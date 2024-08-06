@@ -1,0 +1,34 @@
+name: aurora
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+
+dependencies:
+  carousel_slider: ^4.2.1
+  crystal_navigation_bar: ^1.0.0
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  iconly: ^1.0.1
+  iconsax: ^0.0.8
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets: 
+    - assets/images/avatar.png
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        # Add other styles (italic, bold, etc.) if available
+        # - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+        # - asset: assets/fonts/Poppins/Poppins-Italic.ttf
