@@ -71,8 +71,10 @@ class ReusableCarousel extends StatelessWidget {
                               arguments: {'id': itemData['id']},
                             );
                           },
-                          child: Container(
-                            color: Colors.transparent,
+                          child: Hero(
+                            tag: itemData['id'].toString(),
+                            child: Container(
+                              color: Colors.transparent,
                               width: 200,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
@@ -80,7 +82,9 @@ class ReusableCarousel extends StatelessWidget {
                                   itemData['poster'],
                                   fit: BoxFit.cover,
                                 ),
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),

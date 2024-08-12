@@ -43,7 +43,7 @@ class _MainAppState extends State<MainApp> {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: lightMode,
-          darkTheme: lightMode,
+          darkTheme: darkMode,
           onGenerateRoute: (settings) {
             final args = settings.arguments as Map<String, dynamic>?;
 

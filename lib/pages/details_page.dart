@@ -256,7 +256,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       color: Theme.of(context).colorScheme.tertiary),
                   child: Column(
                     children: [
-                      Text(animeInfo['stats']['episodes']['sub'].toString(),
+                      Text( animeInfo['stats']['episodes']['sub'] == null ? '?' : (animeInfo['stats']['episodes']['sub'].toString()),
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('Episodes')
                     ],
@@ -278,10 +278,16 @@ class _DetailsPageState extends State<DetailsPage> {
                   child: Column(
                     children: [
                       Text(
-                        animeInfo['stats']['duration'].toString().substring(
-                            0,
-                            animeInfo['stats']['duration'].toString().length -
-                                1),
+                        animeInfo['stats']['duration'] == null
+                            ? '??'
+                            : (animeInfo['stats']['duration']
+                                .toString()
+                                .substring(
+                                    0,
+                                    animeInfo['stats']['duration']
+                                            .toString()
+                                            .length -
+                                        1)),
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text('Per Ep')
@@ -367,7 +373,9 @@ class FloatingBar extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 selectable: true,
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                             ),
                             const Text(
@@ -452,9 +460,12 @@ class Poster extends StatelessWidget {
             width: MediaQuery.of(context).size.width - 100,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                animeInfo['poster'],
-                fit: BoxFit.cover,
+              child: Hero(
+                tag: animeInfo['id'].toString(), 
+                child: Image.network(
+                  animeInfo['poster'],
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
