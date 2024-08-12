@@ -1,11 +1,13 @@
+import 'package:aurora/pages/streaming_page.dart';
+import 'package:flutter/material.dart';
+import 'package:aurora/pages/home_page.dart';
+import 'package:aurora/pages/details_page.dart';
 import 'package:aurora/pages/profile_page.dart';
 import 'package:aurora/pages/search_page.dart';
 import 'package:aurora/pages/trending_page.dart';
+import 'package:aurora/theme/theme.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:aurora/pages/home_page.dart';
 import 'package:iconly/iconly.dart';
-
 
 void main() {
   runApp(const MainApp());
@@ -21,12 +23,11 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int _selectedIndex = 0;
 
-  final List<Widget> routes = [
+  final routes = [
     const HomePage(),
     const SearchPage(),
     const TrendingPage(),
     const ProfilePage(),
-    // Add corresponding pages for Favourite, Add, and Profile if needed
   ];
 
   void _onItemTapped(int index) {
@@ -39,40 +40,33 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        final brightness = MediaQuery.of(context).platformBrightness;
-
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            fontFamily: 'Poppins',
-            brightness: Brightness.light,
-            primarySwatch: Colors.blue,
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.black),
-              bodyMedium: TextStyle(color: Colors.black54),
-              headlineSmall: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          darkTheme: ThemeData(
-            fontFamily: 'Poppins',
-            brightness: Brightness.dark,
-            primarySwatch: Colors.blueGrey,
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Colors.white),
-              bodyMedium: TextStyle(color: Colors.grey),
-              headlineSmall: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          themeMode:
-              brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+          theme: lightMode,
+          darkTheme: lightMode,
+          onGenerateRoute: (settings) {
+            final args = settings.arguments as Map<String, dynamic>?;
+
+            switch (settings.name) {
+              case '/details':
+                final id = args?['id'] ?? '';
+                return MaterialPageRoute(
+                  builder: (context) => DetailsPage(id: id),
+                );
+              case '/watch':
+                final id = args?['id'] ?? '';
+                return MaterialPageRoute(
+                  builder: (context) => StreamingPage(id: id),
+                );
+              default:
+                // Optionally, you can return a default page or an error page here
+                return MaterialPageRoute(
+                  builder: (context) => const Scaffold(
+                    body: Center(child: Text('Page not found')),
+                  ),
+                );
+            }
+          },
           home: Scaffold(
             extendBody: true,
             body: routes[_selectedIndex],
@@ -82,31 +76,25 @@ class _MainAppState extends State<MainApp> {
               backgroundColor: Colors.black.withOpacity(0.1),
               onTap: _onItemTapped,
               items: [
-                /// Home
                 CrystalNavigationBarItem(
                   icon: IconlyBold.home,
                   unselectedIcon: IconlyLight.home,
-                  selectedColor: Colors.white,
+                  selectedColor: Colors.indigo,
                 ),
-
                 CrystalNavigationBarItem(
                   icon: IconlyBold.search,
                   unselectedIcon: IconlyLight.search,
-                  selectedColor: Colors.white,
+                  selectedColor: Colors.indigo,
                 ),
-
-                /// Add
                 CrystalNavigationBarItem(
                   icon: IconlyBold.plus,
                   unselectedIcon: IconlyLight.plus,
-                  selectedColor: Colors.white,
+                  selectedColor: Colors.indigo,
                 ),
-
-                /// Profile
                 CrystalNavigationBarItem(
                   icon: IconlyBold.user_2,
                   unselectedIcon: IconlyLight.user,
-                  selectedColor: Colors.white,
+                  selectedColor: Colors.indigo,
                 ),
               ],
             ),

@@ -1,106 +1,116 @@
+import 'dart:ui'; // For BackdropFilter
 import 'package:aurora/components/carousel.dart';
-import 'package:aurora/components/reusable_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+const String API_KEY =
+    "your_api_key_here";
+const String BASE_MOVIE_URL = "https://api.themoviedb.org/3";
 
-  @override
-  State<HomePage> createState() => _HomePageState();
+Future<List<dynamic>?> fetchTopRatedMovies() async {
+  const url = '$BASE_MOVIE_URL/movie/top_rated';
+
+  try {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'accept': 'application/json',
+        'Authorization': 'Bearer $API_KEY',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['results'] as List<dynamic>?;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  List<dynamic>? spotlightAnimes;
-  List<dynamic>? trendingAnimes;
-  List<dynamic>? latestEpisodeAnimes;
-  List<dynamic>? topUpcomingAnimes;
-  Map<String, dynamic>? top10Animes;
-  List<dynamic>? topAiringAnimes;
-  List<dynamic>? mostPopularAnimes;
-  List<dynamic>? mostFavoriteAnimes;
-  List<dynamic>? latestCompletedAnimes;
-  List<dynamic>? genres;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-
-  Future<void> fetchData() async {
-    const String apiUrl = 'https://aniwatch-ryan.vercel.app/anime/home';
-
-    try {
-      final response = await http.get(Uri.parse(apiUrl));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          spotlightAnimes = data['spotlightAnimes'];
-          trendingAnimes = data['trendingAnimes'];
-          latestEpisodeAnimes = data['latestEpisodeAnimes'];
-          topUpcomingAnimes = data['topUpcomingAnimes'];
-          top10Animes = data['top10Animes'];
-          topAiringAnimes = data['topAiringAnimes'];
-          mostPopularAnimes = data['mostPopularAnimes'];
-          mostFavoriteAnimes = data['mostFavoriteAnimes'];
-          latestCompletedAnimes = data['latestCompletedAnimes'];
-          genres = data['genres'];
-        });
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      // Handle exceptions
-      print('Error fetching data: $e');
-    }
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView(
-          children: [
-            const Header(),
-            const SizedBox(height: 20),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Trending ',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Radial gradient background with blur effect
+          Positioned.fill(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 1.5,
+                      colors: [
+                        Colors.indigo.shade400.withOpacity(1),
+                        Colors.indigo.shade200.withOpacity(1),
+                        Colors.black.withOpacity(0.5)
+                      ],
+                      stops: const [0.3, 0.6 ,1.0],
                     ),
                   ),
-                  TextSpan(
-                    text: 'Animes',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.normal,
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                    ),
+                ),
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 10.0,
+                    sigmaY: 10.0,
                   ),
-                ],
-              ),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.7), // Transparent to just apply the blur
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 15),
-            Carousel(animeData: trendingAnimes),
-            ReusableCarousel(title: "Upcoming", carouselData: topUpcomingAnimes),
-            ReusableCarousel(title: "Latest", carouselData: latestEpisodeAnimes),
-            ReusableCarousel(title: "Completed", carouselData: latestCompletedAnimes),
-            const SizedBox(height: 100)
-          ],
-        ),
+          ),
+          // Main content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ListView(
+              children: [
+                const Header(),
+                const SizedBox(height: 20),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Featured ',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Movies',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 15),
+                const Carousel(),
+                // const ReusableCarousel(), 
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -119,13 +129,13 @@ class Header extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 24,
                     backgroundImage: AssetImage('assets/images/avatar.png'),
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -134,6 +144,7 @@ class Header extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                       ),
                       Text(
@@ -141,6 +152,7 @@ class Header extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                       ),
                     ],
@@ -152,7 +164,7 @@ class Header extends StatelessWidget {
                     border: Border.all(
                         width: 1,
                         style: BorderStyle.solid,
-                        color: Theme.of(context).colorScheme.tertiary),
+                        color: Theme.of(context).colorScheme.secondary),
                     borderRadius: BorderRadius.circular(50)),
                 child: IconButton(
                   icon: const Icon(Iconsax.menu),
@@ -165,6 +177,7 @@ class Header extends StatelessWidget {
           const SizedBox(height: 20),
           TextField(
             decoration: InputDecoration(
+              fillColor: Colors.black.withOpacity(0.3),
               hintText: 'Search Movie...',
               prefixIcon: const Icon(Iconsax.search_normal),
               suffixIcon: const Icon(IconlyBold.filter),
@@ -178,7 +191,9 @@ class Header extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25),
                 borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary,
                   width: 1,
                 ),
               ),
@@ -195,8 +210,7 @@ class CategoryItem extends StatelessWidget {
   final String name;
   final VoidCallback? onTap;
 
-  const CategoryItem({
-    super.key,
+  const CategoryItem({super.key, 
     required this.icon,
     required this.name,
     this.onTap,

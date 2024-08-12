@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
-
 class StreamingPage extends StatelessWidget {
-  const StreamingPage({super.key});
+  final String? id;
+  const StreamingPage({super.key, this.id});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Container(
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Text('Hello'),
+        ),
+      ),
+    );
   }
 }

@@ -7,6 +7,8 @@ environment:
   sdk: '>=3.4.4 <4.0.0'
 
 dependencies:
+  appinio_video_player: ^1.3.0
+  better_player: ^0.0.83
   carousel_slider: ^4.2.1
   crystal_navigation_bar: ^1.0.0
   flutter:
@@ -14,6 +16,10 @@ dependencies:
   http: ^1.2.2
   iconly: ^1.0.1
   iconsax: ^0.0.8
+  infinite_carousel: ^1.1.1
+  marquee: ^2.2.3
+  text_marquee: ^0.0.2
+  text_scroll: ^0.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
