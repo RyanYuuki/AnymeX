@@ -1,7 +1,9 @@
-// ignore_for_file: avoid_print
+import 'dart:convert';
+import 'dart:developer';
 
+import 'package:aurora/components/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
+import 'package:http/http.dart' as http;
 
 class StreamingPage extends StatefulWidget {
   final String? id;
@@ -12,55 +14,56 @@ class StreamingPage extends StatefulWidget {
 }
 
 class _StreamingPageState extends State<StreamingPage> {
+  dynamic episodesData;
+  dynamic episodeSrc;
+  final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/episodes/';
+  final String episodeUrl =
+      'https://aniwatch-ryan.vercel.app/anime/episode-srcs?id=';
+
+  @override
+  void initState() {
+    super.initState();
+    FetchAnimeData();
+  }
+
+  Future<void> FetchAnimeData() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl${widget.id}'));
+      if (response.statusCode == 200) {
+        final tempData = jsonDecode(response.body);
+        setState(() {
+          episodesData = tempData['episodes'];
+        });
+        final episodeSrcsResponse = await http
+            .get(Uri.parse(episodeUrl + tempData['episodes'][0]['episodeId']));
+        if (episodeSrcsResponse.statusCode == 200) {
+          final episodeSrcs = jsonDecode(episodeSrcsResponse.body);
+          setState(() {
+            episodeSrc = episodeSrcs['sources'][0]['url'];
+          });
+        } else {
+          throw Exception('Failed to load episode sources');
+        }
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Streaming Page'),
+        title: const Text(''),
         centerTitle: true,
       ),
-      body: YoYoPlayer(
-        aspectRatio: 16 / 9,
-        url: "https://fds.biananset.net/_v7/74a50cfd4c1c68eb65e43d21048f2e2dad2e8db6b42e757ada8fbfd1b4fb38d74b1c23d794f22381a22e44f43c7733f840067afe2e967767eb8a99a3c03102440da0706c30b5e4ed0751e68d7ffd5a686afffad7e16b4c77f16bf345606bdeab79112d52a761e9e003f90a8008a67d833314df0265b6c93971604bd7d00d4179/master.m3u8",
-        videoStyle: const VideoStyle(
-          qualityStyle: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-          forwardAndBackwardBtSize: 30.0,
-          playButtonIconSize: 40.0,
-          playIcon: Icon(
-            Icons.add_circle_outline_outlined,
-            size: 40.0,
-            color: Colors.white,
-          ),
-          pauseIcon: Icon(
-            Icons.remove_circle_outline_outlined,
-            size: 40.0,
-            color: Colors.white,
-          ),
-          videoQualityPadding: EdgeInsets.all(5.0),
-        ),
-        videoLoadingStyle: const VideoLoadingStyle(
-          loading: Center(
-            child: Text("Loading video"),
-          ),
-        ),
-        allowCacheFile: true,
-        onCacheFileCompleted: (files) {
-          print('Cached file length ::: ${files?.length}');
-
-          if (files != null && files.isNotEmpty) {
-            for (var file in files) {
-              print('File path ::: ${file.path}');
-            }
-          }
-        },
-        onCacheFileFailed: (error) {
-          print('Cache file error ::: $error');
-        },
-      ),
+      body: episodeSrc == null
+          ? const Center(child: Text('Loading...'))
+          : Column(
+              children: [VideoPlayer(videoUrl: episodeSrc)],
+            ),
     );
   }
 }

@@ -40,7 +40,7 @@ class ReusableCarousel extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 300,
+          height: 230,
           child: InfiniteCarousel.builder(
             itemCount: carouselData!.length,
             itemExtent: MediaQuery.of(context).size.width / 3,
@@ -53,13 +53,13 @@ class ReusableCarousel extends StatelessWidget {
               final itemData = carouselData![itemIndex];
               return Container(
                 margin: const EdgeInsets.only(right: 4),
-                color: Theme.of(context).colorScheme.surface,
+                color: Colors.transparent,
                 child: Card(
+                  color: Colors.transparent,
                   elevation: 0,
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 200,
                         child: GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
@@ -70,8 +70,8 @@ class ReusableCarousel extends StatelessWidget {
                           },
                           child: Hero(
                             tag: itemData['id'].toString(),
-                            child: Container(
-                              color: Colors.transparent,
+                            child: SizedBox(
+                              height: 170,
                               width: 200,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),

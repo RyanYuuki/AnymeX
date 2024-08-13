@@ -291,7 +291,7 @@ class _DetailsPageState extends State<DetailsPage> {
             ),
           ),
           const SizedBox(height: 40),
-          CharacterCards(carouselData: charactersData)
+          CharacterCards(carouselData: charactersData),
         ],
       ),
     );
@@ -424,10 +424,10 @@ class Poster extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.6),
+                  color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.10),
                   spreadRadius: 5,
                   blurRadius: 10,
-                  offset: Offset(-5, 7),
+                  offset: Offset(0, 7),
                 ),
               ],
             ),

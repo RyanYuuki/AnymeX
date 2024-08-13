@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 15),
-            Carousel(animeData: trendingAnimes),
+            Carousel(animeData: topAiringAnimes),
             ReusableCarousel(title: "Upcoming", carouselData: topUpcomingAnimes),
             ReusableCarousel(title: "Latest", carouselData: latestEpisodeAnimes),
             ReusableCarousel(title: "Completed", carouselData: latestCompletedAnimes),

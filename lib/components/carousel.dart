@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
 
 class Carousel extends StatelessWidget {
   final List<dynamic>? animeData;
@@ -23,8 +24,7 @@ class Carousel extends StatelessWidget {
 
     return CarouselSlider(
       options: CarouselOptions(
-        height: 400, 
-        aspectRatio: 2 / 3,
+        height: 440,
         viewportFraction: 0.7,
         initialPage: 0,
         enableInfiniteScroll: true,
@@ -34,7 +34,7 @@ class Carousel extends StatelessWidget {
         autoPlayAnimationDuration: const Duration(milliseconds: 800),
         autoPlayCurve: Curves.fastOutSlowIn,
         enlargeCenterPage: true,
-        enlargeFactor: 0.3,
+        enlargeFactor: 0.2,
         scrollDirection: Axis.horizontal,
       ),
       items: animeData!.map((anime) {
@@ -46,7 +46,6 @@ class Carousel extends StatelessWidget {
             return Stack(
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -55,6 +54,7 @@ class Carousel extends StatelessWidget {
                       },
                       child: Container(
                         height: 300,
+                        width: 270,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -68,13 +68,66 @@ class Carousel extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10), 
-                    Text(
-                      anime['name'].length > 20
-                          ? '${anime['name'].toString().substring(0, 20)}...'
-                          : anime['name'] ?? '??',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 7),
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            anime['name'].length > 20
+                                ? '${anime['name'].toString().substring(0, 20)}...'
+                                : anime['name'] ?? '??',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(7)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.closed_caption),
+                                    const SizedBox(width: 5),
+                                    Text(anime['episodes']['sub'].toString()),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 40,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(7)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.mic),
+                                    const SizedBox(width: 5),
+                                    Text(anime['episodes']['dub'].toString()),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
                 Positioned(
