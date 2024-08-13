@@ -38,31 +38,28 @@ class ReusableCarousel extends StatelessWidget {
             )
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 270,
+          height: 300,
           child: InfiniteCarousel.builder(
             itemCount: carouselData!.length,
             itemExtent: MediaQuery.of(context).size.width / 3,
             center: false,
             anchor: 0.0,
-            loop: false,
+            loop: true,
             velocityFactor: 0.2,
             axisDirection: Axis.horizontal,
             itemBuilder: (context, itemIndex, realIndex) {
               final itemData = carouselData![itemIndex];
-              final title = itemData['name'].toString().length > 25
-                  ? '${itemData['name'].toString().substring(0, 25)}...'
-                  : itemData['name'];
               return Container(
                 margin: const EdgeInsets.only(right: 4),
+                color: Theme.of(context).colorScheme.surface,
                 child: Card(
-                  color: Theme.of(context).colorScheme.surface,
                   elevation: 0,
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 170,
+                        height: 200,
                         child: GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
@@ -88,9 +85,13 @@ class ReusableCarousel extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(title.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center)
+                      Text(
+                        itemData['name'].toString(),
+                        style: const TextStyle(fontSize: 14),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )
                     ],
                   ),
                 ),

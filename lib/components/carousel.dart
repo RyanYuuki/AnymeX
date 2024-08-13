@@ -46,7 +46,7 @@ class Carousel extends StatelessWidget {
             return Stack(
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.min,  // Constrain the size of the Column
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -54,7 +54,6 @@ class Carousel extends StatelessWidget {
                             arguments: {"id": anime['id']});
                       },
                       child: Container(
-                        width: MediaQuery.of(context).size.width,
                         height: 300,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
@@ -69,7 +68,7 @@ class Carousel extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 10), 
                     Text(
                       anime['name'].length > 20
                           ? '${anime['name'].toString().substring(0, 20)}...'

@@ -113,32 +113,6 @@ class _DetailsPageState extends State<DetailsPage> {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          IconButton(
-            color: Theme.of(context).colorScheme.primary,
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Bruh Why?'),
-                    content: Text(
-                        'Just Why Bro? You got all you want on the damn page why yo gotta click here?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('Close'),
-                      )
-                    ],
-                  );
-                },
-              );
-            },
-          )
-        ],
       ),
       body: Stack(
         children: [
@@ -450,10 +424,10 @@ class Poster extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
+                  color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.6),
                   spreadRadius: 5,
-                  blurRadius: 15,
-                  offset: Offset(0, 10),
+                  blurRadius: 10,
+                  offset: Offset(-5, 7),
                 ),
               ],
             ),

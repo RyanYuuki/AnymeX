@@ -139,8 +139,7 @@ class Header extends StatelessWidget {
                       Text(
                         'Ryan Yuuki',
                         style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins-Bold',
                         ),
                       ),
                     ],
@@ -165,7 +164,7 @@ class Header extends StatelessWidget {
           const SizedBox(height: 20),
           TextField(
             decoration: InputDecoration(
-              hintText: 'Search Movie...',
+              hintText: 'Search Anime...',
               prefixIcon: const Icon(Iconsax.search_normal),
               suffixIcon: const Icon(IconlyBold.filter),
               enabledBorder: OutlineInputBorder(

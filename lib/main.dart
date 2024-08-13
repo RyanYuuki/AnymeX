@@ -59,7 +59,6 @@ class _MainAppState extends State<MainApp> {
                   builder: (context) => StreamingPage(id: id),
                 );
               default:
-                // Optionally, you can return a default page or an error page here
                 return MaterialPageRoute(
                   builder: (context) => const Scaffold(
                     body: Center(child: Text('Page not found')),

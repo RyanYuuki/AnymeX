@@ -32,6 +32,10 @@ flutter:
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins/Poppins-Regular.ttf
-        # Add other styles (italic, bold, etc.) if available
-        # - asset: assets/fonts/Poppins/Poppins-Bold.ttf
-        # - asset: assets/fonts/Poppins/Poppins-Italic.ttf
+    - family: Poppins-SemiBold
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+    - family: Poppins-Bold
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+
