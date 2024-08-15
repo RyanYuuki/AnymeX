@@ -15,8 +15,10 @@ dependencies:
   iconly: ^1.0.1
   iconsax: ^0.0.8
   infinite_carousel: ^1.1.1
-  lecle_yoyo_player: ^0.0.8
   text_scroll: ^0.2.0
+  better_player: ^0.0.84
+  custom_sliding_segmented_control: ^1.8.3
+  hugeicons: ^0.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

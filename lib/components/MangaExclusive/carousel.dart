@@ -3,6 +3,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:text_scroll/text_scroll.dart';
 
 class Carousel extends StatelessWidget {
   final List<dynamic>? animeData;
@@ -35,8 +37,8 @@ class Carousel extends StatelessWidget {
         scrollDirection: Axis.horizontal,
       ),
       items: animeData!.map((anime) {
-        final String posterUrl = anime['poster'] ?? '??';
-        final String type = anime['type'] ?? '??';
+        final String posterUrl = anime['image'] ?? '??';
+        final String type = 'MANGA';
 
         return Builder(
           builder: (BuildContext context) {
@@ -46,8 +48,8 @@ class Carousel extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/details',
-                            arguments: {"id": anime['id']});
+                        Navigator.pushNamed(context, '/manga/details',
+                            arguments: {'id': anime['id']});
                       },
                       child: Container(
                         height: 300,
@@ -77,9 +79,9 @@ class Carousel extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            anime['name'].length > 20
-                                ? '${anime['name'].toString().substring(0, 20)}...'
-                                : anime['name'] ?? '??',
+                            anime['title'].length > 20
+                                ? '${anime['title'].toString().substring(0, 20)}...'
+                                : anime['title'] ?? '??',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           const SizedBox(height: 10),
@@ -88,7 +90,7 @@ class Carousel extends StatelessWidget {
                             children: [
                               Container(
                                 height: 35,
-                                width: 80,
+                                width: 150,
                                 decoration: BoxDecoration(
                                     color:
                                         Theme.of(context).colorScheme.primary,
@@ -97,30 +99,22 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.closed_caption),
+                                    Icon(Iconsax.book),
                                     const SizedBox(width: 5),
-                                    Text(anime['episodes']['sub'] == null
-                                        ? '?'
-                                        : anime['episodes']['sub'].toString(), style: TextStyle(color: Colors.white)),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(7)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.mic),
-                                    const SizedBox(width: 5),
-                                    Text(anime['episodes']['dub'] == null
-                                        ? '?'
-                                        : anime['episodes']['dub'].toString(), style: TextStyle(color: Colors.white)),
+                                    SizedBox(
+                                      child: TextScroll(
+                                        anime['chapter'].substring(0, 10) + '..',
+                                        mode: TextScrollMode.bouncing,
+                                        velocity: const Velocity(
+                                            pixelsPerSecond: Offset(10, 0)),
+                                        delayBefore:
+                                            const Duration(milliseconds: 500),
+                                        pauseBetween:
+                                            const Duration(milliseconds: 1000),
+                                        selectable: true,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -143,8 +137,7 @@ class Carousel extends StatelessWidget {
                     ),
                     child: Text(
                       type,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 14),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
                 ),
