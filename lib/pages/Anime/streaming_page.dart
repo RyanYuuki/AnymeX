@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:text_scroll/text_scroll.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:aurora/components/better_player.dart';
 import 'package:aurora/components/reusable_carousel.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:text_scroll/text_scroll.dart';
 import '../../components/tab_bar.dart';
 
 class StreamingPage extends StatefulWidget {
@@ -173,20 +173,24 @@ class _StreamingPageState extends State<StreamingPage> {
                       itemCount: availEpisodes ?? 0,
                       itemBuilder: (context, index) {
                         final episode = episodesData[index];
-                        return GestureDetector(
-                          onTap: () => handleEpisode(episode['number']),
-                          child: Container(
-                            margin: const EdgeInsets.all(4.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: currentEpisode == episode['number']
-                                  ? Colors.indigo.shade400
-                                  : (episode['isFiller']
-                                      ? Colors.lightGreen.shade700
-                                      : Theme.of(context).colorScheme.tertiary),
-                            ),
-                            child: Center(
-                              child: Text(episode['number'].toString()),
+                        return RepaintBoundary(
+                          child: GestureDetector(
+                            onTap: () => handleEpisode(episode['number']),
+                            child: Container(
+                              margin: const EdgeInsets.all(4.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: currentEpisode == episode['number']
+                                    ? Colors.indigo.shade400
+                                    : (episode['isFiller']
+                                        ? Colors.lightGreen.shade700
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .tertiary),
+                              ),
+                              child: Center(
+                                child: Text(episode['number'].toString()),
+                              ),
                             ),
                           ),
                         );

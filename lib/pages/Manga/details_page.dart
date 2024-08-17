@@ -251,8 +251,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               ])
             ],
           ),
-          const SizedBox(height: 20),
-          ChapterList(chaptersData: mangaData['chapterList'])
+          const SizedBox(height: 30),
+          ChapterList(chaptersData: mangaData['chapterList'], id: widget.id),
+          const SizedBox(height: 70)
         ],
       ),
     );
@@ -329,8 +330,8 @@ class FloatingBar extends StatelessWidget {
                     margin: const EdgeInsets.only(left: 10),
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/watch',
-                            arguments: {'id': id});
+                        Navigator.pushNamed(context, '/manga/read',
+                            arguments: {'id': '/$id/chapter-1', 'mangaId': id});
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

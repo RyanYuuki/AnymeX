@@ -97,7 +97,7 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.closed_caption),
+                                    Icon(Icons.closed_caption, color: Colors.white,),
                                     const SizedBox(width: 5),
                                     Text(anime['episodes']['sub'] == null
                                         ? '?'
@@ -116,7 +116,7 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.mic),
+                                    Icon(Icons.mic, color: Colors.white,),
                                     const SizedBox(width: 5),
                                     Text(anime['episodes']['dub'] == null
                                         ? '?'
@@ -136,7 +136,7 @@ class Carousel extends StatelessWidget {
                   right: 25,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(12),

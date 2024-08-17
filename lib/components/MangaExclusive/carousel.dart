@@ -38,7 +38,7 @@ class Carousel extends StatelessWidget {
       ),
       items: animeData!.map((anime) {
         final String posterUrl = anime['image'] ?? '??';
-        final String type = 'MANGA';
+        const String type = 'MANGA';
 
         return Builder(
           builder: (BuildContext context) {
@@ -99,7 +99,7 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Iconsax.book),
+                                    Icon(Iconsax.book, color: Colors.white),
                                     const SizedBox(width: 5),
                                     SizedBox(
                                       child: TextScroll(
@@ -112,7 +112,7 @@ class Carousel extends StatelessWidget {
                                         pauseBetween:
                                             const Duration(milliseconds: 1000),
                                         selectable: true,
-                                        style: const TextStyle(fontSize: 16),
+                                        style: const TextStyle(fontSize: 16, color: Colors.white),
                                       ),
                                     ),
                                   ],

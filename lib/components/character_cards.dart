@@ -81,7 +81,7 @@ class CharacterCards extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 15),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

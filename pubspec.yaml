@@ -19,6 +19,7 @@ dependencies:
   better_player: ^0.0.84
   custom_sliding_segmented_control: ^1.8.3
   hugeicons: ^0.0.7
+  font_awesome_flutter: ^10.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

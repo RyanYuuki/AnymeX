@@ -169,6 +169,11 @@ class Header extends StatelessWidget {
           const SizedBox(height: 20),
           TextField(
             controller: controller,
+            onSubmitted: (searchTerm) => {
+              Navigator.pushNamed(context, '/anime/search', arguments: {
+                "term": searchTerm,
+              })
+            },
             decoration: InputDecoration(
               hintText: 'Search Anime...',
               prefixIcon: const Icon(Iconsax.search_normal),

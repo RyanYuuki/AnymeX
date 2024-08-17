@@ -1,6 +1,9 @@
+import 'package:aurora/pages/Anime/search_page.dart';
 import 'package:aurora/pages/Anime/streaming_page.dart';
 import 'package:aurora/pages/Manga/details_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
+import 'package:aurora/pages/Manga/read_page.dart';
+import 'package:aurora/pages/Manga/search_page.dart';
 import 'package:aurora/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
@@ -8,6 +11,7 @@ import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:aurora/theme/theme.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
 
 void main() {
   runApp(const MainApp());
@@ -21,7 +25,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 1;
 
   final routes = [
     const MangaHomePage(),
@@ -57,6 +61,16 @@ class _MainAppState extends State<MainApp> {
                 return MaterialPageRoute(
                   builder: (context) => StreamingPage(id: id),
                 );
+              case '/anime/search':
+                final id = args?['term'] ?? '';
+                return MaterialPageRoute(
+                  builder: (context) => SearchPage(searchTerm: id),
+                );
+              case '/manga/search':
+                final id = args?['term'] ?? '';
+                return MaterialPageRoute(
+                  builder: (context) => MangaSearchPage(searchTerm: id),
+                );
               case '/manga/details':
                 final id = args?['id'] ?? '';
                 return MaterialPageRoute(
@@ -64,8 +78,9 @@ class _MainAppState extends State<MainApp> {
                 );
               case '/manga/read':
                 final id = args?['id'] ?? '';
+                final mangaId = args?['mangaId'] ?? '';
                 return MaterialPageRoute(
-                  builder: (context) => MangaDetailsPage(id: id),
+                  builder: (context) => ReadingPage(id: id, mangaId: mangaId),
                 );
               default:
                 return MaterialPageRoute(
@@ -79,15 +94,15 @@ class _MainAppState extends State<MainApp> {
             extendBody: true,
             body: routes[_selectedIndex],
             bottomNavigationBar: CrystalNavigationBar(
-              marginR: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
               currentIndex: _selectedIndex,
+              marginR: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
               unselectedItemColor: Colors.white70,
               backgroundColor: Colors.black.withOpacity(0.1),
               onTap: _onItemTapped,
               items: [
                 CrystalNavigationBarItem(
-                  icon: Icons.menu_book_rounded,
-                  unselectedIcon: Icons.menu_book_outlined,
+                  icon: Iconsax.book,
+                  unselectedIcon: Iconsax.book,
                   selectedColor: Colors.indigo,
                 ),
                 CrystalNavigationBarItem(

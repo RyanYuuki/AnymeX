@@ -16,6 +16,7 @@ ThemeData lightMode = ThemeData(
     secondary: const Color(0xFFE0E0E0),
     tertiary: const Color(0xFFEAEAEA),
     inverseSurface: Colors.black,
+    inversePrimary: Colors.white,
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
@@ -59,6 +60,7 @@ ThemeData darkMode = ThemeData(
     secondary: const Color(0xFF141414),
     tertiary: const Color(0xFF222222),
     inverseSurface: Colors.white,
+    inversePrimary: Colors.black,
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white),

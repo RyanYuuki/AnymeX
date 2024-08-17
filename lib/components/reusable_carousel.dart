@@ -40,7 +40,7 @@ class ReusableCarousel extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 230,
+          height: 250,
           child: InfiniteCarousel.builder(
             itemCount: carouselData!.length,
             itemExtent: MediaQuery.of(context).size.width / 3,
@@ -71,8 +71,8 @@ class ReusableCarousel extends StatelessWidget {
                           child: Hero(
                             tag: itemData['id'].toString(),
                             child: SizedBox(
-                              height: 170,
-                              width: 200,
+                              height: 180,
+                              width: 160,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.network(

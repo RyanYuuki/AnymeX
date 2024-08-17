@@ -14,13 +14,25 @@ class VideoPlayerAlt extends StatefulWidget {
 class _VideoPlayerAltState extends State<VideoPlayerAlt>
     with AutomaticKeepAliveClientMixin {
   List<BetterPlayerSubtitlesSource>? subtitles;
-  late BetterPlayerController _betterPlayerController;
+  BetterPlayerController? _betterPlayerController;
   final BetterPlayerTheme _playerTheme = BetterPlayerTheme.cupertino;
 
   @override
   void initState() {
     super.initState();
+    initializePlayer();
+  }
 
+  @override
+  void didUpdateWidget(covariant VideoPlayerAlt oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.videoUrl != oldWidget.videoUrl) {
+      _betterPlayerController?.dispose();
+      initializePlayer();
+    }
+  }
+
+  void initializePlayer() {
     filterSubtitles(widget.tracks);
 
     BetterPlayerConfiguration betterPlayerConfiguration =
@@ -32,9 +44,8 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(BetterPlayerDataSource(
+    _betterPlayerController!.setupDataSource(BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      useAsmsSubtitles: true,
       widget.videoUrl,
       subtitles: subtitles,
     ));
@@ -58,13 +69,13 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
     super.build(context);
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: BetterPlayer(controller: _betterPlayerController),
+      child: BetterPlayer(controller: _betterPlayerController!),
     );
   }
 
   @override
   void dispose() {
-    _betterPlayerController.dispose();
+    _betterPlayerController?.dispose();
     super.dispose();
   }
 

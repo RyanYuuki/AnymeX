@@ -26,7 +26,8 @@ class _MangaHomePageState extends State<MangaHomePage> {
   }
 
   Future<void> fetchData() async {
-    const String apiUrl = 'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/mangalist';
+    const String apiUrl =
+        'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/mangalist';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -35,9 +36,9 @@ class _MangaHomePageState extends State<MangaHomePage> {
         setState(() {
           mangaList = data['mangaList'];
           if (mangaList != null && mangaList!.length == 24) {
-            CarouselData_1 = mangaList!.sublist(0, 8); 
-            CarouselData_2 = mangaList!.sublist(8, 16); 
-            CarouselData_3 = mangaList!.sublist(16, 24); 
+            CarouselData_1 = mangaList!.sublist(0, 8);
+            CarouselData_2 = mangaList!.sublist(8, 16);
+            CarouselData_3 = mangaList!.sublist(16, 24);
           } else {
             throw Exception('Data length is not 24');
           }
@@ -86,12 +87,9 @@ class _MangaHomePageState extends State<MangaHomePage> {
             ),
             const SizedBox(height: 15),
             Carousel(animeData: mangaList),
-            ReusableCarousel(
-                title: "Popular", carouselData: CarouselData_1),
-            ReusableCarousel(
-                title: "Latest", carouselData: CarouselData_2),
-            ReusableCarousel(
-                title: "Favorite", carouselData: CarouselData_3),
+            ReusableCarousel(title: "Popular", carouselData: CarouselData_1),
+            ReusableCarousel(title: "Latest", carouselData: CarouselData_2),
+            ReusableCarousel(title: "Favorite", carouselData: CarouselData_3),
           ],
         ),
       ),
@@ -99,8 +97,15 @@ class _MangaHomePageState extends State<MangaHomePage> {
   }
 }
 
-class Header extends StatelessWidget {
+class Header extends StatefulWidget {
   const Header({super.key});
+
+  @override
+  State<Header> createState() => _HeaderState();
+}
+
+class _HeaderState extends State<Header> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +161,13 @@ class Header extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           TextField(
+            controller: _controller,
+            onSubmitted: (value) {
+              Navigator.pushNamed(context, '/manga/search',
+                  arguments: {'term': value});
+            },
             decoration: InputDecoration(
-              hintText: 'Search Anime...',
+              hintText: 'Search Manga...',
               prefixIcon: const Icon(Iconsax.search_normal),
               suffixIcon: const Icon(IconlyBold.filter),
               enabledBorder: OutlineInputBorder(
