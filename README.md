@@ -1,34 +1,33 @@
 # **AnymeX** 📚✨
 
-![App Icon Placeholder](./assets/images/icon.png)  
 ![Flutter Logo](https://img.shields.io/badge/Flutter-007ACC?logo=flutter&logoColor=white) ![Dart Logo](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)
 
-Welcome to **AnymeX**, your go-to app for a seamless anime and manga experience! This is my very first Flutter project, and I'm excited to share it with you. Dive into a world of free anime streaming and manga reading with a sleek, aesthetic design and a variety of features.
+Welcome to **AnymeX**, your ultimate destination for a seamless anime and manga experience! 🎉 As my very first Flutter project, I’m thrilled to share it with you. Explore a vast world of free anime streaming and manga reading, all wrapped in a sleek, aesthetic design.
 
 ## 🚀 **Features**
 
-- **Watch Anime for Free**: Stream a wide range of anime series and episodes without any cost.
-- **Read Manga**: Explore a rich collection of manga titles at your fingertips.
-- **Sleek Design**: Enjoy a modern and visually appealing interface.
-- **Aesthetic Theme Toggler**: Switch between light and dark themes to suit your mood.
-- **Fast & Lightweight**: Experience smooth performance and quick load times.
+- **📺 Watch Anime for Free**: Enjoy a wide selection of anime series and episodes without spending a dime.
+- **📚 Read Manga**: Access a diverse library of manga titles, all in one place.
+- **✨ Sleek Design**: Experience a modern, stylish, and user-friendly interface.
+- **🌙 Aesthetic Theme Toggler**: Effortlessly switch between light and dark themes to match your preference.
+- **⚡ Fast & Lightweight**: Benefit from a smooth and responsive performance.
 
 ## 📱 **Screenshots**
 
-``` Will add soon ```
+_Your app screenshots will be added here soon. Stay tuned!_
 
 ## 🔧 **Getting Started**
 
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/anymey.git
+   git clone https://github.com/yourusername/anymex.git
    ```
 
 2. **Install Dependencies**
 
    ```bash
-   cd anymey
+   cd anymex
    flutter pub get
    ```
 
@@ -40,12 +39,12 @@ Welcome to **AnymeX**, your go-to app for a seamless anime and manga experience!
 
 ## 📜 **License**
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ## 📬 **Contact**
 
-For any questions or feedback, feel free to reach out to me at [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or feedback, feel free to reach out at [your-email@example.com](mailto:your-email@example.com).
 
 ---
 
-Feel free to modify and personalize this README to better fit your app and preferences!
+Feel free to tweak this further as needed!
