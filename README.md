@@ -1,9 +1,9 @@
-# **AnymeY** 📚✨
+# **AnymeX** 📚✨
 
 ![App Icon Placeholder](./assets/images/icon.png)  
 ![Flutter Logo](https://img.shields.io/badge/Flutter-007ACC?logo=flutter&logoColor=white) ![Dart Logo](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)
 
-Welcome to **AnymeY**, your go-to app for a seamless anime and manga experience! This is my very first Flutter project, and I'm excited to share it with you. Dive into a world of free anime streaming and manga reading with a sleek, aesthetic design and a variety of features.
+Welcome to **AnymeX**, your go-to app for a seamless anime and manga experience! This is my very first Flutter project, and I'm excited to share it with you. Dive into a world of free anime streaming and manga reading with a sleek, aesthetic design and a variety of features.
 
 ## 🚀 **Features**
 
