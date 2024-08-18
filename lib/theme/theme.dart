@@ -12,7 +12,7 @@ ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.light(
     surface: Colors.grey.shade200,
     surfaceContainer: const Color(0xFFFFFFFF),
-    primary: Colors.indigo.shade400,
+    primary: Colors.black,
     secondary: const Color(0xFFE0E0E0),
     tertiary: const Color(0xFFEAEAEA),
     inverseSurface: Colors.black,
@@ -57,8 +57,8 @@ ThemeData darkMode = ThemeData(
   colorScheme: ColorScheme.dark(
     surface: Colors.black26,
     primary: Colors.indigo.shade400,
-    secondary: const Color(0xFF141414),
-    tertiary: const Color(0xFF222222),
+    secondary: const Color(0xFF222222),
+    tertiary: const Color(0xFF141414),
     inverseSurface: Colors.white,
     inversePrimary: Colors.black,
   ),

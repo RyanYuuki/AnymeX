@@ -1,10 +1,13 @@
 import 'package:aurora/components/MangaExclusive/carousel.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
+import 'package:aurora/fallbackData/manga_data.dart';
+import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class MangaHomePage extends StatefulWidget {
   const MangaHomePage({super.key});
@@ -22,7 +25,15 @@ class _MangaHomePageState extends State<MangaHomePage> {
   @override
   void initState() {
     super.initState();
+    InitFallbackData();
     fetchData();
+  }
+
+  void InitFallbackData() {
+    mangaList = mangaData['mangaList'];
+    CarouselData_1 = mangaList!.sublist(0, 8);
+    CarouselData_2 = mangaList!.sublist(8, 16);
+    CarouselData_3 = mangaList!.sublist(16, 24);
   }
 
   Future<void> fetchData() async {
@@ -109,6 +120,7 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Column(
@@ -152,8 +164,13 @@ class _HeaderState extends State<Header> {
                         color: Theme.of(context).colorScheme.tertiary),
                     borderRadius: BorderRadius.circular(50)),
                 child: IconButton(
-                  icon: const Icon(Iconsax.menu),
-                  onPressed: () {},
+                  icon: Icon(
+                      themeProvider.selectedTheme.brightness == Brightness.dark
+                          ? Iconsax.moon
+                          : Iconsax.sun),
+                  onPressed: () {
+                    themeProvider.toggleTheme();
+                  },
                   color: Theme.of(context).iconTheme.color,
                 ),
               )

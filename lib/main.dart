@@ -5,16 +5,22 @@ import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/Manga/read_page.dart';
 import 'package:aurora/pages/Manga/search_page.dart';
 import 'package:aurora/pages/home_page.dart';
+import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
-import 'package:aurora/theme/theme.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
@@ -41,12 +47,12 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Builder(
       builder: (context) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: lightMode,
-          darkTheme: darkMode,
+          theme: themeProvider.selectedTheme,
           onGenerateRoute: (settings) {
             final args = settings.arguments as Map<String, dynamic>?;
 

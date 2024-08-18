@@ -14,18 +14,19 @@ class MyTabBar extends StatefulWidget {
 }
 
 class _MyTabBarState extends State<MyTabBar> {
+  int currentIndex = 1;
   @override
   Widget build(BuildContext context) {
     return Center(
       child: CustomSlidingSegmentedControl<int>(
         fixedWidth: MediaQuery.of(context).size.width / 2 - 12,
         initialValue: 1,
-        children: const {
-          1: Text('Sub'),
-          2: Text('Dub'),
+        children: {
+          1: Text('Sub', style: TextStyle(color: currentIndex == 1 ? Colors.white : null), ),
+          2: Text('Dub', style: TextStyle(color: currentIndex == 2 ? Colors.white : null), ),
         },
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.tertiary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(8),
         ),
         thumbDecoration: BoxDecoration(
@@ -45,7 +46,12 @@ class _MyTabBarState extends State<MyTabBar> {
         ),
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInToLinear,
-        onValueChanged: (v) => widget.onTap(v),
+        onValueChanged: (v) => {
+          setState(() {
+            currentIndex = v;
+          }),
+          widget.onTap(v)
+        },
       ),
     );
   }

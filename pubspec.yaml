@@ -20,6 +20,8 @@ dependencies:
   custom_sliding_segmented_control: ^1.8.3
   hugeicons: ^0.0.7
   font_awesome_flutter: ^10.7.0
+  provider: ^6.1.2
+  flutter_launcher_icons: ^0.13.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -30,6 +32,7 @@ flutter:
 
   assets: 
     - assets/images/avatar.png
+    - assets/images/icon.png
 
   fonts:
     - family: Poppins

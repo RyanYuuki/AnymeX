@@ -1,10 +1,13 @@
 import 'package:aurora/components/carousel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
+import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../../fallbackData/anime_data.dart';
 
 class AnimeHomePage extends StatefulWidget {
   const AnimeHomePage({super.key});
@@ -29,7 +32,21 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   @override
   void initState() {
     super.initState();
+    InitFallbackData();
     fetchData();
+  }
+
+  void InitFallbackData() {
+    spotlightAnimes = animeData['spotlightAnimes'];
+    trendingAnimes = animeData['trendingAnimes'];
+    latestEpisodeAnimes = animeData['latestEpisodeAnimes'];
+    topUpcomingAnimes = animeData['topUpcomingAnimes'];
+    top10Animes = animeData['top10Animes'];
+    topAiringAnimes = animeData['topAiringAnimes'];
+    mostPopularAnimes = animeData['mostPopularAnimes'];
+    mostFavoriteAnimes = animeData['mostFavoriteAnimes'];
+    latestCompletedAnimes = animeData['latestCompletedAnimes'];
+    genres = animeData['genres'];
   }
 
   Future<void> fetchData() async {
@@ -116,6 +133,7 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Column(
@@ -159,8 +177,13 @@ class Header extends StatelessWidget {
                         color: Theme.of(context).colorScheme.tertiary),
                     borderRadius: BorderRadius.circular(50)),
                 child: IconButton(
-                  icon: const Icon(Iconsax.menu),
-                  onPressed: () {},
+                  icon: Icon(
+                      themeProvider.selectedTheme.brightness == Brightness.dark
+                          ? Iconsax.moon
+                          : Iconsax.sun),
+                  onPressed: () {
+                      themeProvider.toggleTheme();
+                  },
                   color: Theme.of(context).iconTheme.color,
                 ),
               )

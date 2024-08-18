@@ -57,7 +57,8 @@ class _StreamingPageState extends State<StreamingPage> {
 
         setState(() {
           animeData = tempAnimeData;
-          availEpisodes = tempAnimeData['anime']['info']['stats']['episodes']['sub'];
+          availEpisodes =
+              tempAnimeData['anime']['info']['stats']['episodes']['sub'];
           isInfoLoading = false;
           episodesData = tempData['episodes'];
           currentEpisode = 1;
@@ -181,15 +182,21 @@ class _StreamingPageState extends State<StreamingPage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: currentEpisode == episode['number']
-                                    ? Colors.indigo.shade400
+                                    ? Theme.of(context).colorScheme.primary
                                     : (episode['isFiller']
                                         ? Colors.lightGreen.shade700
                                         : Theme.of(context)
                                             .colorScheme
-                                            .tertiary),
+                                            .secondary),
                               ),
                               child: Center(
-                                child: Text(episode['number'].toString()),
+                                child: Text(
+                                  episode['number'].toString(),
+                                  style: TextStyle(
+                                      color: currentEpisode == episode['number']
+                                          ? Colors.white
+                                          : null),
+                                ),
                               ),
                             ),
                           ),
