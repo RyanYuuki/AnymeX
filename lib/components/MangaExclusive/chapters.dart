@@ -11,7 +11,7 @@ class ChapterList extends StatefulWidget {
 }
 
 class _ChapterListState extends State<ChapterList> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<dynamic> _filteredChapters = [];
 
   @override
@@ -53,8 +53,8 @@ class _ChapterListState extends State<ChapterList> {
                 ),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(
-                width: 200,
+              const SizedBox(width: 20),
+              Expanded(
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -104,7 +104,7 @@ class _ChapterListState extends State<ChapterList> {
                                 .substring(17, manga['name'].toString().length)
                             : manga['name'],
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -168,7 +168,7 @@ class _ChapterListState extends State<ChapterList> {
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class Carousel extends StatelessWidget {
       items: animeData!.map((anime) {
         final String posterUrl = anime['poster'] ?? '??';
         final String type = anime['type'] ?? '??';
+        final tag = anime['name'] + anime['jname'] + anime['id'];
 
         return Builder(
           builder: (BuildContext context) {
@@ -46,21 +48,28 @@ class Carousel extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/details',
-                            arguments: {"id": anime['id']});
+                        Navigator.pushNamed(
+                          context,
+                          '/details',
+                          arguments: {
+                            'id': anime['id'],
+                            'posterUrl': posterUrl,
+                            "tag" : tag
+                          },
+                        );
                       },
                       child: Container(
                         height: 300,
                         width: 270,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            posterUrl,
-                            fit: BoxFit.cover,
+                          child: Hero(
+                            tag: tag,
+                            child: CachedNetworkImage(
+                              imageUrl: posterUrl,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -97,11 +106,17 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.closed_caption, color: Colors.white,),
+                                    Icon(
+                                      Icons.closed_caption,
+                                      color: Colors.white,
+                                    ),
                                     const SizedBox(width: 5),
-                                    Text(anime['episodes']['sub'] == null
-                                        ? '?'
-                                        : anime['episodes']['sub'].toString(), style: TextStyle(color: Colors.white)),
+                                    Text(
+                                        anime['episodes']['sub'] == null
+                                            ? '?'
+                                            : anime['episodes']['sub']
+                                                .toString(),
+                                        style: TextStyle(color: Colors.white)),
                                   ],
                                 ),
                               ),
@@ -116,11 +131,17 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.mic, color: Colors.white,),
+                                    Icon(
+                                      Icons.mic,
+                                      color: Colors.white,
+                                    ),
                                     const SizedBox(width: 5),
-                                    Text(anime['episodes']['dub'] == null
-                                        ? '?'
-                                        : anime['episodes']['dub'].toString(), style: TextStyle(color: Colors.white)),
+                                    Text(
+                                        anime['episodes']['dub'] == null
+                                            ? '?'
+                                            : anime['episodes']['dub']
+                                                .toString(),
+                                        style: TextStyle(color: Colors.white)),
                                   ],
                                 ),
                               ),
@@ -143,8 +164,7 @@ class Carousel extends StatelessWidget {
                     ),
                     child: Text(
                       type,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 14),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
                 ),

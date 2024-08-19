@@ -44,135 +44,146 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(IconlyBold.arrow_left)),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    onSubmitted: _search,
-                    decoration: InputDecoration(
-                      hintText: 'Eg.. Attack on Titan',
-                      prefixIcon: const Icon(Iconsax.search_normal),
-                      suffixIcon: const Icon(IconlyBold.filter),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.secondary,
-                          width: 1,
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(IconlyBold.arrow_left)),
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      onSubmitted: _search,
+                      decoration: InputDecoration(
+                        hintText: 'Eg.. Attack on Titan',
+                        prefixIcon: const Icon(Iconsax.search_normal),
+                        suffixIcon: const Icon(IconlyBold.filter),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 1,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: _searchData == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                        childAspectRatio: 0.7,
-                      ),
-                      itemCount: _searchData!.length,
-                      itemBuilder: (context, index) {
-                        final anime = _searchData![index];
-                        return Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.tertiary,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/details',
-                                      arguments: {"id": anime['id']});
-                                },
-                                child: ClipRRect(
+                ],
+              ),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: _searchData == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0,
+                          childAspectRatio: 0.7,
+                        ),
+                        itemCount: _searchData!.length,
+                        itemBuilder: (context, index) {
+                          final anime = _searchData![index];
+                          final tag =
+                              anime['name'] + anime['jname'] + index.toString();
+                          return Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
                                   borderRadius: BorderRadius.circular(12),
-                                  child: SizedBox(
-                                    width: double.infinity, // Full width
-                                    height: double.infinity, // Full height
-                                    child: Image.network(
-                                      anime['poster'],
-                                      fit: BoxFit.cover,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, '/details',
+                                        arguments: {
+                                          "id": anime['id'],
+                                          'posterUrl': anime['poster'],
+                                          'tag': tag
+                                        });
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      child: Hero(
+                                        tag: tag,
+                                        child: Image.network(
+                                          anime['poster'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              left: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.7),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  anime['ratings'] ?? 'PG-13',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
+                              Positioned(
+                                top: 8,
+                                left: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    anime['ratings'] ?? 'PG-13',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              right: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.7),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  anime['type'] ?? 'TV',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
+                              Positioned(
+                                top: 8,
+                                right: 6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    anime['type'] ?? 'TV',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-            ),
-          ],
+                            ],
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

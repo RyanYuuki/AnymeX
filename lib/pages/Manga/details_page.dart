@@ -1,9 +1,8 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +11,13 @@ import 'package:text_scroll/text_scroll.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final String id;
-  const MangaDetailsPage({super.key, required this.id});
+  final String posterUrl;
+  final String tag;
+  const MangaDetailsPage(
+      {super.key,
+      required this.id,
+      required this.posterUrl,
+      required this.tag});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -38,7 +43,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       final response = await http.get(Uri.parse(baseUrl + widget.id));
       if (response.statusCode == 200) {
         final tempData = jsonDecode(response.body);
-        log(tempData['name']);
         setState(() {
           mangaData = tempData;
           isLoading = false;
@@ -56,32 +60,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Loading...'),
-          leading: IconButton(
-            icon: Icon(IconlyBold.arrow_left),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: CupertinoActivityIndicator(
-            radius: 40,
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: TextScroll(
-          mangaData['name'],
+          isLoading || mangaData == null ? 'Loading...' : mangaData['name'],
           mode: TextScrollMode.bouncing,
           velocity: Velocity(pixelsPerSecond: Offset(30, 0)),
           delayBefore: Duration(milliseconds: 500),
@@ -98,25 +82,32 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           },
         ),
       ),
-      body: Stack(
-        children: [
-          ListView(
-            children: [
-              Column(
-                children: [
-                  Poster(mangaInfo: mangaData),
-                  const SizedBox(height: 30),
-                  Info(context)
-                ],
-              ),
-            ],
-          ),
-          FloatingBar(
-            title: mangaData['name'],
-            id: widget.id,
-          ),
-        ],
-      ),
+      body: isLoading
+          ? Center(
+              child: Poster(posterUrl: widget.posterUrl, tag: widget.tag),
+            )
+          : Stack(
+              children: [
+                ListView(
+                  children: [
+                    Column(
+                      children: [
+                        Poster(
+                          posterUrl: widget.posterUrl,
+                          tag: widget.tag,
+                        ),
+                        const SizedBox(height: 30),
+                        Info(context)
+                      ],
+                    ),
+                  ],
+                ),
+                FloatingBar(
+                  title: mangaData['name'],
+                  id: widget.id,
+                ),
+              ],
+            ),
     );
   }
 
@@ -367,10 +358,12 @@ class FloatingBar extends StatelessWidget {
 }
 
 class Poster extends StatelessWidget {
-  dynamic mangaInfo;
+  String? posterUrl;
+  String? tag;
   Poster({
     super.key,
-    required this.mangaInfo,
+    required this.posterUrl,
+    required this.tag,
   });
 
   @override
@@ -385,10 +378,7 @@ class Poster extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .inverseSurface
-                      .withOpacity(0.10),
+                  color: Colors.black.withOpacity(0.10),
                   spreadRadius: 5,
                   blurRadius: 10,
                   offset: Offset(0, 7),
@@ -398,9 +388,12 @@ class Poster extends StatelessWidget {
             width: MediaQuery.of(context).size.width - 100,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                mangaInfo['imageUrl'],
-                fit: BoxFit.cover,
+              child: Hero(
+                tag: tag!,
+                child: CachedNetworkImage(
+                  imageUrl: posterUrl!,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

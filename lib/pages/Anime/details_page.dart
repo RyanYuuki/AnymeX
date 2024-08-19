@@ -2,8 +2,9 @@
 
 import 'dart:convert';
 import 'dart:ui';
+import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +13,9 @@ import 'package:text_scroll/text_scroll.dart';
 
 class DetailsPage extends StatefulWidget {
   final String id;
-  const DetailsPage({super.key, required this.id});
+  final String? posterUrl;
+  final String? tag;
+  const DetailsPage({super.key, required this.id, this.posterUrl, this.tag});
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
@@ -49,7 +52,7 @@ class _DetailsPageState extends State<DetailsPage> {
           });
         }
         setState(() {
-          data = tempData[''];
+          data = tempData;
           animeFullInfo = tempData['anime']['moreInfo'];
           animeInfo = tempData['anime']['info'];
           isLoading = false;
@@ -67,72 +70,51 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String title = animeInfo == null
-        ? 'Anime'
-        : (animeInfo['name'].toString().length > 20
-            ? '${animeInfo['name'].toString().substring(0, 20)}...'
-            : animeInfo['name'].toString());
-    if (isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Loading...'),
-          leading: IconButton(
-            icon: Icon(IconlyBold.arrow_left),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: CupertinoActivityIndicator(
-            radius: 40,
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: TextScroll(
-          animeInfo['name'].toString(),
+          isLoading ? 'Loading...' : animeInfo['name'].toString(),
           mode: TextScrollMode.bouncing,
-          velocity: Velocity(pixelsPerSecond: Offset(30, 0)),
-          delayBefore: Duration(milliseconds: 500),
-          pauseBetween: Duration(milliseconds: 1000),
+          velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
+          delayBefore: const Duration(milliseconds: 500),
+          pauseBetween: const Duration(milliseconds: 1000),
           textAlign: TextAlign.center,
           selectable: true,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(IconlyBold.arrow_left),
+          icon: const Icon(IconlyBold.arrow_left),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
-      body: Stack(
-        children: [
-          ListView(
-            children: [
-              Column(
-                children: [
-                  Poster(animeInfo: animeInfo),
-                  const SizedBox(height: 30),
-                  Info(context),
-                ],
-              ),
-            ],
-          ),
-          FloatingBar(
-            title: title,
-            id: widget.id,
-          ),
-        ],
-      ),
+      body: isLoading
+          ? Center(
+              child: Poster(tag: widget.tag, poster: widget.posterUrl),
+            )
+          : Stack(
+              children: [
+                ListView(
+                  children: [
+                    Column(
+                      children: [
+                        Poster(tag: widget.tag, poster: widget.posterUrl),
+                        const SizedBox(height: 30),
+                        Info(context),
+                      ],
+                    ),
+                  ],
+                ),
+                FloatingBar(
+                  title: animeInfo['name'] ?? '??',
+                  id: widget.id,
+                ),
+              ],
+            ),
     );
   }
 
@@ -157,7 +139,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   Container(
                     constraints: BoxConstraints(maxWidth: 170),
                     child: TextScroll(
-                      animeInfo['name'].toString(),
+                      animeInfo['name']?.toString() ?? '??',
                       mode: TextScrollMode.endless,
                       velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
                       delayBefore: Duration(milliseconds: 500),
@@ -182,7 +164,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    animeFullInfo['malscore'].toString(),
+                    animeFullInfo['malscore']?.toString() ?? '??',
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.primary),
                   ),
@@ -230,7 +212,11 @@ class _DetailsPageState extends State<DetailsPage> {
                       color: Theme.of(context).colorScheme.tertiary),
                   child: Column(
                     children: [
-                      Text( animeInfo['stats']['episodes']['sub'] == null ? '?' : (animeInfo['stats']['episodes']['sub'].toString()),
+                      Text(
+                          animeInfo['stats']['episodes']['sub'] == null
+                              ? '?'
+                              : (animeInfo['stats']['episodes']['sub']
+                                  .toString()),
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('Episodes')
                     ],
@@ -282,7 +268,9 @@ class _DetailsPageState extends State<DetailsPage> {
             child: Column(
               children: [
                 Text(
-                  description!,
+                  description ??
+                      animeInfo['description'] ??
+                      'Description Not Found',
                   maxLines: 13,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
@@ -292,6 +280,12 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
           const SizedBox(height: 40),
           CharacterCards(carouselData: charactersData),
+          ReusableCarousel(
+              title: 'Popular', carouselData: data['mostPopularAnimes']),
+          ReusableCarousel(
+              title: 'Related', carouselData: data['relatedAnimes']),
+          ReusableCarousel(
+              title: 'Recommended', carouselData: data['recommendedAnimes']),
         ],
       ),
     );
@@ -405,13 +399,9 @@ class FloatingBar extends StatelessWidget {
 }
 
 class Poster extends StatelessWidget {
-  Poster({
-    super.key,
-    required this.animeInfo,
-  });
-
-  dynamic animeInfo;
-
+  const Poster({super.key, required this.tag, required this.poster});
+  final String? poster;
+  final String? tag;
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -424,7 +414,7 @@ class Poster extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.10),
+                  color: Colors.black.withOpacity(0.10),
                   spreadRadius: 5,
                   blurRadius: 10,
                   offset: Offset(0, 7),
@@ -435,9 +425,9 @@ class Poster extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Hero(
-                tag: animeInfo['id'].toString(), 
-                child: Image.network(
-                  animeInfo['poster'],
+                tag: tag!,
+                child: CachedNetworkImage(
+                  imageUrl: poster!,
                   fit: BoxFit.cover,
                 ),
               ),

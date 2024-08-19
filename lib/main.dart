@@ -58,9 +58,12 @@ class _MainAppState extends State<MainApp> {
 
             switch (settings.name) {
               case '/details':
+                final posterUrl = args?['posterUrl'] ?? '';
                 final id = args?['id'] ?? '';
+                final tag = args?['tag'] ?? '';
                 return MaterialPageRoute(
-                  builder: (context) => DetailsPage(id: id),
+                  builder: (context) =>
+                      DetailsPage(id: id, posterUrl: posterUrl, tag: tag),
                 );
               case '/watch':
                 final id = args?['id'] ?? '';
@@ -78,9 +81,12 @@ class _MainAppState extends State<MainApp> {
                   builder: (context) => MangaSearchPage(searchTerm: id),
                 );
               case '/manga/details':
+                final posterUrl = args?['posterUrl'] ?? '';
                 final id = args?['id'] ?? '';
+                final tag = args?['tag'] ?? '';
                 return MaterialPageRoute(
-                  builder: (context) => MangaDetailsPage(id: id),
+                  builder: (context) =>
+                      MangaDetailsPage(id: id, posterUrl: posterUrl, tag: tag),
                 );
               case '/manga/read':
                 final id = args?['id'] ?? '';

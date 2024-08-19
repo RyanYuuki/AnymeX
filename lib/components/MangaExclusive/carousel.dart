@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class Carousel extends StatelessWidget {
       items: animeData!.map((anime) {
         final String posterUrl = anime['image'] ?? '??';
         const String type = 'MANGA';
+        final tag = anime['title'] + anime['id'];
 
         return Builder(
           builder: (BuildContext context) {
@@ -48,8 +50,15 @@ class Carousel extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/manga/details',
-                            arguments: {'id': anime['id']});
+                        Navigator.pushNamed(
+                          context,
+                          '/manga/details',
+                          arguments: {
+                            'id': anime['id'],
+                            'posterUrl': posterUrl,
+                            "tag": tag
+                          },
+                        );
                       },
                       child: Container(
                         height: 300,
@@ -60,9 +69,12 @@ class Carousel extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            posterUrl,
-                            fit: BoxFit.cover,
+                          child: Hero(
+                            tag: tag,
+                            child: CachedNetworkImage(
+                              imageUrl: posterUrl,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -103,7 +115,8 @@ class Carousel extends StatelessWidget {
                                     const SizedBox(width: 5),
                                     SizedBox(
                                       child: TextScroll(
-                                        anime['chapter'].substring(0, 10) + '..',
+                                        anime['chapter'].substring(0, 10) +
+                                            '..',
                                         mode: TextScrollMode.bouncing,
                                         velocity: const Velocity(
                                             pixelsPerSecond: Offset(10, 0)),
@@ -112,7 +125,8 @@ class Carousel extends StatelessWidget {
                                         pauseBetween:
                                             const Duration(milliseconds: 1000),
                                         selectable: true,
-                                        style: const TextStyle(fontSize: 16, color: Colors.white),
+                                        style: const TextStyle(
+                                            fontSize: 16, color: Colors.white),
                                       ),
                                     ),
                                   ],

@@ -22,6 +22,8 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   provider: ^6.1.2
   flutter_launcher_icons: ^0.13.1
+  cached_network_image: ^3.4.1
+  animated_segmented_tab_control: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -31,16 +33,17 @@ flutter:
   uses-material-design: true
 
   assets: 
-    - assets/images/avatar.png
-    - assets/images/icon.png
+    - assets/images/
 
   fonts:
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+
     - family: Poppins-SemiBold
       fonts:
         - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+        
     - family: Poppins-Bold
       fonts:
         - asset: assets/fonts/Poppins/Poppins-Bold.ttf

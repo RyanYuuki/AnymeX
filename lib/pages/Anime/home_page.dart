@@ -1,12 +1,15 @@
+import 'package:aurora/components/IconWithLabel.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aurora/components/carousel.dart';
+import 'package:aurora/components/data_table.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import '../../fallbackData/anime_data.dart';
 
 class AnimeHomePage extends StatefulWidget {
@@ -27,7 +30,9 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   List<dynamic>? mostFavoriteAnimes;
   List<dynamic>? latestCompletedAnimes;
   List<dynamic>? genres;
+  int currentTableIndex = 0;
   final TextEditingController _searchTerm = TextEditingController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -76,6 +81,17 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     }
   }
 
+  void _onTableItemTapped(int index) {
+    setState(() {
+      currentTableIndex = index;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +100,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ListView(
           children: [
-            Header(
-              controller: _searchTerm,
-            ),
+            Header(controller: _searchTerm),
             const SizedBox(height: 20),
             RichText(
               text: TextSpan(
@@ -115,14 +129,135 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             const SizedBox(height: 15),
             Carousel(animeData: topAiringAnimes),
             ReusableCarousel(
-                title: "Upcoming", carouselData: topUpcomingAnimes),
-            ReusableCarousel(
-                title: "Latest", carouselData: latestEpisodeAnimes),
+                title: "Popular", carouselData: top10Animes?['today']),
             ReusableCarousel(
                 title: "Completed", carouselData: latestCompletedAnimes),
+            ReusableCarousel(
+                title: "Latest", carouselData: latestEpisodeAnimes),
+            AnimeTable(
+                onTap: (value) {
+                  _onTableItemTapped(value!);
+                },
+                currentIndex: currentTableIndex),
+            Container(
+              height: 1120,
+              margin: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.tertiary),
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentTableIndex = index;
+                  });
+                },
+                children: [
+                  ListItem(context, data: animeData['top10Animes']['today']),
+                  ListItem(context, data: animeData['top10Animes']['week']),
+                  ListItem(context, data: animeData['top10Animes']['month']),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Container ListItem(BuildContext context, {required data}) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+          children: data
+              .map<Widget>(
+                (anime) => GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/details', arguments: {
+                      'id': anime['id'],
+                      'posterUrl': anime['poster'],
+                      'tag' : anime['name'] + anime['id']
+                    });
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(top: 20),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Theme.of(context).colorScheme.secondary),
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 45,
+                          margin: const EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(14)),
+                          child: Center(
+                              child: Text(
+                            anime['rank'].toString(),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                        ),
+                        SizedBox(
+                          height: 70,
+                          width: 50,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Hero(
+                              tag: anime['name'] + anime['id'],
+                              child: CachedNetworkImage(
+                                imageUrl: anime['poster'],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(anime['name'].length > 20
+                                ? anime['name'].substring(0, 20) + '...'
+                                : anime['name']),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                IconWithName(
+                                    isVertical: false,
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(5),
+                                        bottomLeft: Radius.circular(5)),
+                                    icon: Icons.closed_caption,
+                                    backgroundColor: const Color(0xFFb0e3af),
+                                    name: anime['episodes']['sub'].toString()),
+                                const SizedBox(width: 2),
+                                IconWithName(
+                                    isVertical: false,
+                                    backgroundColor: const Color(0xFFb9e7ff),
+                                    borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(5),
+                                        bottomRight: Radius.circular(5)),
+                                    icon: Icons.mic,
+                                    name: anime['episodes']['dub'].toString())
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              .toList()),
     );
   }
 }
@@ -182,7 +317,7 @@ class Header extends StatelessWidget {
                           ? Iconsax.moon
                           : Iconsax.sun),
                   onPressed: () {
-                      themeProvider.toggleTheme();
+                    themeProvider.toggleTheme();
                   },
                   color: Theme.of(context).iconTheme.color,
                 ),
@@ -218,62 +353,6 @@ class Header extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CategoryItem extends StatelessWidget {
-  final IconData icon;
-  final String name;
-  final VoidCallback? onTap;
-
-  const CategoryItem({
-    super.key,
-    required this.icon,
-    required this.name,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 80,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 30,
-              color: Theme.of(context).iconTheme.color,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              name,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodySmall?.color,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins',
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }

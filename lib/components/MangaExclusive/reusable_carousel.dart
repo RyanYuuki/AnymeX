@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
 
@@ -48,11 +49,12 @@ class ReusableCarousel extends StatelessWidget {
             itemExtent: MediaQuery.of(context).size.width / 3,
             center: false,
             anchor: 0.0,
-            loop: true,
+            loop: false,
             velocityFactor: 0.2,
             axisDirection: Axis.horizontal,
             itemBuilder: (context, itemIndex, realIndex) {
               final itemData = carouselData![itemIndex];
+              final tag = itemData.toString();
               return Container(
                 margin: const EdgeInsets.only(right: 4),
                 color: Colors.transparent,
@@ -64,18 +66,25 @@ class ReusableCarousel extends StatelessWidget {
                       SizedBox(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/manga/details',
-                                arguments: {'id': itemData['id']});
+                            Navigator.pushNamed(
+                              context,
+                              '/manga/details',
+                              arguments: {
+                                'id': itemData['id'],
+                                'posterUrl': itemData['image'],
+                                "tag": tag
+                              },
+                            );
                           },
-                          child: Hero(
-                            tag: itemData['id'].toString(),
-                            child: SizedBox(
-                              height: 180,
-                              width: 160,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  itemData['image'],
+                          child: SizedBox(
+                            height: 180,
+                            width: 160,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Hero(
+                                tag: tag,
+                                child: CachedNetworkImage(
+                                  imageUrl: itemData['image'],
                                   fit: BoxFit.cover,
                                 ),
                               ),

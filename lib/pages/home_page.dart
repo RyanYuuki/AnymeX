@@ -42,7 +42,10 @@ class HomePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.indigo.shade400,
               ),
-              child: const Text('Login', style: TextStyle(color: Colors.white),),
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             const SizedBox(height: 25),
             Row(
@@ -55,7 +58,7 @@ class HomePage extends StatelessWidget {
                       .colorScheme
                       .inverseSurface
                       .withOpacity(0.6),
-                      size: 30,
+                  size: 30,
                 ),
                 const SizedBox(width: 20),
                 Icon(
@@ -64,7 +67,7 @@ class HomePage extends StatelessWidget {
                       .colorScheme
                       .inverseSurface
                       .withOpacity(0.6),
-                      size: 30,
+                  size: 30,
                 ),
                 const SizedBox(width: 15),
                 Icon(
@@ -73,7 +76,7 @@ class HomePage extends StatelessWidget {
                       .colorScheme
                       .inverseSurface
                       .withOpacity(0.6),
-                      size: 30,
+                  size: 30,
                 ),
               ],
             )

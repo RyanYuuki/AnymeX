@@ -9,11 +9,7 @@ class CharacterCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (carouselData == null || carouselData!.isEmpty) {
-      return Container(
-        height: 300,
-        alignment: Alignment.center,
-        child: const Text('No data provided'),
-      );
+      return Container();
     }
 
     return Column(
