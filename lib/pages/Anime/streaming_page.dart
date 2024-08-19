@@ -26,7 +26,7 @@ class _StreamingPageState extends State<StreamingPage> {
   int? currentEpisode;
   bool isDub = false;
   int? availEpisodes;
-  bool isList = true;
+  bool isList = false;
   List<dynamic> filteredEpisodes = [];
 
   final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/';

@@ -57,6 +57,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(IconlyBold.arrow_left)),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: controller,
@@ -108,7 +109,8 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                                 ),
                                 child: GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/manga/details',
+                                    Navigator.pushNamed(
+                                        context, '/manga/details',
                                         arguments: {"id": anime['id']});
                                   },
                                   child: ClipRRect(

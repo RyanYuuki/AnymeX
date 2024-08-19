@@ -57,6 +57,7 @@ class _SearchPageState extends State<SearchPage> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(IconlyBold.arrow_left)),
+                      const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: controller,
