@@ -10,11 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox('login-data');
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),

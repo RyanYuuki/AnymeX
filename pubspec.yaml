@@ -25,6 +25,10 @@ dependencies:
   cached_network_image: ^3.4.1
   animated_segmented_tab_control: ^2.0.0
   smooth_sheets: ^0.9.3
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.11
 dev_dependencies:
   flutter_test:
     sdk: flutter

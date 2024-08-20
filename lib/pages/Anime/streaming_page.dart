@@ -298,17 +298,9 @@ class _StreamingPageState extends State<StreamingPage> {
                                                   : null),
                                         ),
                                   SizedBox(width: isList ? 5 : 0),
-                                  SizedBox(
-                                    width: isList
-                                        ? MediaQuery.of(context).size.width /
-                                            1.5
-                                        : 0,
+                                  Expanded(
                                     child: TextScroll(
-                                      isList
-                                          ? (episode['title'].length > 40
-                                              ? '${episode['title'].toString().substring(0, 40)}...'
-                                              : episode['title'])
-                                          : '',
+                                      isList ? (episode['title']) : '',
                                       mode: TextScrollMode.bouncing,
                                       velocity: const Velocity(
                                           pixelsPerSecond: Offset(10, 0)),

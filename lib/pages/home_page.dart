@@ -1,10 +1,22 @@
+import 'package:aurora/components/database/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smooth_sheets/smooth_sheets.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  LoginInfo loginDB = LoginInfo();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,7 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: () => _showLoginSheet(context), // Trigger the bottom sheet
+              onTap: () => _showLoginSheet(context), 
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -119,9 +131,17 @@ class _LoginBottomSheet extends StatelessWidget {
   }
 }
 
-class _LoginContent extends StatelessWidget {
+class _LoginContent extends StatefulWidget {
   const _LoginContent();
 
+  @override
+  State<_LoginContent> createState() => _LoginContentState();
+}
+
+class _LoginContentState extends State<_LoginContent> {
+  LoginInfo loginData = LoginInfo();
+  TextEditingController userName = TextEditingController();
+  TextEditingController passWord = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -139,14 +159,14 @@ class _LoginContent extends StatelessWidget {
             Text(
               'Login',
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.inverseSurface,
-                decoration: TextDecoration.none
-              ),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                  decoration: TextDecoration.none),
             ),
             const SizedBox(height: 16),
             CupertinoTextField(
+              controller: userName,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.inverseSurface),
               placeholder: 'UserName',
@@ -158,6 +178,7 @@ class _LoginContent extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             CupertinoTextField(
+              controller: passWord,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.inverseSurface),
               placeholder: 'Password',
@@ -182,7 +203,13 @@ class _LoginContent extends StatelessWidget {
             const SizedBox(height: 16),
             CupertinoButton(
               color: Theme.of(context).colorScheme.tertiary,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => {
+                loginData.login_data = [
+                  userName.value.toString(),
+                  passWord.value.toString()
+                ],
+                Navigator.pop(context)
+              },
               child:
                   const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
