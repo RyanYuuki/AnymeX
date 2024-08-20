@@ -67,10 +67,10 @@ class Carousel extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Hero(
-                            tag: tag,
+                        child: Hero(
+                          tag: tag,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
                               imageUrl: posterUrl,
                               fit: BoxFit.cover,

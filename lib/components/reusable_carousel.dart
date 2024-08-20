@@ -75,10 +75,10 @@ class ReusableCarousel extends StatelessWidget {
                               },
                             );
                           },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Hero(
-                              tag: tag,
+                          child: Hero(
+                            tag: tag,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: itemData['poster'],
                                 fit: BoxFit.cover,

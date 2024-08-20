@@ -62,10 +62,10 @@ class Carousel extends StatelessWidget {
                         height: 300,
                         width: 270,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Hero(
-                            tag: tag,
+                        child: Hero(
+                          tag: tag,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
                               imageUrl: posterUrl,
                               fit: BoxFit.cover,

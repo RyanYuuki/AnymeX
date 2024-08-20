@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -93,8 +94,14 @@ class _DetailsPageState extends State<DetailsPage> {
         ),
       ),
       body: isLoading
-          ? Center(
-              child: Poster(tag: widget.tag, poster: widget.posterUrl),
+          ? Column(
+              children: [
+                Center(
+                  child: Poster(tag: widget.tag, poster: widget.posterUrl),
+                ),
+                const SizedBox(height: 30),
+                CupertinoActivityIndicator(radius: 50),
+              ],
             )
           : Stack(
               children: [
@@ -366,6 +373,7 @@ class FloatingBar extends StatelessWidget {
                             arguments: {'id': id});
                       },
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -422,10 +430,10 @@ class Poster extends StatelessWidget {
               ],
             ),
             width: MediaQuery.of(context).size.width - 100,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Hero(
-                tag: tag!,
+            child: Hero(
+              tag: tag!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
                 child: CachedNetworkImage(
                   imageUrl: poster!,
                   fit: BoxFit.cover,

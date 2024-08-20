@@ -79,10 +79,10 @@ class ReusableCarousel extends StatelessWidget {
                           child: SizedBox(
                             height: 180,
                             width: 160,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Hero(
-                                tag: tag,
+                            child: Hero(
+                              tag: tag,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
                                 child: CachedNetworkImage(
                                   imageUrl: itemData['image'],
                                   fit: BoxFit.cover,

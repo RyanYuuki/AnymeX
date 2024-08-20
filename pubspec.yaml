@@ -24,6 +24,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   cached_network_image: ^3.4.1
   animated_segmented_tab_control: ^2.0.0
+  smooth_sheets: ^0.9.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

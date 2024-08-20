@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:text_scroll/text_scroll.dart';
 import 'dart:convert';
@@ -153,6 +154,12 @@ class _StreamingPageState extends State<StreamingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(IconlyBold.arrow_left),
+        ),
         title: TextScroll(
           isInfoLoading
               ? 'Loading'
@@ -223,7 +230,8 @@ class _StreamingPageState extends State<StreamingPage> {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                 ),
                                 child: IconButton(
                                     onPressed: () {
@@ -290,11 +298,29 @@ class _StreamingPageState extends State<StreamingPage> {
                                                   : null),
                                         ),
                                   SizedBox(width: isList ? 5 : 0),
-                                  Text(isList
-                                      ? (episode['title'].length > 40
-                                          ? '${episode['title'].toString().substring(0, 40)}...'
-                                          : episode['title'])
-                                      : ''),
+                                  SizedBox(
+                                    width: isList
+                                        ? MediaQuery.of(context).size.width /
+                                            1.5
+                                        : 0,
+                                    child: TextScroll(
+                                      isList
+                                          ? (episode['title'].length > 40
+                                              ? '${episode['title'].toString().substring(0, 40)}...'
+                                              : episode['title'])
+                                          : '',
+                                      mode: TextScrollMode.bouncing,
+                                      velocity: const Velocity(
+                                          pixelsPerSecond: Offset(10, 0)),
+                                      delayBefore:
+                                          const Duration(milliseconds: 500),
+                                      pauseBetween:
+                                          const Duration(milliseconds: 1000),
+                                      textAlign: TextAlign.center,
+                                      selectable: true,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

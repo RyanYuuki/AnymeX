@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:text_scroll/text_scroll.dart';
 
 class ChapterList extends StatefulWidget {
   final dynamic chaptersData;
@@ -24,8 +25,10 @@ class _ChapterListState extends State<ChapterList> {
   void _filterChapters() {
     setState(() {
       _filteredChapters = widget.chaptersData
-          .where((chapter) =>
-              chapter['name'].toString().toLowerCase().contains(_searchController.text.toLowerCase()))
+          .where((chapter) => chapter['name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
           .toList();
     });
   }
@@ -98,14 +101,17 @@ class _ChapterListState extends State<ChapterList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        manga['name'].toString().length > 17
-                            ? manga['name']
-                                .substring(17, manga['name'].toString().length)
-                            : manga['name'],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(
+                        width: 140,
+                        child: TextScroll(
+                          manga['name'],
+                          mode: TextScrollMode.endless,
+                          velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
+                          delayBefore: const Duration(milliseconds: 500),
+                          pauseBetween: const Duration(milliseconds: 1000),
+                          textAlign: TextAlign.center,
+                          selectable: true,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                       const SizedBox(height: 5),
