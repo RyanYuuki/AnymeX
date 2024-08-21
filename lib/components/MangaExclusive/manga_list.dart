@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MangaList extends StatelessWidget {
@@ -25,19 +26,29 @@ class MangaList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(
-                        width: 125,
-                        height: 165,
-                        child: Hero(
-                          tag: manga['id'],
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                              imageUrl: manga['image'],
-                              fit: BoxFit.cover,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/manga/details',
+                            arguments: {
+                              'id': manga['id'],
+                              'posterUrl': manga['image'],
+                              'tag': manga['id']
+                            });
+                      },
+                      child: SizedBox(
+                          width: 125,
+                          height: 165,
+                          child: Hero(
+                            tag: manga['id'],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                imageUrl: manga['image'],
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        )),
+                          )),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                         child: Column(
@@ -57,13 +68,14 @@ class MangaList extends StatelessWidget {
                             IconWithName(
                                 TextColor: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .inversePrimary,
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .inversePrimary,
                                 isVertical: false,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.tertiary,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(5),
                                     bottomLeft: Radius.circular(5)),
@@ -77,17 +89,18 @@ class MangaList extends StatelessWidget {
                             IconWithName(
                                 TextColor: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .inversePrimary,
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .inversePrimary,
                                 isVertical: false,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.tertiary,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
                                 borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(5),
                                     bottomRight: Radius.circular(5)),
-                                icon: Iconsax.heart,
+                                icon: IconlyBold.heart,
                                 name: manga['view'].toString()),
                           ],
                         ),
@@ -106,11 +119,10 @@ class MangaList extends StatelessWidget {
                         const SizedBox(height: 10),
                         ElevatedButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/manga/details',
+                              Navigator.pushNamed(context, '/manga/read',
                                   arguments: {
-                                    'id': manga['id'],
-                                    'posterUrl': manga['image'],
-                                    'tag': manga['id']
+                                    'id': manga['id'] + '/' + 'chapter-1',
+                                    'mangaId': manga['id'] + '/' + 'chapter-1',
                                   });
                             },
                             child: Text('Read Now'))

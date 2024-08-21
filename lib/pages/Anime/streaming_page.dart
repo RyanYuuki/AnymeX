@@ -311,6 +311,8 @@ class _StreamingPageState extends State<StreamingPage> {
                                       ? Expanded(
                                           child: Text(
                                             episode['title'],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: currentEpisode ==

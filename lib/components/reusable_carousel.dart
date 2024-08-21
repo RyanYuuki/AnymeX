@@ -35,68 +35,64 @@ class ReusableCarousel extends StatelessWidget {
             ),
             const Text(
               ' Animes',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
             )
           ],
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 250,
+          height: 300,
           child: InfiniteCarousel.builder(
             itemCount: carouselData!.length,
-            itemExtent: MediaQuery.of(context).size.width / 3,
+            itemExtent: MediaQuery.of(context).size.width / 2.5,
             center: false,
             anchor: 0,
             loop: false,
-            velocityFactor: 0.2,
+            velocityFactor: 0.7,
             axisDirection: Axis.horizontal,
             itemBuilder: (context, itemIndex, realIndex) {
               final itemData = carouselData![itemIndex];
               final String posterUrl = itemData['poster'] ?? '??';
               final tag = itemData.toString();
-              return Container(
-                margin: const EdgeInsets.only(right: 4),
-                color: Colors.transparent,
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/details',
-                              arguments: {
-                                'id': itemData['id'],
-                                'posterUrl': posterUrl,
-                                'tag' : tag
-                              },
-                            );
-                          },
-                          child: Hero(
-                            tag: tag,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                imageUrl: itemData['poster'],
-                                fit: BoxFit.cover,
-                              ),
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 230,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/details',
+                            arguments: {
+                              'id': itemData['id'],
+                              'posterUrl': posterUrl,
+                              'tag' : tag
+                            },
+                          );
+                        },
+                        child: Hero(
+                          tag: tag,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                              imageUrl: itemData['poster'],
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        itemData['name'].toString(),
-                        style: const TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      itemData['name'].toString(),
+                      style: const TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
                 ),
               );
             },

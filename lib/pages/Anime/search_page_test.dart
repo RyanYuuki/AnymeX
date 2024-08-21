@@ -61,7 +61,7 @@ class _SearchPageState extends State<SearchPage> {
                   Expanded(
                     child: TextField(
                       controller: controller,
-                      onSubmitted: _search, 
+                      onSubmitted: _search,
                       decoration: InputDecoration(
                         hintText: 'Eg.. Attack on Titan',
                         prefixIcon: const Icon(Iconsax.search_normal),
@@ -93,80 +93,73 @@ class _SearchPageState extends State<SearchPage> {
                         itemCount: _searchData!.length,
                         itemBuilder: (context, index) {
                           final anime = _searchData![index];
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/details',
-                                    arguments: {"id": anime['id']});
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 70,
-                                      height: 100,
-                                      child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(10),
-                                          child: Image.network(
-                                            anime['poster'],
-                                            fit: BoxFit.cover,
-                                          )),
-                                    ),
-                                    const SizedBox(width: 16.0),
-                                    Column(
-                                      children: [
-                                        Text(
-                                            anime['name'].toString().length > 20
-                                                ? anime['name']
-                                                    .toString()
-                                                    .substring(0, 20)
-                                                : anime['name'],
-                                            overflow: TextOverflow.ellipsis),
-                                        const SizedBox(height: 5),
-                                        Row(
-                                          children: [
-                                            Container(
-                                                padding: const EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Text(
-                                                    anime['rating'] ?? '??')),
-                                            const SizedBox(width: 10),
-                                            Container(
-                                                padding: const EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Text(
-                                                    anime['rating'] ?? '??')),
-                                            const SizedBox(width: 10),
-                                            Container(
-                                                padding: const EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Text(
-                                                    anime['rating'] ?? '??')),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                          return SearchItem_Box(context, anime);
                         },
                       ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container SearchItem_Box(BuildContext context, anime) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.tertiary,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, '/details',
+              arguments: {"id": anime['id']});
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 70,
+                height: 100,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      anime['poster'],
+                      fit: BoxFit.cover,
+                    )),
+              ),
+              const SizedBox(width: 16.0),
+              Column(
+                children: [
+                  Text(
+                      anime['name'].toString().length > 20
+                          ? anime['name'].toString().substring(0, 20)
+                          : anime['name'],
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(anime['rating'] ?? '??')),
+                      const SizedBox(width: 10),
+                      Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(anime['rating'] ?? '??')),
+                      const SizedBox(width: 10),
+                      Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(anime['rating'] ?? '??')),
+                    ],
+                  )
+                ],
               ),
             ],
           ),

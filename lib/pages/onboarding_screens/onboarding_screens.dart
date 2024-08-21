@@ -135,7 +135,10 @@ class OnboardingPage2 extends StatelessWidget {
                 curve: Curves.ease,
               );
             },
-            child: const Text('Light Mode'),
+            child: const Text(
+              'Light Mode',
+              style: TextStyle(fontFamily: 'Poppins'),
+            ),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -153,7 +156,8 @@ class OnboardingPage2 extends StatelessWidget {
                 curve: Curves.ease,
               );
             },
-            child: const Text('Dark Mode'),
+            child: const Text('Dark Mode',
+                style: TextStyle(fontFamily: 'Poppins')),
           ),
         ],
       ),

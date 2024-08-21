@@ -131,11 +131,32 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             const SizedBox(height: 15),
             Carousel(animeData: topAiringAnimes),
             ReusableCarousel(
-                title: "Popular", carouselData: top10Animes?['today']),
+                title: "Popular",
+                carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!]),
             ReusableCarousel(
                 title: "Completed", carouselData: latestCompletedAnimes),
             ReusableCarousel(
                 title: "Latest", carouselData: latestEpisodeAnimes),
+            ReusableCarousel(title: "Upcoming", carouselData: topUpcomingAnimes),
+            ReusableCarousel(title: "Seasonal", carouselData: trendingAnimes),
+            Row(
+              children: [
+                Text(
+                  'Top',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const Text(
+                  ' Animes',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
             AnimeTable(
                 onTap: (value) {
                   _onTableItemTapped(value!);
@@ -201,19 +222,18 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                               child: Text(
                             anime['rank'].toString(),
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                            ),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           )),
                         ),
                         SizedBox(
                           height: 70,
                           width: 50,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Hero(
-                              tag: anime['name'] + anime['id'],
+                          child: Hero(
+                            tag: anime['name'] + anime['id'],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
                               child: CachedNetworkImage(
                                 imageUrl: anime['poster'],
                                 fit: BoxFit.cover,
@@ -277,7 +297,8 @@ class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
     var _box = Hive.box('login-data');
-    final userInfo = _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final userInfo =
+        _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
     final avatarImagePath = userInfo?[2] ?? 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(

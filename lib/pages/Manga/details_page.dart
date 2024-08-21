@@ -90,7 +90,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   child: Poster(posterUrl: widget.posterUrl, tag: widget.tag),
                 ),
                 const SizedBox(height: 30),
-                CupertinoActivityIndicator(radius: 50),
+                CircularProgressIndicator(),
               ],
             )
           : Stack(

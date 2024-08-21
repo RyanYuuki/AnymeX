@@ -70,8 +70,8 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeProvider.selectedTheme,
-      home: _isFirstTime 
-          ? const OnboardingScreens() 
+      home: _isFirstTime
+          ? const OnboardingScreens()
           : Scaffold(
               extendBody: true,
               body: routes[_selectedIndex],
@@ -81,23 +81,27 @@ class _MainAppState extends State<MainApp> {
                     const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                 unselectedItemColor:
                     themeProvider.selectedTheme.colorScheme.inverseSurface,
-                backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.1),
+                backgroundColor: themeProvider.selectedTheme.colorScheme.inverseSurface
+                    .withOpacity(0.1),
                 onTap: _onItemTapped,
                 items: [
                   CrystalNavigationBarItem(
                     icon: Iconsax.book,
                     unselectedIcon: Iconsax.book,
-                    selectedColor: Colors.indigo,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
                   ),
                   CrystalNavigationBarItem(
                     icon: IconlyBold.home,
                     unselectedIcon: IconlyLight.home,
-                    selectedColor: Colors.indigo,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
                   ),
                   CrystalNavigationBarItem(
                     icon: Icons.movie_filter_rounded,
                     unselectedIcon: Icons.movie_filter_outlined,
-                    selectedColor: Colors.indigo,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
                   ),
                 ],
               ),

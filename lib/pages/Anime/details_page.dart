@@ -100,7 +100,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   child: Poster(tag: widget.tag, poster: widget.posterUrl),
                 ),
                 const SizedBox(height: 30),
-                CupertinoActivityIndicator(radius: 50),
+                CircularProgressIndicator(),
               ],
             )
           : Stack(
@@ -116,10 +116,12 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ],
                 ),
-                FloatingBar(
-                  title: animeInfo['name'] ?? '??',
-                  id: widget.id,
-                ),
+                if (animeInfo['stats']['episodes']['sub'] != 0 &&
+                    animeInfo['stats']['episodes']['sub'] != null)
+                  (FloatingBar(
+                    title: animeInfo['name'] ?? '??',
+                    id: widget.id,
+                  ))
               ],
             ),
     );
