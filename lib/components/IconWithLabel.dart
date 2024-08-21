@@ -8,8 +8,9 @@ class IconWithName extends StatelessWidget {
   final double size;
   final Color backgroundColor;
   final BorderRadius? borderRadius;
-
-  const IconWithName({super.key, 
+  final Color TextColor;
+  const IconWithName({
+    super.key,
     required this.icon,
     required this.name,
     this.isVertical = true,
@@ -17,6 +18,7 @@ class IconWithName extends StatelessWidget {
     this.size = 16.0,
     this.backgroundColor = Colors.white,
     this.borderRadius,
+    this.TextColor = Colors.black,
   });
 
   @override
@@ -43,9 +45,9 @@ class IconWithName extends StatelessWidget {
                   Icon(icon, size: size, color: color),
                   const SizedBox(width: 2.0),
                   Text(name,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 12.0,
-                          color: Colors.black,
+                          color: TextColor,
                           fontWeight: FontWeight.bold)),
                 ],
               ),

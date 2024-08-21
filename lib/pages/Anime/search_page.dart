@@ -24,6 +24,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> fetchSearchedTerm() async {
+    _searchData = null;
     final String url =
         'https://aniwatch-ryan.vercel.app/anime/search?q=${controller.text}';
     final resp = await http.get(Uri.parse(url));

@@ -277,5 +277,565 @@ dynamic mangaData = {
       {"id": "Yaoi", "name": "Yaoi"},
       {"id": "Yuri", "name": "Yuri"}
     ]
+  },
+};
+
+dynamic moreMangaData = {
+  "mangaList": [
+    {
+      "id": "manga-kv987430",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-kv987430.jpg",
+      "title": "Please Save My Husband",
+      "chapter": "Chapter 83: Hidden Ending",
+      "view": "5.2M",
+      "description":
+          "The ideal husband; a romantic wedding day; a perfect honeymoon… Everything looks as if it’s going in the right direction, but instead I’m suddenly living a fantasy?!! Hahahaha, what the hell’s going on?!Every time I fail a quest, I’m thrown right back to the beginning of the mission! Where exactly is this heading!?To protect my husband, Yeoyun, and stop travelling back in time, I must control this marriage and the in-laws!"
+    },
+    {
+      "id": "manga-nk990919",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nk990919.jpg",
+      "title": "Swordmaster’S Youngest Son",
+      "chapter": "Chapter 125",
+      "view": "62.9M",
+      "description":
+          "Jin Runcandel was the youngest son of Runcandel, the land’s most prestigious swordsman family…And the biggest failure in Runcandel history.He, who was kicked out miserably and came to a meaningless end, was given another chance.“How do you want to use this power?”“I want to use it for myself.”Memories of his past life, overwhelming talent, and a contract with God…The preparations to become the greatest are complete."
+    },
+    {
+      "id": "manga-hi985265",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-hi985265.jpg",
+      "title": "Kojiin Tamer",
+      "chapter": "Chapter 33",
+      "view": "37M",
+      "description":
+          "Shu, who died of old age, reincarnated as a baby in a different world where he was picked up by a poor orphanage. He quickly grows up under the watchful eye of the gentle director and staff. With skills received from God, he starts to exert talent…He now lives at his own pace, adventuring with cute monsters and good friends ♪"
+    },
+    {
+      "id": "manga-ik985693",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ik985693.jpg",
+      "title": "Nano Machine",
+      "chapter": "Chapter 220",
+      "view": "144.1M",
+      "description":
+          "English: After being held in disdain and having his life put in danger, an orphan from the Demonic Cult, Cheon Yeo-Woon, has an unexpected visit from his descendant from the future who inserts a nano machine into Cheon Yeo-Woon’s body, which drastically changes Cheon Yeo-Woon’s life after its activation. The story of Cheon Yeo-Woon’s journey of bypassing the Demonic Cult and rising to become the best martial artist has just begun. French: La vie remplit d’infortune et d’épreuve de Cheo Yeo-Woon, bâtard et dernier dans l’ordre de succession, prit un tournant après qu’un de ses “descendant” venant du futur ait injecté des Nano Machines dans son corps."
+    },
+    {
+      "id": "manga-ov991730",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ov991730.jpg",
+      "title": "Zenbu Nuganakutatte, Ecchi Wa Dekiru.",
+      "chapter": "Chapter 90",
+      "view": "4.4M",
+      "description":
+          "A sinful sweet josei manga with themes of overcoming complexes about one's body and emotional trauma.Sugiura Tomoko, a beautiful and capable office worker, is doing her best to succeed in her career - but she can't help but keep people at a distance, after a scar on her body ruined her social life in the past. Her supportive mentor at work, Aridome Kakeru, has been trying to get her out of her shell despite her demeanor. When circumstances align and he discovers her secret, he makes it his mission to show her his feelings in full. Trauma doesn't disappear overnight however, and she must come to internalize the affection she has deprived herself for so long. Things get even more complicated as the lines blur between her and her superior, and even more so when her protective childhood friend comes back into her life."
+    },
+    {
+      "id": "manga-nw991331",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nw991331.jpg",
+      "title": "My Lover Is Paranoid",
+      "chapter": "Chapter 216: The Downfall Of A Two-Faced Woman",
+      "view": "2.4M",
+      "description":
+          "A non-existent child firmly ties a paranoid, oppressive, and powerful emperor-like man with a poor, beautiful manga artist… She has no right to resist him, all because his name is ‘Gong Ou’!"
+    },
+    {
+      "id": "manga-jn986670",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-jn986670.jpg",
+      "title": "One Piece - Digital Colored Comics",
+      "chapter": "Chapter 974",
+      "view": "29.3M",
+      "description":
+          "Gol D. Roger, a man referred to as the \"Pirate King,\" is set to be executed by the World Government. But just before his demise, he confirms the existence of a great treasure, One Piece, located somewhere within the vast ocean known as the Grand Line. Announcing that One Piece can be claimed by anyone worthy enough to reach it, the Pirate King is executed and the Great Age of Pirates begins.Twenty years later, a young man by the name of Monkey D. Luffy is ready to embark on his own adventure, searching for One Piece and striving to become the new Pirate King. Armed with just a straw hat, a small boat, and an elastic body, he sets out on a fantastic journey to gather his own crew and a worthy ship that will take them across the Grand Line to claim the greatest status on the high seas."
+    },
+    {
+      "id": "manga-bn978870",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-bn978870.jpg",
+      "title": "Martial Peak",
+      "chapter": "Chapter 3755",
+      "view": "421.7M",
+      "description":
+          "The journey to the martial peak is a lonely, solitary and long one.In the face of adversity,you must survive and remain unyielding.Only then can you break through and and continue on your journey to become the strongest. Sky Tower tests its disciples in the harshest ways to prepare them for this journey.One day the lowly sweeper Yang Kai managed to obtain a black book, setting him on the road to the peak of the martials world."
+    },
+    {
+      "id": "manga-nh990664",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nh990664.jpg",
+      "title": "Youngest Chef From The 3Rd Rate Hotel",
+      "chapter": "Chapter 102",
+      "view": "24.1M",
+      "description":
+          "Kang Sunghoon, the youngest member of a 4 star hotel kitchen in Korea, has the ability to memorise different kinds of ingredients. However, as the youngest, he's still unable to escape dishwashing duty."
+    },
+    {
+      "id": "manga-ii985591",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ii985591.jpg",
+      "title": "Cell",
+      "chapter": "Chapter 71: Afterword",
+      "view": "2.8M",
+      "description":
+          "Wi Sangwoo is kind of a twat, and then hits rock-bottom after his wealthy, sheltered life crumbles around him. Now he's trying to climb the social ladder by hanging out with the rich kids again… with a little help of some garden variety superpower."
+    },
+    {
+      "id": "manga-ju987229",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ju987229.jpg",
+      "title": "The Strongest Ever",
+      "chapter": "Chapter 185",
+      "view": "23.9M",
+      "description":
+          "The ‘Ten Masters’ had kept each other in check and maintained the balance of power and order of the world beyond human limits, until Baek Dohyun showed up with the strongest power ever!"
+    },
+    {
+      "id": "manga-dy980533",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-dy980533.jpg",
+      "title": "Nyx Stay Night",
+      "chapter": "Chapter 172",
+      "view": "4.4M",
+      "description":
+          "The sudden appearance of the amnesiac witch, Nyx, has brought a lot of changes to Ren Xi’s life. The two help each other’s growth, Ren Xi’s willing to help Nyx to find her lost memories, but in the process, will discover an astonishing secret……"
+    },
+    {
+      "id": "manga-ou991729",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ou991729.jpg",
+      "title": "My Mom's A Superstar",
+      "chapter": "Chapter 34: Character Documentary: Youji",
+      "view": "2.8M",
+      "description":
+          "What will happen when an overly-supportive daughter discovers loads of photos of her mom, a famous actress, on the internet posing with her female co-stars in ways that \"friends\" would not do?"
+    },
+    {
+      "id": "manga-nx991332",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nx991332.jpg",
+      "title": "An Earth Immortal Reborn",
+      "chapter": "Chapter 129: Visitor",
+      "view": "2.6M",
+      "description":
+          "Chen Mo, an Immortal Transformation cultivator who died when exploring the forbidden grounds with his junior, has returned to his Senior High days. He has to rebuild his cultivation foundation to regain his strength and look for his junior. Taking advantage of his memories of past life, he has laid out plans to undo all regrets. This time, he will protect his family and friends, crush his enemies, and overturn all malicious schemes!"
+    },
+    {
+      "id": "manga-ny991307",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ny991307.jpg",
+      "title": "Level 999 Demon Lord And A Level 1 Slime",
+      "chapter": "Chapter 9",
+      "view": "2.5M",
+      "description":
+          "Level 999 Demon Lord and a Level 1 Slime summary is updating. Come visit MangaNato.com sometime to read the latest chapter of Level 999 Demon Lord and a Level 1 Slime. If you have any question about this manga, Please don't hesitate to contact us or translate team. Hope you enjoy it."
+    },
+    {
+      "id": "manga-zl976420",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-zl976420.jpg",
+      "title": "Atsumare! Fushigi Kenkyu-Bu",
+      "chapter": "Chapter 379: The Mystery Of Daisuke",
+      "view": "35.2M",
+      "description":
+          "Goryo Daisuke is still unsure about which club to join. When he meets the three girl members of Mysterious Research Club while looking for the school's warehouse, he gets hypnotized to sign the registration form. Suzu who is obsessed with scary curses, Chiaki who only relies on her monstrous strength to perform dangerous magic tricks, and Kotone who can control people by hypnosis."
+    },
+    {
+      "id": "manga-ml989520",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ml989520.jpg",
+      "title": "Soaring Phoenix From The East Palace",
+      "chapter": "Chapter 70",
+      "view": "1.2M",
+      "description":
+          "She is a venomous demon of a consort in the eyes of the world. On the wedding day, she snatches someone else's husband, scaring the wife into unconsciousness. The princess consort of North chen has an arrogant name, domineering Chang'an. But this world just happens to have someone more arrogant than her. Even when everyone condemns her, he only says: \"I dote on the princess consort, what business is it of yours?\" A strong woman and a strong man make for a strong alliance."
+    },
+    {
+      "id": "manga-ni991043",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ni991043.jpg",
+      "title": "Rebellious Disciple",
+      "chapter": "Chapter 181",
+      "view": "1.3M",
+      "description":
+          "A cold and severe master X a villainous crazy disciple! Mu Qingyi died to save the world... After resurrecting 10 years later, he finds the good and obedient disciple of his from that year has actually become the number one demon lord! \"Yinli, be more respectful, I am your master!\" \"It's precisely because you're my master, I wish to discuss techniques with you like this...\""
+    },
+    {
+      "id": "manga-ns990927",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ns990927.jpg",
+      "title": "Please Don't Come To The Villainess' Stationery Store!",
+      "chapter": "Chapter 80: End Of Season 2",
+      "view": "22.2M",
+      "description":
+          "“A useless thing like you has no value in our family. Take this money and leave immediately!”“Yes! Goodbye!”She became the incompetent villainess who commits wrongdoings in order to earn the love of her fiancé, the male lead. Her reputation was already at rock bottom and the main characters, who can’t live without each other, are having an affair.“Getting kicked out and receiving money is good enough!”So after she was kicked out, she set up a stationery store in front of a school. She reminisces of snacks, beer candy, and even bubbles! Just you wait, kids!But… somehow her young customers are a little weird?“I’ll find you a handsome and modest man, and not someone who has an affair like my brother!”“Ha, then what about my brother, the crown prince?”“…the tower master is the best.”The great magic swordsman, the next crown prince, the villainous tower master, and finally, the hidden villain. The stationery store, which she thought would be peaceful, left her with no rest. Help me! I just wanted to live a normal life!"
+    },
+    {
+      "id": "manga-nu991003",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nu991003.jpg",
+      "title": "Sergeant, Your Wife Ran Away Again",
+      "chapter": "Chapter 194: Something Is Wrong With The Dishes!",
+      "view": "1.3M",
+      "description":
+          "Hidden deep in merit and fame, the innocent girl staged a shocking counterattack. Coincidence and inevitableness, acting and scheming, destiny and romance. The epic love story of the overbearing sergeant and the most innocent girl!"
+    },
+    {
+      "id": "manga-ex982180",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ex982180.jpg",
+      "title": "Peerless Battle Spirit",
+      "chapter": "Chapter 658",
+      "view": "62.4M",
+      "description": ""
+    },
+    {
+      "id": "manga-fj982744",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-fj982744.jpg",
+      "title": "Cheating Men Must Die",
+      "chapter":
+          "Vol.19 Chapter 427: Rebirth Of The Demonic Lord - To Exterminate A Family",
+      "view": "50.4M",
+      "description":
+          "One moment oppressing scum yields a moment of satisfaction. Continuously oppressing scum yields continuous satisfaction. Our female main lead, Su Lüxia is bound to the Female Lead Counterattack System and transmigrates to several small worlds. Using elaborate means, she beats up countless cheating bastards and bitches. Su Lüxia: \"Only a cheating bastard's tears of remorse, and the pained moans of a bitch unable to get what she wants bring me solace.\" System: \"Has my host tapped into her humanity today? Nope.\""
+    },
+    {
+      "id": "manga-mt989602",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-mt989602.jpg",
+      "title": "I Can Snatch 999 Types Of Abilities",
+      "chapter": "Chapter 218",
+      "view": "37.6M",
+      "description":
+          "In this world of supernatural abilities, in order to save his beloved sister, Yang Xi vows to make those who hurt her pay in blood! Using his ability to snatch the powers of others, he grows from an ignorant combatant to the leader of a cross-dimensional organization, using both strength and strategy to defeat the dark forces one by one, taking 999 powers into his pocket and becoming the king of supernatural powers that everyone looks up to!"
+    },
+    {
+      "id": "manga-iy985481",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-iy985481.jpg",
+      "title": "Temple Of Dragon King",
+      "chapter": "Chapter 268",
+      "view": "11.3M",
+      "description":
+          "Temple of dragon king summary is updating. Come visit MangaNato.com sometime to read the latest chapter of Temple of dragon king. If you have any question about this manga, Please don't hesitate to contact us or translate team. Hope you enjoy it."
+    }
+  ],
+  "metaData": {
+    "totalStories": 43881,
+    "totalPages": 1829,
+    "type": [
+      {"id": "newest", "name": "Newest"},
+      {"id": "latest", "name": "Latest"},
+      {"id": "topview", "name": "Top read"}
+    ],
+    "state": [
+      {"id": "all", "name": "ALL"},
+      {"id": "Completed", "name": "Completed"},
+      {"id": "Ongoing", "name": "Ongoing"},
+      {"id": "drop", "name": "Dropped"},
+      {"id": "unknown", "name": "Unknown"}
+    ],
+    "category": [
+      {"id": "all", "name": "ALL"},
+      {"id": "Action", "name": "Action"},
+      {"id": "Adventure", "name": "Adventure"},
+      {"id": "Comedy", "name": "Comedy"},
+      {"id": "Cooking", "name": "Cooking"},
+      {"id": "Doujinshi", "name": "Doujinshi"},
+      {"id": "Drama", "name": "Drama"},
+      {"id": "Erotica", "name": "Erotica"},
+      {"id": "Fantasy", "name": "Fantasy"},
+      {"id": "Gender bender", "name": "Gender bender"},
+      {"id": "Harem", "name": "Harem"},
+      {"id": "Historical", "name": "Historical"},
+      {"id": "Horror", "name": "Horror"},
+      {"id": "Isekai", "name": "Isekai"},
+      {"id": "Josei", "name": "Josei"},
+      {"id": "Manhua", "name": "Manhua"},
+      {"id": "Manhwa", "name": "Manhwa"},
+      {"id": "Martial arts", "name": "Martial arts"},
+      {"id": "Mature", "name": "Mature"},
+      {"id": "Mecha", "name": "Mecha"},
+      {"id": "Medical", "name": "Medical"},
+      {"id": "Mystery", "name": "Mystery"},
+      {"id": "One shot", "name": "One shot"},
+      {"id": "Pornographic", "name": "Pornographic"},
+      {"id": "Psychological", "name": "Psychological"},
+      {"id": "Romance", "name": "Romance"},
+      {"id": "School life", "name": "School life"},
+      {"id": "Sci fi", "name": "Sci fi"},
+      {"id": "Seinen", "name": "Seinen"},
+      {"id": "Shoujo", "name": "Shoujo"},
+      {"id": "Shoujo ai", "name": "Shoujo ai"},
+      {"id": "Shounen", "name": "Shounen"},
+      {"id": "Shounen ai", "name": "Shounen ai"},
+      {"id": "Slice of life", "name": "Slice of life"},
+      {"id": "Smut", "name": "Smut"},
+      {"id": "Sports", "name": "Sports"},
+      {"id": "Supernatural", "name": "Supernatural"},
+      {"id": "Tragedy", "name": "Tragedy"},
+      {"id": "Webtoons", "name": "Webtoons"},
+      {"id": "Yaoi", "name": "Yaoi"},
+      {"id": "Yuri", "name": "Yuri"}
+    ]
+  }
+};
+
+dynamic carousalMangaData = {
+  "mangaList": [
+    {
+      "id": "manga-nc991037",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nc991037.jpg",
+      "title": "Tiger Coming In",
+      "chapter": "Vol.2 Chapter 93: Flower Field (1)",
+      "view": "3.7M",
+      "description":
+          "The fun and marvelous daily life of a young couple after meeting mysterious children who found their way to them."
+    },
+    {
+      "id": "manga-nn990970",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nn990970.jpg",
+      "title": "The Great Level Up",
+      "chapter": "Chapter 161: Surrender",
+      "view": "3.6M",
+      "description":
+          "With the system in hand, the world is my oyster! I want the loveliest women, the strongest powers, the noblest titles! I shall be the greatest existence in the universe!"
+    },
+    {
+      "id": "manga-lu988829",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-lu988829.jpg",
+      "title": "Nine Heavenly Star Art",
+      "chapter": "Chapter 192",
+      "view": "7.7M",
+      "description":
+          "Master: SJ.MAN. Practice the nine-star Tianchen, and create your own myths! The original snail of the spontaneously snail “Nine Stars Tianchen” is adapted. The cartoon of “Nine Stars Tianchen” is a world where human beings, monsters and mysterious animals coexist, human beings are cultivating the spirits, the beasts are repairing the flesh, and the mysterious souls are repairing the souls. Read. There is a deep underground hearted Qionglou, a dead lake in the Bohai Sangtian, a mysterious mysterious palace, and a land for the forbidden domain of the Wraith. Legend has it that in the endless jungle wilderness, there are some very powerful forces. They are called demon kings. Some demon kings are extremely tyrannical, some demon kings are good at confusing, some demon kings are good at illusion, and some demon kings can Moving mountains and reclamation, some demon kings can trace thousands of miles. These demon kings rarely appear in the human world. Even if they appear, they are also incarnate in human form, and they are scattered in human beings to seek a breakthrough in realm.Jiuxing Tianchen"
+    },
+    {
+      "id": "manga-nm990969",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nm990969.jpg",
+      "title": "Money + Magnets",
+      "chapter": "Chapter 143: Episode 95",
+      "view": "712.3K",
+      "description":
+          "In one treacherous game, money-hungry players battle it out in a barren land with clear blue skies. You win money when you kill; you lose money when you get killed. When a girl accidentally gets involved, it's up to her brother to steer her through it at all. Will they ever earn enough to leave this godforsaken game?"
+    },
+    {
+      "id": "manga-xv975030",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-xv975030.jpg",
+      "title": "Karate Apocalypse",
+      "chapter": "Vol.3 Chapter 19: Demon Of The Fist",
+      "view": "131.1K",
+      "description":
+          "Karate Apocalypse summary is updating. Come visit MangaNato.com sometime to read the latest chapter of Karate Apocalypse. If you have any question about this manga, Please don't hesitate to contact us or translate team. Hope you enjoy it."
+    },
+    {
+      "id": "manga-bc979159",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-bc979159.jpg",
+      "title": "Beank & Rosa",
+      "chapter": "Chapter 13.5: Extra [End]",
+      "view": "139.9K",
+      "description":
+          "\"I don't need ordinary friends.\"This is the story of the boy Beank and the girl Rosa, living in an abandoned RV."
+    },
+    {
+      "id": "manga-in985422",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-in985422.jpg",
+      "title": "Boy's Abyss",
+      "chapter": "Chapter 183: They Were The Boys And Girls Of That Town",
+      "view": "54M",
+      "description":
+          "In a town with nothing, in the middle of a daily life with seemingly no signs of change, high schooler Reiji Kurose was \"just\" living. Family, dreams for the future, childhood friends. All of them were binding him down to that city. He thought he would \"just\" keep on living like that. Until he met her. Is there hope in living? Is there light waiting ahead? It's the start of a boy meets girl series which reflects the \"now\".By the author of Hatsukoi Zombie"
+    },
+    {
+      "id": "manga-ic985559",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ic985559.jpg",
+      "title": "Cultivators In The City",
+      "chapter": "Chapter 190",
+      "view": "21.4M",
+      "description":
+          "“Warning: Mature content: This manga contains materials that might not be suitable to children under 17. By proceeding, you are confirming that you are 17 or older.”Updating… Please Wait."
+    },
+    {
+      "id": "manga-nu991029",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nu991029.jpg",
+      "title": "Dragon Prince Yuan",
+      "chapter": "Chapter 185: Grade 4 Genesis Beast (First Half)",
+      "view": "3.5M",
+      "description":
+          "Zhou Yuan the prince of the Great Zhou Empire, was born with the blessing of the sacred dragon. Because of a prophecy, his destiny was taken away from him, and had a fatal poison inflicted onto him, sealing his meridian channels and making him unable to cultivate. Even with his home and country almost destroyed, he didn't let these things destroy his spirit. Instead, he opened his eight great meridian channels again with this determination and became stronger during his family's time of crisis. The road ahead is long, the young man who was born with great talent and destined to be extraordinary would continue onwards on his path of cultivation..."
+    },
+    {
+      "id": "manga-ke987787",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ke987787.jpg",
+      "title": "Judge Lee Han Young",
+      "chapter": "Chapter 130",
+      "view": "4.8M",
+      "description":
+          "Judge Lee, who believed justice could be realized in the courtroom, did not follow the orders of his superiors and sentenced the conglomerate to life in prison before being killed.But is it because of the shenanigans he heard as a child ? With all his memories, Lee gets a second life chance.The world needs him, Lee, the heretic of the judiciary, who knows only justice."
+    },
+    {
+      "id": "manga-ld989312",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ld989312.jpg",
+      "title": "Chief Of The Novice Village",
+      "chapter": "Chapter 61",
+      "view": "3.2M",
+      "description":
+          "Tai Paer, who's profession, a necromancer, is considered to be one that make it difficult to live a normal life. As such, he was going to be burned alive by the townsfolk, but is miraculously saved by the system, which is searching for people that fit the job requirement of a Village Chief. Tai Paer starts his new life as the village chief of the novice village and progresses towards building his own harem."
+    },
+    {
+      "id": "manga-lo952549",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-lo952549.jpg",
+      "title": "Natsume Yuujinchou",
+      "chapter": "Chapter 119",
+      "view": "3.8M",
+      "description":
+          "From Storm in Heaven: Natsume's just an ordinary kid, except he can see spirits, just like his grandma Reiko could. Reiko, though, used to bully the spirits, and bound them to her will in the \"Book of Friends\". Now that Natsume has inherited this book, a never-ending stream of spirits is coming after him. With the help of a spirit \"cat\" (who really just wants Natsume to die so he can have the book), Natsume spends his days dissolving the contracts that bind the spirits and trying not to get killed."
+    },
+    {
+      "id": "manga-ns990975",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ns990975.jpg",
+      "title": "Against The Heavenly Lords",
+      "chapter": "Chapter 158: Verifying The Formula",
+      "view": "5M",
+      "description":
+          "Death to those that harm my family! Death to the ones that stole my woman! Most of all, death to the ones that dare take me for a fool! After ten thousand lifetimes of perdition, Tan Yun finally recalled his true self-- the moment I awaken, the world shall tremble before me!"
+    },
+    {
+      "id": "manga-nb990958",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nb990958.jpg",
+      "title": "The President's Valiant Wife",
+      "chapter": "Chapter 145: Rooftop Rendezvous",
+      "view": "472.8K",
+      "description":
+          "Due to an accident, the best entertainment agent Jiang Lang Ning died and transmigrated back to an era where beauty and entertainment reigned supreme. With plenty of work experience under her belt as a talent agent in the entertainment industry, she started recruiting many charming and good-looking men to start her new business back in time. Amongst them were the sloppy wise man Chu Yu Du, the bankrupt gentleman Gu Nan Yi, the reserved scholar Shen Yan Qing, and the loyal imperial guard Xie Sa. They grouped together as famous stars under her management. Initially she only focused on her business, but one thing led to another and those men eventually fell for her and wanted to marry her..."
+    },
+    {
+      "id": "manga-ju987029",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ju987029.jpg",
+      "title": "Trauma Center",
+      "chapter": "Chapter 91",
+      "view": "3.9M",
+      "description":
+          "Patients who can be potentially saved, die every day. And to prevent that, a doctor takes a stand. A doctor, with a strong sense of duty and responsibility. A doctor, who stands as an angel in the Trauma Center. Witness traumatologist Baek Kang-Hyuk’s journey as he restores the Trauma Center to it’s original glory."
+    },
+    {
+      "id": "manga-lb989236",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-lb989236.jpg",
+      "title": "Way To Heaven",
+      "chapter": "Chapter 196",
+      "view": "9.8M",
+      "description":
+          "A strange relationship began when orphan siblings met an old lady who claims to be their grandmother. However, the old woman is a Grandmaster from Murim, who has lost her memory loss due to a disease. The old lady recognizes the hidden talent of the eldest sibling and starts to train him. Thus begins the journey of last disciple of Jinmu Shin Mo, the boy who is destined to reach the pinnacle of heavens."
+    },
+    {
+      "id": "manga-dm981269",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-dm981269.jpg",
+      "title": "Girl And Science",
+      "chapter": "Chapter 595",
+      "view": "20.4M",
+      "description":
+          "They were childhood friends, and she had always been more powerful than him. But when they accidentally traveled (summoned?) to another world, it was finally time for him to become the knight in shining armor! He had to find her first though, since they were separated... Come and witness his fight to be better in a crazy world where monsters roamed and technology was so advanced your amputated limbs be restored to perfection..."
+    },
+    {
+      "id": "manga-ad977486",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ad977486.jpg",
+      "title": "Karakai Jouzu No (Moto) Takagi-San",
+      "chapter": "Chapter 314 [End]",
+      "view": "69.2M",
+      "description":
+          "The (former) Takagi-san and her daughter, Chi-chan, bring you this teasing home comedy. Is Dad going to make an appearance too?"
+    },
+    {
+      "id": "manga-nh990990",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nh990990.jpg",
+      "title": "The Princess Consort's Marriage Study Guide",
+      "chapter": "Chapter 123: Pill-Refining Begins",
+      "view": "913K",
+      "description":
+          "She is the top killer in the modern world. However, she one day travels to the past and is reincarnated as a loser, which is the unfavored daughter of the former Zhenbeihou. What? Her husband is a man that even the emperor is frightened of—the number one fighter in the country that all men are afraid of and all women are crazy over—Prince Ming? They have been married for two years but have never met before? Who said that she has to stick to the rules after getting married? Check out how she uses the program to cheat, defeats the other bitches, and captures the hearts of handsome men from all walks of life."
+    },
+    {
+      "id": "manga-ep951924",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-ep951924.jpg",
+      "title": "19 Days",
+      "chapter": "Chapter 452: Concert With Little Mo & He Tian",
+      "view": "75.5M",
+      "description":
+          "The super cute and funny adventures of a boy and his BFF(best friend forever). You'll find out the names of the main characters after 113 pictures(maybe). Enjoy the manga!"
+    },
+    {
+      "id": "manga-og991715",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-og991715.jpg",
+      "title": "Minmotion Syndrome",
+      "chapter": "Chapter 72",
+      "view": "5.1M",
+      "description":
+          "\"I'll pay back the 600 million won.\" Because of the debt that his father left behind, Seo Taeyoon finds himself dragged in front of Park Jaein, who's looked down upon for being an Omega. Taeyoon smells Jaein's pheromones and realizes that he's an Omega. Jaein declares that he will buy Taeyoon on the condition that if Taeyoon is bought, his debt will be considered repaid! Jaein now holds the leash that's connected to the collar on Taeyoon's neck. What happens when their dangerous relationship begins? And how does it end?"
+    },
+    {
+      "id": "manga-mh990064",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-mh990064.jpg",
+      "title": "Outside The Law",
+      "chapter": "Chapter 66",
+      "view": "3M",
+      "description":
+          "\"Warning: Yaoi content: This manga contains materials that might not be suitable to children under 17. By proceeding, you are confirming that you are 17 or older.\"The canary I kept is actually my sworn enemy? This is the story of playing dumb to take advantage of the situation. When the two-faced Ruan Zheng encounters the big shot Luo Yu of the criminal world, what will happen? How can the sworn enemies be together?"
+    },
+    {
+      "id": "manga-jq986625",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-jq986625.jpg",
+      "title": "Master Of Three Realms",
+      "chapter": "Chapter 219",
+      "view": "2.2M",
+      "description":
+          "Master of Three RealmsThree hundred years ago, he was the great monarch, who was killed by his fiancee right before their wedding. Three hundred years later, he was reincarnated against heaven’s will. He practiced the forbidden technique and forged god-defying meridians. In this lifetime, I will slaughter He whoever stands in my way, be it a god or demon. I am going to do anything till my heart’s content. I shall rule three realms!"
+    },
+    {
+      "id": "manga-nu990877",
+      "image": "https://ww6.mangakakalot.tv/mangaimage/manga-nu990877.jpg",
+      "title": "Kaoru Hana Wa Rin To Saku",
+      "chapter": "Chapter 122",
+      "view": "29.4M",
+      "description":
+          "In a certain place, there are two neighboring high schools. Chidori High School, a bottom-feeder boys' school where idiots gather, and Kikyo Girls' School, a well-established girls' school. Rintaro Tsumugi, a strong and quiet second year student at Chidori High School, meets Kaoruko Wakuri, a girl who comes as a customer while helping out at his family's cake shop. Rintaro feels comfortable spending time with Kaoruko, but she is a student at Kikyo Girls, a neighboring school that thoroughly dislikes Chidori High. This is the story of two people who are so close and yet so far apart.___- (https://twitter.com/kaoruhana_mp)"
+    }
+  ],
+  "metaData": {
+    "totalStories": 43881,
+    "totalPages": 1829,
+    "type": [
+      {"id": "newest", "name": "Newest"},
+      {"id": "latest", "name": "Latest"},
+      {"id": "topview", "name": "Top read"}
+    ],
+    "state": [
+      {"id": "all", "name": "ALL"},
+      {"id": "Completed", "name": "Completed"},
+      {"id": "Ongoing", "name": "Ongoing"},
+      {"id": "drop", "name": "Dropped"},
+      {"id": "unknown", "name": "Unknown"}
+    ],
+    "category": [
+      {"id": "all", "name": "ALL"},
+      {"id": "Action", "name": "Action"},
+      {"id": "Adventure", "name": "Adventure"},
+      {"id": "Comedy", "name": "Comedy"},
+      {"id": "Cooking", "name": "Cooking"},
+      {"id": "Doujinshi", "name": "Doujinshi"},
+      {"id": "Drama", "name": "Drama"},
+      {"id": "Erotica", "name": "Erotica"},
+      {"id": "Fantasy", "name": "Fantasy"},
+      {"id": "Gender bender", "name": "Gender bender"},
+      {"id": "Harem", "name": "Harem"},
+      {"id": "Historical", "name": "Historical"},
+      {"id": "Horror", "name": "Horror"},
+      {"id": "Isekai", "name": "Isekai"},
+      {"id": "Josei", "name": "Josei"},
+      {"id": "Manhua", "name": "Manhua"},
+      {"id": "Manhwa", "name": "Manhwa"},
+      {"id": "Martial arts", "name": "Martial arts"},
+      {"id": "Mature", "name": "Mature"},
+      {"id": "Mecha", "name": "Mecha"},
+      {"id": "Medical", "name": "Medical"},
+      {"id": "Mystery", "name": "Mystery"},
+      {"id": "One shot", "name": "One shot"},
+      {"id": "Pornographic", "name": "Pornographic"},
+      {"id": "Psychological", "name": "Psychological"},
+      {"id": "Romance", "name": "Romance"},
+      {"id": "School life", "name": "School life"},
+      {"id": "Sci fi", "name": "Sci fi"},
+      {"id": "Seinen", "name": "Seinen"},
+      {"id": "Shoujo", "name": "Shoujo"},
+      {"id": "Shoujo ai", "name": "Shoujo ai"},
+      {"id": "Shounen", "name": "Shounen"},
+      {"id": "Shounen ai", "name": "Shounen ai"},
+      {"id": "Slice of life", "name": "Slice of life"},
+      {"id": "Smut", "name": "Smut"},
+      {"id": "Sports", "name": "Sports"},
+      {"id": "Supernatural", "name": "Supernatural"},
+      {"id": "Tragedy", "name": "Tragedy"},
+      {"id": "Webtoons", "name": "Webtoons"},
+      {"id": "Yaoi", "name": "Yaoi"},
+      {"id": "Yuri", "name": "Yuri"}
+    ]
   }
 };

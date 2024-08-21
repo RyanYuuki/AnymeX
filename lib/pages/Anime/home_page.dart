@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:aurora/components/carousel.dart';
 import 'package:aurora/components/data_table.dart';
@@ -176,7 +178,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                     Navigator.pushNamed(context, '/details', arguments: {
                       'id': anime['id'],
                       'posterUrl': anime['poster'],
-                      'tag' : anime['name'] + anime['id']
+                      'tag': anime['name'] + anime['id']
                     });
                   },
                   child: Container(
@@ -201,6 +203,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.white
                             ),
                           )),
                         ),
@@ -223,8 +226,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(anime['name'].length > 20
-                                ? anime['name'].substring(0, 20) + '...'
+                            Text(anime['name'].length > 17
+                                ? anime['name'].substring(0, 17) + '...'
                                 : anime['name']),
                             const SizedBox(
                               height: 5,
@@ -262,12 +265,20 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   }
 }
 
-class Header extends StatelessWidget {
+class Header extends StatefulWidget {
   final TextEditingController controller;
   const Header({super.key, required this.controller});
 
   @override
+  State<Header> createState() => _HeaderState();
+}
+
+class _HeaderState extends State<Header> {
+  @override
   Widget build(BuildContext context) {
+    var _box = Hive.box('login-data');
+    final userInfo = _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final avatarImagePath = userInfo?[2] ?? 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -277,26 +288,31 @@ class Header extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: AssetImage('assets/images/avatar.png'),
-                  ),
-                  SizedBox(width: 15),
+                  avatarImagePath != "null"
+                      ? CircleAvatar(
+                          radius: 24,
+                          backgroundImage: FileImage(File(avatarImagePath)),
+                        )
+                      : const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.person),
+                        ),
+                  const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Good Afternoon',
+                      const Text(
+                        'Good Afternoon,',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
-                        'Ryan Yuuki',
-                        style: TextStyle(
+                        userInfo[0].trim(),
+                        style: const TextStyle(
                           fontFamily: 'Poppins-Bold',
                         ),
                       ),
@@ -326,7 +342,7 @@ class Header extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           TextField(
-            controller: controller,
+            controller: widget.controller,
             onSubmitted: (searchTerm) => {
               Navigator.pushNamed(context, '/anime/search', arguments: {
                 "term": searchTerm,

@@ -85,14 +85,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       ),
       body: isLoading
           ? Column(
-            children: [
-              Center(
+              children: [
+                Center(
                   child: Poster(posterUrl: widget.posterUrl, tag: widget.tag),
                 ),
                 const SizedBox(height: 30),
                 CupertinoActivityIndicator(radius: 50),
-            ],
-          )
+              ],
+            )
           : Stack(
               children: [
                 ListView(

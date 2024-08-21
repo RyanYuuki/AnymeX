@@ -112,7 +112,6 @@ class _ReadingPageState extends State<ReadingPage> {
                 ? const Text('Failed to load data')
                 : ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(10),
                     itemCount: chapterImages!.length,
                     itemBuilder: (context, index) {
                       return Image.network(chapterImages![index]['image']);

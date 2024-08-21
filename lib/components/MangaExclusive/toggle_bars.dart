@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -12,6 +10,7 @@ class ToggleBar extends StatefulWidget {
   final int? totalImages;
   final ScrollController scrollController;
   final ButtonTapCallback handleChapter;
+
   const ToggleBar({
     super.key,
     required this.child,
@@ -56,11 +55,8 @@ class _ToggleBarState extends State<ToggleBar> {
     }
   }
 
-  void _onProgressBarTap(TapUpDetails details) {
+  void _onProgressBarTap(double progress) {
     if (widget.scrollController.hasClients) {
-      final box = context.findRenderObject() as RenderBox;
-      final localPosition = box.globalToLocal(details.globalPosition);
-      final progress = (localPosition.dx / box.size.width).clamp(0.0, 1.0);
       final targetPage = (progress * (widget.totalImages! - 1)).round();
 
       widget.scrollController.jumpTo(
@@ -81,8 +77,6 @@ class _ToggleBarState extends State<ToggleBar> {
               onTap: _toggleBarsVisibility,
               child: widget.child,
             ),
-
-            // Top Bar
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
               top: _areBarsVisible ? 0 : -80,
@@ -91,19 +85,14 @@ class _ToggleBarState extends State<ToggleBar> {
               child: Container(
                 height: 60,
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.tertiary.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(20)),
+                color: Theme.of(context).colorScheme.tertiary.withOpacity(0.9),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(
-                        IconlyBold.arrow_left,
-                      ),
+                      icon: const Icon(IconlyBold.arrow_left),
                     ),
                     const SizedBox(width: 10),
                     Column(
@@ -122,66 +111,84 @@ class _ToggleBarState extends State<ToggleBar> {
                 ),
               ),
             ),
-
-            // Bottom Bar with Progress Bar and Page Numbers
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
-              bottom: _areBarsVisible ? 0 : -80,
+              bottom: _areBarsVisible ? 0 : -100,
               left: 0,
               right: 0,
               child: Container(
-                height: 60,
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.tertiary.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Row(
+                color: Colors.transparent,
+                child: Column(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      onPressed: () {
-                        widget.handleChapter('left');
-                      },
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Text(
-                            '$_currentPage',
-                            style: const TextStyle(fontSize: 16),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Theme.of(context).colorScheme.tertiary,
                           ),
-                          Expanded(
+                          child: IconButton(
+                            icon: const Icon(Icons.skip_previous),
+                            onPressed: () {
+                              widget.handleChapter('left');
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiary
+                                  .withOpacity(0.8),
+                            ),
                             child: Slider(
+                              thumbColor: Theme.of(context).colorScheme.primary,
                               value: _scrollProgress,
                               onChanged: (value) {
-                                _onProgressBarTap(
-                                  TapUpDetails(
-                                    kind: PointerDeviceKind.touch,
-                                    globalPosition: Offset(
-                                      value * MediaQuery.of(context).size.width,
-                                      0,
-                                    ),
-                                  ),
-                                );
+                                setState(() {
+                                  _scrollProgress = value;
+                                });
+                                _onProgressBarTap(value);
                               },
-                              activeColor: Colors.indigo.shade400,
+                              activeColor: Theme.of(context).colorScheme.primary,
                               inactiveColor: Theme.of(context)
                                   .colorScheme
                                   .surface
-                                  .withOpacity(0.7),
+                                  .withOpacity(0.5),
                             ),
                           ),
-                          Text('${widget.totalImages}',
-                              style: const TextStyle(fontSize: 16)),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 5),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.skip_next),
+                            onPressed: () {
+                              widget.handleChapter('right');
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: () {
-                        widget.handleChapter('right');
-                      },
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2, horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      child: Text(
+                        '$_currentPage / ${widget.totalImages}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
                   ],
                 ),

@@ -134,18 +134,20 @@ class _StreamingPageState extends State<StreamingPage> {
         isDub = true;
       }
     });
+    filteredEpisodes = episodesData.sublist(0, availEpisodes);
     fetchEpisodeSrcs();
   }
 
   void filterEpisodes() {
     setState(() {
       final filter = episodeFilterController.text;
+      dynamic newData = episodesData.sublist(0, availEpisodes);
       if (filter.isNotEmpty) {
-        filteredEpisodes = episodesData.where((episode) {
+        filteredEpisodes = newData.where((episode) {
           return episode['number'].toString().contains(filter);
         }).toList();
       } else {
-        filteredEpisodes = episodesData;
+        filteredEpisodes = newData;
       }
     });
   }
@@ -256,8 +258,8 @@ class _StreamingPageState extends State<StreamingPage> {
                         mainAxisExtent: isList ? 50 : 40,
                       ),
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredEpisodes.length,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final episode = filteredEpisodes[index];
                         return GestureDetector(
@@ -280,39 +282,46 @@ class _StreamingPageState extends State<StreamingPage> {
                               padding:
                                   EdgeInsets.only(left: isList ? 8.0 : 0.0),
                               child: Row(
-                                mainAxisAlignment: isList
-                                    ? MainAxisAlignment.start
-                                    : MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   currentEpisode == episode['number']
-                                      ? const Icon(Icons.play_arrow_rounded)
-                                      : Text(
-                                          isList
-                                              ? '${episode['number']}.'
-                                              : episode['number'].toString(),
-                                          style: TextStyle(
+                                      ? const Center(
+                                          child: Icon(Icons.play_arrow_rounded,
+                                              color: Colors.white),
+                                        )
+                                      : Center(
+                                          child: Text(
+                                            isList
+                                                ? '${episode['number']}.'
+                                                : episode['number'].toString(),
+                                            style: TextStyle(
                                               color: currentEpisode ==
                                                       episode['number']
                                                   ? Colors.white
-                                                  : null),
+                                                  : null,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
-                                  SizedBox(width: isList ? 5 : 0),
-                                  Expanded(
-                                    child: TextScroll(
-                                      isList ? (episode['title']) : '',
-                                      mode: TextScrollMode.bouncing,
-                                      velocity: const Velocity(
-                                          pixelsPerSecond: Offset(10, 0)),
-                                      delayBefore:
-                                          const Duration(milliseconds: 500),
-                                      pauseBetween:
-                                          const Duration(milliseconds: 1000),
-                                      textAlign: TextAlign.center,
-                                      selectable: true,
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                  ),
+                                  isList
+                                      ? const SizedBox(width: 5)
+                                      : const SizedBox.shrink(),
+                                  isList
+                                      ? Expanded(
+                                          child: Text(
+                                            episode['title'],
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: currentEpisode ==
+                                                      episode['number']
+                                                  ? Colors.white
+                                                  : null,
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox
+                                          .shrink(), 
                                 ],
                               ),
                             ),

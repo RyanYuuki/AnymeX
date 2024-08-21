@@ -45,7 +45,7 @@ ThemeData lightMode = ThemeData(
       foregroundColor: Colors.white,
       backgroundColor: Colors.black,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(5),
       ),
     ),
   ),
@@ -80,15 +80,15 @@ ThemeData darkMode = ThemeData(
     ),
   ),
   buttonTheme: ButtonThemeData(
-    buttonColor: Colors.indigo.shade700,
+    buttonColor: Colors.indigo.shade400,
     textTheme: ButtonTextTheme.primary,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.indigo.shade700,
+      backgroundColor: Colors.indigo.shade400,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(5),
       ),
     ),
   ),

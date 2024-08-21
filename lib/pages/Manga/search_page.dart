@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
@@ -24,6 +25,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
   }
 
   Future<void> fetchSearchedTerm() async {
+    _searchData = null;
     final String url =
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/search/${controller.text}';
     final resp = await http.get(Uri.parse(url));
@@ -100,6 +102,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                         itemCount: _searchData!.length,
                         itemBuilder: (context, index) {
                           final anime = _searchData![index];
+                          final tag = _searchData![index]['id'];
                           return Stack(
                             children: [
                               Container(
@@ -110,17 +113,23 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, '/manga/details',
-                                        arguments: {"id": anime['id']});
+                                        context, '/manga/details', arguments: {
+                                      "id": anime['id'],
+                                      'posterUrl': anime['image'],
+                                      "tag": tag
+                                    });
                                   },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: SizedBox(
-                                      width: double.infinity, // Full width
-                                      height: double.infinity, // Full height
-                                      child: Image.network(
-                                        anime['image'],
-                                        fit: BoxFit.cover,
+                                  child: Hero(
+                                    tag: tag,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        child: CachedNetworkImage(
+                                          imageUrl: anime['image'],
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -1,13 +1,16 @@
 import 'package:aurora/components/MangaExclusive/carousel.dart';
+import 'package:aurora/components/MangaExclusive/manga_list.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'dart:io';
 
 class MangaHomePage extends StatefulWidget {
   const MangaHomePage({super.key});
@@ -18,9 +21,10 @@ class MangaHomePage extends StatefulWidget {
 
 class _MangaHomePageState extends State<MangaHomePage> {
   List<dynamic>? mangaList;
-  List<dynamic>? CarouselData_1;
-  List<dynamic>? CarouselData_2;
-  List<dynamic>? CarouselData_3;
+ List<dynamic>? CarouselData_1;
+ List<dynamic>? CarouselData_2;
+ List<dynamic>? CarouselData_3;
+ List<dynamic>? MangaListData;
 
   @override
   void initState() {
@@ -31,9 +35,10 @@ class _MangaHomePageState extends State<MangaHomePage> {
 
   void InitFallbackData() {
     mangaList = mangaData['mangaList'];
-    CarouselData_1 = mangaList!.sublist(0, 8);
-    CarouselData_2 = mangaList!.sublist(8, 16);
-    CarouselData_3 = mangaList!.sublist(16, 24);
+    CarouselData_1 = moreMangaData!['mangaList'].sublist(0, 8);
+    CarouselData_2 = moreMangaData!['mangaList'].sublist(8, 16);
+    CarouselData_3 = moreMangaData!['mangaList'].sublist(16, 24);
+    MangaListData = carousalMangaData['mangaList'];
   }
 
   Future<void> fetchData() async {
@@ -41,18 +46,22 @@ class _MangaHomePageState extends State<MangaHomePage> {
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/mangalist';
 
     try {
-      final response = await http.get(Uri.parse(apiUrl));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final response1 = await http.get(Uri.parse(apiUrl));
+      final response2 = await http.get(Uri.parse(apiUrl + '?page=2'));
+      final response3 = await http.get(Uri.parse(apiUrl + '?page=3'));
+
+      if (response1.statusCode == 200 &&
+          response2.statusCode == 200 &&
+          response3.statusCode == 200) {
+        final data1 = json.decode(response1.body);
+        final data2 = json.decode(response2.body);
+        final data3 = json.decode(response3.body);
         setState(() {
-          mangaList = data['mangaList'];
-          if (mangaList != null && mangaList!.length == 24) {
-            CarouselData_1 = mangaList!.sublist(0, 8);
-            CarouselData_2 = mangaList!.sublist(8, 16);
-            CarouselData_3 = mangaList!.sublist(16, 24);
-          } else {
-            throw Exception('Data length is not 24');
-          }
+          mangaList = data1['mangaList'];
+          CarouselData_1 = data2!.sublist(0, 8);
+          CarouselData_2 = data2!.sublist(8, 16);
+          CarouselData_3 = data2!.sublist(16, 24);
+          MangaListData = data3;
         });
       } else {
         throw Exception('Failed to load data');
@@ -101,6 +110,9 @@ class _MangaHomePageState extends State<MangaHomePage> {
             ReusableCarousel(title: "Popular", carouselData: CarouselData_1),
             ReusableCarousel(title: "Latest", carouselData: CarouselData_2),
             ReusableCarousel(title: "Favorite", carouselData: CarouselData_3),
+            MangaList(data: [
+              ...MangaListData!,
+            ]),
           ],
         ),
       ),
@@ -120,6 +132,10 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
+    var _box = Hive.box('login-data');
+    final userInfo =
+        _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final avatarImagePath = userInfo?[2] ?? 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -129,26 +145,31 @@ class _HeaderState extends State<Header> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: AssetImage('assets/images/avatar.png'),
-                  ),
-                  SizedBox(width: 15),
+                  avatarImagePath != "null"
+                      ? CircleAvatar(
+                          radius: 24,
+                          backgroundImage: FileImage(File(avatarImagePath)),
+                        )
+                      : const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.person),
+                        ),
+                  const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Good Afternoon',
+                      const Text(
+                        'Good Afternoon,',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
-                        'Ryan Yuuki',
-                        style: TextStyle(
+                        userInfo[0],
+                        style: const TextStyle(
                           fontFamily: 'Poppins-Bold',
                         ),
                       ),
@@ -158,16 +179,19 @@ class _HeaderState extends State<Header> {
               ),
               Container(
                 decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 1,
-                        style: BorderStyle.solid,
-                        color: Theme.of(context).colorScheme.tertiary),
-                    borderRadius: BorderRadius.circular(50)),
+                  border: Border.all(
+                    width: 1,
+                    style: BorderStyle.solid,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                  borderRadius: BorderRadius.circular(50),
+                ),
                 child: IconButton(
                   icon: Icon(
-                      themeProvider.selectedTheme.brightness == Brightness.dark
-                          ? Iconsax.moon
-                          : Iconsax.sun),
+                    themeProvider.selectedTheme.brightness == Brightness.dark
+                        ? Iconsax.moon
+                        : Iconsax.sun,
+                  ),
                   onPressed: () {
                     themeProvider.toggleTheme();
                   },
