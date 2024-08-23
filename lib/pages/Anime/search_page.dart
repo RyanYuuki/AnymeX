@@ -15,7 +15,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController controller = TextEditingController();
@@ -60,7 +60,6 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     bool isList = layoutModes[currentIndex] == 'List';
     bool isBox = layoutModes[currentIndex] == 'Box';
-    bool isCover = layoutModes[currentIndex] == 'Cover';
 
     return SafeArea(
       child: Scaffold(
@@ -107,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
                     icon: Icon(
                       isList
                           ? Iconsax.menu
-                          : (isBox ? Iconsax.menu1 : Iconsax.image),
+                          : (isBox ? Icons.menu : Iconsax.image),
                     ),
                   ),
                 ],
@@ -141,10 +140,10 @@ class _SearchPageState extends State<SearchPage> {
                                 anime['jname'] +
                                 index.toString();
                             return isList
-                                ? SearchItem_LIST(context, anime, tag)
+                                ? searchItemList(context, anime, tag)
                                 : isBox
-                                    ? SearchItem_BOX(context, anime, tag)
-                                    : SearchItem_COVER(context, anime, tag);
+                                    ? searchItemBox(context, anime, tag)
+                                    : searchItemCover(context, anime, tag);
                           },
                         ),
                 ),
@@ -156,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Stack SearchItem_BOX(BuildContext context, anime, tag) {
+  Stack searchItemBox(BuildContext context, anime, tag) {
     return Stack(
       children: [
         Container(
@@ -168,7 +167,7 @@ class _SearchPageState extends State<SearchPage> {
             onTap: () {
               Navigator.pushNamed(context, '/details', arguments: {
                 "id": anime['id'],
-                'posterUrl': proxyUrl + proxyUrl + anime['poster'],
+                'posterUrl': proxyUrl + anime['poster'],
                 'tag': tag
               });
             },
@@ -229,7 +228,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
+GestureDetector searchItemList(BuildContext context, anime, tag) {
   return GestureDetector(
     onTap: () {
       Navigator.pushNamed(context, '/details', arguments: {
@@ -277,7 +276,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
               ),
               Row(
                 children: [
-                  IconWithName(
+                  iconWithName(
                       isVertical: false,
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
@@ -286,7 +285,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
                       backgroundColor: const Color(0xFFb0e3af),
                       name: anime['episodes']['sub']?.toString() ?? '?'),
                   const SizedBox(width: 2),
-                  IconWithName(
+                  iconWithName(
                       isVertical: false,
                       backgroundColor: const Color(0xFFb9e7ff),
                       borderRadius: const BorderRadius.only(
@@ -304,7 +303,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
   );
 }
 
-GestureDetector SearchItem_COVER(
+GestureDetector searchItemCover(
     BuildContext context, Map<String, dynamic> anime, String tag) {
   return GestureDetector(
     onTap: () {

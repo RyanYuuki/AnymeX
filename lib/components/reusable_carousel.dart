@@ -69,7 +69,7 @@ class ReusableCarousel extends StatelessWidget {
                             '/details',
                             arguments: {
                               'id': itemData['id'],
-                              'posterUrl': posterUrl,
+                              'posterUrl': proxyUrl + posterUrl,
                               'tag': tag
                             },
                           );

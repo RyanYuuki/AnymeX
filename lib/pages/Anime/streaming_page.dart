@@ -322,8 +322,7 @@ class _StreamingPageState extends State<StreamingPage> {
                                             ),
                                           ),
                                         )
-                                      : const SizedBox
-                                          .shrink(), 
+                                      : const SizedBox.shrink(),
                                 ],
                               ),
                             ),
@@ -337,13 +336,18 @@ class _StreamingPageState extends State<StreamingPage> {
                       child: Column(
                         children: [
                           if (animeData != null) ...[
-                            ReusableCarousel(
-                                title: 'Popular',
-                                carouselData: animeData['mostPopularAnimes']),
+                            if (animeData['seasons'].length > 0)
+                              ReusableCarousel(
+                                  title: 'Seasons',
+                                  carouselData: animeData['seasons']),
                             const SizedBox(height: 10),
                             ReusableCarousel(
                                 title: 'Related',
                                 carouselData: animeData['relatedAnimes']),
+                            const SizedBox(height: 10),
+                            ReusableCarousel(
+                                title: 'Popular',
+                                carouselData: animeData['mostPopularAnimes']),
                             const SizedBox(height: 10),
                             ReusableCarousel(
                                 title: 'Recommended',

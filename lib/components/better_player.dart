@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class VideoPlayerAlt extends StatefulWidget {
   final String videoUrl;
@@ -41,6 +42,8 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
       controlsConfiguration: BetterPlayerControlsConfiguration(
         playerTheme: _playerTheme,
       ),
+      autoPlay: true,
+      looping: true,
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
@@ -49,6 +52,8 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
       widget.videoUrl,
       subtitles: subtitles,
     ));
+
+    WakelockPlus.enable();
   }
 
   void filterSubtitles(List<dynamic> source) {
@@ -76,6 +81,7 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
   @override
   void dispose() {
     _betterPlayerController?.dispose();
+    WakelockPlus.disable();
     super.dispose();
   }
 

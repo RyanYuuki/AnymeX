@@ -66,7 +66,7 @@ class _ReadingPageState extends State<ReadingPage> {
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
       final resp = await http.get(
-          Uri.parse('$url${widget.mangaId}/' + chaptersList?[index!]['id']));
+          Uri.parse('$url${widget.mangaId}/${chaptersList?[index!]['id']}'));
       if (resp.statusCode == 200) {
         final tempData = jsonDecode(resp.body);
         setState(() {

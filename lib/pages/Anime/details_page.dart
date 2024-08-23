@@ -413,8 +413,6 @@ class Poster extends StatelessWidget {
   final String? tag;
   @override
   Widget build(BuildContext context) {
-    const String proxyUrl =
-        'https://goodproxy.goodproxy.workers.dev/fetch?url=';
     return Center(
       child: Column(
         children: [
@@ -438,7 +436,7 @@ class Poster extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: CachedNetworkImage(
-                  imageUrl: proxyUrl + poster!,
+                  imageUrl: poster!,
                   fit: BoxFit.cover,
                 ),
               ),

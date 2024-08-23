@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:aurora/components/MangaExclusive/carousel.dart';
 import 'package:aurora/components/MangaExclusive/manga_list.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
@@ -67,7 +69,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
         throw Exception('Failed to load data');
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      log('Error fetching data: $e');
     }
   }
 

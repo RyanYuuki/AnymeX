@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:aurora/pages/onboarding_screens/onboarding_widget.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/theme/theme_provider.dart';

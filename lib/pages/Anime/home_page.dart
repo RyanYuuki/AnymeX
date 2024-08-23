@@ -256,7 +256,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                             ),
                             Row(
                               children: [
-                                IconWithName(
+                                iconWithName(
                                     isVertical: false,
                                     borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(5),
@@ -265,7 +265,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                                     backgroundColor: const Color(0xFFb0e3af),
                                     name: anime['episodes']['sub'].toString()),
                                 const SizedBox(width: 2),
-                                IconWithName(
+                                iconWithName(
                                     isVertical: false,
                                     backgroundColor: const Color(0xFFb9e7ff),
                                     borderRadius: const BorderRadius.only(

@@ -65,7 +65,7 @@ class MangaList extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            IconWithName(
+                            iconWithName(
                                 TextColor: Theme.of(context)
                                     .colorScheme
                                     .inversePrimary,
@@ -86,7 +86,7 @@ class MangaList extends StatelessWidget {
                                         .substring(0, 10)
                                     : manga['chapter'].toString()),
                             const SizedBox(width: 2),
-                            IconWithName(
+                            iconWithName(
                                 TextColor: Theme.of(context)
                                     .colorScheme
                                     .inversePrimary,

@@ -1,4 +1,4 @@
-package com.example.aurora
+package com.anime.anymex
 
 import io.flutter.embedding.android.FlutterActivity
 

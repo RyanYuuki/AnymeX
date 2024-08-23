@@ -19,8 +19,6 @@ class ReusableCarousel extends StatelessWidget {
         child: const Text('No data provided'),
       );
     }
-    const String proxyUrl =
-        'https://goodproxy.goodproxy.workers.dev/fetch?url=';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

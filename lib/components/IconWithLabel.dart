@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class IconWithName extends StatelessWidget {
+class iconWithName extends StatelessWidget {
   final IconData icon;
   final String name;
   final bool isVertical;
@@ -9,7 +9,7 @@ class IconWithName extends StatelessWidget {
   final Color backgroundColor;
   final BorderRadius? borderRadius;
   final Color TextColor;
-  const IconWithName({
+  const iconWithName({
     super.key,
     required this.icon,
     required this.name,
