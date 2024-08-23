@@ -13,6 +13,8 @@ class MangaSearchPage extends StatefulWidget {
   State<MangaSearchPage> createState() => _MangaSearchPageState();
 }
 
+final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+
 class _MangaSearchPageState extends State<MangaSearchPage> {
   final TextEditingController controller = TextEditingController();
   List<dynamic>? _searchData;
@@ -115,7 +117,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                                     Navigator.pushNamed(
                                         context, '/manga/details', arguments: {
                                       "id": anime['id'],
-                                      'posterUrl': anime['image'],
+                                      'posterUrl': proxyUrl + anime['image'],
                                       "tag": tag
                                     });
                                   },
@@ -127,7 +129,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                                         width: double.infinity,
                                         height: double.infinity,
                                         child: CachedNetworkImage(
-                                          imageUrl: anime['image'],
+                                          imageUrl: proxyUrl + anime['image'],
                                           fit: BoxFit.cover,
                                         ),
                                       ),

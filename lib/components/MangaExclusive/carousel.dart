@@ -41,7 +41,8 @@ class Carousel extends StatelessWidget {
         final String posterUrl = anime['image'] ?? '??';
         const String type = 'MANGA';
         final tag = anime['title'] + anime['id'];
-
+        const String proxyUrl =
+            'https://goodproxy.goodproxy.workers.dev/fetch?url=';
         return Builder(
           builder: (BuildContext context) {
             return Stack(
@@ -55,7 +56,7 @@ class Carousel extends StatelessWidget {
                           '/manga/details',
                           arguments: {
                             'id': anime['id'],
-                            'posterUrl': posterUrl,
+                            'posterUrl': proxyUrl + posterUrl,
                             "tag": tag
                           },
                         );
@@ -72,7 +73,7 @@ class Carousel extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: posterUrl,
+                              imageUrl: proxyUrl + posterUrl,
                               fit: BoxFit.cover,
                             ),
                           ),

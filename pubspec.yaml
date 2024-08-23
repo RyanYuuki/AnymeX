@@ -33,6 +33,7 @@ dependencies:
   path_provider: ^2.1.4
   smooth_page_indicator: ^1.2.0+3
   interactive_slider: ^0.2.2
+  path: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

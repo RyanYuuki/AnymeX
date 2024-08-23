@@ -15,6 +15,8 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
+final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController controller = TextEditingController();
   List<dynamic>? _searchData;
@@ -130,7 +132,7 @@ class _SearchPageState extends State<SearchPage> {
                                     )
                                   : const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 1,
-                                      mainAxisExtent: 140,
+                                      mainAxisExtent: 170,
                                     )),
                           itemCount: _searchData!.length,
                           itemBuilder: (context, index) {
@@ -166,7 +168,7 @@ class _SearchPageState extends State<SearchPage> {
             onTap: () {
               Navigator.pushNamed(context, '/details', arguments: {
                 "id": anime['id'],
-                'posterUrl': anime['poster'],
+                'posterUrl': proxyUrl + proxyUrl + anime['poster'],
                 'tag': tag
               });
             },
@@ -178,7 +180,7 @@ class _SearchPageState extends State<SearchPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: CachedNetworkImage(
-                    imageUrl: anime['poster'],
+                    imageUrl: proxyUrl + anime['poster'],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -232,7 +234,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
     onTap: () {
       Navigator.pushNamed(context, '/details', arguments: {
         'id': anime['id'],
-        'posterUrl': anime['poster'],
+        'posterUrl': proxyUrl + anime['poster'],
         'tag': anime['name'] + anime['id']
       });
     },
@@ -254,7 +256,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(7),
                 child: CachedNetworkImage(
-                  imageUrl: anime['poster'],
+                  imageUrl: proxyUrl + anime['poster'],
                   fit: BoxFit.cover,
                 ),
               ),
@@ -302,115 +304,115 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
   );
 }
 
-GestureDetector SearchItem_COVER(BuildContext context, anime, tag) {
+GestureDetector SearchItem_COVER(
+    BuildContext context, Map<String, dynamic> anime, String tag) {
   return GestureDetector(
     onTap: () {
       Navigator.pushNamed(context, '/details', arguments: {
         'id': anime['id'],
-        'posterUrl': anime['poster'],
+        'posterUrl': proxyUrl + anime['poster'],
         'tag': anime['name'] + anime['id']
       });
     },
     child: Container(
       width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.all(10),
-      margin: EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            offset: const Offset(0, 4),
+            blurRadius: 6,
+          ),
+        ],
       ),
       child: Stack(
         children: [
-          Positioned.fill(
+          // Background image with blur effect
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
             child: Stack(
+              fit: StackFit.expand,
               children: [
-                // Background image
-                Positioned.fill(
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: anime['poster'],
-                      fit:
-                          BoxFit.cover, 
-                    ),
-                  ),
+                CachedNetworkImage(
+                  imageUrl: proxyUrl + anime['poster'],
+                  fit: BoxFit.cover,
                 ),
-                
-                Positioned.fill(
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: Container(
+                    color: Colors.transparent,
                   ),
                 ),
               ],
             ),
           ),
+          // Gradient overlay
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.center,
+                    colors: [
+                      Colors.black.withOpacity(0.7),
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius:
+                      const BorderRadius.vertical(bottom: Radius.circular(12)),
+                ),
+              ),
+            ),
+          ),
           // Content
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              SizedBox(
-                height: 100,
-                width: 70,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(7),
-                  child: CachedNetworkImage(
-                    imageUrl: anime['poster'],
-                    fit: BoxFit
-                        .cover, 
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  height: 100,
+                  width: 70,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(7),
+                    child: CachedNetworkImage(
+                      imageUrl: proxyUrl + anime['poster'],
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      anime['name'].length > 28
-                          ? '${anime['name'].toString().substring(0, 28)}...'
-                          : anime['name'].toString(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        IconWithName(
-                            isVertical: false,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(5),
-                                bottomLeft: Radius.circular(5)),
-                            icon: Icons.closed_caption,
-                            backgroundColor: const Color(0xFFb0e3af),
-                            name: anime['episodes']['sub']?.toString() ?? '?'),
-                        const SizedBox(width: 2),
-                        IconWithName(
-                            isVertical: false,
-                            backgroundColor: const Color(0xFFb9e7ff),
-                            borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(5),
-                                bottomRight: Radius.circular(5)),
-                            icon: Icons.mic,
-                            name: anime['episodes']['dub']?.toString() ?? '?')
-                      ],
-                    )
-                  ],
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        anime['name'].length > 28
+                            ? '${anime['name'].substring(0, 28)}...'
+                            : anime['name'],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        "${anime['episodes']['sub'] ?? '?'} Episodes",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

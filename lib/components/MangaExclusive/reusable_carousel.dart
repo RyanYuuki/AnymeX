@@ -19,7 +19,8 @@ class ReusableCarousel extends StatelessWidget {
         child: const Text('No data provided'),
       );
     }
-
+    const String proxyUrl =
+        'https://goodproxy.goodproxy.workers.dev/fetch?url=';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,10 +44,10 @@ class ReusableCarousel extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 250,
+          height: 300,
           child: InfiniteCarousel.builder(
             itemCount: carouselData!.length,
-            itemExtent: MediaQuery.of(context).size.width / 3,
+            itemExtent: MediaQuery.of(context).size.width / 2.5,
             center: false,
             anchor: 0.0,
             loop: false,
@@ -55,53 +56,47 @@ class ReusableCarousel extends StatelessWidget {
             itemBuilder: (context, itemIndex, realIndex) {
               final itemData = carouselData![itemIndex];
               final tag = itemData.toString();
-              return Container(
-                margin: const EdgeInsets.only(right: 4),
-                color: Colors.transparent,
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/manga/details',
-                              arguments: {
-                                'id': itemData['id'],
-                                'posterUrl': itemData['image'],
-                                "tag": tag
-                              },
-                            );
-                          },
-                          child: SizedBox(
-                            height: 180,
-                            width: 160,
-                            child: Hero(
-                              tag: tag,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: CachedNetworkImage(
-                                  imageUrl: itemData['image'],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+              const String proxyUrl =
+                  'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 230,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/manga/details',
+                            arguments: {
+                              'id': itemData['id'],
+                              'posterUrl': proxyUrl + itemData['image'],
+                              'tag': tag
+                            },
+                          );
+                        },
+                        child: Hero(
+                          tag: tag,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                              imageUrl: proxyUrl + itemData['image'],
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        itemData['title'].toString(),
-                        style: const TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      itemData['title'].toString(),
+                      style: const TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
                 ),
               );
             },

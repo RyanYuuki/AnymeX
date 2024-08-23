@@ -47,8 +47,8 @@ class _MangaHomePageState extends State<MangaHomePage> {
 
     try {
       final response1 = await http.get(Uri.parse(apiUrl));
-      final response2 = await http.get(Uri.parse(apiUrl + '?page=2'));
-      final response3 = await http.get(Uri.parse(apiUrl + '?page=3'));
+      final response2 = await http.get(Uri.parse('$apiUrl?page=2'));
+      final response3 = await http.get(Uri.parse('$apiUrl?page=3'));
 
       if (response1.statusCode == 200 &&
           response2.statusCode == 200 &&
@@ -132,9 +132,9 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
-    var _box = Hive.box('login-data');
+    var box = Hive.box('login-data');
     final userInfo =
-        _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
     final avatarImagePath = userInfo?[2] ?? 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(

@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -414,6 +413,8 @@ class Poster extends StatelessWidget {
   final String? tag;
   @override
   Widget build(BuildContext context) {
+    const String proxyUrl =
+        'https://goodproxy.goodproxy.workers.dev/fetch?url=';
     return Center(
       child: Column(
         children: [
@@ -437,7 +438,7 @@ class Poster extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: CachedNetworkImage(
-                  imageUrl: poster!,
+                  imageUrl: proxyUrl + poster!,
                   fit: BoxFit.cover,
                 ),
               ),

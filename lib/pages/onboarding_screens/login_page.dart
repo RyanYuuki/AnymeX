@@ -129,13 +129,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _saveUserData() async {
-    var _box = Hive.box('login-data');
-    _box.put('userInfo', [
+    var box = Hive.box('login-data');
+    box.put('userInfo', [
       userName.text,
       passWord.text,
       _avatarImage?.path,
     ]);
-    _box.put('isFirstTime', false);
+    box.put('isFirstTime', false);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MainApp()),

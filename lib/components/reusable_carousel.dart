@@ -54,6 +54,8 @@ class ReusableCarousel extends StatelessWidget {
               final itemData = carouselData![itemIndex];
               final String posterUrl = itemData['poster'] ?? '??';
               final tag = itemData.toString();
+              const String proxyUrl =
+                  'https://goodproxy.goodproxy.workers.dev/fetch?url=';
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Column(
@@ -68,7 +70,7 @@ class ReusableCarousel extends StatelessWidget {
                             arguments: {
                               'id': itemData['id'],
                               'posterUrl': posterUrl,
-                              'tag' : tag
+                              'tag': tag
                             },
                           );
                         },
@@ -77,7 +79,7 @@ class ReusableCarousel extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: itemData['poster'],
+                              imageUrl: proxyUrl + itemData['poster'],
                               fit: BoxFit.cover,
                             ),
                           ),

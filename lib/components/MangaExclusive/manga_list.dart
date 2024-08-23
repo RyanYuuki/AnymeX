@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +11,8 @@ class MangaList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String proxyUrl =
+        'https://goodproxy.goodproxy.workers.dev/fetch?url=';
     return Column(
       children: data!
           .map<Widget>((manga) => Container(
@@ -31,7 +31,7 @@ class MangaList extends StatelessWidget {
                         Navigator.pushNamed(context, '/manga/details',
                             arguments: {
                               'id': manga['id'],
-                              'posterUrl': manga['image'],
+                              'posterUrl': proxyUrl + manga['image'],
                               'tag': manga['id']
                             });
                       },
@@ -43,7 +43,7 @@ class MangaList extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
-                                imageUrl: manga['image'],
+                                imageUrl: proxyUrl + manga['image'],
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -116,7 +116,7 @@ class MangaList extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 4,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 5),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.pushNamed(context, '/manga/read',
@@ -125,7 +125,7 @@ class MangaList extends StatelessWidget {
                                     'mangaId': manga['id'] + '/' + 'chapter-1',
                                   });
                             },
-                            child: Text('Read Now'))
+                            child: const Text('Read Now'))
                       ],
                     ))
                   ],

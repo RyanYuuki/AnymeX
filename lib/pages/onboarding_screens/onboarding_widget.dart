@@ -6,10 +6,10 @@ class OnboardingButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const OnboardingButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,10 @@ class OnboardingText extends StatelessWidget {
   final TextStyle style;
 
   const OnboardingText({
-    Key? key,
+    super.key,
     required this.text,
     required this.style,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

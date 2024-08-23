@@ -56,9 +56,10 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     genres = animeData['genres'];
   }
 
+  final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+
   Future<void> fetchData() async {
     const String apiUrl = 'https://aniwatch-ryan.vercel.app/anime/home';
-
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
@@ -137,7 +138,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                 title: "Completed", carouselData: latestCompletedAnimes),
             ReusableCarousel(
                 title: "Latest", carouselData: latestEpisodeAnimes),
-            ReusableCarousel(title: "Upcoming", carouselData: topUpcomingAnimes),
+            ReusableCarousel(
+                title: "Upcoming", carouselData: topUpcomingAnimes),
             ReusableCarousel(title: "Seasonal", carouselData: trendingAnimes),
             Row(
               children: [
@@ -235,7 +237,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(7),
                               child: CachedNetworkImage(
-                                imageUrl: anime['poster'],
+                                imageUrl: proxyUrl + anime['poster'],
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -296,9 +298,9 @@ class Header extends StatefulWidget {
 class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
-    var _box = Hive.box('login-data');
+    var box = Hive.box('login-data');
     final userInfo =
-        _box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
     final avatarImagePath = userInfo?[2] ?? 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(

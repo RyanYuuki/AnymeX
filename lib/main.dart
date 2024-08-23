@@ -81,7 +81,8 @@ class _MainAppState extends State<MainApp> {
                     const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                 unselectedItemColor:
                     themeProvider.selectedTheme.colorScheme.inverseSurface,
-                backgroundColor: themeProvider.selectedTheme.colorScheme.inverseSurface
+                backgroundColor: themeProvider
+                    .selectedTheme.colorScheme.inverseSurface
                     .withOpacity(0.1),
                 onTap: _onItemTapped,
                 items: [
