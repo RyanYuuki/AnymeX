@@ -107,6 +107,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             Header(controller: _searchTerm),
             const SizedBox(height: 20),
             CoverCarousel(title: 'Spotlight' ,animeData: spotlightAnimes),
+            const SizedBox(height: 20),
             Carousel(title: 'Trending' ,animeData: topAiringAnimes),
             ReusableCarousel(
                 title: "Popular",

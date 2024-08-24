@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:aurora/components/MangaExclusive/toggle_bars.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -42,9 +43,9 @@ class _ReadingPageState extends State<ReadingPage> {
           chapterImages = tempData['images'];
           currentChapter = tempData['currentChapter'];
           mangaTitle = tempData['title'];
-          isLoading = false;
           index = tempData['chapterListIds']
               ?.indexWhere((chapter) => chapter['name'] == currentChapter);
+          isLoading = false;
         });
       } else {
         setState(() {
@@ -53,6 +54,7 @@ class _ReadingPageState extends State<ReadingPage> {
         });
       }
     } catch (e) {
+      log(e.toString());
       setState(() {
         hasError = true;
         isLoading = false;
@@ -61,7 +63,9 @@ class _ReadingPageState extends State<ReadingPage> {
   }
 
   Future<void> fetchChapterImages() async {
-    isLoading = true;
+    setState(() {
+      isLoading = true;
+    });
     const String url =
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
@@ -70,29 +74,36 @@ class _ReadingPageState extends State<ReadingPage> {
       if (resp.statusCode == 200) {
         final tempData = jsonDecode(resp.body);
         setState(() {
-          chaptersList = tempData['chapterListIds'];
           chapterImages = tempData['images'];
           currentChapter = tempData['currentChapter'];
-          mangaTitle = tempData['title'];
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          hasError = true;
           isLoading = false;
         });
       }
     } catch (e) {
       log(e.toString());
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
     }
   }
 
   void handleChapter(String? direction) {
     if (direction == 'right') {
-      index = ((chaptersList
-                  ?.indexWhere((chapter) => chapter['name'] == currentChapter))!
-              .toInt() -
-          1);
+      index = ((chaptersList?.indexWhere(
+                  (chapter) => chapter['name'] == currentChapter))! -
+              1)
+          .clamp(0, chaptersList!.length - 1);
     } else {
-      index = ((chaptersList
-                  ?.indexWhere((chapter) => chapter['name'] == currentChapter))!
-              .toInt() +
-          1);
+      index = ((chaptersList?.indexWhere(
+                  (chapter) => chapter['name'] == currentChapter))! +
+              1)
+          .clamp(0, chaptersList!.length - 1);
     }
     fetchChapterImages();
   }
@@ -100,9 +111,9 @@ class _ReadingPageState extends State<ReadingPage> {
   @override
   Widget build(BuildContext context) {
     return ToggleBar(
-      title: isLoading ? '??' : mangaTitle,
-      chapter: isLoading ? 'Chapter ?' : currentChapter,
-      totalImages: chapterImages?.length ?? 0,
+      title: isLoading ? 'Loading...' : mangaTitle ?? 'Unknown Title',
+      chapter: isLoading ? 'Loading...' : currentChapter ?? 'Unknown Chapter',
+      totalImages: chapterImages?.length ?? 1,
       scrollController: _scrollController,
       handleChapter: handleChapter,
       child: Center(
@@ -114,7 +125,23 @@ class _ReadingPageState extends State<ReadingPage> {
                     controller: _scrollController,
                     itemCount: chapterImages!.length,
                     itemBuilder: (context, index) {
-                      return Image.network(chapterImages![index]['image']);
+                      return CachedNetworkImage(
+                        imageUrl: chapterImages![index]['image'],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.white,
+                          height: MediaQuery.of(context).size.height,
+                          width: double.infinity,
+                          child: Center(
+                            child: Text(
+                              index.toString(),
+                              style: const TextStyle(fontSize: 30, fontFamily: 'Poppins-Bold'),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      );
                     },
                   ),
       ),

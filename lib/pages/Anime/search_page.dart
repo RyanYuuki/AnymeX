@@ -319,13 +319,6 @@ GestureDetector searchItemCover(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            offset: const Offset(0, 4),
-            blurRadius: 6,
-          ),
-        ],
       ),
       child: Stack(
         children: [

@@ -1,45 +1,46 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class CoverCarousel extends StatelessWidget {
+class CoverCarousel extends StatefulWidget {
   final List<dynamic>? animeData;
   final String? title;
+
   const CoverCarousel({super.key, this.animeData, this.title});
 
   @override
+  _CoverCarouselState createState() => _CoverCarouselState();
+}
+
+class _CoverCarouselState extends State<CoverCarousel> {
+  int activeIndex = 0;
+  final PageController _pageController = PageController();
+
+  @override
   Widget build(BuildContext context) {
-    if (animeData == null) {
+    if (widget.animeData == null) {
       return Center(
-          heightFactor: 300,
-          child: const CupertinoActivityIndicator(
-            radius: 50,
-          ));
+        heightFactor: 300,
+        child: const CupertinoActivityIndicator(
+          radius: 50,
+        ),
+      );
     }
 
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: 350,
-        viewportFraction: 1,
-        initialPage: 0,
-        enlargeCenterPage: true,
-        enlargeFactor: 0.2,
-        scrollDirection: Axis.horizontal,
-      ),
-      items: animeData!.map((anime) {
-        final String posterUrl = anime['poster'] ?? '??';
-        final String type = anime['type'] ?? '??';
-        final tag = anime['name'] + anime['jname'] + anime['id'];
-        const String proxyUrl =
-            'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: widget.animeData!.length,
+          itemBuilder: (context, index, realIndex) {
+            final anime = widget.animeData![index];
+            final String posterUrl = anime['poster'] ?? '??';
+            final tag = anime['name'] + anime['jname'] + anime['id'];
+            const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
-        return Builder(
-          builder: (BuildContext context) {
             return Stack(
               children: [
                 Column(
@@ -101,26 +102,58 @@ class CoverCarousel extends StatelessWidget {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Expanded(
-                          child: Text(
+                      child: Text(
                         anime['description'],
                         style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .inverseSurface
-                                .withOpacity(0.7)),
+                          fontSize: 12,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .inverseSurface
+                              .withOpacity(0.7),
+                        ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
-                      )),
-                    )
+                      ),
+                    ),
                   ],
                 ),
               ],
             );
           },
-        );
-      }).toList(),
+          options: CarouselOptions(
+            height: 300,
+            viewportFraction: 1,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: false,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (index, reason) {
+              setState(() {
+                activeIndex = index;
+              });
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+        AnimatedSmoothIndicator(
+          activeIndex: activeIndex,
+          count: widget.animeData!.length,
+          effect: WormEffect(
+            dotHeight: 8,
+            dotWidth: 8,
+            activeDotColor: Theme.of(context).colorScheme.primary,
+            dotColor: Theme.of(context)
+                .colorScheme
+                .onSurface
+                .withOpacity(0.5),
+          ),
+        ),
+      ],
     );
   }
 }

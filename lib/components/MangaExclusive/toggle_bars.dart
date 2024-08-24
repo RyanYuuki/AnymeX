@@ -85,7 +85,7 @@ class _ToggleBarState extends State<ToggleBar> {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            top: _areBarsVisible ? 0 : -80,
+            top: _areBarsVisible ? 0 : -120,
             left: 0,
             right: 0,
             child: Container(

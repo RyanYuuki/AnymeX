@@ -47,12 +47,17 @@ class _HomePageState extends State<HomePage> {
                                   backgroundImage:
                                       FileImage(File(avatarImagePath)),
                                 )
-                              : const CircleAvatar(
+                              : CircleAvatar(
                                   backgroundColor: Colors.black,
                                   radius: 24,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, '/profile');
+                                    },
+                                    icon: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                           IconButton(
