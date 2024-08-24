@@ -301,7 +301,6 @@ GestureDetector SearchItem_COVER(
       ),
       child: Stack(
         children: [
-          // Background image with blur effect
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Stack(
@@ -349,11 +348,14 @@ GestureDetector SearchItem_COVER(
                 SizedBox(
                   height: 100,
                   width: 70,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(7),
-                    child: CachedNetworkImage(
-                      imageUrl: proxyUrl + anime['image'],
-                      fit: BoxFit.cover,
+                  child: Hero(
+                    tag: tag!,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(7),
+                      child: CachedNetworkImage(
+                        imageUrl: proxyUrl + anime['image'],
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),

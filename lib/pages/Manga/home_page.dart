@@ -23,10 +23,10 @@ class MangaHomePage extends StatefulWidget {
 
 class _MangaHomePageState extends State<MangaHomePage> {
   List<dynamic>? mangaList;
- List<dynamic>? CarouselData_1;
- List<dynamic>? CarouselData_2;
- List<dynamic>? CarouselData_3;
- List<dynamic>? MangaListData;
+  List<dynamic>? CarouselData_1;
+  List<dynamic>? CarouselData_2;
+  List<dynamic>? CarouselData_3;
+  List<dynamic>? MangaListData;
 
   @override
   void initState() {
@@ -155,8 +155,12 @@ class _HeaderState extends State<Header> {
                           backgroundImage: FileImage(File(avatarImagePath)),
                         )
                       : const CircleAvatar(
+                          backgroundColor: Colors.black,
                           radius: 24,
-                          child: Icon(Icons.person),
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
                         ),
                   const SizedBox(width: 15),
                   Column(
@@ -192,7 +196,7 @@ class _HeaderState extends State<Header> {
                   icon: Icon(
                     themeProvider.selectedTheme.brightness == Brightness.dark
                         ? Iconsax.moon
-                        : Iconsax.sun,
+                        : Icons.sunny,
                   ),
                   onPressed: () {
                     themeProvider.toggleTheme();

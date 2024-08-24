@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:aurora/components/IconWithLabel.dart';
+import 'package:aurora/components/coverCarousel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -105,32 +106,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           children: [
             Header(controller: _searchTerm),
             const SizedBox(height: 20),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Trending ',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Animes',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.normal,
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            Carousel(animeData: topAiringAnimes),
+            CoverCarousel(title: 'Spotlight' ,animeData: spotlightAnimes),
+            Carousel(title: 'Trending' ,animeData: topAiringAnimes),
             ReusableCarousel(
                 title: "Popular",
                 carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!]),
@@ -319,8 +296,12 @@ class _HeaderState extends State<Header> {
                           backgroundImage: FileImage(File(avatarImagePath)),
                         )
                       : const CircleAvatar(
+                          backgroundColor: Colors.black,
                           radius: 24,
-                          child: Icon(Icons.person),
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
                         ),
                   const SizedBox(width: 15),
                   Column(
@@ -354,7 +335,7 @@ class _HeaderState extends State<Header> {
                   icon: Icon(
                       themeProvider.selectedTheme.brightness == Brightness.dark
                           ? Iconsax.moon
-                          : Iconsax.sun),
+                          : Icons.sunny),
                   onPressed: () {
                     themeProvider.toggleTheme();
                   },

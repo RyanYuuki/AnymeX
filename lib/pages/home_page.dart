@@ -1,6 +1,15 @@
+import 'dart:io';
+
+import 'package:aurora/components/reusable_carousel.dart';
+import 'package:aurora/components/MangaExclusive/reusable_carousel.dart'
+    as ReusableCarouselManga;
+import 'package:aurora/fallbackData/anime_data.dart';
+import 'package:aurora/fallbackData/manga_data.dart';
+import 'package:aurora/pages/Anime/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,109 +19,102 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _box;
-  var user;
-
-  @override
-  void initState() {
-    super.initState();
-    _box = Hive.box('login-data');
-    user = _box.get('userInfo');
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    setState(() {
-      user = _box.get('userInfo');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    var box = Hive.box('login-data');
+    final userInfo =
+        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final avatarImagePath = userInfo?[2] ?? 'null';
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Anyme',
-                    style: TextStyle(
-                        fontSize: 40,
-                        color: Theme.of(context).colorScheme.inverseSurface),
-                  ),
-                  TextSpan(
-                      text: 'X',
-                      style: TextStyle(
-                        fontSize: 40,
-                        color: Colors.indigo.shade400,
-                      )),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'The NEW Best Anime & Manga App for Android',
-              style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/loginpage'),
-              child: user == null || user == ['Guest', 'Guest']
-                  ? Container(
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              Container(
+                height: 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.indigo.shade400,
+                          horizontal: 20.0, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          avatarImagePath != "null"
+                              ? CircleAvatar(
+                                  radius: 24,
+                                  backgroundImage:
+                                      FileImage(File(avatarImagePath)),
+                                )
+                              : const CircleAvatar(
+                                  backgroundColor: Colors.black,
+                                  radius: 24,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SearchPage(
+                                      searchTerm: 'Attack on Titan',
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Iconsax.search_normal,
+                                size: 24,
+                              ))
+                        ],
                       ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(height: 70),
+                    const Text(
+                      'What are you looking for?',
+                      style:
+                          TextStyle(fontSize: 40, fontFamily: 'Poppins-Bold'),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Find your favorite anime or manga, manhwa or whatever you like!',
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .inverseSurface
+                              .withOpacity(0.8),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    )
-                  // ignore: prefer_interpolation_to_compose_strings
-                  : Text("You've Now Logined As " + user[0]),
-            ),
-            const SizedBox(height: 25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  FontAwesomeIcons.discord,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .inverseSurface
-                      .withOpacity(0.6),
-                  size: 30,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 20),
-                Icon(
-                  FontAwesomeIcons.github,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .inverseSurface
-                      .withOpacity(0.6),
-                  size: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  children: [
+                    ReusableCarousel(
+                      title: 'Top Airing',
+                      carouselData: animeData['topAiringAnimes'],
+                    ),
+                    ReusableCarouselManga.ReusableCarousel(
+                      title: 'Top',
+                      carouselData: moreMangaData['mangaList'],
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 15),
-                Icon(
-                  FontAwesomeIcons.telegram,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .inverseSurface
-                      .withOpacity(0.6),
-                  size: 30,
-                ),
-              ],
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

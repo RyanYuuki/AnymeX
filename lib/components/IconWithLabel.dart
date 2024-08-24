@@ -9,6 +9,8 @@ class iconWithName extends StatelessWidget {
   final Color backgroundColor;
   final BorderRadius? borderRadius;
   final Color TextColor;
+  final double fontSize;
+  final bool isGapped;
   const iconWithName({
     super.key,
     required this.icon,
@@ -16,9 +18,11 @@ class iconWithName extends StatelessWidget {
     this.isVertical = true,
     this.color = Colors.black,
     this.size = 16.0,
+    this.fontSize = 12.0,
     this.backgroundColor = Colors.white,
     this.borderRadius,
     this.TextColor = Colors.black,
+    this.isGapped = true,
   });
 
   @override
@@ -43,10 +47,10 @@ class iconWithName extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(icon, size: size, color: color),
-                  const SizedBox(width: 2.0),
+                  SizedBox(width: isGapped ? 2.0 : 0.0),
                   Text(name,
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: fontSize,
                           color: TextColor,
                           fontWeight: FontWeight.bold)),
                 ],

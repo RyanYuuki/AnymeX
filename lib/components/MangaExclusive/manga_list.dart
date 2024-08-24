@@ -66,20 +66,16 @@ class MangaList extends StatelessWidget {
                         Row(
                           children: [
                             iconWithName(
-                                TextColor: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
+                                TextColor: Colors.white,
+                                color: Colors.white,
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .primary,
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(5),
                                     bottomLeft: Radius.circular(5)),
-                                icon: Iconsax.book,
+                                icon: Iconsax.book_1,
                                 name: manga['chapter'].length > 10
                                     ? manga['chapter']
                                         .toString()
@@ -87,16 +83,12 @@ class MangaList extends StatelessWidget {
                                     : manga['chapter'].toString()),
                             const SizedBox(width: 2),
                             iconWithName(
-                                TextColor: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
+                                TextColor: Colors.white,
+                                color: Colors.white,
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
+                                    .primary,
                                 borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(5),
                                     bottomRight: Radius.circular(5)),

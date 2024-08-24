@@ -438,6 +438,7 @@ class Poster extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: poster!,
                   fit: BoxFit.cover,
+                  alignment: Alignment.center,
                 ),
               ),
             ),
