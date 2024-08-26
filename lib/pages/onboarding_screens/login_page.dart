@@ -20,70 +20,72 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const Text(
-              'Hello!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 50),
-            const Text(
-              "Welcome, you've been missed",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.none,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            GestureDetector(
-              onTap: _pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage:
-                    _avatarImage != null ? FileImage(_avatarImage!) : null,
-                child: _avatarImage == null
-                    ? const Icon(Icons.add_a_photo, size: 50)
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 50),
-            _buildTextField(userName, 'Username', Icons.person),
-            const SizedBox(height: 10),
-            _buildTextField(passWord, 'Password', Icons.lock,
-                obscureText: true),
-            const SizedBox(height: 30),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: _saveUserData,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const Text(
+                'Hello!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 50),
+              const Text(
+                "Welcome, you've been missed",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.none,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              GestureDetector(
+                onTap: _pickImage,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage:
+                      _avatarImage != null ? FileImage(_avatarImage!) : null,
+                  child: _avatarImage == null
+                      ? const Icon(Icons.add_a_photo, size: 50)
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 50),
+              _buildTextField(userName, 'Username', Icons.person),
+              const SizedBox(height: 10),
+              _buildTextField(passWord, 'Password', Icons.lock,
+                  obscureText: true),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: _saveUserData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
