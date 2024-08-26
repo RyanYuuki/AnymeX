@@ -1,11 +1,9 @@
-// ignore_for_file: library_private_types_in_public_api
-
-import 'package:aurora/pages/onboarding_screens/onboarding_widget.dart';
+import 'dart:ui';
+import 'package:aurora/main.dart';
+import 'package:aurora/pages/home_page.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
-import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class OnboardingScreens extends StatefulWidget {
   const OnboardingScreens({super.key});
@@ -15,193 +13,164 @@ class OnboardingScreens extends StatefulWidget {
 }
 
 class _OnboardingScreensState extends State<OnboardingScreens> {
-  final PageController _pageController = PageController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              children: [
-                OnboardingPage1(controller: _pageController),
-                OnboardingPage2(controller: _pageController),
-                OnboardingPage3(controller: _pageController),
-                const LoginPage(),
-              ],
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/peakpx(1).jpg',
+              alignment: Alignment.center,
+              fit: BoxFit.cover,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: _buildPageIndicator(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator(BuildContext context) {
-    return SmoothPageIndicator(
-      controller: _pageController,
-      count: 4,
-      effect: WormEffect(
-        activeDotColor: Theme.of(context).colorScheme.primary,
-        dotHeight: 8.0,
-        dotWidth: 8.0,
-      ),
-    );
-  }
-}
-
-class OnboardingPage1 extends StatelessWidget {
-  final PageController controller;
-
-  const OnboardingPage1({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const OnboardingText(
-            text: 'Welcome to AnymeX',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          // Black Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.9),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          const OnboardingText(
-            text:
-                'Stream and read your favorite anime and manga anytime, anywhere.',
-            style: TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 40),
-          OnboardingButton(
-            text: 'Next',
-            onPressed: () {
-              controller.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OnboardingPage2 extends StatelessWidget {
-  final PageController controller;
-
-  const OnboardingPage2({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const OnboardingText(
-            text: 'Which Theme Would you Prefer?',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          // Content with Blurred Sheet
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                topRight: Radius.circular(30.0),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        children: [
+                          Text(
+                            'AnymeX',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Stream and read your favorite anime and manga anytime, anywhere.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.surface,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface,
+                                    fontSize: 16),
+                              ),
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/login-page');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryFixed,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Watch Now',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              onPressed: () {
+                                var box = Hive.box('login-data');
+                                box.put('userInfo', [
+                                  'Guest',
+                                  'Guest',
+                                  null,
+                                ]);
+                                box.put('isFirstTime', false);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainApp()),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          const OnboardingText(
-            text: 'Choose your preferred theme:',
-            style: TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              minimumSize: const Size(double.infinity, 60),
-              backgroundColor:
-                  Theme.of(context).colorScheme.onPrimaryFixedVariant,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 20),
+          Positioned(
+            top: 50,
+            left: 20,
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainer
+                    .withOpacity(0.8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  'assets/images/logo_transparent.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
-            onPressed: () {
-              themeProvider.setLightMode();
-              controller.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
-            },
-            child: const Text(
-              'Light Mode',
-              style: TextStyle(fontFamily: 'Poppins'),
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              minimumSize: const Size(double.infinity, 60),
-              backgroundColor:
-                  Theme.of(context).colorScheme.onPrimaryFixedVariant,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              themeProvider.setDarkMode();
-              controller.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
-            },
-            child: const Text('Dark Mode',
-                style: TextStyle(fontFamily: 'Poppins')),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OnboardingPage3 extends StatelessWidget {
-  final PageController controller;
-
-  const OnboardingPage3({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const OnboardingText(
-            text: 'Ready to Explore?',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const OnboardingText(
-            text: 'Start your journey by giving us your name!',
-            style: TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 40),
-          OnboardingButton(
-            text: 'Next',
-            onPressed: () {
-              controller.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease,
-              );
-            },
           ),
         ],
       ),
