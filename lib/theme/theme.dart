@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-final Color seedColor = Colors.indigo;
+const Color seedColor = Colors.indigo;
 
 ThemeData lightMode = ThemeData(
   useMaterial3: true,
@@ -28,7 +28,7 @@ ThemeData lightMode = ThemeData(
       borderSide: BorderSide.none,
     ),
   ),
-  buttonTheme: ButtonThemeData(
+  buttonTheme: const ButtonThemeData(
     buttonColor: seedColor,
     textTheme: ButtonTextTheme.primary,
   ),
@@ -45,7 +45,7 @@ ThemeData lightMode = ThemeData(
     color: Colors.black, // Default icon color for light mode
     size: 24, // Default icon size
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: seedColor,
     foregroundColor: Colors.white,
   ),
@@ -76,7 +76,7 @@ ThemeData darkMode = ThemeData(
       borderSide: BorderSide.none,
     ),
   ),
-  buttonTheme: ButtonThemeData(
+  buttonTheme: const ButtonThemeData(
     buttonColor: seedColor,
     textTheme: ButtonTextTheme.primary,
   ),
@@ -93,7 +93,7 @@ ThemeData darkMode = ThemeData(
     color: Colors.white, 
     size: 24, 
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: seedColor,
     foregroundColor: Colors.white,
   ),
