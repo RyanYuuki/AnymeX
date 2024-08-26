@@ -18,6 +18,7 @@ class AnimeTable extends StatefulWidget {
 class _AnimeTableState extends State<AnimeTable> {
   @override
   Widget build(BuildContext context) {
+    final ColorScheme = Theme.of(context).colorScheme;
     return Center(
       child: CustomSlidingSegmentedControl<int>(
         fixedWidth: MediaQuery.of(context).size.width / 3 - 20,
@@ -40,11 +41,11 @@ class _AnimeTableState extends State<AnimeTable> {
           ),
         },
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
+          color: ColorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(8),
         ),
         thumbDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: ColorScheme.onPrimaryFixedVariant,
           borderRadius: BorderRadius.circular(6),
           boxShadow: [
             BoxShadow(

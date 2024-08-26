@@ -34,6 +34,8 @@ dependencies:
   smooth_page_indicator: ^1.2.0+3
   interactive_slider: ^0.2.2
   wakelock_plus: ^1.2.8
+  palette_generator: ^0.3.3+4
+  dynamic_color: ^1.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

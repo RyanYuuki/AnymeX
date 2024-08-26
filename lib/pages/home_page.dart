@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Column(
             children: [
-              Container(
+              SizedBox(
                 height: 400,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -48,7 +48,9 @@ class _HomePageState extends State<HomePage> {
                                       FileImage(File(avatarImagePath)),
                                 )
                               : CircleAvatar(
-                                  backgroundColor: Colors.black,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer,
                                   radius: 24,
                                   child: IconButton(
                                     onPressed: () {
@@ -56,25 +58,31 @@ class _HomePageState extends State<HomePage> {
                                     },
                                     icon: const Icon(
                                       Icons.person,
-                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
-                          IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const SearchPage(
-                                      searchTerm: 'Attack on Titan',
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
+                                borderRadius: BorderRadius.circular(30)),
+                            child: IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const SearchPage(
+                                        searchTerm: 'Attack on Titan',
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(
-                                Iconsax.search_normal,
-                                size: 24,
-                              ))
+                                  );
+                                },
+                                icon: const Icon(
+                                  Iconsax.search_normal,
+                                  size: 24,
+                                )),
+                          )
                         ],
                       ),
                     ),
@@ -109,10 +117,12 @@ class _HomePageState extends State<HomePage> {
                     ReusableCarousel(
                       title: 'Top Airing',
                       carouselData: animeData['topAiringAnimes'],
+                      tag: 'home-page',
                     ),
                     ReusableCarouselManga.ReusableCarousel(
                       title: 'Top',
                       carouselData: moreMangaData['mangaList'],
+                      tag: 'home-page',
                     ),
                   ],
                 ),

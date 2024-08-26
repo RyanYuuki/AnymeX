@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:ui';
+import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -129,9 +130,9 @@ class _DetailsPageState extends State<DetailsPage> {
   Container Info(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(25),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
@@ -162,19 +163,19 @@ class _DetailsPageState extends State<DetailsPage> {
                   Container(
                     height: 15,
                     width: 3,
-                    color: Color(0xFF8192CF),
+                    color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
                   ),
                   const SizedBox(width: 10),
-                  Icon(
-                    Icons.star_rounded,
-                    size: 14,
-                    color: Colors.indigo.shade400,
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    animeFullInfo['malscore']?.toString() ?? '??',
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  iconWithName(
+                    backgroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
+                    icon: Iconsax.star1,
+                    TextColor: Colors.white,
+                    color: Colors.white,
+                    name: animeFullInfo['malscore'] == null
+                        ? '0.0'
+                        : animeFullInfo['malscore'].toString(),
+                    isVertical: false,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ],
               ),
@@ -191,13 +192,12 @@ class _DetailsPageState extends State<DetailsPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.inverseSurface,
-                            borderRadius: BorderRadius.circular(12)),
+                            color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                            borderRadius: BorderRadius.circular(5)),
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodySmall?.color,
+                              color: Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -217,7 +217,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -231,7 +231,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                 ),
                 Container(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onPrimaryFixed,
                   height: 30,
                   width: 2,
                 ),
@@ -242,7 +242,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -270,14 +270,14 @@ class _DetailsPageState extends State<DetailsPage> {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.tertiary,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             padding: EdgeInsets.all(10),
             child: Column(
               children: [
                 Text(
-                  description ??
-                      animeInfo['description'] ??
+                  description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
+                      animeInfo['description'].replaceAll(RegExp(r'<[^>]*>'), '') ??
                       'Description Not Found',
                   maxLines: 13,
                   overflow: TextOverflow.ellipsis,
@@ -286,14 +286,14 @@ class _DetailsPageState extends State<DetailsPage> {
               ],
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
           CharacterCards(carouselData: charactersData),
           ReusableCarousel(
-              title: 'Popular', carouselData: data['mostPopularAnimes']),
+              title: 'Popular', carouselData: data['mostPopularAnimes'], tag: 'details-page1',),
           ReusableCarousel(
-              title: 'Related', carouselData: data['relatedAnimes']),
+              title: 'Related', carouselData: data['relatedAnimes'], tag: 'details-page2'),
           ReusableCarousel(
-              title: 'Recommended', carouselData: data['recommendedAnimes']),
+              title: 'Recommended', carouselData: data['recommendedAnimes'], tag: 'details-page3'),
         ],
       ),
     );
@@ -374,7 +374,7 @@ class FloatingBar extends StatelessWidget {
                             arguments: {'id': id});
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -383,7 +383,7 @@ class FloatingBar extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: const [
                           Icon(
-                            Iconsax.watch,
+                            Iconsax.play_circle5,
                             color: Colors.white, // Icon color
                           ),
                           SizedBox(width: 8),

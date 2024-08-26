@@ -30,10 +30,10 @@ class CharacterCards extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             SizedBox(
-              height: 270,
+              height: 220,
               child: InfiniteCarousel.builder(
                 itemCount: carouselData!.length,
-                itemExtent: MediaQuery.of(context).size.width / 3,
+                itemExtent: MediaQuery.of(context).size.width / 3.3,
                 center: false,
                 anchor: 0.0,
                 loop: false,
@@ -44,15 +44,16 @@ class CharacterCards extends StatelessWidget {
                   final title = itemData['name']['full'].toString().length > 25
                       ? '${itemData['name']['full'].toString().substring(0, 25)}...'
                       : itemData['name']['full'];
+                  final role = itemData['role'].toString();
                   return Container(
                     margin: const EdgeInsets.only(right: 4),
                     child: Card(
-                      color: Theme.of(context).colorScheme.surface,
+                      color: Colors.transparent,
                       elevation: 0,
                       child: Column(
                         children: [
                           SizedBox(
-                            height: 170,
+                            height: 150,
                             child: Container(
                                 color: Colors.transparent,
                                 width: 200,
@@ -64,10 +65,29 @@ class CharacterCards extends StatelessWidget {
                                   ),
                                 )),
                           ),
-                          const SizedBox(height: 8),
-                          Text(title.toString(),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                              textAlign: TextAlign.center)
+                          const SizedBox(height: 4),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title.toString(),
+                                style: const TextStyle(fontSize: 14),
+                                textAlign: TextAlign.left,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 3),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text('- $role',
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic),
+                                    textAlign: TextAlign.right),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -77,7 +97,6 @@ class CharacterCards extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 15),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,7 +112,7 @@ class CharacterCards extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             SizedBox(
-              height: 270,
+              height: 220,
               child: InfiniteCarousel.builder(
                 itemCount: carouselData!.length,
                 itemExtent: MediaQuery.of(context).size.width / 3,
@@ -108,12 +127,12 @@ class CharacterCards extends StatelessWidget {
                   return Container(
                     margin: const EdgeInsets.only(right: 4),
                     child: Card(
-                      color: Theme.of(context).colorScheme.surface,
+                      color: Colors.transparent,
                       elevation: 0,
                       child: Column(
                         children: [
                           SizedBox(
-                            height: 170,
+                            height: 150,
                             child: Container(
                                 color: Colors.transparent,
                                 width: 200,
@@ -125,10 +144,15 @@ class CharacterCards extends StatelessWidget {
                                   ),
                                 )),
                           ),
-                          const SizedBox(height: 8),
-                          Text(title.toString(),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                              textAlign: TextAlign.center)
+                          const SizedBox(height: 4),
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(title.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.center),
+                          )
                         ],
                       ),
                     ),

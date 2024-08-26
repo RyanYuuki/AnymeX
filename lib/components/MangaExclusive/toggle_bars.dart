@@ -157,7 +157,7 @@ class _ToggleBarState extends State<ToggleBar> {
                   Container(
                     width: MediaQuery.of(context).size.width - 30,
                     decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(20)),
                     child: Slider(
                       divisions: widget.totalImages ?? 0,
@@ -209,7 +209,6 @@ class _ToggleBarState extends State<ToggleBar> {
               ),
             ),
           ),
-          // Absolute Positioned Page Number
           Positioned(
             bottom: 0,
             left: 0,

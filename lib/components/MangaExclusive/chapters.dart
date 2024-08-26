@@ -61,17 +61,10 @@ class _ChapterListState extends State<ChapterList> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    fillColor: Theme.of(context).colorScheme.tertiary,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                     filled: true,
                     hintText: 'Search Chapter...',
                     prefixIcon: const Icon(Iconsax.search_normal),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary,
-                        width: 1,
-                      ),
-                    ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
@@ -92,7 +85,7 @@ class _ChapterListState extends State<ChapterList> {
               height: 70,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,15 +149,15 @@ class _ChapterListState extends State<ChapterList> {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           backgroundColor:
-                              Theme.of(context).colorScheme.inverseSurface,
+                              Theme.of(context).colorScheme.onPrimaryFixedVariant,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Read',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                            color: Colors.white,
                             fontSize: 14,
                           ),
                         ),

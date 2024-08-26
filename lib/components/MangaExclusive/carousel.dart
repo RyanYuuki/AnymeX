@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,7 +40,7 @@ class Carousel extends StatelessWidget {
       ),
       items: animeData!.map((anime) {
         final String posterUrl = anime['image'] ?? '??';
-        const String type = 'MANGA';
+        String type = anime['view'] ?? '??';
         final tag = anime['title'] + anime['id'];
         const String proxyUrl =
             'https://goodproxy.goodproxy.workers.dev/fetch?url=';
@@ -86,7 +87,7 @@ class Carousel extends StatelessWidget {
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.surfaceContainer,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -106,7 +107,7 @@ class Carousel extends StatelessWidget {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
                                     borderRadius: BorderRadius.circular(7)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -141,21 +142,17 @@ class Carousel extends StatelessWidget {
                   ],
                 ),
                 Positioned(
-                  top: 8,
-                  right: 25,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      type,
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                ),
+                    top: 8,
+                    right: 20,
+                    child: iconWithName(
+                      icon: Iconsax.heart5,
+                      name: type,
+                      isVertical: false,
+                      backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                      TextColor: Colors.white,
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                    )),
               ],
             );
           },

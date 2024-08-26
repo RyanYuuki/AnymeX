@@ -109,9 +109,21 @@ class _MangaHomePageState extends State<MangaHomePage> {
             ),
             const SizedBox(height: 15),
             Carousel(animeData: mangaList),
-            ReusableCarousel(title: "Popular", carouselData: CarouselData_1),
-            ReusableCarousel(title: "Latest", carouselData: CarouselData_2),
-            ReusableCarousel(title: "Favorite", carouselData: CarouselData_3),
+            ReusableCarousel(
+              title: "Popular",
+              carouselData: CarouselData_1,
+              tag: '1',
+            ),
+            ReusableCarousel(
+              title: "Latest",
+              carouselData: CarouselData_2,
+              tag: '2',
+            ),
+            ReusableCarousel(
+              title: "Favorite",
+              carouselData: CarouselData_3,
+              tag: '3',
+            ),
             MangaList(data: [
               ...MangaListData!,
             ]),
@@ -154,12 +166,12 @@ class _HeaderState extends State<Header> {
                           radius: 24,
                           backgroundImage: FileImage(File(avatarImagePath)),
                         )
-                      : const CircleAvatar(
-                          backgroundColor: Colors.black,
+                      : CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
                           radius: 24,
-                          child: Icon(
+                          child: const Icon(
                             Icons.person,
-                            color: Colors.white,
                           ),
                         ),
                   const SizedBox(width: 15),
@@ -174,7 +186,7 @@ class _HeaderState extends State<Header> {
                         ),
                       ),
                       Text(
-                        userInfo[0],
+                        userInfo[0].trim(),
                         style: const TextStyle(
                           fontFamily: 'Poppins-Bold',
                         ),
@@ -185,23 +197,16 @@ class _HeaderState extends State<Header> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    style: BorderStyle.solid,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                  borderRadius: BorderRadius.circular(50),
-                ),
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(50)),
                 child: IconButton(
                   icon: Icon(
-                    themeProvider.selectedTheme.brightness == Brightness.dark
-                        ? Iconsax.moon
-                        : Icons.sunny,
-                  ),
+                      themeProvider.selectedTheme.brightness == Brightness.dark
+                          ? Iconsax.moon
+                          : Icons.sunny),
                   onPressed: () {
                     themeProvider.toggleTheme();
                   },
-                  color: Theme.of(context).iconTheme.color,
                 ),
               )
             ],
@@ -215,15 +220,10 @@ class _HeaderState extends State<Header> {
             },
             decoration: InputDecoration(
               hintText: 'Search Manga...',
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surfaceContainer,
               prefixIcon: const Icon(Iconsax.search_normal),
               suffixIcon: const Icon(IconlyBold.filter),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.secondary,
-                  width: 1,
-                ),
-              ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25),
                 borderSide: BorderSide(

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class Carousel extends StatelessWidget {
   final List<dynamic>? animeData;
@@ -12,6 +13,7 @@ class Carousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme = Theme.of(context).colorScheme;
     if (animeData == null) {
       return Center(
           heightFactor: 300,
@@ -67,7 +69,7 @@ class Carousel extends StatelessWidget {
           ),
           items: animeData!.map((anime) {
             final String posterUrl = anime['poster'] ?? '??';
-            final String type = anime['type'] ?? '??';
+            final String? type = anime['type'] ?? '??';
             final tag = anime['name'] + anime['jname'] + anime['id'];
             const String proxyUrl =
                 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
@@ -112,7 +114,7 @@ class Carousel extends StatelessWidget {
                           margin: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: ColorScheme.surfaceContainer,
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -121,7 +123,7 @@ class Carousel extends StatelessWidget {
                                 anime['name'].length > 20
                                     ? '${anime['name'].toString().substring(0, 20)}...'
                                     : anime['name'] ?? '??',
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: TextStyle(fontSize: 16),
                               ),
                               const SizedBox(height: 10),
                               Row(
@@ -132,9 +134,8 @@ class Carousel extends StatelessWidget {
                                     height: 35,
                                     width: 80,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color:
+                                            ColorScheme.onPrimaryFixedVariant,
                                         borderRadius: BorderRadius.circular(7)),
                                     child: Row(
                                       mainAxisAlignment:
@@ -161,9 +162,8 @@ class Carousel extends StatelessWidget {
                                     height: 35,
                                     width: 80,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color:
+                                            ColorScheme.onPrimaryFixedVariant,
                                         borderRadius: BorderRadius.circular(7)),
                                     child: Row(
                                       mainAxisAlignment:
@@ -195,18 +195,24 @@ class Carousel extends StatelessWidget {
                     ),
                     Positioned(
                       top: 8,
-                      right: 25,
+                      right: 20,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: ColorScheme.onPrimaryFixedVariant,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          type,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 14),
+                        child: Row(
+                          children: [
+                            Icon(Iconsax.play_circle5, color: Colors.white),
+                            const SizedBox(width: 2),
+                            Text(
+                              type ?? 'TV',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 14),
+                            ),
+                          ],
                         ),
                       ),
                     ),

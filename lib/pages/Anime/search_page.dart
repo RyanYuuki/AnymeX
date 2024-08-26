@@ -93,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
                           borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             width: 1,
                           ),
                         ),
@@ -160,7 +160,7 @@ class _SearchPageState extends State<SearchPage> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.tertiary,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
           ),
           child: GestureDetector(
@@ -193,7 +193,7 @@ class _SearchPageState extends State<SearchPage> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -211,7 +211,7 @@ class _SearchPageState extends State<SearchPage> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -243,7 +243,7 @@ GestureDetector searchItemList(BuildContext context, anime, tag) {
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: Theme.of(context).colorScheme.secondary),
+          color: Theme.of(context).colorScheme.surfaceContainer),
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [

@@ -22,6 +22,7 @@ class _CoverCarouselState extends State<CoverCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme = Theme.of(context).colorScheme;
     if (widget.animeData == null) {
       return Center(
         heightFactor: 300,
@@ -39,7 +40,8 @@ class _CoverCarouselState extends State<CoverCarousel> {
             final anime = widget.animeData![index];
             final String posterUrl = anime['poster'] ?? '??';
             final tag = anime['name'] + anime['jname'] + anime['id'];
-            const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+            const String proxyUrl =
+                'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
             return Stack(
               children: [
@@ -91,8 +93,7 @@ class _CoverCarouselState extends State<CoverCarousel> {
                             name: anime['otherInfo'][2],
                             isVertical: false,
                             borderRadius: BorderRadius.circular(5),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                            backgroundColor: ColorScheme.onPrimaryFixedVariant,
                             color: Colors.white,
                             TextColor: Colors.white,
                           ),
@@ -106,10 +107,7 @@ class _CoverCarouselState extends State<CoverCarousel> {
                         anime['description'],
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .inverseSurface
-                              .withOpacity(0.7),
+                          color: ColorScheme.inverseSurface.withOpacity(0.7),
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
@@ -147,10 +145,7 @@ class _CoverCarouselState extends State<CoverCarousel> {
             dotHeight: 8,
             dotWidth: 8,
             activeDotColor: Theme.of(context).colorScheme.primary,
-            dotColor: Theme.of(context)
-                .colorScheme
-                .onSurface
-                .withOpacity(0.5),
+            dotColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
           ),
         ),
       ],

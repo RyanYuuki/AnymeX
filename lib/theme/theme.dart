@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
 
-// Define your colors
-Color color1 = const Color.fromRGBO(219, 45, 105, 1.0); // #DB2D69
-Color color2 = const Color.fromRGBO(251, 90, 128, 1.0); // #FB5A80
-Color color3 = const Color.fromRGBO(49, 45, 45, 1.0); // #312D2D
-Color color4 = const Color.fromRGBO(255, 255, 255, 1.0); // #FFF
+final Color seedColor = Colors.indigo;
 
 ThemeData lightMode = ThemeData(
-  brightness: Brightness.light,
+  useMaterial3: true,
   fontFamily: 'Poppins',
-  colorScheme: ColorScheme.light(
-    surface: Colors.grey.shade200,
-    surfaceContainer: const Color(0xFFFFFFFF),
-    primary: Colors.black,
-    secondary: const Color(0xFFE0E0E0),
-    tertiary: const Color(0xFFEAEAEA),
-    inverseSurface: Colors.black,
-    inversePrimary: Colors.white,
+  brightness: Brightness.light,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: seedColor,
+    brightness: Brightness.light,
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
@@ -37,36 +29,41 @@ ThemeData lightMode = ThemeData(
     ),
   ),
   buttonTheme: ButtonThemeData(
-    buttonColor: Colors.indigo.shade400,
+    buttonColor: seedColor,
     textTheme: ButtonTextTheme.primary,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.black,
+      backgroundColor: seedColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
       ),
     ),
   ),
+  iconTheme: const IconThemeData(
+    color: Colors.black, // Default icon color for light mode
+    size: 24, // Default icon size
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: seedColor,
+    foregroundColor: Colors.white,
+  ),
 );
 
 ThemeData darkMode = ThemeData(
-  brightness: Brightness.dark,
+  useMaterial3: true,
   fontFamily: 'Poppins',
-  colorScheme: ColorScheme.dark(
-    surface: Colors.black26,
-    primary: Colors.indigo.shade400,
-    secondary: const Color(0xFF222222),
-    tertiary: const Color(0xFF141414),
-    inverseSurface: Colors.white,
-    inversePrimary: Colors.black,
+  brightness: Brightness.dark,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: seedColor,
+    brightness: Brightness.dark,
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white),
     bodyMedium: TextStyle(color: Colors.white),
     titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    bodySmall: TextStyle(color: Colors.black, fontSize: 12),
+    bodySmall: TextStyle(color: Colors.grey, fontSize: 12), // Updated to a lighter color
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
@@ -80,16 +77,24 @@ ThemeData darkMode = ThemeData(
     ),
   ),
   buttonTheme: ButtonThemeData(
-    buttonColor: Colors.indigo.shade400,
+    buttonColor: seedColor,
     textTheme: ButtonTextTheme.primary,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.indigo.shade400,
+      backgroundColor: seedColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
       ),
     ),
+  ),
+  iconTheme: const IconThemeData(
+    color: Colors.white, 
+    size: 24, 
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: seedColor,
+    foregroundColor: Colors.white,
   ),
 );

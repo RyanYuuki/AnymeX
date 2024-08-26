@@ -126,8 +126,9 @@ class OnboardingPage2 extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               minimumSize: const Size(double.infinity, 60),
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              foregroundColor: Colors.black,
+              backgroundColor:
+                  Theme.of(context).colorScheme.onPrimaryFixedVariant,
+              foregroundColor: Colors.white,
               textStyle: const TextStyle(fontSize: 20),
             ),
             onPressed: () {
@@ -147,7 +148,8 @@ class OnboardingPage2 extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               minimumSize: const Size(double.infinity, 60),
-              backgroundColor: Colors.black,
+              backgroundColor:
+                  Theme.of(context).colorScheme.onPrimaryFixedVariant,
               foregroundColor: Colors.white,
               textStyle: const TextStyle(fontSize: 20),
             ),

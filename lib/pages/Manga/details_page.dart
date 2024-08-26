@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
 import 'dart:ui';
+import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
@@ -153,19 +154,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   Container(
                     height: 15,
                     width: 3,
-                    color: Color(0xFF8192CF),
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                   const SizedBox(width: 10),
-                  Icon(
-                    Icons.star_rounded,
-                    size: 14,
-                    color: Colors.indigo.shade400,
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    '6.9',
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  iconWithName(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.onPrimaryFixed,
+                    icon: Iconsax.star1,
+                    TextColor: Colors.white,
+                    color: Colors.white,
+                    name: '6.9',
+                    isVertical: false,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ],
               ),
@@ -182,13 +182,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.inverseSurface,
+                            color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
                             borderRadius: BorderRadius.circular(12)),
                         child: Text(
                           genre as String,
                           style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodySmall?.color,
+                                  Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -208,7 +208,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -222,7 +222,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   ),
                 ),
                 Container(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   height: 30,
                   width: 2,
                 ),
@@ -233,7 +233,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.tertiary),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -331,7 +331,7 @@ class FloatingBar extends StatelessWidget {
                             arguments: {'id': '/$id/chapter-1', 'mangaId': id});
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

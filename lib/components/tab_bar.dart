@@ -26,11 +26,11 @@ class _MyTabBarState extends State<MyTabBar> {
           2: Text('Dub', style: TextStyle(color: currentIndex == 2 ? Colors.white : null), ),
         },
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(8),
         ),
         thumbDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
           borderRadius: BorderRadius.circular(6),
           boxShadow: [
             BoxShadow(

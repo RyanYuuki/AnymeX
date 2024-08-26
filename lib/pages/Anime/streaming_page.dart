@@ -1,3 +1,5 @@
+import 'package:aurora/components/episode_list.dart';
+import 'package:aurora/components/episodelist_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -27,8 +29,9 @@ class _StreamingPageState extends State<StreamingPage> {
   int? currentEpisode;
   bool isDub = false;
   int? availEpisodes;
-  bool isList = false;
+  bool isList = true;
   List<dynamic> filteredEpisodes = [];
+  String? selectedRange;
 
   final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/';
   final String episodeDataUrl =
@@ -92,6 +95,7 @@ class _StreamingPageState extends State<StreamingPage> {
   }
 
   Future<void> fetchEpisodeSrcs() async {
+    episodeSrc = null;
     if (episodesData == null || currentEpisode == null) return;
 
     try {
@@ -130,18 +134,30 @@ class _StreamingPageState extends State<StreamingPage> {
         isDub = false;
         availEpisodes = animeData['anime']['info']['stats']['episodes']['sub'];
       } else {
-        availEpisodes = animeData['anime']['info']['stats']['episodes']['dub'];
+        availEpisodes =
+            animeData['anime']['info']['stats']['episodes']['dub'] ?? 0;
         isDub = true;
       }
+      filteredEpisodes = episodesData.sublist(0, availEpisodes);
+      filterEpisodes();
     });
-    filteredEpisodes = episodesData.sublist(0, availEpisodes);
-    fetchEpisodeSrcs();
   }
 
   void filterEpisodes() {
     setState(() {
       final filter = episodeFilterController.text;
       dynamic newData = episodesData.sublist(0, availEpisodes);
+
+      if (selectedRange != null) {
+        final parts = selectedRange!.split('-');
+        final start = int.parse(parts[0]);
+        final end = int.parse(parts[1]);
+        newData = newData.where((episode) {
+          final episodeNumber = episode['number'];
+          return episodeNumber >= start && episodeNumber <= end;
+        }).toList();
+      }
+
       if (filter.isNotEmpty) {
         filteredEpisodes = newData.where((episode) {
           return episode['number'].toString().contains(filter);
@@ -182,7 +198,17 @@ class _StreamingPageState extends State<StreamingPage> {
               ? const Center(child: Text('Failed to load data.'))
               : ListView(
                   children: [
-                    if (episodeSrc != null)
+                    if (episodeSrc == null)
+                      const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ))
+                    else
                       VideoPlayerAlt(
                           videoUrl: episodeSrc, tracks: subtitleTracks),
                     const SizedBox(height: 20),
@@ -194,142 +220,103 @@ class _StreamingPageState extends State<StreamingPage> {
                             onTap: handleLanguage,
                           ),
                           const SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: TextField(
-                                    controller: episodeFilterController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Filter Episode...',
-                                      suffixIcon:
-                                          const Icon(Iconsax.search_normal),
-                                      enabledBorder: OutlineInputBorder(
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: SizedBox(
+                              height: 50,
+                              width: double.infinity,
+                              child: Row(
+                                children: [
+                                  Container(
+                                      height: 50,
+                                      width: 100,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainer,
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          width: 1,
-                                        ),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          width: 1,
+                                      child: EpisodeDropdown(
+                                        episodesData: filteredEpisodes ?? [],
+                                        selectedRange: selectedRange,
+                                        onRangeSelected: (range) {
+                                          setState(() {
+                                            selectedRange = range;
+                                            final parts = range.split('-');
+                                            final start = int.parse(parts[0]);
+                                            final end = int.parse(parts[1]);
+                                            filteredEpisodes =
+                                                episodesData?.where((episode) {
+                                                      final episodeNumber =
+                                                          episode['number'];
+                                                      return episodeNumber >=
+                                                              start &&
+                                                          episodeNumber <= end;
+                                                    }).toList() ??
+                                                    [];
+                                            filterEpisodes();
+                                          });
+                                        },
+                                      )),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: episodeFilterController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Filter Episode...',
+                                        suffixIcon:
+                                            const Icon(Iconsax.search_normal),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            width: 1,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                                child: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isList = !isList;
-                                      });
-                                    },
-                                    icon: Icon(isList
-                                        ? Icons.menu
-                                        : Icons.grid_on_rounded)),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    GridView.builder(
-                      padding: const EdgeInsets.all(20),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isList ? 1 : 5,
-                        mainAxisExtent: isList ? 50 : 40,
-                      ),
-                      shrinkWrap: true,
-                      itemCount: filteredEpisodes.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final episode = filteredEpisodes[index];
-                        return GestureDetector(
-                          onTap: () => handleEpisode(episode['number']),
-                          child: Container(
-                            width: isList ? double.infinity : null,
-                            height: 40,
-                            margin: const EdgeInsets.all(4.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: currentEpisode == episode['number']
-                                  ? Theme.of(context).colorScheme.primary
-                                  : (episode['isFiller']
-                                      ? Colors.lightGreen.shade700
-                                      : Theme.of(context)
+                                  const SizedBox(width: 10),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Theme.of(context)
                                           .colorScheme
-                                          .secondary),
-                            ),
-                            child: Padding(
-                              padding:
-                                  EdgeInsets.only(left: isList ? 8.0 : 0.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  currentEpisode == episode['number']
-                                      ? const Center(
-                                          child: Icon(Icons.play_arrow_rounded,
-                                              color: Colors.white),
-                                        )
-                                      : Center(
-                                          child: Text(
-                                            isList
-                                                ? '${episode['number']}.'
-                                                : episode['number'].toString(),
-                                            style: TextStyle(
-                                              color: currentEpisode ==
-                                                      episode['number']
-                                                  ? Colors.white
-                                                  : null,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                  isList
-                                      ? const SizedBox(width: 5)
-                                      : const SizedBox.shrink(),
-                                  isList
-                                      ? Expanded(
-                                          child: Text(
-                                            episode['title'],
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: currentEpisode ==
-                                                      episode['number']
-                                                  ? Colors.white
-                                                  : null,
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
+                                          .surfaceContainer,
+                                    ),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          isList = !isList;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        isList
+                                            ? Icons.menu
+                                            : Icons.grid_on_rounded,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 20),
+                    EpisodeGrid(
+                        episodes: filteredEpisodes,
+                        isList: isList,
+                        onEpisodeSelected: (int episode) {
+                          handleEpisode(episode);
+                        }),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -338,24 +325,20 @@ class _StreamingPageState extends State<StreamingPage> {
                           if (animeData != null) ...[
                             if (animeData['seasons'].length > 0)
                               ReusableCarousel(
-                                  title: 'Seasons',
-                                  carouselData: animeData['seasons']),
+                                title: 'Seasons',
+                                carouselData: animeData['seasons'],
+                                tag: 'streaming-page1',
+                              ),
                             const SizedBox(height: 10),
                             ReusableCarousel(
-                                title: 'Related',
-                                carouselData: animeData['relatedAnimes']),
-                            const SizedBox(height: 10),
-                            ReusableCarousel(
-                                title: 'Popular',
-                                carouselData: animeData['mostPopularAnimes']),
-                            const SizedBox(height: 10),
-                            ReusableCarousel(
-                                title: 'Recommended',
-                                carouselData: animeData['recommendedAnimes']),
-                          ],
+                              title: 'Related',
+                              carouselData: animeData['relatedAnimes'],
+                              tag: 'streaming-page2',
+                            )
+                          ]
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
     );

@@ -71,7 +71,7 @@ class MangaList extends StatelessWidget {
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
-                                    .primary,
+                                    .onPrimaryFixedVariant,
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(5),
                                     bottomLeft: Radius.circular(5)),
@@ -88,7 +88,7 @@ class MangaList extends StatelessWidget {
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
-                                    .primary,
+                                    .onPrimaryFixedVariant,
                                 borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(5),
                                     bottomRight: Radius.circular(5)),
@@ -110,6 +110,11 @@ class MangaList extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant,
+                            ),
                             onPressed: () {
                               Navigator.pushNamed(context, '/manga/read',
                                   arguments: {

@@ -3,6 +3,7 @@ import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
 import 'package:aurora/pages/profile/profile.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +68,6 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeProvider.selectedTheme,

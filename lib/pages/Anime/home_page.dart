@@ -106,19 +106,29 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           children: [
             Header(controller: _searchTerm),
             const SizedBox(height: 20),
-            CoverCarousel(title: 'Spotlight' ,animeData: spotlightAnimes),
+            CoverCarousel(title: 'Spotlight', animeData: spotlightAnimes),
             const SizedBox(height: 20),
-            Carousel(title: 'Trending' ,animeData: topAiringAnimes),
+            Carousel(title: 'Trending', animeData: topAiringAnimes),
             ReusableCarousel(
-                title: "Popular",
-                carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!]),
+              title: "Popular",
+              carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!],
+              tag: '0',
+            ),
             ReusableCarousel(
-                title: "Completed", carouselData: latestCompletedAnimes),
+              title: "Completed",
+              carouselData: latestCompletedAnimes,
+              tag: '1',
+            ),
             ReusableCarousel(
-                title: "Latest", carouselData: latestEpisodeAnimes),
+              title: "Latest",
+              carouselData: latestEpisodeAnimes,
+              tag: '2',
+            ),
             ReusableCarousel(
-                title: "Upcoming", carouselData: topUpcomingAnimes),
-            ReusableCarousel(title: "Seasonal", carouselData: trendingAnimes),
+              title: "Upcoming",
+              carouselData: topUpcomingAnimes,
+              tag: '3',
+            ),
             Row(
               children: [
                 Text(
@@ -147,7 +157,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
               margin: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.tertiary),
+                  color: Theme.of(context).colorScheme.surfaceContainer),
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (index) {
@@ -156,9 +166,12 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                   });
                 },
                 children: [
-                  ListItem(context, data: animeData['top10Animes']['today']),
-                  ListItem(context, data: animeData['top10Animes']['week']),
-                  ListItem(context, data: animeData['top10Animes']['month']),
+                  ListItem(context,
+                      data: animeData['top10Animes']['today'], tag: 1),
+                  ListItem(context,
+                      data: animeData['top10Animes']['week'], tag: 2),
+                  ListItem(context,
+                      data: animeData['top10Animes']['month'], tag: 3),
                 ],
               ),
             ),
@@ -168,7 +181,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     );
   }
 
-  Container ListItem(BuildContext context, {required data}) {
+  Container ListItem(BuildContext context, {required data, required tag}) {
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -178,8 +191,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                   onTap: () {
                     Navigator.pushNamed(context, '/details', arguments: {
                       'id': anime['id'],
-                      'posterUrl': anime['poster'],
-                      'tag': anime['name'] + anime['id']
+                      'posterUrl': proxyUrl + anime['poster'],
+                      'tag': anime['name'] + tag.toString()
                     });
                   },
                   child: Container(
@@ -187,7 +200,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                     margin: const EdgeInsets.only(top: 20),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        color: Theme.of(context).colorScheme.secondary),
+                        color:
+                            Theme.of(context).colorScheme.surfaceContainerHigh),
                     padding: const EdgeInsets.all(10),
                     child: Row(
                       children: [
@@ -196,7 +210,9 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                           width: 45,
                           margin: const EdgeInsets.only(right: 20),
                           decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant,
                               borderRadius: BorderRadius.circular(14)),
                           child: Center(
                               child: Text(
@@ -211,7 +227,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                           height: 70,
                           width: 50,
                           child: Hero(
-                            tag: anime['name'] + anime['id'],
+                            tag: anime['name'] + tag.toString(),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(7),
                               child: CachedNetworkImage(
@@ -296,12 +312,12 @@ class _HeaderState extends State<Header> {
                           radius: 24,
                           backgroundImage: FileImage(File(avatarImagePath)),
                         )
-                      : const CircleAvatar(
-                          backgroundColor: Colors.black,
+                      : CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
                           radius: 24,
-                          child: Icon(
+                          child: const Icon(
                             Icons.person,
-                            color: Colors.white,
                           ),
                         ),
                   const SizedBox(width: 15),
@@ -327,10 +343,7 @@ class _HeaderState extends State<Header> {
               ),
               Container(
                 decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 1,
-                        style: BorderStyle.solid,
-                        color: Theme.of(context).colorScheme.tertiary),
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(50)),
                 child: IconButton(
                   icon: Icon(
@@ -340,7 +353,6 @@ class _HeaderState extends State<Header> {
                   onPressed: () {
                     themeProvider.toggleTheme();
                   },
-                  color: Theme.of(context).iconTheme.color,
                 ),
               )
             ],
@@ -355,15 +367,10 @@ class _HeaderState extends State<Header> {
             },
             decoration: InputDecoration(
               hintText: 'Search Anime...',
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surfaceContainer,
               prefixIcon: const Icon(Iconsax.search_normal),
               suffixIcon: const Icon(IconlyBold.filter),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.secondary,
-                  width: 1,
-                ),
-              ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25),
                 borderSide: BorderSide(

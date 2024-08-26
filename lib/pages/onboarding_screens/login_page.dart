@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
               child: ElevatedButton(
                 onPressed: _saveUserData,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
@@ -100,8 +100,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.secondary,
         hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

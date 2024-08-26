@@ -17,6 +17,9 @@ class OnboardingButton extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: 50,
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+        ),
         onPressed: onPressed,
         child: Text(text),
       ),

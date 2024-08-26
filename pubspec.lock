@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.10"
+  dynamic_color:
+    dependency: "direct main"
+    description:
+      name: dynamic_color
+      sha256: eae98052fa6e2826bdac3dd2e921c6ce2903be15c6b7f8b6d8a5d49b5086298d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.7.0"
   fake_async:
     dependency: transitive
     description:
@@ -744,6 +752,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  palette_generator:
+    dependency: "direct main"
+    description:
+      name: palette_generator
+      sha256: d50fbcd69abb80c5baec66d700033b1a320108b1aa17a5961866a12c0abb7c0c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3+4"
   path:
     dependency: transitive
     description:
