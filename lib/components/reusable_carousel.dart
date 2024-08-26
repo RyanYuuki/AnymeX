@@ -119,7 +119,7 @@ class ReusableCarousel extends StatelessWidget {
                                   Shadow(
                                     blurRadius: 4,
                                     color: Colors.black.withOpacity(0.7),
-                                    offset: Offset(2, 2),
+                                    offset: const Offset(2, 2),
                                   ),
                                 ],
                               ),
