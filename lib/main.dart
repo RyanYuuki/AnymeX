@@ -1,9 +1,9 @@
+import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/onboarding_screens/onboarding_screens.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
-import 'package:aurora/pages/profile/profile.dart';
-import 'package:dynamic_color/dynamic_color.dart';
+import 'package:aurora/pages/user/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -152,6 +152,10 @@ class _MainAppState extends State<MainApp> {
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => const ProfilePage(),
+            );
+          case '/login-page' :
+          return MaterialPageRoute(
+              builder: (context) => const LoginPage(),
             );
           default:
             return MaterialPageRoute(
