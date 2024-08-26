@@ -22,89 +22,100 @@ class ThemeProvider extends ChangeNotifier {
 
     if (corePalette != null) {
       _seedColor = Color(corePalette.primary.get(40));
-      _selectedTheme = isLightMode
-          ? lightMode.copyWith(
-              useMaterial3: true,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: _seedColor!,
-                brightness: Brightness.light,
-              ),
-              inputDecorationTheme: InputDecorationTheme(
-                filled: true,
-                fillColor: Colors.grey.shade300,
-                hintStyle: TextStyle(color: Colors.grey.shade600),
-                prefixIconColor: Colors.grey.shade700,
-                suffixIconColor: Colors.grey.shade700,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              buttonTheme: ButtonThemeData(
-                buttonColor: _seedColor,
-                textTheme: ButtonTextTheme.primary,
-              ),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: _seedColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-              ),
-              iconTheme: const IconThemeData(
-                color: Colors.black,
-                size: 24,
-              ),
-              floatingActionButtonTheme: FloatingActionButtonThemeData(
-                backgroundColor: _seedColor,
-                foregroundColor: Colors.white,
-              ),
-            )
-          : darkMode.copyWith(
-              useMaterial3: true,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: _seedColor!,
-                brightness: Brightness.dark,
-              ),
-              inputDecorationTheme: InputDecorationTheme(
-                filled: true,
-                fillColor: Colors.grey.shade900,
-                hintStyle: TextStyle(color: Colors.grey.shade400),
-                prefixIconColor: Colors.grey.shade500,
-                suffixIconColor: Colors.grey.shade500,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              buttonTheme: ButtonThemeData(
-                buttonColor: _seedColor,
-                textTheme: ButtonTextTheme.primary,
-              ),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: _seedColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-              ),
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-                size: 24,
-              ),
-              floatingActionButtonTheme: FloatingActionButtonThemeData(
-                backgroundColor: _seedColor,
-                foregroundColor: Colors.white,
-              ),
-            );
+      updateTheme();
     } else {
       _selectedTheme = isLightMode ? lightMode : darkMode;
     }
 
+    notifyListeners();
+  }
+
+  void updateTheme() {
+    _selectedTheme = isLightMode
+        ? lightMode.copyWith(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: _seedColor!,
+              brightness: Brightness.light,
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.grey.shade300,
+              hintStyle: TextStyle(color: Colors.grey.shade600),
+              prefixIconColor: Colors.grey.shade700,
+              suffixIconColor: Colors.grey.shade700,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            buttonTheme: ButtonThemeData(
+              buttonColor: _seedColor,
+              textTheme: ButtonTextTheme.primary,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: _seedColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+            iconTheme: const IconThemeData(
+              color: Colors.black,
+              size: 24,
+            ),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+              backgroundColor: _seedColor,
+              foregroundColor: Colors.white,
+            ),
+          )
+        : darkMode.copyWith(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: _seedColor!,
+              brightness: Brightness.dark,
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.grey.shade900,
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              prefixIconColor: Colors.grey.shade500,
+              suffixIconColor: Colors.grey.shade500,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            buttonTheme: ButtonThemeData(
+              buttonColor: _seedColor,
+              textTheme: ButtonTextTheme.primary,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: _seedColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+            iconTheme: const IconThemeData(
+              color: Colors.white,
+              size: 24,
+            ),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+              backgroundColor: _seedColor,
+              foregroundColor: Colors.white,
+            ),
+          );
+  }
+
+  void changeSeedColor(MaterialColor newColor) {
+    _seedColor = newColor;
+    updateTheme();
+    Hive.box('login-data').put('SeedColor', newColor);
     notifyListeners();
   }
 

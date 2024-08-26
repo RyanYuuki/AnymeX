@@ -24,9 +24,9 @@ class _CoverCarouselState extends State<CoverCarousel> {
   Widget build(BuildContext context) {
     final ColorScheme = Theme.of(context).colorScheme;
     if (widget.animeData == null) {
-      return Center(
+      return const Center(
         heightFactor: 300,
-        child: const CupertinoActivityIndicator(
+        child: CupertinoActivityIndicator(
           radius: 50,
         ),
       );
