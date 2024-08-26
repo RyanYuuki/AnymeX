@@ -15,7 +15,7 @@ class MangaSearchPage extends StatefulWidget {
   State<MangaSearchPage> createState() => _MangaSearchPageState();
 }
 
-final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
 class _MangaSearchPageState extends State<MangaSearchPage> {
   final TextEditingController controller = TextEditingController();
@@ -342,7 +342,7 @@ GestureDetector SearchItem_COVER(
                   height: 100,
                   width: 70,
                   child: Hero(
-                    tag: tag!,
+                    tag: tag,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7),
                       child: CachedNetworkImage(
