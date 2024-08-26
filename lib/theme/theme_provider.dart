@@ -10,7 +10,7 @@ class ThemeProvider extends ChangeNotifier {
 
   ThemeProvider() {
     var box = Hive.box('login-data');
-    isLightMode = box.get('Theme', defaultValue: 'light') == 'light';
+    isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
     _selectedTheme = isLightMode ? lightMode : darkMode;
     loadDynamicTheme();
   }
@@ -24,6 +24,7 @@ class ThemeProvider extends ChangeNotifier {
       _seedColor = Color(corePalette.primary.get(40));
       _selectedTheme = isLightMode
           ? lightMode.copyWith(
+              useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
                 seedColor: _seedColor!,
                 brightness: Brightness.light,
@@ -62,6 +63,7 @@ class ThemeProvider extends ChangeNotifier {
               ),
             )
           : darkMode.copyWith(
+              useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
                 seedColor: _seedColor!,
                 brightness: Brightness.dark,
