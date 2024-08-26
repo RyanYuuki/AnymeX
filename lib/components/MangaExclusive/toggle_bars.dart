@@ -89,20 +89,23 @@ class _ToggleBarState extends State<ToggleBar> {
             left: 0,
             right: 0,
             child: Container(
-              height: 120,
-              padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
+              height: 90,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.5),
+                    Theme.of(context).colorScheme.surface.withOpacity(0.5),
                     Colors.transparent,
                   ],
                   stops: const [0.5, 1.0],
                 ),
+                // color:
+                //     Theme.of(context).colorScheme.surface.withOpacity(0.8)
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   IconButton(
                     onPressed: () {
@@ -113,12 +116,12 @@ class _ToggleBarState extends State<ToggleBar> {
                   ),
                   const SizedBox(width: 10),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                           widget.chapter!.length > 30
-                              ? widget.chapter!.substring(0, 30) + "..."
+                              ? "${widget.chapter!.substring(0, 30)}..."
                               : widget.chapter!,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -152,60 +155,82 @@ class _ToggleBarState extends State<ToggleBar> {
                   stops: const [0.5, 1.0],
                 ),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width - 30,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Slider(
-                      divisions: widget.totalImages ?? 0,
-                      value: _scrollProgress,
-                      onChangeStart: (_) {
-                        setState(() {
-                          _isSliderBeingUsed = true;
-                        });
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          _scrollProgress = value;
-                        });
-                        _onProgressBarTap(value);
-                      },
-                      onChangeEnd: (_) {
-                        setState(() {
-                          _isSliderBeingUsed = false;
-                        });
-                      },
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      inactiveColor: Theme.of(context)
-                          .colorScheme
-                          .inverseSurface
-                          .withOpacity(0.5),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Iconsax.previous5,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 5),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surface
+                              .withOpacity(0.80),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: IconButton(
+                        icon: const Icon(Icons.skip_previous_rounded,
                             color: Colors.white, size: 35),
                         onPressed: () {
                           widget.handleChapter('left');
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Iconsax.next5,
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.80),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Slider(
+                          divisions: widget.totalImages ?? 0,
+                          value: _scrollProgress,
+                          onChangeStart: (_) {
+                            setState(() {
+                              _isSliderBeingUsed = true;
+                            });
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              _scrollProgress = value;
+                            });
+                            _onProgressBarTap(value);
+                          },
+                          onChangeEnd: (_) {
+                            setState(() {
+                              _isSliderBeingUsed = false;
+                            });
+                          },
+                          activeColor: Theme.of(context).colorScheme.primary,
+                          inactiveColor: Theme.of(context)
+                              .colorScheme
+                              .inverseSurface
+                              .withOpacity(0.1),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surface
+                              .withOpacity(0.80),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: IconButton(
+                        icon: const Icon(Icons.skip_next_rounded,
                             size: 35, color: Colors.white),
                         onPressed: () {
                           widget.handleChapter('right');
                         },
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(width: 5),
+                  ],
+                ),
               ),
             ),
           ),
@@ -217,9 +242,9 @@ class _ToggleBarState extends State<ToggleBar> {
               child: Text(
                 '$_currentPage / ${widget.totalImages}',
                 style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
+                    fontSize: 12,
+                    color: Colors.white,
+                    fontFamily: 'Poppins-Bold'),
               ),
             ),
           ),
