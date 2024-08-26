@@ -6,11 +6,11 @@ class EpisodeGrid extends StatefulWidget {
   final Function(int) onEpisodeSelected;
 
   const EpisodeGrid({
-    Key? key,
+    super.key,
     required this.episodes,
     this.isList = false,
     required this.onEpisodeSelected,
-  }) : super(key: key);
+  });
 
   @override
   _EpisodeGridState createState() => _EpisodeGridState();

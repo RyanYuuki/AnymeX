@@ -6,11 +6,11 @@ class EpisodeDropdown extends StatefulWidget {
   final Function(String) onRangeSelected;
 
   const EpisodeDropdown({
-    Key? key,
+    super.key,
     required this.episodesData,
     this.selectedRange,
     required this.onRangeSelected,
-  }) : super(key: key);
+  });
 
   @override
   _EpisodeDropdownState createState() => _EpisodeDropdownState();

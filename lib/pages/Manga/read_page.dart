@@ -128,15 +128,14 @@ class _ReadingPageState extends State<ReadingPage> {
                       return CachedNetworkImage(
                         imageUrl: chapterImages![index]['image'],
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.white,
+                        placeholder: (context, progress) => SizedBox(
                           height: MediaQuery.of(context).size.height,
-                          width: double.infinity,
-                          child: Center(
-                            child: Text(
-                              index.toString(),
-                              style: const TextStyle(fontSize: 30, fontFamily: 'Poppins-Bold'),
-                            ),
+                          width: MediaQuery.of(context).size.width,
+                          child: const Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator())
                           ),
                         ),
                         errorWidget: (context, url, error) =>
