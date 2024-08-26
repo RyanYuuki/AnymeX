@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:aurora/components/IconWithLabel.dart';
+import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/coverCarousel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -295,8 +296,12 @@ class _HeaderState extends State<Header> {
     var box = Hive.box('login-data');
     final userInfo =
         box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final userName = userInfo?[0] ?? 'Guest';
     final avatarImagePath = userInfo?[2] ?? 'null';
+    final isLoggedIn = userName != 'Guest';
+    final hasAvatarImage = avatarImagePath != 'null';
     final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Column(
@@ -307,19 +312,39 @@ class _HeaderState extends State<Header> {
             children: [
               Row(
                 children: [
-                  avatarImagePath != "null"
-                      ? CircleAvatar(
-                          radius: 24,
-                          backgroundImage: FileImage(File(avatarImagePath)),
-                        )
-                      : CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceContainer,
-                          radius: 24,
-                          child: const Icon(
-                            Icons.person,
-                          ),
-                        ),
+                  GestureDetector(
+                    onTap: isLoggedIn
+                        ? () {
+                            showModalBottomSheet(
+                              context: context,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (context) {
+                                return const SettingsModal();
+                              },
+                            );
+                          }
+                        : () {
+                            Navigator.pushNamed(context, '/login-page');
+                          },
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainer,
+                      backgroundImage: hasAvatarImage
+                          ? FileImage(File(avatarImagePath))
+                          : null,
+                      child: hasAvatarImage
+                          ? null
+                          : const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
+                    ),
+                  ),
                   const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,8 +368,9 @@ class _HeaderState extends State<Header> {
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(50)),
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(50),
+                ),
                 child: IconButton(
                   icon: Icon(
                       themeProvider.selectedTheme.brightness == Brightness.dark
@@ -354,7 +380,7 @@ class _HeaderState extends State<Header> {
                     themeProvider.toggleTheme();
                   },
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 20),

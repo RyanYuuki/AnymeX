@@ -1,13 +1,11 @@
 import 'dart:io';
-
+import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart'
     as ReusableCarouselManga;
 import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
-import 'package:aurora/pages/Anime/search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -22,10 +20,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var box = Hive.box('login-data');
-    final userInfo =
-        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final userInfo = box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    final userName = userInfo?[0] ?? 'Guest';
     final avatarImagePath = userInfo?[2] ?? 'null';
+    final isLoggedIn = userName != 'Guest';
+    final hasAvatarImage = avatarImagePath != 'null';
+
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: ListView(
         children: [
           Column(
@@ -41,56 +43,59 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          avatarImagePath != "null"
-                              ? CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage:
-                                      FileImage(File(avatarImagePath)),
-                                )
-                              : CircleAvatar(
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainer,
-                                  radius: 24,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, '/profile');
-                                    },
-                                    icon: const Icon(
-                                      Icons.person,
-                                    ),
-                                  ),
-                                ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const SearchPage(
-                                        searchTerm: 'Attack on Titan',
+                          SizedBox(
+                            width: 70,
+                            height: 50,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: Image.asset(
+                                'assets/images/logo_transparent.png',
+                                fit: BoxFit.cover,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: isLoggedIn
+                                ? () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20),
+                                        ),
                                       ),
+                                      builder: (context) {
+                                        return const SettingsModal();
+                                      },
+                                    );
+                                  }
+                                : () {
+                                    Navigator.pushNamed(context, '/login-page');
+                                  },
+                            child: CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
+                              backgroundImage: hasAvatarImage
+                                  ? FileImage(File(avatarImagePath))
+                                  : null,
+                              child: hasAvatarImage
+                                  ? null
+                                  : const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
                                     ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Iconsax.search_normal,
-                                  size: 24,
-                                )),
-                          )
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 70),
                     const Text(
                       'What are you looking for?',
-                      style:
-                          TextStyle(fontSize: 40, fontFamily: 'Poppins-Bold'),
+                      style: TextStyle(fontSize: 40, fontFamily: 'Poppins-Bold'),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
