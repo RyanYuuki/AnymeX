@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,21 +14,27 @@ class ThemeProvider extends ChangeNotifier {
     var box = Hive.box('login-data');
     isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
     _selectedTheme = isLightMode ? lightMode : darkMode;
-    loadDynamicTheme();
+    if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
+      loadDynamicTheme();
+    } else {
+      final newColor = box.get('SeedColor', defaultValue: Colors.indigo);
+      changeSeedColor(newColor);
+    }
   }
 
   ThemeData get selectedTheme => _selectedTheme;
 
   Future<void> loadDynamicTheme() async {
+    var box = Hive.box('login-data');
     final corePalette = await DynamicColorPlugin.getCorePalette();
-
     if (corePalette != null) {
       _seedColor = Color(corePalette.primary.get(40));
       updateTheme();
     } else {
+      log('Herre');
       _selectedTheme = isLightMode ? lightMode : darkMode;
     }
-
+    box.put('PaletteMode', 'Material');
     notifyListeners();
   }
 
@@ -116,6 +124,7 @@ class ThemeProvider extends ChangeNotifier {
     _seedColor = newColor;
     updateTheme();
     Hive.box('login-data').put('SeedColor', newColor);
+    Hive.box('login-data').put('PaletteMode', 'Custom');
     notifyListeners();
   }
 

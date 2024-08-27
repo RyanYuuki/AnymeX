@@ -30,7 +30,7 @@ class _StreamingPageState extends State<StreamingPage> {
   bool isDub = false;
   int? availEpisodes;
   bool isList = true;
-  List<dynamic> filteredEpisodes = [];
+  List<dynamic>? filteredEpisodes = [];
   String? selectedRange;
 
   final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/';
@@ -312,7 +312,7 @@ class _StreamingPageState extends State<StreamingPage> {
                     ),
                     const SizedBox(height: 20),
                     EpisodeGrid(
-                        episodes: filteredEpisodes,
+                        episodes: filteredEpisodes!,
                         isList: isList,
                         onEpisodeSelected: (int episode) {
                           handleEpisode(episode);

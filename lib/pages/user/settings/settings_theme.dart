@@ -22,7 +22,7 @@ class _ThemePageState extends State<ThemePage> {
   bool? value3;
   int? selectedIndex;
   int? selectedColorIndex;
-  bool? isDropdownDisabled = true;
+  bool? isCustomTheme;
 
   List<MaterialColor> colors = [
     Colors.indigo,
@@ -32,6 +32,16 @@ class _ThemePageState extends State<ThemePage> {
     Colors.green,
     Colors.purple,
     Colors.deepPurple,
+  ];
+
+  List<String> colorsName = [
+    'Indigo',
+    'Red',
+    'Pink',
+    'Yellow',
+    'Green',
+    'Purple',
+    'DeepPurple',
   ];
 
   void _selectChip(int index) {
@@ -63,9 +73,11 @@ class _ThemePageState extends State<ThemePage> {
         value1 = true;
         value3 = false;
         if (value1!) {
-          isDropdownDisabled = true;
+          isCustomTheme = false;
+          final themeProvider =
+              Provider.of<ThemeProvider>(context, listen: false);
+          themeProvider.loadDynamicTheme();
         }
-        // Provider.of<ThemeProvider>(context).loadDynamicTheme();
         box.put('PaletteMode', 'Material');
       } else if (index == 2) {
         value2 = !value2;
@@ -74,7 +86,7 @@ class _ThemePageState extends State<ThemePage> {
         value3 = true;
         box.put('PaletteMode', 'Custom');
         if (value3!) {
-          isDropdownDisabled = false;
+          isCustomTheme = true;
         }
       }
     });
@@ -87,11 +99,16 @@ class _ThemePageState extends State<ThemePage> {
   }
 
   void initStates() {
+    // Themes Switches
     value1 = box.get('PaletteMode') == 'Material';
     value3 = box.get('PaletteMode') == 'Custom';
     if (value1!) {
-      isDropdownDisabled = true;
+      isCustomTheme = false;
+    } else {
+      isCustomTheme = true;
     }
+
+    // Light and Dark Mode Chips
     if (isLightMode) {
       selectedIndex = 0;
     } else {
@@ -108,7 +125,6 @@ class _ThemePageState extends State<ThemePage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
@@ -187,60 +203,6 @@ class _ThemePageState extends State<ThemePage> {
             ),
           ),
           const SizedBox(height: 30),
-          Container(
-            width: MediaQuery.of(context).size.width - 40,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: IgnorePointer(
-              ignoring: isDropdownDisabled!,
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  value: selectedColorIndex,
-                  onChanged: isDropdownDisabled!
-                      ? null
-                      : (int? newValue) {
-                          if (newValue != null) {
-                            _selectColor(newValue);
-                          }
-                        },
-                  items: [
-                    _buildDropdownMenuItem(0, 'Indigo'),
-                    _buildDropdownMenuItem(1, 'Red'),
-                    _buildDropdownMenuItem(2, 'Pink'),
-                    _buildDropdownMenuItem(3, 'Yellow'),
-                    _buildDropdownMenuItem(4, 'Green'),
-                    _buildDropdownMenuItem(5, 'Purple'),
-                    _buildDropdownMenuItem(6, 'DeepPurple'),
-                  ],
-                  isExpanded: true,
-                  style: TextStyle(
-                    color: isDropdownDisabled!
-                        ? Colors.grey
-                        : Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                  ),
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: isDropdownDisabled!
-                        ? Colors.grey
-                        : Theme.of(context).colorScheme.onSurface,
-                  ),
-                  iconSize: 30,
-                  dropdownColor: isDropdownDisabled!
-                      ? Colors.grey[200]
-                      : Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
           SwitchTileStateless(
             icon: Iconsax.paintbucket5,
             title: 'Material You',
@@ -274,7 +236,36 @@ class _ThemePageState extends State<ThemePage> {
             description: 'Use your own color!',
             onTap: () {},
           ),
+          isCustomTheme! ? ColorChips() : SizedBox.shrink(),
         ],
+      ),
+    );
+  }
+
+  Padding ColorChips() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Wrap(
+        children: colorsName.map<Widget>((color) {
+          final index = colorsName.indexOf(color);
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            child: ChoiceChip(
+              avatar: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: colors[index]),
+              ),
+              label: Text(color),
+              selected: selectedColorIndex == colorsName.indexOf(color),
+              onSelected: (value) {
+                _selectColor(index);
+              },
+            ),
+          );
+        }).toList(),
       ),
     );
   }

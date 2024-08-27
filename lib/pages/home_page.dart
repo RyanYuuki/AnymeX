@@ -7,7 +7,6 @@ import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconsax/iconsax.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

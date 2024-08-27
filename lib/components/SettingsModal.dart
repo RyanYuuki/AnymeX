@@ -1,5 +1,3 @@
-import 'package:aurora/pages/home_page.dart';
-import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/pages/user/settings.dart';
 import 'package:flutter/material.dart';
