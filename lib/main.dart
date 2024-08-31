@@ -1,3 +1,4 @@
+import 'package:aurora/database/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/onboarding_screens/onboarding_screens.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
@@ -21,9 +22,13 @@ import 'package:iconsax/iconsax.dart';
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
+  await Hive.openBox('app-data');
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppData()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
       child: const MainApp(),
     ),
   );
@@ -146,15 +151,20 @@ class _MainAppState extends State<MainApp> {
           case '/manga/read':
             final id = args?['id'] ?? '';
             final mangaId = args?['mangaId'] ?? '';
+            final posterUrl = args?['posterUrl'] ?? '';
             return MaterialPageRoute(
-              builder: (context) => ReadingPage(id: id, mangaId: mangaId),
+              builder: (context) => ReadingPage(
+                id: id,
+                mangaId: mangaId,
+                posterUrl: posterUrl,
+              ),
             );
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => const ProfilePage(),
             );
-          case '/login-page' :
-          return MaterialPageRoute(
+          case '/login-page':
+            return MaterialPageRoute(
               builder: (context) => const LoginPage(),
             );
           default:

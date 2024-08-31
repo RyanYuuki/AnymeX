@@ -1,176 +1,114 @@
-import 'dart:ui';
 import 'package:aurora/main.dart';
 import 'package:aurora/pages/home_page.dart';
+import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class OnboardingScreens extends StatefulWidget {
+class OnboardingScreens extends StatelessWidget {
   const OnboardingScreens({super.key});
 
-  @override
-  _OnboardingScreensState createState() => _OnboardingScreensState();
-}
-
-class _OnboardingScreensState extends State<OnboardingScreens> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/peakpx(1).jpg',
-              alignment: Alignment.center,
+              'assets/images/onboarding-screen.png',
               fit: BoxFit.cover,
+              alignment: Alignment.centerRight,
             ),
           ),
-          // Black Gradient Overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.9),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-          ),
-          // Content with Blurred Sheet
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.4),
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Column(
-                        children: [
-                          Text(
-                            'AnymeX',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Stream and read your favorite anime and manga anytime, anywhere.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white70,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 30),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30)),
+                    color: Theme.of(context).colorScheme.surface),
+                child: Column(
+                  children: [
+                    Text(
+                      'AnymeX',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primaryFixed,
                       ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'The best app to watch anime for free',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: InkWell(
                             child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const AvatarPage()));
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.surface,
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
+                                    const EdgeInsets.symmetric(vertical: 18),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                                    borderRadius: BorderRadius.circular(30),
+                                    side: BorderSide(
+                                        width: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant)),
                               ),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inverseSurface,
-                                    fontSize: 16),
-                              ),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/login-page');
-                              },
+                              child: const Text('Sign In'),
                             ),
                           ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryFixed,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              var box = Hive.box('login-data');
+                              box.put('isFirstTime', false);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MainApp()),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Text(
-                                'Watch Now',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                              onPressed: () {
-                                var box = Hive.box('login-data');
-                                box.put('userInfo', [
-                                  'Guest',
-                                  'Guest',
-                                  null,
-                                ]);
-                                box.put('isFirstTime', false);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const MainApp()),
-                                );
-                              },
                             ),
+                            child: const Text('Watch Now'),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        const SizedBox(width: 20),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-          Positioned(
-            top: 50,
-            left: 20,
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .withOpacity(0.8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/images/logo_transparent.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
+            ],
           ),
         ],
       ),
