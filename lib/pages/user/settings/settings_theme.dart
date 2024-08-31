@@ -25,7 +25,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   late bool isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
   late bool isDarkMode = box.get('Theme', defaultValue: 'dark') == 'dark';
   bool? value1;
-  bool value2 = false;
+  bool? value2;
   bool? value3;
   int? selectedIndex;
   int? selectedColorIndex;
@@ -131,19 +131,24 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   }
 
   void _toggleSwitch(int index) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     setState(() {
       if (index == 1) {
         value1 = true;
         value3 = false;
         if (value1!) {
           isCustomTheme = false;
-          final themeProvider =
-              Provider.of<ThemeProvider>(context, listen: false);
           themeProvider.loadDynamicTheme();
         }
         box.put('PaletteMode', 'Material');
       } else if (index == 2) {
-        value2 = !value2;
+        value2 = !value2!;
+        box.put('isOled', value2);
+        if (value2!) {
+          themeProvider.setOledTheme(true);
+        } else {
+          themeProvider.setOledTheme(false);
+        }
       } else if (index == 3) {
         value1 = false;
         value3 = true;
@@ -177,6 +182,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   void initStates() {
     // Themes Switches
     value1 = box.get('PaletteMode') == 'Material';
+    value2 = box.get('isOled', defaultValue: false);
     value3 = box.get('PaletteMode') == 'Custom';
     if (value1!) {
       isCustomTheme = false;
@@ -306,7 +312,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
           SwitchTileStateless(
             icon: Iconsax.moon5,
             title: 'Oled Theme Variant',
-            value: value2,
+            value: value2!,
             onChanged: (value) {
               _toggleSwitch(2);
             },

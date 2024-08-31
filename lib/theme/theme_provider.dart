@@ -10,11 +10,12 @@ class ThemeProvider extends ChangeNotifier {
   late bool isLightMode;
   late ThemeData _selectedTheme;
   Color? _seedColor;
-
+  late bool isOled;
   ThemeProvider() {
     var box = Hive.box('login-data');
     isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
     _selectedTheme = isLightMode ? lightMode : darkMode;
+    isOled = box.get('isOled', defaultValue: false);
     if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
       loadDynamicTheme();
     } else {
@@ -30,7 +31,7 @@ class ThemeProvider extends ChangeNotifier {
       isLightMode
           ? SystemUiOverlayStyle.light.copyWith(
               statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.dark, 
+              statusBarIconBrightness: Brightness.dark,
             )
           : SystemUiOverlayStyle.dark.copyWith(
               statusBarColor: Colors.transparent,
@@ -80,6 +81,13 @@ class ThemeProvider extends ChangeNotifier {
           )
         : darkMode.copyWith(
             colorScheme: ColorScheme.fromSeed(
+              surface: isOled
+                  ? Colors.black
+                  : ColorScheme.fromSeed(
+                          dynamicSchemeVariant: schemeVariant,
+                          brightness: Brightness.dark,
+                          seedColor: _seedColor!)
+                      .surface,
               seedColor: _seedColor!,
               brightness: Brightness.dark,
               dynamicSchemeVariant: schemeVariant,
@@ -96,7 +104,13 @@ class ThemeProvider extends ChangeNotifier {
               ),
             ),
           );
-          updateStatusBarColor();
+    updateStatusBarColor();
+  }
+
+  void setOledTheme(bool mode) {
+    isOled = mode;
+    updateTheme();
+    notifyListeners();
   }
 
   DynamicSchemeVariant getSchemeVariant(String key) {
@@ -153,7 +167,7 @@ class ThemeProvider extends ChangeNotifier {
     Hive.box('login-data').put('Theme', 'dark');
     notifyListeners();
   }
-  
+
   void setLightModeWithoutDB() {
     isLightMode = true;
     updateTheme();
