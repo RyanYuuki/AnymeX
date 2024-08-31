@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'theme.dart';
 
@@ -17,9 +18,25 @@ class ThemeProvider extends ChangeNotifier {
     if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
       loadDynamicTheme();
     } else {
-      final newColor = box.get('SeedColor', defaultValue: Colors.indigo);
-      changeSeedColor(newColor);
+      int colorValue = box.get('SeedColor', defaultValue: Colors.indigo.value);
+      MaterialColor newSeedColor =
+          MaterialColor(colorValue, getMaterialColorSwatch(colorValue));
+      changeSeedColor(newSeedColor);
     }
+  }
+
+  void updateStatusBarColor() {
+    SystemChrome.setSystemUIOverlayStyle(
+      isLightMode
+          ? SystemUiOverlayStyle.light.copyWith(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark, 
+            )
+          : SystemUiOverlayStyle.dark.copyWith(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+            ),
+    );
   }
 
   ThemeData get selectedTheme => _selectedTheme;
@@ -31,7 +48,6 @@ class ThemeProvider extends ChangeNotifier {
       _seedColor = Color(corePalette.primary.get(40));
       updateTheme();
     } else {
-      log('Herre');
       _selectedTheme = isLightMode ? lightMode : darkMode;
     }
     box.put('PaletteMode', 'Material');
@@ -39,12 +55,16 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void updateTheme() {
+    var box = Hive.box('login-data');
+    String dynamicSchemeKey = box.get('DynamicPalette', defaultValue: 'tonal');
+    DynamicSchemeVariant schemeVariant = getSchemeVariant(dynamicSchemeKey);
+
     _selectedTheme = isLightMode
         ? lightMode.copyWith(
-            useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(
               seedColor: _seedColor!,
               brightness: Brightness.light,
+              dynamicSchemeVariant: schemeVariant,
             ),
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
@@ -57,33 +77,12 @@ class ThemeProvider extends ChangeNotifier {
                 borderSide: BorderSide.none,
               ),
             ),
-            buttonTheme: ButtonThemeData(
-              buttonColor: _seedColor,
-              textTheme: ButtonTextTheme.primary,
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: _seedColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-            ),
-            iconTheme: const IconThemeData(
-              color: Colors.black,
-              size: 24,
-            ),
-            floatingActionButtonTheme: FloatingActionButtonThemeData(
-              backgroundColor: _seedColor,
-              foregroundColor: Colors.white,
-            ),
           )
         : darkMode.copyWith(
-            useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(
               seedColor: _seedColor!,
               brightness: Brightness.dark,
+              dynamicSchemeVariant: schemeVariant,
             ),
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
@@ -96,34 +95,39 @@ class ThemeProvider extends ChangeNotifier {
                 borderSide: BorderSide.none,
               ),
             ),
-            buttonTheme: ButtonThemeData(
-              buttonColor: _seedColor,
-              textTheme: ButtonTextTheme.primary,
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: _seedColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-            ),
-            iconTheme: const IconThemeData(
-              color: Colors.white,
-              size: 24,
-            ),
-            floatingActionButtonTheme: FloatingActionButtonThemeData(
-              backgroundColor: _seedColor,
-              foregroundColor: Colors.white,
-            ),
           );
+          updateStatusBarColor();
+  }
+
+  DynamicSchemeVariant getSchemeVariant(String key) {
+    switch (key) {
+      case 'monochrome':
+        return DynamicSchemeVariant.monochrome;
+      case 'neutral':
+        return DynamicSchemeVariant.neutral;
+      case 'vibrant':
+        return DynamicSchemeVariant.vibrant;
+      case 'tonalspot':
+        return DynamicSchemeVariant.tonalSpot;
+      case 'content':
+        return DynamicSchemeVariant.content;
+      case 'expressive':
+        return DynamicSchemeVariant.expressive;
+      case 'fidelity':
+        return DynamicSchemeVariant.fidelity;
+      case 'fruitsalad':
+        return DynamicSchemeVariant.fruitSalad;
+      case 'rainbow':
+        return DynamicSchemeVariant.rainbow;
+      default:
+        return DynamicSchemeVariant.tonalSpot;
+    }
   }
 
   void changeSeedColor(MaterialColor newColor) {
     _seedColor = newColor;
     updateTheme();
-    Hive.box('login-data').put('SeedColor', newColor);
+    Hive.box('login-data').put('SeedColor', newColor.value);
     Hive.box('login-data').put('PaletteMode', 'Custom');
     notifyListeners();
   }
@@ -138,51 +142,43 @@ class ThemeProvider extends ChangeNotifier {
 
   void setLightMode() {
     isLightMode = true;
-    _selectedTheme = _seedColor != null
-        ? lightMode.copyWith(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: _seedColor!,
-              brightness: Brightness.light,
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              filled: true,
-              fillColor: Colors.grey.shade300,
-              hintStyle: TextStyle(color: Colors.grey.shade600),
-              prefixIconColor: Colors.grey.shade700,
-              suffixIconColor: Colors.grey.shade700,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          )
-        : lightMode;
+    updateTheme();
     Hive.box('login-data').put('Theme', 'light');
     notifyListeners();
   }
 
   void setDarkMode() {
     isLightMode = false;
-    _selectedTheme = _seedColor != null
-        ? darkMode.copyWith(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: _seedColor!,
-              brightness: Brightness.dark,
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              filled: true,
-              fillColor: Colors.grey.shade900,
-              hintStyle: TextStyle(color: Colors.grey.shade400),
-              prefixIconColor: Colors.grey.shade500,
-              suffixIconColor: Colors.grey.shade500,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          )
-        : darkMode;
+    updateTheme();
     Hive.box('login-data').put('Theme', 'dark');
     notifyListeners();
+  }
+  
+  void setLightModeWithoutDB() {
+    isLightMode = true;
+    updateTheme();
+    notifyListeners();
+  }
+
+  void setDarkModeWithoutDB() {
+    isLightMode = false;
+    updateTheme();
+    notifyListeners();
+  }
+
+  Map<int, Color> getMaterialColorSwatch(int colorValue) {
+    Color color = Color(colorValue);
+    return {
+      50: color.withOpacity(.1),
+      100: color.withOpacity(.2),
+      200: color.withOpacity(.3),
+      300: color.withOpacity(.4),
+      400: color.withOpacity(.5),
+      500: color.withOpacity(.6),
+      600: color.withOpacity(.7),
+      700: color.withOpacity(.8),
+      800: color.withOpacity(.9),
+      900: color.withOpacity(1),
+    };
   }
 }
