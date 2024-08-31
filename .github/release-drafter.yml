@@ -1,0 +1,10 @@
+name-template: 'Release $NEXT_RELEASE_VERSION'
+tag-template: 'v$NEXT_RELEASE_VERSION'
+change-template: '- $TITLE ($CONTRIBUTOR)'
+categories:
+  - title: 'Breaking Changes'
+    labels: 'breaking'
+  - title: 'Features'
+    labels: 'feature'
+  - title: 'Bug Fixes'
+    labels: 'fix'
