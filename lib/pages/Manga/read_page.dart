@@ -1,14 +1,21 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:aurora/components/MangaExclusive/toggle_bars.dart';
+import 'package:aurora/database/database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ReadingPage extends StatefulWidget {
   final String id;
   final String mangaId;
-  const ReadingPage({super.key, required this.id, required this.mangaId});
+  final String posterUrl;
+  const ReadingPage(
+      {super.key,
+      required this.id,
+      required this.mangaId,
+      required this.posterUrl});
 
   @override
   State<ReadingPage> createState() => _ReadingPageState();
@@ -36,6 +43,7 @@ class _ReadingPageState extends State<ReadingPage> {
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
       final resp = await http.get(Uri.parse(url + widget.id));
+      final provider = Provider.of<AppData>(context, listen: false);
       if (resp.statusCode == 200) {
         final tempData = jsonDecode(resp.body);
         setState(() {
@@ -47,6 +55,11 @@ class _ReadingPageState extends State<ReadingPage> {
               ?.indexWhere((chapter) => chapter['name'] == currentChapter);
           isLoading = false;
         });
+        provider.addReadManga(
+            mangaId: widget.mangaId,
+            mangaTitle: tempData['title'],
+            currentChapter: currentChapter.toString(),
+            mangaPosterImage: widget.posterUrl);
       } else {
         setState(() {
           hasError = true;
@@ -69,6 +82,7 @@ class _ReadingPageState extends State<ReadingPage> {
     const String url =
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
+      final provider = Provider.of<AppData>(context);
       final resp = await http.get(
           Uri.parse('$url${widget.mangaId}/${chaptersList?[index!]['id']}'));
       if (resp.statusCode == 200) {
@@ -78,6 +92,13 @@ class _ReadingPageState extends State<ReadingPage> {
           currentChapter = tempData['currentChapter'];
           isLoading = false;
         });
+        log(widget.posterUrl);
+        provider.addReadManga(
+            mangaId: widget.mangaId,
+            mangaTitle: mangaTitle!,
+            currentChapter: currentChapter.toString(),
+            mangaPosterImage: widget.posterUrl)
+            ;
       } else {
         setState(() {
           hasError = true;
@@ -132,11 +153,10 @@ class _ReadingPageState extends State<ReadingPage> {
                           height: MediaQuery.of(context).size.height,
                           width: MediaQuery.of(context).size.width,
                           child: const Center(
-                            child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: CircularProgressIndicator())
-                          ),
+                              child: SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: CircularProgressIndicator())),
                         ),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
