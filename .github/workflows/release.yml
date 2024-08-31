@@ -1,0 +1,26 @@
+name: Release Drafter
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger the workflow only on tag pushes that start with 'v'
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Release Drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: release-drafter.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
