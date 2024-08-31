@@ -1,10 +1,16 @@
+import 'dart:developer';
+import 'dart:ui';
+
+import 'package:aurora/components/setting/scheme_varaint_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
 import 'package:aurora/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:provider/provider.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 class ThemePage extends StatefulWidget {
   const ThemePage({super.key});
@@ -13,10 +19,11 @@ class ThemePage extends StatefulWidget {
   State<ThemePage> createState() => _ThemePageState();
 }
 
-class _ThemePageState extends State<ThemePage> {
+class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   final box = Hive.box('login-data');
   late final palettedMode = box.get('PaletteMode', defaultValue: 'Material');
   late bool isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
+  late bool isDarkMode = box.get('Theme', defaultValue: 'dark') == 'dark';
   bool? value1;
   bool value2 = false;
   bool? value3;
@@ -25,24 +32,71 @@ class _ThemePageState extends State<ThemePage> {
   bool? isCustomTheme;
 
   List<MaterialColor> colors = [
-    Colors.indigo,
     Colors.red,
     Colors.pink,
-    Colors.yellow,
-    Colors.green,
     Colors.purple,
     Colors.deepPurple,
+    Colors.indigo,
+    Colors.blue,
+    Colors.lightBlue,
+    Colors.cyan,
+    Colors.teal,
+    Colors.green,
+    Colors.lightGreen,
+    Colors.lime,
+    Colors.yellow,
+    Colors.amber,
+    Colors.orange,
+    Colors.deepOrange,
+    Colors.brown,
   ];
 
   List<String> colorsName = [
-    'Indigo',
     'Red',
     'Pink',
-    'Yellow',
-    'Green',
     'Purple',
     'DeepPurple',
+    'Indigo',
+    'Blue',
+    'LightBlue',
+    'Cyan',
+    'Teal',
+    'Green',
+    'LightGreen',
+    'Lime',
+    'Yellow',
+    'Amber',
+    'Orange',
+    'DeepOrange',
+    'Brown',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    initStates();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isLight =
+        PlatformDispatcher.instance.platformBrightness == Brightness.light;
+    if (selectedIndex == 2) {
+      if (isLight) {
+        themeProvider.setLightModeWithoutDB();
+      } else {
+        themeProvider.setDarkModeWithoutDB();
+      }
+    }
+  }
 
   void _selectChip(int index) {
     setState(() {
@@ -52,8 +106,17 @@ class _ThemePageState extends State<ThemePage> {
         themeProvider.setLightMode();
       } else if (index == 1) {
         themeProvider.setDarkMode();
-      } else if (index == 2) {}
-      box.put('Theme', index == 0 ? 'light' : 'dark');
+      } else if (index == 2) {
+        Hive.box('login-data').put('Theme', 'system');
+        didChangePlatformBrightness();
+      }
+      box.put(
+          'Theme',
+          index == 0
+              ? 'light'
+              : index == 1
+                  ? 'dark'
+                  : 'system');
     });
   }
 
@@ -92,10 +155,23 @@ class _ThemePageState extends State<ThemePage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initStates();
+  void _showSchemeVariantDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => SchemeVariantDialog(
+        selectedVariant: box.get('DynamicPalette', defaultValue: 'tonalSpot'),
+        onVariantSelected: (variant) {
+          final themeProvider =
+              Provider.of<ThemeProvider>(context, listen: false);
+          box.put('DynamicPalette', variant);
+          if (isLightMode) {
+            themeProvider.setLightMode();
+          } else {
+            themeProvider.setDarkMode();
+          }
+        },
+      ),
+    );
   }
 
   void initStates() {
@@ -111,8 +187,10 @@ class _ThemePageState extends State<ThemePage> {
     // Light and Dark Mode Chips
     if (isLightMode) {
       selectedIndex = 0;
-    } else {
+    } else if (isDarkMode) {
       selectedIndex = 1;
+    } else {
+      selectedIndex = 2;
     }
 
     int? colorIndex = box.get('SelectedColorIndex');
@@ -127,18 +205,22 @@ class _ThemePageState extends State<ThemePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
         children: [
-          const SizedBox(height: 60),
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              IconlyBroken.arrow_left_2,
-              size: 30,
-            ),
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  IconlyBroken.arrow_left_2,
+                  size: 30,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 30),
           Padding(
@@ -151,7 +233,7 @@ class _ThemePageState extends State<ThemePage> {
                   style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: _showSchemeVariantDialog,
                     icon: const Icon(
                       Icons.palette,
                       size: 40,
@@ -175,7 +257,7 @@ class _ThemePageState extends State<ThemePage> {
                 Row(
                   children: [
                     ChoiceChip(
-                      label: const Icon(Iconsax.sun, size: 20),
+                      label: const Icon(Icons.sunny, size: 20),
                       selected: selectedIndex == 0,
                       onSelected: (bool selected) {
                         _selectChip(0);
@@ -216,6 +298,11 @@ class _ThemePageState extends State<ThemePage> {
               Provider.of<ThemeProvider>(context).updateTheme();
             },
           ),
+          CustomTile(
+              icon: Iconsax.paintbucket,
+              title: 'Palette',
+              onTap: _showSchemeVariantDialog,
+              description: 'Change color styles!'),
           SwitchTileStateless(
             icon: Iconsax.moon5,
             title: 'Oled Theme Variant',
