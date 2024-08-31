@@ -5,11 +5,13 @@ import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
+import 'package:aurora/database/database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -72,6 +74,7 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -167,7 +170,8 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 10),
                   iconWithName(
-                    backgroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     icon: Iconsax.star1,
                     TextColor: Colors.white,
                     color: Colors.white,
@@ -192,7 +196,9 @@ class _DetailsPageState extends State<DetailsPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryFixedVariant,
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
                           genre as String,
@@ -217,7 +223,9 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -242,7 +250,9 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -277,7 +287,8 @@ class _DetailsPageState extends State<DetailsPage> {
               children: [
                 Text(
                   description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
-                      animeInfo['description'].replaceAll(RegExp(r'<[^>]*>'), '') ??
+                      animeInfo['description']
+                          .replaceAll(RegExp(r'<[^>]*>'), '') ??
                       'Description Not Found',
                   maxLines: 13,
                   overflow: TextOverflow.ellipsis,
@@ -289,11 +300,18 @@ class _DetailsPageState extends State<DetailsPage> {
           const SizedBox(height: 20),
           CharacterCards(carouselData: charactersData),
           ReusableCarousel(
-              title: 'Popular', carouselData: data['mostPopularAnimes'], tag: 'details-page1',),
+            title: 'Popular',
+            carouselData: data['mostPopularAnimes'],
+            tag: 'details-page1',
+          ),
           ReusableCarousel(
-              title: 'Related', carouselData: data['relatedAnimes'], tag: 'details-page2'),
+              title: 'Related',
+              carouselData: data['relatedAnimes'],
+              tag: 'details-page2'),
           ReusableCarousel(
-              title: 'Recommended', carouselData: data['recommendedAnimes'], tag: 'details-page3'),
+              title: 'Recommended',
+              carouselData: data['recommendedAnimes'],
+              tag: 'details-page3'),
         ],
       ),
     );
@@ -307,6 +325,7 @@ class FloatingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AppData>(context);
     return Positioned(
       bottom: 0,
       left: 0,
@@ -354,8 +373,8 @@ class FloatingBar extends StatelessWidget {
                                     color: Colors.white),
                               ),
                             ),
-                            const Text(
-                              'Episode 1',
+                            Text(
+                              'Episode ${provider.getCurrentEpisodeForAnime(id!) ?? '1'}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
@@ -374,7 +393,8 @@ class FloatingBar extends StatelessWidget {
                             arguments: {'id': id});
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/coverCarousel.dart';
+import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -328,7 +329,10 @@ class _HeaderState extends State<Header> {
                             );
                           }
                         : () {
-                            Navigator.pushNamed(context, '/login-page');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AvatarPage()));
                           },
                     child: CircleAvatar(
                       radius: 24,
