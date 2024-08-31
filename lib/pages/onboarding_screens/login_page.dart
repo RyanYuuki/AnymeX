@@ -2,7 +2,10 @@ import 'dart:io';
 import 'package:aurora/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -21,58 +24,38 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Hello!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.none,
-                ),
-              ),
-              const SizedBox(height: 50),
-              const Text(
-                "Welcome, you've been missed",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.none,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
               GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage:
-                      _avatarImage != null ? FileImage(_avatarImage!) : null,
-                  child: _avatarImage == null
-                      ? const Icon(Icons.add_a_photo, size: 50)
-                      : null,
-                ),
+                child: Image.asset('assets/images/login-asset.png',
+                    height: 200, width: 200),
               ),
-              const SizedBox(height: 50),
-              _buildTextField(userName, 'Username', Icons.person),
+              const SizedBox(height: 20),
+              _buildTextField(userName, 'Username', IconlyBold.profile),
               const SizedBox(height: 10),
-              _buildTextField(passWord, 'Password', Icons.lock,
+              _buildTextField(passWord, 'Password', IconlyBold.lock,
                   obscureText: true),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 45,
+                height: 60,
                 child: ElevatedButton(
                   onPressed: _saveUserData,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   child: const Text(
@@ -84,6 +67,26 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              Divider(
+                color: Theme.of(context).colorScheme.outline,
+                thickness: 1,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Or sign in with',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildSocialButton(
+                  'Google', Ionicons.logo_google, _loginWithGoogle),
+              const SizedBox(height: 10),
+              _buildSocialButton(
+                  'Facebook', Ionicons.logo_facebook, _loginWithFacebook),
             ],
           ),
         ),
@@ -104,10 +107,27 @@ class _LoginPageState extends State<LoginPage> {
         prefixIcon: Icon(icon),
         hintText: hintText,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.all(12),
+        contentPadding: const EdgeInsets.all(20),
+      ),
+    );
+  }
+
+  Widget _buildSocialButton(
+      String text, IconData icon, VoidCallback onPressed) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(text),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
       ),
     );
   }
@@ -136,9 +156,14 @@ class _LoginPageState extends State<LoginPage> {
       _avatarImage?.path,
     ]);
     box.put('isFirstTime', false);
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const MainApp()),
+      (route) => false,
     );
   }
+
+  void _loginWithGoogle() {}
+
+  void _loginWithFacebook() {}
 }
