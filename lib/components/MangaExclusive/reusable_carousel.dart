@@ -10,9 +10,14 @@ class ReusableCarousel extends StatelessWidget {
   final List<dynamic>? carouselData;
   final String? title;
   final String? tag;
+  final bool? secondary;
 
   const ReusableCarousel(
-      {super.key, this.title, this.carouselData, required this.tag});
+      {super.key,
+      this.title,
+      this.carouselData,
+      required this.tag,
+      this.secondary = true});
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +40,12 @@ class ReusableCarousel extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            const Text(
-              ' Mangas',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-            )
+            !secondary!
+                ? const SizedBox.shrink()
+                : const Text(
+                    ' Mangas',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  ),
           ],
         ),
         const SizedBox(height: 10),
@@ -141,8 +148,9 @@ class ReusableCarousel extends StatelessWidget {
                                 name: itemData['view'] ?? '69M',
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryFixedVariant,
                               ))
                         ],
                       ),

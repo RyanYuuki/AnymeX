@@ -186,7 +186,7 @@ class _ToggleBarState extends State<ToggleBar> {
                                 .withOpacity(0.80),
                             borderRadius: BorderRadius.circular(20)),
                         child: Slider(
-                          divisions: widget.totalImages ?? 0,
+                          divisions: widget.totalImages ?? 10,
                           value: _scrollProgress,
                           onChangeStart: (_) {
                             setState(() {
