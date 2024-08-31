@@ -4,11 +4,13 @@ class EpisodeGrid extends StatefulWidget {
   final List<dynamic> episodes;
   final bool isList;
   final Function(int) onEpisodeSelected;
+  final int currentEpisode;
 
   const EpisodeGrid({
     super.key,
     required this.episodes,
     this.isList = false,
+    required this.currentEpisode,
     required this.onEpisodeSelected,
   });
 
@@ -18,7 +20,6 @@ class EpisodeGrid extends StatefulWidget {
 
 class _EpisodeGridState extends State<EpisodeGrid> {
   late List<dynamic> filteredEpisodes;
-  int currentEpisode = 1;
 
   @override
   void initState() {
@@ -56,13 +57,10 @@ class _EpisodeGridState extends State<EpisodeGrid> {
           final episodeNumber = episode['number'];
           final episodeTitle = episode['title'] ?? 'No Title';
           final isFiller = episode['isFiller'] ?? false;
-          final isSelected = currentEpisode == episodeNumber;
+          final isSelected = widget.currentEpisode == episodeNumber;
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                currentEpisode = episodeNumber;
-              });
               widget.onEpisodeSelected(episodeNumber);
             },
             child: Container(
