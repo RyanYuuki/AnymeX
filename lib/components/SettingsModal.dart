@@ -1,3 +1,5 @@
+import 'package:aurora/main.dart';
+import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/pages/user/settings.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,16 @@ class SettingsModal extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          ListTile(
+            leading: const Icon(Iconsax.user),
+            title: const Text('Login (Not Completed)'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
           ListTile(
             leading: const Icon(Iconsax.user),
             title: const Text('View Profile'),
@@ -42,7 +54,11 @@ class SettingsModal extends StatelessWidget {
             title: const Text('Logout'),
             onTap: () {
               box.put('userInfo', ['Guest', 'Guest', null]);
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const MainApp()),
+                (route) => false, 
+              );
             },
           ),
         ],
