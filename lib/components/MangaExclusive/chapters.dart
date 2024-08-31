@@ -5,7 +5,8 @@ import 'package:text_scroll/text_scroll.dart';
 class ChapterList extends StatefulWidget {
   final dynamic chaptersData;
   final String? id;
-  const ChapterList({super.key, this.chaptersData, required this.id});
+  final String? posterUrl;
+  const ChapterList({super.key, this.chaptersData, required this.id, required this.posterUrl});
 
   @override
   _ChapterListState createState() => _ChapterListState();
@@ -143,7 +144,8 @@ class _ChapterListState extends State<ChapterList> {
                                       8,
                                       manga['path'].toString().length,
                                     ),
-                                "mangaId": widget.id
+                                "mangaId": widget.id,
+                                'posterUrl' : widget.posterUrl
                               });
                         },
                         style: ElevatedButton.styleFrom(
