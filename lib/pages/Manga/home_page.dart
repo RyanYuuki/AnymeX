@@ -5,6 +5,7 @@ import 'package:aurora/components/MangaExclusive/manga_list.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
 import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
+import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -182,7 +183,10 @@ class _HeaderState extends State<Header> {
                             );
                           }
                         : () {
-                            Navigator.pushNamed(context, '/login-page');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AvatarPage()));
                           },
                     child: CircleAvatar(
                       radius: 24,

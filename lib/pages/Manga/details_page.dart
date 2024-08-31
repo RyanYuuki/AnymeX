@@ -1,13 +1,17 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
+import 'package:aurora/database/database.dart';
+import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 
 class MangaDetailsPage extends StatefulWidget {
@@ -62,6 +66,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -112,6 +117,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 FloatingBar(
                   title: mangaData['name'],
                   id: widget.id,
+                  posterUrl: widget.posterUrl,
+                  chapterList: mangaData['chapterList'],
                 ),
               ],
             ),
@@ -182,13 +189,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryFixedVariant,
                             borderRadius: BorderRadius.circular(12)),
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color:
-                                  Colors.white,
+                              color: Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -208,7 +216,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -233,7 +243,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
@@ -249,7 +261,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
             ],
           ),
           const SizedBox(height: 30),
-          ChapterList(chaptersData: mangaData['chapterList'], id: widget.id),
+          ChapterList(
+            chaptersData: mangaData['chapterList'],
+            id: widget.id,
+            posterUrl: widget.posterUrl,
+          ),
           const SizedBox(height: 70)
         ],
       ),
@@ -260,10 +276,26 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 class FloatingBar extends StatelessWidget {
   final String? title;
   final String? id;
-  const FloatingBar({super.key, this.title, this.id});
-
+  final String? posterUrl;
+  final List<dynamic> chapterList;
+  const FloatingBar(
+      {super.key,
+      this.title,
+      this.id,
+      this.posterUrl,
+      required this.chapterList});
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AppData>(context, listen: false);
+    final currentChapter =
+        provider.getCurrentChapterForManga(id!) ?? 'chapter-1';
+    final currentChapterList = chapterList
+        .where((chapter) => chapter['name'] == currentChapter)
+        .toList();
+    final currentChapterId = currentChapterList.isNotEmpty
+        ? currentChapterList.first['id']
+        : 'chapter-1';
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -311,8 +343,10 @@ class FloatingBar extends StatelessWidget {
                                     color: Colors.white),
                               ),
                             ),
-                            const Text(
-                              'Chapter 1',
+                            Text(
+                              currentChapter.isEmpty
+                                  ? 'Chapter 1'
+                                  : currentChapter,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
@@ -327,11 +361,15 @@ class FloatingBar extends StatelessWidget {
                     margin: const EdgeInsets.only(left: 10),
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/manga/read',
-                            arguments: {'id': '/$id/chapter-1', 'mangaId': id});
+                        Navigator.pushNamed(context, '/manga/read', arguments: {
+                          'id': '/$id/${currentChapterId}',
+                          'mangaId': id,
+                          'posterUrl': posterUrl
+                        });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
