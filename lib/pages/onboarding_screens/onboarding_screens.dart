@@ -1,7 +1,5 @@
 import 'package:aurora/main.dart';
-import 'package:aurora/pages/home_page.dart';
 import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
-import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

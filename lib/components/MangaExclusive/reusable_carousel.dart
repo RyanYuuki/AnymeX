@@ -122,7 +122,8 @@ class ReusableCarousel extends StatelessWidget {
                             child: Text(
                               itemData['title'].toString(),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -143,8 +144,10 @@ class ReusableCarousel extends StatelessWidget {
                               right: 5,
                               child: iconWithName(
                                 icon: Iconsax.heart5,
-                                TextColor: Colors.white,
-                                color: Colors.white,
+                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 name: itemData['view'] ?? '69M',
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),

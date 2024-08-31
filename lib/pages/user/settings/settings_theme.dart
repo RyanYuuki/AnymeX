@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:aurora/components/setting/scheme_varaint_dialog.dart';
@@ -10,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 
 class ThemePage extends StatefulWidget {
   const ThemePage({super.key});
@@ -329,7 +327,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
             description: 'Use your own color!',
             onTap: () {},
           ),
-          isCustomTheme! ? ColorChips() : SizedBox.shrink(),
+          isCustomTheme! ? ColorChips() : const SizedBox.shrink(),
         ],
       ),
     );

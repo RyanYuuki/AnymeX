@@ -94,8 +94,10 @@ class _CoverCarouselState extends State<CoverCarousel> {
                             isVertical: false,
                             borderRadius: BorderRadius.circular(5),
                             backgroundColor: ColorScheme.onPrimaryFixedVariant,
-                            color: Colors.white,
-                            TextColor: Colors.white,
+                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                            TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                           ),
                         ],
                       ),

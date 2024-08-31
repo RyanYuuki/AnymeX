@@ -113,7 +113,8 @@ class Carousel extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Iconsax.book, color: Colors.white),
+                                    Icon(Iconsax.book, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                                     const SizedBox(width: 5),
                                     SizedBox(
                                       child: TextScroll(
@@ -127,8 +128,9 @@ class Carousel extends StatelessWidget {
                                         pauseBetween:
                                             const Duration(milliseconds: 1000),
                                         selectable: true,
-                                        style: const TextStyle(
-                                            fontSize: 16, color: Colors.white),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                                       ),
                                     ),
                                   ],
@@ -149,8 +151,10 @@ class Carousel extends StatelessWidget {
                       name: type,
                       isVertical: false,
                       backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                      TextColor: Colors.white,
-                      color: Colors.white,
+                      TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                      color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(5),
                     )),
               ],

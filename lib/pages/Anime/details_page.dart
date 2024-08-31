@@ -173,8 +173,10 @@ class _DetailsPageState extends State<DetailsPage> {
                     backgroundColor:
                         Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     icon: Iconsax.star1,
-                    TextColor: Colors.white,
-                    color: Colors.white,
+                    TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                     name: animeFullInfo['malscore'] == null
                         ? '0.0'
                         : animeFullInfo['malscore'].toString(),
@@ -203,7 +205,8 @@ class _DetailsPageState extends State<DetailsPage> {
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -370,14 +373,16 @@ class FloatingBar extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                               ),
                             ),
                             Text(
                               'Episode ${provider.getCurrentEpisodeForAnime(id!) ?? '1'}',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                               ),
                             ),
                           ],
@@ -401,16 +406,18 @@ class FloatingBar extends StatelessWidget {
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Iconsax.play_circle5,
-                            color: Colors.white, // Icon color
+                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, // Icon color
                           ),
                           SizedBox(width: 8),
                           Text(
                             'Watch',
                             style: TextStyle(
-                              color: Colors.white, // Text color
+                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, // Text color
                             ),
                           ),
                         ],

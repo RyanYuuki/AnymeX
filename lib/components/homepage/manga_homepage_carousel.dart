@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
 
@@ -134,7 +133,8 @@ class MangaHomepageCarousel extends StatelessWidget {
                             child: Text(
                               itemData['mangaTitle'].toString(),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -155,8 +155,10 @@ class MangaHomepageCarousel extends StatelessWidget {
                               right: 7,
                               child: iconWithName(
                                 icon: Iconsax.book,
-                                TextColor: Colors.white,
-                                color: Colors.white,
+                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),

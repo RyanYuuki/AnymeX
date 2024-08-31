@@ -219,10 +219,22 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                           child: Center(
                               child: Text(
                             anime['rank'].toString(),
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white),
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white),
                           )),
                         ),
                         SizedBox(
@@ -343,9 +355,10 @@ class _HeaderState extends State<Header> {
                           : null,
                       child: hasAvatarImage
                           ? null
-                          : const Icon(
+                          : Icon(
                               Icons.person,
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).colorScheme.inverseSurface,
                             ),
                     ),
                   ),

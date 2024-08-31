@@ -1,11 +1,9 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
 import 'package:aurora/database/database.dart';
-import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -168,8 +166,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     backgroundColor:
                         Theme.of(context).colorScheme.onPrimaryFixed,
                     icon: Iconsax.star1,
-                    TextColor: Colors.white,
-                    color: Colors.white,
+                    TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                     name: '6.9',
                     isVertical: false,
                     borderRadius: BorderRadius.circular(5),
@@ -196,7 +196,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -340,7 +341,8 @@ class FloatingBar extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                               ),
                             ),
                             Text(
@@ -349,7 +351,8 @@ class FloatingBar extends StatelessWidget {
                                   : currentChapter,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                               ),
                             ),
                           ],
@@ -362,7 +365,7 @@ class FloatingBar extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/manga/read', arguments: {
-                          'id': '/$id/${currentChapterId}',
+                          'id': '/$id/$currentChapterId',
                           'mangaId': id,
                           'posterUrl': posterUrl
                         });
@@ -376,16 +379,18 @@ class FloatingBar extends StatelessWidget {
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Iconsax.book,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                           ),
                           SizedBox(width: 8),
                           Text(
                             'Read',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                             ),
                           ),
                         ],

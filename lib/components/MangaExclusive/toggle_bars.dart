@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:iconsax/iconsax.dart';
 
 typedef ButtonTapCallback = void Function(String? index);
 
@@ -112,7 +111,8 @@ class _ToggleBarState extends State<ToggleBar> {
                       Navigator.pop(context);
                     },
                     icon:
-                        const Icon(IconlyBold.arrow_left, color: Colors.white),
+                         Icon(IconlyBold.arrow_left, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -124,12 +124,14 @@ class _ToggleBarState extends State<ToggleBar> {
                               ? "${widget.chapter!.substring(0, 30)}..."
                               : widget.chapter!,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 16, color: Colors.white)),
+                          style:  TextStyle(
+                              fontSize: 16, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white)),
                       const SizedBox(height: 3),
                       Text(widget.title!,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.white70)),
+                          style:  TextStyle(
+                              fontSize: 12, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white70)),
                     ],
                   ),
                 ],
@@ -169,8 +171,9 @@ class _ToggleBarState extends State<ToggleBar> {
                               .withOpacity(0.80),
                           borderRadius: BorderRadius.circular(30)),
                       child: IconButton(
-                        icon: const Icon(Icons.skip_previous_rounded,
-                            color: Colors.white, size: 35),
+                        icon: Icon(Icons.skip_previous_rounded,
+                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, size: 35),
                         onPressed: () {
                           widget.handleChapter('left');
                         },
@@ -221,8 +224,9 @@ class _ToggleBarState extends State<ToggleBar> {
                               .withOpacity(0.80),
                           borderRadius: BorderRadius.circular(30)),
                       child: IconButton(
-                        icon: const Icon(Icons.skip_next_rounded,
-                            size: 35, color: Colors.white),
+                        icon:  Icon(Icons.skip_next_rounded,
+                            size: 35, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                         onPressed: () {
                           widget.handleChapter('right');
                         },
@@ -241,9 +245,10 @@ class _ToggleBarState extends State<ToggleBar> {
             child: Center(
               child: Text(
                 '$_currentPage / ${widget.totalImages}',
-                style: const TextStyle(
+                style:  TextStyle(
                     fontSize: 12,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                     fontFamily: 'Poppins-Bold'),
               ),
             ),

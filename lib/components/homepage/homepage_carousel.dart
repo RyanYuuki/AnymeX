@@ -1,13 +1,9 @@
-import 'dart:developer';
 
 import 'package:aurora/components/IconWithLabel.dart';
-import 'package:aurora/database/database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
-import 'package:provider/provider.dart';
 
 class HomepageCarousel extends StatelessWidget {
   final List<dynamic>? carouselData;
@@ -135,7 +131,8 @@ class HomepageCarousel extends StatelessWidget {
                             child: Text(
                               itemData['animeTitle'].toString(),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -156,8 +153,10 @@ class HomepageCarousel extends StatelessWidget {
                               right: 7,
                               child: iconWithName(
                                 icon: Iconsax.play_circle5,
-                                TextColor: Colors.white,
-                                color: Colors.white,
+                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),

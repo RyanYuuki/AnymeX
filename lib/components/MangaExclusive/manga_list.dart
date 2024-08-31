@@ -66,8 +66,32 @@ class MangaList extends StatelessWidget {
                         Row(
                           children: [
                             iconWithName(
-                                TextColor: Colors.white,
-                                color: Colors.white,
+                                TextColor: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
@@ -83,8 +107,32 @@ class MangaList extends StatelessWidget {
                                     : manga['chapter'].toString()),
                             const SizedBox(width: 2),
                             iconWithName(
-                                TextColor: Colors.white,
-                                color: Colors.white,
+                                TextColor: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 isVertical: false,
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
@@ -106,14 +154,17 @@ class MangaList extends StatelessWidget {
                                   .inverseSurface
                                   .withOpacity(0.8)),
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 4,
+                          maxLines: 3,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 10),
                         ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryFixedVariant,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)
+                                  )
                             ),
                             onPressed: () {
                               Navigator.pushNamed(context, '/manga/read',
@@ -122,7 +173,23 @@ class MangaList extends StatelessWidget {
                                     'mangaId': manga['id'] + '/' + 'chapter-1',
                                   });
                             },
-                            child: const Text('Read Now'))
+                            child: Text(
+                              'Read Now',
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white),
+                            ))
                       ],
                     ))
                   ],

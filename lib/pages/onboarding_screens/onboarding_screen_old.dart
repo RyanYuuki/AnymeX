@@ -1,5 +1,4 @@
 import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
-import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/onboarding_screens/onboarding_widgets.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';

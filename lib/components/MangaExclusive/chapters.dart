@@ -156,10 +156,11 @@ class _ChapterListState extends State<ChapterList> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Read',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                             fontSize: 14,
                           ),
                         ),

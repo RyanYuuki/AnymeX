@@ -27,17 +27,20 @@ class _AnimeTableState extends State<AnimeTable> {
           0: Text(
             'Day',
             style: TextStyle(
-                color: widget.currentIndex == 0 ? Colors.white : null),
+                color: widget.currentIndex == 0 ? Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white : null),
           ),
           1: Text(
             'Week',
             style: TextStyle(
-                color: widget.currentIndex == 1 ? Colors.white : null),
+                color: widget.currentIndex == 1 ? Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white : null),
           ),
           2: Text(
             'Month',
             style: TextStyle(
-                color: widget.currentIndex == 2 ? Colors.white : null),
+                color: widget.currentIndex == 2 ? Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white : null),
           ),
         },
         decoration: BoxDecoration(

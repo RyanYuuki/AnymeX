@@ -77,6 +77,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    log(Theme.of(context).colorScheme.onPrimaryFixedVariant.toString());
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -197,9 +198,9 @@ class _HeaderState extends State<Header> {
                           : null,
                       child: hasAvatarImage
                           ? null
-                          : const Icon(
+                          :  Icon(
                               Icons.person,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.inverseSurface,
                             ),
                     ),
                   ),

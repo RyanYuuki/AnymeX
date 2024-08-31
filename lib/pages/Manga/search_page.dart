@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -195,8 +194,9 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
           ),
           child: Text(
             anime['ratings'] ?? 'PG-13',
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
               fontSize: 12,
             ),
           ),
@@ -213,8 +213,9 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
           ),
           child: Text(
             anime['type'] ?? 'MANGA',
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
               fontSize: 12,
             ),
           ),
@@ -362,8 +363,9 @@ GestureDetector SearchItem_COVER(
                         anime['title'].length > 28
                             ? '${anime['title'].substring(0, 28)}...'
                             : anime['title'],
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style:  TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),

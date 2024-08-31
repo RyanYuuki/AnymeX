@@ -145,7 +145,8 @@ class Carousel extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.closed_caption,
-                                          color: Colors.white,
+                                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
@@ -154,7 +155,8 @@ class Carousel extends StatelessWidget {
                                                 : anime['episodes']['sub']
                                                     .toString(),
                                             style:
-                                                TextStyle(color: Colors.white)),
+                                                TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white)),
                                       ],
                                     ),
                                   ),
@@ -173,7 +175,8 @@ class Carousel extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.mic,
-                                          color: Colors.white,
+                                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
@@ -182,7 +185,8 @@ class Carousel extends StatelessWidget {
                                                 : anime['episodes']['dub']
                                                     .toString(),
                                             style:
-                                                TextStyle(color: Colors.white)),
+                                                TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white)),
                                       ],
                                     ),
                                   ),
@@ -205,12 +209,14 @@ class Carousel extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            Icon(Iconsax.play_circle5, color: Colors.white),
+                            Icon(Iconsax.play_circle5, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                             const SizedBox(width: 2),
                             Text(
                               type ?? 'TV',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
+                              style:  TextStyle(
+                                  color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, fontSize: 14),
                             ),
                           ],
                         ),

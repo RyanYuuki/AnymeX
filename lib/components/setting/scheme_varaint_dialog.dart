@@ -4,7 +4,7 @@ class SchemeVariantDialog extends StatefulWidget {
   final String selectedVariant;
   final Function(String) onVariantSelected;
 
-  SchemeVariantDialog({
+  const SchemeVariantDialog({super.key, 
     required this.selectedVariant,
     required this.onVariantSelected,
   });

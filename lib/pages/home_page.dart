@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/homepage/homepage_carousel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
-import 'package:aurora/components/MangaExclusive/reusable_carousel.dart' as MangaCarousel;
+import 'package:aurora/components/MangaExclusive/reusable_carousel.dart'
+    as MangaCarousel;
 import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
 import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
@@ -93,9 +94,11 @@ class HomePage extends StatelessWidget {
                                       : null,
                                   child: hasAvatarImage
                                       ? null
-                                      : const Icon(
+                                      : Icon(
                                           Icons.person,
-                                          color: Colors.white,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface,
                                         ),
                                 ),
                               ),

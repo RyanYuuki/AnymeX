@@ -22,8 +22,10 @@ class _MyTabBarState extends State<MyTabBar> {
         fixedWidth: MediaQuery.of(context).size.width / 2 - 12,
         initialValue: 1,
         children: {
-          1: Text('Sub', style: TextStyle(color: currentIndex == 1 ? Colors.white : null), ),
-          2: Text('Dub', style: TextStyle(color: currentIndex == 2 ? Colors.white : null), ),
+          1: Text('Sub', style: TextStyle(color: currentIndex == 1 ? Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white : null), ),
+          2: Text('Dub', style: TextStyle(color: currentIndex == 2 ? Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white : null), ),
         },
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainer,

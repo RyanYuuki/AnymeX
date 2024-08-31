@@ -198,8 +198,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
             child: Text(
               anime['ratings'] ?? 'PG-13',
-              style: const TextStyle(
-                color: Colors.white,
+              style:  TextStyle(
+                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -216,8 +217,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
             child: Text(
               anime['type'] ?? 'TV',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -390,8 +392,9 @@ GestureDetector searchItemCover(
                         anime['name'].length > 28
                             ? '${anime['name'].substring(0, 28)}...'
                             : anime['name'],
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style:  TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -400,7 +403,8 @@ GestureDetector searchItemCover(
                       const SizedBox(height: 5),
                       Text(
                         "${anime['episodes']['sub'] ?? '?'} Episodes",
-                        style: const TextStyle(color: Colors.white),
+                        style:  TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
+Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
                       ),
                     ],
                   ),
