@@ -284,6 +284,8 @@ class _StreamingPageState extends State<StreamingPage> {
                                     child: TextField(
                                       controller: episodeFilterController,
                                       decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                                         hintText: 'Filter Episode...',
                                         suffixIcon:
                                             const Icon(Iconsax.search_normal),

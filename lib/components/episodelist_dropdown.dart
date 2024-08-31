@@ -53,7 +53,7 @@ class _EpisodeDropdownState extends State<EpisodeDropdown> {
             child: Center(
               child: Text(
                 range,
-                style: const TextStyle(fontSize: 12),
+                style:  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.inverseSurface),
               ),
             ),
           );

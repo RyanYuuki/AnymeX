@@ -86,8 +86,8 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                         : Center(
                             child: Text(
                               isList ? '$episodeNumber.' : episodeNumber.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.inverseSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

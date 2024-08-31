@@ -240,7 +240,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: Theme.of(context).colorScheme.secondary),
+          color: Theme.of(context).colorScheme.surfaceContainer),
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
