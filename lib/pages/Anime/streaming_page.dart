@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:aurora/components/episode_list.dart';
 import 'package:aurora/components/episodelist_dropdown.dart';
+import 'package:aurora/database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -63,6 +67,7 @@ class _StreamingPageState extends State<StreamingPage> {
     });
 
     try {
+      final provider = Provider.of<AppData>(context, listen: false);
       final response = await http.get(Uri.parse('$episodeDataUrl${widget.id}'));
       final animeDataResponse =
           await http.get(Uri.parse('${baseUrl}info?id=${widget.id!}'));
@@ -70,7 +75,6 @@ class _StreamingPageState extends State<StreamingPage> {
       if (response.statusCode == 200 && animeDataResponse.statusCode == 200) {
         final tempAnimeData = jsonDecode(animeDataResponse.body);
         final tempData = jsonDecode(response.body);
-
         setState(() {
           animeData = tempAnimeData;
           availEpisodes =
@@ -78,10 +82,15 @@ class _StreamingPageState extends State<StreamingPage> {
           isInfoLoading = false;
           episodesData = tempData['episodes'];
           filteredEpisodes = tempData['episodes'];
-          currentEpisode = 1;
+          currentEpisode = int.tryParse(provider.getCurrentEpisodeForAnime(
+              animeData['anime']['info']['id'] ?? 1)!);
+          provider.addWatchedAnime(
+              animeId: tempAnimeData['anime']['info']['id'],
+              animeTitle: tempAnimeData['anime']['info']['name'],
+              currentEpisode: currentEpisode!.toString(),
+              animePosterImageUrl: tempAnimeData['anime']['info']['poster']);
         });
-
-        fetchEpisodeSrcs();
+        await fetchEpisodeSrcs();
       } else {
         throw Exception('Failed to load data');
       }
@@ -95,12 +104,12 @@ class _StreamingPageState extends State<StreamingPage> {
   }
 
   Future<void> fetchEpisodeSrcs() async {
-    episodeSrc = null;
+    final provider = Provider.of<AppData>(context, listen: false);
     if (episodesData == null || currentEpisode == null) return;
 
     try {
       final response = await http.get(Uri.parse(
-        '$episodeUrl${episodesData[currentEpisode! - 1]['episodeId']}&category=${isDub ? 'dub' : 'sub'}',
+        '$episodeUrl${episodesData[(currentEpisode! - 1)]['episodeId']}&category=${isDub ? 'dub' : 'sub'}',
       ));
 
       if (response.statusCode == 200) {
@@ -110,6 +119,11 @@ class _StreamingPageState extends State<StreamingPage> {
           episodeSrc = episodeSrcs['sources'][0]['url'];
           isLoading = false;
         });
+        provider.addWatchedAnime(
+            animeId: animeData['anime']['info']['id'],
+            animeTitle: animeData['anime']['info']['name'],
+            currentEpisode: currentEpisode!.toString(),
+            animePosterImageUrl: animeData['anime']['info']['poster']);
       } else {
         throw Exception('Failed to load episode sources');
       }
@@ -140,6 +154,7 @@ class _StreamingPageState extends State<StreamingPage> {
       }
       filteredEpisodes = episodesData.sublist(0, availEpisodes);
       filterEpisodes();
+      fetchEpisodeSrcs();
     });
   }
 
@@ -170,7 +185,9 @@ class _StreamingPageState extends State<StreamingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeProvider = Theme.of(context);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -210,7 +227,9 @@ class _StreamingPageState extends State<StreamingPage> {
                           ))
                     else
                       VideoPlayerAlt(
-                          videoUrl: episodeSrc, tracks: subtitleTracks),
+                          videoUrl: episodeSrc,
+                          tracks: subtitleTracks,
+                          provider: ThemeProvider),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -312,6 +331,7 @@ class _StreamingPageState extends State<StreamingPage> {
                     ),
                     const SizedBox(height: 20),
                     EpisodeGrid(
+                        currentEpisode: currentEpisode!,
                         episodes: filteredEpisodes!,
                         isList: isList,
                         onEpisodeSelected: (int episode) {
