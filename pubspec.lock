@@ -25,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  archive:
-    dependency: transitive
-    description:
-      name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -185,14 +177,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: c05b7406fdabc7a49a3929d4af76bcaccbbffcbcdcf185b082e1ae07da323d19
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.1"
   clock:
     dependency: transitive
     description:
@@ -374,14 +358,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
-  flutter_launcher_icons:
-    dependency: "direct main"
-    description:
-      name: flutter_launcher_icons
-      sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.13.1"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -528,14 +504,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.8"
-  image:
-    dependency: transitive
-    description:
-      name: image
-      sha256: "2237616a36c0d69aef7549ab439b833fb7f9fb9fc861af2cc9ac3eedddd69ca8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.0"
   image_picker:
     dependency: "direct main"
     description:
@@ -608,14 +576,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  interactive_slider:
-    dependency: "direct main"
-    description:
-      name: interactive_slider
-      sha256: f90020cd1f1376fc8c0a099f48432d25bb2128cef95f9f72acc71e06c5f7d622
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.2"
   io:
     dependency: transitive
     description:
@@ -624,6 +584,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  ionicons:
+    dependency: "direct main"
+    description:
+      name: ionicons
+      sha256: "5496bc65a16115ecf05b15b78f494ee4a8869504357668f0a11d689e970523cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   js:
     dependency: transitive
     description:
@@ -1061,6 +1029,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  video_player:
+    dependency: "direct main"
+    description:
+      name: video_player
+      sha256: e30df0d226c4ef82e2c150ebf6834b3522cf3f654d8e2f9419d376cdc071425d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.1"
+  video_player_android:
+    dependency: transitive
+    description:
+      name: video_player_android
+      sha256: e343701aa890b74a863fa460f5c0e628127ed06a975d7d9af6b697133fb25bdf
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.1"
+  video_player_avfoundation:
+    dependency: transitive
+    description:
+      name: video_player_avfoundation
+      sha256: d1e9a824f2b324000dc8fb2dcb2a3285b6c1c7c487521c63306cc5b394f68a7c
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.1"
+  video_player_platform_interface:
+    dependency: transitive
+    description:
+      name: video_player_platform_interface
+      sha256: "236454725fafcacf98f0f39af0d7c7ab2ce84762e3b63f2cbb3ef9a7e0550bc6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.2"
+  video_player_web:
+    dependency: transitive
+    description:
+      name: video_player_web
+      sha256: "6dcdd298136523eaf7dfc31abaf0dfba9aa8a8dbc96670e87e9d42b6f2caf774"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
   visibility_detector:
     dependency: transitive
     description:
