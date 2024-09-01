@@ -114,7 +114,7 @@ class ReusableCarousel extends StatelessWidget {
                               itemData['name'].toString(),
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -136,9 +136,9 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                               child: iconWithName(
                                 icon: Iconsax.play_circle5,
                                 TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),

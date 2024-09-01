@@ -8,8 +8,13 @@ class VideoPlayerAlt extends StatefulWidget {
   final String videoUrl;
   final ThemeData provider;
   final dynamic tracks;
-  const VideoPlayerAlt(
-      {super.key, required this.videoUrl, required this.tracks, required this.provider});
+
+  const VideoPlayerAlt({
+    super.key,
+    required this.videoUrl,
+    required this.tracks,
+    required this.provider,
+  });
 
   @override
   State<VideoPlayerAlt> createState() => _VideoPlayerAltState();
@@ -41,7 +46,7 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
         BetterPlayerConfiguration(
       autoDetectFullscreenAspectRatio: true,
       autoDetectFullscreenDeviceOrientation: true,
-      deviceOrientationsOnFullScreen: const [
+      deviceOrientationsOnFullScreen: [
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight
       ],
@@ -55,7 +60,8 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
         pauseIcon: Iconsax.pause,
         controlBarColor: widget.provider.colorScheme.surfaceContainerHighest,
         progressBarHandleColor: widget.provider.colorScheme.onPrimaryFixed,
-        progressBarPlayedColor: widget.provider.colorScheme.onPrimaryFixedVariant,
+        progressBarPlayedColor:
+            widget.provider.colorScheme.onPrimaryFixedVariant,
       ),
       autoPlay: true,
       looping: false,
@@ -74,6 +80,20 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
       widget.videoUrl,
       subtitles: subtitles,
     ));
+
+    _betterPlayerController!.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.openFullscreen) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]);
+      } else if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+      }
+    });
 
     WakelockPlus.enable();
   }
@@ -96,7 +116,7 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); 
+    super.build(context);
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: BetterPlayer(controller: _betterPlayerController!),
@@ -107,6 +127,10 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
   void dispose() {
     _betterPlayerController?.dispose();
     WakelockPlus.disable();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]); 
     super.dispose();
   }
 

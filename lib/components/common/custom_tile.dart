@@ -52,7 +52,7 @@ class CustomTile extends StatelessWidget {
               ),
             ),
             Icon(IconlyLight.arrow_right_2,
-                color: Theme.of(context).colorScheme.onSurface),
+                color: Theme.of(context).colorScheme.primary),
           ],
         ),
       ),

@@ -76,7 +76,7 @@ class MangaList extends StatelessWidget {
                                     : Theme.of(context)
                                                 .colorScheme
                                                 .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
+                                            const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white,
                                 color: Theme.of(context)
@@ -89,7 +89,7 @@ class MangaList extends StatelessWidget {
                                     : Theme.of(context)
                                                 .colorScheme
                                                 .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
+                                            const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white,
                                 isVertical: false,
@@ -117,7 +117,7 @@ class MangaList extends StatelessWidget {
                                     : Theme.of(context)
                                                 .colorScheme
                                                 .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
+                                            const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white,
                                 color: Theme.of(context)
@@ -130,7 +130,7 @@ class MangaList extends StatelessWidget {
                                     : Theme.of(context)
                                                 .colorScheme
                                                 .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
+                                            const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white,
                                 isVertical: false,
@@ -186,7 +186,7 @@ class MangaList extends StatelessWidget {
                                       : Theme.of(context)
                                                   .colorScheme
                                                   .onPrimaryFixedVariant ==
-                                              Color(0xffe2e2e2)
+                                              const Color(0xffe2e2e2)
                                           ? Colors.black
                                           : Colors.white),
                             ))
