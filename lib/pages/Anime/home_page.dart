@@ -232,7 +232,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                                     : Theme.of(context)
                                                 .colorScheme
                                                 .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
+                                            const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white),
                           )),

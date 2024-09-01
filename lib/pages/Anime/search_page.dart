@@ -200,7 +200,7 @@ class _SearchPageState extends State<SearchPage> {
               anime['ratings'] ?? 'PG-13',
               style:  TextStyle(
                 color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -219,7 +219,7 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
               anime['type'] ?? 'TV',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -394,7 +394,7 @@ GestureDetector searchItemCover(
                             : anime['name'],
                         style:  TextStyle(
                           color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -404,7 +404,7 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                       Text(
                         "${anime['episodes']['sub'] ?? '?'} Episodes",
                         style:  TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white),
                       ),
                     ],
                   ),

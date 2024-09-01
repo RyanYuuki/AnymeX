@@ -161,7 +161,7 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
         ),
         child: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/manga/manga/details', arguments: {
+            Navigator.pushNamed(context, '/manga/details', arguments: {
               "id": anime['id'],
               'posterUrl': proxyUrl + anime['image'],
               'tag': tag
@@ -194,9 +194,14 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
           ),
           child: Text(
             anime['ratings'] ?? 'PG-13',
-            style:  TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface ==
+                      Theme.of(context).colorScheme.onPrimaryFixedVariant
+                  ? Colors.black
+                  : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                          const Color(0xffe2e2e2)
+                      ? Colors.black
+                      : Colors.white,
               fontSize: 12,
             ),
           ),
@@ -213,9 +218,14 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
           ),
           child: Text(
             anime['type'] ?? 'MANGA',
-            style:  TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface ==
+                      Theme.of(context).colorScheme.onPrimaryFixedVariant
+                  ? Colors.black
+                  : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                          const Color(0xffe2e2e2)
+                      ? Colors.black
+                      : Colors.white,
               fontSize: 12,
             ),
           ),
@@ -343,7 +353,7 @@ GestureDetector SearchItem_COVER(
                   height: 100,
                   width: 70,
                   child: Hero(
-                    tag: tag,
+                    tag: anime['title'] + anime['id'],
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7),
                       child: CachedNetworkImage(
@@ -363,9 +373,18 @@ GestureDetector SearchItem_COVER(
                         anime['title'].length > 28
                             ? '${anime['title'].substring(0, 28)}...'
                             : anime['title'],
-                        style:  TextStyle(
-                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface ==
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryFixedVariant
+                              ? Colors.black
+                              : Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant ==
+                                      const Color(0xffe2e2e2)
+                                  ? Colors.black
+                                  : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),

@@ -79,7 +79,7 @@ class _AvatarPageState extends State<AvatarPage> {
                     backgroundColor:
                         Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     foregroundColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -88,7 +88,7 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                     'Submit',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
