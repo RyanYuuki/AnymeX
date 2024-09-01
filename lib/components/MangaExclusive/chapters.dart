@@ -160,7 +160,7 @@ class _ChapterListState extends State<ChapterList> {
                           'Read',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
                             fontSize: 14,
                           ),
                         ),
