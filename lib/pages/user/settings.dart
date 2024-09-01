@@ -1,4 +1,5 @@
 import 'package:aurora/components/common/custom_tile.dart';
+import 'package:aurora/pages/user/settings/player_settings.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -33,6 +34,15 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
+          CustomTile(
+            icon: Iconsax.play5,
+            title: 'Player',
+            description: 'Change Video Player Settings',
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const VideoPlayerSettings()));
+            },
+          ),
           CustomTile(
             icon: Iconsax.paintbucket5,
             title: 'Theme',
