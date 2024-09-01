@@ -1,4 +1,3 @@
-
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,30 +12,33 @@ class HomepageCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // if (carouselData == null || carouselData!.isEmpty) {
+    //   return SizedBox(
+    //     height: 300,
+    //     width: MediaQuery.of(context).size.width,
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         Text(
+    //           'Currently Watching',
+    //           style: TextStyle(
+    //             fontSize: 22,
+    //             fontFamily: 'Poppins',
+    //             fontWeight: FontWeight.bold,
+    //             color: Theme.of(context).colorScheme.primary,
+    //           ),
+    //         ),
+    //         const Expanded(
+    //           child: Center(
+    //             child: Text("Guess it's your first time here huh?"),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   );
+    // }
     if (carouselData == null || carouselData!.isEmpty) {
-      return SizedBox(
-        height: 300,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Currently Watching',
-              style: TextStyle(
-                fontSize: 22,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const Expanded(
-              child: Center(
-                child: Text("Guess it's your first time here huh?"),
-              ),
-            ),
-          ],
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     return Column(
@@ -74,7 +76,7 @@ class HomepageCarousel extends StatelessWidget {
               const String proxyUrl =
                   'https://goodproxy.goodproxy.workers.dev/fetch?url=';
               dynamic extraData = itemData['currentEpisode'].toString();
-                  '1';
+              '1';
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: GestureDetector(
@@ -131,8 +133,19 @@ class HomepageCarousel extends StatelessWidget {
                             child: Text(
                               itemData['animeTitle'].toString(),
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -153,10 +166,32 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                               right: 7,
                               child: iconWithName(
                                 icon: Iconsax.play_circle5,
-                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                TextColor: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),

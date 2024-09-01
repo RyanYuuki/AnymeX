@@ -36,7 +36,7 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 30),
           CustomTile(
             icon: Iconsax.play5,
-            title: 'Player',
+            title: 'Player (Soon)',
             description: 'Change Video Player Settings',
             onTap: () {
               Navigator.push(context,

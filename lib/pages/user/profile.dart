@@ -192,27 +192,27 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           StatsRow(
                             name: 'Episodes Watched',
-                            value: '10',
+                            value: '0',
                           ),
                           StatsRow(
                             name: 'Days Watched',
-                            value: '1',
+                            value: '0',
                           ),
                           StatsRow(
                             name: 'Anime Mean Score',
-                            value: '12.02',
+                            value: '00.00',
                           ),
                           StatsRow(
                             name: 'Chapters Read',
-                            value: '400',
+                            value: '0',
                           ),
                           StatsRow(
                             name: 'Volume Read',
-                            value: '30',
+                            value: '0',
                           ),
                           StatsRow(
                             name: 'Manga Mean Score',
-                            value: '60',
+                            value: '0',
                           ),
                         ],
                       ),
