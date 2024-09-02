@@ -110,9 +110,18 @@ class _ToggleBarState extends State<ToggleBar> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon:
-                         Icon(IconlyBold.arrow_left, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                    icon: Icon(IconlyBold.arrow_left,
+                        color: Theme.of(context).colorScheme.inverseSurface ==
+                                Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryFixedVariant
+                            ? Colors.black
+                            : Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant ==
+                                    const Color(0xffe2e2e2)
+                                ? Colors.black
+                                : Colors.white),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -124,14 +133,38 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                               ? "${widget.chapter!.substring(0, 30)}..."
                               : widget.chapter!,
                           overflow: TextOverflow.ellipsis,
-                          style:  TextStyle(
-                              fontSize: 16, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white)),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          const Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white)),
                       const SizedBox(height: 3),
                       Text(widget.title!,
-                          style:  TextStyle(
-                              fontSize: 12, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white70)),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          const Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white70)),
                     ],
                   ),
                 ],
@@ -172,8 +205,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                           borderRadius: BorderRadius.circular(30)),
                       child: IconButton(
                         icon: Icon(Icons.skip_previous_rounded,
-                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white, size: 35),
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                            size: 35),
                         onPressed: () {
                           widget.handleChapter('left');
                         },
@@ -191,6 +235,10 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                         child: Slider(
                           divisions: widget.totalImages ?? 10,
                           value: _scrollProgress,
+                          label:
+                              (_scrollProgress * (widget.totalImages! - 1) + 1)
+                                  .round()
+                                  .toString(),
                           onChangeStart: (_) {
                             setState(() {
                               _isSliderBeingUsed = true;
@@ -224,9 +272,20 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                               .withOpacity(0.80),
                           borderRadius: BorderRadius.circular(30)),
                       child: IconButton(
-                        icon:  Icon(Icons.skip_next_rounded,
-                            size: 35, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                        icon: Icon(Icons.skip_next_rounded,
+                            size: 35,
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white),
                         onPressed: () {
                           widget.handleChapter('right');
                         },
@@ -245,10 +304,15 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
             child: Center(
               child: Text(
                 '$_currentPage / ${widget.totalImages}',
-                style:  TextStyle(
+                style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface ==
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                        ? Colors.black
+                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                                const Color(0xffe2e2e2)
+                            ? Colors.black
+                            : Colors.white,
                     fontFamily: 'Poppins-Bold'),
               ),
             ),
