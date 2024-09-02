@@ -64,7 +64,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   Future<void> fetchData() async {
     const String apiUrl = 'https://aniwatch-ryan.vercel.app/anime/home';
     try {
-      final response = await http.get(Uri.parse(apiUrl));
+      final response = await http.get(Uri.parse(proxyUrl + apiUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {

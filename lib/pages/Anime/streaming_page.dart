@@ -1,4 +1,3 @@
-
 import 'package:aurora/components/episode_list.dart';
 import 'package:aurora/components/episodelist_dropdown.dart';
 import 'package:aurora/database/database.dart';
@@ -36,11 +35,12 @@ class _StreamingPageState extends State<StreamingPage> {
   List<dynamic>? filteredEpisodes = [];
   String? selectedRange;
 
-  final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/';
+  final String baseUrl =
+      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/';
   final String episodeDataUrl =
-      'https://aniwatch-ryan.vercel.app/anime/episodes/';
+      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/episodes/';
   final String episodeUrl =
-      'https://aniwatch-ryan.vercel.app/anime/episode-srcs?id=';
+      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/episode-srcs?id=';
 
   TextEditingController episodeFilterController = TextEditingController();
 
@@ -285,7 +285,9 @@ class _StreamingPageState extends State<StreamingPage> {
                                       controller: episodeFilterController,
                                       decoration: InputDecoration(
                                         filled: true,
-                                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                        fillColor: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                         hintText: 'Filter Episode...',
                                         suffixIcon:
                                             const Icon(Iconsax.search_normal),

@@ -32,7 +32,7 @@ class _DetailsPageState extends State<DetailsPage> {
   dynamic charactersData;
   String? description;
 
-  final String baseUrl = 'https://aniwatch-ryan.vercel.app/anime/info?id=';
+  final String baseUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/info?id=';
 
   @override
   void initState() {
