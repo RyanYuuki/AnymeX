@@ -13,23 +13,23 @@ Welcome to **AnymeX**, your ultimate destination for a seamless anime and manga 
 - **⚡ Fast & Lightweight**: Benefit from a smooth and responsive performance.
 
 ## 📱 **Screenshots**
-![Preview 1](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview1.png)
-![Preview 2](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview2.png)
+![Preview 1](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview1.jpg)
+![Preview 2](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview2.jpg)
 
-![Preview 3](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview3.png)
-![Preview 4](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview4.png)
+![Preview 3](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview3.jpg)
+![Preview 4](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview4.jpg)
 
-![Preview 5](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview5.png)
-![Preview 6](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview6.png)
+![Preview 5](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview5.jpg)
+![Preview 6](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview6.jpg)
 
-![Preview 7](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview7.png)
-![Preview 8](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview8.png)
+![Preview 7](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview7.jpg)
+![Preview 8](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview8.jpg)
 
-![Preview 9](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview9.png)
-![Preview 10](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview10.png)
+![Preview 9](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview9.jpg)
+![Preview 10](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview10.jpg)
 
-![Preview 11](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview11.png)
-![Preview 12](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview12.png)
+![Preview 11](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview11.jpg)
+![Preview 12](https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview12.jpg)
 
 
 ## 🔧 **Getting Started**
