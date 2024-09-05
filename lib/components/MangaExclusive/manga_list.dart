@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MangaList extends StatelessWidget {
   final List<dynamic>? data;
@@ -45,6 +46,15 @@ class MangaList extends StatelessWidget {
                               child: CachedNetworkImage(
                                 imageUrl: proxyUrl + manga['image'],
                                 fit: BoxFit.cover,
+                                placeholder:(context, url) => Shimmer.fromColors(
+                                  baseColor: Colors.grey[900]!,
+                                  highlightColor: Colors.grey[700]!,
+                                  child: Container(
+                                    color: Colors.grey[600],
+                                    height: 250,
+                                    width: double.infinity,
+                                  ),
+                                ),
                               ),
                             ),
                           )),

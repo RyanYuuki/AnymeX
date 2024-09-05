@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Carousel extends StatelessWidget {
   final List<dynamic>? animeData;
@@ -102,6 +103,15 @@ class Carousel extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 child: CachedNetworkImage(
                                   imageUrl: proxyUrl + posterUrl,
+                                  placeholder: (context, url) => Shimmer.fromColors(
+                                  baseColor: Colors.grey[900]!,
+                                  highlightColor: Colors.grey[700]!,
+                                  child: Container(
+                                    color: Colors.grey[400],
+                                    height: 250,
+                                    width: double.infinity,
+                                  ),
+                                ),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -145,8 +155,19 @@ class Carousel extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.closed_caption,
-                                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                          color: Theme.of(context)
+                                                      .colorScheme
+                                                      .inverseSurface ==
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryFixedVariant
+                                              ? Colors.black
+                                              : Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryFixedVariant ==
+                                                      Color(0xffe2e2e2)
+                                                  ? Colors.black
+                                                  : Colors.white,
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
@@ -154,9 +175,20 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                                                 ? '?'
                                                 : anime['episodes']['sub']
                                                     .toString(),
-                                            style:
-                                                TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white)),
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                            .colorScheme
+                                                            .inverseSurface ==
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimaryFixedVariant
+                                                    ? Colors.black
+                                                    : Theme.of(context)
+                                                                .colorScheme
+                                                                .onPrimaryFixedVariant ==
+                                                            Color(0xffe2e2e2)
+                                                        ? Colors.black
+                                                        : Colors.white)),
                                       ],
                                     ),
                                   ),
@@ -175,8 +207,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                                       children: [
                                         Icon(
                                           Icons.mic,
-                                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                          color: Theme.of(context)
+                                                      .colorScheme
+                                                      .inverseSurface ==
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryFixedVariant
+                                              ? Colors.black
+                                              : Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryFixedVariant ==
+                                                      Color(0xffe2e2e2)
+                                                  ? Colors.black
+                                                  : Colors.white,
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
@@ -184,9 +227,20 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                                                 ? '?'
                                                 : anime['episodes']['dub']
                                                     .toString(),
-                                            style:
-                                                TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white)),
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                            .colorScheme
+                                                            .inverseSurface ==
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimaryFixedVariant
+                                                    ? Colors.black
+                                                    : Theme.of(context)
+                                                                .colorScheme
+                                                                .onPrimaryFixedVariant ==
+                                                            Color(0xffe2e2e2)
+                                                        ? Colors.black
+                                                        : Colors.white)),
                                       ],
                                     ),
                                   ),
@@ -209,14 +263,38 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                         ),
                         child: Row(
                           children: [
-                            Icon(Iconsax.play_circle5, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                            Icon(Iconsax.play_circle5,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white),
                             const SizedBox(width: 2),
                             Text(
                               type ?? 'TV',
-                              style:  TextStyle(
-                                  color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, fontSize: 14),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white,
+                                  fontSize: 14),
                             ),
                           ],
                         ),

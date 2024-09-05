@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MangaHomepageCarousel extends StatelessWidget {
   final List<dynamic>? carouselData;
@@ -77,8 +78,7 @@ class MangaHomepageCarousel extends StatelessWidget {
               log(itemData.toString());
               final String posterUrl = itemData['poster'] ?? '??';
               final tagg = itemData.toString() + tag!;
-              String extraData =
-                  itemData['rank'] ?? itemData['currentChapter'] ?? '??';
+              String extraData = itemData['currentChapter'] ?? '??';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -104,6 +104,16 @@ class MangaHomepageCarousel extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: posterUrl,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                  baseColor: Colors.grey[900]!,
+                                  highlightColor: Colors.grey[700]!,
+                                  child: Container(
+                                    color: Colors.grey[400],
+                                    height: 250,
+                                    width: double.infinity,
+                                  ),
+                                ),
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: 250,

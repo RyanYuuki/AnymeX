@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:text_scroll/text_scroll.dart';
 
 class Carousel extends StatelessWidget {
@@ -76,6 +79,15 @@ class Carousel extends StatelessWidget {
                             child: CachedNetworkImage(
                               imageUrl: proxyUrl + posterUrl,
                               fit: BoxFit.cover,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  color: Colors.grey[300],
+                                  height: 250,
+                                  width: double.infinity,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -106,15 +118,28 @@ class Carousel extends StatelessWidget {
                                 height: 35,
                                 width: 150,
                                 decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant,
                                     borderRadius: BorderRadius.circular(7)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Iconsax.book, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                                    Icon(Iconsax.book,
+                                        color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inverseSurface ==
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryFixedVariant
+                                            ? Colors.black
+                                            : Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryFixedVariant ==
+                                                    Color(0xffe2e2e2)
+                                                ? Colors.black
+                                                : Colors.white),
                                     const SizedBox(width: 5),
                                     SizedBox(
                                       child: TextScroll(
@@ -129,8 +154,20 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                                             const Duration(milliseconds: 1000),
                                         selectable: true,
                                         style: TextStyle(
-                                            fontSize: 16, color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                                            fontSize: 16,
+                                            color: Theme.of(context)
+                                                        .colorScheme
+                                                        .inverseSurface ==
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryFixedVariant
+                                                ? Colors.black
+                                                : Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimaryFixedVariant ==
+                                                        Color(0xffe2e2e2)
+                                                    ? Colors.black
+                                                    : Colors.white),
                                       ),
                                     ),
                                   ],
@@ -150,11 +187,30 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                       icon: Iconsax.heart5,
                       name: type,
                       isVertical: false,
-                      backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                      TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                      color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                      TextColor: Theme.of(context).colorScheme.inverseSurface ==
+                              Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant
+                          ? Colors.black
+                          : Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryFixedVariant ==
+                                  Color(0xffe2e2e2)
+                              ? Colors.black
+                              : Colors.white,
+                      color: Theme.of(context).colorScheme.inverseSurface ==
+                              Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant
+                          ? Colors.black
+                          : Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryFixedVariant ==
+                                  Color(0xffe2e2e2)
+                              ? Colors.black
+                              : Colors.white,
                       borderRadius: BorderRadius.circular(5),
                     )),
               ],

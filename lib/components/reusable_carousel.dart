@@ -3,13 +3,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ReusableCarousel extends StatelessWidget {
   final List<dynamic>? carouselData;
   final String? title;
   final String? tag;
   final bool? secondary;
-  const ReusableCarousel({super.key, this.title, this.carouselData, this.tag, this.secondary = true});
+  const ReusableCarousel(
+      {super.key,
+      this.title,
+      this.carouselData,
+      this.tag,
+      this.secondary = true});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +38,12 @@ class ReusableCarousel extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            secondary! ? const Text(
-              ' Animes',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-            ) : const SizedBox.shrink()
+            secondary!
+                ? const Text(
+                    ' Animes',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  )
+                : const SizedBox.shrink()
           ],
         ),
         const SizedBox(height: 10),
@@ -55,7 +63,10 @@ class ReusableCarousel extends StatelessWidget {
               final tagg = itemData.toString() + tag!;
               const String proxyUrl =
                   'https://goodproxy.goodproxy.workers.dev/fetch?url=';
-              String extraData = itemData['rank'] ?? itemData['type'] ?? itemData['relationType'] ?? '??';
+              String extraData = itemData['rank'] ??
+                  itemData['type'] ??
+                  itemData['relationType'] ??
+                  '??';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -81,6 +92,16 @@ class ReusableCarousel extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: proxyUrl + posterUrl,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                  baseColor: Colors.grey[900]!,
+                                  highlightColor: Colors.grey[700]!,
+                                  child: Container(
+                                    color: Colors.grey[900],
+                                    height: 250,
+                                    width: double.infinity,
+                                  ),
+                                ),
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: 250,
@@ -113,8 +134,19 @@ class ReusableCarousel extends StatelessWidget {
                             child: Text(
                               itemData['name'].toString(),
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
@@ -135,15 +167,38 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                               right: 7,
                               child: iconWithName(
                                 icon: Iconsax.play_circle5,
-                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                TextColor: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryFixedVariant,
                               ))
                         ],
                       ),
