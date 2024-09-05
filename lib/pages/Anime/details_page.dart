@@ -32,7 +32,8 @@ class _DetailsPageState extends State<DetailsPage> {
   dynamic charactersData;
   String? description;
 
-  final String baseUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/info?id=';
+  final String baseUrl =
+      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/info?id=';
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _DetailsPageState extends State<DetailsPage> {
       if (response.statusCode == 200) {
         final tempData = jsonDecode(response.body);
         final newResponse = await http.get(Uri.parse(
-            'https://consumet-api-two-nu.vercel.app/meta/anilist/info/${tempData['anime']['info']['anilistId']}'));
+            'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${tempData['anime']['info']['anilistId']}'));
         if (newResponse.statusCode == 200) {
           final characterTemp = jsonDecode(newResponse.body);
           setState(() {
@@ -64,7 +65,7 @@ class _DetailsPageState extends State<DetailsPage> {
         throw Exception('Failed to load data');
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      print('Error fetching data: $e Proxyyy ');
       setState(() {
         isLoading = false;
       });
@@ -79,7 +80,7 @@ class _DetailsPageState extends State<DetailsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: TextScroll(
-          isLoading ? 'Loading...' : animeInfo['name'].toString(),
+          isLoading ? 'Loading...' : animeInfo['name'].toString() ?? 'Failed to Load Data',
           mode: TextScrollMode.bouncing,
           velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
           delayBefore: const Duration(milliseconds: 500),
@@ -164,19 +165,29 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    height: 15,
+                    height: 18,
                     width: 3,
-                    color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                    color: Theme.of(context).colorScheme.inverseSurface,
                   ),
                   const SizedBox(width: 10),
                   iconWithName(
                     backgroundColor:
                         Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     icon: Iconsax.star1,
-                    TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                    TextColor: Theme.of(context).colorScheme.inverseSurface ==
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                        ? Colors.black
+                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                                Color(0xffe2e2e2)
+                            ? Colors.black
+                            : Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface ==
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                        ? Colors.black
+                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                                Color(0xffe2e2e2)
+                            ? Colors.black
+                            : Colors.white,
                     name: animeFullInfo['malscore'] == null
                         ? '0.0'
                         : animeFullInfo['malscore'].toString(),
@@ -205,8 +216,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -334,7 +356,7 @@ class FloatingBar extends StatelessWidget {
       left: 0,
       right: 0,
       child: Container(
-        margin: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         height: 60,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(7),
@@ -346,7 +368,7 @@ class FloatingBar extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Row(
@@ -373,16 +395,38 @@ class FloatingBar extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                                    color: Theme.of(context)
+                                                .colorScheme
+                                                .inverseSurface ==
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant
+                                        ? Colors.black
+                                        : Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryFixedVariant ==
+                                                Color(0xffe2e2e2)
+                                            ? Colors.black
+                                            : Colors.white),
                               ),
                             ),
                             Text(
                               'Episode ${provider.getCurrentEpisodeForAnime(id!) ?? '1'}',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                               ),
                             ),
                           ],
@@ -409,15 +453,36 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                         children: [
                           Icon(
                             Iconsax.play_circle5,
-                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, // Icon color
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white, // Icon color
                           ),
                           SizedBox(width: 8),
                           Text(
                             'Watch',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white, // Text color
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white, // Text color
                             ),
                           ),
                         ],

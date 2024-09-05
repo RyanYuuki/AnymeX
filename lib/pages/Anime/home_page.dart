@@ -15,6 +15,7 @@ import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 import '../../fallbackData/anime_data.dart';
 
 class AnimeHomePage extends StatefulWidget {
@@ -23,6 +24,21 @@ class AnimeHomePage extends StatefulWidget {
   @override
   State<AnimeHomePage> createState() => _AnimeHomePageState();
 }
+
+  String getGreetingMessage() {
+    DateTime now = DateTime.now();
+    int hour = now.hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'Good morning,';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good afternoon,';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good evening,';
+    } else {
+      return 'Good night,';
+    }
+  }
 
 class _AnimeHomePageState extends State<AnimeHomePage> {
   List<dynamic>? spotlightAnimes;
@@ -246,6 +262,15 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                               borderRadius: BorderRadius.circular(7),
                               child: CachedNetworkImage(
                                 imageUrl: proxyUrl + anime['poster'],
+                                placeholder:(context, url) => Shimmer.fromColors(
+                                  baseColor: Colors.grey[900]!,
+                                  highlightColor: Colors.grey[700]!,
+                                  child: Container(
+                                    color: Colors.grey[600],
+                                    height: 250,
+                                    width: double.infinity,
+                                  ),
+                                ),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -366,8 +391,8 @@ class _HeaderState extends State<Header> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Good Afternoon,',
+                      Text(
+                        getGreetingMessage(),
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
