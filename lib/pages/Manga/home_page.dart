@@ -144,6 +144,21 @@ class Header extends StatefulWidget {
   State<Header> createState() => _HeaderState();
 }
 
+String getGreetingMessage() {
+  DateTime now = DateTime.now();
+  int hour = now.hour;
+
+  if (hour >= 5 && hour < 12) {
+    return 'Good morning,';
+  } else if (hour >= 12 && hour < 17) {
+    return 'Good afternoon,';
+  } else if (hour >= 17 && hour < 21) {
+    return 'Good evening,';
+  } else {
+    return 'Good night,';
+  }
+}
+
 class _HeaderState extends State<Header> {
   final TextEditingController _controller = TextEditingController();
 
@@ -208,9 +223,9 @@ class _HeaderState extends State<Header> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Good Afternoon,',
-                        style: TextStyle(
+                      Text(
+                        getGreetingMessage(),
+                        style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                         ),

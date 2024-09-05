@@ -34,13 +34,13 @@ class HomePage extends StatelessWidget {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           body: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
             child: ListView(
               children: [
                 Column(
                   children: [
                     SizedBox(
-                      height: 400,
+                      height: 350,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -105,10 +105,10 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 60),
-                          const Text(
-                            'What are you looking for?',
-                            style: TextStyle(
-                                fontSize: 40, fontFamily: 'Poppins-Bold'),
+                          Text(
+                            'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
+                            style: const TextStyle(
+                                fontSize: 30, fontFamily: 'Poppins-Bold'),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 10),
