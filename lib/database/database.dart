@@ -1,11 +1,14 @@
 import 'dart:developer';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class AppData extends ChangeNotifier {
   List<Map<String, dynamic>>? watchedAnimes;
   List<Map<String, dynamic>>? readMangas;
   bool? isGrid;
+  // bool? isAndroid12OrAbove;
 
   AppData() {
     _loadData();
@@ -21,11 +24,30 @@ class AppData extends ChangeNotifier {
         box.get('currently-reading', defaultValue: []),
       );
       isGrid = box.get('grid-context', defaultValue: false);
+      // await _checkAndroidVersion();
       notifyListeners();
     } catch (e) {
       log('Failed to load data from Hive: $e');
     }
   }
+
+  // Future<void> _checkAndroidVersion() async {
+  //   if (Platform.isAndroid) {
+  //     try {
+  //       final deviceInfo = DeviceInfoPlugin();
+  //       final androidInfo = await deviceInfo.androidInfo;
+  //       final androidVersion = androidInfo.version.sdkInt;
+
+  //       isAndroid12OrAbove = androidVersion >= 31;
+  //       log('Android version : $androidVersion.toString');
+  //       notifyListeners();
+  //     } catch (e) {
+  //       log('Failed to get Android version: $e');
+  //     }
+  //   } else {
+  //     isAndroid12OrAbove = false;
+  //   }
+  // }
 
   void setWatchedAnimes(List<Map<String, dynamic>> animes) {
     watchedAnimes = animes;

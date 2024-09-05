@@ -48,6 +48,7 @@ class ThemeProvider extends ChangeNotifier {
       _seedColor = Color(corePalette.primary.get(40));
       updateTheme();
     } else {
+      _seedColor = Colors.indigo;
       _selectedTheme = isLightMode ? lightMode : darkMode;
     }
     box.put('PaletteMode', 'Material');

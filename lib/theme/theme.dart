@@ -42,8 +42,8 @@ ThemeData lightMode = ThemeData(
     ),
   ),
   iconTheme: const IconThemeData(
-    color: Colors.black, // Default icon color for light mode
-    size: 24, // Default icon size
+    color: Colors.black, 
+    size: 24, 
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: seedColor,

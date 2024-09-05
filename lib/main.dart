@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:aurora/database/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/onboarding_screens/onboarding_screens.dart';
@@ -5,6 +7,7 @@ import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
 import 'package:aurora/pages/user/profile.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +52,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     _checkFirstTime();
+    _checkAndroidVersion();
   }
 
   Future<void> _checkFirstTime() async {
@@ -56,6 +60,13 @@ class _MainAppState extends State<MainApp> {
     setState(() {
       _isFirstTime = box.get('isFirstTime', defaultValue: true);
     });
+  }
+
+  Future<void> _checkAndroidVersion() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    final bool isAndroid12orAbove = androidInfo.version.sdkInt >= 31;
+    Hive.box('app-data').put('isAndroid12orAbove', isAndroid12orAbove);
   }
 
   void _onItemTapped(int index) {
@@ -84,12 +95,10 @@ class _MainAppState extends State<MainApp> {
               bottomNavigationBar: CrystalNavigationBar(
                 currentIndex: _selectedIndex,
                 marginR:
-                    const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                 unselectedItemColor:
                     themeProvider.selectedTheme.colorScheme.inverseSurface,
-                backgroundColor: themeProvider
-                    .selectedTheme.colorScheme.inverseSurface
-                    .withOpacity(0.1),
+                backgroundColor: Colors.black.withOpacity(0.3),
                 onTap: _onItemTapped,
                 items: [
                   CrystalNavigationBarItem(
