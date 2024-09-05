@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
@@ -157,19 +158,29 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    height: 15,
+                    height: 18,
                     width: 3,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.inverseSurface,
                   ),
                   const SizedBox(width: 10),
                   iconWithName(
                     backgroundColor:
                         Theme.of(context).colorScheme.onPrimaryFixed,
                     icon: Iconsax.star1,
-                    TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                    TextColor: Theme.of(context).colorScheme.inverseSurface ==
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                        ? Colors.black
+                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                                Color(0xffe2e2e2)
+                            ? Colors.black
+                            : Colors.white,
+                    color: Theme.of(context).colorScheme.inverseSurface ==
+                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                        ? Colors.black
+                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                                Color(0xffe2e2e2)
+                            ? Colors.black
+                            : Colors.white,
                     name: '6.9',
                     isVertical: false,
                     borderRadius: BorderRadius.circular(5),
@@ -196,8 +207,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                         child: Text(
                           genre as String,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white,
                               fontSize: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -289,7 +311,7 @@ class FloatingBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<AppData>(context, listen: false);
     final currentChapter =
-        provider.getCurrentChapterForManga(id!) ?? 'chapter-1';
+        provider.getCurrentChapterForManga(id!) ?? 'Chapter 1';
     final currentChapterList = chapterList
         .where((chapter) => chapter['name'] == currentChapter)
         .toList();
@@ -341,8 +363,19 @@ class FloatingBar extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                                    color: Theme.of(context)
+                                                .colorScheme
+                                                .inverseSurface ==
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant
+                                        ? Colors.black
+                                        : Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryFixedVariant ==
+                                                Color(0xffe2e2e2)
+                                            ? Colors.black
+                                            : Colors.white),
                               ),
                             ),
                             Text(
@@ -351,8 +384,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                                   : currentChapter,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                               ),
                             ),
                           ],
@@ -382,15 +426,36 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Color
                         children: [
                           Icon(
                             Iconsax.book,
-                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                           ),
                           SizedBox(width: 8),
                           Text(
                             'Read',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                              color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface ==
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant
+                                  ? Colors.black
+                                  : Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant ==
+                                          Color(0xffe2e2e2)
+                                      ? Colors.black
+                                      : Colors.white,
                             ),
                           ),
                         ],
