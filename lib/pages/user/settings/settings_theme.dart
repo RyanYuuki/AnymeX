@@ -1,6 +1,9 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:aurora/components/setting/scheme_varaint_dialog.dart';
+import 'package:aurora/database/database.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
@@ -28,6 +31,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   int? selectedIndex;
   int? selectedColorIndex;
   bool? isCustomTheme;
+  bool isAndroid12orAbove = true;
 
   List<MaterialColor> colors = [
     Colors.red,
@@ -178,6 +182,8 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   }
 
   void initStates() {
+    isAndroid12orAbove =
+        Hive.box('app-data').get('isAndroid12orAbove', defaultValue: true);
     // Themes Switches
     value1 = box.get('PaletteMode') == 'Material';
     value2 = box.get('isOled', defaultValue: false);
@@ -291,7 +297,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
           const SizedBox(height: 30),
           SwitchTileStateless(
             icon: Iconsax.paintbucket5,
-            title: 'Material You',
+            title: isAndroid12orAbove ? 'Material You' : 'Default Theme',
             value: value1!,
             onChanged: (value) {
               _toggleSwitch(1);
@@ -302,11 +308,12 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
               Provider.of<ThemeProvider>(context).updateTheme();
             },
           ),
-          CustomTile(
-              icon: Iconsax.paintbucket,
-              title: 'Palette',
-              onTap: _showSchemeVariantDialog,
-              description: 'Change color styles!'),
+          if (isAndroid12orAbove)
+            CustomTile(
+                icon: Iconsax.paintbucket,
+                title: 'Palette',
+                onTap: _showSchemeVariantDialog,
+                description: 'Change color styles!'),
           SwitchTileStateless(
             icon: Iconsax.moon5,
             title: 'Oled Theme Variant',
@@ -318,7 +325,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
             onTap: () {},
           ),
           SwitchTileStateless(
-            icon: Iconsax.info_circle5,
+            icon: Iconsax.brush_1,
             title: 'Custom Theme',
             value: value3!,
             onChanged: (value) {
