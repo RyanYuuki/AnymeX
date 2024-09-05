@@ -119,6 +119,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
+              Positioned(
+                top: 30,
+                right: 15,
+                child: IconButton(
+                  onPressed: () {
+                    _showUsernameDialog(context);
+                  },
+                  icon: const Icon(Icons.edit),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer
+                        .withOpacity(0.7),
+                  ),
+                ),
+              ),
               Column(
                 children: [
                   const SizedBox(height: 70),
@@ -227,6 +246,80 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+  }
+
+  // Dialog to capture username
+  void _showUsernameDialog(BuildContext context) {
+    final TextEditingController _usernameController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          content: TextFormField(
+            controller: _usernameController,
+            decoration: InputDecoration(
+                hintText: 'Username',
+                fillColor: Theme.of(context).colorScheme.surfaceContainer),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                              width: 2,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant)),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      _submitUsername(_usernameController.text);
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  // Save the new username in Hive and update the UI
+  void _submitUsername(String newUsername) {
+    if (newUsername.isNotEmpty) {
+      var box = Hive.box('login-data');
+      var userInfo =
+          box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+      userInfo[0] = newUsername;
+      box.put('userInfo', userInfo);
+
+      // Refresh the UI
+      setState(() {});
+    }
   }
 
   Widget _buildStatContainer({required String label, required String value}) {
