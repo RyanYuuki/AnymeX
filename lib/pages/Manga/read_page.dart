@@ -82,7 +82,7 @@ class _ReadingPageState extends State<ReadingPage> {
     const String url =
         'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
-      final provider = Provider.of<AppData>(context);
+      final provider = Provider.of<AppData>(context, listen: false);
       final resp = await http.get(
           Uri.parse('$url${widget.mangaId}/${chaptersList?[index!]['id']}'));
       if (resp.statusCode == 200) {
@@ -92,7 +92,6 @@ class _ReadingPageState extends State<ReadingPage> {
           currentChapter = tempData['currentChapter'];
           isLoading = false;
         });
-        log(widget.posterUrl);
         provider.addReadManga(
             mangaId: widget.mangaId,
             mangaTitle: mangaTitle!,
