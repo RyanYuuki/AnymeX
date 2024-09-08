@@ -250,14 +250,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // Dialog to capture username
   void _showUsernameDialog(BuildContext context) {
-    final TextEditingController _usernameController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           content: TextFormField(
-            controller: _usernameController,
+            controller: usernameController,
             decoration: InputDecoration(
                 hintText: 'Username',
                 fillColor: Theme.of(context).colorScheme.surfaceContainer),
@@ -294,7 +294,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     onPressed: () {
-                      _submitUsername(_usernameController.text);
+                      _submitUsername(usernameController.text);
                       Navigator.of(context).pop(); // Close the dialog
                     },
                     child: const Text('Submit'),
