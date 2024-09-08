@@ -3,11 +3,11 @@ import 'package:infinite_carousel/infinite_carousel.dart';
 
 class CharacterCards extends StatelessWidget {
   final List<dynamic>? carouselData;
-
   const CharacterCards({super.key, this.carouselData});
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme customScheme = Theme.of(context).colorScheme;
     if (carouselData == null || carouselData!.isEmpty) {
       return Container();
     }
@@ -25,7 +25,7 @@ class CharacterCards extends StatelessWidget {
                 fontSize: 22,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: customScheme.primary,
               ),
             ),
             const SizedBox(height: 15),
@@ -107,7 +107,7 @@ class CharacterCards extends StatelessWidget {
                 fontSize: 22,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: customScheme.primary,
               ),
             ),
             const SizedBox(height: 15),
@@ -122,8 +122,8 @@ class CharacterCards extends StatelessWidget {
                 velocityFactor: 0.2,
                 axisDirection: Axis.horizontal,
                 itemBuilder: (context, itemIndex, realIndex) {
-                  final itemData = carouselData![itemIndex]['voiceActors'];
-                  final title = itemData[0]['name']['full'];
+                  final itemData = carouselData![itemIndex]?['voiceActors'];
+                  final title = itemData?[0]?['name']?['full'];
                   return Container(
                     margin: const EdgeInsets.only(right: 4),
                     child: Card(

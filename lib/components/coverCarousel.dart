@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class CoverCarousel extends StatefulWidget {
@@ -38,8 +39,8 @@ class _CoverCarouselState extends State<CoverCarousel> {
           itemCount: widget.animeData!.length,
           itemBuilder: (context, index, realIndex) {
             final anime = widget.animeData![index];
-            final String posterUrl = anime['poster'] ?? '??';
-            final tag = anime['name'] + anime['jname'] + anime['id'];
+            final String posterUrl = anime['carouselImage'] ?? '??';
+            final tag = anime['name'] + anime['id'];
             const String proxyUrl =
                 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
@@ -60,7 +61,7 @@ class _CoverCarouselState extends State<CoverCarousel> {
                         );
                       },
                       child: Container(
-                        height: 200,
+                        height: 170,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Hero(
                           tag: tag,
@@ -69,6 +70,17 @@ class _CoverCarouselState extends State<CoverCarousel> {
                             child: CachedNetworkImage(
                               imageUrl: proxyUrl + posterUrl,
                               fit: BoxFit.cover,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.grey[900]!,
+                                highlightColor: Colors.grey[700]!,
+                                child: Container(
+                                  color: Colors.grey[400],
+                                  height: 250,
+                                  width: double.infinity,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -94,10 +106,30 @@ class _CoverCarouselState extends State<CoverCarousel> {
                             isVertical: false,
                             borderRadius: BorderRadius.circular(5),
                             backgroundColor: ColorScheme.onPrimaryFixedVariant,
-                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                            TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                            TextColor:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
                           ),
                         ],
                       ),
@@ -121,7 +153,7 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
             );
           },
           options: CarouselOptions(
-            height: 300,
+            height: 270,
             viewportFraction: 1,
             initialPage: 0,
             enableInfiniteScroll: true,
