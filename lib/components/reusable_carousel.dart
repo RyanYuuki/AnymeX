@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ class ReusableCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customScheme = Theme.of(context).colorScheme;
     if (carouselData == null || carouselData!.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -35,7 +38,7 @@ class ReusableCarousel extends StatelessWidget {
                 fontSize: 22,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: customScheme.primary,
               ),
             ),
             secondary!
@@ -59,7 +62,7 @@ class ReusableCarousel extends StatelessWidget {
             axisDirection: Axis.horizontal,
             itemBuilder: (context, itemIndex, realIndex) {
               final itemData = carouselData![itemIndex];
-              final String posterUrl = itemData['poster'] ?? '??';
+              final String posterUrl = itemData['poster'] ?? itemData['image'] ?? '??';
               final tagg = itemData.toString() + tag!;
               const String proxyUrl =
                   'https://goodproxy.goodproxy.workers.dev/fetch?url=';
@@ -67,7 +70,6 @@ class ReusableCarousel extends StatelessWidget {
                   itemData['type'] ??
                   itemData['relationType'] ??
                   '??';
-
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: GestureDetector(
@@ -132,7 +134,7 @@ class ReusableCarousel extends StatelessWidget {
                             left: 10,
                             right: 10,
                             child: Text(
-                              itemData['name'].toString(),
+                              itemData?['name'] ?? itemData?['title'],
                               style: TextStyle(
                                 color: Theme.of(context)
                                             .colorScheme
@@ -196,9 +198,8 @@ class ReusableCarousel extends StatelessWidget {
                                 name: extraData,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryFixedVariant,
+                                backgroundColor:
+                                    customScheme.onPrimaryFixedVariant,
                               ))
                         ],
                       ),
