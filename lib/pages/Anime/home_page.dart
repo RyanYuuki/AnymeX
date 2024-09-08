@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/coverCarousel.dart';
+import 'package:aurora/database/api.dart';
+import 'package:aurora/fallbackData/anime_data_consumet.dart';
 import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +15,6 @@ import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 import '../../fallbackData/anime_data.dart';
 
@@ -25,32 +25,34 @@ class AnimeHomePage extends StatefulWidget {
   State<AnimeHomePage> createState() => _AnimeHomePageState();
 }
 
-  String getGreetingMessage() {
-    DateTime now = DateTime.now();
-    int hour = now.hour;
+String getGreetingMessage() {
+  DateTime now = DateTime.now();
+  int hour = now.hour;
 
-    if (hour >= 5 && hour < 12) {
-      return 'Good morning,';
-    } else if (hour >= 12 && hour < 17) {
-      return 'Good afternoon,';
-    } else if (hour >= 17 && hour < 21) {
-      return 'Good evening,';
-    } else {
-      return 'Good night,';
-    }
+  if (hour >= 5 && hour < 12) {
+    return 'Good morning,';
+  } else if (hour >= 12 && hour < 17) {
+    return 'Good afternoon,';
+  } else if (hour >= 17 && hour < 21) {
+    return 'Good evening,';
+  } else {
+    return 'Good night,';
   }
+}
 
 class _AnimeHomePageState extends State<AnimeHomePage> {
+  bool? usingConsumet =
+      Hive.box('app-data').get('using-consumet', defaultValue: false);
+  dynamic baseAnimeData;
   List<dynamic>? spotlightAnimes;
   List<dynamic>? trendingAnimes;
   List<dynamic>? latestEpisodeAnimes;
   List<dynamic>? topUpcomingAnimes;
-  Map<String, dynamic>? top10Animes;
+  dynamic top10Animes;
   List<dynamic>? topAiringAnimes;
   List<dynamic>? mostPopularAnimes;
   List<dynamic>? mostFavoriteAnimes;
   List<dynamic>? latestCompletedAnimes;
-  List<dynamic>? genres;
   int currentTableIndex = 0;
   final TextEditingController _searchTerm = TextEditingController();
   final PageController _pageController = PageController();
@@ -58,48 +60,73 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   @override
   void initState() {
     super.initState();
-    InitFallbackData();
+    final appDataBox = Hive.box('app-data');
+    usingConsumet = appDataBox.get('using-consumet', defaultValue: false);
+    _initFallbackData();
     fetchData();
+    appDataBox.watch(key: 'using-consumet').listen((BoxEvent event) {
+      if (event.value != null && event.value != usingConsumet) {
+        setState(() {
+          usingConsumet = event.value;
+        });
+        _initFallbackData(); 
+        fetchData(); 
+      }
+    });
   }
 
-  void InitFallbackData() {
-    spotlightAnimes = animeData['spotlightAnimes'];
-    trendingAnimes = animeData['trendingAnimes'];
-    latestEpisodeAnimes = animeData['latestEpisodeAnimes'];
-    topUpcomingAnimes = animeData['topUpcomingAnimes'];
-    top10Animes = animeData['top10Animes'];
-    topAiringAnimes = animeData['topAiringAnimes'];
-    mostPopularAnimes = animeData['mostPopularAnimes'];
-    mostFavoriteAnimes = animeData['mostFavoriteAnimes'];
-    latestCompletedAnimes = animeData['latestCompletedAnimes'];
-    genres = animeData['genres'];
+  void _initFallbackData() {
+    if (usingConsumet!) {
+      setState(() {
+        spotlightAnimes = extractData(consumet_spotlightAnimes['results']);
+        trendingAnimes = extractData(consumet_trendingAnimes['results']);
+        latestEpisodeAnimes =
+            extractData(consumet_latestEpisodeAnimes['results']);
+        topUpcomingAnimes = extractData(consumet_topUpcomingAnimes['results']);
+        topAiringAnimes = extractData(consumet_topAiringAnimes['results']);
+        mostPopularAnimes = extractData(consumet_mostPopularAnimes['results']);
+        mostFavoriteAnimes =
+            extractData(consumet_mostFavoriteAnimes['results']);
+        latestCompletedAnimes =
+            extractData(consumet_latestCompletedAnimes['results']);
+      });
+    } else {
+      setState(() {
+        spotlightAnimes = extractData(animeData['spotlightAnimes']);
+        trendingAnimes = extractData(animeData['trendingAnimes']);
+        latestEpisodeAnimes = extractData(animeData['latestEpisodeAnimes']);
+        topUpcomingAnimes = extractData(animeData['topUpcomingAnimes']);
+        top10Animes = animeData['top10Animes'];
+        topAiringAnimes = extractData(animeData['topAiringAnimes']);
+        mostPopularAnimes = extractData(animeData['mostPopularAnimes']);
+        mostFavoriteAnimes = extractData(animeData['mostFavoriteAnimes']);
+        latestCompletedAnimes = extractData(animeData['latestCompletedAnimes']);
+      });
+    }
   }
 
   final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
   Future<void> fetchData() async {
-    const String apiUrl = 'https://aniwatch-ryan.vercel.app/anime/home';
-    try {
-      final response = await http.get(Uri.parse(proxyUrl + apiUrl));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          spotlightAnimes = data['spotlightAnimes'];
-          trendingAnimes = data['trendingAnimes'];
-          latestEpisodeAnimes = data['latestEpisodeAnimes'];
-          topUpcomingAnimes = data['topUpcomingAnimes'];
-          top10Animes = data['top10Animes'];
-          topAiringAnimes = data['topAiringAnimes'];
-          mostPopularAnimes = data['mostPopularAnimes'];
-          mostFavoriteAnimes = data['mostFavoriteAnimes'];
-          latestCompletedAnimes = data['latestCompletedAnimes'];
-          genres = data['genres'];
-        });
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
+    if (!usingConsumet!) {
+      baseAnimeData = await fetchHomePageAniwatch();
+    } else {
+      baseAnimeData = await fetchHomePageConsumet();
+    }
+
+    if (baseAnimeData != null) {
+      setState(() {
+        spotlightAnimes = extractData(baseAnimeData['spotlightAnimes']);
+        trendingAnimes = extractData(baseAnimeData['trendingAnimes']);
+        latestEpisodeAnimes = extractData(baseAnimeData['latestEpisodeAnimes']);
+        topUpcomingAnimes = extractData(baseAnimeData['topUpcomingAnimes']);
+        top10Animes = baseAnimeData['top10Animes'];
+        topAiringAnimes = extractData(baseAnimeData['topAiringAnimes']);
+        mostPopularAnimes = extractData(baseAnimeData['mostPopularAnimes']);
+        mostFavoriteAnimes = extractData(baseAnimeData['mostFavoriteAnimes']);
+        latestCompletedAnimes =
+            extractData(baseAnimeData['latestCompletedAnimes']);
+      });
     }
   }
 
@@ -262,7 +289,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                               borderRadius: BorderRadius.circular(7),
                               child: CachedNetworkImage(
                                 imageUrl: proxyUrl + anime['poster'],
-                                placeholder:(context, url) => Shimmer.fromColors(
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
                                   baseColor: Colors.grey[900]!,
                                   highlightColor: Colors.grey[700]!,
                                   child: Container(
@@ -393,7 +421,7 @@ class _HeaderState extends State<Header> {
                     children: [
                       Text(
                         getGreetingMessage(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                         ),
