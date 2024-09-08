@@ -70,7 +70,7 @@ class Carousel extends StatelessWidget {
           ),
           items: animeData!.map((anime) {
             final String posterUrl = anime['poster'] ?? '??';
-            final String? type = anime['type'] ?? '??';
+            final String? type = anime['type'] ?? 'TV';
             final tag = anime['name'] + anime['jname'] + anime['id'];
             const String proxyUrl =
                 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
@@ -103,15 +103,16 @@ class Carousel extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 child: CachedNetworkImage(
                                   imageUrl: proxyUrl + posterUrl,
-                                  placeholder: (context, url) => Shimmer.fromColors(
-                                  baseColor: Colors.grey[900]!,
-                                  highlightColor: Colors.grey[700]!,
-                                  child: Container(
-                                    color: Colors.grey[400],
-                                    height: 250,
-                                    width: double.infinity,
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: Colors.grey[900]!,
+                                    highlightColor: Colors.grey[700]!,
+                                    child: Container(
+                                      color: Colors.grey[400],
+                                      height: 250,
+                                      width: double.infinity,
+                                    ),
                                   ),
-                                ),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -171,10 +172,7 @@ class Carousel extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                            anime['episodes']['sub'] == null
-                                                ? '?'
-                                                : anime['episodes']['sub']
-                                                    .toString(),
+                                            anime['episodes']['sub'].toString(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                             .colorScheme
@@ -223,10 +221,7 @@ class Carousel extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                            anime['episodes']['dub'] == null
-                                                ? '?'
-                                                : anime['episodes']['dub']
-                                                    .toString(),
+                                            anime['episodes']['dub'].toString(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                             .colorScheme
