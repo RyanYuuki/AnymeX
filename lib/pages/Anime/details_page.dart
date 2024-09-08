@@ -1,18 +1,34 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
+import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
+
+Color? hexToColor(String hexColor) {
+  if (hexColor == '??') {
+    return null;
+  } else {
+    hexColor = hexColor.replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF$hexColor';
+    }
+    return Color(int.parse(hexColor, radix: 16));
+  }
+}
 
 class DetailsPage extends StatefulWidget {
   final String id;
@@ -25,9 +41,9 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  bool usingConsumet =
+      Hive.box('app-data').get('using-consumet', defaultValue: false);
   dynamic data;
-  dynamic animeInfo;
-  dynamic animeFullInfo;
   bool isLoading = true;
   dynamic charactersData;
   String? description;
@@ -38,49 +54,99 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    FetchAnimeData();
+    fetchAnimeData();
   }
 
-  Future<void> FetchAnimeData() async {
+  Future<void> fetchAnimeData() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl${widget.id}'));
-      if (response.statusCode == 200) {
-        final tempData = jsonDecode(response.body);
-        final newResponse = await http.get(Uri.parse(
-            'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${tempData['anime']['info']['anilistId']}'));
-        if (newResponse.statusCode == 200) {
-          final characterTemp = jsonDecode(newResponse.body);
-          setState(() {
-            description = characterTemp['description'];
-            charactersData = characterTemp['characters'];
-          });
-        }
-        setState(() {
-          data = tempData;
-          animeFullInfo = tempData['anime']['moreInfo'];
-          animeInfo = tempData['anime']['info'];
-          isLoading = false;
-        });
+      setState(() {
+        isLoading = true;
+        usingConsumet =
+            Hive.box('app-data').get('using-consumet', defaultValue: false);
+      });
+      if (usingConsumet) {
+        await fetchFromConsumet();
       } else {
-        throw Exception('Failed to load data');
+        await fetchFromAniwatch();
       }
     } catch (e) {
-      print('Error fetching data: $e Proxyyy ');
+      log('Primary fetch failed: $e, switching API...');
+      if (usingConsumet) {
+        try {
+          await fetchFromAniwatch();
+        } catch (e) {
+          log('Fallback Aniwatch fetch failed: $e');
+        }
+      } else {
+        try {
+          await fetchFromConsumet();
+        } catch (e) {
+          log('Fallback Consumet fetch failed: $e');
+        }
+      }
+    } finally {
       setState(() {
         isLoading = false;
       });
     }
   }
 
+  Future<void> fetchFromConsumet() async {
+    final tempData = await fetchAnimeDetailsConsumet(widget.id);
+    if (tempData != null) {
+      setState(() {
+        data = conditionDetailPageData(tempData, true);
+        description = tempData['description'] ?? 'No description available';
+        charactersData = tempData['characters'] ?? [];
+        if (Hive.box('login-data')
+                .get('PaletteMode', defaultValue: 'Material') ==
+            'Banner') {
+          Provider.of<ThemeProvider>(context, listen: false)
+              .adaptBannerColor(hexToColor(data['color'])!);
+        } else {
+          Provider.of<ThemeProvider>(context, listen: false)
+              .checkAndApplyPaletteMode();
+        }
+      });
+    } else {
+      throw Exception('Consumet fetch failed');
+    }
+  }
+
+  Future<void> fetchFromAniwatch() async {
+    final tempData = await fetchAnimeDetailsAniwatch(widget.id);
+    if (tempData != null) {
+      setState(() {
+        data = mergeData(tempData);
+      });
+
+      final newResponse = await http.get(Uri.parse(
+          'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data['anilistId']}'));
+
+      if (newResponse.statusCode == 200) {
+        final characterTemp = jsonDecode(newResponse.body);
+        setState(() {
+          description = data['description'];
+          charactersData = characterTemp['characters'] ?? [];
+        });
+      } else {
+        log('Failed to fetch character data from Consumet: ${newResponse.statusCode}');
+      }
+    } else {
+      throw Exception('Aniwatch fetch failed');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    ColorScheme CustomScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: CustomScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: TextScroll(
-          isLoading ? 'Loading...' : animeInfo['name'].toString() ?? 'Failed to Load Data',
+          data == null ? 'Loading...' : data['name'] ?? '??',
           mode: TextScrollMode.bouncing,
           velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
           delayBefore: const Duration(milliseconds: 500),
@@ -113,18 +179,25 @@ class _DetailsPageState extends State<DetailsPage> {
                   children: [
                     Column(
                       children: [
-                        Poster(tag: widget.tag, poster: widget.posterUrl),
+                        Poster(
+                          tag: widget.tag,
+                          poster: widget.posterUrl,
+                        ),
                         const SizedBox(height: 30),
                         Info(context),
                       ],
                     ),
                   ],
                 ),
-                if (animeInfo['stats']['episodes']['sub'] != 0 &&
-                    animeInfo['stats']['episodes']['sub'] != null)
+                if (data?['stats']?['episodes']?['sub'] != 0 &&
+                        data?['stats']?['episodes']?['sub'] != null ||
+                    data?['totalEpisodes'] != 0 &&
+                        data?['totalEpisodes'] != null)
                   (FloatingBar(
-                    title: animeInfo['name'] ?? '??',
+                    title: data['name'] ?? '??',
                     id: widget.id,
+                    usingConsumet: usingConsumet,
+                    color: hexToColor(data['color'] ?? '??'),
                   ))
               ],
             ),
@@ -132,11 +205,12 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   Container Info(BuildContext context) {
+    ColorScheme CustomScheme = Theme.of(context).colorScheme;
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: CustomScheme.surfaceContainer,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
@@ -152,7 +226,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   Container(
                     constraints: BoxConstraints(maxWidth: 170),
                     child: TextScroll(
-                      animeInfo['name']?.toString() ?? '??',
+                      data == null ? 'Loading...' : data['name'] ?? '??',
                       mode: TextScrollMode.endless,
                       velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
                       delayBefore: Duration(milliseconds: 500),
@@ -167,30 +241,27 @@ class _DetailsPageState extends State<DetailsPage> {
                   Container(
                     height: 18,
                     width: 3,
-                    color: Theme.of(context).colorScheme.inverseSurface,
+                    color: CustomScheme.inverseSurface,
                   ),
                   const SizedBox(width: 10),
                   iconWithName(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                    backgroundColor: CustomScheme.onPrimaryFixedVariant,
                     icon: Iconsax.star1,
-                    TextColor: Theme.of(context).colorScheme.inverseSurface ==
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                    TextColor: CustomScheme.inverseSurface ==
+                            CustomScheme.onPrimaryFixedVariant
                         ? Colors.black
-                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                        : CustomScheme.onPrimaryFixedVariant ==
                                 Color(0xffe2e2e2)
                             ? Colors.black
                             : Colors.white,
-                    color: Theme.of(context).colorScheme.inverseSurface ==
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant
+                    color: CustomScheme.inverseSurface ==
+                            CustomScheme.onPrimaryFixedVariant
                         ? Colors.black
-                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                        : CustomScheme.onPrimaryFixedVariant ==
                                 Color(0xffe2e2e2)
                             ? Colors.black
                             : Colors.white,
-                    name: animeFullInfo['malscore'] == null
-                        ? '0.0'
-                        : animeFullInfo['malscore'].toString(),
+                    name: data['rating'] ?? data['malscore'],
                     isVertical: false,
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -201,7 +272,7 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: (animeFullInfo['genres'] as List<dynamic>? ?? [])
+                children: (data?['genres'] as List<dynamic>? ?? [])
                     .take(3)
                     .map<Widget>(
                       (genre) => Container(
@@ -209,9 +280,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryFixedVariant,
+                            color: CustomScheme.onPrimaryFixedVariant,
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
                           genre as String,
@@ -248,23 +317,19 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest),
+                      color: CustomScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
-                          animeInfo['stats']['episodes']['sub'] == null
-                              ? '?'
-                              : (animeInfo['stats']['episodes']['sub']
-                                  .toString()),
+                          data?['totalEpisodes'] ??
+                              data?['stats']['episodes']['sub'].toString(),
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('Episodes')
                     ],
                   ),
                 ),
                 Container(
-                  color: Theme.of(context).colorScheme.onPrimaryFixed,
+                  color: CustomScheme.onPrimaryFixed,
                   height: 30,
                   width: 2,
                 ),
@@ -275,22 +340,11 @@ class _DetailsPageState extends State<DetailsPage> {
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest),
+                      color: CustomScheme.surfaceContainerHighest),
                   child: Column(
                     children: [
                       Text(
-                        animeInfo['stats']['duration'] == null
-                            ? '??'
-                            : (animeInfo['stats']['duration']
-                                .toString()
-                                .substring(
-                                    0,
-                                    animeInfo['stats']['duration']
-                                            .toString()
-                                            .length -
-                                        1)),
+                        data?['duration'] ?? '??',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text('Per Ep')
@@ -305,15 +359,14 @@ class _DetailsPageState extends State<DetailsPage> {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: CustomScheme.surfaceContainerHighest,
             ),
             padding: EdgeInsets.all(10),
             child: Column(
               children: [
                 Text(
                   description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
-                      animeInfo['description']
-                          .replaceAll(RegExp(r'<[^>]*>'), '') ??
+                      data?['description'].replaceAll(RegExp(r'<[^>]*>'), '') ??
                       'Description Not Found',
                   maxLines: 13,
                   overflow: TextOverflow.ellipsis,
@@ -323,20 +376,25 @@ class _DetailsPageState extends State<DetailsPage> {
             ),
           ),
           const SizedBox(height: 20),
-          CharacterCards(carouselData: charactersData),
+          CharacterCards(
+            carouselData: charactersData,
+          ),
           ReusableCarousel(
             title: 'Popular',
-            carouselData: data['mostPopularAnimes'],
+            carouselData: data?['popularAnimes'],
             tag: 'details-page1',
           ),
           ReusableCarousel(
-              title: 'Related',
-              carouselData: data['relatedAnimes'],
-              tag: 'details-page2'),
+            title: 'Related',
+            carouselData: data?['relatedAnimes'],
+            tag: 'details-page2',
+          ),
           ReusableCarousel(
-              title: 'Recommended',
-              carouselData: data['recommendedAnimes'],
-              tag: 'details-page3'),
+            title: 'Recommended',
+            carouselData: data?['recommendedAnimes'],
+            tag: 'details-page3',
+          ),
+          const SizedBox(height: 100),
         ],
       ),
     );
@@ -346,10 +404,18 @@ class _DetailsPageState extends State<DetailsPage> {
 class FloatingBar extends StatelessWidget {
   final String? title;
   final String? id;
-  const FloatingBar({super.key, this.title, this.id});
+  final bool usingConsumet;
+  final Color? color;
+  const FloatingBar(
+      {super.key,
+      this.title,
+      this.id,
+      required this.usingConsumet,
+      this.color});
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme CustomScheme = Theme.of(context).colorScheme;
     final provider = Provider.of<AppData>(context);
     return Positioned(
       bottom: 0,
@@ -368,7 +434,10 @@ class FloatingBar extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.1),
+                color: Theme.of(context)
+                    .colorScheme
+                    .inverseSurface
+                    .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Row(
@@ -442,8 +511,7 @@ class FloatingBar extends StatelessWidget {
                             arguments: {'id': id});
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                        backgroundColor: CustomScheme.onPrimaryFixedVariant,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -453,18 +521,13 @@ class FloatingBar extends StatelessWidget {
                         children: [
                           Icon(
                             Iconsax.play_circle5,
-                            color:
-                                Theme.of(context).colorScheme.inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
+                            color: CustomScheme.inverseSurface ==
+                                    CustomScheme.onPrimaryFixedVariant
+                                ? Colors.black
+                                : CustomScheme.onPrimaryFixedVariant ==
+                                        Color(0xffe2e2e2)
                                     ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white, // Icon color
+                                    : Colors.white, // Icon color
                           ),
                           SizedBox(width: 8),
                           Text(
@@ -500,7 +563,11 @@ class FloatingBar extends StatelessWidget {
 }
 
 class Poster extends StatelessWidget {
-  const Poster({super.key, required this.tag, required this.poster});
+  const Poster({
+    super.key,
+    required this.tag,
+    required this.poster,
+  });
   final String? poster;
   final String? tag;
   @override
