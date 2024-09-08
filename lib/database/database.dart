@@ -1,14 +1,12 @@
 import 'dart:developer';
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 
 class AppData extends ChangeNotifier {
-  List<Map<String, dynamic>>? watchedAnimes;
-  List<Map<String, dynamic>>? readMangas;
+  dynamic watchedAnimes;
+  dynamic readMangas;
   bool? isGrid;
-  // bool? isAndroid12OrAbove;
+  bool? usingConsumet;
 
   AppData() {
     _loadData();
@@ -17,37 +15,15 @@ class AppData extends ChangeNotifier {
   Future<void> _loadData() async {
     try {
       var box = await Hive.openBox('app-data');
-      watchedAnimes = List<Map<String, dynamic>>.from(
-        box.get('currently-watching', defaultValue: []),
-      );
-      readMangas = List<Map<String, dynamic>>.from(
-        box.get('currently-reading', defaultValue: []),
-      );
+      watchedAnimes = box.get('currently-watching', defaultValue: []);
+      readMangas = box.get('currently-reading', defaultValue: []);
       isGrid = box.get('grid-context', defaultValue: false);
-      // await _checkAndroidVersion();
+      usingConsumet = box.get('using-consumet', defaultValue: false);
       notifyListeners();
     } catch (e) {
       log('Failed to load data from Hive: $e');
     }
   }
-
-  // Future<void> _checkAndroidVersion() async {
-  //   if (Platform.isAndroid) {
-  //     try {
-  //       final deviceInfo = DeviceInfoPlugin();
-  //       final androidInfo = await deviceInfo.androidInfo;
-  //       final androidVersion = androidInfo.version.sdkInt;
-
-  //       isAndroid12OrAbove = androidVersion >= 31;
-  //       log('Android version : $androidVersion.toString');
-  //       notifyListeners();
-  //     } catch (e) {
-  //       log('Failed to get Android version: $e');
-  //     }
-  //   } else {
-  //     isAndroid12OrAbove = false;
-  //   }
-  // }
 
   void setWatchedAnimes(List<Map<String, dynamic>> animes) {
     watchedAnimes = animes;
@@ -61,6 +37,7 @@ class AppData extends ChangeNotifier {
     required String animeTitle,
     required String currentEpisode,
     required String animePosterImageUrl,
+    required bool isConsumet,
   }) {
     watchedAnimes ??= [];
 
@@ -69,6 +46,7 @@ class AppData extends ChangeNotifier {
       'animeTitle': animeTitle,
       'currentEpisode': currentEpisode,
       'poster': animePosterImageUrl,
+      'isConsumet': isConsumet,
     };
 
     watchedAnimes!.removeWhere((anime) => anime['animeId'] == animeId);
@@ -116,14 +94,14 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, dynamic>? getAnimeById(String animeId) {
+  dynamic getAnimeById(String animeId) {
     return watchedAnimes?.firstWhere(
       (anime) => anime['animeId'] == animeId,
       orElse: () => {},
     );
   }
 
-  Map<String, dynamic>? getMangaById(String mangaId) {
+  dynamic getMangaById(String mangaId) {
     return readMangas?.firstWhere(
       (manga) => manga['mangaId'] == mangaId,
       orElse: () => {},
@@ -132,13 +110,11 @@ class AppData extends ChangeNotifier {
 
   String? getCurrentEpisodeForAnime(String animeId) {
     final anime = getAnimeById(animeId);
-    log('Anime fetched: $anime');
     return anime?['currentEpisode'] ?? '1';
   }
 
   String? getCurrentChapterForManga(String mangaId) {
     final manga = getMangaById(mangaId);
-    log('Manga fetched: $manga');
     return manga?['currentChapter'];
   }
 }
