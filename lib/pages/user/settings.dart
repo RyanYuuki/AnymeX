@@ -1,5 +1,6 @@
 import 'package:aurora/components/common/custom_tile.dart';
-import 'package:aurora/pages/user/settings/player_settings.dart';
+import 'package:aurora/pages/user/settings/settings_player.dart';
+import 'package:aurora/pages/user/settings/settings_sources.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -35,6 +36,15 @@ class SettingsPage extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           CustomTile(
+            icon: Icons.source,
+            title: 'Sources',
+            description: 'Switch Sources for Animes and Manga',
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const SourcesSettingPage()));
+            },
+          ),
+          CustomTile(
             icon: Iconsax.play5,
             title: 'Player (Soon)',
             description: 'Change Video Player Settings',
@@ -53,7 +63,7 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           CustomTile(
-            icon: Iconsax.language_circle5,
+            icon: Icons.language,
             title: 'Language',
             description: 'Change the app language',
             onTap: () {},
