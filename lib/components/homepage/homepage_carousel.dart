@@ -1,4 +1,5 @@
 import 'package:aurora/components/IconWithLabel.dart';
+import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -82,14 +83,15 @@ class HomepageCarousel extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(
+                    Navigator.push(
                       context,
-                      '/details',
-                      arguments: {
-                        'id': itemData['animeId'],
-                        'posterUrl': proxyUrl + posterUrl,
-                        'tag': tagg
-                      },
+                      MaterialPageRoute(
+                        builder: (context) => DetailsPage(
+                          id: itemData['animeId'],
+                          posterUrl: proxyUrl + posterUrl,
+                          tag: tagg,
+                        ),
+                      ),
                     );
                   },
                   child: Column(
@@ -102,7 +104,8 @@ class HomepageCarousel extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: proxyUrl + posterUrl,
-                                placeholder: (context, url) => Shimmer.fromColors(
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
                                   baseColor: Colors.grey[900]!,
                                   highlightColor: Colors.grey[700]!,
                                   child: Container(

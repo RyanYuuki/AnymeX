@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';

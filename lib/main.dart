@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:aurora/database/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
@@ -131,8 +130,11 @@ class _MainAppState extends State<MainApp> {
             final id = args?['id'] ?? '';
             final tag = args?['tag'] ?? '';
             return MaterialPageRoute(
-              builder: (context) =>
-                  DetailsPage(id: id, posterUrl: posterUrl, tag: tag),
+              builder: (context) => DetailsPage(
+                id: id,
+                posterUrl: posterUrl,
+                tag: tag,
+              ),
             );
           case '/watch':
             final id = args?['id'] ?? '';

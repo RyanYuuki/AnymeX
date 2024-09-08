@@ -54,9 +54,9 @@ class _EpisodeGridState extends State<EpisodeGrid> {
         itemCount: filteredEpisodes.length,
         itemBuilder: (context, index) {
           final episode = filteredEpisodes[index];
-          final episodeNumber = episode['number'];
-          final episodeTitle = episode['title'] ?? 'No Title';
-          final isFiller = episode['isFiller'] ?? false;
+          final episodeNumber = episode?['number'];
+          final episodeTitle = episode?['title'] ?? 'No Title';
+          final isFiller = episode?['isFiller'] ?? false;
           final isSelected = widget.currentEpisode == episodeNumber;
 
           return GestureDetector(
