@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +16,8 @@ class ThemeProvider extends ChangeNotifier {
     isOled = box.get('isOled', defaultValue: false);
     if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
       loadDynamicTheme();
+    } else if (box.get('PaletteMode', defaultValue: 'Material') == 'Banner') {
+      adaptBannerColor(Colors.indigo);
     } else {
       int colorValue = box.get('SeedColor', defaultValue: Colors.indigo.value);
       MaterialColor newSeedColor =
@@ -146,6 +147,13 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void adaptBannerColor(Color newColor) {
+    _seedColor = newColor;
+    updateTheme();
+    Hive.box('login-data').put('PaletteMode', 'Banner');
+    notifyListeners();
+  }
+
   void toggleTheme() {
     if (isLightMode) {
       setDarkMode();
@@ -194,5 +202,20 @@ class ThemeProvider extends ChangeNotifier {
       800: color.withOpacity(.9),
       900: color.withOpacity(1),
     };
+  }
+
+  void checkAndApplyPaletteMode() {
+    var box = Hive.box('login-data');
+    String paletteMode = box.get('PaletteMode', defaultValue: 'Material');
+
+    if (paletteMode == 'Material') {
+      loadDynamicTheme();
+    } else {
+      int colorValue = box.get('SeedColor', defaultValue: Colors.indigo.value);
+      MaterialColor newSeedColor =
+          MaterialColor(colorValue, getMaterialColorSwatch(colorValue));
+      changeSeedColor(newSeedColor);
+    }
+    updateTheme();
   }
 }

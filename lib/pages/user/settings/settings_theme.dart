@@ -1,9 +1,6 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:aurora/components/setting/scheme_varaint_dialog.dart';
-import 'package:aurora/database/database.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
@@ -28,6 +25,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   bool? value1;
   bool? value2;
   bool? value3;
+  bool? value4;
   int? selectedIndex;
   int? selectedColorIndex;
   bool? isCustomTheme;
@@ -138,6 +136,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
       if (index == 1) {
         value1 = true;
         value3 = false;
+        value4 = false;
         if (value1!) {
           isCustomTheme = false;
           themeProvider.loadDynamicTheme();
@@ -152,11 +151,20 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
           themeProvider.setOledTheme(false);
         }
       } else if (index == 3) {
+        value4 = false;
         value1 = false;
         value3 = true;
         box.put('PaletteMode', 'Custom');
         if (value3!) {
           isCustomTheme = true;
+        }
+      } else if (index == 4) {
+        value3 = false;
+        value1 = false;
+        value4 = true;
+        box.put('PaletteMode', 'Banner');
+        if (value4!) {
+          isCustomTheme = false;
         }
       }
     });
@@ -188,10 +196,11 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
     value1 = box.get('PaletteMode') == 'Material';
     value2 = box.get('isOled', defaultValue: false);
     value3 = box.get('PaletteMode') == 'Custom';
-    if (value1!) {
-      isCustomTheme = false;
-    } else {
+    value4 = box.get('PaletteMode') == 'Banner';
+    if(value2!) {
       isCustomTheme = true;
+    } else {
+      isCustomTheme = false;
     }
 
     // Light and Dark Mode Chips
@@ -314,6 +323,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
                 title: 'Palette',
                 onTap: _showSchemeVariantDialog,
                 description: 'Change color styles!'),
+
           SwitchTileStateless(
             icon: Iconsax.moon5,
             title: 'Oled Theme Variant',
@@ -322,6 +332,16 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
               _toggleSwitch(2);
             },
             description: 'Make it super dark',
+            onTap: () {},
+          ),
+          SwitchTileStateless(
+            icon: Iconsax.moon5,
+            title: 'Use Anime Banner as Color',
+            value: value4!,
+            onChanged: (value) {
+              _toggleSwitch(4);
+            },
+            description: 'Warning! only works with consumet',
             onTap: () {},
           ),
           SwitchTileStateless(
