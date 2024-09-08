@@ -87,7 +87,8 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight,
         ]);
-      } else if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen) {
+      } else if (event.betterPlayerEventType ==
+          BetterPlayerEventType.hideFullscreen) {
         SystemChrome.setPreferredOrientations([
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
@@ -98,20 +99,25 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
     WakelockPlus.enable();
   }
 
-  void filterSubtitles(List<dynamic> source) {
-    setState(() {
-      subtitles = source
-          .where((data) => data['kind'] == 'captions')
-          .map<BetterPlayerSubtitlesSource>(
-            (caption) => BetterPlayerSubtitlesSource(
-              selectedByDefault: caption['label'] == 'English',
-              type: BetterPlayerSubtitlesSourceType.network,
-              name: caption['label'],
-              urls: [caption['file']],
-            ),
-          )
-          .toList();
-    });
+  void filterSubtitles(List<dynamic>? source) {
+    if (source != null) {
+      setState(() {
+        subtitles = source
+            .where((data) => data['kind'] == 'captions')
+            .map<BetterPlayerSubtitlesSource>(
+              (caption) => BetterPlayerSubtitlesSource(
+                selectedByDefault: caption['label'] == 'English',
+                type: BetterPlayerSubtitlesSourceType.network,
+                name: caption['label'],
+                urls: [caption['file']],
+              ),
+            )
+            .toList();
+      });
+    }
+    else {
+      subtitles = null;
+    }
   }
 
   @override
@@ -130,7 +136,7 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-    ]); 
+    ]);
     super.dispose();
   }
 
