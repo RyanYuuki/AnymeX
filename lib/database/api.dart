@@ -9,8 +9,10 @@ const String proxy_url = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
 const String consumet_api_url =
     "https://consumet-api-two-nu.vercel.app/meta/anilist/";
 const String aniwatch_api_url = "https://aniwatch-ryan.vercel.app/anime/";
+bool isRomaji = Hive.box('app-data').get('isRomaji', defaultValue: false);
 void toggleRomaji(String source, bool state) {}
-Future<dynamic> fetchHomePageAniwatch() async {
+
+Future<dynamic>? fetchHomePageAniwatch() async {
   final response =
       await http.get(Uri.parse('$proxy_url${aniwatch_api_url}home'));
   if (response.statusCode == 200) {
@@ -172,7 +174,7 @@ Future<dynamic>? fetchStreamingLinksConsumet(String id) async {
   }
 }
 
-dynamic extractData(dynamic items, {bool isRomaji = false}) {
+dynamic extractData(dynamic items) {
   bool? isConsumet =
       Hive.box('app-data').get('using-consumet', defaultValue: false);
   if (items != null) {
@@ -190,10 +192,11 @@ dynamic extractData(dynamic items, {bool isRomaji = false}) {
       dynamic episodes = {};
       if (isConsumet!) {
         id = item['id'] ?? '';
-        name = item['title']['english'] ??
-            item['title']['romaji'] ??
-            item['title']['user-preferred'] ??
-            'Unknown';
+        name = isRomaji
+            ? item['title']['romaji']
+            : item['title']['english'] ??
+                item['title']['user-preferred'] ??
+                'Unknown';
         poster = item['image'] ?? 'Consumet';
         cover = item['cover'] ?? item['image'] ?? item['poster'] ?? '';
         description = item['description'] ?? 'No description available';
@@ -302,10 +305,12 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
 
   if (isConsumet) {
     id = data['id'] ?? '??';
-    name = data?['title']?['english'] ??
-        data?['title']?['romaji'] ??
-        data?['name'] ??
-        '??';
+    name = isRomaji
+        ? data?['title']?['romaji']
+        : data?['title']?['english'] ??
+            data?['title']?['romaji'] ??
+            data?['name'] ??
+            '??';
     poster = data['image'] ?? data['poster'] ?? '??';
     cover = data['cover'] ?? data['image'] ?? '??';
     description = data['description'] ?? '??';
@@ -325,7 +330,7 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
     color = data['color'] ?? '??';
   } else {
     id = data['id'] ?? '??';
-    name = data['name'] ?? data['title'] ?? '??';
+    name = isRomaji ? data['jname'] : data['name'] ?? data['title'] ?? '??';
     poster = data['poster'] ?? data['image'] ?? '??';
     cover = '??';
     description = data['description'] ?? '??';
@@ -353,13 +358,15 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
     'genres': genres,
     'totalEpisodes': totalEpisodes,
     'duration': duration,
-    "stats" : stats,
+    "stats": stats,
     'characters': characters,
     'popularAnimes': popularAnimes,
-    'relatedAnimes':
-        isConsumet ? extractRelationData(relatedAnimes, isConsumet) : relatedAnimes,
-    'recommendedAnimes':
-        isConsumet ? extractRelationData(recommendedAnimes, isConsumet) : recommendedAnimes,
+    'relatedAnimes': isConsumet
+        ? extractRelationData(relatedAnimes, isConsumet)
+        : relatedAnimes,
+    'recommendedAnimes': isConsumet
+        ? extractRelationData(recommendedAnimes, isConsumet)
+        : recommendedAnimes,
     'seasons': seasons,
     'color': color,
   };
@@ -379,14 +386,16 @@ dynamic extractRelationData(dynamic data, bool isConsumet) {
 
     if (isConsumet) {
       id = item['id']?.toString() ?? '??';
-      name = item['title']['english']?.toString() ??
-          item['title']['romaji']?.toString() ??
-          '??';
+      name = !isRomaji
+          ? item['title']['english'].toString()
+          : item['title']['romaji']?.toString() ?? '??';
       type = item['type']?.toString() ?? '??';
       poster = item['image']?.toString() ?? '??';
     } else {
       id = item['id']?.toString() ?? '??';
-      name = item['name']?.toString() ?? item['jname']?.toString() ?? '??';
+      name = (!isRomaji
+          ? item['name']?.toString()
+          : item['jname']?.toString() ?? '??')!;
       type = item['type']?.toString() ?? '??';
       poster = item['poster']?.toString() ?? '??';
     }

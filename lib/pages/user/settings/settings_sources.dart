@@ -14,6 +14,7 @@ class SourcesSettingPage extends StatefulWidget {
 
 class _SourcesSettingPageState extends State<SourcesSettingPage> {
   late bool? usingConsumet;
+  late bool? isRomaji;
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
   void initiliazeVars() {
     usingConsumet =
         Hive.box('app-data').get('using-consumet', defaultValue: false);
+    isRomaji = Hive.box('app-data').get('isRomaji', defaultValue: false);
   }
 
   @override
@@ -79,11 +81,18 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.primary)),
           ),
-          SwitchTile(
+          SwitchTileStateless(
             icon: Iconsax.language_square,
             title: 'Romaji Names',
             description: 'Switch Anime Names to romaji',
             onTap: () {},
+            value: isRomaji!,
+            onChanged: (value) {
+              Hive.box('app-data').put('isRomaji', value);
+              setState(() {
+                isRomaji = value;
+              });
+            },
           ),
           SwitchTileStateless(
             icon: Icons.api,
