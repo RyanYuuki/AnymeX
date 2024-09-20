@@ -152,7 +152,7 @@ Future<dynamic>? fetchStreamingDataAniwatch(String id) async {
 
 Future<dynamic> fetchStreamingLinksAniwatch(String id) async {
   try {
-    final url = '${aniwatch_api_url}episode-srcs?id=$id';
+    final url = '$proxy_url${aniwatch_api_url}episode-srcs?id=$id';
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final tempData = jsonDecode(resp.body);
