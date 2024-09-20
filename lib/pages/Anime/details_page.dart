@@ -126,7 +126,7 @@ class _DetailsPageState extends State<DetailsPage> {
       if (newResponse.statusCode == 200) {
         final characterTemp = jsonDecode(newResponse.body);
         setState(() {
-          description = data['description'];
+          description = characterTemp['description'] ?? data['description'];
           charactersData = characterTemp['characters'] ?? [];
         });
       } else {
