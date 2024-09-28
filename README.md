@@ -59,6 +59,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 📬 **Contact**
 
-If you have any questions or feedback, feel free to reach out at [rehank220358@example.com](mailto:rehank220358@gmail.com).
+If you have any questions or feedback, feel free to reach out at [rehank220358@example.com](mailto:rehank220358@gmail.com) or if you want any kind of features drop it on telegram group [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+_pfInbBGQ1g0YjQ9)
+
 
 ---
