@@ -7,6 +7,7 @@ import 'package:aurora/components/episodelist_dropdown.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -40,6 +41,8 @@ class _StreamingPageState extends State<StreamingPage> {
   bool isList = true;
   List<dynamic>? filteredEpisodes = [];
   String? selectedRange;
+  int selectedIndex = 0;
+  String? activeServer = 'VidStream';
 
   final String baseUrl =
       'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/';
@@ -109,7 +112,8 @@ class _StreamingPageState extends State<StreamingPage> {
           conditionDetailPageData(mergeData(tempAnimeData), false);
       setState(() {
         animeData = _animeData;
-        availEpisodes = int.parse(_animeData['totalEpisodes'] ?? _animeData['stats']['sub']);
+        availEpisodes = int.parse(
+            _animeData['totalEpisodes'] ?? _animeData['stats']['sub']);
         isInfoLoading = false;
         episodesData = tempData['episodes'];
         filteredEpisodes = tempData['episodes'];
@@ -157,12 +161,13 @@ class _StreamingPageState extends State<StreamingPage> {
   }
 
   Future<void> fetchEpisodeSrcs() async {
+    episodeSrc = null;
     final provider = Provider.of<AppData>(context, listen: false);
     if (episodesData == null || currentEpisode == null) return;
 
     try {
       final response = await fetchStreamingLinksAniwatch(
-          '${episodesData[(currentEpisode! - 1)]['episodeId']}&category=${isDub ? 'dub' : 'sub'}');
+          '${episodesData[(currentEpisode! - 1)]['episodeId']}?server=$activeServer&category=${isDub ? 'dub' : 'sub'}');
       if (response != null) {
         final episodeSrcs = response;
         setState(() {
@@ -179,7 +184,15 @@ class _StreamingPageState extends State<StreamingPage> {
             animePosterImageUrl: animeData['poster'],
             isConsumet: usingConsumet);
       } else {
-        throw Exception('Failed to load episode sources');
+        // Fluttertoast.showToast(
+        //     msg:
+        //         "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!",
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.BOTTOM,
+        //     timeInSecForIosWeb: 1,
+        //     backgroundColor: Colors.grey,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0);
       }
     } catch (e) {
       setState(() {
@@ -188,6 +201,15 @@ class _StreamingPageState extends State<StreamingPage> {
         isLoading = false;
       });
       log('Error fetching episode sources: $e');
+      // Fluttertoast.showToast(
+      //     msg:
+      //         "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!",
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.BOTTOM,
+      //     timeInSecForIosWeb: 1,
+      //     backgroundColor: Colors.grey,
+      //     textColor: Colors.white,
+      //     fontSize: 16.0);
     }
   }
 
@@ -278,6 +300,26 @@ class _StreamingPageState extends State<StreamingPage> {
     });
   }
 
+  void serverSwitch(int index, String name) {
+    String newName = name.toLowerCase();
+    if (index == 2) {
+      if (usingConsumet) {
+        newName = 'streamsb';
+      } else {
+        newName = 'hd-1';
+      }
+    }
+    setState(() {
+      selectedIndex = index;
+      activeServer = newName;
+    });
+    if (usingConsumet) {
+      fetchEpisodeSrcsConsumet();
+    } else {
+      fetchEpisodeSrcs();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeProvider = Theme.of(context);
@@ -332,6 +374,50 @@ class _StreamingPageState extends State<StreamingPage> {
                             MyTabBar(
                               onTap: handleLanguage,
                             ),
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Servers',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      Server_Button(
+                                        name: 'VidStream',
+                                        index: 0,
+                                        selectedIndex: selectedIndex,
+                                        onPressed: (int index, String name) =>
+                                            serverSwitch(index, name),
+                                      ),
+                                      Server_Button(
+                                        name: 'MegaCloud',
+                                        index: 1,
+                                        selectedIndex: selectedIndex,
+                                        onPressed: (int index, String name) =>
+                                            serverSwitch(index, name),
+                                      ),
+                                      Server_Button(
+                                        name: 'StreamSB',
+                                        index: 2,
+                                        selectedIndex: selectedIndex,
+                                        onPressed: (int index, String name) =>
+                                            serverSwitch(index, name),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                           const SizedBox(height: 15),
                           Padding(
                             padding:
@@ -459,6 +545,31 @@ class _StreamingPageState extends State<StreamingPage> {
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+class Server_Button extends StatelessWidget {
+  final String? name;
+  final int? index;
+  final int? selectedIndex;
+  final void Function(int, String) onPressed;
+  const Server_Button(
+      {super.key,
+      required this.name,
+      this.index,
+      this.selectedIndex,
+      required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ChoiceChip(
+        label: Text(name!),
+        selected: index == selectedIndex,
+        onSelected: (bool selected) => onPressed(index!, name!),
+      ),
     );
   }
 }
