@@ -1,4 +1,5 @@
 import 'package:aurora/components/common/custom_tile.dart';
+import 'package:aurora/pages/user/settings/settings_about.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
 import 'package:aurora/pages/user/settings/settings_sources.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
@@ -64,7 +65,7 @@ class SettingsPage extends StatelessWidget {
           ),
           CustomTile(
             icon: Icons.language,
-            title: 'Language',
+            title: 'Language (Soon)',
             description: 'Change the app language',
             onTap: () {},
           ),
@@ -72,7 +73,10 @@ class SettingsPage extends StatelessWidget {
             icon: Iconsax.info_circle5,
             title: 'About',
             description: 'About this app',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AboutPage()));
+            },
           ),
         ],
       ),
