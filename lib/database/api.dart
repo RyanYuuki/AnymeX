@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, unused_local_variable
 
 import 'dart:convert';
 import 'dart:developer';
@@ -288,6 +288,8 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
 
   String id = '??';
   String name = '??';
+  String jname = '??';
+  String premiered = '??';
   String description = '??';
   String poster = '??';
   String cover = '??';
@@ -311,10 +313,12 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
             data?['title']?['romaji'] ??
             data?['name'] ??
             '??';
+    jname = data?['title']?['romaji'] ?? data?['jname'] ?? '??';
     poster = data['image'] ?? data['poster'] ?? '??';
     cover = data['cover'] ?? data['image'] ?? '??';
+    premiered = '${data["season"]} ${data["releaseDate"]}' ?? '??';
     description = data['description'] ?? '??';
-    rating = data['rating']?.toString() ?? '??';
+    rating = data['rating']?.toString() ?? data?['malscore'].toString() ?? '??';
     genres =
         List<String>.from(data['genres'] ?? ['Action, Adventure, Fantasy']);
     totalEpisodes = data['currentEpisode']?.toString() ??
@@ -331,9 +335,11 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
   } else {
     id = data['id'] ?? '??';
     name = isRomaji ? data['jname'] : data['name'] ?? data['title'] ?? '??';
+    jname = data?['japanese'] ?? '??';
     poster = data['poster'] ?? data['image'] ?? '??';
     cover = '??';
     description = data['description'] ?? '??';
+    premiered = data['premiered'] ?? '??';
     stats = data?['stats'] ?? {};
     rating = data['malscore']?.toString() ?? '??';
     genres =
@@ -351,11 +357,13 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
   result = {
     'id': id,
     'name': name,
+    'jname': jname,
     'description': description,
     'poster': poster,
     'cover': cover,
     'rating': rating,
     'genres': genres,
+    'premiered' : premiered,
     'totalEpisodes': totalEpisodes,
     'duration': duration,
     "stats": stats,
