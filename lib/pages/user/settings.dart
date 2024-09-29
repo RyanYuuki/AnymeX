@@ -1,5 +1,6 @@
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/pages/user/settings/settings_about.dart';
+import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
 import 'package:aurora/pages/user/settings/settings_sources.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
@@ -43,6 +44,15 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const SourcesSettingPage()));
+            },
+          ),
+          CustomTile(
+            icon: Icons.stairs_rounded,
+            title: 'Layout',
+            description: 'Change the app${"'"}s layout entirely',
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const LayoutPage()));
             },
           ),
           CustomTile(

@@ -8,9 +8,11 @@ import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -40,13 +42,18 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage> {
+class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStateMixin {
   bool usingConsumet =
       Hive.box('app-data').get('using-consumet', defaultValue: false);
+  bool usingSaikouLayout =
+      Hive.box('app-data').get('usingSaikouLayout', defaultValue: false);
   dynamic data;
   bool isLoading = true;
+  dynamic altData;
   dynamic charactersData;
   String? description;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   final String baseUrl =
       'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/info?id=';
@@ -55,6 +62,15 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     super.initState();
     fetchAnimeData();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..repeat(reverse: true); 
+
+    _animation = Tween<double>(begin: -1.0, end: -2.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
   }
 
   Future<void> fetchAnimeData() async {
@@ -98,6 +114,7 @@ class _DetailsPageState extends State<DetailsPage> {
         data = conditionDetailPageData(tempData, true);
         description = tempData['description'] ?? 'No description available';
         charactersData = tempData['characters'] ?? [];
+        altData = tempData;
         if (Hive.box('login-data')
                 .get('PaletteMode', defaultValue: 'Material') ==
             'Banner') {
@@ -128,6 +145,7 @@ class _DetailsPageState extends State<DetailsPage> {
         setState(() {
           description = characterTemp['description'] ?? data['description'];
           charactersData = characterTemp['characters'] ?? [];
+          altData = characterTemp;
         });
       } else {
         log('Failed to fetch character data from Consumet: ${newResponse.statusCode}');
@@ -140,6 +158,234 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     ColorScheme CustomScheme = Theme.of(context).colorScheme;
+    if (usingSaikouLayout) {
+      return saikouDetailsPage(context);
+    } else {
+      return originalDetailsPage(CustomScheme, context);
+    }
+  }
+
+  Scaffold saikouDetailsPage(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: Column(
+        children: [
+          // Top Sectiom
+          saikouTopSection(context),
+          // Mid Section
+          isLoading
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 30.0),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 25.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                                text: 'Total of ',
+                                style: TextStyle(fontSize: 15),
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          '${data['stats']['episodes']['sub']} Episodes',
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          fontFamily: 'Poppins-Bold')),
+                                ]),
+                          ),
+                          Expanded(child: SizedBox.shrink()),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Iconsax.heart),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.share),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      infoRow(
+                        field: 'Rating',
+                        value:
+                            '${data?['malscore']?.toString() ?? data?['rating']?.toString()}/10',
+                      ),
+                      infoRow(
+                        field: 'Studios',
+                        value: data?['studios'] ?? '??',
+                      ),
+                      infoRow(
+                        field: 'Total Episodes',
+                        value: data?['stats']?['episodes']?['sub'].toString() ??
+                            '??',
+                      ),
+                      infoRow(
+                        field: 'Type',
+                        value: 'TV',
+                      ),
+                      infoRow(
+                        field: 'Romaji Name',
+                        value: data?['jname'] ?? data?['japanese'] ?? '??',
+                      ),
+                      infoRow(
+                        field: 'Premiered',
+                        value: data?['premiered'] ?? '??',
+                      ),
+                      infoRow(
+                        field: 'Duration',
+                        value: data?['duration'] ?? '??',
+                      ),
+                    ],
+                  ),
+                )
+        ],
+      ),
+    );
+  }
+
+  Stack saikouTopSection(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        if (altData?['cover'] != null)
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Positioned(
+                left: MediaQuery.of(context).size.width * _animation.value, // Animate left position
+                child: CachedNetworkImage(
+                  height: 450,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  imageUrl: altData?['cover'] ?? '',
+                ),
+              );
+            },
+          ),
+        Positioned(
+          top: 30,
+          right: 20,
+          child: IconButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            ),
+            onPressed: () {},
+            icon: Icon(Icons.close),
+          ),
+        ),
+        Positioned(
+          child: Container(
+            height: 450,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Theme.of(context).colorScheme.surface.withOpacity(0.7),
+                  Theme.of(context).colorScheme.surface,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Hero(
+                      tag: widget.tag!,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          height: 170,
+                          width: 120,
+                          imageUrl: widget.posterUrl!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      height: 180,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            child: Text(
+                              data?['name'] ?? 'Loading...',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 16,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              maxLines: 4,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            data?['status'] ?? 'RELEASING',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              color: Theme.of(context).colorScheme.primary,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width - 40,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        width: 2,
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'ADD TO LIST',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Scaffold originalDetailsPage(ColorScheme CustomScheme, BuildContext context) {
     return Scaffold(
       backgroundColor: CustomScheme.surface,
       appBar: AppBar(
@@ -395,6 +641,46 @@ class _DetailsPageState extends State<DetailsPage> {
             tag: 'details-page3',
           ),
           const SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+}
+
+class infoRow extends StatelessWidget {
+  final String value;
+  final String field;
+
+  const infoRow({super.key, required this.field, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(right: 10),
+      margin: EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(field,
+              style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.7))),
+          SizedBox(
+            width: 170,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: 'Poppins-Bold')),
+            ),
+          ),
         ],
       ),
     );
