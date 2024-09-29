@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const String telegramUrl = 'https://t.me/+_pfInbBGQ1g0YjQ9';
+const String telegramUrl = 'https://t.me/AnymeX_Discussion';
 const String githubUrl = 'https://github.com/RyanYuuki/AnymeX';
 
 class AboutPage extends StatelessWidget {
@@ -22,6 +22,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50),
         child: Center(
