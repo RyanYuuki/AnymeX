@@ -1,4 +1,3 @@
-
 import 'package:aurora/database/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/onboarding_screens/onboarding_screens.dart';

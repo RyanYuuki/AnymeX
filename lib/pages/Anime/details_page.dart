@@ -8,7 +8,6 @@ import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
-import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +31,32 @@ Color? hexToColor(String hexColor) {
   }
 }
 
+dynamic genrePreviews = {
+  'Action': 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1735.jpg',
+  'Adventure':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg',
+  'School':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21459-yeVkolGKdGUV.jpg',
+  'Shounen':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/101922-YfZhKBUDDS6L.jpg',
+  'Super Power':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sHb9zUZFsHe1.jpg',
+  'Supernatural':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/113415-jQBSkxWAAk83.jpg',
+  'Slice of Life':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/133965-spTi0WE7jR0r.jpg',
+  'Romance':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/162804-NwvD3Lya8IZp.jpg',
+  'Fantasy':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/108465-RgsRpTMhP9Sv.jpg',
+  'Comedy':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/100922-ef1bBJCUCfxk.jpg',
+  'Mystery':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+  'default':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1-OquNCNB6srGe.jpg'
+};
+
 class DetailsPage extends StatefulWidget {
   final String id;
   final String? posterUrl;
@@ -42,7 +67,8 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStateMixin {
+class _DetailsPageState extends State<DetailsPage>
+    with SingleTickerProviderStateMixin {
   bool usingConsumet =
       Hive.box('app-data').get('using-consumet', defaultValue: false);
   bool usingSaikouLayout =
@@ -65,7 +91,7 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
     _controller = AnimationController(
       duration: const Duration(seconds: 10),
       vsync: this,
-    )..repeat(reverse: true); 
+    )..repeat(reverse: true);
 
     _animation = Tween<double>(begin: -1.0, end: -2.0).animate(CurvedAnimation(
       parent: _controller,
@@ -168,86 +194,201 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
   Scaffold saikouDetailsPage(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        children: [
-          // Top Sectiom
-          saikouTopSection(context),
-          // Mid Section
-          isLoading
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 25.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              // Top Section
+              saikouTopSection(context),
+              // Mid Section
+              isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 25.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text.rich(
-                            TextSpan(
-                                text: 'Total of ',
-                                style: TextStyle(fontSize: 15),
-                                children: [
-                                  TextSpan(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  text: 'Total of ',
+                                  style: TextStyle(fontSize: 15),
+                                  children: [
+                                    TextSpan(
                                       text:
                                           '${data['stats']['episodes']['sub']} Episodes',
                                       style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontFamily: 'Poppins-Bold')),
-                                ]),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontFamily: 'Poppins-Bold',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(child: SizedBox.shrink()),
+                              IconButton(
+                                  onPressed: () {}, icon: Icon(Iconsax.heart)),
+                              IconButton(
+                                  onPressed: () {}, icon: Icon(Icons.share)),
+                            ],
                           ),
-                          Expanded(child: SizedBox.shrink()),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Iconsax.heart),
+                          const SizedBox(height: 20),
+                          infoRow(
+                              field: 'Rating',
+                              value:
+                                  '${data?['malscore']?.toString() ?? data?['rating']?.toString()}/10'),
+                          infoRow(
+                              field: 'Studios',
+                              value: data?['studios'] ?? '??'),
+                          infoRow(
+                              field: 'Total Episodes',
+                              value: data?['stats']?['episodes']?['sub']
+                                      .toString() ??
+                                  '??'),
+                          infoRow(field: 'Type', value: 'TV'),
+                          infoRow(
+                              field: 'Romaji Name',
+                              value:
+                                  data?['jname'] ?? data?['japanese'] ?? '??'),
+                          infoRow(
+                              field: 'Premiered',
+                              value: data?['premiered'] ?? '??'),
+                          infoRow(
+                              field: 'Duration',
+                              value: data?['duration'] ?? '??'),
+                          const SizedBox(height: 20),
+                          Text('Synopsis',
+                              style: TextStyle(fontFamily: 'Poppins-Bold')),
+                          const SizedBox(height: 10),
+                          Text(description!.toString().length > 250
+                              ? '${description!.toString().substring(0, 250)}...'
+                              : description!),
+
+                          // Grid Section
+                          const SizedBox(height: 20),
+                          Text('Genres',
+                              style: TextStyle(fontFamily: 'Poppins-Bold')),
+                          Flexible(
+                            flex: 0,
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: data['genres'].length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisExtent: 55,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemBuilder: (context, itemIndex) {
+                                String genre = data['genres'][itemIndex];
+                                String buttonBackground =
+                                    genrePreviews[genre] ??
+                                        genrePreviews['default'];
+
+                                return Container(
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image:
+                                                NetworkImage(buttonBackground),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      // Gradient overlay
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          border: Border.all(
+                                              width: 3,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainer),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.black.withOpacity(0.5),
+                                              Colors.black.withOpacity(0.5)
+                                            ],
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                          ),
+                                        ),
+                                      ),
+                                      // ElevatedButton
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                        onPressed: () {},
+                                        child: Text(
+                                          genre.toUpperCase(),
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.share),
+                          const SizedBox(height: 15),
+                          // Text('Characters',
+                          //     style: TextStyle(fontFamily: 'Poppins-Bold')),
+                          CharacterCards(carouselData: charactersData),
+                          ReusableCarousel(
+                            title: 'Popular',
+                            carouselData: data?['popularAnimes'],
+                            tag: 'details-page1',
                           ),
+                          ReusableCarousel(
+                            title: 'Related',
+                            carouselData: data?['relatedAnimes'],
+                            tag: 'details-page2',
+                          ),
+                          ReusableCarousel(
+                            title: 'Recommended',
+                            carouselData: data?['recommendedAnimes'],
+                            tag: 'details-page3',
+                          ),
+                          const SizedBox(height: 100),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      infoRow(
-                        field: 'Rating',
-                        value:
-                            '${data?['malscore']?.toString() ?? data?['rating']?.toString()}/10',
-                      ),
-                      infoRow(
-                        field: 'Studios',
-                        value: data?['studios'] ?? '??',
-                      ),
-                      infoRow(
-                        field: 'Total Episodes',
-                        value: data?['stats']?['episodes']?['sub'].toString() ??
-                            '??',
-                      ),
-                      infoRow(
-                        field: 'Type',
-                        value: 'TV',
-                      ),
-                      infoRow(
-                        field: 'Romaji Name',
-                        value: data?['jname'] ?? data?['japanese'] ?? '??',
-                      ),
-                      infoRow(
-                        field: 'Premiered',
-                        value: data?['premiered'] ?? '??',
-                      ),
-                      infoRow(
-                        field: 'Duration',
-                        value: data?['duration'] ?? '??',
-                      ),
-                    ],
-                  ),
-                )
-        ],
-      ),
+                    ),
+            ],
+          ),
+        ),
+        if (data?['stats']?['episodes']?['sub'] != 0 &&
+                data?['stats']?['episodes']?['sub'] != null ||
+            data?['totalEpisodes'] != 0 && data?['totalEpisodes'] != null)
+          (FloatingBar(
+            title: data['name'] ?? '??',
+            id: widget.id,
+            usingConsumet: usingConsumet,
+            color: hexToColor(data['color'] ?? '??'),
+          ))
+      ]),
     );
   }
 
@@ -260,7 +401,8 @@ class _DetailsPageState extends State<DetailsPage> with SingleTickerProviderStat
             animation: _animation,
             builder: (context, child) {
               return Positioned(
-                left: MediaQuery.of(context).size.width * _animation.value, // Animate left position
+                left: MediaQuery.of(context).size.width *
+                    _animation.value, // Animate left position
                 child: CachedNetworkImage(
                   height: 450,
                   alignment: Alignment.center,
