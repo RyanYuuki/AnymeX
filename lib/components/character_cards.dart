@@ -7,7 +7,6 @@ class CharacterCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ColorScheme customScheme = Theme.of(context).colorScheme;
     if (carouselData == null || carouselData!.isEmpty) {
       return Container();
     }
@@ -19,13 +18,12 @@ class CharacterCards extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Characters',
               style: TextStyle(
                 fontSize: 22,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                color: customScheme.primary,
               ),
             ),
             const SizedBox(height: 15),
@@ -72,7 +70,7 @@ class CharacterCards extends StatelessWidget {
                             children: [
                               Text(
                                 title.toString(),
-                                style: const TextStyle(fontSize: 14),
+                                style: const TextStyle(fontSize: 12),
                                 textAlign: TextAlign.left,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -80,10 +78,11 @@ class CharacterCards extends StatelessWidget {
                               const SizedBox(height: 3),
                               Align(
                                 alignment: Alignment.bottomRight,
-                                child: Text('- $role',
-                                    style: const TextStyle(
+                                child: Text(role,
+                                    style: TextStyle(
                                         fontSize: 12,
-                                        fontStyle: FontStyle.italic),
+                                        fontStyle: FontStyle.italic,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
                                     textAlign: TextAlign.right),
                               ),
                             ],
@@ -101,13 +100,12 @@ class CharacterCards extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Voice Actors',
               style: TextStyle(
                 fontSize: 22,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                color: customScheme.primary,
               ),
             ),
             const SizedBox(height: 15),
@@ -115,7 +113,7 @@ class CharacterCards extends StatelessWidget {
               height: 220,
               child: InfiniteCarousel.builder(
                 itemCount: carouselData!.length,
-                itemExtent: MediaQuery.of(context).size.width / 3,
+                itemExtent: MediaQuery.of(context).size.width / 3.3,
                 center: false,
                 anchor: 0.0,
                 loop: false,
@@ -150,7 +148,9 @@ class CharacterCards extends StatelessWidget {
                             child: Text(title.toString(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
                                 textAlign: TextAlign.center),
                           )
                         ],

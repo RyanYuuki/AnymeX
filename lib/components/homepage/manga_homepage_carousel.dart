@@ -78,7 +78,7 @@ class MangaHomepageCarousel extends StatelessWidget {
               log(itemData.toString());
               final String posterUrl = itemData['poster'] ?? '??';
               final tagg = itemData.toString() + tag!;
-              String extraData = itemData['currentChapter'] ?? '??';
+              String? extraData = itemData['currentChapter']!.toString().length > 20 ? itemData['currentChapter']?.toString().substring(0,20) : itemData['currentChapter']?.toString() ?? '??';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -205,7 +205,7 @@ class MangaHomepageCarousel extends StatelessWidget {
                                             const Color(0xffe2e2e2)
                                         ? Colors.black
                                         : Colors.white,
-                                name: extraData,
+                                name: extraData!,
                                 isVertical: false,
                                 borderRadius: BorderRadius.circular(5),
                                 backgroundColor: Theme.of(context)
