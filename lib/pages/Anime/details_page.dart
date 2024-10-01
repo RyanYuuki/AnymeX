@@ -73,6 +73,7 @@ class _DetailsPageState extends State<DetailsPage>
       Hive.box('app-data').get('using-consumet', defaultValue: false);
   bool usingSaikouLayout =
       Hive.box('app-data').get('usingSaikouLayout', defaultValue: false);
+  bool consumetSesh = false;
   dynamic data;
   bool isLoading = true;
   dynamic altData;
@@ -137,6 +138,7 @@ class _DetailsPageState extends State<DetailsPage>
     final tempData = await fetchAnimeDetailsConsumet(widget.id);
     if (tempData != null) {
       setState(() {
+        consumetSesh = true;
         data = conditionDetailPageData(tempData, true);
         description = tempData['description'] ?? 'No description available';
         charactersData = tempData['characters'] ?? [];
@@ -161,6 +163,7 @@ class _DetailsPageState extends State<DetailsPage>
     if (tempData != null) {
       setState(() {
         data = mergeData(tempData);
+        consumetSesh = false;
       });
 
       final newResponse = await http.get(Uri.parse(
@@ -222,7 +225,7 @@ class _DetailsPageState extends State<DetailsPage>
                                   children: [
                                     TextSpan(
                                       text:
-                                          '${data['stats']['episodes']['sub']} Episodes',
+                                          '${data?['stats']?['episodes']?['sub'] ?? data?['totalEpisodes']}',
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
@@ -244,14 +247,17 @@ class _DetailsPageState extends State<DetailsPage>
                           infoRow(
                               field: 'Rating',
                               value:
-                                  '${data?['malscore']?.toString() ?? data?['rating']?.toString()}/10'),
+                                  '${data?['malscore']?.toString() ?? (int.parse(data?['rating']) / 10).toString()}/10'),
                           infoRow(
                               field: 'Studios',
-                              value: data?['studios'] ?? '??'),
+                              value: data?['studios'] ??
+                                  data?['studios']?[0] ??
+                                  '??'),
                           infoRow(
                               field: 'Total Episodes',
                               value: data?['stats']?['episodes']?['sub']
                                       .toString() ??
+                                  data?['totalEpisodes'] ??
                                   '??'),
                           infoRow(field: 'Type', value: 'TV'),
                           infoRow(
@@ -263,7 +269,8 @@ class _DetailsPageState extends State<DetailsPage>
                               value: data?['premiered'] ?? '??'),
                           infoRow(
                               field: 'Duration',
-                              value: data?['duration'] ?? '??'),
+                              value:
+                                  '${data?['duration']}${consumetSesh ? 'M' : ''}'),
                           const SizedBox(height: 20),
                           Text('Synopsis',
                               style: TextStyle(fontFamily: 'Poppins-Bold')),
@@ -302,12 +309,16 @@ class _DetailsPageState extends State<DetailsPage>
                                   child: Stack(
                                     fit: StackFit.expand,
                                     children: [
-                                      DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image:
-                                                NetworkImage(buttonBackground),
-                                            fit: BoxFit.cover,
+                                      Padding(
+                                        padding: const EdgeInsets.all(2.3),
+                                        child: DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(15),
+                                            image: DecorationImage(
+                                              image:
+                                                  NetworkImage(buttonBackground),
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -401,8 +412,7 @@ class _DetailsPageState extends State<DetailsPage>
             animation: _animation,
             builder: (context, child) {
               return Positioned(
-                left: MediaQuery.of(context).size.width *
-                    _animation.value, // Animate left position
+                left: MediaQuery.of(context).size.width * _animation.value,
                 child: CachedNetworkImage(
                   height: 450,
                   alignment: Alignment.center,
@@ -413,19 +423,8 @@ class _DetailsPageState extends State<DetailsPage>
             },
           ),
         Positioned(
-          top: 30,
-          right: 20,
-          child: IconButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-            ),
-            onPressed: () {},
-            icon: Icon(Icons.close),
-          ),
-        ),
-        Positioned(
           child: Container(
-            height: 450,
+            height: 455,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -521,6 +520,23 @@ class _DetailsPageState extends State<DetailsPage>
                 ),
               ),
             ],
+          ),
+        ),
+        Positioned(
+          top: 30,
+          right: 20,
+          child: Material(
+            borderOnForeground: false,
+            color: Colors.transparent,
+            child: IconButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.close),
+            ),
           ),
         ),
       ],
