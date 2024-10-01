@@ -1,4 +1,3 @@
-import 'package:aurora/components/common/switch_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -14,7 +13,9 @@ class LayoutPage extends StatefulWidget {
 
 class _LayoutPageState extends State<LayoutPage> {
   bool compactCard =
-      Hive.box('app-data').get('usingCompactCard', defaultValue: false);
+      Hive.box('app-data').get('usingCompactCards', defaultValue: true);
+  bool saikouCards =
+      Hive.box('app-data').get('usingSaikouCards', defaultValue: false);
   bool usingSaikouLayout =
       Hive.box('app-data').get('usingSaikouLayout', defaultValue: false);
   @override
@@ -79,7 +80,20 @@ class _LayoutPageState extends State<LayoutPage> {
             onChanged: (value) {
               setState(() {
                 compactCard = !compactCard;
-                Hive.box('app-data').put('usingCompactCard', compactCard);
+                Hive.box('app-data').put('usingCompactCards', compactCard);
+              });
+            },
+          ),
+          SwitchTileStateless(
+            icon: Iconsax.card_add5,
+            title: 'Saikou Like Cards',
+            description: 'You Like small cards like saikou? Turn this on!',
+            onTap: () {},
+            value: saikouCards,
+            onChanged: (value) {
+              setState(() {
+                saikouCards = !saikouCards;
+                Hive.box('app-data').put('usingSaikouCards', saikouCards);
               });
             },
           ),
