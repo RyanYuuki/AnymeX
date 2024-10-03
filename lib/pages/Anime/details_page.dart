@@ -8,6 +8,7 @@ import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/database/scraper/scraper_details.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -76,8 +77,8 @@ class _DetailsPageState extends State<DetailsPage>
   bool consumetSesh = false;
   dynamic data;
   bool isLoading = true;
-  dynamic altData;
-  dynamic charactersData;
+  dynamic altdata;
+  dynamic charactersdata;
   String? description;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -88,7 +89,7 @@ class _DetailsPageState extends State<DetailsPage>
   @override
   void initState() {
     super.initState();
-    fetchAnimeData();
+    fetchAnimedata();
     _controller = AnimationController(
       duration: const Duration(seconds: 10),
       vsync: this,
@@ -100,7 +101,7 @@ class _DetailsPageState extends State<DetailsPage>
     ));
   }
 
-  Future<void> fetchAnimeData() async {
+  Future<void> fetchAnimedata() async {
     try {
       setState(() {
         isLoading = true;
@@ -135,19 +136,19 @@ class _DetailsPageState extends State<DetailsPage>
   }
 
   Future<void> fetchFromConsumet() async {
-    final tempData = await fetchAnimeDetailsConsumet(widget.id);
-    if (tempData != null) {
+    final tempdata = await fetchAnimeDetailsConsumet(widget.id);
+    if (tempdata != null) {
       setState(() {
         consumetSesh = true;
-        data = conditionDetailPageData(tempData, true);
-        description = tempData['description'] ?? 'No description available';
-        charactersData = tempData['characters'] ?? [];
-        altData = tempData;
-        if (Hive.box('login-data')
+        data = conditionDetailPageData(tempdata, true);
+        description = tempdata?['description'] ?? 'No description available';
+        charactersdata = tempdata?['characters'] ?? [];
+        altdata = tempdata;
+        if (Hive.box('login-data?')
                 .get('PaletteMode', defaultValue: 'Material') ==
             'Banner') {
           Provider.of<ThemeProvider>(context, listen: false)
-              .adaptBannerColor(hexToColor(data['color'])!);
+              .adaptBannerColor(hexToColor(data?['color'])!);
         } else {
           Provider.of<ThemeProvider>(context, listen: false)
               .checkAndApplyPaletteMode();
@@ -159,25 +160,29 @@ class _DetailsPageState extends State<DetailsPage>
   }
 
   Future<void> fetchFromAniwatch() async {
-    final tempData = await fetchAnimeDetailsAniwatch(widget.id);
-    if (tempData != null) {
+    // final tempdata = await fetchAnimeDetailsAniwatch(widget.id);
+    final tempdata = await scrapeAnimeAboutInfo(widget.id);
+    if (tempdata != null) {
       setState(() {
-        data = mergeData(tempData);
+        // data = mergeData(tempdata);
+        data = tempdata;
         consumetSesh = false;
+        description = data?['description'];
+        isLoading = false;
       });
 
       final newResponse = await http.get(Uri.parse(
-          'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data['anilistId']}'));
+          'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data?['anilistId']}'));
 
       if (newResponse.statusCode == 200) {
         final characterTemp = jsonDecode(newResponse.body);
         setState(() {
-          description = characterTemp['description'] ?? data['description'];
-          charactersData = characterTemp['characters'] ?? [];
-          altData = characterTemp;
+          description = characterTemp?['description'] ?? data?['description'];
+          charactersdata = characterTemp['characters'] ?? [];
+          altdata = characterTemp;
         });
       } else {
-        log('Failed to fetch character data from Consumet: ${newResponse.statusCode}');
+        log('Failed to fetch character data? from Consumet: ${newResponse.statusCode}');
       }
     } else {
       throw Exception('Aniwatch fetch failed');
@@ -288,7 +293,7 @@ class _DetailsPageState extends State<DetailsPage>
                             child: GridView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: data['genres'].length,
+                              itemCount: data?['genres'].length,
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
@@ -297,7 +302,7 @@ class _DetailsPageState extends State<DetailsPage>
                                 mainAxisSpacing: 10,
                               ),
                               itemBuilder: (context, itemIndex) {
-                                String genre = data['genres'][itemIndex];
+                                String genre = data?['genres'][itemIndex];
                                 String buttonBackground =
                                     genrePreviews[genre] ??
                                         genrePreviews['default'];
@@ -313,10 +318,11 @@ class _DetailsPageState extends State<DetailsPage>
                                         padding: const EdgeInsets.all(2.3),
                                         child: DecoratedBox(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                             image: DecorationImage(
-                                              image:
-                                                  NetworkImage(buttonBackground),
+                                              image: NetworkImage(
+                                                  buttonBackground),
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -367,7 +373,7 @@ class _DetailsPageState extends State<DetailsPage>
                           const SizedBox(height: 15),
                           // Text('Characters',
                           //     style: TextStyle(fontFamily: 'Poppins-Bold')),
-                          CharacterCards(carouselData: charactersData),
+                          CharacterCards(carouselData: charactersdata),
                           ReusableCarousel(
                             title: 'Popular',
                             carouselData: data?['popularAnimes'],
@@ -394,10 +400,10 @@ class _DetailsPageState extends State<DetailsPage>
                 data?['stats']?['episodes']?['sub'] != null ||
             data?['totalEpisodes'] != 0 && data?['totalEpisodes'] != null)
           (FloatingBar(
-            title: data['name'] ?? '??',
+            title: data?['name'] ?? '??',
             id: widget.id,
             usingConsumet: usingConsumet,
-            color: hexToColor(data['color'] ?? '??'),
+            color: hexToColor(data?['color'] ?? '??'),
           ))
       ]),
     );
@@ -407,7 +413,7 @@ class _DetailsPageState extends State<DetailsPage>
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        if (altData?['cover'] != null)
+        if (altdata?['cover'] != null)
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
@@ -417,7 +423,7 @@ class _DetailsPageState extends State<DetailsPage>
                   height: 450,
                   alignment: Alignment.center,
                   fit: BoxFit.cover,
-                  imageUrl: altData?['cover'] ?? '',
+                  imageUrl: altdata?['cover'] ?? '',
                 ),
               );
             },
@@ -482,7 +488,7 @@ class _DetailsPageState extends State<DetailsPage>
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            data?['status'] ?? 'RELEASING',
+                            altdata?['status'] ?? data?['status'] ?? 'RELEASING',
                             style: TextStyle(
                               fontFamily: 'Poppins-Bold',
                               color: Theme.of(context).colorScheme.primary,
@@ -550,7 +556,7 @@ class _DetailsPageState extends State<DetailsPage>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: TextScroll(
-          data == null ? 'Loading...' : data['name'] ?? '??',
+          data == null ? 'Loading...' : data?['name'] ?? '??',
           mode: TextScrollMode.bouncing,
           velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
           delayBefore: const Duration(milliseconds: 500),
@@ -598,10 +604,10 @@ class _DetailsPageState extends State<DetailsPage>
                     data?['totalEpisodes'] != 0 &&
                         data?['totalEpisodes'] != null)
                   (FloatingBar(
-                    title: data['name'] ?? '??',
+                    title: data?['name'] ?? '??',
                     id: widget.id,
                     usingConsumet: usingConsumet,
-                    color: hexToColor(data['color'] ?? '??'),
+                    color: hexToColor(data?['color'] ?? '??'),
                   ))
               ],
             ),
@@ -630,7 +636,7 @@ class _DetailsPageState extends State<DetailsPage>
                   Container(
                     constraints: BoxConstraints(maxWidth: 170),
                     child: TextScroll(
-                      data == null ? 'Loading...' : data['name'] ?? '??',
+                      data == null ? 'Loading...' : data?['name'] ?? '??',
                       mode: TextScrollMode.endless,
                       velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
                       delayBefore: Duration(milliseconds: 500),
@@ -665,7 +671,7 @@ class _DetailsPageState extends State<DetailsPage>
                                 Color(0xffe2e2e2)
                             ? Colors.black
                             : Colors.white,
-                    name: data['rating'] ?? data['malscore'],
+                    name: data?['rating'] ?? data?['malscore'] ?? '?',
                     isVertical: false,
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -725,8 +731,9 @@ class _DetailsPageState extends State<DetailsPage>
                   child: Column(
                     children: [
                       Text(
-                          data?['totalEpisodes'] ??
-                              data?['stats']['episodes']['sub'].toString(),
+                          data?['stats']?['episodes']?['sub']?.toString() ??
+                              data?['totalEpisodes'] ??
+                              '??',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('Episodes')
                     ],
@@ -781,7 +788,7 @@ class _DetailsPageState extends State<DetailsPage>
           ),
           const SizedBox(height: 20),
           CharacterCards(
-            carouselData: charactersData,
+            carouselData: charactersdata,
           ),
           ReusableCarousel(
             title: 'Popular',

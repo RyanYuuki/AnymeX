@@ -6,6 +6,8 @@ import 'package:aurora/components/episode_list.dart';
 import 'package:aurora/components/episodelist_dropdown.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/database/scraper/scraper_details.dart';
+import 'package:aurora/database/scraper/scraper_episodes.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -104,17 +106,18 @@ class _StreamingPageState extends State<StreamingPage> {
   }
 
   Future<void> fetchFromAniwatch(AppData provider) async {
-    final tempAnimeData = await fetchAnimeDetailsAniwatch(widget.id!);
-    final tempData = await fetchStreamingDataAniwatch(widget.id!);
+    // final tempAnimeData = await fetchAnimeDetailsAniwatch(widget.id!);
+    final tempAnimeData = await scrapeAnimeAboutInfo(widget.id!);
+    final tempData = await scrapeAnimeEpisodes(widget.id!);
 
-    if (tempAnimeData != null && tempData != null) {
-      final _animeData =
-          conditionDetailPageData(mergeData(tempAnimeData), false);
+    try {
+      final _animeData = conditionDetailPageData((tempAnimeData), false);
       setState(() {
         animeData = _animeData;
         availEpisodes = int.parse(
             _animeData['totalEpisodes'] ?? _animeData['stats']['sub']);
         isInfoLoading = false;
+        isLoading = false;
         episodesData = tempData['episodes'];
         filteredEpisodes = tempData['episodes'];
         currentEpisode = int.tryParse(
@@ -127,8 +130,8 @@ class _StreamingPageState extends State<StreamingPage> {
             isConsumet: usingConsumet);
       });
       await fetchEpisodeSrcs();
-    } else {
-      throw Exception('Aniwatch data is null');
+    } catch(e) {
+      throw Exception('Aniwatch data is null $e');
     }
   }
 
@@ -184,15 +187,12 @@ class _StreamingPageState extends State<StreamingPage> {
             animePosterImageUrl: animeData['poster'],
             isConsumet: usingConsumet);
       } else {
-        // Fluttertoast.showToast(
-        //     msg:
-        //         "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.BOTTOM,
-        //     timeInSecForIosWeb: 1,
-        //     backgroundColor: Colors.grey,
-        //     textColor: Colors.white,
-        //     fontSize: 16.0);
+        SnackBar(
+          content: const Text(
+              "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!"),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        );
       }
     } catch (e) {
       setState(() {
@@ -201,15 +201,11 @@ class _StreamingPageState extends State<StreamingPage> {
         isLoading = false;
       });
       log('Error fetching episode sources: $e');
-      // Fluttertoast.showToast(
-      //     msg:
-      //         "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!",
-      //     toastLength: Toast.LENGTH_SHORT,
-      //     gravity: ToastGravity.BOTTOM,
-      //     timeInSecForIosWeb: 1,
-      //     backgroundColor: Colors.grey,
-      //     textColor: Colors.white,
-      //     fontSize: 16.0);
+      SnackBar(
+        content: const Text(
+            "Whoopsy! just ran into a server error, either switch the server or please wait until the server is up again, thanks love!"),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      );
     }
   }
 
