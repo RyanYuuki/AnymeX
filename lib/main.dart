@@ -93,7 +93,7 @@ class _MainAppState extends State<MainApp> {
               bottomNavigationBar: CrystalNavigationBar(
                 currentIndex: _selectedIndex,
                 marginR:
-                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
                 unselectedItemColor:
                     themeProvider.selectedTheme.colorScheme.inverseSurface,
                 backgroundColor: Colors.black.withOpacity(0.3),
