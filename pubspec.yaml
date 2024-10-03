@@ -42,6 +42,8 @@ dependencies:
   shimmer: ^3.0.0
   fluttertoast: ^8.2.8
   url_launcher: ^6.3.0
+  crypto: ^3.0.5
+  pointycastle: ^3.9.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
