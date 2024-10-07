@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 const String proxy_url = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
+// const String proxy_url = "https://anymey-proxy.vercel.app/cors?url=";
 const String consumet_api_url =
     "https://consumet-api-two-nu.vercel.app/meta/anilist/";
 const String aniwatch_api_url = "https://aniwatch-ryan.vercel.app/anime/";
@@ -150,9 +151,11 @@ Future<dynamic>? fetchStreamingDataAniwatch(String id) async {
   }
 }
 
-Future<dynamic> fetchStreamingLinksAniwatch(String id) async {
+Future<dynamic> fetchStreamingLinksAniwatch(
+    String id, String server, String category) async {
   try {
-    final url = '$proxy_url${aniwatch_api_url}episode-srcs?id=$id';
+    final url =
+        '${aniwatch_api_url}episode-srcs?id=$id?server=$server&category=$category';
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final tempData = jsonDecode(resp.body);
@@ -363,7 +366,7 @@ dynamic conditionDetailPageData(dynamic data, bool isConsumet) {
     'cover': cover,
     'rating': rating,
     'genres': genres,
-    'premiered' : premiered,
+    'premiered': premiered,
     'totalEpisodes': totalEpisodes,
     'duration': duration,
     "stats": stats,
