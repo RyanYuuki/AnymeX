@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/pages/user/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class SettingsModal extends StatelessWidget {
   const SettingsModal({
@@ -15,12 +17,17 @@ class SettingsModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var box = Hive.box('login-data');
-    final userInfo =
-        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-    final userName = userInfo?[0] ?? 'Guest';
-    final avatarImagePath = userInfo?[2] ?? 'null';
-    final isLoggedIn = userName != 'Guest';
-    final hasAvatarImage = avatarImagePath != 'null';
+    final anilistProvider = Provider.of<AniListProvider>(context);
+    // final userInfo =
+    //     box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    // final userName = userInfo?[0] ?? 'Guest';
+    // final avatarImagePath = userInfo?[2] ?? 'null';
+    // final isLoggedIn = userName != 'Guest';
+    // final hasAvatarImage = avatarImagePath != 'null';
+
+    final userName = anilistProvider.userData['name'] ?? 'Guest';
+    final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
+    final isLoggedIn = anilistProvider.userData.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -31,10 +38,11 @@ class SettingsModal extends StatelessWidget {
             CircleAvatar(
               radius: 24,
               backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-              backgroundImage:
-                  hasAvatarImage ? FileImage(File(avatarImagePath)) : null,
-              child: hasAvatarImage
-                  ? null
+              child: isLoggedIn
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.network(fit: BoxFit.cover, avatarImagePath),
+                    )
                   : Icon(
                       Icons.person,
                       color: Theme.of(context).colorScheme.inverseSurface,
@@ -47,7 +55,11 @@ class SettingsModal extends StatelessWidget {
                 Text(userName),
                 GestureDetector(
                   onTap: () {
-                    box.put('userInfo', ['Guest', 'Guest', null]);
+                    if (isLoggedIn) {
+                      anilistProvider.logout(context);
+                    } else {
+                      anilistProvider.login(context);
+                    }
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const MainApp()),
@@ -106,18 +118,20 @@ class SettingsModal extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Iconsax.logout),
-            title: const Text('Logout'),
-            onTap: () {
-              box.put('userInfo', ['Guest', 'Guest', null]);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const MainApp()),
-                (route) => false,
-              );
-            },
-          ),
+          if (isLoggedIn)
+            ListTile(
+              leading: const Icon(Iconsax.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                Provider.of<AniListProvider>(context, listen: false)
+                    .logout(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainApp()),
+                  (route) => false,
+                );
+              },
+            ),
         ],
       ),
     );
