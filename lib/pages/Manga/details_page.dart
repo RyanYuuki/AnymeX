@@ -377,25 +377,30 @@ class FloatingBar extends StatelessWidget {
                                             : Colors.white),
                               ),
                             ),
-                            Text(
-                              currentChapter.isEmpty
-                                  ? 'Chapter 1'
-                                  : currentChapter,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white,
+                            SizedBox(
+                              width: 180,
+                              child: Text(
+                                currentChapter.isEmpty
+                                    ? 'Chapter 1'
+                                    : currentChapter,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
                               ),
                             ),
                           ],
