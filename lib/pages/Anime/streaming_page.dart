@@ -9,7 +9,6 @@ import 'package:aurora/database/database.dart';
 import 'package:aurora/database/scraper/scraper_details.dart';
 import 'package:aurora/database/scraper/scraper_episodes.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -45,13 +44,6 @@ class _StreamingPageState extends State<StreamingPage> {
   String? selectedRange;
   int selectedIndex = 0;
   String? activeServer = 'VidStream';
-
-  final String baseUrl =
-      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/';
-  final String episodeDataUrl =
-      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/episodes/';
-  final String episodeUrl =
-      'https://goodproxy.goodproxy.workers.dev/fetch?url=https://aniwatch-ryan.vercel.app/anime/episode-srcs?id=';
 
   TextEditingController episodeFilterController = TextEditingController();
 
@@ -130,7 +122,7 @@ class _StreamingPageState extends State<StreamingPage> {
             isConsumet: usingConsumet);
       });
       await fetchEpisodeSrcs();
-    } catch(e) {
+    } catch (e) {
       throw Exception('Aniwatch data is null $e');
     }
   }
@@ -170,7 +162,9 @@ class _StreamingPageState extends State<StreamingPage> {
 
     try {
       final response = await fetchStreamingLinksAniwatch(
-          '${episodesData[(currentEpisode! - 1)]['episodeId']}?server=$activeServer&category=${isDub ? 'dub' : 'sub'}');
+          episodesData[(currentEpisode! - 1)]['episodeId'],
+          activeServer!,
+          isDub ? 'dub' : 'sub');
       if (response != null) {
         final episodeSrcs = response;
         setState(() {
