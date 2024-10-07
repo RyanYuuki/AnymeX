@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/SettingsModal.dart';
 import 'package:aurora/components/coverCarousel.dart';
@@ -43,6 +44,7 @@ String getGreetingMessage() {
 class _AnimeHomePageState extends State<AnimeHomePage> {
   bool? usingConsumet =
       Hive.box('app-data').get('using-consumet', defaultValue: false);
+
   dynamic baseAnimeData;
   List<dynamic>? spotlightAnimes;
   List<dynamic>? trendingAnimes;
@@ -69,8 +71,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
         setState(() {
           usingConsumet = event.value;
         });
-        _initFallbackData(); 
-        fetchData(); 
+        _initFallbackData();
+        fetchData();
       }
     });
   }
@@ -359,13 +361,17 @@ class Header extends StatefulWidget {
 class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
-    var box = Hive.box('login-data');
-    final userInfo =
-        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-    final userName = userInfo?[0] ?? 'Guest';
-    final avatarImagePath = userInfo?[2] ?? 'null';
-    final isLoggedIn = userName != 'Guest';
-    final hasAvatarImage = avatarImagePath != 'null';
+    // var box = Hive.box('login-data');
+    // final userInfo =
+    //     box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    // final userName = userInfo?[0] ?? 'Guest';
+    // final avatarImagePath = userInfo?[2] ?? 'null';
+    // final isLoggedIn = userName != 'Guest';
+    // final hasAvatarImage = avatarImagePath != 'null';
+    final anilistProvider = Provider.of<AniListProvider>(context);
+    final userName = anilistProvider.userData['name'] ?? 'Guest';
+    final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
+    final isLoggedIn = anilistProvider.userData.isNotEmpty;
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Padding(
@@ -403,11 +409,12 @@ class _HeaderState extends State<Header> {
                       radius: 24,
                       backgroundColor:
                           Theme.of(context).colorScheme.surfaceContainer,
-                      backgroundImage: hasAvatarImage
-                          ? FileImage(File(avatarImagePath))
-                          : null,
-                      child: hasAvatarImage
-                          ? null
+                      child: isLoggedIn
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Image.network(
+                                  fit: BoxFit.cover, avatarImagePath),
+                            )
                           : Icon(
                               Icons.person,
                               color:
@@ -427,7 +434,7 @@ class _HeaderState extends State<Header> {
                         ),
                       ),
                       Text(
-                        userInfo[0].trim(),
+                        userName,
                         style: const TextStyle(
                           fontFamily: 'Poppins-Bold',
                         ),

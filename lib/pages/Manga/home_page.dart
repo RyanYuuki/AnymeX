@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/MangaExclusive/carousel.dart';
 import 'package:aurora/components/MangaExclusive/manga_list.dart';
 import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
@@ -164,14 +165,17 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
-    var box = Hive.box('login-data');
-    final userInfo =
-        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-    final userName = userInfo?[0] ?? 'Guest';
-    final avatarImagePath = userInfo?[2] ?? 'null';
-    final isLoggedIn = userName != 'Guest';
-    final hasAvatarImage = avatarImagePath != 'null';
-
+    // var box = Hive.box('login-data');
+    // final userInfo =
+    //     box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    // final userName = userInfo?[0] ?? 'Guest';
+    // final avatarImagePath = userInfo?[2] ?? 'null';
+    // final isLoggedIn = userName != 'Guest';
+    // final hasAvatarImage = avatarImagePath != 'null';
+    final anilistProvider = Provider.of<AniListProvider>(context);
+    final userName = anilistProvider.userData['name'] ?? 'Guest';
+    final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
+    final isLoggedIn = anilistProvider.userData.isNotEmpty;
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -208,14 +212,16 @@ class _HeaderState extends State<Header> {
                       radius: 24,
                       backgroundColor:
                           Theme.of(context).colorScheme.surfaceContainer,
-                      backgroundImage: hasAvatarImage
-                          ? FileImage(File(avatarImagePath))
-                          : null,
-                      child: hasAvatarImage
-                          ? null
-                          :  Icon(
+                      child: isLoggedIn
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Image.network(
+                                  fit: BoxFit.cover, avatarImagePath),
+                            )
+                          : Icon(
                               Icons.person,
-                              color: Theme.of(context).colorScheme.inverseSurface,
+                              color:
+                                  Theme.of(context).colorScheme.inverseSurface,
                             ),
                     ),
                   ),
@@ -231,7 +237,7 @@ class _HeaderState extends State<Header> {
                         ),
                       ),
                       Text(
-                        userInfo[0].trim(),
+                        userName,
                         style: const TextStyle(
                           fontFamily: 'Poppins-Bold',
                         ),
