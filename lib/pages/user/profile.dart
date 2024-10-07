@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/homepage/homepage_carousel.dart';
 import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
 import 'package:aurora/database/database.dart';
@@ -21,229 +22,247 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _avatarImage;
 
+  // var box = Hive.box('login-data');
+  // final userInfo =
+  //     box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+  // final userName = userInfo?[0] ?? 'Guest';
+  // final avatarImagePath = userInfo?[2] ?? 'null';
+  // final isLoggedIn = userName != 'Guest';
+  // final hasAvatarImage = avatarImagePath != 'null';
+  // final totalWatchedAnimes =
+  //     Provider.of<AppData>(context).watchedAnimes?.length.toString() ?? '00';
+  // final totalReadManga =
+  //     Provider.of<AppData>(context).readMangas?.length.toString() ?? '00';
+  // final hiveBox = Hive.box('app-data');
+  // final List<dynamic>? watchingAnimeList = hiveBox.get('currently-watching');
+  // final List<dynamic>? readingMangaList = hiveBox.get('currently-reading');
+
   @override
   Widget build(BuildContext context) {
-    var box = Hive.box('login-data');
-    final userInfo =
-        box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-    final userName = userInfo?[0] ?? 'Guest';
-    final avatarImagePath = userInfo?[2] ?? 'null';
-    final isLoggedIn = userName != 'Guest';
-    final hasAvatarImage = avatarImagePath != 'null';
-    final totalWatchedAnimes =
-        Provider.of<AppData>(context).watchedAnimes?.length.toString() ?? '00';
-    final totalReadManga =
-        Provider.of<AppData>(context).readMangas?.length.toString() ?? '00';
-    final hiveBox = Hive.box('app-data');
-    final List<dynamic>? watchingAnimeList = hiveBox.get('currently-watching');
-    final List<dynamic>? readingMangaList = hiveBox.get('currently-reading');
-
     return Scaffold(
-      body: ListView(
-        children: [
-          Stack(
+      body: Consumer<AniListProvider>(
+        builder: (context, anilistProvider, child) {
+          final isLoggedIn = anilistProvider.userData.isNotEmpty;
+          final userName =
+              isLoggedIn ? anilistProvider.userData['name'] : 'Guest';
+          final avatarUrl =
+              isLoggedIn ? anilistProvider.userData['avatar']['large'] : null;
+          final totalWatchedAnimes = isLoggedIn
+              ? anilistProvider.userData['statistics']['anime']['count']
+              : 0;
+          final totalReadManga = isLoggedIn
+              ? anilistProvider.userData['statistics']['manga']['count']
+              : 0;
+          final hiveBox = Hive.box('app-data');
+          final List<dynamic>? watchingAnimeList =
+              hiveBox.get('currently-watching');
+          final List<dynamic>? readingMangaList =
+              hiveBox.get('currently-reading');
+          final hasAvatarImage = avatarUrl != null;
+
+          return ListView(
             children: [
-              Positioned(
-                height: 200,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(
-                  children: [
-                    if (hasAvatarImage)
-                      ClipRect(
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: SizedBox.expand(
-                            child: Image.file(
-                              File(avatarImagePath),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (hasAvatarImage)
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context)
-                                    .colorScheme
-                                    .surface
-                                    .withOpacity(0.8),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                      ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Theme.of(context).colorScheme.surface,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: const [0, 1],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 30,
-                left: 15,
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(IconlyBold.arrow_left),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .withOpacity(0.7),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 30,
-                right: 15,
-                child: IconButton(
-                  onPressed: () {
-                    _showUsernameDialog(context);
-                  },
-                  icon: const Icon(Icons.edit),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .withOpacity(0.7),
-                  ),
-                ),
-              ),
-              Column(
+              Stack(
                 children: [
-                  const SizedBox(height: 70),
-                  GestureDetector(
-                    onTap: () => _showAvatarSelector(context),
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        backgroundImage: hasAvatarImage
-                            ? FileImage(File(avatarImagePath))
-                            : null,
-                        child: !hasAvatarImage
-                            ? Icon(
-                                Icons.person,
+                  Positioned(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      children: [
+                        if (hasAvatarImage)
+                          ClipRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                              child: SizedBox.expand(
+                                child: Image.network(
+                                  avatarUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .surface
+                                      .withOpacity(0.8),
+                                  Colors.transparent,
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  Theme.of(context).colorScheme.surface,
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: const [0, 1],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 30,
+                    left: 15,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(IconlyBold.arrow_left),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainer
+                            .withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      const SizedBox(height: 70),
+                      GestureDetector(
+                        onTap: () => _showAvatarSelector(context),
+                        child: SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: CircleAvatar(
+                            radius: 24,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            backgroundImage:
+                                hasAvatarImage ? NetworkImage(avatarUrl) : null,
+                            child: !hasAvatarImage
+                                ? Icon(
+                                    Icons.person,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface,
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        userName,
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildStatContainer(
+                            label: 'Anime',
+                            value: totalWatchedAnimes.toString(),
+                          ),
+                          const SizedBox(width: 10),
+                          _buildStatContainer(
+                            label: 'Manga',
+                            value: totalReadManga.toString(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Stats',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              margin: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .inverseSurface,
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    isLoggedIn ? userName : 'Guest',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildStatContainer(
-                        label: 'Anime',
-                        value: totalWatchedAnimes,
-                      ),
-                      const SizedBox(width: 10),
-                      _buildStatContainer(
-                        label: 'Manga',
-                        value: totalReadManga,
+                                    .surfaceContainer,
+                              ),
+                              child: Column(
+                                children: [
+                                  StatsRow(
+                                    name: 'Episodes Watched',
+                                    value: anilistProvider
+                                            .userData?['statistics']?['anime']
+                                                ?['episodesWatched']
+                                            ?.toString() ??
+                                        '?',
+                                  ),
+                                  StatsRow(
+                                    name: 'Days Watched',
+                                    value: anilistProvider
+                                            .userData?['statistics']?['anime']
+                                                ?['minutesWatched']
+                                            ?.toString() ??
+                                        '?',
+                                  ),
+                                  const StatsRow(
+                                    name: 'Anime Mean Score',
+                                    value:
+                                        '00.00', // Customize this field if available
+                                  ),
+                                  StatsRow(
+                                    name: 'Chapters Read',
+                                    value: anilistProvider
+                                            .userData?['statistics']?['manga']
+                                                ?['chaptersRead']
+                                            ?.toString() ??
+                                        '?',
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            HomepageCarousel(
+                              title: 'Currently Watching',
+                              carouselData: watchingAnimeList,
+                              tag: 'home-page',
+                            ),
+                            const SizedBox(height: 10),
+                            MangaHomepageCarousel(
+                              title: 'Currently Reading',
+                              carouselData: readingMangaList,
+                              tag: 'home-page',
+                            )
+                          ],
+                        ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Stats',
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          margin: const EdgeInsets.all(5),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(7),
-                            color:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                          ),
-                          child: const Column(
-                            children: [
-                              StatsRow(name: 'Episodes Watched', value: '0'),
-                              StatsRow(name: 'Days Watched', value: '0'),
-                              StatsRow(
-                                  name: 'Anime Mean Score', value: '00.00'),
-                              StatsRow(name: 'Chapters Read', value: '0'),
-                              StatsRow(name: 'Volume Read', value: '0'),
-                              StatsRow(name: 'Manga Mean Score', value: '0'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        HomepageCarousel(
-                          title: 'Currently Watching',
-                          carouselData: watchingAnimeList,
-                          tag: 'home-page',
-                        ),
-                        MangaHomepageCarousel(
-                          title: 'Currently Reading',
-                          carouselData: readingMangaList,
-                          tag: 'home-page',
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
