@@ -6,28 +6,43 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:label="AnymeX"
+        android:label="AnymeX" 
         android:name="${applicationName}"
         android:roundIcon="@mipmap/ic_rounded_launcher"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity 
+            android:name="com.linusu.flutter_web_auth.CallbackActivity"
+            android:exported="true"> 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anymex" android:host="callback" /> 
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
@@ -41,20 +56,16 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="sms" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="tel" />
+        </intent>
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
     </queries>
-
-    <queries>
-      <intent>
-        <action android:name="android.intent.action.VIEW" />
-        <data android:scheme="sms" />
-      </intent>
-      <intent>
-        <action android:name="android.intent.action.VIEW" />
-        <data android:scheme="tel" />
-      </intent>
-      <intent>
-        <action android:name="android.support.customtabs.action.CustomTabsService" />
-      </intent>
-    </queries>
-
 </manifest>
