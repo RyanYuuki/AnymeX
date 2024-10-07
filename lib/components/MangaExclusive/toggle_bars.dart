@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:ionicons/ionicons.dart';
 
 typedef ButtonTapCallback = void Function(String? index);
+typedef LayoutCallback = void Function(BuildContext context);
 
 class ToggleBar extends StatefulWidget {
   final Widget child;
@@ -9,17 +11,26 @@ class ToggleBar extends StatefulWidget {
   final String? chapter;
   final int? totalImages;
   final ScrollController scrollController;
+  final PageController pageController;
   final ButtonTapCallback handleChapter;
+  final LayoutCallback showSettings;
+  final LayoutCallback showChapters;
+  final String currentLayout;
+  final double? pageNumber;
 
-  const ToggleBar({
-    super.key,
-    required this.child,
-    required this.title,
-    required this.chapter,
-    required this.totalImages,
-    required this.scrollController,
-    required this.handleChapter,
-  });
+  const ToggleBar(
+      {super.key,
+      required this.child,
+      required this.title,
+      required this.chapter,
+      required this.totalImages,
+      required this.scrollController,
+      required this.handleChapter,
+      required this.showSettings,
+      required this.showChapters,
+      required this.currentLayout,
+      required this.pageController,
+      required this.pageNumber});
 
   @override
   State<ToggleBar> createState() => _ToggleBarState();
@@ -61,14 +72,21 @@ class _ToggleBarState extends State<ToggleBar> {
   }
 
   void _onProgressBarTap(double progress) {
-    if (widget.scrollController.hasClients) {
-      final targetPage = (progress * (widget.totalImages! - 1)).round();
+    if (widget.currentLayout == 'Webtoon') {
+      if (widget.scrollController.hasClients) {
+        final targetPage = (progress * (widget.totalImages! - 1)).round();
 
-      widget.scrollController.jumpTo(
-        targetPage *
-            (widget.scrollController.position.maxScrollExtent /
-                (widget.totalImages! - 1)),
-      );
+        widget.scrollController.jumpTo(
+          targetPage *
+              (widget.scrollController.position.maxScrollExtent /
+                  (widget.totalImages! - 1)),
+        );
+      }
+    } else {
+      if (widget.pageController.hasClients) {
+        final targetPage = (progress * (widget.totalImages! - 1)).round();
+        widget.pageController.jumpToPage(targetPage);
+      }
     }
   }
 
@@ -104,13 +122,14 @@ class _ToggleBarState extends State<ToggleBar> {
                 //     Theme.of(context).colorScheme.surface.withOpacity(0.8)
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(IconlyBold.arrow_left,
+                    icon: Icon(Ionicons.chevron_back,
                         color: Theme.of(context).colorScheme.inverseSurface ==
                                 Theme.of(context)
                                     .colorScheme
@@ -128,45 +147,64 @@ class _ToggleBarState extends State<ToggleBar> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          widget.chapter!.length > 30
-                              ? "${widget.chapter!.substring(0, 30)}..."
-                              : widget.chapter!,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface ==
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryFixedVariant
-                                  ? Colors.black
-                                  : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant ==
-                                          const Color(0xffe2e2e2)
-                                      ? Colors.black
-                                      : Colors.white)),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 190,
+                        child: Text(
+                            widget.chapter!.length > 30
+                                ? "${widget.chapter!.substring(0, 30)}..."
+                                : widget.chapter!,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white)),
+                      ),
                       const SizedBox(height: 3),
-                      Text(widget.title!,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface ==
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryFixedVariant
-                                  ? Colors.black
-                                  : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant ==
-                                          const Color(0xffe2e2e2)
-                                      ? Colors.black
-                                      : Colors.white70)),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 190,
+                        child: Text(widget.title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white70)),
+                      ),
                     ],
                   ),
+                  const Expanded(child: SizedBox.shrink()),
+                  // IconButton(
+                  //     onPressed: () {
+                  //       widget.showChapters(context);
+                  //     },
+                  //     icon: const Icon(Iconsax.bookmark5)),
+                  IconButton(
+                      onPressed: () {
+                        widget.showSettings(context);
+                      },
+                      icon: const Icon(Ionicons.settings))
                 ],
               ),
             ),
@@ -233,8 +271,11 @@ class _ToggleBarState extends State<ToggleBar> {
                                 .withOpacity(0.80),
                             borderRadius: BorderRadius.circular(20)),
                         child: Slider(
-                          divisions: widget.totalImages ?? 10,
-                          value: _scrollProgress,
+                          divisions: widget.totalImages ?? 20,
+                          value: widget.currentLayout == 'Webtoon'
+                              ? _scrollProgress
+                              : (widget.pageNumber! / widget.totalImages!)
+                                  .clamp(0, 1),
                           label:
                               (_scrollProgress * (widget.totalImages! - 1) + 1)
                                   .round()
@@ -303,7 +344,7 @@ class _ToggleBarState extends State<ToggleBar> {
             right: 0,
             child: Center(
               child: Text(
-                '$_currentPage / ${widget.totalImages}',
+                '${widget.currentLayout == 'Webtoon' ? _currentPage : widget.pageNumber?.floor()} / ${widget.totalImages}',
                 style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.inverseSurface ==
