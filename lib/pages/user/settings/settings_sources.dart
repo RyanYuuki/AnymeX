@@ -1,9 +1,7 @@
+import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/components/common/switch_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
-import 'package:aurora/database/scraper/scrape_episode_src.dart';
-import 'package:aurora/database/scraper/scraper_aniwatch.dart';
-import 'package:aurora/database/scraper/scraper_details.dart';
-import 'package:aurora/database/scraper/scraper_episodes.dart';
+import 'package:aurora/test/anilistLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
@@ -111,13 +109,6 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
               });
             },
           ),
-          // ListTile(
-          //   leading: const Icon(IconlyBroken.document),
-          //   title: const Text('Fetch Data'),
-          //   onTap: () {
-          //     scrapeAnimeEpisodeSources('naruto-shippuden-355?ep=7882');
-          //   },
-          // ),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
@@ -131,7 +122,7 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
             title: 'MangaReader API',
             description: "Try if you're having slow experience",
             onTap: () {},
-          )
+          ),
         ],
       ),
     );
