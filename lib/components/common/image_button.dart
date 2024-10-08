@@ -12,7 +12,7 @@ class ImageButton extends StatelessWidget {
   final TextStyle? textStyle;
 
   const ImageButton({
-    Key? key,
+    super.key,
     required this.buttonText,
     required this.onPressed,
     required this.backgroundImage,
@@ -21,7 +21,7 @@ class ImageButton extends StatelessWidget {
     this.borderRadius = 18,
     this.textColor = Colors.white,
     this.textStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,8 @@ class ImageButton extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.7),
-              Theme.of(context).colorScheme.surface.withOpacity(0.7)
+              Colors.black.withOpacity(0.5),
+              Colors.black.withOpacity(0.5),
             ]),
             borderRadius: BorderRadius.circular(borderRadius),
           ),

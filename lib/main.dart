@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/database/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
@@ -111,7 +110,7 @@ class _MainAppState extends State<MainApp> {
           currentIndex: _selectedIndex,
           marginR: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
           unselectedItemColor:
-              themeProvider.selectedTheme.colorScheme.inverseSurface,
+              Colors.white,
           backgroundColor: Colors.black.withOpacity(0.3),
           onTap: _onItemTapped,
           items: [

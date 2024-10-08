@@ -53,12 +53,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: Hive.box('login-data').listenable(),
-      builder: (context, Box loginBox, _) {
-        final anilistProvider = Provider.of<AniListProvider>(context);
-        // final userInfo =
-        //     loginBox.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
+    return Consumer<AniListProvider>(
+      builder: (context, anilistProvider, _) {
         final userName = anilistProvider.userData['name'] ?? 'Guest';
         final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
         final isLoggedIn = anilistProvider.userData.isNotEmpty;
@@ -162,43 +158,43 @@ class _HomePageState extends State<HomePage> {
                                   textAlign: TextAlign.center,
                                 ),
                               ),
-                              if(isLoggedIn)
-                              const SizedBox(height: 20),
-                              if(isLoggedIn)
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ImageButton(
+                              if (isLoggedIn) const SizedBox(height: 20),
+                              if (isLoggedIn)
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ImageButton(
                                       buttonText: 'ANIME LIST',
                                       onPressed: () {
                                         Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AnimeList()));
-                                        Provider.of<AniListProvider>(context,
-                                                listen: false)
-                                            .fetchUserAnimeList();
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => AnimeList(),
+                                          ),
+                                        );
+                                        anilistProvider.fetchUserAnimeList();
                                       },
                                       backgroundImage:
-                                          'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg'),
-                                  ImageButton(
+                                          'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+                                    ),
+                                    ImageButton(
                                       buttonText: 'MANGA LIST',
                                       onPressed: () {
                                         Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AnilistMangaList()));
-                                        Provider.of<AniListProvider>(context,
-                                                listen: false)
-                                            .fetchUserMangaList();
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AnilistMangaList(),
+                                          ),
+                                        );
+                                        anilistProvider.fetchUserMangaList();
                                       },
                                       backgroundImage:
-                                          'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg'),
-                                ],
-                              ),
+                                          'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                         ),

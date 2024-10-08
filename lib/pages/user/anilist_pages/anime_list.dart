@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/fallbackData/anime_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +35,8 @@ class AnimeList extends StatelessWidget {
               style: TextStyle(
                   fontSize: 16, color: Theme.of(context).colorScheme.primary)),
           bottom: TabBar(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            physics: BouncingScrollPhysics(),
             tabAlignment: TabAlignment.start,
             isScrollable: true,
             tabs: tabs

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/homepage/homepage_carousel.dart';
 import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
-import 'package:aurora/database/database.dart';
+import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
@@ -221,20 +221,38 @@ class _ProfilePageState extends State<ProfilePage> {
                                     name: 'Days Watched',
                                     value: anilistProvider
                                             .userData?['statistics']?['anime']
-                                                ?['minutesWatched']
+                                                ?['daysWatched']
                                             ?.toString() ??
                                         '?',
                                   ),
-                                  const StatsRow(
-                                    name: 'Anime Mean Score',
-                                    value:
-                                        '00.00', // Customize this field if available
-                                  ),
+                                  StatsRow(
+                                      name: 'Anime Mean Score',
+                                      value: anilistProvider
+                                              .userData?['statistics']?['anime']
+                                                  ?['meanScore']
+                                              ?.toString() ??
+                                          '?'),
                                   StatsRow(
                                     name: 'Chapters Read',
                                     value: anilistProvider
                                             .userData?['statistics']?['manga']
                                                 ?['chaptersRead']
+                                            ?.toString() ??
+                                        '?',
+                                  ),
+                                  StatsRow(
+                                    name: 'Volume Read',
+                                    value: anilistProvider
+                                            .userData?['statistics']?['manga']
+                                                ?['volumeRead']
+                                            ?.toString() ??
+                                        '?',
+                                  ),
+                                  StatsRow(
+                                    name: 'Manga Mean Score',
+                                    value: anilistProvider
+                                            .userData?['statistics']?['manga']
+                                                ?['meanScore']
                                             ?.toString() ??
                                         '?',
                                   ),

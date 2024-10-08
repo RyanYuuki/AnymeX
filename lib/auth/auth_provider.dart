@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 class AniListProvider with ChangeNotifier {
   final storage = const FlutterSecureStorage();
+  final Box _loginDataBox =
+      Hive.box('login-data'); 
   dynamic _userData = {};
   bool _isLoading = false;
 
@@ -18,6 +21,12 @@ class AniListProvider with ChangeNotifier {
     final token = await storage.read(key: 'auth_token');
     if (token != null) {
       await fetchUserProfile();
+    } else {
+      final lastSession = _loginDataBox.get('last_session');
+      if (lastSession != null) {
+        _userData = lastSession;
+        notifyListeners();
+      }
     }
   }
 
@@ -118,7 +127,10 @@ class AniListProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       _userData = data['data']['Viewer'];
-      log('User profile fetched');
+
+      // Save the newly fetched user data into Hive for future sessions
+      await _loginDataBox.put('last_session', _userData);
+      log('User profile fetched and saved');
     } else {
       throw Exception('Failed to load user profile');
     }
@@ -203,8 +215,6 @@ class AniListProvider with ChangeNotifier {
           _userData['animeList'] =
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
           log('User anime list fetched successfully');
-          log('Fetched ${_userData['animeList'].length} anime entries');
-          log(data['data']['MediaListCollection']['lists']);
         } else {
           log('Unexpected response structure: ${response.body}');
         }
@@ -297,7 +307,6 @@ class AniListProvider with ChangeNotifier {
           _userData['mangaList'] =
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
           log('User manga list fetched successfully');
-          log('Fetched ${_userData['mangaList'].length} manga entries');
         } else {
           log('Unexpected response structure: ${response.body}');
         }
@@ -316,6 +325,7 @@ class AniListProvider with ChangeNotifier {
   Future<void> logout(BuildContext context) async {
     await storage.delete(key: 'auth_token');
     _userData = {};
+    await _loginDataBox.delete('last_session'); // Remove session data on logout
     notifyListeners();
   }
 }

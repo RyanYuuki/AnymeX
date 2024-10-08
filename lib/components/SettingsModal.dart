@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/main.dart';

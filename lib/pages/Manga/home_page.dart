@@ -9,13 +9,11 @@ import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'dart:io';
 
 class MangaHomePage extends StatefulWidget {
   const MangaHomePage({super.key});

@@ -40,7 +40,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AniListProvider>(context);
-    final _userData = provider.userData;
+    final userData = provider.userData;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,14 +61,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
               child: Column(
                 children: [
                   CircleAvatar(
-                    backgroundImage: NetworkImage(_userData['avatar']['large']),
+                    backgroundImage: NetworkImage(userData['avatar']['large']),
                     radius: 50,
                   ),
                   const SizedBox(height: 16),
-                  Text('Name: ${_userData['name']}'),
+                  Text('Name: ${userData['name']}'),
                   const SizedBox(height: 8),
-                  Text('Anime Watched: ${_userData['statistics']['anime']['count']}'),
-                  Text('Manga Read: ${_userData['statistics']['manga']['count']}'),
+                  Text('Anime Watched: ${userData['statistics']['anime']['count']}'),
+                  Text('Manga Read: ${userData['statistics']['manga']['count']}'),
                 ],
               ),
             ),

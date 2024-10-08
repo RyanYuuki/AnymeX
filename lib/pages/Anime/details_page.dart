@@ -12,7 +12,6 @@ import 'package:aurora/database/scraper/scraper_details.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -162,32 +161,28 @@ class _DetailsPageState extends State<DetailsPage>
   Future<void> fetchFromAniwatch() async {
     // final tempdata = await fetchAnimeDetailsAniwatch(widget.id);
     final tempdata = await scrapeAnimeAboutInfo(widget.id);
-    if (tempdata != null) {
+    setState(() {
+      // data = mergeData(tempdata);
+      data = tempdata;
+      consumetSesh = false;
+      description = data?['description'];
+      isLoading = false;
+    });
+
+    final newResponse = await http.get(Uri.parse(
+        'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data?['anilistId']}'));
+
+    if (newResponse.statusCode == 200) {
+      final characterTemp = jsonDecode(newResponse.body);
       setState(() {
-        // data = mergeData(tempdata);
-        data = tempdata;
-        consumetSesh = false;
-        description = data?['description'];
-        isLoading = false;
+        description = characterTemp?['description'] ?? data?['description'];
+        charactersdata = characterTemp['characters'] ?? [];
+        altdata = characterTemp;
       });
-
-      final newResponse = await http.get(Uri.parse(
-          'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data?['anilistId']}'));
-
-      if (newResponse.statusCode == 200) {
-        final characterTemp = jsonDecode(newResponse.body);
-        setState(() {
-          description = characterTemp?['description'] ?? data?['description'];
-          charactersdata = characterTemp['characters'] ?? [];
-          altdata = characterTemp;
-        });
-      } else {
-        log('Failed to fetch character data? from Consumet: ${newResponse.statusCode}');
-      }
     } else {
-      throw Exception('Aniwatch fetch failed');
+      log('Failed to fetch character data? from Consumet: ${newResponse.statusCode}');
     }
-  }
+    }
 
   @override
   Widget build(BuildContext context) {

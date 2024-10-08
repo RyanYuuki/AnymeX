@@ -180,9 +180,9 @@ List<Map<String, dynamic>> extractAnimes(Document document, String selector,
         'rating': el.querySelector(".fd-infor .rating")?.text.trim(),
         'episodes': {
           'sub': int.tryParse(
-              el.querySelector(".tick-item.tick-sub")?.text?.trim() ?? ''),
+              el.querySelector(".tick-item.tick-sub")?.text.trim() ?? ''),
           'dub': int.tryParse(
-              el.querySelector(".tick-item.tick-dub")?.text?.trim() ?? ''),
+              el.querySelector(".tick-item.tick-dub")?.text.trim() ?? ''),
         }
       });
     }
@@ -210,8 +210,7 @@ Map<String, List<Map<String, dynamic>>> extractTop10Animes(Document document) {
       '#main-sidebar .block_area-realtime [id^="top-viewed-"]');
 
   for (var el in elements) {
-    final period = el.id?.split("-").last.trim();
-    if (period == null) continue;
+    final period = el.id.split("-").last.trim();
 
     final animes = el
         .querySelectorAll("ul li")

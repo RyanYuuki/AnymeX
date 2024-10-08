@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 
 typedef ButtonTapCallback = void Function(String? index);
