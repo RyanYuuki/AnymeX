@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -32,7 +33,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
   Future<void> fetchSearchedTerm() async {
     _searchData = null;
     final String url =
-        'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/search/${controller.text}';
+        'https://anymey-proxy.vercel.app/cors?url=${dotenv.get('MANGA_URL')}api/search/${controller.text}';
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final tempData = jsonDecode(resp.body);

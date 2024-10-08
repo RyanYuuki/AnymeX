@@ -6,6 +6,7 @@ import 'package:aurora/components/MangaExclusive/chapters.dart';
 import 'package:aurora/database/database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
@@ -33,7 +34,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   String? description;
 
   final String baseUrl =
-      'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
+      '${dotenv.get('PROXY_URL')}${dotenv.get('MANGA_URL')}api/manga/';
 
   @override
   void initState() {

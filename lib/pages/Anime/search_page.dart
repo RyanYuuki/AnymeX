@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -33,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> fetchSearchedTerm() async {
     _searchData = null;
     final String url =
-        'https://aniwatch-ryan.vercel.app/anime/search?q=${controller.text}';
+        '${dotenv.get('ANIME_URL')}anime/search?q=${controller.text}';
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final tempData = jsonDecode(resp.body);

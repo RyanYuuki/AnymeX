@@ -2,20 +2,19 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
-const String proxy_url = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
-// const String proxy_url = "https://anymey-proxy.vercel.app/cors?url=";
-const String consumet_api_url =
-    "https://consumet-api-two-nu.vercel.app/meta/anilist/";
-const String aniwatch_api_url = "https://aniwatch-ryan.vercel.app/anime/";
+String proxyUrl = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
+String consumetUrl = "${dotenv.get('CONSUMET_URL')}meta/anilist/";
+String aniwatchUrl = "${dotenv.get('ANIME_URL')}anime/";
 bool isRomaji = Hive.box('app-data').get('isRomaji', defaultValue: false);
 void toggleRomaji(String source, bool state) {}
 
 Future<dynamic>? fetchHomePageAniwatch() async {
   final response =
-      await http.get(Uri.parse('$proxy_url${aniwatch_api_url}home'));
+      await http.get(Uri.parse('$proxyUrl${aniwatchUrl}home'));
   if (response.statusCode == 200) {
     return jsonDecode(response.body);
   } else {
@@ -29,21 +28,21 @@ Future<dynamic>? fetchHomePageConsumet() async {
 
   try {
     final spotlightAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/trending'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/trending'));
     final trendingAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/trending?page=2'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/trending?page=2'));
     final latestEpisodesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/advanced-search?sort=["EPISODES"]'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/advanced-search?sort=["EPISODES"]'));
     final topUpcomingAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/advanced-search?status=NOT_YET_RELEASED'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/advanced-search?status=NOT_YET_RELEASED'));
     final topAiringAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/trending?page=3'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/trending?page=3'));
     final mostPopularAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/popular'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/popular'));
     final mostFavouriteAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/popular?page=2'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/popular?page=2'));
     final latestCompletedAnimesResponse = await http.get(Uri.parse(
-        '${proxy_url}https://consumet-api-two-nu.vercel.app/meta/anilist/advanced-search?year=2024&status=FINISHED'));
+        '$proxyUrl${dotenv.get('CONSUMET_URL')}meta/anilist/advanced-search?year=2024&status=FINISHED'));
 
     if (spotlightAnimesResponse.statusCode == 200) {
       data['spotlightAnimes'] =
@@ -99,7 +98,7 @@ Future<dynamic>? fetchHomePageConsumet() async {
 Future<dynamic>? fetchAnimeDetailsConsumet(String id) async {
   try {
     final resp =
-        await http.get(Uri.parse('$proxy_url${consumet_api_url}info/$id'));
+        await http.get(Uri.parse('$proxyUrl${consumetUrl}info/$id'));
 
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
@@ -116,7 +115,7 @@ Future<dynamic>? fetchAnimeDetailsConsumet(String id) async {
 Future<dynamic> fetchAnimeDetailsAniwatch(String id) async {
   try {
     final resp =
-        await http.get(Uri.parse('$proxy_url${aniwatch_api_url}info?id=$id'));
+        await http.get(Uri.parse('$proxyUrl${aniwatchUrl}info?id=$id'));
 
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
@@ -135,7 +134,7 @@ Future<dynamic>? fetchSearchesAniwatch(String id) async {}
 Future<dynamic>? fetchSearchesConsumet(String id) async {}
 Future<dynamic>? fetchStreamingDataConsumet(String id) async {
   final resp =
-      await http.get(Uri.parse('$proxy_url${consumet_api_url}episodes/$id'));
+      await http.get(Uri.parse('$proxyUrl${consumetUrl}episodes/$id'));
   if (resp.statusCode == 200) {
     final tempData = jsonDecode(resp.body);
     return tempData;
@@ -144,7 +143,7 @@ Future<dynamic>? fetchStreamingDataConsumet(String id) async {
 
 Future<dynamic>? fetchStreamingDataAniwatch(String id) async {
   final resp =
-      await http.get(Uri.parse('$proxy_url${aniwatch_api_url}episodes/$id'));
+      await http.get(Uri.parse('$proxyUrl${aniwatchUrl}episodes/$id'));
   if (resp.statusCode == 200) {
     final tempData = jsonDecode(resp.body);
     return tempData;
@@ -155,7 +154,7 @@ Future<dynamic> fetchStreamingLinksAniwatch(
     String id, String server, String category) async {
   try {
     final url =
-        '${aniwatch_api_url}episode-srcs?id=$id?server=$server&category=$category';
+        '${aniwatchUrl}episode-srcs?id=$id?server=$server&category=$category';
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final tempData = jsonDecode(resp.body);
@@ -170,7 +169,7 @@ Future<dynamic> fetchStreamingLinksAniwatch(
 
 Future<dynamic>? fetchStreamingLinksConsumet(String id) async {
   final resp =
-      await http.get(Uri.parse('$proxy_url${consumet_api_url}watch/$id'));
+      await http.get(Uri.parse('$proxyUrl${consumetUrl}watch/$id'));
   if (resp.statusCode == 200) {
     final tempData = jsonDecode(resp.body);
     return tempData;

@@ -9,6 +9,11 @@ import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+>>>>>>> Stashed changes
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:convert';
@@ -45,8 +50,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
   }
 
   Future<void> fetchData() async {
-    const String apiUrl =
-        'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/mangalist';
+    String apiUrl = '${dotenv.get('PROXY_URL')}${dotenv.get('MANGA_URL')}api/mangaList';
 
     try {
       final response1 = await http.get(Uri.parse(apiUrl));

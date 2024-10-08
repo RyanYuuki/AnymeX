@@ -4,6 +4,7 @@ import 'package:aurora/components/MangaExclusive/toggle_bars.dart';
 import 'package:aurora/database/database.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -42,9 +43,9 @@ class _ReadingPageState extends State<ReadingPage> {
     fetchChapterData();
   }
 
+  String url = '${dotenv.get('PROXY_URL')}${dotenv.get('MANGA_URL')}api/manga/';
+
   Future<void> fetchChapterData() async {
-    const String url =
-        'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
       final resp = await http.get(Uri.parse(url + widget.id));
       final provider = Provider.of<AppData>(context, listen: false);
@@ -83,8 +84,6 @@ class _ReadingPageState extends State<ReadingPage> {
     setState(() {
       isLoading = true;
     });
-    const String url =
-        'https://anymey-proxy.vercel.app/cors?url=https://manga-ryan.vercel.app/api/manga/';
     try {
       final provider = Provider.of<AppData>(context, listen: false);
       final resp = await http.get(
