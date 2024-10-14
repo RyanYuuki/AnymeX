@@ -110,11 +110,11 @@ class MangaList extends StatelessWidget {
                                     topLeft: Radius.circular(5),
                                     bottomLeft: Radius.circular(5)),
                                 icon: Iconsax.book_1,
-                                name: manga['chapter'].length > 10
-                                    ? manga['chapter']
+                                name: manga['author'].length > 10
+                                    ? manga['author']
                                         .toString()
                                         .substring(0, 10)
-                                    : manga['chapter'].toString()),
+                                    : manga['author'].toString()),
                             const SizedBox(width: 2),
                             iconWithName(
                                 TextColor: Theme.of(context)
