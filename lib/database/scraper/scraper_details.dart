@@ -183,7 +183,6 @@ Future<Map<String, dynamic>> scrapeAnimeAboutInfo(String animeId) async {
     }
     result['recommendedAnimes'] = extractAnimes(document,
         '#main-content .block_area.block_area_category .tab-content .flw-item');
-    log(result['malscore'].toString());
     return result;
   } catch (e) {
     throw Exception('Failed to scrape anime info $e');
