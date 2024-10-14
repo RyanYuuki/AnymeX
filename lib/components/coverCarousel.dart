@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, unused_field, library_private_types_in_public_api
+
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -7,17 +9,17 @@ import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class CoverCarousel extends StatefulWidget {
+class Covercarousel extends StatefulWidget {
   final List<dynamic>? animeData;
   final String? title;
 
-  const CoverCarousel({super.key, this.animeData, this.title});
+  const Covercarousel({super.key, this.animeData, this.title});
 
   @override
-  _CoverCarouselState createState() => _CoverCarouselState();
+  _CovercarouselState createState() => _CovercarouselState();
 }
 
-class _CoverCarouselState extends State<CoverCarousel> {
+class _CovercarouselState extends State<Covercarousel> {
   int activeIndex = 0;
   final PageController _pageController = PageController();
 
