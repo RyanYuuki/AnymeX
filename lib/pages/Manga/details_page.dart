@@ -1,14 +1,13 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
-import 'dart:convert';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/MangaExclusive/chapters.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iconly/iconly.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -33,9 +32,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   dynamic charactersData;
   String? description;
 
-  final String baseUrl =
-      '${dotenv.get('PROXY_URL')}${dotenv.get('MANGA_URL')}api/manga/';
-
   @override
   void initState() {
     super.initState();
@@ -44,16 +40,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Future<void> FetchMangaData() async {
     try {
-      final response = await http.get(Uri.parse(baseUrl + widget.id));
-      if (response.statusCode == 200) {
-        final tempData = jsonDecode(response.body);
-        setState(() {
-          mangaData = tempData;
-          isLoading = false;
-        });
-      } else {
-        throw Exception('Failed to load data');
-      }
+      final tempData = await fetchMangaDetails(widget.id);
+      setState(() {
+        mangaData = tempData;
+        isLoading = false;
+      });
     } catch (e) {
       print('Error fetching data: $e');
       setState(() {
@@ -165,7 +156,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   const SizedBox(width: 10),
                   iconWithName(
                     backgroundColor:
-                        Theme.of(context).colorScheme.onPrimaryFixed,
+                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
                     icon: Iconsax.star1,
                     TextColor: Theme.of(context).colorScheme.inverseSurface ==
                             Theme.of(context).colorScheme.onPrimaryFixedVariant
@@ -192,7 +183,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: (mangaData['genres'] as List<dynamic>? ?? [])
+                children: (mangaData['genres'] as List<dynamic>? ??
+                        ["Action", "Adventure", "Sigma"])
                     .take(3)
                     .map<Widget>(
                       (genre) => Container(
@@ -282,6 +274,27 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 ),
               ])
             ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                  mangaData['description'] ?? 'No description available',
+                  maxLines: 13,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 30),
           ChapterList(
@@ -384,8 +397,8 @@ class FloatingBar extends StatelessWidget {
                                 currentChapter.isEmpty
                                     ? 'Chapter 1'
                                     : currentChapter,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Theme.of(context)
@@ -414,7 +427,7 @@ class FloatingBar extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/manga/read', arguments: {
-                          'id': '/$id/$currentChapterId',
+                          'id': currentChapterId,
                           'mangaId': id,
                           'posterUrl': posterUrl
                         });

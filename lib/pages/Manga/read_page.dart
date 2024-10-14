@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:aurora/components/MangaExclusive/toggle_bars.dart';
 import 'package:aurora/database/database.dart';
+import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,6 +28,7 @@ class _ReadingPageState extends State<ReadingPage> {
   List<dynamic>? chapterImages;
   String? currentChapter;
   String? mangaTitle;
+  int? totalImages;
   int? index;
   bool isLoading = true;
   bool hasError = false;
@@ -47,30 +49,24 @@ class _ReadingPageState extends State<ReadingPage> {
 
   Future<void> fetchChapterData() async {
     try {
-      final resp = await http.get(Uri.parse(url + widget.id));
       final provider = Provider.of<AppData>(context, listen: false);
-      if (resp.statusCode == 200) {
-        final tempData = jsonDecode(resp.body);
-        setState(() {
-          chaptersList = tempData['chapterListIds'];
-          chapterImages = tempData['images'];
-          currentChapter = tempData['currentChapter'];
-          mangaTitle = tempData['title'];
-          index = tempData['chapterListIds']
-              ?.indexWhere((chapter) => chapter['name'] == currentChapter);
-          isLoading = false;
-        });
-        provider.addReadManga(
-            mangaId: widget.mangaId,
-            mangaTitle: tempData['title'],
-            currentChapter: currentChapter.toString(),
-            mangaPosterImage: widget.posterUrl);
-      } else {
-        setState(() {
-          hasError = true;
-          isLoading = false;
-        });
-      }
+      final tempData = await fetchChapterDetails(
+          mangaId: widget.mangaId, chapterId: widget.id);
+      setState(() {
+        chaptersList = tempData['chapterListIds'];
+        chapterImages = tempData['images'];
+        currentChapter = tempData['currentChapter'];
+        mangaTitle = tempData['title'];
+        totalImages = tempData['totalImages'];
+        index = tempData['chapterListIds']
+            ?.indexWhere((chapter) => chapter['name'] == currentChapter);
+        isLoading = false;
+      });
+      provider.addReadManga(
+          mangaId: widget.mangaId,
+          mangaTitle: tempData['title'],
+          currentChapter: currentChapter.toString(),
+          mangaPosterImage: widget.posterUrl);
     } catch (e) {
       log(e.toString());
       setState(() {
@@ -86,26 +82,19 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     try {
       final provider = Provider.of<AppData>(context, listen: false);
-      final resp = await http.get(
-          Uri.parse('$url${widget.mangaId}/${chaptersList?[index!]['id']}'));
-      if (resp.statusCode == 200) {
-        final tempData = jsonDecode(resp.body);
-        setState(() {
-          chapterImages = tempData['images'];
-          currentChapter = tempData['currentChapter'];
-          isLoading = false;
-        });
-        provider.addReadManga(
-            mangaId: widget.mangaId,
-            mangaTitle: mangaTitle!,
-            currentChapter: currentChapter.toString(),
-            mangaPosterImage: widget.posterUrl);
-      } else {
-        setState(() {
-          hasError = true;
-          isLoading = false;
-        });
-      }
+      final tempData = await fetchChapterDetails(
+          mangaId: widget.mangaId, chapterId: chaptersList?[index!]['id']);
+      setState(() {
+        totalImages = tempData['totalImages'];
+        chapterImages = tempData['images'];
+        currentChapter = tempData['currentChapter'];
+        isLoading = false;
+      });
+      provider.addReadManga(
+          mangaId: widget.mangaId,
+          mangaTitle: mangaTitle!,
+          currentChapter: currentChapter.toString(),
+          mangaPosterImage: widget.posterUrl);
     } catch (e) {
       log(e.toString());
       setState(() {
@@ -138,7 +127,7 @@ class _ReadingPageState extends State<ReadingPage> {
       pageNumber: _getPageNumber(),
       title: isLoading ? 'Loading...' : mangaTitle ?? 'Unknown Title',
       chapter: isLoading ? 'Loading...' : currentChapter ?? 'Unknown Chapter',
-      totalImages: chapterImages?.length ?? 1,
+      totalImages: totalImages ?? 10,
       scrollController: _scrollController,
       handleChapter: handleChapter,
       showChapters: _showChapters,
