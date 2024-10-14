@@ -1,11 +1,17 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:developer';
+import 'dart:math';
+
 import 'package:aurora/components/IconWithLabel.dart';
+import 'package:aurora/components/helper/scroll_helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:infinite_carousel/infinite_carousel.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:transformable_list_view/transformable_list_view.dart';
 
 class ReusableCarousel extends StatelessWidget {
   final List<dynamic>? carouselData;
@@ -13,15 +19,53 @@ class ReusableCarousel extends StatelessWidget {
   final String? tag;
   final bool? secondary;
 
-  const ReusableCarousel(
+  ReusableCarousel(
       {super.key,
       this.title,
       this.carouselData,
       required this.tag,
       this.secondary = true});
 
+  final ScrollDirectionHelper _scrollDirectionHelper = ScrollDirectionHelper();
+
+  Matrix4 getTransformMatrix(TransformableListItem item) {
+    const maxScale = 1;
+    const minScale = 0.9;
+    final viewportWidth = item.constraints.viewportMainAxisExtent;
+    final itemLeftEdge = item.offset.dx;
+    final itemRightEdge = item.offset.dx + item.size.width;
+
+    bool isScrollingRight =
+        _scrollDirectionHelper.isScrollingRight(item.offset);
+
+    double visiblePortion;
+    if (isScrollingRight) {
+      visiblePortion = (viewportWidth - itemLeftEdge) / item.size.width;
+    } else {
+      visiblePortion = (itemRightEdge) / item.size.width;
+    }
+
+    if ((isScrollingRight && itemLeftEdge < viewportWidth) ||
+        (!isScrollingRight && itemRightEdge > 0)) {
+      const scaleRange = maxScale - minScale;
+      final scale =
+          minScale + (scaleRange * visiblePortion).clamp(0.0, scaleRange);
+
+      return Matrix4.identity()
+        ..translate(item.size.width / 2, 0, 0)
+        ..scale(scale)
+        ..translate(-item.size.width / 2, 0, 0);
+    }
+
+    return Matrix4.identity();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool usingCompactCards =
+        Hive.box('app-data').get('usingCompactCards', defaultValue: false);
+    final bool usingSaikouCards =
+        Hive.box('app-data').get('usingSaikouCards', defaultValue: true);
     if (carouselData == null || carouselData!.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -30,42 +74,51 @@ class ReusableCarousel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Text(
-              title ?? '??',
-              style: TextStyle(
-                fontSize: 22,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            children: [
+              Text(
+                title ?? '??',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
-            !secondary!
-                ? const SizedBox.shrink()
-                : const Text(
-                    ' Mangas',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-                  ),
-          ],
+              !secondary!
+                  ? const SizedBox.shrink()
+                  : const Text(
+                      ' Mangas',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 260,
-          child: InfiniteCarousel.builder(
+          height: usingSaikouCards
+              ? (usingCompactCards ? 180 : 210)
+              : (usingCompactCards ? 280 : 300),
+          child: TransformableListView.builder(
+            padding: const EdgeInsets.only(left: 20),
+            physics: const BouncingScrollPhysics(
+                decelerationRate: ScrollDecelerationRate.fast),
+            getTransformMatrix: getTransformMatrix,
+            scrollDirection: Axis.horizontal,
             itemCount: carouselData!.length,
-            itemExtent: MediaQuery.of(context).size.width / 2.3,
-            center: false,
-            anchor: 0,
-            loop: false,
-            velocityFactor: 0.7,
-            axisDirection: Axis.horizontal,
-            itemBuilder: (context, itemIndex, realIndex) {
-              final itemData = carouselData![itemIndex];
+            itemExtent: MediaQuery.of(context).size.width /
+                (usingSaikouCards ? 3.3 : 2.3),
+            itemBuilder: (context, index) {
+              final itemData = carouselData![index];
               final String posterUrl = itemData['image'] ?? '??';
-              final tagg = itemData['id'] + tag!;
+              final random = Random().nextInt(100000);
+              final tagg = '${itemData['id']}$tag$random';
               const String proxyUrl =
                   'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+              final extraData = itemData?['view'] ?? '?';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -83,29 +136,105 @@ class ReusableCarousel extends StatelessWidget {
                   },
                   child: Column(
                     children: [
-                      Stack(
-                        children: [
-                          Hero(
-                            tag: tagg,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                imageUrl: proxyUrl + posterUrl,
-                                placeholder: (context, url) => Shimmer.fromColors(
-                                  baseColor: Colors.grey[900]!,
-                                  highlightColor: Colors.grey[700]!,
-                                  child: Container(
-                                    color: Colors.grey[400],
-                                    height: 250,
-                                    width: double.infinity,
+                      Stack(children: [
+                        Stack(children: [
+                          SizedBox(
+                            height: usingSaikouCards ? 160 : 240,
+                            child: Hero(
+                              tag: tagg,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: CachedNetworkImage(
+                                  imageUrl: proxyUrl + posterUrl,
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: Colors.grey[900]!,
+                                    highlightColor: Colors.grey[700]!,
+                                    child: Container(
+                                      color: Colors.grey[400],
+                                      height: 250,
+                                      width: double.infinity,
+                                    ),
                                   ),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: usingSaikouCards
+                                      ? (usingCompactCards ? 200 : 170)
+                                      : (usingCompactCards ? 280 : 250),
                                 ),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: 250,
                               ),
                             ),
                           ),
+                          if (!usingCompactCards)
+                            Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 12),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainer,
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(18),
+                                          bottomRight: Radius.circular(10))),
+                                  child: Text(
+                                    extraData,
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        fontFamily: 'Poppins-Bold',
+                                        color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inverseSurface ==
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryFixedVariant
+                                            ? Colors.black
+                                            : Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryFixedVariant ==
+                                                    const Color(0xffe2e2e2)
+                                                ? Colors.black
+                                                : Colors.white),
+                                  ),
+                                )),
+                          if (usingCompactCards)
+                            Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 12),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainer,
+                                      borderRadius: const BorderRadius.only(
+                                          bottomLeft: Radius.circular(18),
+                                          topRight: Radius.circular(11))),
+                                  child: Text(
+                                    extraData,
+                                    style: TextStyle(
+                                        fontFamily: 'Poppins-Bold',
+                                        fontSize: 11,
+                                        color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inverseSurface ==
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryFixedVariant
+                                            ? Colors.black
+                                            : Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryFixedVariant ==
+                                                    const Color(0xffe2e2e2)
+                                                ? Colors.black
+                                                : Colors.white),
+                                  ),
+                                )),
+                        ]),
+                        if (usingCompactCards)
                           Positioned(
                             bottom: 0,
                             left: 0,
@@ -125,16 +254,28 @@ class ReusableCarousel extends StatelessWidget {
                               ),
                             ),
                           ),
+                        if (usingCompactCards)
                           Positioned(
                             bottom: 10,
                             left: 10,
                             right: 10,
                             child: Text(
-                              itemData['title'].toString(),
+                              itemData?['name'] ?? itemData?['title'],
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                                fontSize: 13,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                fontSize: usingSaikouCards ? 10 : 13,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
                                   Shadow(
@@ -148,26 +289,41 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
+                          )
+                        else
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: usingSaikouCards ? 164 : 248,
+                                width: MediaQuery.of(context).size.width /
+                                    (usingSaikouCards ? 3.3 : 2.3),
+                              ),
+                              Text(
+                                itemData?['title'],
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              const Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white,
+                                  fontSize: usingSaikouCards ? 10 : 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          Positioned(
-                              top: 5,
-                              right: 5,
-                              child: iconWithName(
-                                icon: Iconsax.heart5,
-                                TextColor: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                                name: itemData['view'] ?? '69M',
-                                isVertical: false,
-                                borderRadius: BorderRadius.circular(5),
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryFixedVariant,
-                              ))
-                        ],
-                      ),
-                      const SizedBox(height: 8),
+                      ]),
                     ],
                   ),
                 ),
