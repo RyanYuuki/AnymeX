@@ -6,7 +6,11 @@ class ChapterList extends StatefulWidget {
   final dynamic chaptersData;
   final String? id;
   final String? posterUrl;
-  const ChapterList({super.key, this.chaptersData, required this.id, required this.posterUrl});
+  const ChapterList(
+      {super.key,
+      this.chaptersData,
+      required this.id,
+      required this.posterUrl});
 
   @override
   _ChapterListState createState() => _ChapterListState();
@@ -62,7 +66,8 @@ class _ChapterListState extends State<ChapterList> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                    fillColor:
+                        Theme.of(context).colorScheme.surfaceContainerHigh,
                     filled: true,
                     hintText: 'Search Chapter...',
                     prefixIcon: const Icon(Iconsax.search_normal),
@@ -78,99 +83,123 @@ class _ChapterListState extends State<ChapterList> {
               )
             ],
           ),
-          ..._filteredChapters.map<Widget>((manga) {
-            return Container(
-              margin: const EdgeInsets.only(top: 20),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              width: MediaQuery.of(context).size.width,
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        child: TextScroll(
-                          manga['name'],
-                          mode: TextScrollMode.endless,
-                          velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
-                          delayBefore: const Duration(milliseconds: 500),
-                          pauseBetween: const Duration(milliseconds: 1000),
-                          textAlign: TextAlign.center,
-                          selectable: true,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        manga['createdAt'].toString(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
+          const SizedBox(height: 30),
+          SizedBox(
+            height: 400,
+            child: ListView.builder(
+              itemCount: _filteredChapters.length,
+              itemBuilder: (context, index) {
+                final manga = _filteredChapters[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  width: MediaQuery.of(context).size.width,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
-                  Row(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.whatshot,
-                            size: 16,
+                          SizedBox(
+                            width: 140,
+                            child: TextScroll(
+                              manga['title'],
+                              mode: TextScrollMode.endless,
+                              velocity: const Velocity(
+                                  pixelsPerSecond: Offset(30, 0)),
+                              delayBefore: const Duration(milliseconds: 500),
+                              pauseBetween: const Duration(milliseconds: 1000),
+                              textAlign: TextAlign.center,
+                              selectable: true,
+                              style: const TextStyle(fontSize: 16),
+                            ),
                           ),
-                          const SizedBox(width: 5),
+                          const SizedBox(height: 5),
                           Text(
-                            manga['view'],
-                            style: const TextStyle(
-                              fontSize: 14,
+                            manga['date'].toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[400],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(width: 15),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/manga/read',
-                              arguments: {
-                                "id": manga['path'].toString().substring(
-                                      8,
-                                      manga['path'].toString().length,
-                                    ),
-                                "mangaId": widget.id,
-                                'posterUrl' : widget.posterUrl
-                              });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      Row(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.whatshot,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                manga['views'],
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Text(
-                          'Read',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
-                            fontSize: 14,
+                          const SizedBox(width: 15),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/manga/read',
+                                  arguments: {
+                                    "id": manga['path']
+                                        .toString()
+                                        .split('/')
+                                        .last,
+                                    "mangaId": widget.id,
+                                    'posterUrl': widget.posterUrl
+                                  });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryFixedVariant,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Read',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            );
-          }),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
