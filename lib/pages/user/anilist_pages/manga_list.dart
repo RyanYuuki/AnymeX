@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +20,13 @@ class AnilistMangaList extends StatelessWidget {
   Widget build(BuildContext context) {
     final mangaList =
         Provider.of<AniListProvider>(context).userData['mangaList'];
-    log(mangaList.toString());
+    final userName = Provider.of<AniListProvider>(context).userData['name'];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("RyanYuuki's Manga List",
+          title: Text("$userName's Manga List",
               style: TextStyle(
                   fontSize: 16, color: Theme.of(context).colorScheme.primary)),
           bottom: TabBar(
@@ -78,7 +77,7 @@ class MangaListContent extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, mainAxisExtent: 250, crossAxisSpacing: 10),
+            crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
         itemCount: filteredMangaList.length,
         itemBuilder: (context, index) {
           final item = filteredMangaList[index]['media'];

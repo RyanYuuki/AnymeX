@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 class AnimeList extends StatelessWidget {
@@ -25,18 +26,19 @@ class AnimeList extends StatelessWidget {
   Widget build(BuildContext context) {
     final animeList =
         Provider.of<AniListProvider>(context).userData['animeList'];
-    log(animeList.toString());
+    final userName =
+        Provider.of<AniListProvider>(context).userData['name'];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("RyanYuuki's Anime List",
+          title: Text("$userName's Anime List",
               style: TextStyle(
                   fontSize: 16, color: Theme.of(context).colorScheme.primary)),
           bottom: TabBar(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             tabAlignment: TabAlignment.start,
             isScrollable: true,
             tabs: tabs
@@ -84,24 +86,63 @@ class AnimeListContent extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, mainAxisExtent: 250, crossAxisSpacing: 10),
+            crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
         itemCount: filteredAnimeList.length,
         itemBuilder: (context, index) {
           final item = filteredAnimeList[index]['media'];
           return Column(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: CachedNetworkImage(
-                  height: 170,
-                  fit: BoxFit.cover,
-                  imageUrl: item?['coverImage']?['large'] ??
-                      'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg',
-                  placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+              Stack(children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: CachedNetworkImage(
+                    height: 170,
+                    fit: BoxFit.cover,
+                    imageUrl: item?['coverImage']?['large'] ??
+                        'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg',
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
                 ),
-              ),
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 8),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(16))),
+                      child: Row(
+                        children: [
+                          const Icon(IconlyBold.star, size: 11),
+                          const SizedBox(width: 2),
+                          Text(
+                            (item?['averageScore'] / 10)?.toString() ?? '0.0',
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white),
+                          ),
+                        ],
+                      ),
+                    )),
+              ]),
               const SizedBox(height: 7),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,15 +162,23 @@ class AnimeListContent extends StatelessWidget {
                       Text(
                         animeData?[index]?['progress']?.toString() ?? '?',
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                       ),
                       Text(' | ',
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary)),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .inverseSurface
+                                  .withOpacity(0.5))),
                       Text(
                         item['episodes']?.toString() ?? '?',
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .inverseSurface
+                                .withOpacity(0.5)),
                       ),
                     ],
                   ),

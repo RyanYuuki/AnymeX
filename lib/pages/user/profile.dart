@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/anilistCarousels/animeListCarousels.dart';
 import 'package:aurora/components/homepage/homepage_carousel.dart';
 import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
@@ -37,6 +38,10 @@ class _ProfilePageState extends State<ProfilePage> {
   // final List<dynamic>? watchingAnimeList = hiveBox.get('currently-watching');
   // final List<dynamic>? readingMangaList = hiveBox.get('currently-reading');
 
+  dynamic filterData(dynamic animeList) {
+    return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,12 +58,13 @@ class _ProfilePageState extends State<ProfilePage> {
           final totalReadManga = isLoggedIn
               ? anilistProvider.userData['statistics']['manga']['count']
               : 0;
-          final hiveBox = Hive.box('app-data');
-          final List<dynamic>? watchingAnimeList =
-              hiveBox.get('currently-watching');
-          final List<dynamic>? readingMangaList =
-              hiveBox.get('currently-reading');
+          final followers = isLoggedIn ? 0 : 0;
+          final following = isLoggedIn ? 0 : 0;
           final hasAvatarImage = avatarUrl != null;
+          final rawData = anilistProvider.userData['animeList'];
+          final animeList = filterData(anilistProvider.userData['animeList']);
+          final rawDataManga = anilistProvider.userData['mangaList'];
+          final mangaList = filterData(anilistProvider.userData['mangaList']);
 
           return ListView(
             children: [
@@ -177,11 +183,26 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildStatContainer(
+                            isFirst: true,
+                            isLast: false,
+                            label: 'Followers',
+                            value: followers.toString(),
+                          ),
+                          _buildStatContainer(
+                            isFirst: false,
+                            isLast: false,
+                            label: 'Following',
+                            value: following.toString(),
+                          ),
+                          _buildStatContainer(
+                            isFirst: false,
+                            isLast: false,
                             label: 'Anime',
                             value: totalWatchedAnimes.toString(),
                           ),
-                          const SizedBox(width: 10),
                           _buildStatContainer(
+                            isFirst: false,
+                            isLast: true,
                             label: 'Manga',
                             value: totalReadManga.toString(),
                           ),
@@ -215,15 +236,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                             .userData?['statistics']?['anime']
                                                 ?['episodesWatched']
                                             ?.toString() ??
-                                        '?',
+                                        '0',
                                   ),
                                   StatsRow(
-                                    name: 'Days Watched',
+                                    name: 'Minutes Watched',
                                     value: anilistProvider
                                             .userData?['statistics']?['anime']
-                                                ?['daysWatched']
+                                                ?['minutesWatched']
                                             ?.toString() ??
-                                        '?',
+                                        '0',
                                   ),
                                   StatsRow(
                                       name: 'Anime Mean Score',
@@ -231,14 +252,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                               .userData?['statistics']?['anime']
                                                   ?['meanScore']
                                               ?.toString() ??
-                                          '?'),
+                                          '0.0'),
                                   StatsRow(
                                     name: 'Chapters Read',
                                     value: anilistProvider
                                             .userData?['statistics']?['manga']
                                                 ?['chaptersRead']
                                             ?.toString() ??
-                                        '?',
+                                        '0',
                                   ),
                                   StatsRow(
                                     name: 'Volume Read',
@@ -246,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             .userData?['statistics']?['manga']
                                                 ?['volumeRead']
                                             ?.toString() ??
-                                        '?',
+                                        '0',
                                   ),
                                   StatsRow(
                                     name: 'Manga Mean Score',
@@ -254,25 +275,27 @@ class _ProfilePageState extends State<ProfilePage> {
                                             .userData?['statistics']?['manga']
                                                 ?['meanScore']
                                             ?.toString() ??
-                                        '?',
+                                        '0.0',
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            HomepageCarousel(
-                              title: 'Currently Watching',
-                              carouselData: watchingAnimeList,
-                              tag: 'home-page',
-                            ),
-                            const SizedBox(height: 10),
-                            MangaHomepageCarousel(
-                              title: 'Currently Reading',
-                              carouselData: readingMangaList,
-                              tag: 'home-page',
-                            )
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      anilistCarousel(
+                        title: 'Currently Watching',
+                        carouselData: animeList,
+                        tag: 'currently-watching',
+                        rawData: rawData,
+                      ),
+                      anilistCarousel(
+                        title: 'Currently Reading',
+                        carouselData: mangaList,
+                        tag: 'currently-reading',
+                        rawData: rawDataManga,
+                        isManga: true,
                       ),
                     ],
                   ),
@@ -285,7 +308,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Dialog to capture username
   void _showUsernameDialog(BuildContext context) {
     final TextEditingController usernameController = TextEditingController();
     showDialog(
@@ -345,7 +367,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Save the new username in Hive and update the UI
   void _submitUsername(String newUsername) {
     if (newUsername.isNotEmpty) {
       var box = Hive.box('login-data');
@@ -353,19 +374,29 @@ class _ProfilePageState extends State<ProfilePage> {
           box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
       userInfo[0] = newUsername;
       box.put('userInfo', userInfo);
-
-      // Refresh the UI
       setState(() {});
     }
   }
 
-  Widget _buildStatContainer({required String label, required String value}) {
+  Widget _buildStatContainer({
+    required String label,
+    required String value,
+    required bool isFirst,
+    required bool isLast,
+  }) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      width: 150,
+      width: screenWidth * 0.23,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.only(
+          topLeft: isFirst ? const Radius.circular(10) : Radius.zero,
+          bottomLeft: isFirst ? const Radius.circular(10) : Radius.zero,
+          topRight: isLast ? const Radius.circular(10) : Radius.zero,
+          bottomRight: isLast ? const Radius.circular(10) : Radius.zero,
+        ),
       ),
       child: Column(
         children: [
@@ -375,9 +406,13 @@ class _ProfilePageState extends State<ProfilePage> {
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 2),
-          Text(label),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
