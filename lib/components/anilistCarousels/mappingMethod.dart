@@ -1,15 +1,19 @@
-import 'package:algorithmic/algorithmic.dart'; // Import the algorithmic package
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
+import 'package:algorithmic/algorithmic.dart'; 
 import 'package:aurora/database/scraper/scraper_search.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 Future<void> mapMalToAniwatch(
     BuildContext context, String title, String posterUrl, String tag) async {
-  // Show loading dialog
   final loadingDialog = showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (context) => Center(child: CircularProgressIndicator()),
+    builder: (context) => const Center(child: CircularProgressIndicator()),
   );
 
   try {
@@ -39,8 +43,7 @@ Future<void> mapMalToAniwatch(
       }
     }
 
-    // Dismiss the loading dialog
-    Navigator.of(context).pop(); // Dismiss loading dialog
+    Navigator.of(context).pop();
 
     if (animeId == null && bestSimilarity >= similarityThreshold) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,12 +66,37 @@ Future<void> mapMalToAniwatch(
       );
     }
   } catch (e) {
-    // Dismiss loading dialog in case of error
-    Navigator.of(context).pop(); // Dismiss loading dialog
-    print('Error occurred while fetching anime: $e');
+    Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
           content: Text('An error occurred. Please try again later.')),
     );
   }
 }
+
+
+
+// Future<String> fetchAnilistToAniwatch(String animeId) async {
+//   final url =
+//       'https://proxy-ryan.vercel.app/cors?url=https://raw.githubusercontent.com/bal-mackup/mal-backup/master/anilist/anime/$animeId.json';
+
+//   final response = await http.get(
+//     Uri.parse(url),
+//     headers: {
+//       'Authorization': 'token $githubToken',
+//     },
+//   );
+
+//   if (response.statusCode == 200) {
+//     final data = jsonDecode(response.body);
+//     var aniwatchData = data['Sites']['Zoro'];
+//     aniwatchData.forEach((key, value) {
+//       if (value is Map && value.containsKey('identifier')) {
+//         return (value['url'].toString().split('/').last);
+//       }
+//     });
+//   } else {
+//     return '';
+//   }
+//   return '';
+// }

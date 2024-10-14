@@ -63,22 +63,20 @@ class _HomePageState extends State<HomePage> {
         final userName = anilistProvider.userData['name'] ?? 'Guest';
         final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
         final isLoggedIn = anilistProvider.userData.isNotEmpty;
+        final rawData = isLoggedIn &&
+                anilistProvider.userData != null &&
+                anilistProvider.userData.containsKey('animeList')
+            ? (anilistProvider.userData['animeList'] ?? [])
+            : [];
 
+        final animeList = isLoggedIn &&
+                anilistProvider.userData != null &&
+                anilistProvider.userData.containsKey('animeList')
+            ? filterData(anilistProvider.userData['animeList'] ?? [])
+            : [];
         return ValueListenableBuilder(
           valueListenable: Hive.box('app-data').listenable(),
           builder: (context, Box appBox, _) {
-            final rawData = isLoggedIn &&
-                    anilistProvider.userData != null &&
-                    anilistProvider.userData.containsKey('animeList')
-                ? (anilistProvider.userData['animeList'] ?? [])
-                : [];
-
-            final animeList = isLoggedIn &&
-                    anilistProvider.userData != null &&
-                    anilistProvider.userData.containsKey('animeList')
-                ? filterData(anilistProvider.userData['animeList'] ?? [])
-                : [];
-
             // final rawDataManga = anilistProvider.userData['mangaList'];
             // final mangaList = filterData(anilistProvider.userData['mangaList']);
             final dynamic readingMangaList = appBox.get('currently-reading');

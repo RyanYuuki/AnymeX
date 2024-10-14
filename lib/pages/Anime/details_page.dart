@@ -801,7 +801,7 @@ class _DetailsPageState extends State<DetailsPage>
               children: [
                 Text(
                   description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
-                      data?['description'].replaceAll(RegExp(r'<[^>]*>'), '') ??
+                      data?['description']?.replaceAll(RegExp(r'<[^>]*>'), '') ??
                       'Description Not Found',
                   maxLines: 13,
                   overflow: TextOverflow.ellipsis,

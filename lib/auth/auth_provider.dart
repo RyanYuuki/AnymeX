@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:aurora/components/anilistCarousels/mappingMethod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -190,34 +191,34 @@ class AniListProvider with ChangeNotifier {
     }
 
     const query = '''
-    query GetUserAnimeList(\$userId: Int) {
-      MediaListCollection(userId: \$userId, type: ANIME) {
-        lists {
-          name
-          entries {
-            media {
-              id
-              title {
-                romaji
-                english
-                native
-              }
-              episodes
-              format
-              genres
-              status
-              averageScore
-              coverImage {
-                large
-              }
+  query GetUserAnimeList(\$userId: Int) {
+    MediaListCollection(userId: \$userId, type: ANIME) {
+      lists {
+        name
+        entries {
+          media {
+            id
+            title {
+              romaji
+              english
+              native
             }
-            progress
+            episodes
+            format
+            genres
             status
+            averageScore
+            coverImage {
+              large
+            }
           }
+          progress
+          status
         }
       }
     }
-    ''';
+  }
+  ''';
 
     try {
       if (_userData['id'] == null) {
@@ -251,11 +252,30 @@ class AniListProvider with ChangeNotifier {
             data['data']['MediaListCollection'] != null) {
           final lists =
               data['data']['MediaListCollection']['lists'] as List<dynamic>;
-          _userData['animeList'] =
+          final animeList =
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
+
+          // for (var animeEntry in animeList) {
+          //   if (animeEntry['status'] == 'CURRENT') {
+          //     final anilistId = animeEntry['media']['id'];
+          //     try {
+          //       final hiAnimeId =
+          //           await fetchAnilistToAniwatch(anilistId.toString());
+          //       if (hiAnimeId != '' && hiAnimeId != null) {
+          //         animeEntry['media']['hiAnimeId'] = hiAnimeId;
+          //         log('Fetched HiAnime ID for anime with AniList ID: $anilistId -> HiAnime ID: $hiAnimeId');
+          //         log('Fetched HiAnime ');
+          //       }
+          //     } catch (e) {
+          //       log('Failed to fetch HiAnime ID for anime with AniList ID: $anilistId: $e');
+          //     }
+          //   }
+          // }
+
+          _userData['animeList'] = animeList;
           log('User anime list fetched successfully');
           log('Fetched ${_userData['animeList'].length} anime entries');
-          log(data['data']['MediaListCollection']['lists']);
+          log(_userData['animeList']);
         } else {
           log('Unexpected response structure: ${response.body}');
         }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:aurora/components/anilistCarousels/mappingMethod.dart';
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
 import 'package:aurora/database/scraper/scrape_episode_src.dart';
@@ -101,8 +102,7 @@ class SettingsPage extends StatelessWidget {
             title: 'Fetch Data',
             description: 'Test',
             onTap: () async {
-              await fetchChapterDetails(
-                  mangaId: 'manga-nl991268', chapterId: 'chapter-1');
+              // await fetchAnilistToAniwatch("21");
             },
           ),
         ],
