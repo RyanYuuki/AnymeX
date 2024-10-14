@@ -1,11 +1,10 @@
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/SettingsModal.dart';
-import 'package:aurora/components/coverCarousel.dart';
 import 'package:aurora/database/api.dart';
 import 'package:aurora/fallbackData/anime_data_consumet.dart';
-import 'package:aurora/pages/onboarding_screens/avatar_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../components/coverCarousel.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -146,41 +145,54 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView(
-          children: [
-            Header(controller: _searchTerm),
-            const SizedBox(height: 20),
-            CoverCarousel(title: 'Spotlight', animeData: spotlightAnimes),
-            const SizedBox(height: 20),
-            Carousel(title: 'Trending', animeData: topAiringAnimes),
-            ReusableCarousel(
-              title: "Popular",
-              carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!],
-              tag: '0',
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                Header(controller: _searchTerm),
+                const SizedBox(height: 20),
+                Covercarousel(title: 'Spotlight', animeData: spotlightAnimes),
+                const SizedBox(height: 20),
+                Carousel(title: 'Trending', animeData: topAiringAnimes),
+              ],
             ),
-            ReusableCarousel(
-              title: "Completed",
-              carouselData: latestCompletedAnimes,
-              tag: '1',
-            ),
-            ReusableCarousel(
-              title: "Latest",
-              carouselData: latestEpisodeAnimes,
-              tag: '2',
-            ),
-            ReusableCarousel(
-              title: "Upcoming",
-              carouselData: topUpcomingAnimes,
-              tag: '3',
-            ),
-            Row(
+          ),
+          // ReusableCarousel(
+          //   title: "Trending",
+          //   carouselData: topAiringAnimes,
+          //   tag: '01',
+          // ),
+          ReusableCarousel(
+            title: "Popular",
+            carouselData: [...mostPopularAnimes!, ...mostFavoriteAnimes!],
+            tag: '0',
+          ),
+          ReusableCarousel(
+            title: "Completed",
+            carouselData: latestCompletedAnimes,
+            tag: '1',
+          ),
+          ReusableCarousel(
+            title: "Latest",
+            carouselData: latestEpisodeAnimes,
+            tag: '2',
+          ),
+          ReusableCarousel(
+            title: "Upcoming",
+            carouselData: topUpcomingAnimes,
+            tag: '3',
+          ),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
               children: [
                 Text(
                   'Top',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 16,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -188,46 +200,46 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                 ),
                 const Text(
                   ' Animes',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 )
               ],
             ),
-            const SizedBox(height: 20),
-            AnimeTable(
-                onTap: (value) {
-                  _onTableItemTapped(value!);
-                },
-                currentIndex: currentTableIndex),
-            Container(
-              height: 1120,
-              margin: const EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.surfaceContainer),
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentTableIndex = index;
-                  });
-                },
-                children: [
-                  ListItem(context,
-                      data: animeData['top10Animes']['today'], tag: 1),
-                  ListItem(context,
-                      data: animeData['top10Animes']['week'], tag: 2),
-                  ListItem(context,
-                      data: animeData['top10Animes']['month'], tag: 3),
-                ],
-              ),
+          ),
+          const SizedBox(height: 10),
+          AnimeTable(
+              onTap: (value) {
+                _onTableItemTapped(value!);
+              },
+              currentIndex: currentTableIndex),
+          Container(
+            height: 1120,
+            margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.surfaceContainer),
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  currentTableIndex = index;
+                });
+              },
+              children: [
+                tableColumn(context,
+                    data: animeData['top10Animes']['today'], tag: 1),
+                tableColumn(context,
+                    data: animeData['top10Animes']['week'], tag: 2),
+                tableColumn(context,
+                    data: animeData['top10Animes']['month'], tag: 3),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Container ListItem(BuildContext context, {required data, required tag}) {
+  Container tableColumn(BuildContext context, {required data, required tag}) {
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -384,26 +396,19 @@ class _HeaderState extends State<Header> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: isLoggedIn
-                        ? () {
-                            showModalBottomSheet(
-                              context: context,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              builder: (context) {
-                                return const SettingsModal();
-                              },
-                            );
-                          }
-                        : () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AvatarPage()));
-                          },
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) {
+                          return const SettingsModal();
+                        },
+                      );
+                    },
                     child: CircleAvatar(
                       radius: 24,
                       backgroundColor:

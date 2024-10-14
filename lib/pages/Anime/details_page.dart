@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:aurora/components/reusable_carousel.dart';
 import 'package:aurora/components/character_cards.dart';
@@ -12,10 +13,7 @@ import 'package:aurora/database/scraper/scraper_details.dart';
 import 'package:aurora/theme/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
-=======
 import 'package:flutter_dotenv/flutter_dotenv.dart';
->>>>>>> Stashed changes
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
@@ -173,37 +171,20 @@ class _DetailsPageState extends State<DetailsPage>
       isLoading = false;
     });
 
-    final newResponse = await http.get(Uri.parse(
-        'https://goodproxy.goodproxy.workers.dev/fetch?url=https://consumet-api-two-nu.vercel.app/meta/anilist/info/${data?['anilistId']}'));
+    final response = await http.get(Uri.parse(
+        'https://goodproxy.goodproxy.workers.dev/fetch?url=${dotenv.get('CONSUMET_URL')}meta/anilist/info/${data?['anilistId']}'));
 
-    if (newResponse.statusCode == 200) {
-      final characterTemp = jsonDecode(newResponse.body);
+    if (response.statusCode == 200) {
+      final characterTemp = jsonDecode(response.body);
       setState(() {
         description = characterTemp?['description'] ?? data?['description'];
         charactersdata = characterTemp['characters'] ?? [];
         altdata = characterTemp;
       });
-<<<<<<< Updated upstream
-=======
-
-      final newResponse = await http.get(Uri.parse(
-          'https://goodproxy.goodproxy.workers.dev/fetch?url=${dotenv.get('CONSUMET_URL')}meta/anilist/info/${data?['anilistId']}'));
-
-      if (newResponse.statusCode == 200) {
-        final characterTemp = jsonDecode(newResponse.body);
-        setState(() {
-          description = characterTemp?['description'] ?? data?['description'];
-          charactersdata = characterTemp['characters'] ?? [];
-          altdata = characterTemp;
-        });
-      } else {
-        log('Failed to fetch character data? from Consumet: ${newResponse.statusCode}');
-      }
->>>>>>> Stashed changes
     } else {
-      log('Failed to fetch character data? from Consumet: ${newResponse.statusCode}');
+      log('Failed to fetch character data? from Consumet: ${response.statusCode}');
     }
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +194,18 @@ class _DetailsPageState extends State<DetailsPage>
     } else {
       return originalDetailsPage(CustomScheme, context);
     }
+  }
+
+  String checkAvailability(BuildContext context, String anilistId) {
+    final animeList = Provider.of<AniListProvider>(context, listen: false)
+        .userData?['animeList'];
+
+    final matchingAnime = animeList?.firstWhere(
+      (anime) => anime?['media']?['id']?.toString() == anilistId,
+      orElse: () => null,
+    );
+
+    return matchingAnime != null ? matchingAnime['status'] : 'Add To List';
   }
 
   Scaffold saikouDetailsPage(BuildContext context) {
@@ -230,184 +223,194 @@ class _DetailsPageState extends State<DetailsPage>
                       padding: const EdgeInsets.only(top: 30.0),
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 25.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 25.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text.rich(
-                                TextSpan(
-                                  text: 'Total of ',
-                                  style: TextStyle(fontSize: 15),
-                                  children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text.rich(
                                     TextSpan(
-                                      text:
-                                          '${data?['stats']?['episodes']?['sub'] ?? data?['totalEpisodes']}',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontFamily: 'Poppins-Bold',
-                                      ),
+                                      text: 'Total of ',
+                                      style: TextStyle(fontSize: 15),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              '${data?['stats']?['episodes']?['sub'] ?? data?['totalEpisodes']}',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontFamily: 'Poppins-Bold',
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(child: SizedBox.shrink()),
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Iconsax.heart)),
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.share)),
+                                ],
                               ),
-                              Expanded(child: SizedBox.shrink()),
-                              IconButton(
-                                  onPressed: () {}, icon: Icon(Iconsax.heart)),
-                              IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.share)),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          infoRow(
-                              field: 'Rating',
-                              value:
-                                  '${data?['malscore']?.toString() ?? (int.parse(data?['rating']) / 10).toString()}/10'),
-                          infoRow(
-                              field: 'Studios',
-                              value: data?['studios'] ??
-                                  data?['studios']?[0] ??
-                                  '??'),
-                          infoRow(
-                              field: 'Total Episodes',
-                              value: data?['stats']?['episodes']?['sub']
-                                      .toString() ??
-                                  data?['totalEpisodes'] ??
-                                  '??'),
-                          infoRow(field: 'Type', value: 'TV'),
-                          infoRow(
-                              field: 'Romaji Name',
-                              value:
-                                  data?['jname'] ?? data?['japanese'] ?? '??'),
-                          infoRow(
-                              field: 'Premiered',
-                              value: data?['premiered'] ?? '??'),
-                          infoRow(
-                              field: 'Duration',
-                              value:
-                                  '${data?['duration']}${consumetSesh ? 'M' : ''}'),
-                          const SizedBox(height: 20),
-                          Text('Synopsis',
-                              style: TextStyle(fontFamily: 'Poppins-Bold')),
-                          const SizedBox(height: 10),
-                          Text(description!.toString().length > 250
-                              ? '${description!.toString().substring(0, 250)}...'
-                              : description!),
+                              const SizedBox(height: 20),
+                              infoRow(
+                                  field: 'Rating',
+                                  value:
+                                      '${data?['malscore']?.toString() ?? (int.parse(data?['rating']) / 10).toString()}/10'),
+                              infoRow(
+                                  field: 'Studios',
+                                  value: data?['studios'] ??
+                                      data?['studios']?[0] ??
+                                      '??'),
+                              infoRow(
+                                  field: 'Total Episodes',
+                                  value: data?['stats']?['episodes']?['sub']
+                                          .toString() ??
+                                      data?['totalEpisodes'] ??
+                                      '??'),
+                              infoRow(field: 'Type', value: 'TV'),
+                              infoRow(
+                                  field: 'Romaji Name',
+                                  value: data?['jname'] ??
+                                      data?['japanese'] ??
+                                      '??'),
+                              infoRow(
+                                  field: 'Premiered',
+                                  value: data?['premiered'] ?? '??'),
+                              infoRow(
+                                  field: 'Duration',
+                                  value:
+                                      '${data?['duration']}${consumetSesh ? 'M' : ''}'),
+                              const SizedBox(height: 20),
+                              Text('Synopsis',
+                                  style: TextStyle(fontFamily: 'Poppins-Bold')),
+                              const SizedBox(height: 10),
+                              Text(description!.toString().length > 250
+                                  ? '${description!.toString().substring(0, 250)}...'
+                                  : description!),
 
-                          // Grid Section
-                          const SizedBox(height: 20),
-                          Text('Genres',
-                              style: TextStyle(fontFamily: 'Poppins-Bold')),
-                          Flexible(
-                            flex: 0,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: data?['genres'].length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisExtent: 55,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                              itemBuilder: (context, itemIndex) {
-                                String genre = data?['genres'][itemIndex];
-                                String buttonBackground =
-                                    genrePreviews[genre] ??
-                                        genrePreviews['default'];
+                              // Grid Section
+                              const SizedBox(height: 20),
+                              Text('Genres',
+                                  style: TextStyle(fontFamily: 'Poppins-Bold')),
+                              Flexible(
+                                flex: 0,
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: data?['genres'].length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisExtent: 55,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                  ),
+                                  itemBuilder: (context, itemIndex) {
+                                    String genre = data?['genres'][itemIndex];
+                                    String buttonBackground =
+                                        genrePreviews[genre] ??
+                                            genrePreviews['default'];
 
-                                return Container(
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(2.3),
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  buttonBackground),
-                                              fit: BoxFit.cover,
+                                    return Container(
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(2.3),
+                                            child: DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                image: DecorationImage(
+                                                  image: NetworkImage(
+                                                      buttonBackground),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                      // Gradient overlay
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          border: Border.all(
-                                              width: 3,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainer),
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.black.withOpacity(0.5),
-                                              Colors.black.withOpacity(0.5)
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
+                                          // Gradient overlay
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                  width: 3,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .surfaceContainer),
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  Colors.black.withOpacity(0.5),
+                                                  Colors.black.withOpacity(0.5)
+                                                ],
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      // ElevatedButton
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          shadowColor: Colors.transparent,
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {},
-                                        child: Text(
-                                          genre.toUpperCase(),
-                                          style: TextStyle(
-                                            fontFamily: 'Poppins-Bold',
-                                            color: Colors.white,
+                                          // ElevatedButton
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              shadowColor: Colors.transparent,
+                                              padding: EdgeInsets.zero,
+                                            ),
+                                            onPressed: () {},
+                                            child: Text(
+                                              genre.toUpperCase(),
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins-Bold',
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 15),
-                          // Text('Characters',
-                          //     style: TextStyle(fontFamily: 'Poppins-Bold')),
-                          CharacterCards(carouselData: charactersdata),
-                          ReusableCarousel(
-                            title: 'Popular',
-                            carouselData: data?['popularAnimes'],
-                            tag: 'details-page1',
-                          ),
-                          ReusableCarousel(
-                            title: 'Related',
-                            carouselData: data?['relatedAnimes'],
-                            tag: 'details-page2',
-                          ),
-                          ReusableCarousel(
-                            title: 'Recommended',
-                            carouselData: data?['recommendedAnimes'],
-                            tag: 'details-page3',
-                          ),
-                          const SizedBox(height: 100),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 15),
+                        // Text('Characters',
+                        //     style: TextStyle(fontFamily: 'Poppins-Bold')),
+                        CharacterCards(carouselData: charactersdata),
+                        ReusableCarousel(
+                          title: 'Popular',
+                          carouselData: data?['popularAnimes'],
+                          tag: 'details-page1',
+                        ),
+                        ReusableCarousel(
+                          title: 'Related',
+                          carouselData: data?['relatedAnimes'],
+                          tag: 'details-page2',
+                        ),
+                        ReusableCarousel(
+                          title: 'Recommended',
+                          carouselData: data?['recommendedAnimes'],
+                          tag: 'details-page3',
+                        ),
+                        const SizedBox(height: 100),
+                      ],
                     ),
             ],
           ),
@@ -535,7 +538,7 @@ class _DetailsPageState extends State<DetailsPage>
                     ),
                   ),
                   child: Text(
-                    'ADD TO LIST',
+                    checkAvailability(context, (data?['anilistId'] ?? '')),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontFamily: 'Poppins-Bold',
@@ -636,7 +639,6 @@ class _DetailsPageState extends State<DetailsPage>
     ColorScheme CustomScheme = Theme.of(context).colorScheme;
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: CustomScheme.surfaceContainer,
         borderRadius: BorderRadius.only(
@@ -646,142 +648,145 @@ class _DetailsPageState extends State<DetailsPage>
       ),
       child: Column(
         children: [
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 170),
+                      child: TextScroll(
+                        data == null ? 'Loading...' : data?['name'] ?? '??',
+                        mode: TextScrollMode.endless,
+                        velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
+                        delayBefore: Duration(milliseconds: 500),
+                        pauseBetween: Duration(milliseconds: 1000),
+                        textAlign: TextAlign.center,
+                        selectable: true,
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      height: 18,
+                      width: 3,
+                      color: CustomScheme.inverseSurface,
+                    ),
+                    const SizedBox(width: 10),
+                    iconWithName(
+                      backgroundColor: CustomScheme.onPrimaryFixedVariant,
+                      icon: Iconsax.star1,
+                      TextColor: CustomScheme.inverseSurface ==
+                              CustomScheme.onPrimaryFixedVariant
+                          ? Colors.black
+                          : CustomScheme.onPrimaryFixedVariant ==
+                                  Color(0xffe2e2e2)
+                              ? Colors.black
+                              : Colors.white,
+                      color: CustomScheme.inverseSurface ==
+                              CustomScheme.onPrimaryFixedVariant
+                          ? Colors.black
+                          : CustomScheme.onPrimaryFixedVariant ==
+                                  Color(0xffe2e2e2)
+                              ? Colors.black
+                              : Colors.white,
+                      name: data?['rating'] ?? data?['malscore'] ?? '?',
+                      isVertical: false,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: (data?['genres'] as List<dynamic>? ?? [])
+                      .take(3)
+                      .map<Widget>(
+                        (genre) => Container(
+                          margin: EdgeInsets.only(right: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                              color: CustomScheme.onPrimaryFixedVariant,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            genre as String,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white,
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.fontSize,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                const SizedBox(height: 15),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Container(
-                    constraints: BoxConstraints(maxWidth: 170),
-                    child: TextScroll(
-                      data == null ? 'Loading...' : data?['name'] ?? '??',
-                      mode: TextScrollMode.endless,
-                      velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
-                      delayBefore: Duration(milliseconds: 500),
-                      pauseBetween: Duration(milliseconds: 1000),
-                      textAlign: TextAlign.center,
-                      selectable: true,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    padding: EdgeInsets.all(7),
+                    width: 130,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            bottomLeft: Radius.circular(5)),
+                        color: CustomScheme.surfaceContainerHighest),
+                    child: Column(
+                      children: [
+                        Text(
+                            data?['stats']?['episodes']?['sub']?.toString() ??
+                                data?['totalEpisodes'] ??
+                                '??',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Episodes')
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10),
                   Container(
-                    height: 18,
-                    width: 3,
-                    color: CustomScheme.inverseSurface,
+                    color: CustomScheme.onPrimaryFixed,
+                    height: 30,
+                    width: 2,
                   ),
-                  const SizedBox(width: 10),
-                  iconWithName(
-                    backgroundColor: CustomScheme.onPrimaryFixedVariant,
-                    icon: Iconsax.star1,
-                    TextColor: CustomScheme.inverseSurface ==
-                            CustomScheme.onPrimaryFixedVariant
-                        ? Colors.black
-                        : CustomScheme.onPrimaryFixedVariant ==
-                                Color(0xffe2e2e2)
-                            ? Colors.black
-                            : Colors.white,
-                    color: CustomScheme.inverseSurface ==
-                            CustomScheme.onPrimaryFixedVariant
-                        ? Colors.black
-                        : CustomScheme.onPrimaryFixedVariant ==
-                                Color(0xffe2e2e2)
-                            ? Colors.black
-                            : Colors.white,
-                    name: data?['rating'] ?? data?['malscore'] ?? '?',
-                    isVertical: false,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: (data?['genres'] as List<dynamic>? ?? [])
-                    .take(3)
-                    .map<Widget>(
-                      (genre) => Container(
-                        margin: EdgeInsets.only(right: 8),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                            color: CustomScheme.onPrimaryFixedVariant,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          genre as String,
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface ==
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryFixedVariant
-                                  ? Colors.black
-                                  : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant ==
-                                          Color(0xffe2e2e2)
-                                      ? Colors.black
-                                      : Colors.white,
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.fontSize,
-                              fontWeight: FontWeight.bold),
+                  Container(
+                    width: 130,
+                    padding: EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(5),
+                            bottomRight: Radius.circular(5)),
+                        color: CustomScheme.surfaceContainerHighest),
+                    child: Column(
+                      children: [
+                        Text(
+                          data?['duration'] ?? '??',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 15),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  padding: EdgeInsets.all(7),
-                  width: 130,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5)),
-                      color: CustomScheme.surfaceContainerHighest),
-                  child: Column(
-                    children: [
-                      Text(
-                          data?['stats']?['episodes']?['sub']?.toString() ??
-                              data?['totalEpisodes'] ??
-                              '??',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('Episodes')
-                    ],
+                        Text('Per Ep')
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  color: CustomScheme.onPrimaryFixed,
-                  height: 30,
-                  width: 2,
-                ),
-                Container(
-                  width: 130,
-                  padding: EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(5),
-                          bottomRight: Radius.circular(5)),
-                      color: CustomScheme.surfaceContainerHighest),
-                  child: Column(
-                    children: [
-                      Text(
-                        data?['duration'] ?? '??',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text('Per Ep')
-                    ],
-                  ),
-                ),
-              ])
-            ],
+                ])
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Container(
@@ -791,6 +796,7 @@ class _DetailsPageState extends State<DetailsPage>
               color: CustomScheme.surfaceContainerHighest,
             ),
             padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
                 Text(
@@ -887,7 +893,7 @@ class FloatingBar extends StatelessWidget {
     ColorScheme CustomScheme = Theme.of(context).colorScheme;
     final provider = Provider.of<AppData>(context);
     return Positioned(
-      bottom: 0,
+      bottom: 10,
       left: 0,
       right: 0,
       child: Container(
