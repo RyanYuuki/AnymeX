@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/database/scraper/deps/scraper_streamSB.dart';
+import 'package:aurora/database/scraper/deps/scraper_rapidcloud.dart';
+import 'package:aurora/database/scraper/deps/scraper_streamsb.dart';
 import 'package:aurora/database/scraper/deps/scraper_megacloud.dart';
+import 'package:aurora/database/scraper/deps/scraper_streamtap.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 
 const String SRC_BASE_URL = 'https://hianime.to';
-const String SRC_AJAX_URL = '$SRC_BASE_URL/ajax';
+const String SRC_AJAX_URL = '$SRC_BASE_URL/ajax/';
 const String USER_AGENT_HEADER =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36';
 
@@ -15,7 +17,7 @@ enum AnimeServers { VidStreaming, VidCloud, StreamSB, StreamTape, MegaCloud }
 
 class ScrapedAnimeEpisodesSources {
   final Map<String, String> headers;
-  final List<Map<String, dynamic>> sources;
+  final dynamic sources;
 
   ScrapedAnimeEpisodesSources({required this.headers, required this.sources});
 }
@@ -32,12 +34,13 @@ class HttpError implements Exception {
       'HttpError: $statusCode - $message\nResponse: $responseBody';
 }
 
-String? retrieveServerId(Document document, int serverIndex, String category) {
-  final serverElements = document.querySelectorAll('.server-item');
-  for (var element in serverElements) {
-    if (element.attributes['data-server-id'] == serverIndex.toString() &&
-        element.text.toLowerCase().contains(category)) {
-      return element.attributes['data-id'];
+String? retrieveServerId(Document document, int index, String category) {
+  final serverItems = document.querySelectorAll(
+      '.ps_-block.ps_-block-sub.servers-$category > .ps__-list .server-item');
+
+  for (var el in serverItems) {
+    if (el.attributes['data-server-id'] == index.toString()) {
+      return el.attributes['data-id'];
     }
   }
   return null;
@@ -45,7 +48,7 @@ String? retrieveServerId(Document document, int serverIndex, String category) {
 
 Future<ScrapedAnimeEpisodesSources> scrapeAnimeEpisodeSources(
   String episodeId, {
-  AnimeServers server = AnimeServers.MegaCloud,
+  AnimeServers server = AnimeServers.VidCloud,
   String category = 'sub',
 }) async {
   log('Starting scrapeAnimeEpisodeSources with episodeId: $episodeId, server: $server, category: $category');
@@ -53,13 +56,14 @@ Future<ScrapedAnimeEpisodesSources> scrapeAnimeEpisodeSources(
   if (episodeId.startsWith('http')) {
     log('episodeId is a URL, processing accordingly');
     final serverUrl = Uri.parse(episodeId);
+
     switch (server) {
       case AnimeServers.VidStreaming:
-      case AnimeServers.VidCloud:
       case AnimeServers.MegaCloud:
         log('Processing MegaCloud');
         final megaCloud = MegaCloud();
         final extractedData = await megaCloud.extract(serverUrl);
+        log(extractedData.toString());
         return ScrapedAnimeEpisodesSources(
           headers: {
             'Referer': serverUrl.toString(),
@@ -68,15 +72,17 @@ Future<ScrapedAnimeEpisodesSources> scrapeAnimeEpisodeSources(
           sources: extractedData['sources']
               .map((s) => {
                     'url': s['url'],
-                    'quality': 'auto', 
+                    'quality': 'auto',
                     'isM3U8': s['type'] == 'hls',
                   })
               .toList(),
         );
+
       case AnimeServers.StreamSB:
         log('Processing StreamSB');
         final streamSB = StreamSB();
         final sources = await streamSB.extract(serverUrl);
+        log('yoo');
         return ScrapedAnimeEpisodesSources(
           headers: {
             'Referer': serverUrl.toString(),
@@ -91,9 +97,46 @@ Future<ScrapedAnimeEpisodesSources> scrapeAnimeEpisodeSources(
                   })
               .toList(),
         );
+
       case AnimeServers.StreamTape:
-        log('StreamTape extractor not implemented');
-        throw UnimplementedError('StreamTape extractor not implemented');
+        log('Processing StreamTape');
+        final streamTape = StreamTape();
+        final sources = await streamTape.extract(serverUrl);
+        log(sources.toString());
+        return ScrapedAnimeEpisodesSources(
+            headers: {
+              'Referer': serverUrl.toString(),
+              'User-Agent': USER_AGENT_HEADER,
+            },
+            sources: sources
+                .map((source) => {
+                      'url': source['url'],
+                      'quality': 'auto',
+                      'isM3U8': source['isM3U8'],
+                    })
+                .toList());
+
+      case AnimeServers.VidCloud:
+        log('Processing VidCloud');
+        final rapidCloud = RapidCloud();
+        final extractedData =
+            await rapidCloud.extract(serverUrl); // RapidCloud extraction method
+        log(extractedData.toString());
+        return ScrapedAnimeEpisodesSources(
+          headers: {
+            'Referer': serverUrl.toString(),
+          },
+          sources: extractedData['sources']
+              .map((s) => {
+                    'url': s['url'],
+                    'quality': s['quality'] ?? 'auto',
+                    'isM3U8': s['isM3U8'] ?? false,
+                  })
+              .toList(),
+        );
+
+      default:
+        throw Exception('Unsupported server: $server');
     }
   }
 
@@ -107,8 +150,7 @@ Future<ScrapedAnimeEpisodesSources> scrapeAnimeEpisodeSources(
         Uri.parse('$SRC_AJAX_URL/v2/episode/servers?episodeId=$episodeIdParam');
     log('Fetching episode servers from: $serverUrl');
 
-    final resp =
-        await http.get(serverUrl);
+    final resp = await http.get(serverUrl);
 
     if (resp.statusCode != 200) {
       log('Failed to fetch episode servers. Status code: ${resp.statusCode}');
