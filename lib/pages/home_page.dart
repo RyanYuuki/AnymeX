@@ -1,3 +1,4 @@
+import 'package:aurora/components/anilistCarousels/animeListCarousels.dart';
 import 'package:aurora/components/common/image_button.dart';
 import 'package:aurora/pages/user/anilist_pages/anime_list.dart';
 import 'package:aurora/pages/user/anilist_pages/manga_list.dart';
@@ -51,6 +52,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  dynamic filterData(dynamic animeList) {
+    return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AniListProvider>(
@@ -62,173 +67,198 @@ class _HomePageState extends State<HomePage> {
         return ValueListenableBuilder(
           valueListenable: Hive.box('app-data').listenable(),
           builder: (context, Box appBox, _) {
-            final List<dynamic>? watchingAnimeList =
-                appBox.get('currently-watching');
-            final List<dynamic>? readingMangaList =
-                appBox.get('currently-reading');
+            final rawData = isLoggedIn &&
+                    anilistProvider.userData != null &&
+                    anilistProvider.userData.containsKey('animeList')
+                ? (anilistProvider.userData['animeList'] ?? [])
+                : [];
+
+            final animeList = isLoggedIn &&
+                    anilistProvider.userData != null &&
+                    anilistProvider.userData.containsKey('animeList')
+                ? filterData(anilistProvider.userData['animeList'] ?? [])
+                : [];
+
+            // final rawDataManga = anilistProvider.userData['mangaList'];
+            // final mangaList = filterData(anilistProvider.userData['mangaList']);
+            final dynamic readingMangaList = appBox.get('currently-reading');
 
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
-              body: Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
-                child: ListView(
-                  children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 350,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+              body: ListView(
+                children: [
+                  Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 300,
+                      maxHeight: 450,
+                    ),
+                    padding:
+                        const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 50,
-                                    height: 70,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(30),
-                                      child: Image.asset(
-                                        'assets/images/logo_transparent.png',
-                                        fit: BoxFit.cover,
-                                        alignment: Alignment.center,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface,
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(
-                                            top: Radius.circular(20),
-                                          ),
-                                        ),
-                                        builder: (context) {
-                                          return const SettingsModal();
-                                        },
-                                      );
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 24,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainer,
-                                      child: isLoggedIn
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                              child: CachedNetworkImage(
-                                                  fit: BoxFit.cover,
-                                                  imageUrl: avatarImagePath),
-                                            )
-                                          : Icon(
-                                              Icons.person,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inverseSurface,
-                                            ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 60),
-                              Text(
-                                'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
-                                style: const TextStyle(
-                                    fontSize: 30, fontFamily: 'Poppins-Bold'),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 10),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Text(
-                                  'Find your favorite anime or manga, manhwa or whatever you like!',
-                                  style: TextStyle(
+                              SizedBox(
+                                width: 50,
+                                height: 70,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Image.asset(
+                                    'assets/images/logo_transparent.png',
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .inverseSurface
-                                        .withOpacity(0.8),
+                                        .inverseSurface,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                              if (isLoggedIn) const SizedBox(height: 20),
-                              if (isLoggedIn)
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ImageButton(
-                                      buttonText: 'ANIME LIST',
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AnimeList(),
-                                          ),
-                                        );
-                                        anilistProvider.fetchUserAnimeList();
-                                      },
-                                      backgroundImage:
-                                          'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
                                     ),
-                                    ImageButton(
-                                      buttonText: 'MANGA LIST',
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AnilistMangaList(),
-                                          ),
-                                        );
-                                        anilistProvider.fetchUserMangaList();
-                                      },
-                                      backgroundImage:
-                                          'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
-                                    ),
-                                  ],
+                                    builder: (context) {
+                                      return const SettingsModal();
+                                    },
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer,
+                                  child: isLoggedIn
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: avatarImagePath),
+                                        )
+                                      : Icon(
+                                          Icons.person,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface,
+                                        ),
                                 ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 60),
+                          Text(
+                            'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
+                            style: const TextStyle(
+                                fontSize: 30, fontFamily: 'Poppins-Bold'),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              'Find your favorite anime or manga, manhwa or whatever you like!',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface
+                                    .withOpacity(0.8),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      if (isLoggedIn)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ImageButton(
+                                width:
+                                    MediaQuery.of(context).size.width / 2 - 40,
+                                buttonText: 'ANIME LIST',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AnimeList(),
+                                    ),
+                                  );
+                                  Provider.of<AniListProvider>(context,
+                                          listen: false)
+                                      .fetchUserAnimeList();
+                                },
+                                backgroundImage:
+                                    'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+                              ),
+                              ImageButton(
+                                width:
+                                    MediaQuery.of(context).size.width / 2 - 40,
+                                buttonText: 'MANGA LIST',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AnilistMangaList(),
+                                    ),
+                                  );
+                                  Provider.of<AniListProvider>(context,
+                                          listen: false)
+                                      .fetchUserMangaList();
+                                },
+                                backgroundImage:
+                                    'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
+                              ),
                             ],
                           ),
                         ),
-                        Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            HomepageCarousel(
-                              title: 'Currently Watching',
-                              carouselData: watchingAnimeList,
-                              tag: 'home-page',
-                            ),
-                            MangaHomepageCarousel(
-                              title: 'Currently Reading',
-                              carouselData: readingMangaList,
-                              tag: 'home-page',
-                            ),
-                            ReusableCarousel(
-                              title: 'Recommended',
-                              carouselData: animeData['topAiringAnimes'],
-                              tag: 'home-page-recommended',
-                              secondary: true,
-                            ),
-                            MangaCarousel.ReusableCarousel(
-                              title: 'Recommended',
-                              carouselData: mangaData['mangaList'],
-                              tag: 'home-page-recommended',
-                              secondary: true,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 20),
+                      anilistCarousel(
+                        title: 'Currently Watching',
+                        carouselData: animeList,
+                        tag: 'currently-watching',
+                        rawData: rawData,
+                      ),
+                      // anilistCarousel(
+                      //   title: 'Currently Reading',
+                      //   carouselData: mangaList,
+                      //   tag: 'currently-reading',
+                      //   rawData: rawDataManga,
+                      //   isManga: true,
+                      // ),
+                      MangaHomepageCarousel(
+                        title: 'Currently Reading',
+                        carouselData: readingMangaList,
+                        tag: 'home-page',
+                      ),
+                      ReusableCarousel(
+                        title: 'Recommended',
+                        carouselData: animeData['topAiringAnimes'],
+                        tag: 'home-page-recommended',
+                        secondary: true,
+                      ),
+                      MangaCarousel.ReusableCarousel(
+                        title: 'Recommended',
+                        carouselData: mangaData['mangaList'],
+                        tag: 'home-page-recommended',
+                        secondary: true,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
           },
