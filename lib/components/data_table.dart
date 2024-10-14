@@ -21,7 +21,7 @@ class _AnimeTableState extends State<AnimeTable> {
     final ColorScheme = Theme.of(context).colorScheme;
     return Center(
       child: CustomSlidingSegmentedControl<int>(
-        fixedWidth: MediaQuery.of(context).size.width / 3 - 20,
+        fixedWidth: MediaQuery.of(context).size.width / 3 - 10,
         initialValue: widget.currentIndex,
         children: {
           0: Text(
