@@ -9,6 +9,7 @@ import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ import 'package:aurora/pages/Manga/search_page.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
@@ -55,27 +57,14 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int _selectedIndex = 1;
   int selectedIndex = 1;
-  // bool _isFirstTime = false;
 
   @override
   void initState() {
     super.initState();
-    // _checkFirstTime();
     _checkAndroidVersion();
+    WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
-
-  // Future<void> _checkFirstTime() async {
-  //   final box = await Hive.openBox('login-data');
-  //   setState(() {
-  //     _isFirstTime = box.get('isFirstTime', defaultValue: true);
-  //   });
-
-  //   if (_isFirstTime) {
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       _showWelcomeDialog(context);
-  //     });
-  //   }
-  // }
 
   Future<void> _checkAndroidVersion() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -105,12 +94,12 @@ class _MainAppState extends State<MainApp> {
       theme: themeProvider.selectedTheme,
       home: Scaffold(
         extendBody: true,
+        extendBodyBehindAppBar: true,
         body: routes[_selectedIndex],
         bottomNavigationBar: CrystalNavigationBar(
           currentIndex: _selectedIndex,
           marginR: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
-          unselectedItemColor:
-              Colors.white,
+          unselectedItemColor: Colors.white,
           backgroundColor: Colors.black.withOpacity(0.3),
           onTap: _onItemTapped,
           items: [
