@@ -12,7 +12,7 @@ class MegaCloud {
     'sources': 'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=',
   };
 
-  Future<Map<String, dynamic>> extract(Uri videoUrl) async {
+  Future<dynamic> extract(Uri videoUrl) async {
     try {
       Map<String, dynamic> extractedData = {
         'tracks': [],
@@ -168,7 +168,6 @@ class MegaCloud {
       offset += cipher.processBlock(encrypted, offset, paddedPlaintext, offset);
     }
 
-    // Manually remove PKCS7 padding
     int padLength = paddedPlaintext.last;
     if (padLength > 0 && padLength <= 16) {
       for (int i = 1; i <= padLength; i++) {
