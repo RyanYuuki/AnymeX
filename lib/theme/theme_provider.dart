@@ -32,11 +32,13 @@ class ThemeProvider extends ChangeNotifier {
           ? SystemUiOverlayStyle.light.copyWith(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.dark,
-            )
+              systemNavigationBarDividerColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent)
           : SystemUiOverlayStyle.dark.copyWith(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.light,
-            ),
+              systemNavigationBarDividerColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent),
     );
   }
 
