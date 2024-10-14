@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-
 import 'package:aurora/components/IconWithLabel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -141,17 +140,12 @@ class Carousel extends StatelessWidget {
                                                 : Colors.white),
                                     const SizedBox(width: 5),
                                     SizedBox(
-                                      child: TextScroll(
-                                        anime['chapter'].substring(0, 10) +
-                                            '..',
-                                        mode: TextScrollMode.bouncing,
-                                        velocity: const Velocity(
-                                            pixelsPerSecond: Offset(10, 0)),
-                                        delayBefore:
-                                            const Duration(milliseconds: 500),
-                                        pauseBetween:
-                                            const Duration(milliseconds: 1000),
-                                        selectable: true,
+                                      child: Text(
+                                        anime['chapter'].toString().length > 11
+                                            ? anime['chapter']
+                                                .toString()
+                                                .substring(0, 11)
+                                            : anime['chapter'],
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: Theme.of(context)

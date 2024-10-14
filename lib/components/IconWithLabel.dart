@@ -36,6 +36,8 @@ class iconWithName extends StatelessWidget {
       ),
       child: isVertical
           ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(icon, size: size, color: color),
