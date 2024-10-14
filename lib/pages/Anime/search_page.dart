@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:aurora/components/IconWithLabel.dart';
+import 'package:aurora/database/scraper/scraper_search.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -33,15 +31,10 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> fetchSearchedTerm() async {
     _searchData = null;
-    final String url =
-        '${dotenv.get('ANIME_URL')}anime/search?q=${controller.text}';
-    final resp = await http.get(Uri.parse(url));
-    if (resp.statusCode == 200) {
-      final tempData = jsonDecode(resp.body);
-      setState(() {
-        _searchData = tempData['animes'];
-      });
-    }
+    final tempData = await scrapeAnimeSearch(controller.text);
+    setState(() {
+      _searchData = tempData;
+    });
   }
 
   void _search(String searchTerm) {
@@ -199,9 +192,14 @@ class _SearchPageState extends State<SearchPage> {
             ),
             child: Text(
               anime['ratings'] ?? 'PG-13',
-              style:  TextStyle(
-                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.inverseSurface ==
+                        Theme.of(context).colorScheme.onPrimaryFixedVariant
+                    ? Colors.black
+                    : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                            const Color(0xffe2e2e2)
+                        ? Colors.black
+                        : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -219,8 +217,13 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
             child: Text(
               anime['type'] ?? 'TV',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                color: Theme.of(context).colorScheme.inverseSurface ==
+                        Theme.of(context).colorScheme.onPrimaryFixedVariant
+                    ? Colors.black
+                    : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
+                            const Color(0xffe2e2e2)
+                        ? Colors.black
+                        : Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -393,9 +396,18 @@ GestureDetector searchItemCover(
                         anime['name'].length > 28
                             ? '${anime['name'].substring(0, 28)}...'
                             : anime['name'],
-                        style:  TextStyle(
-                          color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inverseSurface ==
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryFixedVariant
+                              ? Colors.black
+                              : Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryFixedVariant ==
+                                      const Color(0xffe2e2e2)
+                                  ? Colors.black
+                                  : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -404,8 +416,19 @@ Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ?
                       const SizedBox(height: 5),
                       Text(
                         "${anime['episodes']['sub'] ?? '?'} Episodes",
-                        style:  TextStyle(color: Theme.of(context).colorScheme.inverseSurface == Theme.of(context).colorScheme.onPrimaryFixedVariant ? Colors.black : 
-Theme.of(context).colorScheme.onPrimaryFixedVariant == const Color(0xffe2e2e2) ? Colors.black : Colors.white),
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.inverseSurface ==
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryFixedVariant
+                                    ? Colors.black
+                                    : Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryFixedVariant ==
+                                            const Color(0xffe2e2e2)
+                                        ? Colors.black
+                                        : Colors.white),
                       ),
                     ],
                   ),
