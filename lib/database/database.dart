@@ -25,7 +25,7 @@ class AppData extends ChangeNotifier {
     }
   }
 
-  void setWatchedAnimes(List<Map<String, dynamic>> animes) {
+  void setWatchedAnimes(dynamic animes) {
     watchedAnimes = animes;
     var box = Hive.box('app-data');
     box.put('currently-watching', animes);
@@ -57,7 +57,7 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setReadMangas(List<Map<String, dynamic>> mangas) {
+  void setReadMangas(dynamic mangas) {
     readMangas = mangas;
     var box = Hive.box('app-data');
     box.put('currently-reading', mangas);
