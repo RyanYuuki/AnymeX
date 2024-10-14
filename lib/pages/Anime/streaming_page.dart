@@ -512,27 +512,24 @@ class _StreamingPageState extends State<StreamingPage> {
                           handleEpisode(episode);
                         }),
                     const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Column(children: [
-                        ReusableCarousel(
-                          title: 'Seasons',
-                          carouselData: animeData['seasons'],
-                          tag: 'streaming-page1',
-                        ),
-                        const SizedBox(height: 10),
-                        ReusableCarousel(
-                          title: 'Related',
-                          carouselData: animeData['relatedAnimes'],
-                          tag: 'streaming-page2',
-                        ),
-                        ReusableCarousel(
-                          title: 'Recommended',
-                          carouselData: animeData['recommendedAnimes'],
-                          tag: 'streaming-page2',
-                        ),
-                      ]),
-                    ),
+                    Column(children: [
+                      ReusableCarousel(
+                        title: 'Seasons',
+                        carouselData: animeData['seasons'],
+                        tag: 'streaming-page1',
+                      ),
+                      const SizedBox(height: 10),
+                      ReusableCarousel(
+                        title: 'Related',
+                        carouselData: animeData['relatedAnimes'],
+                        tag: 'streaming-page2',
+                      ),
+                      ReusableCarousel(
+                        title: 'Recommended',
+                        carouselData: animeData['recommendedAnimes'],
+                        tag: 'streaming-page2',
+                      ),
+                    ]),
                   ],
                 ),
     );
