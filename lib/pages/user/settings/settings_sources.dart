@@ -94,19 +94,19 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
               });
             },
           ),
-          SwitchTileStateless(
-            icon: Icons.api,
-            title: 'Consumet API',
-            description: 'Faster, Better, NO DUBS THO',
-            onTap: () {},
-            value: usingConsumet!,
-            onChanged: (bool value) {
-              Hive.box('app-data').put('using-consumet', value);
-              setState(() {
-                usingConsumet = value;
-              });
-            },
-          ),
+          // SwitchTileStateless(
+          //   icon: Icons.api,
+          //   title: 'Consumet API',
+          //   description: 'Faster, Better, NO DUBS THO',
+          //   onTap: () {},
+          //   value: usingConsumet!,
+          //   onChanged: (bool value) {
+          //     Hive.box('app-data').put('using-consumet', value);
+          //     setState(() {
+          //       usingConsumet = value;
+          //     });
+          //   },
+          // ),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),

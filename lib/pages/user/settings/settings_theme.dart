@@ -4,7 +4,7 @@ import 'package:aurora/components/setting/scheme_varaint_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
-import 'package:aurora/theme/theme_provider.dart';
+import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
