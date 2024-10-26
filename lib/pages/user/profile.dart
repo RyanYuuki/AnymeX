@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/anilistCarousels/animeListCarousels.dart';
-import 'package:aurora/components/homepage/homepage_carousel.dart';
-import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
-import 'package:aurora/pages/Anime/details_page.dart';
+import 'package:aurora/components/anilistExclusive/animeListCarousels.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
@@ -39,7 +36,10 @@ class _ProfilePageState extends State<ProfilePage> {
   // final List<dynamic>? readingMangaList = hiveBox.get('currently-reading');
 
   dynamic filterData(dynamic animeList) {
-    return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
+    if (animeList != null) {
+      return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
+    }
+    return [];
   }
 
   @override
@@ -47,24 +47,25 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       body: Consumer<AniListProvider>(
         builder: (context, anilistProvider, child) {
-          final isLoggedIn = anilistProvider.userData.isNotEmpty;
+          final isLoggedIn = anilistProvider.userData?['user']?['id'] != null;
           final userName =
-              isLoggedIn ? anilistProvider.userData['name'] : 'Guest';
-          final avatarUrl =
-              isLoggedIn ? anilistProvider.userData['avatar']['large'] : null;
+              isLoggedIn ? anilistProvider.userData?['user']?['name'] : 'Guest';
+          final avatarUrl = isLoggedIn
+              ? (anilistProvider.userData?['user']?['avatar']?['large'])
+              : null;
           final totalWatchedAnimes = isLoggedIn
-              ? anilistProvider.userData['statistics']['anime']['count']
+              ? anilistProvider.userData?['user']?['statistics']?['anime']
+                  ?['count']
               : 0;
           final totalReadManga = isLoggedIn
-              ? anilistProvider.userData['statistics']['manga']['count']
+              ? anilistProvider.userData?['user']?['statistics']?['manga']
+                  ?['count']
               : 0;
           final followers = isLoggedIn ? 0 : 0;
           final following = isLoggedIn ? 0 : 0;
           final hasAvatarImage = avatarUrl != null;
-          final rawData = anilistProvider.userData['animeList'];
           final animeList = filterData(anilistProvider.userData['animeList']);
-          final rawDataManga = anilistProvider.userData['mangaList'];
-          final mangaList = filterData(anilistProvider.userData['mangaList']);
+          // final mangaList = filterData(anilistProvider.userData['mangaList']);
 
           return ListView(
             children: [
@@ -148,26 +149,23 @@ class _ProfilePageState extends State<ProfilePage> {
                   Column(
                     children: [
                       const SizedBox(height: 70),
-                      GestureDetector(
-                        onTap: () => _showAvatarSelector(context),
-                        child: SizedBox(
-                          height: 200,
-                          width: 200,
-                          child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            backgroundImage:
-                                hasAvatarImage ? NetworkImage(avatarUrl) : null,
-                            child: !hasAvatarImage
-                                ? Icon(
-                                    Icons.person,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inverseSurface,
-                                  )
-                                : null,
-                          ),
+                      SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          backgroundImage:
+                              hasAvatarImage ? NetworkImage(avatarUrl) : null,
+                          child: !hasAvatarImage
+                              ? Icon(
+                                  Icons.person,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inverseSurface,
+                                )
+                              : null,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -232,47 +230,47 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   StatsRow(
                                     name: 'Episodes Watched',
-                                    value: anilistProvider
-                                            .userData?['statistics']?['anime']
+                                    value: anilistProvider.userData['user']
+                                                ?['statistics']?['anime']
                                                 ?['episodesWatched']
                                             ?.toString() ??
                                         '0',
                                   ),
                                   StatsRow(
                                     name: 'Minutes Watched',
-                                    value: anilistProvider
-                                            .userData?['statistics']?['anime']
+                                    value: anilistProvider.userData['user']
+                                                ?['statistics']?['anime']
                                                 ?['minutesWatched']
                                             ?.toString() ??
                                         '0',
                                   ),
                                   StatsRow(
                                       name: 'Anime Mean Score',
-                                      value: anilistProvider
-                                              .userData?['statistics']?['anime']
+                                      value: anilistProvider.userData['user']
+                                                  ?['statistics']?['anime']
                                                   ?['meanScore']
                                               ?.toString() ??
                                           '0.0'),
                                   StatsRow(
                                     name: 'Chapters Read',
-                                    value: anilistProvider
-                                            .userData?['statistics']?['manga']
+                                    value: anilistProvider.userData['user']
+                                                ?['statistics']?['manga']
                                                 ?['chaptersRead']
                                             ?.toString() ??
                                         '0',
                                   ),
                                   StatsRow(
                                     name: 'Volume Read',
-                                    value: anilistProvider
-                                            .userData?['statistics']?['manga']
+                                    value: anilistProvider.userData['user']
+                                                ?['statistics']?['manga']
                                                 ?['volumeRead']
                                             ?.toString() ??
                                         '0',
                                   ),
                                   StatsRow(
                                     name: 'Manga Mean Score',
-                                    value: anilistProvider
-                                            .userData?['statistics']?['manga']
+                                    value: anilistProvider.userData['user']
+                                                ?['statistics']?['manga']
                                                 ?['meanScore']
                                             ?.toString() ??
                                         '0.0',
@@ -288,15 +286,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: 'Currently Watching',
                         carouselData: animeList,
                         tag: 'currently-watching',
-                        rawData: rawData,
                       ),
-                      anilistCarousel(
-                        title: 'Currently Reading',
-                        carouselData: mangaList,
-                        tag: 'currently-reading',
-                        rawData: rawDataManga,
-                        isManga: true,
-                      ),
+                      // anilistCarousel(
+                      //   title: 'Currently Reading',
+                      //   carouselData: mangaList,
+                      //   tag: 'currently-reading',
+                      //   rawData: rawDataManga,
+                      //   isManga: true,
+                      // ),
                     ],
                   ),
                 ],
@@ -412,6 +409,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             label,
             textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 11),
           ),
         ],
       ),
