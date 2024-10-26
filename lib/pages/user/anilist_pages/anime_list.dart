@@ -1,9 +1,9 @@
-import 'dart:developer';
-
+import 'dart:math';
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class AnimeList extends StatelessWidget {
@@ -27,7 +27,7 @@ class AnimeList extends StatelessWidget {
     final animeList =
         Provider.of<AniListProvider>(context).userData['animeList'];
     final userName =
-        Provider.of<AniListProvider>(context).userData['name'];
+        Provider.of<AniListProvider>(context).userData['user']['name'];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -90,101 +90,124 @@ class AnimeListContent extends StatelessWidget {
         itemCount: filteredAnimeList.length,
         itemBuilder: (context, index) {
           final item = filteredAnimeList[index]['media'];
-          return Column(
-            children: [
-              Stack(children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
-                  child: CachedNetworkImage(
-                    height: 170,
-                    fit: BoxFit.cover,
-                    imageUrl: item?['coverImage']?['large'] ??
-                        'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg',
-                    placeholder: (context, url) =>
-                        const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+          final tag = '${Random().nextInt(100000)}$index';
+          final posterUrl = item?['coverImage']?['large'] ??
+              'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailsPage(
+                            id: item['id'],
+                            tag: tag,
+                            posterUrl: posterUrl,
+                          )));
+            },
+            child: Column(
+              children: [
+                Stack(children: [
+                  Hero(
+                    tag: tag,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: CachedNetworkImage(
+                        height: 170,
+                        fit: BoxFit.cover,
+                        imageUrl: posterUrl,
+                        placeholder: (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                    ),
                   ),
-                ),
-                Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 8),
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              bottomRight: Radius.circular(16))),
-                      child: Row(
-                        children: [
-                          const Icon(IconlyBold.star, size: 11),
-                          const SizedBox(width: 2),
-                          Text(
-                            (item?['averageScore'] / 10)?.toString() ?? '0.0',
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
+                        decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomRight: Radius.circular(16))),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Iconsax.star5,
+                              size: 11,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              (item?['averageScore'] / 10)?.toString() ?? '0.0',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              const Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white),
+                            ),
+                          ],
+                        ),
+                      )),
+                ]),
+                const SizedBox(height: 7),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item?['title']?['english'] ??
+                          item?['title']?['romaji'] ??
+                          '?',
+                      maxLines: 2,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          filteredAnimeList[index]?['progress']?.toString() ??
+                              '?',
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer),
+                        ),
+                        Text(' | ',
                             style: TextStyle(
-                                fontSize: 11,
                                 color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            const Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white),
-                          ),
-                        ],
-                      ),
-                    )),
-              ]),
-              const SizedBox(height: 7),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item?['title']?['english'] ??
-                        item?['title']?['romaji'] ??
-                        '?',
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        animeData?[index]?['progress']?.toString() ?? '?',
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer),
-                      ),
-                      Text(' | ',
+                                    .colorScheme
+                                    .inverseSurface
+                                    .withOpacity(0.5))),
+                        Text(
+                          item['episodes']?.toString() ?? '?',
                           style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
                                   .inverseSurface
-                                  .withOpacity(0.5))),
-                      Text(
-                        item['episodes']?.toString() ?? '?',
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .inverseSurface
-                                .withOpacity(0.5)),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
+                                  .withOpacity(0.5)),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
           );
         },
       ),
