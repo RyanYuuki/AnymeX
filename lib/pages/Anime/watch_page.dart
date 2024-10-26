@@ -1,8 +1,9 @@
-import 'package:aurora/components/better_player.dart';
+import 'package:aurora/components/videoPlayer/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class WatchPage extends StatefulWidget {
+  final int animeId;
   final dynamic episodeData;
   final String episodeTitle;
   final int currentEpisode;
@@ -22,6 +23,7 @@ class WatchPage extends StatefulWidget {
     required this.animeTitle,
     required this.activeServer,
     required this.isDub,
+    required this.animeId,
   });
 
   @override
@@ -54,6 +56,7 @@ class _WatchPageState extends State<WatchPage> {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: VideoPlayerAlt(
+          animeId: widget.animeId,
           episodeTitle: widget.episodeTitle,
           episodeSrc: widget.episodeSrc,
           tracks: widget.subtitleTracks,
