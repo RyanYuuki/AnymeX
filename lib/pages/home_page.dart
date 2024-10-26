@@ -1,19 +1,18 @@
-import 'package:aurora/components/anilistCarousels/animeListCarousels.dart';
-import 'package:aurora/components/common/image_button.dart';
+import 'package:aurora/components/anilistExclusive/animeListCarousels.dart';
+import 'package:aurora/components/anime/details/image_button.dart';
+import 'package:aurora/fallbackData/anilist_homepage_data.dart';
 import 'package:aurora/pages/user/anilist_pages/anime_list.dart';
 import 'package:aurora/pages/user/anilist_pages/manga_list.dart';
-import 'package:aurora/theme/theme_provider.dart';
+import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/SettingsModal.dart';
-import 'package:aurora/components/homepage/homepage_carousel.dart';
-import 'package:aurora/components/reusable_carousel.dart';
-import 'package:aurora/components/MangaExclusive/reusable_carousel.dart'
+import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/common/reusable_carousel.dart';
+import 'package:aurora/components/manga/reusable_carousel.dart'
     as MangaCarousel;
-import 'package:aurora/components/homepage/manga_homepage_carousel.dart';
-import 'package:aurora/fallbackData/anime_data.dart';
+import 'package:aurora/components/home/manga_homepage_carousel.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -52,27 +51,18 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  dynamic filterData(dynamic animeList) {
-    return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AniListProvider>(
       builder: (context, anilistProvider, _) {
-        final userName = anilistProvider.userData['name'] ?? 'Guest';
-        final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
-        final isLoggedIn = anilistProvider.userData.isNotEmpty;
-        final rawData = isLoggedIn &&
-                anilistProvider.userData != null &&
-                anilistProvider.userData.containsKey('animeList')
-            ? (anilistProvider.userData['animeList'] ?? [])
-            : [];
-
+        final userName = anilistProvider.userData?['user']?['name'] ?? 'Guest';
+        final avatarImagePath =
+            anilistProvider.userData?['user']?['avatar']?['large'];
+        final isLoggedIn = anilistProvider.userData?['user']?['name'] != null;
         final animeList = isLoggedIn &&
                 anilistProvider.userData != null &&
-                anilistProvider.userData.containsKey('animeList')
-            ? filterData(anilistProvider.userData['animeList'] ?? [])
+                anilistProvider.userData.containsKey('currentlyWatching')
+            ? (anilistProvider.userData['currentlyWatching'] ?? [])
             : [];
         return ValueListenableBuilder(
           valueListenable: Hive.box('app-data').listenable(),
@@ -224,12 +214,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       const SizedBox(height: 20),
-                      anilistCarousel(
-                        title: 'Currently Watching',
-                        carouselData: animeList,
-                        tag: 'currently-watching',
-                        rawData: rawData,
-                      ),
+                      if (anilistProvider.userData?['data'] != null)
+                        anilistCarousel(
+                          title: 'Currently Watching',
+                          carouselData: animeList,
+                          tag: 'currently-watching',
+                        )
+                      else
+                        loader(),
                       // anilistCarousel(
                       //   title: 'Currently Reading',
                       //   carouselData: mangaList,
@@ -244,7 +236,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       ReusableCarousel(
                         title: 'Recommended',
-                        carouselData: animeData['topAiringAnimes'],
+                        carouselData: fallbackAnilistData['data']
+                            ['popularAnimes']['media'],
                         tag: 'home-page-recommended',
                         secondary: true,
                       ),
@@ -263,6 +256,11 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  SizedBox loader() {
+    return const SizedBox(
+        height: 150, child: Center(child: CircularProgressIndicator()));
   }
 
   void _showWelcomeDialog(BuildContext context) {
