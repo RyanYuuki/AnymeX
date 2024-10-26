@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
 import 'dart:ui';
-import 'package:aurora/components/IconWithLabel.dart';
-import 'package:aurora/components/MangaExclusive/chapters.dart';
-import 'package:aurora/database/database.dart';
-import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
+import 'package:aurora/components/common/IconWithLabel.dart';
+import 'package:aurora/components/manga/chapters.dart';
+import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
