@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/components/anilistCarousels/mappingMethod.dart';
+import 'package:aurora/components/anilistExclusive/mappingMethod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,6 +20,8 @@ class AniListProvider with ChangeNotifier {
     if (token != null) {
       await fetchUserProfile();
     }
+    await fetchAnilistHomepage();
+    notifyListeners();
   }
 
   Future<void> login(BuildContext context) async {
@@ -42,7 +44,7 @@ class AniListProvider with ChangeNotifier {
             code, clientId, clientSecret, redirectUri, context);
       }
     } catch (e) {
-      print('Error during login: $e');
+      log('Error during login: $e');
     }
   }
 
@@ -70,6 +72,109 @@ class AniListProvider with ChangeNotifier {
     } else {
       throw Exception('Failed to exchange code for token: ${response.body}');
     }
+  }
+
+  Future<void> updateAnimeList({
+    required int animeId,
+    required int episodeProgress,
+    required double rating,
+    required String status,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+    const String mutation = '''
+  mutation UpdateMediaList(\$animeId: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
+    SaveMediaListEntry(mediaId: \$animeId, progress: \$progress, score: \$score, status: \$status) {
+      id
+      status
+      progress
+      score
+    }
+  }
+  ''';
+
+    final Map<String, dynamic> variables = {
+      'animeId': animeId,
+      'progress': episodeProgress,
+      'score': rating,
+      'status': status.toUpperCase(),
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': variables,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['errors'] != null) {
+        log('Error: ${data['errors']}');
+      } else {
+        log('Anime list updated successfully: ${data['data']}');
+        await fetchUserAnimeList();
+      }
+    } else {
+      log('Failed to update anime list. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+    }
+    notifyListeners();
+  }
+
+  Future<void> updateAnimeProgress({
+    required int animeId,
+    required int episodeProgress,
+    required String status,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+    const String mutation = '''
+  mutation UpdateMediaList(\$animeId: Int, \$progress: Int, \$status: MediaListStatus) {
+    SaveMediaListEntry(mediaId: \$animeId, progress: \$progress, status: \$status) {
+      id
+      status
+      progress
+    }
+  }
+  ''';
+
+    final Map<String, dynamic> variables = {
+      'animeId': animeId,
+      'progress': episodeProgress,
+      'status': status.toUpperCase(),
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': variables,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['errors'] != null) {
+        log('Error: ${data['errors']}');
+      } else {
+        log('Anime list updated successfully: ${data['data']}');
+        await fetchUserAnimeList();
+      }
+    } else {
+      log('Failed to update anime list. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+    }
+    notifyListeners();
   }
 
   Future<void> fetchUserProfile() async {
@@ -124,8 +229,10 @@ class AniListProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _userData = data['data']['Viewer'];
+        _userData['user'] = data['data']['Viewer'];
         log('User profile fetched successfully');
+        await fetchUserAnimeList();
+        await fetchUserMangaList();
       } else {
         log('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');
@@ -133,49 +240,141 @@ class AniListProvider with ChangeNotifier {
     } catch (e) {
       log('Error fetching user profile: $e');
     }
-
     _isLoading = false;
-    await fetchUserAnimeList();
-    await fetchUserMangaList();
     notifyListeners();
   }
 
-  Future<void> updateUsername(String newUsername) async {
-    final token = await storage.read(key: 'auth_token');
-    if (token == null) return;
+  Future<void> fetchAnilistHomepage() async {
+    const String url = 'https://graphql.anilist.co';
 
-    const mutation = '''
-    mutation UpdateUser(\$username: String) {
-      UpdateUser(name: \$username) {
+    const String query = '''
+  query {
+    upcomingAnimes: Page(page: 1, perPage: 10) {
+      media(type: ANIME, status: NOT_YET_RELEASED) {
         id
-        name
+        title {
+          romaji
+          english
+          native
+        }
+        averageScore
+        coverImage {
+          large
+        }
       }
     }
-    ''';
+    popularAnimes: Page(page: 1, perPage: 10) {
+      media(type: ANIME, sort: POPULARITY_DESC) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        episodes
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+    trendingAnimes: Page(page: 1, perPage: 10) {
+      media(type: ANIME, sort: TRENDING_DESC) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        description
+        bannerImage
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+    top10Today: Page(page: 1, perPage: 10) {
+      media(type: ANIME, sort: [POPULARITY_DESC]) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        episodes
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+    top10Week: Page(page: 2, perPage: 10) {
+      media(type: ANIME, sort: [POPULARITY_DESC]) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        episodes
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+    top10Month: Page(page: 3, perPage: 10) {
+      media(type: ANIME, sort: [POPULARITY_DESC]) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        episodes
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+    latestAnimes: Page(page: 1, perPage: 10) {
+      media(type: ANIME, sort: [START_DATE]) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        averageScore
+        coverImage {
+          large
+        }
+      }
+    }
+  }
+  ''';
+
+    final headers = {
+      'Content-Type': 'application/json',
+    };
 
     final response = await http.post(
-      Uri.parse('https://graphql.anilist.co'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      Uri.parse(url),
+      headers: headers,
       body: json.encode({
-        'query': mutation,
-        'variables': {
-          'username': newUsername,
-        },
+        'query': query,
       }),
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      _userData['name'] = data['data']['UpdateUser']['name'];
-      log('Username updated successfully');
+      final dynamic responseData = json.decode(response.body);
+      _userData['data'] = responseData['data'];
+      log(responseData['data'].toString());
     } else {
-      log('Failed to update username: ${response.body}');
+      throw Exception('Failed to load AniList data: ${response.statusCode}');
     }
-
     notifyListeners();
   }
 
@@ -203,10 +402,8 @@ class AniListProvider with ChangeNotifier {
               english
               native
             }
-            episodes
             format
-            genres
-            status
+            episodes
             averageScore
             coverImage {
               large
@@ -221,12 +418,12 @@ class AniListProvider with ChangeNotifier {
   ''';
 
     try {
-      if (_userData['id'] == null) {
+      if (_userData['user']['id'] == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = _userData['id'];
+      final userId = _userData['user']['id'];
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
@@ -252,30 +449,19 @@ class AniListProvider with ChangeNotifier {
             data['data']['MediaListCollection'] != null) {
           final lists =
               data['data']['MediaListCollection']['lists'] as List<dynamic>;
+
           final animeList =
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
 
-          // for (var animeEntry in animeList) {
-          //   if (animeEntry['status'] == 'CURRENT') {
-          //     final anilistId = animeEntry['media']['id'];
-          //     try {
-          //       final hiAnimeId =
-          //           await fetchAnilistToAniwatch(anilistId.toString());
-          //       if (hiAnimeId != '' && hiAnimeId != null) {
-          //         animeEntry['media']['hiAnimeId'] = hiAnimeId;
-          //         log('Fetched HiAnime ID for anime with AniList ID: $anilistId -> HiAnime ID: $hiAnimeId');
-          //         log('Fetched HiAnime ');
-          //       }
-          //     } catch (e) {
-          //       log('Failed to fetch HiAnime ID for anime with AniList ID: $anilistId: $e');
-          //     }
-          //   }
-          // }
+          _userData['currentlyWatching'] = animeList
+              .where((animeEntry) => animeEntry['status'] == 'CURRENT')
+              .toList();
 
           _userData['animeList'] = animeList;
           log('User anime list fetched successfully');
           log('Fetched ${_userData['animeList'].length} anime entries');
-          log(_userData['animeList']);
+          log('Fetched ${_userData['currentlyWatching'].length} currently watching entries');
+          log(_userData['currentlyWatching']);
         } else {
           log('Unexpected response structure: ${response.body}');
         }
@@ -334,12 +520,12 @@ class AniListProvider with ChangeNotifier {
     ''';
 
     try {
-      if (_userData['id'] == null) {
+      if (_userData['user']['id'] == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = _userData['id'];
+      final userId = _userData['user']['id'];
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
