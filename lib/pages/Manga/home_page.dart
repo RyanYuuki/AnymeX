@@ -1,14 +1,14 @@
 import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/IconWithLabel.dart';
-import 'package:aurora/components/MangaExclusive/carousel.dart';
-import 'package:aurora/components/MangaExclusive/reusable_carousel.dart';
-import 'package:aurora/components/SettingsModal.dart';
-import 'package:aurora/components/data_table.dart';
-import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
+import 'package:aurora/components/common/IconWithLabel.dart';
+import 'package:aurora/components/manga/carousel.dart';
+import 'package:aurora/components/manga/reusable_carousel.dart';
+import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/anime/home/data_table.dart';
+import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
-import 'package:aurora/theme/theme_provider.dart';
+import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -349,9 +349,9 @@ class _HeaderState extends State<Header> {
     // final isLoggedIn = userName != 'Guest';
     // final hasAvatarImage = avatarImagePath != 'null';
     final anilistProvider = Provider.of<AniListProvider>(context);
-    final userName = anilistProvider.userData['name'] ?? 'Guest';
-    final avatarImagePath = anilistProvider.userData?['avatar']?['large'];
-    final isLoggedIn = anilistProvider.userData.isNotEmpty;
+    final userName = anilistProvider.userData?['user']?['name'] ?? 'Guest';
+    final avatarImagePath = anilistProvider.userData?['user']?['avatar']?['large'];
+    final isLoggedIn = anilistProvider.userData?['user']?['name'] != null;
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0),
