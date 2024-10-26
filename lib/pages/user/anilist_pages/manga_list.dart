@@ -20,7 +20,7 @@ class AnilistMangaList extends StatelessWidget {
   Widget build(BuildContext context) {
     final mangaList =
         Provider.of<AniListProvider>(context).userData['mangaList'];
-    final userName = Provider.of<AniListProvider>(context).userData['name'];
+    final userName = Provider.of<AniListProvider>(context).userData['user']['name'];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
