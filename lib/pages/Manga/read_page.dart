@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/components/MangaExclusive/toggle_bars.dart';
-import 'package:aurora/database/database.dart';
-import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
+import 'package:aurora/components/manga/toggle_bars.dart';
+import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
