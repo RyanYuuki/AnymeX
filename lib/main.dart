@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/database/database.dart';
+import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/user/profile.dart';
-import 'package:aurora/theme/theme_provider.dart';
+import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
@@ -15,7 +15,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:aurora/pages/Anime/search_page.dart';
-import 'package:aurora/pages/Anime/streaming_page.dart';
 import 'package:aurora/pages/Manga/details_page.dart';
 import 'package:aurora/pages/Manga/read_page.dart';
 import 'package:aurora/pages/Manga/search_page.dart';
@@ -64,6 +63,8 @@ class _MainAppState extends State<MainApp> {
     _checkAndroidVersion();
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   }
 
   Future<void> _checkAndroidVersion() async {
@@ -127,7 +128,7 @@ class _MainAppState extends State<MainApp> {
         switch (settings.name) {
           case '/details':
             final posterUrl = args?['posterUrl'] ?? '';
-            final id = args?['id'] ?? '';
+            final id = args?['id'] ?? 0;
             final tag = args?['tag'] ?? '';
             return MaterialPageRoute(
               builder: (context) => DetailsPage(
@@ -135,11 +136,6 @@ class _MainAppState extends State<MainApp> {
                 posterUrl: posterUrl,
                 tag: tag,
               ),
-            );
-          case '/watch':
-            final id = args?['id'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) => StreamingPage(id: id),
             );
           case '/anime/search':
             final id = args?['term'] ?? '';
