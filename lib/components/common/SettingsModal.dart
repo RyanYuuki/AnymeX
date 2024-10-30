@@ -4,7 +4,6 @@ import 'package:aurora/main.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/pages/user/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
