@@ -64,6 +64,10 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
     super.initState();
     _initVars();
     initializePlayer();
+    if (widget.isDub) {
+      fetchSubtitles(
+          widget.episodeData[widget.currentEpisode - 1]['episodeId']);
+    }
     Provider.of<AniListProvider>(context, listen: false).updateAnimeProgress(
         animeId: widget.animeId,
         episodeProgress: widget.currentEpisode,
@@ -84,14 +88,14 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         const BetterPlayerConfiguration(
-            fit: BoxFit.contain,
-            controlsConfiguration: BetterPlayerControlsConfiguration(
-              showControls: false,
-            ),
-            autoPlay: true,
-            expandToFill: true,
-            looping: false,
-            allowedScreenSleep: false);
+      fit: BoxFit.contain,
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        showControls: false,
+      ),
+      autoPlay: true,
+      expandToFill: true,
+      looping: false,
+    );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController!.setupDataSource(BetterPlayerDataSource(
@@ -147,6 +151,34 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
                 animeId: widget.animeId,
                 episodeProgress: currentEpisode!,
                 status: 'CURRENT');
+        if (widget.isDub) {
+          await fetchSubtitles(episodeId);
+        }
+      }
+    } catch (e) {
+      log('Error fetching episode sources: $e');
+    }
+  }
+
+  Future<void> fetchSubtitles(String episodeId) async {
+    log('Fetching Subtitles');
+    try {
+      final response = await fetchStreamingLinksAniwatch(
+          episodeId, widget.activeServer, 'sub');
+      if (response != null) {
+        final episodeSrcs = response;
+        setState(() {
+          tracks = episodeSrcs['tracks'];
+        });
+
+        filterSubtitles(tracks);
+
+        _betterPlayerController?.setupDataSource(BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          episodeSrc!,
+          subtitles: subtitles,
+          videoFormat: BetterPlayerVideoFormat.hls,
+        ));
       }
     } catch (e) {
       log('Error fetching episode sources: $e');
@@ -616,17 +648,24 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
         children: [
           BetterPlayer(controller: _betterPlayerController!),
           Positioned.fill(child: overlay()),
-          if (showControls) ...[
-            Controls(
-                controller: _betterPlayerController!,
-                bottomControls: bottomControls(),
-                topControls: topControls(),
-                hideControlsOnTimeout: () {},
-                isControlsLocked: () {
-                  return isControlsLocked;
-                },
-                isControlsVisible: showControls),
-          ],
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: showControls ? 1 : 0,
+              duration: const Duration(milliseconds: 300),
+              child: IgnorePointer(
+                ignoring: !showControls,
+                child: Controls(
+                    controller: _betterPlayerController!,
+                    bottomControls: bottomControls(),
+                    topControls: topControls(),
+                    hideControlsOnTimeout: () {},
+                    isControlsLocked: () {
+                      return isControlsLocked;
+                    },
+                    isControlsVisible: showControls),
+              ),
+            ),
+          ),
         ],
       ),
     );
