@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/utils/scrapers/anime/aniwatch/deps/scraper_rapidcloud.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/deps/scraper_streamsb.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/deps/scraper_megacloud.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/deps/scraper_streamtap.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/deps/scraper_rapidcloud.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/deps/scraper_streamsb.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/deps/scraper_megacloud.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/deps/scraper_streamtap.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';

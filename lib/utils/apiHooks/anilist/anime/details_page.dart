@@ -27,6 +27,7 @@ Future<Map<String, dynamic>> fetchAnimeInfo(int animeId) async {
         seasonYear
         duration
         status
+        chapters
         format
         popularity
         startDate {
@@ -175,6 +176,8 @@ Future<Map<String, dynamic>> fetchAnimeInfo(int animeId) async {
         'relations': (media['relations']['edges'] as List?) ?? '?',
         'recommendations': (media['recommendations']['edges'] as List?) ?? '?',
         'popularity': media?['popularity']?.toString() ?? '6900',
+        'format': media?['format'] ?? 'ANIME',
+        'totalChapters': media?['totalChapters'] ?? '?'
       };
 
       return updatedMedia;

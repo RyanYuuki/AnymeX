@@ -14,7 +14,6 @@ class SourcesSettingPage extends StatefulWidget {
 
 class _SourcesSettingPageState extends State<SourcesSettingPage> {
   late bool? usingConsumet;
-  late bool? isRomaji;
 
   @override
   void initState() {
@@ -25,7 +24,6 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
   void initiliazeVars() {
     usingConsumet =
         Hive.box('app-data').get('using-consumet', defaultValue: false);
-    isRomaji = Hive.box('app-data').get('isRomaji', defaultValue: false);
   }
 
   @override
@@ -81,19 +79,19 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.primary)),
           ),
-          SwitchTileStateless(
-            icon: Iconsax.language_square,
-            title: 'Romaji Names',
-            description: 'Switch Anime Names to romaji',
-            onTap: () {},
-            value: isRomaji!,
-            onChanged: (value) {
-              Hive.box('app-data').put('isRomaji', value);
-              setState(() {
-                isRomaji = value;
-              });
-            },
-          ),
+          // SwitchTileStateless(
+          //   icon: Iconsax.language_square,
+          //   title: 'Romaji Names',
+          //   description: 'Switch Anime Names to romaji',
+          //   onTap: () {},
+          //   value: isRomaji!,
+          //   onChanged: (value) {
+          //     Hive.box('app-data').put('isRomaji', value);
+          //     setState(() {
+          //       isRomaji = value;
+          //     });
+          //   },
+          // ),
           // SwitchTileStateless(
           //   icon: Icons.api,
           //   title: 'Consumet API',
@@ -107,20 +105,20 @@ class _SourcesSettingPageState extends State<SourcesSettingPage> {
           //     });
           //   },
           // ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: Text('Manga',
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.primary)),
-          ),
-          SwitchTile(
-            icon: Icons.api_rounded,
-            title: 'MangaReader API',
-            description: "Try if you're having slow experience",
-            onTap: () {},
-          ),
+          // const SizedBox(height: 20),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+          //   child: Text('Manga',
+          //       style: TextStyle(
+          //           fontSize: 12,
+          //           color: Theme.of(context).colorScheme.primary)),
+          // ),
+          // SwitchTile(
+          //   icon: Icons.api_rounded,
+          //   title: 'MangaReader API',
+          //   description: "Try if you're having slow experience",
+          //   onTap: () {},
+          // ),
         ],
       ),
     );

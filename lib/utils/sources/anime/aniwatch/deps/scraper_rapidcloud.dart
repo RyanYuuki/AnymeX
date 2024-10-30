@@ -49,7 +49,7 @@ class RapidCloud {
     };
 
     try {
-      final String? id = videoUrl.pathSegments.last.split("?")[0];
+      final String id = videoUrl.pathSegments.last.split("?")[0];
       final Map<String, String> headers = {
         "X-Requested-With": "XMLHttpRequest",
       };

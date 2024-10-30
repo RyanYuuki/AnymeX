@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
@@ -19,7 +18,7 @@ List<Map<String, dynamic>> extractAnimes(Document document, String selector) {
       final name = element
           .querySelector('.film-detail .film-name .dynamic-name')
           ?.text
-          ?.trim();
+          .trim();
 
       final jname = element
           .querySelector('.film-detail .film-name .dynamic-name')
@@ -41,22 +40,22 @@ List<Map<String, dynamic>> extractAnimes(Document document, String selector) {
           fdInfoElements.length > 1 ? fdInfoElements[1].text.trim() : 'Unknown';
 
       final rating =
-          element.querySelector('.film-poster .tick-rate')?.text?.trim() ??
+          element.querySelector('.film-poster .tick-rate')?.text.trim() ??
               'N/A';
 
       final subEpisodes = int.tryParse(element
               .querySelector('.film-poster .tick-sub')
               ?.text
-              ?.trim()
-              ?.split(" ")
+              .trim()
+              .split(" ")
               .last ??
           '0');
 
       final dubEpisodes = int.tryParse(element
               .querySelector('.film-poster .tick-dub')
               ?.text
-              ?.trim()
-              ?.split(" ")
+              .trim()
+              .split(" ")
               .last ??
           '0');
 

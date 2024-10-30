@@ -33,7 +33,7 @@ class StreamSB {
 
     // Extract ID from URL
     String? id = videoUrl.pathSegments.last.split(".html").first;
-    List<int> bytes = utf8.encode(id!);
+    List<int> bytes = utf8.encode(id);
     String payload = PAYLOAD(bytesToHex(bytes));
     Uri apiUrl = Uri.parse('${isAlt ? host2 : host}/$payload');
 
@@ -42,7 +42,7 @@ class StreamSB {
     try {
       res = await http
           .get(apiUrl, headers: headers)
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
     } catch (e) {
       throw Exception("Failed to fetch stream data: $e");
     }
@@ -63,7 +63,7 @@ class StreamSB {
     try {
       m3u8Res = await http
           .get(Uri.parse(streamData['file']), headers: headers)
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
     } catch (e) {
       throw Exception("Failed to fetch M3U8 data: $e");
     }
