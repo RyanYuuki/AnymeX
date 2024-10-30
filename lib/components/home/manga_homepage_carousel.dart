@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'dart:math';
 import 'package:aurora/components/helper/scroll_helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:infinite_carousel/infinite_carousel.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transformable_list_view/transformable_list_view.dart';
 
@@ -92,8 +90,8 @@ class MangaHomepageCarousel extends StatelessWidget {
               final random = Random().nextInt(100000);
               final tagg = '${itemData['id']}$tag$random';
               String? extraData =
-                  itemData['currentChapter']!.toString().length > 20
-                      ? itemData['currentChapter']?.toString().substring(0, 20)
+                  itemData['currentChapter']!.toString().length > 13
+                      ? itemData['currentChapter']?.toString().substring(0, 13)
                       : itemData['currentChapter']?.toString() ?? '??';
 
               return Padding(
