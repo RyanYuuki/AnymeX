@@ -9,24 +9,21 @@ import 'package:aurora/components/anime/details/episode_buttons.dart';
 import 'package:aurora/components/anime/details/episode_list.dart';
 import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/components/anime/details/character_cards.dart';
-import 'package:aurora/utils/apiHooks/api.dart';
 import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/utils/apiHooks/anilist/details_page.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/scrape_episode_src.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/scraper_episodes.dart';
+import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:aurora/utils/apiHooks/api.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/scrape_episode_src.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/scraper_episodes.dart';
 import 'package:aurora/pages/Anime/watch_page.dart';
-import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:text_scroll/text_scroll.dart';
 
 Color? hexToColor(String hexColor) {
   if (hexColor == '??') {
@@ -70,13 +67,12 @@ class DetailsPage extends StatefulWidget {
   final int id;
   final String? posterUrl;
   final String? tag;
-  final bool fromAnilist;
-  const DetailsPage(
-      {super.key,
-      required this.id,
-      this.posterUrl,
-      this.tag,
-      this.fromAnilist = false});
+  const DetailsPage({
+    super.key,
+    required this.id,
+    this.posterUrl,
+    this.tag,
+  });
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
@@ -84,11 +80,8 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage>
     with SingleTickerProviderStateMixin {
-  bool usingConsumet =
-      Hive.box('app-data').get('using-consumet', defaultValue: false);
   bool usingSaikouLayout =
       Hive.box('app-data').get('usingSaikouLayout', defaultValue: false);
-  bool consumetSesh = false;
   dynamic data;
   bool isLoading = true;
   dynamic altdata;
@@ -98,9 +91,9 @@ class _DetailsPageState extends State<DetailsPage>
   late Animation<double> _animation;
   int selectedIndex = 0;
   PageController pageController = PageController();
-
   // Episodes Section
   dynamic episodesData;
+  dynamic episodeImages;
   int availEpisodes = 0;
   String? episodeSrc;
   int currentEpisode = 1;
@@ -109,6 +102,7 @@ class _DetailsPageState extends State<DetailsPage>
   bool isDub = false;
   int watchProgress = 1;
   final serverList = ['HD-1', 'HD-2', 'Vidstream'];
+  bool usingAPI = false;
 
   // Layout Buttons
   List<IconData> layoutIcons = [
@@ -118,8 +112,6 @@ class _DetailsPageState extends State<DetailsPage>
   ];
   int layoutIndex = 0;
 
-  final String baseUrl =
-      'https://goodproxy.goodproxy.workers.dev/fetch?url=${dotenv.get('ANIME_URL')}anime/info?id=';
 
   @override
   void initState() {
@@ -143,15 +135,11 @@ class _DetailsPageState extends State<DetailsPage>
       final tempdata = await fetchAnimeInfo(widget.id);
       setState(() {
         data = tempdata;
-        consumetSesh = false;
         description = data?['description'];
-      });
-
-      final characterTemp = tempdata;
-      setState(() {
-        description = characterTemp['description'] ?? data?['description'];
-        charactersdata = characterTemp['characters'] ?? [];
-        altdata = characterTemp;
+        description = data['description'] ?? data?['description'];
+        charactersdata = data['characters'] ?? [];
+        altdata = data;
+        isLoading = false;
       });
       final resp = await http.get(Uri.parse(
           "https://raw.githubusercontent.com/RyanYuuki/Anilist-Database/master/anilist/anime/${tempdata['id']}.json"));
@@ -183,6 +171,11 @@ class _DetailsPageState extends State<DetailsPage>
         availEpisodes = tempEpisodesData['totalEpisodes'];
         isLoading = false;
       });
+      final tempEpisodeImages =
+          await fetchStreamingDataConsumet(widget.id.toString());
+      setState(() {
+        episodeImages = tempEpisodeImages;
+      });
     } catch (e) {
       log(e.toString());
     }
@@ -191,28 +184,38 @@ class _DetailsPageState extends State<DetailsPage>
   Future<void> fetchEpisodeSrcs() async {
     episodeSrc = null;
     final provider = Provider.of<AppData>(context, listen: false);
-    if (episodesData == null || currentEpisode == null) return;
+    if (episodesData == null) return;
 
     try {
-      final response = await scrapeAnimeEpisodeSources(
-          episodesData[(currentEpisode - 1)]['episodeId'],
-          category: isDub ? 'dub' : 'sub');
+      dynamic response;
+
+      if (!usingAPI) {
+        response = await scrapeAnimeEpisodeSources(
+            episodesData[(currentEpisode - 1)]['episodeId'],
+            category: isDub ? 'dub' : 'sub');
+      } else {
+        response = await fetchStreamingLinksAniwatch(
+            episodesData[(currentEpisode - 1)]['episodeId'],
+            activeServer,
+            isDub ? 'dub' : 'sub');
+      }
+
       if (response != null) {
-        final episodeSrcs = response;
-        log(response.toString());
         setState(() {
-          usingConsumet = false;
-          subtitleTracks = episodeSrcs.tracks;
-          episodeSrc =
-              'https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${episodeSrcs.sources[0]['url']}';
+          subtitleTracks = !usingAPI ? response.tracks : response['tracks'];
+          episodeSrc = !usingAPI
+              ? 'https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${response.sources[0]['url']}'
+              : response['sources'][0]['url'];
           isLoading = false;
         });
+
         provider.addWatchedAnime(
-            animeId: data['id'].toString(),
-            animeTitle: data['name'],
-            currentEpisode: currentEpisode.toString(),
-            animePosterImageUrl: data['poster'],
-            isConsumet: usingConsumet);
+          animeId: data['id'],
+          animeTitle: data['name'],
+          currentEpisode: currentEpisode.toString(),
+          animePosterImageUrl: data['poster'],
+        );
+
         Navigator.pop(context);
         Navigator.push(
             context,
@@ -231,9 +234,11 @@ class _DetailsPageState extends State<DetailsPage>
                     )));
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       log('Error fetching episode sources: $e');
     }
   }
@@ -251,7 +256,8 @@ class _DetailsPageState extends State<DetailsPage>
       body: Stack(children: [
         currentPage,
         if (altdata?['status'] != 'CANCELLED' &&
-            altdata?['status'] != 'NOT_YET_RELEASED')
+            altdata?['status'] != 'NOT_YET_RELEASED' &&
+            data != null)
           Positioned(
             bottom: 0,
             child: LayoutBuilder(
@@ -327,13 +333,6 @@ class _DetailsPageState extends State<DetailsPage>
     return 'Add To List';
   }
 
-  double? getSize() {
-    if (selectedIndex == 1) {
-      Future.delayed(Duration(seconds: 1), () => 700);
-    }
-    return 1950;
-  }
-
   Scaffold saikouDetailsPage(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -348,7 +347,7 @@ class _DetailsPageState extends State<DetailsPage>
               )
             else
               SizedBox(
-                height: selectedIndex == 0 ? 1650 : 700,
+                height: selectedIndex == 0 ? 1650 : 750,
                 child: PageView(
                   padEnds: false,
                   physics: NeverScrollableScrollPhysics(),
@@ -363,6 +362,23 @@ class _DetailsPageState extends State<DetailsPage>
         ),
       ),
     );
+  }
+
+  String? getChapterId({
+    required Map<String, dynamic>? mangaData,
+    required int progress,
+  }) {
+    if (mangaData == null) return null;
+
+    final chapterList = mangaData['chapterList'] as List?;
+    if (chapterList == null || chapterList.isEmpty) return null;
+
+    final totalChapters = chapterList.length;
+    final reversedIndex = totalChapters - progress - 1;
+
+    if (reversedIndex < 0 || reversedIndex >= totalChapters) return null;
+
+    return chapterList[reversedIndex]['path'].toString().split('/').last;
   }
 
   bool isList = true;
@@ -566,6 +582,7 @@ class _DetailsPageState extends State<DetailsPage>
                   height: layoutIndex == 0 ? 320 : 280,
                   child: EpisodeGrid(
                       currentEpisode: currentEpisode,
+                      episodeImages: episodeImages,
                       episodes: filteredEpisodes,
                       progress: watchProgress,
                       layoutIndex: layoutIndex,
@@ -593,7 +610,7 @@ class _DetailsPageState extends State<DetailsPage>
       orElse: () => null,
     );
 
-    return matchingAnime?['progress'] ?? 1;
+    return matchingAnime?['progress'] ?? 0;
   }
 
   String returnProgressString() {
@@ -630,7 +647,7 @@ class _DetailsPageState extends State<DetailsPage>
           builder: (context, setState) {
             return Container(
               padding: const EdgeInsets.all(16.0),
-              height: 380,
+              height: 450,
               decoration: BoxDecoration(
                 color:
                     Theme.of(context).colorScheme.surface, // Background color
@@ -649,14 +666,35 @@ class _DetailsPageState extends State<DetailsPage>
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Text(
-                    'Select Server',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Column(children: [
+                    Text(
+                      'Select Server',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('USE API',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                              fontSize: 16,
+                            )),
+                        const SizedBox(width: 5),
+                        Switch(
+                            value: usingAPI,
+                            onChanged: (value) {
+                              setState(() {
+                                usingAPI = value;
+                              });
+                            }),
+                      ],
+                    ),
+                  ]),
                   SizedBox(height: 16),
                   for (int i = 0; i < 3; i++) ...[
                     Container(
@@ -755,6 +793,36 @@ class _DetailsPageState extends State<DetailsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (Provider.of<AniListProvider>(context).userData?['user']
+                      ?['name'] !=
+                  null)
+                SizedBox(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showListEditorModal(
+                          context, data['totalEpisodes'] ?? '?');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          width: 2,
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      (checkAvailability(context)).toUpperCase(),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontFamily: 'Poppins-Bold',
+                      ),
+                    ),
+                  ),
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -775,22 +843,8 @@ class _DetailsPageState extends State<DetailsPage>
                     ),
                   ),
                   Expanded(child: SizedBox.shrink()),
-                  if (widget.fromAnilist)
-                    TextButton(
-                        onPressed: () {
-                          showAnimeSearchModal(
-                              context, isLoading ? '' : data['name']);
-                        },
-                        child: Text(
-                          'Wrong Title?',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontFamily: 'Poppins-Bold'),
-                        )),
-                  if (!widget.fromAnilist)
-                    IconButton(onPressed: () {}, icon: Icon(Iconsax.heart)),
-                  if (!widget.fromAnilist)
-                    IconButton(onPressed: () {}, icon: Icon(Icons.share)),
+                  IconButton(onPressed: () {}, icon: Icon(Iconsax.heart)),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.share)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -811,9 +865,7 @@ class _DetailsPageState extends State<DetailsPage>
                   field: 'Romaji Name',
                   value: data?['jname'] ?? data?['japanese'] ?? '??'),
               infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
-              infoRow(
-                  field: 'Duration',
-                  value: '${data?['duration']}${consumetSesh ? 'M' : ''}'),
+              infoRow(field: 'Duration', value: '${data?['duration']}'),
               const SizedBox(height: 20),
               Text('Synopsis', style: TextStyle(fontFamily: 'Poppins-Bold')),
               const SizedBox(height: 10),
@@ -907,7 +959,7 @@ class _DetailsPageState extends State<DetailsPage>
         const SizedBox(height: 15),
         // Text('Characters',
         //     style: TextStyle(fontFamily: 'Poppins-Bold')),
-        CharacterCards(carouselData: charactersdata),
+        CharacterCards(carouselData: charactersdata, isManga: false),
         // ReusableCarousel(
         //   title: 'Popular',
         //   carouselData: data?['popularAnimes'],
@@ -944,7 +996,7 @@ class _DetailsPageState extends State<DetailsPage>
                   height: 450,
                   alignment: Alignment.center,
                   fit: BoxFit.cover,
-                  imageUrl: altdata?['cover'] ?? '',
+                  imageUrl: altdata?['cover'] ?? widget.posterUrl,
                 ),
               );
             },
@@ -1022,32 +1074,6 @@ class _DetailsPageState extends State<DetailsPage>
                       ),
                     ),
                   ],
-                ),
-              ),
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showListEditorModal(context, data['totalEpisodes']);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        width: 2,
-                        color: Theme.of(context).colorScheme.surfaceContainer,
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    (checkAvailability(context)).toUpperCase(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -1401,13 +1427,14 @@ class _DetailsPageState extends State<DetailsPage>
       width: MediaQuery.of(context).size.width,
       child: Stack(
         children: [
-          if (data?['cover'] != null)
-            Positioned.fill(
-              child: Image.network(
-                data['cover'],
-                fit: BoxFit.cover,
-              ),
+          Positioned.fill(
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl:
+                  (data?['cover'] == '' ? poster : data?['cover']) ?? poster!,
+              alignment: Alignment.topCenter,
             ),
+          ),
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -1501,7 +1528,7 @@ class _DetailsPageState extends State<DetailsPage>
             child: Center(child: CircularProgressIndicator()),
           )
         : SizedBox(
-            height: selectedIndex == 0 ? 1450 : 700,
+            height: selectedIndex == 0 ? 1450 : 750,
             child: PageView(
               padEnds: false,
               physics: NeverScrollableScrollPhysics(),
@@ -1522,32 +1549,36 @@ class _DetailsPageState extends State<DetailsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showListEditorModal(context, data['totalEpisodes']);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        width: 2,
-                        color: Theme.of(context).colorScheme.surfaceContainer,
+              if (Provider.of<AniListProvider>(context).userData?['user']
+                      ?['name'] !=
+                  null)
+                SizedBox(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showListEditorModal(
+                          context, data['totalEpisodes'] ?? '?');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          width: 2,
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      (checkAvailability(context)).toUpperCase(),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontFamily: 'Poppins-Bold',
                       ),
                     ),
                   ),
-                  child: Text(
-                    (checkAvailability(context)).toUpperCase(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                  ),
                 ),
-              ),
               const SizedBox(height: 30),
               Text('Description',
                   style: TextStyle(fontFamily: 'Poppins-SemiBold')),
@@ -1588,13 +1619,12 @@ class _DetailsPageState extends State<DetailsPage>
                   field: 'Romaji Name',
                   value: data?['jname'] ?? data?['japanese'] ?? '??'),
               infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
-              infoRow(
-                  field: 'Duration',
-                  value: '${data?['duration']}${consumetSesh ? 'M' : ''}'),
+              infoRow(field: 'Duration', value: '${data?['duration']}'),
             ],
           ),
         ),
         CharacterCards(
+          isManga: false,
           carouselData: charactersdata,
         ),
         // ReusableCarousel(
