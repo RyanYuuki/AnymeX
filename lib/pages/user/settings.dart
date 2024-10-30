@@ -1,20 +1,33 @@
-import 'dart:developer';
-
-import 'package:aurora/components/anilistCarousels/mappingMethod.dart';
 import 'package:aurora/components/common/custom_tile.dart';
-import 'package:aurora/database/scraper/mangakakalot/scraper_all.dart';
-import 'package:aurora/database/scraper/scrape_episode_src.dart';
 import 'package:aurora/pages/user/settings/settings_about.dart';
 import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
-import 'package:aurora/pages/user/settings/settings_sources.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
+import 'package:aurora/utils/sources/manga/extension_test/quickjs_testing.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
+  Route _createSlideRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        final tween = Tween(begin: begin, end: end)
+            .chain(CurveTween(curve: Curves.easeInOut));
+        final offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +55,21 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          CustomTile(
-            icon: Icons.source,
-            title: 'Sources',
-            description: 'Switch Sources for Animes and Manga',
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SourcesSettingPage()));
-            },
-          ),
+          // CustomTile(
+          //   icon: Icons.source,
+          //   title: 'Sources',
+          //   description: 'Switch Sources for Animes and Manga',
+          //   onTap: () {
+          //     Navigator.push(
+          //         context, _createSlideRoute(const SourcesSettingPage()));
+          //   },
+          // ),
           CustomTile(
             icon: Icons.stairs_rounded,
             title: 'Layout',
             description: 'Change the app${"'"}s layout entirely',
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LayoutPage()));
+              Navigator.push(context, _createSlideRoute(const LayoutPage()));
             },
           ),
           CustomTile(
@@ -68,9 +78,7 @@ class SettingsPage extends StatelessWidget {
             description: 'Change Video Player Settings',
             onTap: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const VideoPlayerSettings()));
+                  context, _createSlideRoute(const VideoPlayerSettings()));
             },
           ),
           CustomTile(
@@ -78,8 +86,7 @@ class SettingsPage extends StatelessWidget {
             title: 'Theme',
             description: 'Change the app theme',
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ThemePage()));
+              Navigator.push(context, _createSlideRoute(const ThemePage()));
             },
           ),
           CustomTile(
@@ -93,8 +100,7 @@ class SettingsPage extends StatelessWidget {
             title: 'About',
             description: 'About this app',
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const AboutPage()));
+              Navigator.push(context, _createSlideRoute(const AboutPage()));
             },
           ),
           CustomTile(
@@ -102,7 +108,8 @@ class SettingsPage extends StatelessWidget {
             title: 'Fetch Data',
             description: 'Test',
             onTap: () async {
-              // await fetchAnilistToAniwatch("21");
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => const MangaSearchPage()));
             },
           ),
         ],

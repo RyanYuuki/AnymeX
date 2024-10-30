@@ -1,46 +1,136 @@
-// ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print
-import 'dart:ui';
+// ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print, use_build_context_synchronously
+
+import 'dart:developer';
+import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/anilistExclusive/wrong_tile_manga.dart';
 import 'package:aurora/components/common/IconWithLabel.dart';
+import 'package:aurora/components/common/reusable_carousel.dart';
+import 'package:aurora/components/anime/details/character_cards.dart';
+import 'package:aurora/components/manga/chapter_ranges.dart';
 import 'package:aurora/components/manga/chapters.dart';
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
+import 'package:aurora/pages/Manga/read_page.dart';
+import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:text_scroll/text_scroll.dart';
+
+dynamic genrePreviews = {
+  'Action': 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1735.jpg',
+  'Adventure':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/154587-ivXNJ23SM1xB.jpg',
+  'School':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21459-yeVkolGKdGUV.jpg',
+  'Shounen':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/101922-YfZhKBUDDS6L.jpg',
+  'Super Power':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sHb9zUZFsHe1.jpg',
+  'Supernatural':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/113415-jQBSkxWAAk83.jpg',
+  'Slice of Life':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/133965-spTi0WE7jR0r.jpg',
+  'Romance':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/162804-NwvD3Lya8IZp.jpg',
+  'Fantasy':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/108465-RgsRpTMhP9Sv.jpg',
+  'Comedy':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/100922-ef1bBJCUCfxk.jpg',
+  'Mystery':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+  'default':
+      'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1-OquNCNB6srGe.jpg'
+};
 
 class MangaDetailsPage extends StatefulWidget {
-  final String id;
-  final String posterUrl;
-  final String tag;
-  const MangaDetailsPage(
-      {super.key,
-      required this.id,
-      required this.posterUrl,
-      required this.tag});
+  final int id;
+  final String? posterUrl;
+  final String? tag;
+  const MangaDetailsPage({
+    super.key,
+    required this.id,
+    this.posterUrl,
+    this.tag,
+  });
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
 }
 
-class _MangaDetailsPageState extends State<MangaDetailsPage> {
-  dynamic mangaData;
+class _MangaDetailsPageState extends State<MangaDetailsPage>
+    with SingleTickerProviderStateMixin {
+  bool usingSaikouLayout =
+      Hive.box('app-data').get('usingSaikouLayout', defaultValue: false);
+  dynamic data;
   bool isLoading = true;
-  dynamic charactersData;
+  dynamic altdata;
+  dynamic charactersdata;
   String? description;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  int selectedIndex = 0;
+  PageController pageController = PageController();
+
+  // Chapter section
+  dynamic mangaData;
+
+  // Manga Sources
+  final MangaSourceHandler mangaSourceHandler = MangaSourceHandler();
+  List<Map<String, String>> availableSources = [];
+  String selectedSource = '';
+  late int chapterProgress;
+
+  // Layout Buttons
+  List<IconData> layoutIcons = [
+    IconlyBold.image,
+    Icons.list_rounded,
+    Iconsax.grid_25
+  ];
+  int layoutIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    FetchMangaData();
+    fetchData();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..repeat(reverse: true);
+    availableSources = mangaSourceHandler.getAvailableSources();
+    selectedSource = mangaSourceHandler.selectedSourceName ??
+        availableSources.first['name']!;
+    chapterProgress = returnMangaProgress();
+    _animation = Tween<double>(begin: -1.0, end: -2.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final tempdata = await fetchAnimeInfo(widget.id);
+      setState(() {
+        data = tempdata;
+        description = data?['description'];
+        description = data['description'] ?? data?['description'];
+        charactersdata = data['characters'] ?? [];
+        altdata = data;
+        isLoading = false;
+      });
+      await FetchMangaData();
+    } catch (e) {
+      log('Failed to fetch Anime Info: $e');
+    }
   }
 
   Future<void> FetchMangaData() async {
     try {
-      final tempData = await fetchMangaDetails(widget.id);
+      final tempData =
+          await mangaSourceHandler.mapToAnilist(data['name'], selectedSource);
       setState(() {
         mangaData = tempData;
         isLoading = false;
@@ -53,481 +143,1374 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     }
   }
 
+  Future<void> fetchMangaDataByID(String mangaId) async {
+    try {
+      final tempData =
+          await mangaSourceHandler.fetchMangaChapters(mangaId, selectedSource);
+      setState(() {
+        mangaData = tempData;
+        log('Chapters Data: $tempData');
+        initializeChapters();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    ColorScheme customScheme = Theme.of(context).colorScheme;
+
+    Widget currentPage = usingSaikouLayout
+        ? saikouDetailsPage(context)
+        : originalDetailsPage(customScheme, context);
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: TextScroll(
-          isLoading || mangaData == null ? 'Loading...' : mangaData['name'],
-          mode: TextScrollMode.bouncing,
-          velocity: Velocity(pixelsPerSecond: Offset(30, 0)),
-          delayBefore: Duration(milliseconds: 500),
-          pauseBetween: Duration(milliseconds: 1000),
-          textAlign: TextAlign.center,
-          selectable: true,
-          style: TextStyle(fontSize: 16),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(IconlyBold.arrow_left),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: isLoading
-          ? Column(
-              children: [
-                Center(
-                  child: Poster(posterUrl: widget.posterUrl, tag: widget.tag),
-                ),
-                const SizedBox(height: 30),
-                CircularProgressIndicator(),
-              ],
-            )
-          : Stack(
-              children: [
-                ListView(
-                  children: [
-                    Column(
-                      children: [
-                        Poster(
-                          posterUrl: widget.posterUrl,
-                          tag: widget.tag,
-                        ),
-                        const SizedBox(height: 30),
-                        Info(context)
-                      ],
-                    ),
-                  ],
-                ),
-                FloatingBar(
-                  title: mangaData['name'],
-                  id: widget.id,
-                  posterUrl: widget.posterUrl,
-                  chapterList: mangaData['chapterList'],
-                ),
-              ],
+      body: Stack(children: [
+        currentPage,
+        if (altdata?['status'] != 'CANCELLED' &&
+            altdata?['status'] != 'NOT_YET_RELEASED' &&
+            data != null)
+          Positioned(
+            bottom: 0,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SizedBox(
+                  height: 158,
+                  width: MediaQuery.of(context).size.width,
+                  child: bottomBar(context),
+                );
+              },
             ),
+          )
+      ]),
     );
   }
 
-  Container Info(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(40),
-          topRight: Radius.circular(40),
+  CrystalNavigationBar bottomBar(BuildContext context) {
+    return CrystalNavigationBar(
+      currentIndex: selectedIndex,
+      unselectedItemColor: Colors.white,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      marginR: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+      paddingR: EdgeInsets.symmetric(horizontal: 10),
+      backgroundColor: Colors.black.withOpacity(0.3),
+      onTap: (index) {
+        setState(() {
+          selectedIndex = index;
+          pageController.animateToPage(index,
+              duration: Duration(milliseconds: 300), curve: Curves.linear);
+        });
+      },
+      items: [
+        CrystalNavigationBarItem(
+            icon: selectedIndex == 0
+                ? Iconsax.info_circle5
+                : Iconsax.info_circle),
+        CrystalNavigationBarItem(
+            icon: selectedIndex == 1 ? Iconsax.book : Iconsax.book)
+      ],
+    );
+  }
+
+  String checkAvailability(BuildContext context) {
+    final animeList = Provider.of<AniListProvider>(context, listen: false)
+        .userData?['mangaList'];
+
+    final matchingAnime = animeList?.firstWhere(
+      (anime) => anime?['media']?['id']?.toString() == widget.id.toString(),
+      orElse: () => null,
+    );
+
+    if (matchingAnime != null) {
+      String status = matchingAnime['status'];
+
+      switch (status) {
+        case 'CURRENT':
+          return 'CURRENTLy Reading';
+        case 'COMPLETED':
+          return 'Completed';
+        case 'PAUSED':
+          return 'Paused';
+        case 'DROPPED':
+          return 'Dropped';
+        case 'PLANNING':
+          return 'Planning to Read';
+        case 'REPEATING':
+          return 'REREADING';
+        default:
+          return 'Add To List';
+      }
+    }
+
+    return 'Add To List';
+  }
+
+  double? getSize() {
+    if (selectedIndex == 1) {
+      Future.delayed(Duration(seconds: 1), () => 700);
+    }
+    return 1950;
+  }
+
+  Scaffold saikouDetailsPage(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            saikouTopSection(context),
+            if (isLoading)
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              SizedBox(
+                height: selectedIndex == 0 ? 1650 : 750,
+                child: PageView(
+                  padEnds: false,
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: pageController,
+                  children: [saikouDetails(context), chapterSection()],
+                ),
+              ),
+          ],
         ),
       ),
+    );
+  }
+
+  String? getChapterId({
+    required Map<String, dynamic>? mangaData,
+    required int progress,
+  }) {
+    if (mangaData == null) return null;
+    List<dynamic> ChapterList = mangaData['chapterList'];
+    final chapter = ChapterList.firstWhere((chapter) =>
+        chapter['id'].toString().split('-').last == progress.toString());
+    return chapter['id'];
+  }
+
+  void initializeChapters() {
+    if (mangaData?['chapterList'] != null) {
+      setState(() {
+        int step;
+        int length = mangaData!['chapterList'].length;
+
+        // Determine step size based on chapter count
+        if (length > 50 && length < 100) {
+          step = 24;
+        } else if (length > 200 && length < 300) {
+          step = 40;
+        } else if (length > 300) {
+          step = 50;
+        } else {
+          step = 12;
+        }
+
+        chapterRanges = getChapterRanges(mangaData!['chapterList'], step);
+
+        // Filter chapters based on the first range, ensuring start is less than or equal to end
+        filteredChapters = mangaData!['chapterList'].where((chapter) {
+          double chapterNumber = double.parse(chapter['number']);
+          return chapterNumber >= chapterRanges[0][0] &&
+              chapterNumber <= chapterRanges[0][1];
+        }).toList();
+      });
+    }
+  }
+
+  List<List<double>> getChapterRanges(List<dynamic> chapters, int step) {
+    List<List<double>> ranges = [];
+    int length = chapters.length;
+
+    for (int i = 0; i < length; i += step) {
+      double start = double.parse(chapters[i]['number'].toString());
+      double end;
+
+      if ((i + step) >= length) {
+        end = double.parse(chapters.last['number'].toString());
+      } else {
+        end = double.parse(chapters[i + step - 1]['number'].toString());
+      }
+
+      if (start <= end) {
+        ranges.add([start, end]);
+      } else {
+        ranges.add([end, start]);
+      }
+    }
+
+    return ranges;
+  }
+
+  List<List<double>> chapterRanges = [];
+  dynamic filteredChapters = [];
+
+  Widget chapterSection() {
+    if (mangaData?['chapterList'] != null && chapterRanges.isEmpty) {
+      initializeChapters();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(height: 30),
+          Text(
+            'Found: ${mangaData?['title']}',
+            style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            value: selectedSource,
+            decoration: InputDecoration(
+              labelText: 'Choose Source',
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+              labelStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
+              border: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onPrimaryFixedVariant),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            isExpanded: true,
+            items: availableSources.map((source) {
+              return DropdownMenuItem<String>(
+                value: source['name'],
+                child: Text(
+                  source['name']!,
+                  style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) async {
+              setState(() {
+                selectedSource = value!;
+                mangaSourceHandler.selectedSourceName = selectedSource;
+                filteredChapters = null;
+              });
+
+              final newData = await mangaSourceHandler.mapToAnilist(
+                  data['name'], selectedSource);
+              setState(() {
+                mangaData = newData;
+                initializeChapters();
+              });
+            },
+            dropdownColor: Theme.of(context).colorScheme.surface,
+            icon: Icon(Icons.arrow_drop_down,
+                color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {
+                showMangaSearchModal(
+                  context,
+                  data['name'],
+                  (mangaId) async {
+                    final chapterData =
+                        await mangaSourceHandler.fetchMangaChapters(
+                      mangaId,
+                      selectedSource,
+                    );
+                    setState(() {
+                      mangaData = chapterData;
+                    });
+                    initializeChapters();
+                  },
+                  selectedSource,
+                );
+              },
+              child: Stack(
                 children: [
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 170),
-                    child: TextScroll(
-                      mangaData['name'] ?? '??',
-                      mode: TextScrollMode.endless,
-                      velocity: Velocity(pixelsPerSecond: Offset(50, 0)),
-                      delayBefore: Duration(milliseconds: 500),
-                      pauseBetween: Duration(milliseconds: 1000),
-                      textAlign: TextAlign.center,
-                      selectable: true,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text('Wrong Title?',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                      )),
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      width: 100,
+                      height: 1,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('Chapters',
+                  style:
+                      TextStyle(fontSize: 18, fontFamily: 'Poppins-SemiBold')),
+              // IconButton(
+              //   style: ElevatedButton.styleFrom(
+              //       backgroundColor:
+              //           Theme.of(context).colorScheme.surfaceContainer),
+              //   onPressed: () {
+              //     setState(() {
+              //       layoutIndex++;
+              //       if (layoutIndex > layoutIcons.length - 1) {
+              //         layoutIndex = 0;
+              //       }
+              //     });
+              //   },
+              //   icon: Icon(layoutIcons[layoutIndex]),
+              // )
+            ],
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ReadingPage(
+                          id: getChapterId(
+                              mangaData: mangaData,
+                              progress: returnMangaProgress())!,
+                          mangaId: mangaData?['id'],
+                          posterUrl: widget.posterUrl!,
+                          currentSource: selectedSource)));
+            },
+            child: Container(
+              height: 75,
+              width: double.infinity,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  image: NetworkImage(
+                      altdata?['cover'] ?? data?['poster'] ?? widget.posterUrl),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.black.withOpacity(0.7),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    height: 18,
-                    width: 3,
-                    color: Theme.of(context).colorScheme.inverseSurface,
-                  ),
-                  const SizedBox(width: 10),
-                  iconWithName(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                    icon: Iconsax.star1,
-                    TextColor: Theme.of(context).colorScheme.inverseSurface ==
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant
-                        ? Colors.black
-                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
-                                Color(0xffe2e2e2)
-                            ? Colors.black
-                            : Colors.white,
-                    color: Theme.of(context).colorScheme.inverseSurface ==
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant
-                        ? Colors.black
-                        : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
-                                Color(0xffe2e2e2)
-                            ? Colors.black
-                            : Colors.white,
-                    name: '6.9',
-                    isVertical: false,
-                    borderRadius: BorderRadius.circular(5),
+                  Center(
+                    child: Text(
+                      returnMangaProgressString(),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 16,
+                          fontFamily: 'Poppins-SemiBold'),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: (mangaData['genres'] as List<dynamic>? ??
-                        ["Action", "Adventure", "Sigma"])
-                    .take(3)
-                    .map<Widget>(
-                      (genre) => Container(
-                        margin: EdgeInsets.only(right: 8),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryFixedVariant,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(
-                          genre as String,
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface ==
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryFixedVariant
-                                  ? Colors.black
-                                  : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant ==
-                                          Color(0xffe2e2e2)
-                                      ? Colors.black
-                                      : Colors.white,
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.fontSize,
-                              fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 40,
+            child: Stack(
+              children: [
+                ChapterRanges(
+                  chapterRanges: chapterRanges,
+                  onRangeSelected: (range) {
+                    setState(() {
+                      filteredChapters = mangaData?['chapterList']!
+                          .where((episode) =>
+                              double.parse(episode['number']) >= range[0] &&
+                              double.parse(episode['number']) <= range[1])
+                          .toList();
+                    });
+                  },
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Colors.black.withOpacity(0.3),
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.3),
+                          ],
                         ),
                       ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 15),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  padding: EdgeInsets.all(7),
-                  width: 130,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5)),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest),
-                  child: Column(
-                    children: [
-                      Text(
-                          mangaData['view'] == null
-                              ? '?'
-                              : (mangaData['view'].toString()),
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 5),
-                      Text('Popularity')
-                    ],
+                    ),
                   ),
-                ),
-                Container(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  height: 30,
-                  width: 2,
-                ),
-                Container(
-                  width: 130,
-                  padding: EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(5),
-                          bottomRight: Radius.circular(5)),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest),
-                  child: Column(
-                    children: [
-                      Text(
-                        mangaData['status'],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 5),
-                      Text('Status')
-                    ],
-                  ),
-                ),
-              ])
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            ),
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: [
-                Text(
-                  mangaData['description'] ?? 'No description available',
-                  maxLines: 13,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                ),
+                )
               ],
             ),
           ),
-          const SizedBox(height: 30),
-          ChapterList(
-            chaptersData: mangaData['chapterList'],
-            id: widget.id,
-            posterUrl: widget.posterUrl,
-          ),
-          const SizedBox(height: 70)
+          const SizedBox(height: 10),
+          if (mangaData == null)
+            SizedBox(
+                height: 200, child: Center(child: CircularProgressIndicator()))
+          else
+            ChapterList(
+              id: mangaData?['id'],
+              posterUrl: widget.posterUrl,
+              chaptersData: filteredChapters,
+              currentSource: selectedSource,
+            )
         ],
       ),
     );
   }
-}
 
-class FloatingBar extends StatelessWidget {
-  final String? title;
-  final String? id;
-  final String? posterUrl;
-  final List<dynamic> chapterList;
-  const FloatingBar(
-      {super.key,
-      this.title,
-      this.id,
-      this.posterUrl,
-      required this.chapterList});
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<AppData>(context, listen: false);
-    final currentChapter =
-        provider.getCurrentChapterForManga(id!) ?? 'Chapter 1';
-    final currentChapterList = chapterList
-        .where((chapter) => chapter['name'] == currentChapter)
-        .toList();
-    final currentChapterId = currentChapterList.isNotEmpty
-        ? currentChapterList.first['id']
-        : 'chapter-1';
+  String selectedStatus = 'CURRENT';
+  double score = 1.0;
 
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        margin: const EdgeInsets.all(20),
-        height: 60,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(7),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 10,
-              sigmaY: 10,
-            ),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              constraints: BoxConstraints(maxWidth: 130),
-                              child: TextScroll(
-                                title!,
-                                mode: TextScrollMode.bouncing,
-                                velocity:
-                                    Velocity(pixelsPerSecond: Offset(20, 0)),
-                                delayBefore: Duration(milliseconds: 500),
-                                pauseBetween: Duration(milliseconds: 1000),
-                                textAlign: TextAlign.center,
-                                selectable: true,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                                .colorScheme
-                                                .inverseSurface ==
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant
-                                        ? Colors.black
-                                        : Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryFixedVariant ==
-                                                Color(0xffe2e2e2)
-                                            ? Colors.black
-                                            : Colors.white),
-                              ),
+  void showListEditorModal(BuildContext context, String totalEpisodes) {
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 30.0,
+                  right: 30.0,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 40.0,
+                  top: 20.0,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'List Editor',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Status Dropdown
+                    SizedBox(
+                      height: 55,
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          prefixIcon: Icon(Icons.playlist_add),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
                             ),
-                            SizedBox(
-                              width: 180,
-                              child: Text(
-                                currentChapter.isEmpty
-                                    ? 'Chapter 1'
-                                    : currentChapter,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context)
-                                              .colorScheme
-                                              .inverseSurface ==
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant
-                                      ? Colors.black
-                                      : Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryFixedVariant ==
-                                              Color(0xffe2e2e2)
-                                          ? Colors.black
-                                          : Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          labelText: 'Status',
+                          labelStyle: const TextStyle(
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: selectedStatus,
+                            items: [
+                              'PLANNING',
+                              'CURRENT',
+                              'COMPLETED',
+                              'PAUSED',
+                              'DROPPED',
+                            ].map((String status) {
+                              return DropdownMenuItem<String>(
+                                value: status,
+                                child: Text(status),
+                              );
+                            }).toList(),
+                            onChanged: (String? newStatus) {
+                              setState(() {
+                                selectedStatus = newStatus!;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Progress Input
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 55,
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.add),
+                                suffixText: '/$totalEpisodes',
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                  ),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                labelText: 'Progress',
+                                labelStyle: const TextStyle(
+                                  fontFamily: 'Poppins-Bold',
                                 ),
                               ),
+                              initialValue: chapterProgress.toString(),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              onChanged: (String value) {
+                                int? newProgress = int.tryParse(value);
+                                if (newProgress != null && newProgress >= 0) {
+                                  setState(() {
+                                    if (totalEpisodes == '?') {
+                                      chapterProgress = newProgress;
+                                    } else {
+                                      int totalEp = int.parse(totalEpisodes);
+                                      chapterProgress = newProgress <= totalEp
+                                          ? newProgress
+                                          : totalEp;
+                                    }
+                                  });
+                                }
+                              },
                             ),
-                          ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        // +1 Button
+                        SizedBox(
+                          height: 55,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  width: 1,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (totalEpisodes == '?' ||
+                                    chapterProgress <
+                                        int.parse(totalEpisodes)) {
+                                  chapterProgress += 1;
+                                }
+                              });
+                            },
+                            child: Text('+1',
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary)),
+                          ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
+                    // Score Input
+                    SizedBox(
+                      height: 55,
+                      child: TextFormField(
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.star),
+                          suffixText: '/10',
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          labelText: 'Score',
+                          labelStyle: const TextStyle(
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
+                        initialValue: score.toString(),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d+\.?\d{0,1}')),
+                        ],
+                        onChanged: (String value) {
+                          double? newScore = double.tryParse(value);
+                          if (newScore != null) {
+                            setState(() {
+                              score = newScore.clamp(1.0, 10.0);
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            side: BorderSide(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18)),
+                          ),
+                          child: const Text('Delete'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Provider.of<AniListProvider>(context, listen: false)
+                                .updateMangaList(
+                                    mangaId: data['id'],
+                                    chapterProgress: chapterProgress,
+                                    rating: score,
+                                    status: selectedStatus);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            side: BorderSide(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18)),
+                          ),
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  int returnMangaProgress() {
+    final animeList = Provider.of<AniListProvider>(context, listen: false)
+        .userData?['mangaList'];
+
+    if (animeList == null) return 1;
+
+    final matchingAnime = animeList.firstWhere(
+      (anime) => anime?['media']?['id'] == widget.id,
+      orElse: () => null,
+    );
+
+    return matchingAnime?['progress'] ?? 1;
+  }
+
+  String returnMangaProgressString() {
+    final animeList = Provider.of<AniListProvider>(context, listen: false)
+        .userData?['mangaList'];
+
+    if (animeList == null) return "Read: Chapter 1";
+
+    final matchingAnime = animeList.firstWhere(
+      (anime) => anime?['media']?['id'] == widget.id,
+      orElse: () => null,
+    );
+
+    if (matchingAnime == null) return "Read: Chapter 1";
+
+    return 'Continue: Chapter ${matchingAnime?['progress']}';
+  }
+
+  Column saikouDetails(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: 'Read ',
+                      style: TextStyle(fontSize: 15),
+                      children: [
+                        TextSpan(
+                          text: "${returnMangaProgress()} ",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
+                        TextSpan(text: 'Out of ${data?['totalChapters']}')
+                      ],
+                    ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/manga/read', arguments: {
-                          'id': currentChapterId,
-                          'mangaId': id,
-                          'posterUrl': posterUrl
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.onPrimaryFixedVariant,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  Expanded(child: SizedBox.shrink()),
+                  IconButton(onPressed: () {}, icon: Icon(Iconsax.heart)),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.share)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              infoRow(
+                  field: 'Rating',
+                  value:
+                      '${data?['malscore']?.toString() ?? ((data?['rating'])).toString()}/10'),
+              // infoRow(
+              //     field: 'Studios',
+              //     value: data?['studios'] ?? data?['studios']?[0] ?? '??'),
+              infoRow(
+                  field: 'Total Chapters',
+                  value: data['totalChapters'].toString()),
+              infoRow(field: 'Type', value: 'TV'),
+              infoRow(
+                  field: 'Romaji Name',
+                  value: data?['jname'] ?? data?['japanese'] ?? '??'),
+              infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
+              infoRow(field: 'Duration', value: '${data?['duration']}' ''),
+              const SizedBox(height: 20),
+              Text('Synopsis', style: TextStyle(fontFamily: 'Poppins-Bold')),
+              const SizedBox(height: 10),
+              Text(description!.toString().length > 250
+                  ? '${description!.toString().substring(0, 250)}...'
+                  : description!),
+
+              // Grid Section
+              const SizedBox(height: 20),
+              Text('Genres', style: TextStyle(fontFamily: 'Poppins-Bold')),
+              Flexible(
+                flex: 0,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: data?['genres'].length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisExtent: 55,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemBuilder: (context, itemIndex) {
+                    String genre = data?['genres'][itemIndex];
+                    String buttonBackground =
+                        genrePreviews[genre] ?? genrePreviews['default'];
+
+                    return Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(2.3),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                  image: NetworkImage(buttonBackground),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Gradient overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                  width: 3,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.black.withOpacity(0.5),
+                                  Colors.black.withOpacity(0.5)
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                            ),
+                          ),
+                          // ElevatedButton
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              padding: EdgeInsets.zero,
+                            ),
+                            onPressed: () {},
+                            child: Text(
+                              genre.toUpperCase(),
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 15),
+        // Text('Characters',
+        //     style: TextStyle(fontFamily: 'Poppins-Bold')),
+        CharacterCards(carouselData: charactersdata, isManga: true),
+        // ReusableCarousel(
+        //   title: 'Popular',
+        //   carouselData: data?['popularAnimes'],
+        //   tag: 'details-page1',
+        // ),
+        // ReusableCarousel(
+        //   title: 'Related',
+        //   carouselData: data?['relations'],
+        //   tag: 'details-page2',
+        //   detailsPage: true,
+        // ),
+        ReusableCarousel(
+          detailsPage: true,
+          title: 'Recommended',
+          carouselData: data?['recommendations'],
+          tag: 'details-page3',
+        ),
+        const SizedBox(height: 100),
+      ],
+    );
+  }
+
+  Stack saikouTopSection(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        if (altdata?['cover'] != null)
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Positioned(
+                left: MediaQuery.of(context).size.width * _animation.value,
+                child: CachedNetworkImage(
+                  height: 450,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  imageUrl: altdata?['cover'] ?? widget.posterUrl,
+                ),
+              );
+            },
+          ),
+        Positioned(
+          child: Container(
+            height: 455,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Theme.of(context).colorScheme.surface.withOpacity(0.7),
+                  Theme.of(context).colorScheme.surface,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Hero(
+                      tag: widget.tag!,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          height: 170,
+                          width: 120,
+                          imageUrl: widget.posterUrl!,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    ),
+                    const SizedBox(width: 20),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      height: 180,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Iconsax.book,
-                            color:
-                                Theme.of(context).colorScheme.inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: Text(
+                              data?['name'] ?? 'Loading...',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 16,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              maxLines: 4,
+                            ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(height: 10),
                           Text(
-                            'Read',
+                            altdata?['status'] ??
+                                data?['status'] ??
+                                'RELEASING',
                             style: TextStyle(
-                              color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface ==
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryFixedVariant
-                                  ? Colors.black
-                                  : Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant ==
-                                          Color(0xffe2e2e2)
-                                      ? Colors.black
-                                      : Colors.white,
+                              fontFamily: 'Poppins-Bold',
+                              color: Theme.of(context).colorScheme.primary,
+                              letterSpacing: 1,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width - 40,
+                child: ElevatedButton(
+                  onPressed: () {
+                    showListEditorModal(context, data['chapters'] ?? '?');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        width: 2,
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    (checkAvailability(context)).toUpperCase(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 30,
+          right: 20,
+          child: Material(
+            borderOnForeground: false,
+            color: Colors.transparent,
+            child: IconButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.close),
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Scaffold originalDetailsPage(ColorScheme CustomScheme, BuildContext context) {
+    return Scaffold(
+      backgroundColor: CustomScheme.surface,
+      body: isLoading
+          ? Column(
+              children: [
+                Center(
+                  child: Poster(
+                    context,
+                    tag: widget.tag,
+                    poster: widget.posterUrl,
+                    isLoading: true,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                CircularProgressIndicator(),
+              ],
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Poster(
+                    context,
+                    isLoading: false,
+                    tag: widget.tag,
+                    poster: widget.posterUrl,
+                  ),
+                  const SizedBox(height: 30),
+                  Info(context),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget Poster(
+    BuildContext context, {
+    required String? tag,
+    required String? poster,
+    required bool? isLoading,
+  }) {
+    return SizedBox(
+      height: 300,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl:
+                  (data?['cover'] == '' ? poster : data?['cover']) ?? poster!,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).colorScheme.surface.withOpacity(0.4),
+                    Theme.of(context).colorScheme.surface.withOpacity(0.6),
+                    Theme.of(context).colorScheme.surface,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 25,
+            child: Row(
+              children: [
+                Hero(
+                  tag: tag!,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: CachedNetworkImage(
+                      imageUrl: poster!,
+                      fit: BoxFit.cover,
+                      width: 70,
+                      height: 100,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width - 100,
+                      child: Text(
+                        data?['name'] ?? 'Loading',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            overflow: TextOverflow.ellipsis),
+                        maxLines: 2,
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        iconWithName(
+                          icon: Iconsax.star5,
+                          name: data?['rating'] ?? '6.9',
+                          isVertical: false,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 2,
+                          height: 18,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .inverseSurface
+                              .withOpacity(0.4),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(data?['status'] ?? '??',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontFamily: 'Poppins-SemiBold'))
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Info(BuildContext context) {
+    ColorScheme CustomScheme = Theme.of(context).colorScheme;
+    return isLoading
+        ? Padding(
+            padding: const EdgeInsets.only(top: 30.0),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : SizedBox(
+            height: selectedIndex == 0 ? 1450 : 750,
+            child: PageView(
+              padEnds: false,
+              physics: NeverScrollableScrollPhysics(),
+              controller: pageController,
+              children: [
+                originalInfoPage(CustomScheme, context),
+                chapterSection()
+              ],
+            ),
+          );
+  }
+
+  Column originalInfoPage(ColorScheme CustomScheme, BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width - 40,
+                child: ElevatedButton(
+                  onPressed: () {
+                    showListEditorModal(context, data['chapters'] ?? '?');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        width: 2,
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    (checkAvailability(context)).toUpperCase(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Text('Description',
+                  style: TextStyle(fontFamily: 'Poppins-SemiBold')),
+              const SizedBox(
+                height: 5,
+              ),
+              Column(
+                children: [
+                  Text(
+                    description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
+                        data?['description']
+                            ?.replaceAll(RegExp(r'<[^>]*>'), '') ??
+                        'Description Not Found',
+                    maxLines: 13,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey[400]),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text('Statistics',
+                  style:
+                      TextStyle(fontFamily: 'Poppins-SemiBold', fontSize: 16)),
+              infoRow(
+                  field: 'Rating',
+                  value:
+                      '${data?['malscore']?.toString() ?? ((data?['rating'])).toString()}/10'),
+              infoRow(
+                  field: 'Total Chapters',
+                  value: data['totalChapters'].toString()),
+              infoRow(field: 'Type', value: 'TV'),
+              infoRow(
+                  field: 'Romaji Name',
+                  value: data?['jname'] ?? data?['japanese'] ?? '??'),
+              infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
+              infoRow(field: 'Duration', value: '${data?['duration']}' ''),
+            ],
+          ),
+        ),
+        CharacterCards(
+          isManga: true,
+          carouselData: charactersdata,
+        ),
+        // ReusableCarousel(
+        //   title: 'Related',
+        //   carouselData: data?['relations'],
+        //   detailsPage: true,
+        // ),
+        ReusableCarousel(
+          title: 'Recommended',
+          carouselData: data?['recommendations'],
+          detailsPage: true,
+        ),
+      ],
     );
   }
 }
 
-class Poster extends StatelessWidget {
-  String? posterUrl;
-  String? tag;
-  Poster({
-    super.key,
-    required this.posterUrl,
-    required this.tag,
-  });
+class infoRow extends StatelessWidget {
+  final String value;
+  final String field;
+
+  const infoRow({super.key, required this.field, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
+    return Container(
+      padding: EdgeInsets.only(right: 10),
+      margin: EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            height: 400,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  spreadRadius: 5,
-                  blurRadius: 10,
-                  offset: Offset(0, 7),
-                ),
-              ],
-            ),
-            width: MediaQuery.of(context).size.width - 100,
-            child: Hero(
-              tag: tag!,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: CachedNetworkImage(
-                  imageUrl: posterUrl!,
-                  fit: BoxFit.cover,
-                ),
-              ),
+          Text(field,
+              style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.7))),
+          SizedBox(
+            width: 170,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontFamily: 'Poppins-Bold')),
             ),
           ),
         ],

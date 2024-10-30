@@ -1,12 +1,13 @@
 import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/anime/home/carousel.dart';
+import 'package:aurora/components/anime/home/coverCarousel.dart';
 import 'package:aurora/components/common/IconWithLabel.dart';
-import 'package:aurora/components/manga/carousel.dart';
-import 'package:aurora/components/manga/reusable_carousel.dart';
 import 'package:aurora/components/common/SettingsModal.dart';
 import 'package:aurora/components/anime/home/data_table.dart';
-import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
+import 'package:aurora/components/common/reusable_carousel.dart';
+import 'package:aurora/fallbackData/anilist_manga_homepage.dart';
 import 'package:aurora/fallbackData/manga_data.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -77,137 +78,139 @@ class _MangaHomePageState extends State<MangaHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    int index = 0;
-    log(Theme.of(context).colorScheme.onPrimaryFixedVariant.toString());
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Header(),
-                const SizedBox(height: 20),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Trending ',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Manga',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.normal,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                        ),
-                      ),
-                    ],
-                  ),
+      body: Consumer<AniListProvider>(
+        builder: (context, aniListProvider, child) {
+          final userData = aniListProvider.userData;
+
+          final baseAnimeData =
+              userData['mangaData'] ?? fallbackMangaData?['data'];
+          return ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Header(),
+                    const SizedBox(height: 20),
+                    Covercarousel(
+                        title: 'Spotlight',
+                        animeData: baseAnimeData['trendingManga']['media'],
+                        isManga: true),
+                    const SizedBox(height: 20),
+                    Carousel(
+                      title: 'Popular',
+                      span: 'Mangas',
+                      animeData: baseAnimeData['popularMangas']['media'],
+                      isManga: true,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 15),
-                Carousel(animeData: mangaList),
-              ],
-            ),
-          ),
-          ReusableCarousel(
-            title: "Popular",
-            carouselData: trendingData,
-            tag: '1',
-          ),
-          ReusableCarousel(
-            title: "Latest",
-            carouselData: popularData,
-            tag: '2',
-          ),
-          ReusableCarousel(
-            title: "Favorite",
-            carouselData: latestData,
-            tag: '3',
-          ),
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                Text(
-                  'Top',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+              ),
+              ReusableCarousel(
+                title: "Popular",
+                carouselData: baseAnimeData['morePopularMangas']['media'],
+                tag: '1',
+                isManga: true,
+              ),
+              ReusableCarousel(
+                title: "Latest",
+                carouselData: baseAnimeData['latestMangas']['media'],
+                tag: '2',
+                isManga: true,
+              ),
+              ReusableCarousel(
+                title: "Favorite",
+                carouselData: baseAnimeData['mostFavoriteMangas']['media'],
+                tag: '3',
+                isManga: true,
+              ),
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Top',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const Text(
+                      ' Mangas',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    )
+                  ],
                 ),
-                const Text(
-                  ' Mangas',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          AnimeTable(
-              onTap: (value) {
-                _onTableItemTapped(value!);
-              },
-              currentIndex: currentTableIndex),
-          Container(
-            height: 1150,
-            margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context).colorScheme.surfaceContainer),
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  currentTableIndex = index;
-                });
-              },
-              children: [
-                ListItem(context,
-                    data: moreMangaData['mangaList'].sublist(0, 10), tag: 1, index: index),
-                ListItem(context,
-                    data: moreMangaData['mangaList'].sublist(10, 20), tag: 2, index: index),
-                ListItem(context,
-                    data: moreMangaData['mangaList'].sublist(0, 10), tag: 3, index: index),
-              ],
-            ),
-          ),
-        ],
+              ),
+              const SizedBox(height: 10),
+              AnimeTable(
+                  onTap: (value) {
+                    _onTableItemTapped(value!);
+                  },
+                  isManga: true,
+                  currentIndex: currentTableIndex),
+              Container(
+                height: 1150,
+                margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context).colorScheme.surfaceContainer),
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      currentTableIndex = index;
+                    });
+                  },
+                  children: [
+                    ListItem(
+                      context,
+                      data: baseAnimeData['topRated']['media'],
+                      tag: 1,
+                    ),
+                    ListItem(
+                      context,
+                      data: baseAnimeData['topOngoing']['media'],
+                      tag: 2,
+                    ),
+                    ListItem(context,
+                        data: baseAnimeData['topUpdated']['media'], tag: 3),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
-Container ListItem(BuildContext context,
-    {required data, required tag, required index}) {
+const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+
+Container ListItem(BuildContext context, {required data, required tag}) {
+  int index = 0;
   return Container(
     padding: const EdgeInsets.all(10),
     child: Column(
         children: data.map<Widget>(
       (anime) {
-        if (index == 11) {
-          index = 1;
-        } else {
-          index++;
-        }
+        index++;
+        String title =
+            anime['title']['english'] ?? anime['title']['romaji'] ?? '?';
         return GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/manga/details', arguments: {
               'id': anime['id'],
-              'posterUrl': anime['image'],
-              'tag': anime['title'] + tag.toString()
+              'posterUrl': proxyUrl + anime['coverImage']['large'],
+              'tag': title + tag.toString()
             });
           },
           child: Container(
@@ -250,11 +253,11 @@ Container ListItem(BuildContext context,
                   height: 70,
                   width: 50,
                   child: Hero(
-                    tag: anime['title'] + tag.toString(),
+                    tag: title + tag.toString(),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7),
                       child: CachedNetworkImage(
-                        imageUrl: anime['image'],
+                        imageUrl: proxyUrl + anime['coverImage']['large'],
                         placeholder: (context, url) => Shimmer.fromColors(
                           baseColor: Colors.grey[900]!,
                           highlightColor: Colors.grey[700]!,
@@ -274,9 +277,9 @@ Container ListItem(BuildContext context,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(anime['title'].length > 17
-                        ? anime['title'].substring(0, 17) + '...'
-                        : anime['title']),
+                    Text(title.length > 17
+                        ? '${title.substring(0, 17)}...'
+                        : title),
                     const SizedBox(
                       height: 5,
                     ),
@@ -289,9 +292,7 @@ Container ListItem(BuildContext context,
                                 bottomLeft: Radius.circular(5)),
                             icon: Iconsax.book,
                             backgroundColor: const Color(0xFFb0e3af),
-                            name: anime['chapter'].toString().length > 11
-                                ? anime['chapter'].toString().substring(0, 11)
-                                : anime['chapter'].toString()),
+                            name: anime?['chapters']?.toString() ?? '?'),
                         const SizedBox(width: 2),
                         iconWithName(
                             isVertical: false,
@@ -299,8 +300,8 @@ Container ListItem(BuildContext context,
                             borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(5),
                                 bottomRight: Radius.circular(5)),
-                            icon: Iconsax.like_tag5,
-                            name: anime['view'].toString())
+                            icon: Iconsax.star5,
+                            name: anime?['averageScore']?.toString() ?? '0.0')
                       ],
                     )
                   ],
@@ -350,7 +351,8 @@ class _HeaderState extends State<Header> {
     // final hasAvatarImage = avatarImagePath != 'null';
     final anilistProvider = Provider.of<AniListProvider>(context);
     final userName = anilistProvider.userData?['user']?['name'] ?? 'Guest';
-    final avatarImagePath = anilistProvider.userData?['user']?['avatar']?['large'];
+    final avatarImagePath =
+        anilistProvider.userData?['user']?['avatar']?['large'];
     final isLoggedIn = anilistProvider.userData?['user']?['name'] != null;
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(

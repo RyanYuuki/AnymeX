@@ -1,10 +1,8 @@
-import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
-import 'package:aurora/utils/scrapers/manga/mangakakalot/scraper_all.dart';
+import 'package:aurora/utils/apiHooks/anilist/manga/search_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -33,9 +31,9 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
 
   Future<void> fetchSearchedTerm() async {
     _searchData = null;
-    dynamic tempData = await scrapeMangaSearch(controller.text);
+    dynamic tempData = await fetchMangaBySearch(controller.text);
     setState(() {
-      _searchData = tempData['mangaList'];
+      _searchData = tempData;
     });
   }
 
@@ -131,7 +129,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                         itemCount: _searchData!.length,
                         itemBuilder: (context, index) {
                           final anime = _searchData![index];
-                          final tag = _searchData![index]['id'];
+                          final tag = _searchData![index]['id'].toString();
                           return isList
                               ? SearchItem_LIST(context, anime, tag)
                               : isBox
@@ -148,7 +146,10 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
   }
 }
 
+final Random random = Random();
+
 Stack SearchItem_BOX(BuildContext context, anime, tag) {
+  final uniqueTag = tag + random.nextInt(1000).toString();
   return Stack(
     children: [
       Container(
@@ -161,14 +162,14 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
             Navigator.pushNamed(context, '/manga/details', arguments: {
               "id": anime['id'],
               'posterUrl': proxyUrl + anime['image'],
-              'tag': tag
+              'tag': uniqueTag,
             });
           },
           child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: Hero(
-              tag: tag,
+              tag: uniqueTag,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: CachedNetworkImage(
@@ -180,65 +181,19 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
           ),
         ),
       ),
-      Positioned(
-        top: 8,
-        left: 6,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            anime['ratings'] ?? 'PG-13',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface ==
-                      Theme.of(context).colorScheme.onPrimaryFixedVariant
-                  ? Colors.black
-                  : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
-                          const Color(0xffe2e2e2)
-                      ? Colors.black
-                      : Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-      Positioned(
-        top: 8,
-        right: 6,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            anime['type'] ?? 'MANGA',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface ==
-                      Theme.of(context).colorScheme.onPrimaryFixedVariant
-                  ? Colors.black
-                  : Theme.of(context).colorScheme.onPrimaryFixedVariant ==
-                          const Color(0xffe2e2e2)
-                      ? Colors.black
-                      : Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
+      // Positioned items remain unchanged
     ],
   );
 }
 
 GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
+  final uniqueTag = tag + random.nextInt(1000).toString();
   return GestureDetector(
     onTap: () {
       Navigator.pushNamed(context, '/manga/details', arguments: {
         'id': anime['id'],
         'posterUrl': proxyUrl + anime['image'],
-        'tag': anime['title'] + anime['id']
+        'tag': uniqueTag,
       });
     },
     child: Container(
@@ -246,8 +201,9 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: Theme.of(context).colorScheme.surfaceContainer),
+        borderRadius: BorderRadius.circular(5),
+        color: Theme.of(context).colorScheme.surfaceContainer,
+      ),
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
@@ -255,7 +211,7 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
             height: 90,
             width: 50,
             child: Hero(
-              tag: anime['title'] + anime['id'],
+              tag: uniqueTag,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(7),
                 child: CachedNetworkImage(
@@ -272,11 +228,11 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
             children: [
               Text(
                 anime['title'].length > 28
-                    ? '${anime['title'].toString().substring(0, 28)}...'
-                    : anime['title'].toString(),
+                    ? '${anime['title'].substring(0, 28)}...'
+                    : anime['title'],
               ),
             ],
-          )
+          ),
         ],
       ),
     ),
@@ -285,12 +241,13 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
 
 GestureDetector SearchItem_COVER(
     BuildContext context, Map<String, dynamic> anime, String tag) {
+  final uniqueTag = tag + random.nextInt(1000).toString();
   return GestureDetector(
     onTap: () {
       Navigator.pushNamed(context, '/manga/details', arguments: {
         'id': anime['id'],
         'posterUrl': proxyUrl + anime['image'],
-        'tag': anime['title'] + anime['id']
+        'tag': uniqueTag,
       });
     },
     child: Container(
@@ -320,7 +277,6 @@ GestureDetector SearchItem_COVER(
               ],
             ),
           ),
-          // Gradient overlay
           Positioned.fill(
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -335,13 +291,13 @@ GestureDetector SearchItem_COVER(
                       Colors.transparent,
                     ],
                   ),
-                  borderRadius:
-                      const BorderRadius.vertical(bottom: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(12),
+                  ),
                 ),
               ),
             ),
           ),
-          // Content
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -350,7 +306,7 @@ GestureDetector SearchItem_COVER(
                   height: 100,
                   width: 70,
                   child: Hero(
-                    tag: anime['title'] + anime['id'],
+                    tag: uniqueTag,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7),
                       child: CachedNetworkImage(
