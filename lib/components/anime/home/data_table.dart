@@ -8,8 +8,12 @@ typedef ButtonTapCallback = void Function(int? index);
 class AnimeTable extends StatefulWidget {
   final ButtonTapCallback onTap;
   final int? currentIndex;
+  final bool isManga;
   const AnimeTable(
-      {super.key, required this.onTap, required this.currentIndex});
+      {super.key,
+      required this.onTap,
+      required this.currentIndex,
+      this.isManga = false});
 
   @override
   State<AnimeTable> createState() => _AnimeTableState();
@@ -21,6 +25,7 @@ class _AnimeTableState extends State<AnimeTable> {
     final ColorScheme = Theme.of(context).colorScheme;
     return Center(
       child: CustomSlidingSegmentedControl<int>(
+        innerPadding: EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: ColorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
@@ -33,8 +38,9 @@ class _AnimeTableState extends State<AnimeTable> {
         initialValue: widget.currentIndex,
         children: {
           0: Text(
-            'Day',
+            widget.isManga ? 'Rated' : 'Day',
             style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
                 color: widget.currentIndex == 0
                     ? Theme.of(context).colorScheme.inverseSurface ==
                             Theme.of(context).colorScheme.onPrimaryFixedVariant
@@ -46,8 +52,9 @@ class _AnimeTableState extends State<AnimeTable> {
                     : null),
           ),
           1: Text(
-            'Week',
+            widget.isManga ? 'Ongoing' : 'Week',
             style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
                 color: widget.currentIndex == 1
                     ? Theme.of(context).colorScheme.inverseSurface ==
                             Theme.of(context).colorScheme.onPrimaryFixedVariant
@@ -59,8 +66,9 @@ class _AnimeTableState extends State<AnimeTable> {
                     : null),
           ),
           2: Text(
-            'Month',
+            widget.isManga ? 'Updated' : 'Month',
             style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
                 color: widget.currentIndex == 2
                     ? Theme.of(context).colorScheme.inverseSurface ==
                             Theme.of(context).colorScheme.onPrimaryFixedVariant
