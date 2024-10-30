@@ -12,7 +12,14 @@ import 'package:shimmer/shimmer.dart';
 class Carousel extends StatelessWidget {
   final List<dynamic>? animeData;
   final String? title;
-  const Carousel({super.key, this.animeData, this.title});
+  final String? span;
+  final bool isManga;
+  const Carousel(
+      {super.key,
+      this.animeData,
+      this.title,
+      this.span = 'Animes',
+      this.isManga = false});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +49,7 @@ class Carousel extends StatelessWidget {
                   ),
                 ),
                 TextSpan(
-                  text: 'Animes',
+                  text: span,
                   style: TextStyle(
                     fontSize: 22,
                     fontFamily: 'Poppins',
@@ -88,15 +95,27 @@ class Carousel extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/details',
-                              arguments: {
-                                'id': anime['id'],
-                                'posterUrl': proxyUrl + posterUrl,
-                                "tag": tag
-                              },
-                            );
+                            if (isManga) {
+                              Navigator.pushNamed(
+                                context,
+                                '/manga/details',
+                                arguments: {
+                                  'id': anime['id'],
+                                  'posterUrl': proxyUrl + posterUrl,
+                                  "tag": tag
+                                },
+                              );
+                            } else {
+                              Navigator.pushNamed(
+                                context,
+                                '/details',
+                                arguments: {
+                                  'id': anime['id'],
+                                  'posterUrl': proxyUrl + posterUrl,
+                                  "tag": tag
+                                },
+                              );
+                            }
                           },
                           child: Container(
                             height: 300,
