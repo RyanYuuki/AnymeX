@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:math';
 
 import 'package:aurora/components/helper/scroll_helper.dart';
@@ -14,6 +16,7 @@ class ReusableCarousel extends StatelessWidget {
   final String? tag;
   final bool? detailsPage;
   final bool? secondary;
+  final bool isManga;
 
   ReusableCarousel({
     super.key,
@@ -22,6 +25,7 @@ class ReusableCarousel extends StatelessWidget {
     this.tag,
     this.secondary = true,
     this.detailsPage = false,
+    this.isManga = false,
   });
 
   final ScrollDirectionHelper _scrollDirectionHelper = ScrollDirectionHelper();
@@ -98,10 +102,10 @@ class ReusableCarousel extends StatelessWidget {
                 ),
               ),
               secondary!
-                  ? const Text(
-                      ' Animes',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ? Text(
+                      isManga ? ' Manga' : ' Animes',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w500),
                     )
                   : const SizedBox.shrink(),
               const Expanded(child: SizedBox.shrink()),
@@ -142,15 +146,27 @@ class ReusableCarousel extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/details',
-                      arguments: {
-                        'id': itemData['id'],
-                        'posterUrl': proxyUrl + posterUrl,
-                        'tag': tagg
-                      },
-                    );
+                    if (isManga) {
+                      Navigator.pushNamed(
+                        context,
+                        '/manga/details',
+                        arguments: {
+                          'id': itemData['id'],
+                          'posterUrl': proxyUrl + posterUrl,
+                          'tag': tagg
+                        },
+                      );
+                    } else {
+                      Navigator.pushNamed(
+                        context,
+                        '/details',
+                        arguments: {
+                          'id': itemData['id'],
+                          'posterUrl': proxyUrl + posterUrl,
+                          'tag': tagg
+                        },
+                      );
+                    }
                   },
                   child: Column(
                     children: [
