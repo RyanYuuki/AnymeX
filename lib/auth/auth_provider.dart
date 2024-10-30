@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/components/anilistExclusive/mappingMethod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -19,8 +18,10 @@ class AniListProvider with ChangeNotifier {
     final token = await storage.read(key: 'auth_token');
     if (token != null) {
       await fetchUserProfile();
+      notifyListeners();
     }
     await fetchAnilistHomepage();
+    await fetchAnilistMangaPage();
     notifyListeners();
   }
 
@@ -122,6 +123,59 @@ class AniListProvider with ChangeNotifier {
       }
     } else {
       log('Failed to update anime list. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+    }
+    notifyListeners();
+  }
+
+  Future<void> updateMangaList({
+    required int mangaId,
+    required int chapterProgress,
+    required double rating,
+    required String status,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+    const String mutation = '''
+  mutation UpdateMediaList(\$mangaId: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
+    SaveMediaListEntry(mediaId: \$mangaId, progress: \$progress, score: \$score, status: \$status) {
+      id
+      status
+      progress
+      score
+    }
+  }
+  ''';
+
+    final Map<String, dynamic> variables = {
+      'mangaId': mangaId,
+      'progress': chapterProgress,
+      'score': rating,
+      'status': status.toUpperCase(),
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': variables,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['errors'] != null) {
+        log('Error: ${data['errors']}');
+      } else {
+        log('Manga list updated successfully: ${data['data']}');
+        await fetchUserMangaList();
+      }
+    } else {
+      log('Failed to update manga list. Status code: ${response.statusCode}');
       log('Response body: ${response.body}');
     }
     notifyListeners();
@@ -378,6 +432,172 @@ class AniListProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchAnilistMangaPage() async {
+    const String url = 'https://graphql.anilist.co';
+
+    const String query = '''
+  query CombinedMangaQueries(\$perPage: Int) {
+    # Popular Mangas (Page 1)
+    popularMangas: Page(page: 1, perPage: \$perPage) {
+      media(sort: POPULARITY_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        averageScore
+      }
+    }
+
+    # Popular Mangas (Page 2)
+    morePopularMangas: Page(page: 2, perPage: \$perPage) {
+      media(sort: POPULARITY_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        averageScore
+      }
+    }
+
+    # Latest Mangas (Page 1)
+    latestMangas: Page(page: 1, perPage: \$perPage) {
+      media(sort: START_DATE_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        averageScore
+      }
+    }
+
+    # Most Favorite Mangas (Page 1)
+    mostFavoriteMangas: Page(page: 1, perPage: \$perPage) {
+      media(sort: FAVOURITES_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        averageScore
+      }
+    }
+
+    # Top Rated Mangas (Page 1)
+    topRated: Page(page: 1, perPage: \$perPage) {
+      media(sort: SCORE_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        chapters
+        averageScore
+      }
+    }
+
+    # Top Updated Mangas (Page 1)
+    topUpdated: Page(page: 1, perPage: \$perPage) {
+      media(sort: UPDATED_AT_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        chapters
+        averageScore
+      }
+    }
+
+    # Top Ongoing Mangas (Page 1)
+    topOngoing: Page(page: 1, perPage: \$perPage) {
+      media(status: RELEASING, sort: SCORE_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          large
+        }
+        chapters
+        averageScore
+      }
+    }
+
+    # Trending Mangas (Page 1)
+    trendingManga: Page(page: 1, perPage: \$perPage) {
+      media(sort: TRENDING_DESC, type: MANGA) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        description
+        bannerImage
+        coverImage {
+          large
+        }
+        averageScore
+      }
+    }
+  }
+''';
+
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: json.encode({
+        'query': query,
+        'variables': {
+          'perPage': 10,
+        },
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic responseData = json.decode(response.body);
+      _userData['mangaData'] = responseData['data'];
+      log(responseData['data'].toString());
+    } else {
+      throw Exception(
+          'Failed to load AniList manga data: ${response.statusCode}');
+    }
+    notifyListeners();
+  }
+
   Future<void> fetchUserAnimeList() async {
     _isLoading = true;
     notifyListeners();
@@ -555,7 +775,6 @@ class AniListProvider with ChangeNotifier {
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
           log('User manga list fetched successfully');
           log('Fetched ${_userData['mangaList'].length} manga entries');
-          log(data['data']['MediaListCollection']['lists']);
         } else {
           log('Unexpected response structure: ${response.body}');
         }
