@@ -1,3 +1,8 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EpisodeGrid extends StatefulWidget {
@@ -7,6 +12,7 @@ class EpisodeGrid extends StatefulWidget {
   final int currentEpisode;
   final String coverImage;
   final int progress;
+  final dynamic episodeImages;
   const EpisodeGrid({
     super.key,
     required this.episodes,
@@ -15,6 +21,7 @@ class EpisodeGrid extends StatefulWidget {
     required this.onEpisodeSelected,
     required this.progress,
     required this.coverImage,
+    this.episodeImages,
   });
 
   @override
@@ -51,9 +58,9 @@ class _EpisodeGridState extends State<EpisodeGrid> {
             ? 50
             : isGrid
                 ? 40
-                : 120,
+                : 100,
         crossAxisSpacing: 5,
-        mainAxisSpacing: widget.layoutIndex == 0 ? 20 : 5,
+        mainAxisSpacing: widget.layoutIndex == 0 ? 10 : 5,
       ),
       padding: const EdgeInsets.symmetric(vertical: 5),
       shrinkWrap: true,
@@ -74,32 +81,97 @@ class _EpisodeGridState extends State<EpisodeGrid> {
               opacity: episodeNumber < widget.progress ? 0.7 : 1,
               child: Container(
                 height: 50,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? Theme.of(context).colorScheme.onPrimaryFixedVariant
                       : Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12), // Rounded corners
                 ),
-                child: Stack(
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              widget.coverImage,
-                              width: 50,
-                              height: 120,
-                              fit: BoxFit.cover,
+                    Expanded(
+                      flex: 1,
+                      child: Stack(
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl:
+                                'https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=' +
+                                    (widget.episodeImages != null &&
+                                            widget.episodeImages!.length > index
+                                        ? widget.episodeImages![
+                                                episodeNumber - 1]['image'] ??
+                                            widget.coverImage
+                                        : widget.coverImage),
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) {
+                              return CachedNetworkImage(
+                                imageUrl: widget.coverImage,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                            errorWidget: (context, error, stackTrace) {
+                              return CachedNetworkImage(
+                                imageUrl: widget.coverImage,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            left: 10,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
+                              child: BackdropFilter(
+                                filter:
+                                    ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                                child: Container(
+                                  width: 50,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                    color: Colors.black.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'EP ${episodeNumber?.toString() ?? index.toString()}',
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins-Bold',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Episode ${episodeNumber?.toString() ?? index.toString()}',
+                            style: const TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
                             episodeTitle,
                             style: TextStyle(
                               color: isSelected
@@ -112,31 +184,10 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                             ),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          width: 45,
-                          height: 35,
-                          decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomRight: Radius.circular(12))),
-                          child: Center(
-                            child: Text(
-                              episodeNumber?.toString() ?? index.toString(),
-                              style: const TextStyle(
-                                  fontFamily: 'Poppins-Bold',
-                                  color: Colors.black),
-                            ),
-                          ),
-                        )),
                   ],
                 ),
               ),
