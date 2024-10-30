@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/onboarding_screens/login_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
@@ -10,7 +9,6 @@ import 'package:aurora/pages/home_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
@@ -27,7 +25,6 @@ void main() async {
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
   try {
-    await dotenv.load(fileName: ".env");
     log('Env file loaded successfully.');
   } catch (e) {
     log('Error loading env file: $e');
@@ -159,20 +156,18 @@ class _MainAppState extends State<MainApp> {
             final id = args?['id'] ?? '';
             final mangaId = args?['mangaId'] ?? '';
             final posterUrl = args?['posterUrl'] ?? '';
+            final currentSource = args?['currentSource'] ?? '';
             return MaterialPageRoute(
               builder: (context) => ReadingPage(
                 id: id,
                 mangaId: mangaId,
                 posterUrl: posterUrl,
+                currentSource: currentSource,
               ),
             );
           case '/profile':
             return MaterialPageRoute(
               builder: (context) => const ProfilePage(),
-            );
-          case '/login-page':
-            return MaterialPageRoute(
-              builder: (context) => const LoginPage(),
             );
           default:
             return MaterialPageRoute(
