@@ -33,11 +33,10 @@ class AppData extends ChangeNotifier {
   }
 
   void addWatchedAnime({
-    required String animeId,
+    required int animeId,
     required String animeTitle,
     required String currentEpisode,
     required String animePosterImageUrl,
-    required bool isConsumet,
   }) {
     watchedAnimes ??= [];
 
@@ -46,7 +45,6 @@ class AppData extends ChangeNotifier {
       'animeTitle': animeTitle,
       'currentEpisode': currentEpisode,
       'poster': animePosterImageUrl,
-      'isConsumet': isConsumet,
     };
 
     watchedAnimes!.removeWhere((anime) => anime['animeId'] == animeId);
