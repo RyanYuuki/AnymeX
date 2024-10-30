@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:algorithmic/algorithmic.dart';
-import 'package:aurora/utils/scrapers/anime/aniwatch/scraper_search.dart';
+import 'package:aurora/utils/sources/anime/aniwatch/scraper_search.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -86,7 +86,6 @@ Future mapMalToAniwatch(
             id: int.parse(animeId!),
             posterUrl: posterUrl,
             tag: tag,
-            fromAnilist: true,
           ),
         ),
       );

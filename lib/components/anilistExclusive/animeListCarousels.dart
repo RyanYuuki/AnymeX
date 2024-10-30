@@ -2,6 +2,7 @@
 import 'dart:math';
 import 'package:aurora/components/helper/scroll_helper.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
+import 'package:aurora/pages/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -110,14 +111,25 @@ class anilistCarousel extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetailsPage(
-                                  id: itemData['id'],
-                                  tag: tagg,
-                                  posterUrl: proxyUrl + posterUrl,
-                                )));
+                    if (isManga) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MangaDetailsPage(
+                                    id: itemData['id'],
+                                    tag: tagg,
+                                    posterUrl: proxyUrl + posterUrl,
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailsPage(
+                                    id: itemData['id'],
+                                    tag: tagg,
+                                    posterUrl: proxyUrl + posterUrl,
+                                  )));
+                    }
                   },
                   child: Column(
                     children: [
