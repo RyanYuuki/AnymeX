@@ -84,8 +84,6 @@ class Carousel extends StatelessWidget {
             final tag = '${anime["id"]}${Random().nextInt(100000)}';
             final String title =
                 anime['title']['english'] ?? anime['title']['romaji'] ?? '?';
-            const String proxyUrl =
-                'https://goodproxy.goodproxy.workers.dev/fetch?url=';
 
             return Builder(
               builder: (BuildContext context) {
@@ -101,7 +99,7 @@ class Carousel extends StatelessWidget {
                                 '/manga/details',
                                 arguments: {
                                   'id': anime['id'],
-                                  'posterUrl': proxyUrl + posterUrl,
+                                  'posterUrl': posterUrl,
                                   "tag": tag
                                 },
                               );
@@ -111,7 +109,7 @@ class Carousel extends StatelessWidget {
                                 '/details',
                                 arguments: {
                                   'id': anime['id'],
-                                  'posterUrl': proxyUrl + posterUrl,
+                                  'posterUrl': posterUrl,
                                   "tag": tag
                                 },
                               );
@@ -126,7 +124,7 @@ class Carousel extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: CachedNetworkImage(
-                                  imageUrl: proxyUrl + posterUrl,
+                                  imageUrl: posterUrl,
                                   placeholder: (context, url) =>
                                       Shimmer.fromColors(
                                     baseColor: Colors.grey[900]!,
