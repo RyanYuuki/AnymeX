@@ -137,8 +137,6 @@ class ReusableCarousel extends StatelessWidget {
                   '?';
               final random = Random().nextInt(100000);
               final tagg = '${itemData['id']}$tag$random';
-              const String proxyUrl =
-                  'https://goodproxy.goodproxy.workers.dev/fetch?url=';
               String extraData =
                   ((itemData['averageScore'] ?? 0) / 10)?.toString() ?? '??';
 
@@ -152,7 +150,7 @@ class ReusableCarousel extends StatelessWidget {
                         '/manga/details',
                         arguments: {
                           'id': itemData['id'],
-                          'posterUrl': proxyUrl + posterUrl,
+                          'posterUrl': posterUrl,
                           'tag': tagg
                         },
                       );
@@ -162,7 +160,7 @@ class ReusableCarousel extends StatelessWidget {
                         '/details',
                         arguments: {
                           'id': itemData['id'],
-                          'posterUrl': proxyUrl + posterUrl,
+                          'posterUrl': posterUrl,
                           'tag': tagg
                         },
                       );
@@ -180,7 +178,7 @@ class ReusableCarousel extends StatelessWidget {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(18),
                                   child: CachedNetworkImage(
-                                    imageUrl: proxyUrl + posterUrl,
+                                    imageUrl: posterUrl,
                                     placeholder: (context, url) =>
                                         Shimmer.fromColors(
                                       baseColor: Colors.grey[900]!,
