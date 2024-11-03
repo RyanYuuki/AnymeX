@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/pages/Novel/home_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
@@ -10,6 +11,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:aurora/pages/Anime/search_page.dart';
@@ -51,7 +53,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   int selectedIndex = 1;
 
   @override
@@ -78,9 +80,10 @@ class _MainAppState extends State<MainApp> {
   }
 
   final routes = [
-    const MangaHomePage(),
     const HomePage(),
     const AnimeHomePage(),
+    const MangaHomePage(),
+    const NovelHomePage(),
   ];
 
   @override
@@ -96,16 +99,12 @@ class _MainAppState extends State<MainApp> {
         body: routes[_selectedIndex],
         bottomNavigationBar: CrystalNavigationBar(
           currentIndex: _selectedIndex,
-          marginR: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+          paddingR: const EdgeInsets.all(0),
+          marginR: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
           unselectedItemColor: Colors.white,
           backgroundColor: Colors.black.withOpacity(0.3),
           onTap: _onItemTapped,
           items: [
-            CrystalNavigationBarItem(
-              icon: Iconsax.book,
-              unselectedIcon: Iconsax.book,
-              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
-            ),
             CrystalNavigationBarItem(
               icon: IconlyBold.home,
               unselectedIcon: IconlyLight.home,
@@ -114,6 +113,16 @@ class _MainAppState extends State<MainApp> {
             CrystalNavigationBarItem(
               icon: Icons.movie_filter_rounded,
               unselectedIcon: Icons.movie_filter_outlined,
+              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
+            ),
+            CrystalNavigationBarItem(
+              icon: Iconsax.book,
+              unselectedIcon: Iconsax.book,
+              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
+            ),
+            CrystalNavigationBarItem(
+              icon: HugeIcons.strokeRoundedBookOpen01,
+              unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
               selectedColor: themeProvider.selectedTheme.colorScheme.primary,
             ),
           ],

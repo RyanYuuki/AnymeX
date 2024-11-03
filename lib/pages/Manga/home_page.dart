@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/anime/home/carousel.dart';
 import 'package:aurora/components/anime/home/coverCarousel.dart';
