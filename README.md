@@ -5,7 +5,7 @@
 <h1 style="font-size: 2em; font-weight: bold;">AnymeX 📚✨</h1>
 
 <div align="center">
-   <a href="https://discord.gg/azAMuBWd8c">
+   <a href="https://discord.gg/azAMuBWd8C">
    <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
    </a>
    <a href="https://t.me/AnymeX_Discussion">
