@@ -191,7 +191,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
   }
 }
 
-const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = '';
 
 Container ListItem(BuildContext context, {required data, required tag}) {
   int index = 0;

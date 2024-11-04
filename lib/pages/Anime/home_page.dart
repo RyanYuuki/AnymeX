@@ -51,7 +51,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     return newData;
   }
 
-  final String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+  final String proxyUrl = '';
 
   void _onTableItemTapped(int index) {
     setState(() {

@@ -15,7 +15,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = '';
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController controller = TextEditingController();

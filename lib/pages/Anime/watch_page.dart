@@ -12,9 +12,11 @@ class WatchPage extends StatefulWidget {
   final String animeTitle;
   final String activeServer;
   final bool isDub;
+  final String referer;
 
   const WatchPage({
     super.key,
+    required this.referer,
     required this.episodeSrc,
     required this.episodeData,
     required this.currentEpisode,
@@ -56,6 +58,7 @@ class _WatchPageState extends State<WatchPage> {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: VideoPlayerAlt(
+          referer: widget.referer,
           animeId: widget.animeId,
           episodeTitle: widget.episodeTitle,
           episodeSrc: widget.episodeSrc,

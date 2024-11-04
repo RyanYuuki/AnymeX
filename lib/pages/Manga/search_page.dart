@@ -14,7 +14,7 @@ class MangaSearchPage extends StatefulWidget {
   State<MangaSearchPage> createState() => _MangaSearchPageState();
 }
 
-const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = '';
 
 class _MangaSearchPageState extends State<MangaSearchPage> {
   final TextEditingController controller = TextEditingController();

@@ -108,7 +108,7 @@ class SettingsPage extends StatelessWidget {
             title: 'Fetch Data',
             description: 'Test',
             onTap: () async {
-              await scrapeNovelSearchData('omniscient');
+              await scrapeHomePageData();
             },
           ),
         ],

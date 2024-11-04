@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/novel/carousel.dart';
 import 'package:aurora/components/novel/reusable_carousel.dart';
+import 'package:aurora/fallbackData/novel_homepage.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart' hide Header;
 import 'package:aurora/pages/Novel/search_page.dart';
@@ -26,11 +28,20 @@ class _NovelHomePageState extends State<NovelHomePage> {
   @override
   void initState() {
     super.initState();
-    novelData = fetchNovelData();
+    novelData = Future.value(novelFallbackData); 
+    fetchNovelData();
   }
 
   Future<dynamic> fetchNovelData() async {
-    return await scrapeHomePageData();
+    try {
+      final tempData = await scrapeHomePageData();
+      setState(() {
+        novelData =
+            Future.value(tempData); 
+      });
+    } catch (error) {
+      log('Failed to fetch novel data: $error'); 
+    }
   }
 
   @override
@@ -48,7 +59,16 @@ class _NovelHomePageState extends State<NovelHomePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Header(controller: _searchTerm),
+                child: Column(
+                  children: [
+                    Header(controller: _searchTerm),
+                    Carousel(
+                      title: 'Trending',
+                      animeData: snapshot.data!.sublist(10, 20),
+                      span: 'Novels',
+                    ),
+                  ],
+                ),
               ),
               ReusableCarousel(
                 title: "Popular",
