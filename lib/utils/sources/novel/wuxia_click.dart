@@ -52,6 +52,8 @@ Future<dynamic> scrapeHomePageData() async {
         });
       }
     }
+    log(novels.sublist(10, 20).toString());
+    // log(novels.sublist(0, 10).toString());
     return novels;
   }
 }
@@ -163,8 +165,8 @@ Future<Map<String, dynamic>> scrapeNovelWords(String url) async {
     final novelData = {
       'title': title,
       'currentChapter': currentChapter ?? 'Chapter ?',
-      'prevChapterId': previousChapterLink,
-      'nextChapterId': nextChapterLink,
+      'prevChapterId': previousChapterLink ?? '',
+      'nextChapterId': nextChapterLink ?? '',
       'words': words,
     };
 
