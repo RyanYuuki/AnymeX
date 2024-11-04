@@ -10,6 +10,7 @@ import 'package:aurora/pages/home_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ void main() async {
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
   try {
+    await dotenv.load(fileName: ".env");
     log('Env file loaded successfully.');
   } catch (e) {
     log('Error loading env file: $e');
