@@ -1,10 +1,10 @@
-<div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; text-align: center;">
+<div align="center">
 
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 300px; width: 300px;">
 
 <h1 style="font-size: 2em; font-weight: bold;">AnymeX 📚✨</h1>
 
-<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+<div align="center">
    <a href="https://discord.gg/azAMuBWd8c">
    <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
    </a>
@@ -13,7 +13,7 @@
    </a>
 </div>
 
-<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+<div align="center">
    <img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white" alt="Flutter">
    <img src="https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white" alt="Dart">
 </div>
