@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
-String proxyUrl = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
+String proxyUrl = "";
 String consumetUrl = "${dotenv.get('CONSUMET_URL')}meta/anilist/";
 String aniwatchUrl = "${dotenv.get('ANIME_URL')}anime/";
 bool isRomaji = Hive.box('app-data').get('isRomaji', defaultValue: false);
