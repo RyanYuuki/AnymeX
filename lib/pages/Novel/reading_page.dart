@@ -77,7 +77,6 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          // Handle error state if needed
         });
       }
     }
@@ -103,7 +102,6 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          // Handle error state if needed
         });
       }
     }
@@ -135,15 +133,16 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal:  16.0),
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
+            maxHeight: MediaQuery.of(context).size.height * 0.65,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 'Reading Settings',
@@ -177,6 +176,11 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                                 });
                               },
                             ),
+                          ),
+                          Text(
+                            _fontSize.round().toString(),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary),
                           ),
                         ],
                       ),
@@ -412,7 +416,8 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                         widget.novelTitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: _textColor, fontFamily: 'Poppins-SemiBold'),
+                        style: TextStyle(
+                            color: _textColor, fontFamily: 'Poppins-SemiBold'),
                       ),
                       SizedBox(
                         width: MediaQuery.of(context).size.width / 1.5,
@@ -420,7 +425,10 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                           novelData['currentChapter'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: _textColor, fontSize: 12, fontStyle: FontStyle.italic),
+                          style: TextStyle(
+                              color: _textColor,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic),
                         ),
                       ),
                     ],
