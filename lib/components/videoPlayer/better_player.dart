@@ -20,6 +20,7 @@ class VideoPlayerAlt extends StatefulWidget {
   final dynamic episodeData;
   final String activeServer;
   final bool isDub;
+  final String referer;
 
   const VideoPlayerAlt({
     super.key,
@@ -33,6 +34,7 @@ class VideoPlayerAlt extends StatefulWidget {
     required this.isDub,
     this.episodeData,
     required this.animeId,
+    required this.referer,
   });
 
   @override
@@ -99,6 +101,7 @@ class _VideoPlayerAltState extends State<VideoPlayerAlt>
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController!.setupDataSource(BetterPlayerDataSource(
+      headers: {'Referer': widget.referer},
       BetterPlayerDataSourceType.network,
       episodeSrc!,
       subtitles: subtitles,
