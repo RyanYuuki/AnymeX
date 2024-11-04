@@ -112,7 +112,6 @@ class _DetailsPageState extends State<DetailsPage>
   ];
   int layoutIndex = 0;
 
-
   @override
   void initState() {
     super.initState();
@@ -128,6 +127,13 @@ class _DetailsPageState extends State<DetailsPage>
       parent: _controller,
       curve: Curves.linear,
     ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    pageController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchData() async {
@@ -188,6 +194,7 @@ class _DetailsPageState extends State<DetailsPage>
 
     try {
       dynamic response;
+      String referer = 'https://hianime.to/';
 
       if (!usingAPI) {
         response = await scrapeAnimeEpisodeSources(
@@ -204,9 +211,11 @@ class _DetailsPageState extends State<DetailsPage>
         setState(() {
           subtitleTracks = !usingAPI ? response.tracks : response['tracks'];
           episodeSrc = !usingAPI
-              ? 'https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${response.sources[0]['url']}'
+              ? "https://proxy-ryan.vercel.app/cors?url=${response.sources[0]['url']}"
               : response['sources'][0]['url'];
           isLoading = false;
+          referer =
+              !usingAPI ? response.headers['Referer'] : 'https://hianime.to/';
         });
 
         provider.addWatchedAnime(
@@ -225,6 +234,7 @@ class _DetailsPageState extends State<DetailsPage>
                       episodeData: episodesData,
                       currentEpisode: currentEpisode,
                       subtitleTracks: subtitleTracks,
+                      referer: referer,
                       episodeTitle:
                           episodesData[currentEpisode - 1]['title'] ?? '',
                       animeTitle: data['name'] ?? data['jname'],
@@ -362,23 +372,6 @@ class _DetailsPageState extends State<DetailsPage>
         ),
       ),
     );
-  }
-
-  String? getChapterId({
-    required Map<String, dynamic>? mangaData,
-    required int progress,
-  }) {
-    if (mangaData == null) return null;
-
-    final chapterList = mangaData['chapterList'] as List?;
-    if (chapterList == null || chapterList.isEmpty) return null;
-
-    final totalChapters = chapterList.length;
-    final reversedIndex = totalChapters - progress - 1;
-
-    if (reversedIndex < 0 || reversedIndex >= totalChapters) return null;
-
-    return chapterList[reversedIndex]['path'].toString().split('/').last;
   }
 
   bool isList = true;
