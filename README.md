@@ -1,16 +1,49 @@
+<div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center">
+
+ <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 300px; width: 300px">
+
 # **AnymeX** 📚✨
 
-![Flutter Logo](https://img.shields.io/badge/Flutter-007ACC?logo=flutter&logoColor=white) ![Dart Logo](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)
+<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
 
-Welcome to **AnymeX**, your ultimate destination for a seamless anime and manga experience! 🎉 As my very first Flutter project, I’m thrilled to share it with you. Explore a vast world of free anime streaming and manga reading, all wrapped in a sleek, aesthetic design.
+![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+
+![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
+
+</div>
+<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
+
+</div>
+
+<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
+  
+![Total Downloads](https://img.shields.io/github/downloads/ryanyuuki/anymex/total.svg?label=Downloads)
+[![GitHub release (with filter)](https://img.shields.io/github/v/release/ryanyuuki/anymex)](https://github.com/ryanyuuki/anymex/releases/latest)
+[![Stars](https://img.shields.io/github/stars/ryanyuuki/anymex)](https://github.com/ryanyuuki/anymex/stargazers)
+
+ </div>
+
+</div>
+
+Welcome to **AnymeX**—an open-source anime streaming, manga reading, and novel reading app built with Flutter and Dart! 🌟 It's designed to give you fast and free access to your favorite content in a beautiful, user-friendly app that keeps getting better. Explore a growing library of anime, manga, and novels, all in one place, with seamless performance and sleek design updates.
+
+---
 
 ## 🚀 **Features**
 
-- **📺 Watch Anime for Free**: Enjoy a wide selection of anime series and episodes without spending a dime.
-- **📚 Read Manga**: Access a diverse library of manga titles, all in one place.
-- **✨ Sleek Design**: Experience a modern, stylish, and user-friendly interface.
-- **🌙 Aesthetic Theme Toggler**: Effortlessly switch between light and dark themes to match your preference.
-- **⚡ Fast & Lightweight**: Benefit from a smooth and responsive performance.
+- **📺 Anime, 📚 Manga, & 📖 Novels**: Stream and read from a vast collection of anime, manga, and novels.
+- **🎨 Multiple Themes**: More than just light and dark—explore various themes to match your style.
+- **📌 Numerous Sources**: Access multiple sources for anime and manga (with more coming soon).
+- **⚡ Lightweight & Fast**: Enjoy a high-performance experience, optimized for quick loads.
+- **✨ Sleek Material UI**: Experience a modern, smooth, and polished interface.
+- **🔄 Frequent Updates**: Stay up-to-date with new content and features added regularly.
+- **📊 AniList Tracking**: Integrate with your AniList account to track your anime and manga progress.
+
+
+---
 
 ## 📱 **Screenshots**
 
@@ -29,38 +62,37 @@ Welcome to **AnymeX**, your ultimate destination for a seamless anime and manga 
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview12.jpg" width="49%" style="margin: 0;" />
 </div>
 
-
-
-
+---
 
 ## 🔧 **Getting Started**
 
-1. **Clone the Repository**
+### 1. **Clone the Repository**
 
-   ```bash
-   git clone https://github.com/yourusername/anymex.git
-   ```
+```bash
+git clone https://github.com/yourusername/anymex.git
+```
 
-2. **Install Dependencies**
+### 2. **Install Dependencies**
 
-   ```bash
-   cd anymex
-   flutter pub get
-   ```
+```bash
+cd anymex
+flutter pub get
+```
 
-3. **Run the App**
+### 3. **Run the App**
 
-   ```bash
-   flutter run
-   ```
+```bash
+flutter run
+```
+
+---
 
 ## 📜 **License**
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
-## 📬 **Contact**
-
-If you have any questions or feedback, feel free to reach out at [rehank220358@gmail.com](mailto:rehank220358@gmail.com) or if you want any kind of features drop it on telegram group [![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+_pfInbBGQ1g0YjQ9)
-
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ---
+
+## 📬 **Contact & Feedback**
+
+Got questions or feature requests? Reach out via [email](mailto:rehank220358@gmail.com) or join our [Telegram group](https://t.me/+_pfInbBGQ1g0YjQ9) for more discussions!
