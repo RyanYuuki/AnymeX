@@ -8,7 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:aurora/components/common/IconWithLabel.dart';
 import 'package:aurora/utils/sources/anime/aniwatch/scraper_search.dart';
 
-const String proxyUrl = 'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+const String proxyUrl = '';
 
 class AnimeSearchModal extends StatefulWidget {
   final String initialText;

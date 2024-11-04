@@ -53,7 +53,7 @@ class _CovercarouselState extends State<Covercarousel> {
             final randNum = Random().nextInt(100000);
             final tag = '$randNum$index';
             const String proxyUrl =
-                'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+                '';
 
             return Stack(
               children: [

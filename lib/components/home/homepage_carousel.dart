@@ -95,7 +95,7 @@ class HomepageCarousel extends StatelessWidget {
               final tagg = '${itemData['id']}$tag$random';
 
               const String proxyUrl =
-                  'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+                  '';
               dynamic extraData =
                   'Episode ${itemData['currentEpisode'].toString()}';
               '1';

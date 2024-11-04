@@ -95,14 +95,12 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                       child: Stack(
                         children: [
                           CachedNetworkImage(
-                            imageUrl:
-                                'https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=' +
-                                    (widget.episodeImages != null &&
-                                            widget.episodeImages!.length > index
-                                        ? widget.episodeImages![
-                                                episodeNumber - 1]['image'] ??
-                                            widget.coverImage
-                                        : widget.coverImage),
+                            imageUrl: (widget.episodeImages != null &&
+                                    widget.episodeImages!.length > index
+                                ? widget.episodeImages![episodeNumber - 1]
+                                        ['image'] ??
+                                    widget.coverImage
+                                : widget.coverImage),
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,

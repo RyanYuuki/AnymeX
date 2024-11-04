@@ -102,8 +102,7 @@ class anilistCarousel extends StatelessWidget {
                   'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
               int random = Random().nextInt(100000);
               final tagg = '$random$index';
-              const String proxyUrl =
-                  'https://goodproxy.goodproxy.workers.dev/fetch?url=';
+              const String proxyUrl = '';
               dynamic extraData =
                   '${isManga ? 'Chapter' : 'Episode'} ${carouselData?[index]?['progress']?.toString() ?? '?'}';
               '1';
