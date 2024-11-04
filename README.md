@@ -1,34 +1,38 @@
-<div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; text-align: center;">
 
- <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 300px; width: 300px">
+<img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 300px; width: 300px;">
 
-# **AnymeX** 📚✨
+<h1 style="font-size: 2em; font-weight: bold;">AnymeX 📚✨</h1>
 
-<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
-
-![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
-
-![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
-
-</div>
-<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
-
-![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
-
+<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+   <a href="https://discord.gg/azAMuBWd8c">
+   <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
+   </a>
+   <a href="https://t.me/AnymeX_Discussion">
+   <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram">
+   </a>
 </div>
 
-<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px">
-  
-![Total Downloads](https://img.shields.io/github/downloads/ryanyuuki/anymex/total.svg?label=Downloads)
-[![GitHub release (with filter)](https://img.shields.io/github/v/release/ryanyuuki/anymex)](https://github.com/ryanyuuki/anymex/releases/latest)
-[![Stars](https://img.shields.io/github/stars/ryanyuuki/anymex)](https://github.com/ryanyuuki/anymex/stargazers)
+<div style="display: flex; flex-direction: row; justify-content: center; gap: 10px;">
+   <img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white" alt="Flutter">
+   <img src="https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white" alt="Dart">
+</div>
 
- </div>
+<div align="center">
+    <img src="https://img.shields.io/github/downloads/ryanyuuki/anymex/total.svg?label=Downloads" alt="Total Downloads" style="height: 20px;">
+    <a href="https://github.com/ryanyuuki/anymex/releases/latest">
+        <img src="https://img.shields.io/github/v/release/ryanyuuki/anymex" alt="GitHub release">
+    </a>
+    <a href="https://github.com/ryanyuuki/anymex/stargazers">
+        <img src="https://img.shields.io/github/stars/ryanyuuki/anymex" alt="Stars">
+    </a>
+</div>
 
 </div>
 
-Welcome to **AnymeX**—an open-source anime streaming, manga reading, and novel reading app built with Flutter and Dart! 🌟 It's designed to give you fast and free access to your favorite content in a beautiful, user-friendly app that keeps getting better. Explore a growing library of anime, manga, and novels, all in one place, with seamless performance and sleek design updates.
+<p style="text-align: center;">
+    Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and novel reading app built with Flutter and Dart! 🌟 It's designed to give you fast and free access to your favorite content in a beautiful, user-friendly app that keeps getting better. Explore a growing library of anime, manga, and novels, all in one place, with seamless performance and sleek design updates.
+</p>
 
 ---
 
@@ -41,7 +45,6 @@ Welcome to **AnymeX**—an open-source anime streaming, manga reading, and novel
 - **✨ Sleek Material UI**: Experience a modern, smooth, and polished interface.
 - **🔄 Frequent Updates**: Stay up-to-date with new content and features added regularly.
 - **📊 AniList Tracking**: Integrate with your AniList account to track your anime and manga progress.
-
 
 ---
 
