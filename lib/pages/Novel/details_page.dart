@@ -7,7 +7,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:text_scroll/text_scroll.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final String id;
@@ -240,6 +239,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
               infoRow(field: 'Status', value: data?['status'] ?? '??'),
               const SizedBox(height: 30),
               ChapterList(
+                novelId: data['id'],
                 title: data['title'],
                 chaptersData: data['chapterList'],
               )
@@ -294,10 +294,12 @@ class infoRow extends StatelessWidget {
 class ChapterList extends StatefulWidget {
   final dynamic chaptersData;
   final String title;
+  final String novelId;
   const ChapterList({
     super.key,
     this.chaptersData,
     required this.title,
+    required this.novelId,
   });
 
   @override
@@ -441,6 +443,8 @@ class _ChapterListState extends State<ChapterList> {
                                   builder: (context) => NovelReadingPage(
                                         id: manga['id'],
                                         novelTitle: widget.title,
+                                        novelId: widget.novelId,
+                                        chapterNumber: index,
                                       )));
                         },
                         style: ElevatedButton.styleFrom(

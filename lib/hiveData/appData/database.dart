@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class AppData extends ChangeNotifier {
   dynamic watchedAnimes;
   dynamic readMangas;
+  dynamic novelList;
   bool? isGrid;
   bool? usingConsumet;
 
@@ -19,6 +20,7 @@ class AppData extends ChangeNotifier {
       readMangas = box.get('currently-reading', defaultValue: []);
       isGrid = box.get('grid-context', defaultValue: false);
       usingConsumet = box.get('using-consumet', defaultValue: false);
+      novelList = box.get('currently-noveling', defaultValue: []);
       notifyListeners();
     } catch (e) {
       log('Failed to load data from Hive: $e');
@@ -52,6 +54,30 @@ class AppData extends ChangeNotifier {
 
     var box = Hive.box('app-data');
     box.put('currently-watching', watchedAnimes);
+    notifyListeners();
+  }
+
+  void addReadNovels({
+    required String novelId,
+    required String novelTitle,
+    required String chapterNumber,
+    required String chapterId,
+  }) {
+    novelList ??= [];
+
+    final newNovel = {
+      'novelId': novelId,
+      'novelTitle': novelTitle,
+      'chapterNumber': chapterNumber,
+      'chapterId': chapterId
+    };
+
+    novelList.removeWhere((novel) => novel['novelId'] == novelId);
+    novelList.add(newNovel);
+    novelList = novelList.reversed.toList();
+
+    var box = Hive.box('app-data');
+    box.put('currently-noveling', novelList);
     notifyListeners();
   }
 
