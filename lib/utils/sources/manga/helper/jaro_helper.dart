@@ -44,7 +44,9 @@ double jaroWinkler(String s1, String s2) {
   int k = 0;
   for (int i = 0; i < len1; i++) {
     if (!s1Matches[i]) continue;
-    while (!s2Matches[k]) k++;
+    while (!s2Matches[k]) {
+      k++;
+    }
     if (s1[i] != s2[k]) transpositions++;
     k++;
   }
@@ -56,14 +58,15 @@ double jaroWinkler(String s1, String s2) {
 
   double prefixLength = 0;
   for (int i = 0; i < Math.min(4, Math.min(len1, len2)); i++) {
-    if (s1[i] == s2[i])
+    if (s1[i] == s2[i]) {
       prefixLength++;
-    else
+    } else {
       break;
+    }
   }
 
-  final winklerThreshold = 0.7;
-  final winklerScalingFactor = 0.1;
+  const winklerThreshold = 0.7;
+  const winklerScalingFactor = 0.1;
 
   if (jaro > winklerThreshold) {
     jaro = jaro + (prefixLength * winklerScalingFactor * (1 - jaro));

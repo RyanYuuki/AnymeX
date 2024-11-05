@@ -1,15 +1,25 @@
+// ignore_for_file: unused_field
+
+import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/utils/sources/novel/wuxia_click.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class NovelReadingPage extends StatefulWidget {
   final String id;
   final String novelTitle;
+  final String novelId;
+  final int chapterNumber;
   const NovelReadingPage(
-      {super.key, required this.id, required this.novelTitle});
+      {super.key,
+      required this.id,
+      required this.novelTitle,
+      required this.novelId,
+      required this.chapterNumber});
 
   @override
   State<NovelReadingPage> createState() => _NovelReadingPageState();
@@ -72,6 +82,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
           novelData = data;
           _isLoading = false;
         });
+
       }
     } catch (e) {
       if (mounted) {
@@ -80,6 +91,12 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
         });
       }
     }
+  }
+
+  void _saveChapterProgress() {
+    final provider = Provider.of<AppData>(context);
+
+    
   }
 
   Future<void> _fetchNextPreviousChapter(String chapterId) async {
@@ -136,7 +153,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
       showDragHandle: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Container(
-          padding: const EdgeInsets.symmetric(horizontal:  16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.65,
           ),

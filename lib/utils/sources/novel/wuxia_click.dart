@@ -52,8 +52,6 @@ Future<dynamic> scrapeHomePageData() async {
         });
       }
     }
-    log(novels.sublist(10, 20).toString());
-    // log(novels.sublist(0, 10).toString());
     return novels;
   }
 }
@@ -240,7 +238,7 @@ Future<dynamic> scrapeNovelSearchData(String query) async {
     Map<String, String> data = {
       'id': '$baseUrl$link',
       'title': title,
-      'image': (imageUrl == null || imageUrl.isEmpty)
+      'image': (imageUrl.isEmpty)
           ? 'https://placehold.co/200x250.png'
           : imageUrl,
       'rating': (double.parse(rating) * 2).toString(),

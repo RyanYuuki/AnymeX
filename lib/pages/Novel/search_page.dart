@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:aurora/components/common/IconWithLabel.dart';
-import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:aurora/pages/Novel/details_page.dart';
 import 'package:aurora/utils/sources/novel/wuxia_click.dart';
 import 'package:cached_network_image/cached_network_image.dart';

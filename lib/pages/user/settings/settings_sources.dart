@@ -1,9 +1,6 @@
-import 'package:aurora/components/common/switch_tile.dart';
-import 'package:aurora/components/common/switch_tile_stateless.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
-import 'package:iconsax/iconsax.dart';
 
 class SourcesSettingPage extends StatefulWidget {
   const SourcesSettingPage({super.key});

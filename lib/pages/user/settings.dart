@@ -3,6 +3,7 @@ import 'package:aurora/pages/user/settings/settings_about.dart';
 import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
+import 'package:aurora/utils/sources/novel/novel_buddy.dart';
 import 'package:aurora/utils/sources/novel/wuxia_click.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -108,7 +109,7 @@ class SettingsPage extends StatelessWidget {
             title: 'Fetch Data',
             description: 'Test',
             onTap: () async {
-              await scrapeHomePageData();
+              await scrapeNovelsHomePage();
             },
           ),
         ],
