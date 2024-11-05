@@ -10,12 +10,6 @@ import 'package:http/http.dart' as http;
 
 Future mapMalToAniwatch(
     BuildContext context, String title, String posterUrl, String tag) async {
-  final loadingDialog = showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => const Center(child: CircularProgressIndicator()),
-  );
-
   try {
     final searchResults = await scrapeAnimeSearch(title);
 

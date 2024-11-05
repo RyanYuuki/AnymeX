@@ -8,6 +8,7 @@ import 'package:aurora/fallbackData/novel_homepage.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart' hide Header;
 import 'package:aurora/pages/Novel/search_page.dart';
+import 'package:aurora/utils/sources/novel/novel_buddy.dart';
 import 'package:aurora/utils/sources/novel/wuxia_click.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -28,19 +29,18 @@ class _NovelHomePageState extends State<NovelHomePage> {
   @override
   void initState() {
     super.initState();
-    novelData = Future.value(novelFallbackData); 
+    novelData = Future.value(novelFallbackData);
     fetchNovelData();
   }
 
   Future<dynamic> fetchNovelData() async {
     try {
-      final tempData = await scrapeHomePageData();
+      final tempData = await scrapeNovelsHomePage();
       setState(() {
-        novelData =
-            Future.value(tempData); 
+        novelData = Future.value(tempData);
       });
     } catch (error) {
-      log('Failed to fetch novel data: $error'); 
+      log('Failed to fetch novel data: $error');
     }
   }
 
@@ -64,7 +64,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
                     Header(controller: _searchTerm),
                     Carousel(
                       title: 'Trending',
-                      animeData: snapshot.data!.sublist(10, 20),
+                      animeData: snapshot.data!.sublist(0, 10),
                       span: 'Novels',
                     ),
                   ],
@@ -76,11 +76,11 @@ class _NovelHomePageState extends State<NovelHomePage> {
               ),
               ReusableCarousel(
                 title: "Latest",
-                carouselData: snapshot.data!.sublist(0, 10),
+                carouselData: snapshot.data!.sublist(20, 30),
               ),
               ReusableCarousel(
                 title: "Favorite",
-                carouselData: snapshot.data!.sublist(20, 28),
+                carouselData: snapshot.data!.sublist(30, 40),
               ),
               const SizedBox(height: 10),
             ],
