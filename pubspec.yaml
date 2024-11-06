@@ -14,34 +14,21 @@ dependencies:
   http: ^1.2.2
   iconly: ^1.0.1
   iconsax: ^0.0.8
-  infinite_carousel: ^1.1.1
   text_scroll: ^0.2.0
   better_player: ^0.0.84
   custom_sliding_segmented_control: ^1.8.3
-  hugeicons: ^0.0.7
-  font_awesome_flutter: ^10.7.0
   provider: ^6.1.2
   cached_network_image: ^3.4.1
   animated_segmented_tab_control: ^2.0.0
-  smooth_sheets: ^0.9.3
   hive_flutter: ^1.1.0
   hive: ^2.2.3
-  hive_generator: ^2.0.1
-  build_runner: ^2.4.11
-  image_picker: ^1.1.2
-  path_provider: ^2.1.4
   smooth_page_indicator: ^1.2.0+3
   wakelock_plus: ^1.2.8
   dynamic_color: ^1.7.0
-  ionicons: ^0.2.2
-  video_player: ^2.9.2
-  path: any
-  platform: ^3.1.5
   device_info_plus: ^10.1.2
   shimmer: ^3.0.0
   url_launcher: ^6.3.0
   crypto: ^3.0.5
-  flutter_appauth: ^7.0.1
   flutter_secure_storage: ^4.2.1
   flutter_dotenv: ^5.1.0
   flutter_web_auth: ^0.5.0
@@ -49,19 +36,22 @@ dependencies:
   html: any
   transformable_list_view: ^0.6.0
   encrypt: ^5.0.3
-  algorithmic: ^0.0.11
+  hugeicons: ^0.0.7
   google_fonts: ^6.2.1
+  pointycastle: ^3.9.1
+  js_unpack: ^1.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  change_app_package_name: ^1.3.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.11
 
 flutter:
   uses-material-design: true
 
   assets: 
-    - assets/images/
+    - assets/images/logo_transparent.png
     - .env
 
   fonts:
