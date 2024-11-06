@@ -1,5 +1,6 @@
 import 'package:aurora/components/anilistExclusive/animeListCarousels.dart';
 import 'package:aurora/components/anime/details/image_button.dart';
+import 'package:aurora/components/novel/continue_noveling.dart';
 import 'package:aurora/fallbackData/anilist_homepage_data.dart';
 import 'package:aurora/fallbackData/anilist_manga_homepage.dart';
 import 'package:aurora/pages/user/anilist_pages/anime_list.dart';
@@ -68,6 +69,7 @@ class _HomePageState extends State<HomePage> {
             // final rawDataManga = anilistProvider.userData['mangaList'];
             final mangaList = anilistProvider.userData['mangaList'];
             final dynamic readingMangaList = appBox.get('currently-reading');
+            final dynamic readingNovelList = appBox.get('currently-noveling');
 
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -232,6 +234,11 @@ class _HomePageState extends State<HomePage> {
                           carouselData: readingMangaList,
                           tag: 'home-page',
                         ),
+                      ContinueNoveling(
+                        carouselData: readingNovelList,
+                        title: 'Continue Novelling',
+                        tag: 'Novel-Carousel',
+                      ),
                       ReusableCarousel(
                         title: 'Recommended',
                         carouselData: fallbackAnilistData['data']
