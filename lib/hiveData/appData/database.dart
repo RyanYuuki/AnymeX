@@ -62,6 +62,7 @@ class AppData extends ChangeNotifier {
     required String novelTitle,
     required String chapterNumber,
     required String chapterId,
+    required String novelImage,
   }) {
     novelList ??= [];
 
@@ -69,7 +70,8 @@ class AppData extends ChangeNotifier {
       'novelId': novelId,
       'novelTitle': novelTitle,
       'chapterNumber': chapterNumber,
-      'chapterId': chapterId
+      'chapterId': chapterId,
+      'novelImage': novelImage
     };
 
     novelList.removeWhere((novel) => novel['novelId'] == novelId);
@@ -78,6 +80,7 @@ class AppData extends ChangeNotifier {
 
     var box = Hive.box('app-data');
     box.put('currently-noveling', novelList);
+    log(box.get('currently-noveling').toString());
     notifyListeners();
   }
 
