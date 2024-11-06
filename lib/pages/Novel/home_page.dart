@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/novel/cover_carousel.dart';
 import 'package:aurora/components/common/SettingsModal.dart';
 import 'package:aurora/components/novel/carousel.dart';
 import 'package:aurora/components/novel/reusable_carousel.dart';
@@ -8,8 +9,7 @@ import 'package:aurora/fallbackData/novel_homepage.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart' hide Header;
 import 'package:aurora/pages/Novel/search_page.dart';
-import 'package:aurora/utils/sources/novel/novel_buddy.dart';
-import 'package:aurora/utils/sources/novel/wuxia_click.dart';
+import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -35,7 +35,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
 
   Future<dynamic> fetchNovelData() async {
     try {
-      final tempData = await scrapeNovelsHomePage();
+      final tempData = await NovelBuddy().scrapeNovelsHomePage();
       setState(() {
         novelData = Future.value(tempData);
       });
@@ -62,6 +62,10 @@ class _NovelHomePageState extends State<NovelHomePage> {
                 child: Column(
                   children: [
                     Header(controller: _searchTerm),
+                    Covercarousel(
+                      animeData: snapshot.data!.sublist(8, 18),
+                    ),
+                    const SizedBox(height: 10),
                     Carousel(
                       title: 'Trending',
                       animeData: snapshot.data!.sublist(0, 10),

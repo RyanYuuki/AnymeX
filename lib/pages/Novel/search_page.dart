@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:aurora/components/common/IconWithLabel.dart';
 import 'package:aurora/pages/Novel/details_page.dart';
-import 'package:aurora/utils/sources/novel/wuxia_click.dart';
+import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -30,7 +30,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> fetchSearchedTerm() async {
     _searchData = null;
-    final tempData = await scrapeNovelSearchData(controller.text);
+    final tempData = await NovelBuddy().scrapeNovelSearchData(controller.text);
     setState(() {
       _searchData = tempData;
     });
@@ -282,9 +282,9 @@ GestureDetector searchItemList(BuildContext context, anime, tag) {
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5)),
-                      icon: Iconsax.book,
+                      icon: Iconsax.eye,
                       backgroundColor: const Color(0xFFb0e3af),
-                      name: anime['chapters']?.toString() ?? '?'),
+                      name: anime['views']?.toString() ?? '?'),
                   const SizedBox(width: 2),
                   iconWithName(
                       isVertical: false,
@@ -414,7 +414,7 @@ GestureDetector searchItemCover(
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '${anime['chapters'] ?? '?'} Chapters',
+                        '${anime['views'] ?? '?'} Views',
                         style: TextStyle(
                             color:
                                 Theme.of(context).colorScheme.inverseSurface ==
