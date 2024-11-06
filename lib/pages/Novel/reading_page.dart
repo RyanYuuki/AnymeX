@@ -2,7 +2,7 @@
 
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
-import 'package:aurora/utils/sources/novel/wuxia_click.dart';
+import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
@@ -14,12 +14,16 @@ class NovelReadingPage extends StatefulWidget {
   final String novelTitle;
   final String novelId;
   final int chapterNumber;
+  final String selectedSource;
+  final String novelImage;
   const NovelReadingPage(
       {super.key,
       required this.id,
       required this.novelTitle,
       required this.novelId,
-      required this.chapterNumber});
+      required this.chapterNumber,
+      required this.selectedSource,
+      required this.novelImage});
 
   @override
   State<NovelReadingPage> createState() => _NovelReadingPageState();
@@ -34,7 +38,6 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
   Color _textColor = ThemeProvider().selectedTheme.colorScheme.inverseSurface;
   dynamic novelData;
   String _currentChapterId = '';
-
   final List<String> _fontFamilies = [
     'Default',
     'Roboto',
@@ -72,17 +75,18 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
     super.initState();
     _currentChapterId = widget.id;
     _fetchInitialChapter();
+    saveChapterProgress();
   }
 
   Future<void> _fetchInitialChapter() async {
     try {
-      final data = await scrapeNovelWords(widget.id);
+      final data = await NovelSourcesHandler()
+          .fetchNovelWords(widget.id, widget.selectedSource);
       if (mounted) {
         setState(() {
           novelData = data;
           _isLoading = false;
         });
-
       }
     } catch (e) {
       if (mounted) {
@@ -93,27 +97,38 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
     }
   }
 
-  void _saveChapterProgress() {
-    final provider = Provider.of<AppData>(context);
-
-    
+  void saveChapterProgress() {
+    final provider = Provider.of<AppData>(context, listen: false);
+    provider.addReadNovels(
+        novelId: widget.novelId,
+        novelTitle: widget.novelTitle,
+        chapterNumber: widget.chapterNumber.toString(),
+        chapterId: widget.id,
+        novelImage: widget.novelImage);
   }
 
   Future<void> _fetchNextPreviousChapter(String chapterId) async {
     if (chapterId.isEmpty) return;
-
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final data = await scrapeNovelWords(chapterId);
+      final data = await NovelSourcesHandler()
+          .fetchNovelWords(chapterId, widget.selectedSource);
       if (mounted) {
         setState(() {
           novelData = data;
           _currentChapterId = chapterId;
           _isLoading = false;
         });
+        final provider = Provider.of<AppData>(context, listen: false);
+        provider.addReadNovels(
+            novelId: widget.novelId,
+            novelTitle: widget.novelTitle,
+            chapterNumber: widget.chapterNumber.toString(),
+            chapterId: chapterId,
+            novelImage: widget.novelImage);
       }
     } catch (e) {
       if (mounted) {
@@ -218,6 +233,9 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                             return Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: ChoiceChip(
+                                side: BorderSide.none,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.onSecondary,
                                 label: Text(family),
                                 selected: _selectedFontFamily == family,
                                 onSelected: (selected) {
@@ -368,6 +386,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
       );
     }
 
+
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: Stack(
@@ -409,7 +428,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
             right: 0,
             child: Container(
               height: 80,
-              padding: const EdgeInsets.only(top: 40, left: 10, right: 10),
+              padding: const EdgeInsets.only(top: 40, left: 0, right: 10),
               decoration: BoxDecoration(
                 color: _backgroundColor.withOpacity(0.4),
                 boxShadow: [
@@ -439,7 +458,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width / 1.5,
                         child: Text(
-                          novelData['currentChapter'],
+                          novelData['chapterTitle'],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
