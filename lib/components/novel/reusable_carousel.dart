@@ -123,7 +123,7 @@ class ReusableCarousel extends StatelessWidget {
               final String title = itemData['title'] ?? '?';
               final random = Random().nextInt(100000);
               final tagg = '${itemData['id']}$random';
-              String extraData = itemData['rating'] ?? '??';
+              String extraData = itemData['rating']?.toString() ?? '??';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 10.0),
