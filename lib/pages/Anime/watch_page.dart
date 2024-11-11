@@ -530,15 +530,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       builder: (context) {
         return Container(
           width: 400,
+          height: 300,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: ListView(
             children: [
-              const Text(
-                "Select Video Quality",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              const Center(
+                child: Text(
+                  "Select Video Quality",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 20),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),

@@ -3,6 +3,7 @@ import 'package:aurora/components/anime/details/image_button.dart';
 import 'package:aurora/components/novel/continue_noveling.dart';
 import 'package:aurora/fallbackData/anilist_homepage_data.dart';
 import 'package:aurora/fallbackData/anilist_manga_homepage.dart';
+import 'package:aurora/pages/MyList/mylist_page.dart';
 import 'package:aurora/pages/user/anilist_pages/anime_list.dart';
 import 'package:aurora/pages/user/anilist_pages/manga_list.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
@@ -61,15 +62,19 @@ class _HomePageState extends State<HomePage> {
         final animeList = isLoggedIn &&
                 anilistProvider.userData != null &&
                 anilistProvider.userData.containsKey('currentlyWatching')
-            ? (anilistProvider.userData['currentlyWatching'] ?? [])
+            ? (anilistProvider.userData['currentlyWatching'].reversed
+                    .toList() ??
+                [])
             : [];
         return ValueListenableBuilder(
           valueListenable: Hive.box('app-data').listenable(),
           builder: (context, Box appBox, _) {
             // final rawDataManga = anilistProvider.userData['mangaList'];
-            final mangaList = anilistProvider.userData['mangaList'];
-            final dynamic readingMangaList = appBox.get('currently-reading');
-            final dynamic readingNovelList = appBox.get('currently-noveling');
+            final mangaList = anilistProvider.userData?['mangaList'];
+            final dynamic readingMangaList =
+                appBox.get('currently-reading')?.reversed.toList();
+            final dynamic readingNovelList =
+                appBox.get('currently-noveling')?.reversed.toList();
 
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -213,6 +218,18 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
+                      const SizedBox(height: 20),
+                      ImageButton(
+                          width: 200,
+                          buttonText: "FAVOURITES",
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MyList()));
+                          },
+                          backgroundImage:
+                              'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
                       const SizedBox(height: 20),
                       if (anilistProvider.userData?['data'] != null)
                         anilistCarousel(
