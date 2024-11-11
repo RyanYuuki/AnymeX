@@ -13,7 +13,7 @@ class MangaSourceHandler {
     "MangaNato": MangaNato(),
   };
 
-  String? selectedSourceName;
+  String? selectedSourceName = "MangaKakalotUnofficial";
 
   void setSelectedSource(String sourceName) {
     if (sourceMap.containsKey(sourceName)) {
