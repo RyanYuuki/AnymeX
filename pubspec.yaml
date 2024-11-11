@@ -40,6 +40,9 @@ dependencies:
   google_fonts: ^6.2.1
   pointycastle: ^3.9.1
   js_unpack: ^1.0.4
+  dio: ^5.7.0
+  permission_handler: ^11.3.1
+  ffmpeg_kit_flutter: ^6.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
