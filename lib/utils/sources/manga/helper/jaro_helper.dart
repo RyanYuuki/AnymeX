@@ -5,7 +5,7 @@ String findBestMatch(String query, dynamic mangaList) {
   String bestMatchId = '';
 
   for (var manga in mangaList) {
-    final title = manga['title'] ?? '';
+    final title = manga?['title'] ?? manga?['name'] ?? '';
     double similarity = jaroWinkler(query.toLowerCase(), title.toLowerCase());
     if (similarity > bestSimilarity) {
       bestSimilarity = similarity;

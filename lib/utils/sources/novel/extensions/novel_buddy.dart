@@ -1,21 +1,20 @@
 import 'dart:developer';
-
+import 'package:http/http.dart' as http;
 import 'package:aurora/utils/sources/novel/base/source_base.dart';
-import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 class NovelBuddy implements NovelSourceBase {
   @override
   final baseUrl = 'https://novelbuddy.com';
-  final dio = Dio();
+
   Future<dynamic> scrapeNovelsHomePage() async {
     String url = 'https://novelbuddy.com/popular?status=completed';
 
     try {
-      Response response = await dio.get(url);
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        Document document = parse(response.data);
+        Document document = parse(response.body);
         List<Map<String, dynamic>> novelsData = [];
 
         var novelItems = document.querySelectorAll('.book-item');
@@ -52,10 +51,10 @@ class NovelBuddy implements NovelSourceBase {
 
   @override
   Future<Map<String, dynamic>> scrapeNovelDetails(String url) async {
-    final response = await dio.get(url);
+    final response = await http.get(Uri.parse(url));
     dynamic novelData = [];
     if (response.statusCode == 200) {
-      final document = parse(response.data);
+      final document = parse(response.body);
 
       final title =
           document.querySelector('.detail .name h1')?.text.trim() ?? '';
@@ -102,10 +101,10 @@ class NovelBuddy implements NovelSourceBase {
       final bookIdMatch = RegExp(r'var bookId = (\d+);').firstMatch(novelId!);
       final bookId =
           bookIdMatch != null ? int.parse(bookIdMatch.group(1)!) : null;
-      final newResp = await dio.get(
-          'https://novelbuddy.com/api/manga/$bookId/chapters?source=detail');
+      final newResp = await http.get(Uri.parse(
+          'https://novelbuddy.com/api/manga/$bookId/chapters?source=detail'));
       if (newResp.statusCode == 200) {
-        final pageContent = parse(newResp.data);
+        final pageContent = parse(newResp.body);
         var chapterListElements = pageContent.querySelectorAll('li');
         final chapterList = [];
         for (var chapter in chapterListElements) {
@@ -138,10 +137,10 @@ class NovelBuddy implements NovelSourceBase {
 
   @override
   Future<Map<String, dynamic>> scrapeNovelWords(String url) async {
-    final resp = await dio.get(url);
+    final resp = await http.get(Uri.parse(url));
 
     if (resp.statusCode == 200) {
-      Document document = parse(resp.data);
+      Document document = parse(resp.body);
       var title =
           document.querySelector('.chapter-info a')?.attributes['title'];
       var chapterTitle = document.querySelector('#chapter__content h1')?.text;
@@ -178,9 +177,9 @@ class NovelBuddy implements NovelSourceBase {
     String url = 'https://novelbuddy.com/search?q=$query';
 
     try {
-      Response response = await dio.get(url);
+      var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        Document document = parse(response.data);
+        Document document = parse(response.body);
         List<Map<String, String>> novelsData = [];
 
         var novelItems = document.querySelectorAll('.book-item');
