@@ -6,7 +6,6 @@ import 'package:aurora/components/common/IconWithLabel.dart';
 import 'package:aurora/pages/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
@@ -31,9 +30,7 @@ class _CovercarouselState extends State<Covercarousel> {
     if (widget.animeData == null) {
       return const Center(
         heightFactor: 300,
-        child: CupertinoActivityIndicator(
-          radius: 50,
-        ),
+        child: CircularProgressIndicator(),
       );
     }
 

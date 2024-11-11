@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:aurora/pages/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
@@ -27,10 +26,7 @@ class Carousel extends StatelessWidget {
     final ColorScheme = Theme.of(context).colorScheme;
     if (animeData == null) {
       return Center(
-          heightFactor: 300,
-          child: const CupertinoActivityIndicator(
-            radius: 50,
-          ));
+          heightFactor: 300, child: const CircularProgressIndicator());
     }
 
     return Column(
@@ -155,25 +151,13 @@ class Carousel extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: ColorScheme.onPrimaryFixedVariant,
+                          color: ColorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
                             Icon(Iconsax.star5,
-                                color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white),
+                                color: Theme.of(context).colorScheme.primary, size: 18),
                             const SizedBox(width: 2),
                             Text(
                               rating,
@@ -191,7 +175,7 @@ class Carousel extends StatelessWidget {
                                               Color(0xffe2e2e2)
                                           ? Colors.black
                                           : Colors.white,
-                                  fontSize: 14),
+                                  fontSize: 14, fontFamily: 'Poppins-SemiBold'),
                             ),
                           ],
                         ),

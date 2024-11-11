@@ -1,8 +1,6 @@
 // ignore_for_file: camel_case_types, use_build_context_synchronously, must_be_immutable
 import 'dart:math';
 import 'package:aurora/components/helper/scroll_helper.dart';
-import 'package:aurora/pages/Anime/details_page.dart';
-import 'package:aurora/pages/Manga/details_page.dart';
 import 'package:aurora/pages/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
