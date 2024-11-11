@@ -5,8 +5,6 @@ import 'package:aurora/components/anilistExclusive/animeListCarousels.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
@@ -401,7 +399,7 @@ class _ProfilePageState extends State<ProfilePage> {
             value,
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins-SemiBold',
             ),
             textAlign: TextAlign.center,
           ),
@@ -413,29 +411,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showAvatarSelector(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return AvatarModal(
-          onAvatarSelected: (File avatar) {
-            setState(() {
-              _avatarImage = avatar;
-            });
-            Hive.box('login-data').put('userInfo', [
-              Hive.box('login-data').get('userInfo')[0],
-              Hive.box('login-data').get('userInfo')[1],
-              _avatarImage?.path ?? 'null',
-            ]);
-          },
-        );
-      },
     );
   }
 }
@@ -466,151 +441,6 @@ class StatsRow extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AvatarModal extends StatefulWidget {
-  final Function(File) onAvatarSelected;
-
-  const AvatarModal({required this.onAvatarSelected, super.key});
-
-  @override
-  State<AvatarModal> createState() => _AvatarModalState();
-}
-
-class _AvatarModalState extends State<AvatarModal> {
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = path.basename(pickedFile.path);
-      final savedImage =
-          await File(pickedFile.path).copy('${directory.path}/$fileName');
-
-      widget.onAvatarSelected(savedImage);
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> _selectAvatar(String assetPath) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final fileName = path.basename(assetPath);
-    final byteData = await DefaultAssetBundle.of(context).load(assetPath);
-    final file = File('${directory.path}/$fileName');
-    await file.writeAsBytes(byteData.buffer.asUint8List());
-
-    widget.onAvatarSelected(file);
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 350,
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text(
-            'Choose your avatar',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 30),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context).colorScheme.secondaryContainer,
-              ),
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: IconButton(
-                      onPressed: _pickImage,
-                      icon: const Icon(IconlyBold.image, size: 50),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        _selectAvatar('assets/images/avatars/avatar1.png'),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/avatars/avatar1.png',
-                        fit: BoxFit.cover,
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        _selectAvatar('assets/images/avatars/avatar2.png'),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/avatars/avatar2.png',
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        _selectAvatar('assets/images/avatars/avatar3.png'),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/avatars/avatar3.png',
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        _selectAvatar('assets/images/avatars/avatar4.png'),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/avatars/avatar4.png',
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        _selectAvatar('assets/images/avatars/avatar5.png'),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/avatars/avatar5.png',
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
