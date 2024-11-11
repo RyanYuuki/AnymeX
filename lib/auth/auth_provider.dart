@@ -181,6 +181,56 @@ class AniListProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateMangaProgress({
+    required int mangaId,
+    required int chapterProgress,
+    required String status,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+    const String mutation = '''
+  mutation UpdateMediaList(\$mangaId: Int, \$progress: Int, \$status: MediaListStatus) {
+    SaveMediaListEntry(mediaId: \$mangaId, progress: \$progress, status: \$status) {
+      id
+      status
+      progress
+    }
+  }
+  ''';
+
+    final Map<String, dynamic> variables = {
+      'mangaId': mangaId,
+      'progress': chapterProgress,
+      'status': status.toUpperCase(),
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': variables,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['errors'] != null) {
+        log('Error: ${data['errors']}');
+      } else {
+        log('Manga list updated successfully: ${data['data']}');
+        await fetchUserMangaList();
+      }
+    } else {
+      log('Failed to update manga list. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+    }
+    notifyListeners();
+  }
+
   Future<void> updateAnimeProgress({
     required int animeId,
     required int episodeProgress,
