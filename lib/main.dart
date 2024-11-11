@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/pages/MyList/mylist_page.dart';
 import 'package:aurora/pages/Novel/home_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Anime/home_page.dart';
 import 'package:aurora/pages/Manga/home_page.dart';
 import 'package:aurora/pages/home_page.dart';
+import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +41,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AppData()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SourcesHandler()),
         ChangeNotifierProvider(
             create: (_) => AniListProvider()..tryAutoLogin()),
       ],
@@ -88,10 +91,36 @@ class _MainAppState extends State<MainApp> {
     const NovelHomePage(),
   ];
 
+  double getProperSize(double size) {
+    if (size >= 0.0 && size < 5.0) {
+      return 50.0;
+    } else if (size >= 5.0 && size < 10.0) {
+      return 45.0;
+    } else if (size >= 10.0 && size < 15.0) {
+      return 40.0;
+    } else if (size >= 15.0 && size < 20.0) {
+      return 35.0;
+    } else if (size >= 20.0 && size < 25.0) {
+      return 30.0;
+    } else if (size >= 25.0 && size < 30.0) {
+      return 25.0;
+    } else if (size >= 30.0 && size < 35.0) {
+      return 20.0;
+    } else if (size >= 35.0 && size < 40.0) {
+      return 15.0;
+    } else if (size >= 40.0 && size < 45.0) {
+      return 10.0;
+    } else if (size >= 45.0 && size < 50.0) {
+      return 5.0;
+    } else {
+      return 0.0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    final box = Hive.box('app-data');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeProvider.selectedTheme,
@@ -99,35 +128,52 @@ class _MainAppState extends State<MainApp> {
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: routes[_selectedIndex],
-        bottomNavigationBar: CrystalNavigationBar(
-          currentIndex: _selectedIndex,
-          paddingR: const EdgeInsets.all(0),
-          marginR: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-          unselectedItemColor: Colors.white,
-          backgroundColor: Colors.black.withOpacity(0.3),
-          onTap: _onItemTapped,
-          items: [
-            CrystalNavigationBarItem(
-              icon: IconlyBold.home,
-              unselectedIcon: IconlyLight.home,
-              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
-            ),
-            CrystalNavigationBarItem(
-              icon: Icons.movie_filter_rounded,
-              unselectedIcon: Icons.movie_filter_outlined,
-              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
-            ),
-            CrystalNavigationBarItem(
-              icon: Iconsax.book,
-              unselectedIcon: Iconsax.book,
-              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
-            ),
-            CrystalNavigationBarItem(
-              icon: HugeIcons.strokeRoundedBookOpen01,
-              unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
-              selectedColor: themeProvider.selectedTheme.colorScheme.primary,
-            ),
-          ],
+        bottomNavigationBar: ValueListenableBuilder(
+          valueListenable: box.listenable(),
+          builder: (BuildContext context, Box<dynamic> value, Widget? child) {
+            double tabBarSizeVertical = Hive.box('app-data')
+                .get('tabBarSizeVertical', defaultValue: 30.0);
+            double tabBarSizeHorizontal = Hive.box('app-data')
+                .get('tabBarSizeHorizontal', defaultValue: 0.0);
+            return CrystalNavigationBar(
+              borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
+              currentIndex: _selectedIndex,
+              paddingR: const EdgeInsets.all(0),
+              marginR: EdgeInsets.symmetric(
+                horizontal: getProperSize(tabBarSizeHorizontal),
+                vertical: getProperSize(tabBarSizeVertical),
+              ),
+              unselectedItemColor: Colors.white,
+              backgroundColor: Colors.black.withOpacity(0.3),
+              onTap: _onItemTapped,
+              items: [
+                CrystalNavigationBarItem(
+                  icon: IconlyBold.home,
+                  unselectedIcon: IconlyLight.home,
+                  selectedColor:
+                      themeProvider.selectedTheme.colorScheme.primary,
+                ),
+                CrystalNavigationBarItem(
+                  icon: Icons.movie_filter_rounded,
+                  unselectedIcon: Icons.movie_filter_outlined,
+                  selectedColor:
+                      themeProvider.selectedTheme.colorScheme.primary,
+                ),
+                CrystalNavigationBarItem(
+                  icon: Iconsax.book,
+                  unselectedIcon: Iconsax.book,
+                  selectedColor:
+                      themeProvider.selectedTheme.colorScheme.primary,
+                ),
+                CrystalNavigationBarItem(
+                  icon: HugeIcons.strokeRoundedBookOpen01,
+                  unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                  selectedColor:
+                      themeProvider.selectedTheme.colorScheme.primary,
+                ),
+              ],
+            );
+          },
         ),
       ),
       onGenerateRoute: (settings) {
@@ -168,12 +214,14 @@ class _MainAppState extends State<MainApp> {
             final mangaId = args?['mangaId'] ?? '';
             final posterUrl = args?['posterUrl'] ?? '';
             final currentSource = args?['currentSource'] ?? '';
+            final anilistId = args?['anilistId'] ?? '';
             return MaterialPageRoute(
               builder: (context) => ReadingPage(
                 id: id,
                 mangaId: mangaId,
                 posterUrl: posterUrl,
                 currentSource: currentSource,
+                anilistId: anilistId,
               ),
             );
           case '/profile':
