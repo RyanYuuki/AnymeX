@@ -78,7 +78,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
               widget.onEpisodeSelected(episodeNumber);
             },
             child: Opacity(
-              opacity: episodeNumber < widget.progress ? 0.7 : 1,
+              opacity: (episodeNumber) < widget.progress ? 0.7 : 1,
               child: Container(
                 height: 50,
                 clipBehavior: Clip.antiAlias,

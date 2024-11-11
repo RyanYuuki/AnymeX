@@ -25,61 +25,68 @@ class ImageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-            child: ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: CachedNetworkImage(
-            imageUrl: backgroundImage,
-            fit: BoxFit.cover,
-          ),
-        )),
-        Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Colors.black.withOpacity(0.5),
-              Colors.black.withOpacity(0.5),
-            ]),
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-        ),
-        // Elevated Button
-        ElevatedButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            fixedSize: Size(width, height),
-            backgroundColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .inverseSurface
-                      .withOpacity(0.3)),
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            width: 1,
+            color:
+                Theme.of(context).colorScheme.inverseSurface.withOpacity(0.3)),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+              child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: CachedNetworkImage(
+              imageUrl: backgroundImage,
+              fit: BoxFit.cover,
+            ),
+          )),
+          Container(
+            width: width,
+            height: height,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Colors.black.withOpacity(0.5),
+                Colors.black.withOpacity(0.5),
+              ]),
               borderRadius: BorderRadius.circular(borderRadius),
             ),
-            elevation: 0,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                buttonText,
-                style: textStyle ?? TextStyle(color: textColor, fontFamily: 'Poppins-SemiBold'),
+          // Elevated Button
+          ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              fixedSize: Size(width, height),
+              backgroundColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
-              const SizedBox(height: 3),
-              Container(
-                color: Theme.of(context).colorScheme.primary,
-                height: 2,
-                width: 50,
-              )
-            ],
+              elevation: 0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  buttonText,
+                  style: textStyle ??
+                      TextStyle(
+                          color: textColor, fontFamily: 'Poppins-SemiBold'),
+                ),
+                const SizedBox(height: 3),
+                Container(
+                  color: Theme.of(context).colorScheme.primary,
+                  height: 2,
+                  width: 50,
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
