@@ -123,7 +123,7 @@ class _ControlsState extends State<Controls> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric(vertical:  10.0, horizontal: 30),
       child: Column(
         children: [
           widget.topControls,
@@ -175,7 +175,6 @@ class _ControlsState extends State<Controls> {
                             const Color.fromARGB(255, 167, 167, 167),
                         thumbShape:
                             const RoundSliderThumbShape(enabledThumbRadius: 6),
-                        trackShape: EdgeToEdgeTrackShape(),
                         overlayShape: SliderComponentShape.noThumb,
                       ),
                       child: BetterPlayerMaterialVideoProgressBar(
@@ -337,22 +336,5 @@ class _ControlsState extends State<Controls> {
         ),
       ),
     );
-  }
-}
-
-class EdgeToEdgeTrackShape extends RoundedRectSliderTrackShape {
-  @override
-  Rect getPreferredRect({
-    required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-  }) {
-    final double trackHeight = sliderTheme.trackHeight ?? 2.0;
-    final double trackWidth = parentBox.size.width;
-    final double trackTop =
-        offset.dy + (parentBox.size.height - trackHeight) / 2;
-    return Rect.fromLTWH(offset.dx, trackTop, trackWidth, trackHeight);
   }
 }
