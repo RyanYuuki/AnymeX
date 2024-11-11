@@ -8,6 +8,7 @@ import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/components/anime/details/character_cards.dart';
 import 'package:aurora/components/manga/chapter_ranges.dart';
 import 'package:aurora/components/manga/chapters.dart';
+import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/Manga/read_page.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
 import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
@@ -74,6 +75,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
   late Animation<double> _animation;
   int selectedIndex = 0;
   PageController pageController = PageController();
+  late bool isFavourite;
 
   // Chapter section
   dynamic mangaData;
@@ -101,6 +103,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
       vsync: this,
     )..repeat(reverse: true);
     availableSources = mangaSourceHandler.getAvailableSources();
+    final readMangas = AppData().readMangas;
+    isFavourite = readMangas != null
+        ? readMangas?.any((manga) => manga['anilistId'] == widget.id.toString())
+        : false;
     selectedSource = mangaSourceHandler.selectedSourceName ??
         availableSources.first['name']!;
     chapterProgress = returnMangaProgress();
@@ -192,12 +198,44 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
     );
   }
 
+  double getProperSize(double size) {
+    if (size >= 0.0 && size < 5.0) {
+      return 50.0;
+    } else if (size >= 5.0 && size < 10.0) {
+      return 45.0;
+    } else if (size >= 10.0 && size < 15.0) {
+      return 40.0;
+    } else if (size >= 15.0 && size < 20.0) {
+      return 35.0;
+    } else if (size >= 20.0 && size < 25.0) {
+      return 30.0;
+    } else if (size >= 25.0 && size < 30.0) {
+      return 25.0;
+    } else if (size >= 30.0 && size < 35.0) {
+      return 20.0;
+    } else if (size >= 35.0 && size < 40.0) {
+      return 15.0;
+    } else if (size >= 40.0 && size < 45.0) {
+      return 10.0;
+    } else if (size >= 45.0 && size < 50.0) {
+      return 5.0;
+    } else {
+      return 0.0;
+    }
+  }
+
   CrystalNavigationBar bottomBar(BuildContext context) {
+    final tabBarRoundness =
+        Hive.box('app-data').get('tabBarRoundness', defaultValue: 30.0);
+    double tabBarSizeVertical =
+        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 30.0);
     return CrystalNavigationBar(
+      borderRadius: tabBarRoundness,
       currentIndex: selectedIndex,
       unselectedItemColor: Colors.white,
       selectedItemColor: Theme.of(context).colorScheme.primary,
-      marginR: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+      marginR: EdgeInsets.symmetric(
+          horizontal: 100, vertical: getProperSize(tabBarSizeVertical)),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
       onTap: (index) {
@@ -232,7 +270,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
 
       switch (status) {
         case 'CURRENT':
-          return 'CURRENTLy Reading';
+          return 'Currently Reading';
         case 'COMPLETED':
           return 'Completed';
         case 'PAUSED':
@@ -303,7 +341,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
         int step;
         int length = mangaData!['chapterList'].length;
 
-        // Determine step size based on chapter count
         if (length > 50 && length < 100) {
           step = 24;
         } else if (length > 200 && length < 300) {
@@ -316,7 +353,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
 
         chapterRanges = getChapterRanges(mangaData!['chapterList'], step);
 
-        // Filter chapters based on the first range, ensuring start is less than or equal to end
         filteredChapters = mangaData!['chapterList'].where((chapter) {
           double chapterNumber = double.parse(chapter['number']);
           return chapterNumber >= chapterRanges[0][0] &&
@@ -491,12 +527,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                   context,
                   MaterialPageRoute(
                       builder: (context) => ReadingPage(
-                          id: getChapterId(
-                              mangaData: mangaData,
-                              progress: returnMangaProgress())!,
-                          mangaId: mangaData?['id'],
-                          posterUrl: widget.posterUrl!,
-                          currentSource: selectedSource)));
+                            id: getChapterId(
+                                mangaData: mangaData,
+                                progress: returnMangaProgress())!,
+                            mangaId: mangaData?['id'],
+                            posterUrl: widget.posterUrl!,
+                            currentSource: selectedSource,
+                            anilistId: data['id'].toString(),
+                          )));
             },
             child: Container(
               height: 75,
@@ -598,6 +636,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               posterUrl: widget.posterUrl,
               chaptersData: filteredChapters,
               currentSource: selectedSource,
+              anilistId: data['id'].toString(),
             )
         ],
       ),
@@ -943,7 +982,28 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                     ),
                   ),
                   Expanded(child: SizedBox.shrink()),
-                  IconButton(onPressed: () {}, icon: Icon(Iconsax.heart)),
+                  IconButton(
+                      onPressed: () {
+                        if (mangaData != null) {
+                          setState(() {
+                            isFavourite = !isFavourite;
+                          });
+                          if (!isFavourite) {
+                            AppData().addReadManga(
+                                mangaId: mangaData['id'],
+                                mangaTitle: mangaData['title'],
+                                currentChapter: chapterProgress.toString(),
+                                mangaPosterImage: widget.posterUrl!,
+                                anilistMangaId: widget.id.toString(),
+                                currentSource:
+                                    mangaSourceHandler.selectedSourceName!);
+                          } else {
+                            AppData()
+                                .removeMangaByAnilistId(widget.id.toString());
+                          }
+                        }
+                      },
+                      icon: Icon(Iconsax.heart)),
                   IconButton(onPressed: () {}, icon: Icon(Icons.share)),
                 ],
               ),
@@ -1392,31 +1452,84 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showListEditorModal(context, data['chapters'] ?? '?');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        width: 2,
-                        color: Theme.of(context).colorScheme.surfaceContainer,
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showListEditorModal(context, data['chapters'] ?? '?');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              width: 2,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          (checkAvailability(context)).toUpperCase(),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  child: Text(
-                    (checkAvailability(context)).toUpperCase(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontFamily: 'Poppins-Bold',
+                  const SizedBox(width: 10),
+                  AnimatedContainer(
+                    width: 60,
+                    height: 60,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: isFavourite
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer
+                                : Theme.of(context).colorScheme.primary),
+                        color: isFavourite
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(50)),
+                    duration: Duration(milliseconds: 300),
+                    child: IconButton(
+                      icon: Icon(
+                        isFavourite ? IconlyBold.heart : IconlyLight.heart,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () {
+                        if (mangaData != null) {
+                          setState(() {
+                            isFavourite = !isFavourite;
+                          });
+                          if (isFavourite) {
+                            AppData().addReadManga(
+                                mangaId: mangaData['id'],
+                                mangaTitle: mangaData['title'],
+                                currentChapter: chapterProgress.toString(),
+                                mangaPosterImage: widget.posterUrl!,
+                                anilistMangaId: widget.id.toString(),
+                                currentSource:
+                                    mangaSourceHandler.selectedSourceName!);
+                          } else {
+                            AppData()
+                                .removeMangaByAnilistId(widget.id.toString());
+                          }
+                        }
+                      },
                     ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 30),
               Text('Description',
