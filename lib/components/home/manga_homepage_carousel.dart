@@ -64,8 +64,7 @@ class MangaHomepageCarousel extends StatelessWidget {
             title ?? '??',
             style: TextStyle(
               fontSize: 16,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins-SemiBold',
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
@@ -102,7 +101,7 @@ class MangaHomepageCarousel extends StatelessWidget {
                       context,
                       '/manga/details',
                       arguments: {
-                        'id': itemData['mangaId'],
+                        'id': int.parse(itemData['mangaId']),
                         'posterUrl': posterUrl,
                         'tag': tagg
                       },
@@ -250,7 +249,7 @@ class MangaHomepageCarousel extends StatelessWidget {
                                           ? Colors.black
                                           : Colors.white,
                                   fontSize: usingSaikouCards ? 10 : 13,
-                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins-SemiBold',
                                   shadows: [
                                     Shadow(
                                       blurRadius: 4,
@@ -289,7 +288,7 @@ class MangaHomepageCarousel extends StatelessWidget {
                                             ? Colors.black
                                             : Colors.white,
                                     fontSize: usingSaikouCards ? 10 : 13,
-                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins-SemiBold',
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,

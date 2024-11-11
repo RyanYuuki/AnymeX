@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:aurora/pages/Manga/read_page.dart';
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -8,13 +6,15 @@ class ChapterList extends StatelessWidget {
   final dynamic chaptersData;
   final String? id;
   final String? posterUrl;
+  final String anilistId;
   final String currentSource;
   const ChapterList(
       {super.key,
       this.chaptersData,
       required this.id,
       required this.posterUrl,
-      required this.currentSource});
+      required this.currentSource,
+      required this.anilistId});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +36,6 @@ class ChapterList extends StatelessWidget {
               itemCount: chaptersData.length,
               itemBuilder: (context, index) {
                 final manga = chaptersData[index];
-                log(id ?? 'Empty ID');
-                log(manga['id']);
                 return Container(
                   margin: const EdgeInsets.only(bottom: 20),
                   padding:
@@ -104,17 +102,20 @@ class ChapterList extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ReadingPage(
-                                          id: manga['id'],
-                                          mangaId: id!,
-                                          posterUrl: posterUrl!,
-                                          currentSource: currentSource)));
+                                            id: manga['id'],
+                                            mangaId: id!,
+                                            posterUrl: posterUrl!,
+                                            currentSource: currentSource,
+                                            anilistId: anilistId,
+                                          )));
                             },
                             style: ElevatedButton.styleFrom(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               backgroundColor: Theme.of(context)
                                   .colorScheme
-                                  .onPrimaryFixedVariant,
+                                  .secondaryContainer,
+                              elevation: 10,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

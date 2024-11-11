@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:iconly/iconly.dart';
 
 typedef ButtonTapCallback = void Function(String? index);
 typedef LayoutCallback = void Function(BuildContext context);
@@ -130,7 +130,7 @@ class _ToggleBarState extends State<ToggleBar> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(Ionicons.chevron_back,
+                    icon: Icon(IconlyBold.arrow_left,
                         color: Theme.of(context).colorScheme.inverseSurface ==
                                 Theme.of(context)
                                     .colorScheme
@@ -205,7 +205,7 @@ class _ToggleBarState extends State<ToggleBar> {
                       onPressed: () {
                         widget.showSettings(context);
                       },
-                      icon: const Icon(Ionicons.settings))
+                      icon: const Icon(IconlyBold.setting))
                 ],
               ),
             ),
@@ -361,7 +361,7 @@ class _ToggleBarState extends State<ToggleBar> {
                                 const Color(0xffe2e2e2)
                             ? Colors.black
                             : Colors.white,
-                    fontFamily: 'Poppins-Bold'),
+                    fontFamily: 'Poppins-SemiBold'),
               ),
             ),
           ),
