@@ -35,18 +35,22 @@ class AppData extends ChangeNotifier {
   }
 
   void addWatchedAnime({
-    required int animeId,
+    required String anilistAnimeId,
+    required String animeId,
     required String animeTitle,
     required String currentEpisode,
     required String animePosterImageUrl,
+    required String currentSource,
   }) {
     watchedAnimes ??= [];
 
     final newAnime = {
+      'anilistId': anilistAnimeId,
       'animeId': animeId,
       'animeTitle': animeTitle,
       'currentEpisode': currentEpisode,
       'poster': animePosterImageUrl,
+      'currentSource': currentSource
     };
 
     watchedAnimes!.removeWhere((anime) => anime['animeId'] == animeId);
@@ -63,6 +67,7 @@ class AppData extends ChangeNotifier {
     required String chapterNumber,
     required String chapterId,
     required String novelImage,
+    required String currentSource,
   }) {
     novelList ??= [];
 
@@ -71,7 +76,8 @@ class AppData extends ChangeNotifier {
       'novelTitle': novelTitle,
       'chapterNumber': chapterNumber,
       'chapterId': chapterId,
-      'novelImage': novelImage
+      'novelImage': novelImage,
+      'currentSource': currentSource
     };
 
     novelList.removeWhere((novel) => novel['novelId'] == novelId);
@@ -92,18 +98,22 @@ class AppData extends ChangeNotifier {
   }
 
   void addReadManga({
+    required String anilistMangaId,
     required String mangaId,
     required String mangaTitle,
     required String currentChapter,
     required String mangaPosterImage,
+    required String currentSource,
   }) {
     readMangas ??= [];
 
     final newManga = {
+      'anilistId': anilistMangaId,
       'mangaId': mangaId,
       'mangaTitle': mangaTitle,
       'currentChapter': currentChapter,
       'poster': mangaPosterImage,
+      'currentSource': currentSource
     };
 
     readMangas!.removeWhere((manga) => manga['mangaId'] == mangaId);
@@ -143,5 +153,24 @@ class AppData extends ChangeNotifier {
   String? getCurrentChapterForManga(String mangaId) {
     final manga = getMangaById(mangaId);
     return manga?['currentChapter'];
+  }
+
+  void removeMangaByAnilistId(String anilistId) {
+    if (readMangas == null) {
+      log('Manga was not here to begin with!');
+    } else {
+      readMangas.removeWhere((manga) => manga['anilistId'] == anilistId);
+      var box = Hive.box('app-data');
+      box.put('currently-reading', readMangas);
+    }
+
+    notifyListeners();
+  }
+
+  void removeAnimeByAnilistId(String anilistId) {
+    watchedAnimes.removeWhere((anime) => anime['anilistId'] == anilistId);
+    var box = Hive.box('app-data');
+    box.put('currently-watching', watchedAnimes);
+    notifyListeners();
   }
 }
