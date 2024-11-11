@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "com.anime.anymex"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = "2.7.1"
