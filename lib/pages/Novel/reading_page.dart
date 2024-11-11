@@ -104,7 +104,8 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
         novelTitle: widget.novelTitle,
         chapterNumber: widget.chapterNumber.toString(),
         chapterId: widget.id,
-        novelImage: widget.novelImage);
+        novelImage: widget.novelImage,
+        currentSource: widget.selectedSource);
   }
 
   Future<void> _fetchNextPreviousChapter(String chapterId) async {
@@ -128,7 +129,8 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
             novelTitle: widget.novelTitle,
             chapterNumber: widget.chapterNumber.toString(),
             chapterId: chapterId,
-            novelImage: widget.novelImage);
+            novelImage: widget.novelImage,
+            currentSource: widget.selectedSource);
       }
     } catch (e) {
       if (mounted) {
@@ -386,7 +388,6 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
       );
     }
 
-
     return Scaffold(
       backgroundColor: _backgroundColor,
       body: Stack(
@@ -445,29 +446,33 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(IconlyBold.arrow_left, color: _textColor),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.novelTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            color: _textColor, fontFamily: 'Poppins-SemiBold'),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        child: Text(
-                          novelData['chapterTitle'],
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 150,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.novelTitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: _textColor,
-                              fontSize: 12,
-                              fontStyle: FontStyle.italic),
+                              fontFamily: 'Poppins-SemiBold'),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: Text(
+                            novelData['chapterTitle'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: _textColor,
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
