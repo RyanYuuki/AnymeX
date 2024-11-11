@@ -8,6 +8,7 @@ import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class NovelDetailsPage extends StatefulWidget {
@@ -37,12 +38,14 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
   final NovelSourcesHandler _novelSourcesHandler = NovelSourcesHandler();
   late String selectedSource;
   late dynamic availableSources;
+  late bool isFavourite;
 
   @override
   void initState() {
     super.initState();
     selectedSource = _novelSourcesHandler.getSelectedSourceName();
     availableSources = _novelSourcesHandler.getAvailableSources();
+    isFavourite = true;
     fetchData();
   }
 
@@ -256,6 +259,69 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50)),
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer),
+                            onPressed: () {},
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text('Read: ',
+                                    style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold')),
+                                Text('Chapter 1',
+                                    style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold'))
+                              ],
+                            )),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    AnimatedContainer(
+                      width: 60,
+                      height: 60,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: isFavourite
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer
+                                  : Theme.of(context).colorScheme.primary),
+                          color: isFavourite
+                              ? Theme.of(context).colorScheme.secondaryContainer
+                              : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(50)),
+                      duration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: Icon(
+                          isFavourite ? IconlyBold.heart : IconlyLight.heart,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isFavourite = !isFavourite;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 30),
               Text('Description',
                   style: TextStyle(fontFamily: 'Poppins-SemiBold')),
