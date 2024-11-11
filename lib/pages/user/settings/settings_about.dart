@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const String telegramUrl = 'https://t.me/AnymeX_Discussion';
@@ -39,8 +39,9 @@ class AboutPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Version: 2.1.0',
-                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                'Version: 2.7.1',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
               const SizedBox(height: 20),
               Container(
@@ -65,7 +66,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () => _launchUrl(githubUrl),
-                    icon: const Icon(Ionicons.logo_github, size: 48),
+                    icon: const Icon(HugeIcons.strokeRoundedGithub01, size: 48),
                   ),
                 ],
               ),

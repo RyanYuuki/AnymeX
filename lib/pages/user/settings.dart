@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/pages/user/settings/settings_about.dart';
 import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
-import 'package:aurora/utils/sources/novel/novel_buddy.dart';
-import 'package:aurora/utils/sources/novel/wuxia_click.dart';
+import 'package:aurora/utils/downloader/downloader.dart';
+import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -66,9 +70,9 @@ class SettingsPage extends StatelessWidget {
           //   },
           // ),
           CustomTile(
-            icon: Icons.stairs_rounded,
-            title: 'Layout',
-            description: 'Change the app${"'"}s layout entirely',
+            icon: HugeIcons.strokeRoundedPaintBrush02,
+            title: 'UI',
+            description: 'Play Around with UI Tweaks',
             onTap: () {
               Navigator.push(context, _createSlideRoute(const LayoutPage()));
             },
@@ -109,7 +113,12 @@ class SettingsPage extends StatelessWidget {
             title: 'Fetch Data',
             description: 'Test',
             onTap: () async {
-              await scrapeNovelsHomePage();
+              Downloader downloader = Downloader();
+              downloader.download(
+                'https://fds.biananset.net/_v7/417ddd84ea05034a8fb6d188381db81f00fe0570cfbebe412cc503746b8daa957900444662ad1e19b6551715fad254cf614103c5d6e118894d1eeb47f4a17bec16e500f04e84e18ff053b54584f5c4ca235bb3bae7ea4b758f3cf234afe2b446ab0d13720c2b206b36f092502aa3997fd9fdaecbdad5dca986b65c2c85652260/index-f3-v1-a1.m3u8',
+                "Dandadan",
+              );
+              // await GogoAnime().scrapeEpisodesSrcs('https://www16.gogoanimes.fi/naruto-shippuden-episode-500');
             },
           ),
         ],
