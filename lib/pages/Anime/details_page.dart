@@ -12,9 +12,9 @@ import 'package:aurora/components/anime/details/character_cards.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
 import 'package:aurora/utils/apiHooks/api.dart';
-import 'package:aurora/utils/sources/anime/aniwatch/scrape_episode_src.dart';
-import 'package:aurora/utils/sources/anime/aniwatch/scraper_episodes.dart';
+import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/pages/Anime/watch_page.dart';
+import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +95,7 @@ class _DetailsPageState extends State<DetailsPage>
   dynamic episodesData;
   dynamic episodeImages;
   int availEpisodes = 0;
-  String? episodeSrc;
+  List<dynamic>? episodeSrc;
   int currentEpisode = 1;
   dynamic subtitleTracks;
   String activeServer = 'vidstream';
@@ -103,6 +103,9 @@ class _DetailsPageState extends State<DetailsPage>
   int watchProgress = 1;
   final serverList = ['HD-1', 'HD-2', 'Vidstream'];
   bool usingAPI = false;
+
+  // Sources
+  dynamic fetchedData;
 
   // Layout Buttons
   List<IconData> layoutIcons = [
@@ -151,16 +154,31 @@ class _DetailsPageState extends State<DetailsPage>
           "https://raw.githubusercontent.com/RyanYuuki/Anilist-Database/master/anilist/anime/${tempdata['id']}.json"));
       if (resp.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(resp.body);
+        if (Provider.of<SourcesHandler>(context, listen: false)
+                .selectedSource ==
+            "HiAnime") {
+          final zoroInfo = jsonResponse['Sites']['Zoro'];
+          String? zoroUrl;
+          String? zoroId;
 
-        final zoroInfo = jsonResponse['Sites']['Zoro'];
-        String? zoroUrl;
-        String? zoroId;
+          if (zoroInfo != null) {
+            zoroUrl = zoroInfo.entries.first.value['url'];
+            if (zoroUrl != null) {
+              zoroId = zoroUrl.split('/').last;
+              await fetchEpisodes(zoroId);
+            }
+          }
+        } else {
+          final gogoInfo = jsonResponse['Sites']['Gogoanime'];
+          String? gogoUrl;
+          String? gogoId;
 
-        if (zoroInfo != null) {
-          zoroUrl = zoroInfo.entries.first.value['url'];
-          if (zoroUrl != null) {
-            zoroId = zoroUrl.split('/').last;
-            await fetchEpisodes(zoroId);
+          if (gogoInfo != null) {
+            gogoUrl = gogoInfo.entries.first.value['url'];
+            if (gogoUrl != null) {
+              gogoId = gogoUrl.split('/').last;
+              await fetchEpisodes(gogoId);
+            }
           }
         }
       }
@@ -171,8 +189,11 @@ class _DetailsPageState extends State<DetailsPage>
 
   Future<void> fetchEpisodes(String id) async {
     try {
-      final tempEpisodesData = await scrapeAnimeEpisodes(id);
+      final tempEpisodesData =
+          await Provider.of<SourcesHandler>(context, listen: false)
+              .fetchEpisodes(id);
       setState(() {
+        fetchedData = tempEpisodesData;
         episodesData = tempEpisodesData['episodes'];
         availEpisodes = tempEpisodesData['totalEpisodes'];
         isLoading = false;
@@ -189,17 +210,15 @@ class _DetailsPageState extends State<DetailsPage>
 
   Future<void> fetchEpisodeSrcs() async {
     episodeSrc = null;
-    final provider = Provider.of<AppData>(context, listen: false);
+    final provider = Provider.of<SourcesHandler>(context, listen: false);
     if (episodesData == null) return;
-
     try {
       dynamic response;
-      String referer = 'https://hianime.to/';
-
       if (!usingAPI) {
-        response = await scrapeAnimeEpisodeSources(
+        response = await provider.fetchEpisodesSrcs(
             episodesData[(currentEpisode - 1)]['episodeId'],
             category: isDub ? 'dub' : 'sub');
+        log(response.toString());
       } else {
         response = await fetchStreamingLinksAniwatch(
             episodesData[(currentEpisode - 1)]['episodeId'],
@@ -209,39 +228,10 @@ class _DetailsPageState extends State<DetailsPage>
 
       if (response != null) {
         setState(() {
-          subtitleTracks = !usingAPI ? response.tracks : response['tracks'];
-          episodeSrc = !usingAPI
-              ? "https://proxy-ryan.vercel.app/cors?url=${response.sources[0]['url']}"
-              : response['sources'][0]['url'];
+          subtitleTracks = response['tracks'];
+          episodeSrc = response['sources'];
           isLoading = false;
-          referer =
-              !usingAPI ? response.headers['Referer'] : 'https://hianime.to/';
         });
-
-        provider.addWatchedAnime(
-          animeId: data['id'],
-          animeTitle: data['name'],
-          currentEpisode: currentEpisode.toString(),
-          animePosterImageUrl: data['poster'],
-        );
-
-        Navigator.pop(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => WatchPage(
-                      episodeSrc: episodeSrc!,
-                      episodeData: episodesData,
-                      currentEpisode: currentEpisode,
-                      subtitleTracks: subtitleTracks,
-                      referer: referer,
-                      episodeTitle:
-                          episodesData[currentEpisode - 1]['title'] ?? '',
-                      animeTitle: data['name'] ?? data['jname'],
-                      activeServer: activeServer,
-                      isDub: isDub,
-                      animeId: widget.id,
-                    )));
       }
     } catch (e) {
       if (mounted) {
@@ -250,6 +240,35 @@ class _DetailsPageState extends State<DetailsPage>
         });
       }
       log('Error fetching episode sources: $e');
+    }
+
+    AppData().addWatchedAnime(
+      animeId: data['id'].toString(),
+      animeTitle: data['name'],
+      currentEpisode: currentEpisode.toString(),
+      animePosterImageUrl: data['poster'],
+      anilistAnimeId: widget.id.toString(),
+      currentSource: provider.selectedSource,
+    );
+
+    if (episodeSrc != null) {
+      Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WatchPage(
+                    episodeSrc: episodeSrc ?? [],
+                    episodeData: episodesData,
+                    currentEpisode: currentEpisode,
+                    episodeTitle:
+                        episodesData[currentEpisode - 1]['title'] ?? '',
+                    animeTitle: data['name'] ?? data['jname'],
+                    activeServer: activeServer,
+                    isDub: isDub,
+                    animeId: widget.id,
+                    tracks: subtitleTracks,
+                    provider: Theme.of(context),
+                  )));
     }
   }
 
@@ -284,12 +303,44 @@ class _DetailsPageState extends State<DetailsPage>
     );
   }
 
+  double getProperSize(double size) {
+    if (size >= 0.0 && size < 5.0) {
+      return 50.0;
+    } else if (size >= 5.0 && size < 10.0) {
+      return 45.0;
+    } else if (size >= 10.0 && size < 15.0) {
+      return 40.0;
+    } else if (size >= 15.0 && size < 20.0) {
+      return 35.0;
+    } else if (size >= 20.0 && size < 25.0) {
+      return 30.0;
+    } else if (size >= 25.0 && size < 30.0) {
+      return 25.0;
+    } else if (size >= 30.0 && size < 35.0) {
+      return 20.0;
+    } else if (size >= 35.0 && size < 40.0) {
+      return 15.0;
+    } else if (size >= 40.0 && size < 45.0) {
+      return 10.0;
+    } else if (size >= 45.0 && size < 50.0) {
+      return 5.0;
+    } else {
+      return 0.0;
+    }
+  }
+
   CrystalNavigationBar bottomBar(BuildContext context) {
+    final tabBarRoundness =
+        Hive.box('app-data').get('tabBarRoundness', defaultValue: 30.0);
+    double tabBarSizeVertical =
+        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 30.0);
     return CrystalNavigationBar(
+      borderRadius: tabBarRoundness,
       currentIndex: selectedIndex,
       unselectedItemColor: Colors.white,
       selectedItemColor: Theme.of(context).colorScheme.primary,
-      marginR: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+      marginR: EdgeInsets.symmetric(
+          horizontal: 100, vertical: getProperSize(tabBarSizeVertical)),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
       onTap: (index) {
@@ -378,7 +429,7 @@ class _DetailsPageState extends State<DetailsPage>
   List<dynamic> filteredEpisodes = [];
   List<List<int>> episodeRanges = [];
 
-  Widget episodeSection(BuildContext context) {
+  void initliazedEpisodes() {
     if (episodesData != null && episodeRanges.isEmpty) {
       setState(() {
         if (episodesData.length > 50 && episodesData.length < 100) {
@@ -390,39 +441,141 @@ class _DetailsPageState extends State<DetailsPage>
         } else {
           episodeRanges = getEpisodeRanges(episodesData!, 12);
         }
-        filteredEpisodes = episodesData!
-            .where((episode) =>
-                episode['number'] >= episodeRanges[0][0] &&
-                episode['number'] <= episodeRanges[0][1])
-            .toList();
+        filteredEpisodes = episodesData!.where((episode) {
+          int episodeNumber = (episode['number']);
+          return episodeNumber >= episodeRanges[0][0] &&
+              episodeNumber <= episodeRanges[0][1];
+        }).toList();
       });
     }
+  }
+
+  Widget episodeSection(BuildContext context) {
+    final sourceProvider = Provider.of<SourcesHandler>(context);
+    initliazedEpisodes();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(
             height: 30,
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              'Found: ${fetchedData?['title'] ?? '??'}',
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontFamily: "Poppins-SemiBold"),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          DropdownButtonFormField<String>(
+            value: sourceProvider.selectedSource,
+            decoration: InputDecoration(
+              labelText: 'Choose Source',
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+              labelStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
+              border: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onPrimaryFixedVariant),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            isExpanded: true,
+            items: sourceProvider.getAvailableSource().map((source) {
+              return DropdownMenuItem<String>(
+                value: source['name'],
+                child: Text(
+                  source['name']!,
+                  style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) async {
+              setState(() {
+                episodesData = null;
+              });
+              sourceProvider.changeSelectedSource(value!);
+              final newData = await sourceProvider.mapToAnilist(data['name']);
+              setState(() {
+                fetchedData = newData;
+                episodesData = newData['episodes'];
+                availEpisodes = newData['totalEpisodes'];
+                episodeImages = newData['episodes'];
+                episodeRanges = [];
+              });
+              initliazedEpisodes();
+            },
+            dropdownColor: Theme.of(context).colorScheme.surface,
+            icon: Icon(Icons.arrow_drop_down,
+                color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 16,
+            ),
+          ),
           Row(
             children: [
-              Switch(
-                  value: isDub,
-                  onChanged: (value) {
-                    setState(() {
-                      isDub = !isDub;
-                    });
-                  }),
-              const SizedBox(width: 5),
-              Text(
-                isDub ? 'Dubbed' : 'Subbed',
-                style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-              ),
+              if (Provider.of<SourcesHandler>(context).selectedSource !=
+                  "GogoAnime") ...[
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AnimatedPositioned(
+                          top: isDub ? 40 : 5,
+                          duration: Duration(milliseconds: 300),
+                          child: Icon(Iconsax.subtitle5, size: 30)),
+                      AnimatedPositioned(
+                          top: isDub ? 5 : 40,
+                          duration: Duration(milliseconds: 300),
+                          child: Icon(Iconsax.microphone5, size: 30)),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Switch(
+                    value: isDub,
+                    onChanged: (value) {
+                      setState(() {
+                        isDub = !isDub;
+                      });
+                    }),
+              ],
               Spacer(),
               TextButton(
                 onPressed: () {
-                  showAnimeSearchModal(context, data['name']);
+                  showAnimeSearchModal(context, data['name'], (animeId) async {
+                    setState(() {
+                      episodesData = null;
+                    });
+                    final newData = await sourceProvider.fetchEpisodes(animeId);
+                    setState(() {
+                      fetchedData = newData;
+                      episodesData = newData['episodes'];
+                      availEpisodes = newData['totalEpisodes'];
+                      episodeRanges = [];
+                      episodeImages = newData['episodes'];
+                    });
+                    initliazedEpisodes();
+                  });
                 },
                 child: Stack(
                   children: [
@@ -534,8 +687,8 @@ class _DetailsPageState extends State<DetailsPage>
                       setState(() {
                         filteredEpisodes = episodesData!
                             .where((episode) =>
-                                episode['number'] >= range[0] &&
-                                episode['number'] <= range[1])
+                                (episode['number']) >= range[0] &&
+                                (episode['number']) <= range[1])
                             .toList();
                       });
                     },
@@ -668,25 +821,27 @@ class _DetailsPageState extends State<DetailsPage>
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('USE API',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-SemiBold',
-                              fontSize: 16,
-                            )),
-                        const SizedBox(width: 5),
-                        Switch(
-                            value: usingAPI,
-                            onChanged: (value) {
-                              setState(() {
-                                usingAPI = value;
-                              });
-                            }),
-                      ],
-                    ),
+                    if (Provider.of<SourcesHandler>(context).selectedSource ==
+                        "HiAnime")
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('USE API',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-SemiBold',
+                                fontSize: 16,
+                              )),
+                          const SizedBox(width: 5),
+                          Switch(
+                              value: usingAPI,
+                              onChanged: (value) {
+                                setState(() {
+                                  usingAPI = value;
+                                });
+                              }),
+                        ],
+                      ),
                   ]),
                   SizedBox(height: 16),
                   for (int i = 0; i < 3; i++) ...[
@@ -1098,7 +1253,7 @@ class _DetailsPageState extends State<DetailsPage>
 
   void showListEditorModal(BuildContext context, String totalEpisodes) {
     showModalBottomSheet(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -1110,7 +1265,7 @@ class _DetailsPageState extends State<DetailsPage>
                 padding: EdgeInsets.only(
                   left: 30.0,
                   right: 30.0,
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 40.0,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 80.0,
                   top: 20.0,
                 ),
                 child: Column(
@@ -1125,7 +1280,6 @@ class _DetailsPageState extends State<DetailsPage>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Status Dropdown
                     SizedBox(
                       height: 55,
                       child: InputDecorator(
@@ -1136,8 +1290,9 @@ class _DetailsPageState extends State<DetailsPage>
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer,
                             ),
                             borderRadius: BorderRadius.circular(18),
                           ),
@@ -1180,9 +1335,7 @@ class _DetailsPageState extends State<DetailsPage>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Progress Input
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: SizedBox(
@@ -1199,7 +1352,7 @@ class _DetailsPageState extends State<DetailsPage>
                                     width: 1,
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .inversePrimary,
+                                        .secondaryContainer,
                                   ),
                                   borderRadius: BorderRadius.circular(18),
                                 ),
@@ -1238,129 +1391,94 @@ class _DetailsPageState extends State<DetailsPage>
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        // +1 Button
-                        SizedBox(
-                          height: 55,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.surface,
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                  width: 1,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .inversePrimary,
-                                ),
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (totalEpisodes == '?' ||
-                                    watchProgress < int.parse(totalEpisodes)) {
-                                  watchProgress += 1;
-                                }
-                              });
-                            },
-                            child: Text('+1',
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary)),
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Score Input
                     SizedBox(
-                      height: 55,
-                      child: TextFormField(
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.star),
-                          suffixText: '/10',
-                          filled: true,
-                          fillColor: Colors.transparent,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: 1,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.star,
+                                  color: Theme.of(context).colorScheme.primary),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Score: ${score.toStringAsFixed(1)}/10',
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
+                          Slider(
+                            value: score,
+                            min: 0.0,
+                            max: 10.0,
+                            divisions: 100,
+                            label: score.toStringAsFixed(1),
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            inactiveColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            onChanged: (double newValue) {
+                              setState(() {
+                                score = newValue;
+                              });
+                            },
                           ),
-                          labelText: 'Score',
-                          labelStyle: const TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                          ),
-                        ),
-                        initialValue: score.toString(),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d+\.?\d{0,1}')),
                         ],
-                        onChanged: (String value) {
-                          double? newScore = double.tryParse(value);
-                          if (newScore != null) {
-                            setState(() {
-                              score = newScore.clamp(1.0, 10.0);
-                            });
-                          }
-                        },
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Action Buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                            side: BorderSide(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18)),
+                        SizedBox(
+                          height: 50,
+                          width: 120,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              side: BorderSide(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18)),
+                            ),
+                            child: const Text('Delete'),
                           ),
-                          child: const Text('Delete'),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Provider.of<AniListProvider>(context, listen: false)
-                                .updateAnimeList(
-                                    animeId: data['id'],
-                                    episodeProgress: watchProgress,
-                                    rating: score,
-                                    status: selectedStatus);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                            side: BorderSide(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18)),
+                        SizedBox(
+                          height: 50,
+                          width: 120,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Provider.of<AniListProvider>(context,
+                                      listen: false)
+                                  .updateAnimeList(
+                                      animeId: data['id'],
+                                      episodeProgress: watchProgress,
+                                      rating: score,
+                                      status: selectedStatus);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              side: BorderSide(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18)),
+                            ),
+                            child: const Text('Save'),
                           ),
-                          child: const Text('Save'),
                         ),
                       ],
                     ),
