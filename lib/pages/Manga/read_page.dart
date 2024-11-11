@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/manga/toggle_bars.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
@@ -11,12 +12,14 @@ class ReadingPage extends StatefulWidget {
   final String mangaId;
   final String posterUrl;
   final String currentSource;
+  final String anilistId;
   const ReadingPage(
       {super.key,
       required this.id,
       required this.mangaId,
       required this.posterUrl,
-      required this.currentSource});
+      required this.currentSource,
+      required this.anilistId});
 
   @override
   State<ReadingPage> createState() => _ReadingPageState();
@@ -63,11 +66,14 @@ class _ReadingPageState extends State<ReadingPage> {
             ?.indexWhere((chapter) => chapter['name'] == currentChapter);
         isLoading = false;
       });
+      _updateMangaProgress();
       provider.addReadManga(
           mangaId: widget.mangaId,
           mangaTitle: tempData['title'],
           currentChapter: currentChapter.toString(),
-          mangaPosterImage: widget.posterUrl);
+          mangaPosterImage: widget.posterUrl,
+          anilistMangaId: widget.anilistId,
+          currentSource: widget.currentSource);
     } catch (e) {
       log(e.toString());
       setState(() {
@@ -75,6 +81,15 @@ class _ReadingPageState extends State<ReadingPage> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> _updateMangaProgress() async {
+    final chapterNumber =
+        RegExp(r'\d+').firstMatch(currentChapter!)?.group(0) ?? '';
+    await AniListProvider().updateMangaProgress(
+        mangaId: int.parse(widget.anilistId),
+        chapterProgress: int.parse(chapterNumber),
+        status: 'CURRENT');
   }
 
   Future<void> fetchChapterImages(String chapterId) async {
@@ -98,7 +113,10 @@ class _ReadingPageState extends State<ReadingPage> {
           mangaId: widget.mangaId,
           mangaTitle: mangaTitle!,
           currentChapter: currentChapter.toString(),
-          mangaPosterImage: widget.posterUrl);
+          mangaPosterImage: widget.posterUrl,
+          anilistMangaId: '',
+          currentSource: '');
+      _updateMangaProgress();
     } catch (e) {
       log(e.toString());
       setState(() {
