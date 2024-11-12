@@ -20,12 +20,13 @@ class Downloader {
     return status.isGranted;
   }
 
-  Future<void> download(String streamLink, String fileName,
+  Future<void> download(String streamLink, String fileName, String folderName,
       {int retries = 3, int parallelDownloads = 5}) async {
     if (!await checkPermission()) {
       throw Exception("ERR_NO_STORAGE_PERMISSION");
     }
-    final downloadDir = Directory('/storage/emulated/0/Download/AnymeX');
+    final downloadDir =
+        Directory('/storage/emulated/0/Download/AnymeX/$folderName');
     if (!downloadDir.existsSync()) {
       await downloadDir.create(recursive: true);
       log("Created AnymeX folder at ${downloadDir.path}");

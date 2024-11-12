@@ -54,7 +54,6 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
   Widget build(BuildContext context) {
     bool isList = layoutModes[currentIndex] == 'List';
     bool isBox = layoutModes[currentIndex] == 'Box';
-    bool isCover = layoutModes[currentIndex] == 'Cover';
     return SafeArea(
       child: Scaffold(
         body: Padding(

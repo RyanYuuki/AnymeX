@@ -1,6 +1,7 @@
 
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/main.dart';
+import 'package:aurora/pages/Downloads/download_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/pages/user/settings.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +107,18 @@ class SettingsModal extends StatelessWidget {
               );
             },
           ),
+          
+          ListTile(
+            leading: const Icon(Iconsax.document_download),
+            title: const Text('Downloads'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const DownloadPage()),
+              );
+            },
+          ),
+
           ListTile(
             leading: const Icon(Iconsax.setting),
             title: const Text('Settings'),

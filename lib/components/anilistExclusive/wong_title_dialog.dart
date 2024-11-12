@@ -1,8 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:math';
-
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';

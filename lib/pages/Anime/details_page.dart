@@ -12,7 +12,6 @@ import 'package:aurora/components/anime/details/character_cards.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
 import 'package:aurora/utils/apiHooks/api.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/pages/Anime/watch_page.dart';
 import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';

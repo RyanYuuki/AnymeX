@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/MyList/mylist_page.dart';
 import 'package:aurora/pages/Novel/home_page.dart';
 import 'package:aurora/pages/user/profile.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
