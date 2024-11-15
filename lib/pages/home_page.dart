@@ -11,7 +11,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/common/settings_modal.dart';
 import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/components/home/manga_homepage_carousel.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -231,14 +231,13 @@ class _HomePageState extends State<HomePage> {
                           backgroundImage:
                               'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
                       const SizedBox(height: 20),
-                      if (anilistProvider.userData?['data'] != null)
+                      if (isLoggedIn)
                         anilistCarousel(
                           title: 'Currently Watching',
                           carouselData: animeList,
                           tag: 'currently-watching',
-                        )
-                      else
-                        loader(),
+                        ),
+                      if(isLoggedIn)
                       anilistCarousel(
                         title: 'Currently Reading',
                         carouselData: mangaList,
