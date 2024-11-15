@@ -92,10 +92,9 @@ class HomepageCarousel extends StatelessWidget {
               final itemData = carouselData![index];
               final String posterUrl = itemData['poster'] ?? '??';
               final random = Random().nextInt(100000);
-              final tagg = '${itemData['id']}$tag$random';
+              final tagg = '${itemData['animeId']}$tag$random';
 
-              const String proxyUrl =
-                  '';
+              const String proxyUrl = '';
               dynamic extraData =
                   'Episode ${itemData['currentEpisode'].toString()}';
               '1';
@@ -107,7 +106,7 @@ class HomepageCarousel extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailsPage(
-                          id: itemData['animeId'],
+                          id: itemData['anilistId'],
                           posterUrl: proxyUrl + posterUrl,
                           tag: tagg,
                         ),

@@ -101,7 +101,7 @@ class MangaHomepageCarousel extends StatelessWidget {
                       context,
                       '/manga/details',
                       arguments: {
-                        'id': int.parse(itemData['mangaId']),
+                        'id': int.parse(itemData['anilistId']),
                         'posterUrl': posterUrl,
                         'tag': tagg
                       },
