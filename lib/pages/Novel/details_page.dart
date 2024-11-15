@@ -2,6 +2,7 @@
 import 'dart:developer';
 import 'package:aurora/components/common/IconWithLabel.dart';
 import 'package:aurora/components/novel/wong_title.dart';
+import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/Novel/reading_page.dart';
 import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final String id;
@@ -38,14 +40,15 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
   final NovelSourcesHandler _novelSourcesHandler = NovelSourcesHandler();
   late String selectedSource;
   late dynamic availableSources;
-  late bool isFavourite;
+  bool isFavourite = false;
 
   @override
   void initState() {
     super.initState();
     selectedSource = _novelSourcesHandler.getSelectedSourceName();
     availableSources = _novelSourcesHandler.getAvailableSources();
-    isFavourite = true;
+    isFavourite =
+        Provider.of<AppData>(context, listen: false).getNovelAvail(widget.id);
     fetchData();
   }
 
@@ -274,7 +277,23 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
                                 backgroundColor: Theme.of(context)
                                     .colorScheme
                                     .secondaryContainer),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NovelReadingPage(
+                                            id: data['chapterList'][0]['id'],
+                                            novelTitle: data['title'],
+                                            novelId: data['id'],
+                                            chapterNumber: data['chapterList']
+                                                [0]['number'],
+                                            selectedSource: _novelSourcesHandler
+                                                .getSelectedSourceName(),
+                                            novelImage: widget.posterUrl!,
+                                            chapterList: data['chapterList'],
+                                            description: data['description'],
+                                          )));
+                            },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
@@ -313,9 +332,21 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
                           backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
-                          setState(() {
-                            isFavourite = !isFavourite;
-                          });
+                          if (data != null) {
+                            setState(() {
+                              isFavourite = !isFavourite;
+                            });
+                            Provider.of<AppData>(context, listen: false)
+                                .addReadNovels(
+                                    novelId: data['id'],
+                                    novelTitle: data['title'],
+                                    chapterNumber: '1',
+                                    chapterId: data['chapterList'][0]['id'],
+                                    novelImage: widget.posterUrl!,
+                                    currentSource: selectedSource,
+                                    chapterList: data['chapterList'],
+                                    description: data['description']);
+                          }
                         },
                       ),
                     ),
@@ -461,6 +492,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage>
                   chaptersData: chapterData,
                   selectedSource: selectedSource,
                   novelImage: widget.posterUrl!,
+                  description: data['description'],
                 )
             ],
           ),
@@ -516,6 +548,7 @@ class ChapterList extends StatefulWidget {
   final String novelId;
   final String selectedSource;
   final String novelImage;
+  final String description;
   const ChapterList({
     super.key,
     this.chaptersData,
@@ -523,6 +556,7 @@ class ChapterList extends StatefulWidget {
     required this.novelId,
     required this.selectedSource,
     required this.novelImage,
+    required this.description,
   });
 
   @override
@@ -678,12 +712,12 @@ class _ChapterListState extends State<ChapterList> {
                                               id: manga['id'],
                                               novelTitle: widget.title,
                                               novelId: widget.novelId,
-                                              chapterNumber:
-                                                  _filteredChapters.length -
-                                                      (index),
+                                              chapterNumber: manga['number'],
                                               selectedSource:
                                                   widget.selectedSource,
                                               novelImage: widget.novelImage,
+                                              chapterList: widget.chaptersData,
+                                              description: widget.description,
                                             )));
                               },
                               style: ElevatedButton.styleFrom(

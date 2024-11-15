@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/novel/cover_carousel.dart';
-import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/common/settings_modal.dart';
 import 'package:aurora/components/novel/carousel.dart';
 import 'package:aurora/components/novel/reusable_carousel.dart';
 import 'package:aurora/fallbackData/novel_homepage.dart';

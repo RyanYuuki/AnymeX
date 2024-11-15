@@ -16,6 +16,8 @@ class NovelReadingPage extends StatefulWidget {
   final int chapterNumber;
   final String selectedSource;
   final String novelImage;
+  final dynamic chapterList;
+  final String description;
   const NovelReadingPage(
       {super.key,
       required this.id,
@@ -23,7 +25,9 @@ class NovelReadingPage extends StatefulWidget {
       required this.novelId,
       required this.chapterNumber,
       required this.selectedSource,
-      required this.novelImage});
+      required this.novelImage,
+      required this.chapterList,
+      required this.description});
 
   @override
   State<NovelReadingPage> createState() => _NovelReadingPageState();
@@ -105,7 +109,9 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
         chapterNumber: widget.chapterNumber.toString(),
         chapterId: widget.id,
         novelImage: widget.novelImage,
-        currentSource: widget.selectedSource);
+        currentSource: widget.selectedSource,
+        chapterList: widget.chapterList,
+        description: widget.description);
   }
 
   Future<void> _fetchNextPreviousChapter(String chapterId) async {
@@ -130,7 +136,9 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
             chapterNumber: widget.chapterNumber.toString(),
             chapterId: chapterId,
             novelImage: widget.novelImage,
-            currentSource: widget.selectedSource);
+            currentSource: widget.selectedSource,
+            chapterList: widget.chapterList,
+            description: widget.description);
       }
     } catch (e) {
       if (mounted) {
