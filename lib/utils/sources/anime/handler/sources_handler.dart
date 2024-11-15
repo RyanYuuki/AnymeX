@@ -1,3 +1,4 @@
+import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/utils/sources/anime/base/source_base.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/material.dart';
 
 class SourcesHandler extends ChangeNotifier {
   final Map<String, SourceBase> animeSourcesMap = {
-    'HiAnime': HiAnime(),
+    'HiAnime (Scrapper)': HiAnime(),
+    "HiAnime (API)": HiAnimeApi(),
     "GogoAnime": GogoAnime(),
   };
 
@@ -60,16 +62,15 @@ class SourcesHandler extends ChangeNotifier {
   }
 
   Future<dynamic> fetchEpisodesSrcs(String episodeId,
-      {AnimeServers? server, String? category, String? lang}) async {
-    if (server == null && category == null) {
-      final animeList =
-          await animeSourcesMap[selectedSource]?.scrapeEpisodesSrcs(episodeId);
-      return animeList;
-    } else {
-      final animeList = await animeSourcesMap[selectedSource]
-          ?.scrapeEpisodesSrcs(episodeId, server: server, category: category);
-      return animeList;
-    }
+      {AnimeServers server = AnimeServers.MegaCloud,
+      String? category,
+      String? lang}) async {
+    final animeList = await animeSourcesMap[selectedSource]?.scrapeEpisodesSrcs(
+        episodeId,
+        server: server,
+        category: category,
+        lang: lang);
+    return animeList;
   }
 
   Future<dynamic> fetchSearchResults(String query) async {
