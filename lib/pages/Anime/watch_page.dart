@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'dart:math' show max;
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/videoPlayer/custom_controls.dart';
-import 'package:aurora/utils/apiHooks/api.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
+import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
@@ -53,19 +53,40 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   dynamic tracks;
   String? episodeTitle;
   int? currentEpisode;
-  List<BoxFit> resizeModes = [
-    BoxFit.contain,
-    BoxFit.fill,
-    BoxFit.cover,
-  ];
-  late bool moreThanOneLink;
+  final List<BoxFit> resizeModes = [BoxFit.contain, BoxFit.fill, BoxFit.cover];
+  final Map<String, BoxFit> resizeModesOptions = {
+    'Cover': BoxFit.contain,
+    'Zoom': BoxFit.fill,
+    'Stretch': BoxFit.cover,
+  };
+  final Map<String, Color> colorOptions = {
+    'Default': Colors.transparent,
+    'White': Colors.white,
+    'Black': Colors.black,
+    'Red': Colors.red,
+    'Green': Colors.green,
+    'Blue': Colors.blue,
+    'Yellow': Colors.yellow,
+    'Cyan': Colors.cyan,
+  };
+
+  // Video Player Settings
+  late String resizeMode;
+  late double playbackSpeed;
+  late String subtitleColor;
+  late String subtitleOutlineColor;
+  late String subtitleBackgroundColor;
+  late String subtitleFont;
+  late double subtitleSize;
+  late AnimationController _leftAnimationController;
+  late AnimationController _rightAnimationController;
+
   int index = 0;
-  late BetterPlayerDataSource singleSrcConfig;
-  late BetterPlayerDataSource multiSrcConfig;
 
   @override
   void initState() {
     super.initState();
+    _initPlayerSettings();
     _leftAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -74,127 +95,143 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    moreThanOneLink =
-        Provider.of<SourcesHandler>(context, listen: false).getExtensionType();
     _initVars();
     initializePlayer();
+
     if (widget.isDub) {
       fetchSubtitles(
           widget.episodeData[widget.currentEpisode - 1]['episodeId']);
     }
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+
     Provider.of<AniListProvider>(context, listen: false).updateAnimeProgress(
-        animeId: widget.animeId,
-        episodeProgress: widget.currentEpisode,
-        status: 'CURRENT');
+      animeId: widget.animeId,
+      episodeProgress: widget.currentEpisode,
+      status: 'CURRENT',
+    );
+  }
+
+  @override
+  void dispose() {
+    _betterPlayerController?.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _leftAnimationController.dispose();
+    _rightAnimationController.dispose();
+    _doubleTapTimeout?.cancel();
+    super.dispose();
+  }
+
+  void _initPlayerSettings() {
+    var box = Hive.box('app-data');
+    resizeMode = box.get('resizeMode', defaultValue: 'Cover');
+    playbackSpeed = box.get('playbackSpeed', defaultValue: 1.0);
+    subtitleColor = box.get('subtitleColor', defaultValue: 'White');
+    subtitleBackgroundColor =
+        box.get('subtitleBackgroundColor', defaultValue: 'Default');
+    subtitleOutlineColor =
+        box.get('subtitleOutlineColor', defaultValue: 'Black');
+    subtitleFont = box.get('subtitleFont', defaultValue: 'Poppins');
+    subtitleSize = box.get('subtitleSize', defaultValue: 16.0);
   }
 
   void _initVars() {
-    setState(() {
-      episodeSrc = widget.episodeSrc;
-      tracks = widget.tracks;
-      episodeTitle = widget.episodeTitle;
-      currentEpisode = widget.currentEpisode;
-      singleSrcConfig = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        episodeSrc![0]['url']!,
-        notificationConfiguration: BetterPlayerNotificationConfiguration(
-            showNotification: true,
-            title: widget.episodeTitle,
-            author: widget.animeTitle,
-            imageUrl: widget.episodeData[widget.currentEpisode - 1]['image'],
-            activityName: 'AnymeX',
-            notificationChannelName: 'AnymeX'),
-        subtitles: subtitles,
-        videoFormat: BetterPlayerVideoFormat.hls,
-      );
-      multiSrcConfig = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        episodeSrc![0]['url'],
-        notificationConfiguration: BetterPlayerNotificationConfiguration(
-            showNotification: true,
-            title: widget.episodeTitle,
-            author: widget.animeTitle,
-            imageUrl: widget.episodeData[widget.currentEpisode - 1]['image'],
-            activityName: 'AnymeX',
-            notificationChannelName: 'AnymeX'),
-        subtitles: subtitles,
-      );
-    });
+    episodeSrc = widget.episodeSrc;
+    tracks = widget.tracks;
+    episodeTitle = widget.episodeTitle;
+    currentEpisode = widget.currentEpisode;
   }
 
   void initializePlayer() {
     filterSubtitles(tracks);
-
     BetterPlayerConfiguration betterPlayerConfiguration =
-        const BetterPlayerConfiguration(
+        BetterPlayerConfiguration(
       fit: BoxFit.contain,
-      controlsConfiguration: BetterPlayerControlsConfiguration(
-        showControls: false,
-      ),
+      // fit: resizeModesOptions[resizeMode]!,
+      controlsConfiguration:
+          const BetterPlayerControlsConfiguration(showControls: false),
       autoPlay: true,
       expandToFill: true,
       looping: false,
+      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+        fontSize: subtitleSize,
+        fontColor: colorOptions[subtitleColor]!,
+        outlineColor: colorOptions[subtitleOutlineColor]!,
+        fontFamily: subtitleFont == "Default" ? "Poppins" : subtitleFont,
+        backgroundColor: colorOptions[subtitleBackgroundColor]!,
+      ),
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    if (moreThanOneLink) {
-      _betterPlayerController!.setupDataSource(multiSrcConfig);
-    } else {
-      _betterPlayerController!.setupDataSource(singleSrcConfig);
-    }
+    _betterPlayerController!.setupDataSource(_createDataSource());
+
+    _betterPlayerController!.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
+        _betterPlayerController!.setSpeed(playbackSpeed);
+      }
+    });
+  }
+
+  BetterPlayerDataSource _createDataSource() {
+    return BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      episodeSrc![0]['url']!,
+      notificationConfiguration: BetterPlayerNotificationConfiguration(
+        showNotification: true,
+        title: widget.episodeTitle,
+        author: widget.animeTitle,
+        imageUrl: widget.episodeData[widget.currentEpisode - 1]['image'],
+        activityName: 'AnymeX',
+        notificationChannelName: 'AnymeX',
+      ),
+      subtitles: subtitles,
+      videoFormat: BetterPlayerVideoFormat.hls,
+    );
   }
 
   void filterSubtitles(List<dynamic>? source) {
     if (source != null) {
-      setState(() {
-        subtitles = source
-            .where((data) => data['kind'] == 'captions')
-            .map<BetterPlayerSubtitlesSource>(
-              (caption) => BetterPlayerSubtitlesSource(
-                selectedByDefault: caption['label'] == 'English',
-                type: BetterPlayerSubtitlesSourceType.network,
-                name: caption['label'],
-                urls: [caption['file']],
-              ),
-            )
-            .toList();
-      });
+      subtitles = source
+          .where((data) => data['kind'] == 'captions')
+          .map<BetterPlayerSubtitlesSource>(
+            (caption) => BetterPlayerSubtitlesSource(
+              selectedByDefault: caption['label'] == 'English',
+              type: BetterPlayerSubtitlesSourceType.network,
+              name: caption['label'],
+              urls: [caption['file']],
+            ),
+          )
+          .toList();
     } else {
       subtitles = null;
     }
   }
 
   Future<void> fetchSrcHelper(String episodeId) async {
-    episodeSrc = null;
     try {
-      final response = await fetchStreamingLinksAniwatch(
-          episodeId, widget.activeServer, widget.isDub ? 'dub' : 'sub');
-      if (response != null) {
-        final episodeSrcs = response;
+      final response = await HiAnimeApi().fetchStreamingLinksAniwatch(
+        episodeId,
+        widget.activeServer,
+        widget.isDub ? 'dub' : 'sub',
+      );
+
+      if (response != null && mounted) {
         setState(() {
-          tracks = episodeSrcs['tracks'];
-          episodeSrc = episodeSrcs['sources'];
+          tracks = response['tracks'];
+          episodeSrc = response['sources'];
         });
 
         filterSubtitles(tracks);
-        if (moreThanOneLink) {
-          _betterPlayerController!.setupDataSource(multiSrcConfig);
-        } else {
-          _betterPlayerController!.setupDataSource(singleSrcConfig);
-        }
-
-        AniListProvider().updateAnimeProgress(
-            animeId: widget.animeId,
-            episodeProgress: currentEpisode!,
-            status: 'CURRENT');
-        if (widget.isDub) {
-          await fetchSubtitles(episodeId);
-        }
+        _betterPlayerController?.setupDataSource(_createDataSource());
+        if (widget.isDub) await fetchSubtitles(episodeId);
       }
     } catch (e) {
       log('Error fetching episode sources: $e');
@@ -202,25 +239,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Future<void> fetchSubtitles(String episodeId) async {
-    log('Fetching Subtitles');
     try {
-      final response = await fetchStreamingLinksAniwatch(
-          episodeId, widget.activeServer, 'sub');
-      if (response != null) {
-        final episodeSrcs = response;
+      final response = await HiAnimeApi().fetchStreamingLinksAniwatch(
+        episodeId,
+        widget.activeServer,
+        'sub',
+      );
+
+      if (response != null && mounted) {
         setState(() {
-          tracks = episodeSrcs['tracks'];
+          tracks = response['tracks'];
         });
 
         filterSubtitles(tracks);
-        if (moreThanOneLink) {
-          _betterPlayerController!.setupDataSource(multiSrcConfig);
-        }
-      } else {
-        _betterPlayerController!.setupDataSource(singleSrcConfig);
+        _betterPlayerController?.setupDataSource(_createDataSource());
       }
     } catch (e) {
-      log('Error fetching episode sources: $e');
+      log('Error fetching subtitles: $e');
     }
   }
 
@@ -593,6 +628,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   BetterPlayerSubtitlesSource? nullSub;
 
   subtitleDialog() {
+    log(widget.tracks.toString());
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -677,9 +713,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   String _doubleTapLabel = '';
   Timer? _doubleTapTimeout;
-
-  late AnimationController _leftAnimationController;
-  late AnimationController _rightAnimationController;
 
   Offset? _doubleTapPosition;
   DateTime? _lastTapTime;
@@ -850,19 +883,5 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _betterPlayerController?.dispose();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    _leftAnimationController.dispose();
-    _rightAnimationController.dispose();
-    _doubleTapTimeout?.cancel();
-    super.dispose();
   }
 }
