@@ -1,7 +1,7 @@
 import 'package:aurora/components/common/custom_tile.dart';
-import 'package:aurora/components/common/custom_tile_ui.dart';
 import 'package:aurora/components/common/switch_tile_stateless.dart';
 import 'package:aurora/pages/user/settings/layout_subs/resize_tabbar.dart';
+import 'package:aurora/pages/user/settings/modals/tile_with_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -130,6 +130,7 @@ class _LayoutPageState extends State<LayoutPage> {
             icon: Icons.rounded_corner_rounded,
             max: 50.0,
             min: 0.0,
+            divisions: 10,
           ),
           TileWithSlider(
             sliderValue: tabBarRoundness,
@@ -144,6 +145,7 @@ class _LayoutPageState extends State<LayoutPage> {
             icon: Icons.rounded_corner,
             min: 0.0,
             max: 50.0,
+            divisions: 10,
           ),
           const SizedBox(height: 20),
           Padding(
@@ -169,66 +171,6 @@ class _LayoutPageState extends State<LayoutPage> {
           )
         ],
       ),
-    );
-  }
-}
-
-class TileWithSlider extends StatefulWidget {
-  const TileWithSlider({
-    super.key,
-    required this.sliderValue,
-    required this.onChanged,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.min,
-    required this.max,
-  });
-  final String title;
-  final String description;
-  final double sliderValue;
-  final ValueChanged<double> onChanged;
-  final IconData icon;
-  final double min;
-  final double max;
-
-  @override
-  State<TileWithSlider> createState() => _TileWithSliderState();
-}
-
-class _TileWithSliderState extends State<TileWithSlider> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CustomTileUi(
-            icon: widget.icon,
-            title: widget.title,
-            description: widget.description),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-            children: [
-              Text(widget.sliderValue.toStringAsFixed(1),
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary)),
-              Expanded(
-                child: Slider(
-                  value: widget.sliderValue,
-                  onChanged: (newValue) => widget.onChanged(newValue),
-                  min: widget.min,
-                  max: widget.max,
-                  label: widget.sliderValue.toStringAsFixed(1),
-                  divisions: (widget.max * 10).toInt(),
-                ),
-              ),
-              Text(widget.max.toString(),
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary)),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
