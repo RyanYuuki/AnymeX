@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const Color seedColor = Colors.indigo;
+const Color seedColor = Colors.deepPurple;
 
 ThemeData lightMode = ThemeData(
   useMaterial3: true,
@@ -42,8 +42,8 @@ ThemeData lightMode = ThemeData(
     ),
   ),
   iconTheme: const IconThemeData(
-    color: Colors.black, 
-    size: 24, 
+    color: Colors.black,
+    size: 24,
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: seedColor,
@@ -63,7 +63,8 @@ ThemeData darkMode = ThemeData(
     bodyLarge: TextStyle(color: Colors.white),
     bodyMedium: TextStyle(color: Colors.white),
     titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    bodySmall: TextStyle(color: Colors.grey, fontSize: 12), // Updated to a lighter color
+    bodySmall: TextStyle(
+        color: Colors.grey, fontSize: 12), // Updated to a lighter color
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
@@ -90,8 +91,8 @@ ThemeData darkMode = ThemeData(
     ),
   ),
   iconTheme: const IconThemeData(
-    color: Colors.white, 
-    size: 24, 
+    color: Colors.white,
+    size: 24,
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: seedColor,

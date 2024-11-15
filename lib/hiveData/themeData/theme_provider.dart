@@ -17,9 +17,10 @@ class ThemeProvider extends ChangeNotifier {
     if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
       loadDynamicTheme();
     } else if (box.get('PaletteMode', defaultValue: 'Material') == 'Banner') {
-      adaptBannerColor(Colors.indigo);
+      adaptBannerColor(Colors.deepPurple);
     } else {
-      int colorValue = box.get('SeedColor', defaultValue: Colors.indigo.value);
+      int colorValue =
+          box.get('SeedColor', defaultValue: Colors.deepPurple.value);
       MaterialColor newSeedColor =
           MaterialColor(colorValue, getMaterialColorSwatch(colorValue));
       changeSeedColor(newSeedColor);
@@ -51,7 +52,7 @@ class ThemeProvider extends ChangeNotifier {
       _seedColor = Color(corePalette.primary.get(40));
       updateTheme();
     } else {
-      _seedColor = Colors.indigo;
+      _seedColor = Colors.deepPurple;
       _selectedTheme = isLightMode ? lightMode : darkMode;
     }
     box.put('PaletteMode', 'Material');
@@ -213,7 +214,7 @@ class ThemeProvider extends ChangeNotifier {
     if (paletteMode == 'Material') {
       loadDynamicTheme();
     } else {
-      int colorValue = box.get('SeedColor', defaultValue: Colors.indigo.value);
+      int colorValue = box.get('SeedColor', defaultValue: Colors.deepPurple.value);
       MaterialColor newSeedColor =
           MaterialColor(colorValue, getMaterialColorSwatch(colorValue));
       changeSeedColor(newSeedColor);
