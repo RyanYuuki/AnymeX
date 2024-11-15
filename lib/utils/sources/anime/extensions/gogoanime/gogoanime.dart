@@ -41,7 +41,7 @@ class GogoAnime implements SourceBase {
 
   @override
   Future<Map<String, dynamic>> scrapeEpisodesSrcs(String episodeUrl,
-      {String? category, AnimeServers? server}) async {
+      {String? category, AnimeServers? server, String? lang}) async {
     final serverLinks = await _getAllServerLinks(episodeUrl);
     final vidstreamLink = _getServerUrl("vidstreaming", serverLinks);
     // final streamwishLink = _getServerUrl("streamwish", serverLinks);

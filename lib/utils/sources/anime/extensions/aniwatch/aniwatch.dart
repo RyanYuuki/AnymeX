@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages, unused_local_variable
 
 import 'dart:convert';
 import 'dart:developer';
@@ -16,6 +16,14 @@ class HttpError implements Exception {
 
   @override
   String toString() => 'HttpError: $statusCode $message';
+}
+
+String formatAnimeTitle(String animeId) {
+  var arr = animeId.split('-').toList();
+  arr.removeLast();
+  var animeTitle =
+      arr.map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+  return animeTitle;
 }
 
 class HiAnime implements SourceBase {
@@ -62,6 +70,7 @@ class HiAnime implements SourceBase {
       }).toList();
 
       final scrapedData = {
+        'title': formatAnimeTitle(animeId),
         'totalEpisodes': totalEpisodes,
         'episodes': episodes,
       };
@@ -297,7 +306,7 @@ class HiAnime implements SourceBase {
   }
 
   @override
-  String get sourceName => 'HiAnime';
+  String get sourceName => 'HiAnime (Scrapper)';
 
   @override
   bool get isMulti => false;
