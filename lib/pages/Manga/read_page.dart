@@ -13,13 +13,17 @@ class ReadingPage extends StatefulWidget {
   final String posterUrl;
   final String currentSource;
   final String anilistId;
+  final dynamic chapterList;
+  final String description;
   const ReadingPage(
       {super.key,
       required this.id,
       required this.mangaId,
       required this.posterUrl,
       required this.currentSource,
-      required this.anilistId});
+      required this.anilistId,
+      required this.chapterList,
+      required this.description});
 
   @override
   State<ReadingPage> createState() => _ReadingPageState();
@@ -66,14 +70,17 @@ class _ReadingPageState extends State<ReadingPage> {
             ?.indexWhere((chapter) => chapter['name'] == currentChapter);
         isLoading = false;
       });
-      _updateMangaProgress();
+      await _updateMangaProgress();
       provider.addReadManga(
-          mangaId: widget.mangaId,
-          mangaTitle: tempData['title'],
-          currentChapter: currentChapter.toString(),
-          mangaPosterImage: widget.posterUrl,
-          anilistMangaId: widget.anilistId,
-          currentSource: widget.currentSource);
+        mangaId: widget.mangaId,
+        mangaTitle: tempData['title'],
+        currentChapter: currentChapter!. split(':').first.toString(),
+        mangaPosterImage: widget.posterUrl,
+        anilistMangaId: widget.anilistId,
+        currentSource: widget.currentSource,
+        chapterList: widget.chapterList,
+        description: widget.description,
+      );
     } catch (e) {
       log(e.toString());
       setState(() {
@@ -112,10 +119,12 @@ class _ReadingPageState extends State<ReadingPage> {
       provider.addReadManga(
           mangaId: widget.mangaId,
           mangaTitle: mangaTitle!,
-          currentChapter: currentChapter.toString(),
+          currentChapter: currentChapter!.split(':').first.toString(),
           mangaPosterImage: widget.posterUrl,
-          anilistMangaId: '',
-          currentSource: '');
+          anilistMangaId: (widget.anilistId),
+          currentSource: widget.currentSource,
+          chapterList: widget.chapterList,
+          description: widget.description);
       _updateMangaProgress();
     } catch (e) {
       log(e.toString());

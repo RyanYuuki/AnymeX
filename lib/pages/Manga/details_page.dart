@@ -103,10 +103,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
       vsync: this,
     )..repeat(reverse: true);
     availableSources = mangaSourceHandler.getAvailableSources();
-    final readMangas = AppData().readMangas;
-    isFavourite = readMangas != null
-        ? readMangas?.any((manga) => manga['anilistId'] == widget.id.toString())
-        : false;
+    isFavourite = Provider.of<AppData>(context, listen: false)
+        .getMangaAvail(widget.id.toString());
     selectedSource = mangaSourceHandler.selectedSourceName ??
         availableSources.first['name']!;
     chapterProgress = returnMangaProgress();
@@ -534,6 +532,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                             posterUrl: widget.posterUrl!,
                             currentSource: selectedSource,
                             anilistId: data['id'].toString(),
+                            chapterList: mangaData['chapterList'],
+                            description: data['description'],
                           )));
             },
             child: Container(
@@ -637,6 +637,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               chaptersData: filteredChapters,
               currentSource: selectedSource,
               anilistId: data['id'].toString(),
+              rawChapters: mangaData['chapterList'],
+              description: data['description'],
             )
         ],
       ),
@@ -877,6 +879,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context);
+                            Provider.of<AniListProvider>(context, listen: false)
+                                .deleteMangaFromList(mangaId: widget.id);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -984,26 +988,43 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                   Expanded(child: SizedBox.shrink()),
                   IconButton(
                       onPressed: () {
-                        if (mangaData != null) {
+                        if (mangaData != null && data != null) {
                           setState(() {
                             isFavourite = !isFavourite;
                           });
-                          if (!isFavourite) {
-                            AppData().addReadManga(
-                                mangaId: mangaData['id'],
-                                mangaTitle: mangaData['title'],
-                                currentChapter: chapterProgress.toString(),
-                                mangaPosterImage: widget.posterUrl!,
-                                anilistMangaId: widget.id.toString(),
-                                currentSource:
-                                    mangaSourceHandler.selectedSourceName!);
+                          if (isFavourite) {
+                            Provider.of<AppData>(context, listen: false)
+                                .addReadManga(
+                                    mangaId: mangaData['id'],
+                                    mangaTitle: mangaData['title'],
+                                    currentChapter: chapterProgress.toString(),
+                                    mangaPosterImage: widget.posterUrl!,
+                                    anilistMangaId: widget.id.toString(),
+                                    currentSource:
+                                        mangaSourceHandler.selectedSourceName!,
+                                    chapterList: mangaData['chapterList'],
+                                    description: data['description']);
                           } else {
-                            AppData()
+                            Provider.of<AppData>(context, listen: false)
                                 .removeMangaByAnilistId(widget.id.toString());
                           }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              content: Text(
+                                  'What are you? flash? you${"'"}re gonna have to wait few secs',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface))));
                         }
                       },
-                      icon: Icon(Iconsax.heart)),
+                      icon: Icon(isFavourite ? Iconsax.heart5 : Iconsax.heart)),
                   IconButton(onPressed: () {}, icon: Icon(Icons.share)),
                 ],
               ),
@@ -1239,7 +1260,26 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                 width: MediaQuery.of(context).size.width - 40,
                 child: ElevatedButton(
                   onPressed: () {
-                    showListEditorModal(context, data['chapters'] ?? '?');
+                    if (Provider.of<AniListProvider>(context, listen: false)
+                            .userData?['user']?['name'] ==
+                        null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          content: Text(
+                            'Login on AniList First!',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
+                      );
+                    } else {
+                      showListEditorModal(context, data['chapters'] ?? '?');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
@@ -1459,7 +1499,31 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                       height: 60,
                       child: ElevatedButton(
                         onPressed: () {
-                          showListEditorModal(context, data['chapters'] ?? '?');
+                          if (Provider.of<AniListProvider>(context,
+                                      listen: false)
+                                  .userData?['user']?['name'] ==
+                              null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
+                                content: Text(
+                                  'Login on AniList First!',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                              ),
+                            );
+                          } else {
+                            showListEditorModal(
+                                context, data['chapters'] ?? '?');
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
@@ -1508,23 +1572,40 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                         backgroundColor: Colors.transparent,
                       ),
                       onPressed: () {
-                        if (mangaData != null) {
+                        if (mangaData != null && data != null) {
                           setState(() {
                             isFavourite = !isFavourite;
                           });
                           if (isFavourite) {
-                            AppData().addReadManga(
-                                mangaId: mangaData['id'],
-                                mangaTitle: mangaData['title'],
-                                currentChapter: chapterProgress.toString(),
-                                mangaPosterImage: widget.posterUrl!,
-                                anilistMangaId: widget.id.toString(),
-                                currentSource:
-                                    mangaSourceHandler.selectedSourceName!);
+                            Provider.of<AppData>(context, listen: false)
+                                .addReadManga(
+                                    mangaId: mangaData['id'],
+                                    mangaTitle: mangaData['title'],
+                                    currentChapter: chapterProgress.toString(),
+                                    mangaPosterImage: widget.posterUrl!,
+                                    anilistMangaId: widget.id.toString(),
+                                    currentSource:
+                                        mangaSourceHandler.selectedSourceName!,
+                                    chapterList: mangaData['chapterList'],
+                                    description: data['description']);
                           } else {
-                            AppData()
+                            Provider.of<AppData>(context, listen: false)
                                 .removeMangaByAnilistId(widget.id.toString());
                           }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              content: Text(
+                                  'What are you? flash? you${"'"}re gonna have to wait few secs',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface))));
                         }
                       },
                     ),

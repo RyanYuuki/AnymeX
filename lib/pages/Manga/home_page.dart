@@ -2,7 +2,7 @@ import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/anime/home/carousel.dart';
 import 'package:aurora/components/anime/home/coverCarousel.dart';
 import 'package:aurora/components/common/IconWithLabel.dart';
-import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/common/settings_modal.dart';
 import 'package:aurora/components/anime/home/data_table.dart';
 import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/fallbackData/anilist_manga_homepage.dart';
@@ -95,7 +95,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
                     const SizedBox(height: 20),
                     Covercarousel(
                         title: 'Spotlight',
-                        animeData: baseAnimeData['trendingManga']['media'],
+                        animeData: baseAnimeData['trendingManga']['media'].sublist(0,10),
                         isManga: true),
                     const SizedBox(height: 20),
                     Carousel(
