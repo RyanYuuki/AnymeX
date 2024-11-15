@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/anilistExclusive/animeListCarousels.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';
-import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,23 +13,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  File? _avatarImage;
-
-  // var box = Hive.box('login-data');
-  // final userInfo =
-  //     box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-  // final userName = userInfo?[0] ?? 'Guest';
-  // final avatarImagePath = userInfo?[2] ?? 'null';
-  // final isLoggedIn = userName != 'Guest';
-  // final hasAvatarImage = avatarImagePath != 'null';
-  // final totalWatchedAnimes =
-  //     Provider.of<AppData>(context).watchedAnimes?.length.toString() ?? '00';
-  // final totalReadManga =
-  //     Provider.of<AppData>(context).readMangas?.length.toString() ?? '00';
-  // final hiveBox = Hive.box('app-data');
-  // final List<dynamic>? watchingAnimeList = hiveBox.get('currently-watching');
-  // final List<dynamic>? readingMangaList = hiveBox.get('currently-reading');
-
   dynamic filterData(dynamic animeList) {
     if (animeList != null) {
       return animeList.where((anime) => anime['status'] == 'CURRENT').toList();
@@ -63,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
           final following = isLoggedIn ? 0 : 0;
           final hasAvatarImage = avatarUrl != null;
           final animeList = filterData(anilistProvider.userData['animeList']);
-          // final mangaList = filterData(anilistProvider.userData['mangaList']);
+          final mangaList = filterData(anilistProvider.userData['mangaList']);
 
           return ListView(
             children: [
@@ -285,13 +265,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         carouselData: animeList,
                         tag: 'currently-watching',
                       ),
-                      // anilistCarousel(
-                      //   title: 'Currently Reading',
-                      //   carouselData: mangaList,
-                      //   tag: 'currently-reading',
-                      //   rawData: rawDataManga,
-                      //   isManga: true,
-                      // ),
+                      anilistCarousel(
+                        title: 'Currently Reading',
+                        carouselData: mangaList,
+                        tag: 'currently-reading',
+                        isManga: true,
+                      ),
                     ],
                   ),
                 ],
@@ -301,76 +280,6 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       ),
     );
-  }
-
-  void _showUsernameDialog(BuildContext context) {
-    final TextEditingController usernameController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          content: TextFormField(
-            controller: usernameController,
-            decoration: InputDecoration(
-                hintText: 'Username',
-                fillColor: Theme.of(context).colorScheme.surfaceContainer),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                              width: 2,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryFixedVariant)),
-                    ),
-                    child: const Text('Cancel'),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    onPressed: () {
-                      _submitUsername(usernameController.text);
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  void _submitUsername(String newUsername) {
-    if (newUsername.isNotEmpty) {
-      var box = Hive.box('login-data');
-      var userInfo =
-          box.get('userInfo', defaultValue: ['Guest', 'Guest', 'null']);
-      userInfo[0] = newUsername;
-      box.put('userInfo', userInfo);
-      setState(() {});
-    }
   }
 
   Widget _buildStatContainer({
