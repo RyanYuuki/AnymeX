@@ -8,13 +8,17 @@ class ChapterList extends StatelessWidget {
   final String? posterUrl;
   final String anilistId;
   final String currentSource;
+  final dynamic rawChapters;
+  final String description;
   const ChapterList(
       {super.key,
       this.chaptersData,
       required this.id,
       required this.posterUrl,
       required this.currentSource,
-      required this.anilistId});
+      required this.anilistId,
+      required this.rawChapters,
+      required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +111,8 @@ class ChapterList extends StatelessWidget {
                                             posterUrl: posterUrl!,
                                             currentSource: currentSource,
                                             anilistId: anilistId,
+                                            chapterList: rawChapters,
+                                            description: description,
                                           )));
                             },
                             style: ElevatedButton.styleFrom(
