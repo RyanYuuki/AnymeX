@@ -181,6 +181,160 @@ class AniListProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteMangaFromList({
+    required int mangaId,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+
+    const String query = '''
+  query GetMangaListEntryId(\$mediaId: Int) {
+    MediaList(mediaId: \$mediaId) {
+      id
+    }
+  }
+  ''';
+
+    final responseId = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': query,
+        'variables': {'mediaId': mangaId},
+      }),
+    );
+
+    if (responseId.statusCode != 200) {
+      log('Failed to fetch media list entry ID. Status code: ${responseId.statusCode}');
+      log('Response body: ${responseId.body}');
+      return;
+    }
+
+    final dataId = jsonDecode(responseId.body);
+    if (dataId['errors'] != null || dataId['data']['MediaList'] == null) {
+      log('Error fetching media list entry ID: ${dataId['errors']}');
+      return;
+    }
+
+    final int mediaListEntryId = dataId['data']['MediaList']['id'];
+
+    const String mutation = '''
+  mutation DeleteMangaEntry(\$id: Int) {
+    DeleteMediaListEntry(id: \$id) {
+      deleted
+    }
+  }
+  ''';
+
+    final responseDelete = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': {'id': mediaListEntryId},
+      }),
+    );
+
+    if (responseDelete.statusCode == 200) {
+      final dataDelete = jsonDecode(responseDelete.body);
+      if (dataDelete['errors'] != null) {
+        log('Error deleting manga: ${dataDelete['errors']}');
+      } else {
+        log('Manga deleted successfully: ${dataDelete['data']}');
+        await fetchUserMangaList();
+      }
+    } else {
+      log('Failed to delete manga. Status code: ${responseDelete.statusCode}');
+      log('Response body: ${responseDelete.body}');
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> deleteAnimeFromList({
+    required int animeId,
+  }) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = await storage.read(key: 'auth_token');
+
+    // Step 1: Fetch the media list entry ID
+    const String query = '''
+  query GetAnimeListEntryId(\$mediaId: Int) {
+    MediaList(mediaId: \$mediaId) {
+      id
+    }
+  }
+  ''';
+
+    final responseId = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': query,
+        'variables': {'mediaId': animeId},
+      }),
+    );
+
+    if (responseId.statusCode != 200) {
+      log('Failed to fetch media list entry ID. Status code: ${responseId.statusCode}');
+      log('Response body: ${responseId.body}');
+      return;
+    }
+
+    final dataId = jsonDecode(responseId.body);
+    if (dataId['errors'] != null || dataId['data']['MediaList'] == null) {
+      log('Error fetching media list entry ID: ${dataId['errors']}');
+      return;
+    }
+
+    final int mediaListEntryId = dataId['data']['MediaList']['id'];
+
+    // Step 2: Delete the entry using the media list entry ID
+    const String mutation = '''
+  mutation DeleteAnimeEntry(\$id: Int) {
+    DeleteMediaListEntry(id: \$id) {
+      deleted
+    }
+  }
+  ''';
+
+    final responseDelete = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'query': mutation,
+        'variables': {'id': mediaListEntryId},
+      }),
+    );
+
+    if (responseDelete.statusCode == 200) {
+      final dataDelete = jsonDecode(responseDelete.body);
+      if (dataDelete['errors'] != null) {
+        log('Error deleting anime: ${dataDelete['errors']}');
+      } else {
+        log('Anime deleted successfully: ${dataDelete['data']}');
+        await fetchUserAnimeList();
+      }
+    } else {
+      log('Failed to delete anime. Status code: ${responseDelete.statusCode}');
+      log('Response body: ${responseDelete.body}');
+    }
+
+    notifyListeners();
+  }
+
   Future<void> updateMangaProgress({
     required int mangaId,
     required int chapterProgress,
