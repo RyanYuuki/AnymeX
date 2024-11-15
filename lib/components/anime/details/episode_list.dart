@@ -9,6 +9,7 @@ class EpisodeGrid extends StatefulWidget {
   final List<dynamic> episodes;
   final int layoutIndex;
   final Function(int) onEpisodeSelected;
+  final Function(String, String) onEpisodeDownload;
   final int currentEpisode;
   final String coverImage;
   final int progress;
@@ -22,6 +23,7 @@ class EpisodeGrid extends StatefulWidget {
     required this.progress,
     required this.coverImage,
     this.episodeImages,
+    required this.onEpisodeDownload,
   });
 
   @override
@@ -53,14 +55,18 @@ class _EpisodeGridState extends State<EpisodeGrid> {
     bool isGrid = widget.layoutIndex == 2;
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isGrid ? 5 : 1,
+        crossAxisCount: isGrid
+            ? 5
+            : widget.layoutIndex == 1
+                ? 2
+                : 1,
         mainAxisExtent: isList
-            ? 50
+            ? 90
             : isGrid
                 ? 40
                 : 100,
         crossAxisSpacing: 5,
-        mainAxisSpacing: widget.layoutIndex == 0 ? 10 : 5,
+        mainAxisSpacing: widget.layoutIndex == 2 ? 5 : 10,
       ),
       padding: const EdgeInsets.symmetric(vertical: 5),
       shrinkWrap: true,
@@ -78,7 +84,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
               widget.onEpisodeSelected(episodeNumber);
             },
             child: Opacity(
-              opacity: (episodeNumber) < widget.progress ? 0.7 : 1,
+              opacity: (episodeNumber) <= widget.progress ? 0.7 : 1,
               child: Container(
                 height: 50,
                 clipBehavior: Clip.antiAlias,
@@ -86,7 +92,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                   color: isSelected
                       ? Theme.of(context).colorScheme.onPrimaryFixedVariant
                       : Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
+                  borderRadius: BorderRadius.circular(12), 
                 ),
                 child: Row(
                   children: [
@@ -158,36 +164,96 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                     const SizedBox(width: 10),
                     Expanded(
                       flex: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Episode ${episodeNumber?.toString() ?? index.toString()}',
-                            style: const TextStyle(
-                              fontFamily: 'Poppins-SemiBold',
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            episodeTitle,
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .inverseSurface,
-                              fontFamily: 'Poppins-SemiBold',
-                              fontSize: 12,
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                      child: Text(
+                        episodeTitle,
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : Theme.of(context).colorScheme.inverseSurface,
+                          fontFamily: 'Poppins-Bold',
+                          fontSize: 14,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
+                    ),
+                    IconButton(
+                      onPressed: () => widget.onEpisodeDownload(
+                          episode['episodeId'], episodeNumber.toString()),
+                      icon: Icon(Icons.download,
+                          color: Theme.of(context).colorScheme.inverseSurface),
                     ),
                   ],
                 ),
+              ),
+            ),
+          );
+        }
+
+        if (widget.layoutIndex == 1) {
+          return Opacity(
+            opacity: episodeNumber < widget.progress ? 0.7 : 1,
+            child: Container(
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: (widget.episodeImages != null &&
+                            widget.episodeImages!.length > index
+                        ? widget.episodeImages![episodeNumber - 1]['image'] ??
+                            widget.coverImage
+                        : widget.coverImage),
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(top: 15, left: 10, right: 5),
+                    decoration: BoxDecoration(
+                      color: isFiller
+                          ? Colors.lightGreen.shade700.withOpacity(0.8)
+                          : Theme.of(context)
+                              .colorScheme
+                              .surfaceContainer
+                              .withOpacity(0.6),
+                    ),
+                    child: Text(
+                      episodeTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontFamily: 'Poppins-SemiBold'),
+                    ),
+                  ),
+                  Positioned(
+                      bottom: 5,
+                      right: 20,
+                      child: Text(episodeNumber.toString(),
+                          style: TextStyle(
+                              fontFamily: "Poppins-Bold",
+                              fontSize: 24,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .inverseSurface
+                                  .withOpacity(0.8)))),
+                  Positioned(
+                      bottom: 7,
+                      left: 10,
+                      child: InkWell(
+                          onTap: () => widget.onEpisodeDownload(
+                              episode['episodeId'], episodeNumber.toString()),
+                          child: Icon(Icons.download,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .inverseSurface
+                                  .withOpacity(0.8))))
+                ],
               ),
             ),
           );
