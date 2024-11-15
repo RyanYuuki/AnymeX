@@ -4,12 +4,14 @@ class CustomTileUi extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
+  final double? size;
 
   const CustomTileUi({
     super.key,
     required this.icon,
     required this.title,
     required this.description,
+    this.size,
   });
 
   @override
@@ -20,7 +22,8 @@ class CustomTileUi extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Row(
           children: [
-            Icon(icon, size: 30, color: Theme.of(context).colorScheme.primary),
+            Icon(icon,
+                size: size ?? 30, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 20),
             Expanded(
               child: Column(

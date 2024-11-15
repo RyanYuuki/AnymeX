@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/Novel/home_page.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:aurora/pages/Anime/details_page.dart';
 import 'package:aurora/pages/Anime/search_page.dart';
@@ -47,6 +49,18 @@ void main() async {
       child: const MainApp(),
     ),
   );
+}
+
+Future<void> requestNotificationPermission() async {
+  if (Platform.isAndroid) {
+    final os = await DeviceInfoPlugin().androidInfo;
+    if (os.version.sdkInt >= 33) {
+      final status = await Permission.notification.request();
+      if (!status.isGranted) {
+        print("Notification permission not granted");
+      }
+    }
+  }
 }
 
 class MainApp extends StatefulWidget {
@@ -221,6 +235,8 @@ class _MainAppState extends State<MainApp> {
                 posterUrl: posterUrl,
                 currentSource: currentSource,
                 anilistId: anilistId,
+                chapterList: null,
+                description: '',
               ),
             );
           case '/profile':

@@ -133,12 +133,12 @@ void showAnimeSearchModal(BuildContext context, String initialText,
 }
 
 GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
-    Function(String) onAnimeSelected // Add the callback parameter
+    Function(String) onAnimeSelected
     ) {
   return GestureDetector(
     onTap: () {
-      onAnimeSelected(anime['id']); // Call the callback with the anime ID
-      Navigator.pop(context); // Close the modal after selection
+      onAnimeSelected(anime['id']); 
+      Navigator.pop(context); 
     },
     child: Container(
       height: 110,
