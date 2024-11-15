@@ -106,13 +106,25 @@ class NovelBuddy implements NovelSourceBase {
       if (newResp.statusCode == 200) {
         final pageContent = parse(newResp.body);
         var chapterListElements = pageContent.querySelectorAll('li');
-        final chapterList = [];
+        List<Map<String, dynamic>> chapterList = [];
+
         for (var chapter in chapterListElements) {
-          chapterList.add({
-            'id': baseUrl + chapter.querySelector('a')!.attributes['href']!,
-            'title': chapter.querySelector('a')?.attributes['title'],
-          });
+          final String? href = chapter.querySelector('a')?.attributes['href'];
+          final String? title = chapter.querySelector('a')?.attributes['title'];
+
+          if (href != null) {
+            chapterList.add({
+              'id': '$baseUrl$href',
+              'title': title ?? 'Untitled Chapter',
+            });
+          }
         }
+
+        chapterList = chapterList.reversed.toList();
+        for (int i = 0; i < chapterList.length; i++) {
+          chapterList[i]['number'] = i + 1;
+        }
+
         novelData = {
           'id': url,
           'title': title,

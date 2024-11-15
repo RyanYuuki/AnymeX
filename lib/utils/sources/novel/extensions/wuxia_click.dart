@@ -62,7 +62,7 @@ class WuxiaClick implements NovelSourceBase {
   @override
   Future<dynamic> scrapeNovelDetails(String url) async {
     final response = await http.get(Uri.parse(url));
-
+    int index = 0;
     if (response.statusCode == 200) {
       var document = parse(response.body);
 
@@ -97,13 +97,20 @@ class WuxiaClick implements NovelSourceBase {
       var descriptionElement =
           document.querySelector('.mantine-Text-root.mantine-tpna8b');
       var description = descriptionElement?.text.trim() ?? '';
-      List<Map<String, String>> chapters = [];
+      List<Map<String, dynamic>> chapterList = [];
+
       for (int i = 1; i <= int.parse(chaptersCount); i++) {
-        chapters.add({
+        chapterList.add({
           'id': '${url.replaceAll('novel', 'chapter')}-$i',
           'title': 'Chapter $i',
         });
       }
+
+      chapterList = chapterList.reversed.toList();
+      for (int i = 0; i < chapterList.length; i++) {
+        chapterList[i]['number'] = i + 1;
+      }
+
       novelDetailsList = {
         'id': url,
         'title': title,
@@ -115,7 +122,7 @@ class WuxiaClick implements NovelSourceBase {
         'reviews': reviews,
         'image': imageUrl,
         'description': description,
-        'chapterList': chapters,
+        'chapterList': chapterList,
       };
       return novelDetailsList;
     } else {
