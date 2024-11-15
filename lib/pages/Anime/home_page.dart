@@ -1,6 +1,6 @@
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/common/IconWithLabel.dart';
-import 'package:aurora/components/common/SettingsModal.dart';
+import 'package:aurora/components/common/settings_modal.dart';
 import 'package:aurora/fallbackData/anilist_homepage_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../components/anime/home/coverCarousel.dart';

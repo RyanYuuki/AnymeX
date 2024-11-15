@@ -11,8 +11,10 @@ import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/components/anime/details/character_cards.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
-import 'package:aurora/utils/apiHooks/api.dart';
+import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/pages/Anime/watch_page.dart';
+import 'package:aurora/utils/downloader/downloader.dart';
+import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
@@ -101,10 +103,10 @@ class _DetailsPageState extends State<DetailsPage>
   bool isDub = false;
   int watchProgress = 1;
   final serverList = ['HD-1', 'HD-2', 'Vidstream'];
-  bool usingAPI = false;
 
   // Sources
   dynamic fetchedData;
+  bool isFavourite = false;
 
   // Layout Buttons
   List<IconData> layoutIcons = [
@@ -122,9 +124,7 @@ class _DetailsPageState extends State<DetailsPage>
       duration: const Duration(seconds: 10),
       vsync: this,
     )..repeat(reverse: true);
-    setState(() {
-      watchProgress = returnProgress();
-    });
+    watchProgress = returnProgress();
     _animation = Tween<double>(begin: -1.0, end: -2.0).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.linear,
@@ -143,19 +143,20 @@ class _DetailsPageState extends State<DetailsPage>
       final tempdata = await fetchAnimeInfo(widget.id);
       setState(() {
         data = tempdata;
-        description = data?['description'];
         description = data['description'] ?? data?['description'];
         charactersdata = data['characters'] ?? [];
         altdata = data;
+        isFavourite = Provider.of<AppData>(context, listen: false)
+            .getAnimeAvail(widget.id.toString());
         isLoading = false;
       });
       final resp = await http.get(Uri.parse(
-          "https://raw.githubusercontent.com/RyanYuuki/Anilist-Database/master/anilist/anime/${tempdata['id']}.json"));
+          "https://raw.githubusercontent.com/bal-mackup/mal-backup/refs/heads/master/anilist/anime/${tempdata['id']}.json"));
       if (resp.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(resp.body);
         if (Provider.of<SourcesHandler>(context, listen: false)
-                .selectedSource ==
-            "HiAnime") {
+                .selectedSource !=
+            "GogoAnime") {
           final zoroInfo = jsonResponse['Sites']['Zoro'];
           String? zoroUrl;
           String? zoroId;
@@ -198,7 +199,7 @@ class _DetailsPageState extends State<DetailsPage>
         isLoading = false;
       });
       final tempEpisodeImages =
-          await fetchStreamingDataConsumet(widget.id.toString());
+          await HiAnimeApi().fetchStreamingDataConsumet(widget.id.toString());
       setState(() {
         episodeImages = tempEpisodeImages;
       });
@@ -213,19 +214,13 @@ class _DetailsPageState extends State<DetailsPage>
     if (episodesData == null) return;
     try {
       dynamic response;
-      if (!usingAPI) {
-        response = await provider.fetchEpisodesSrcs(
-            episodesData[(currentEpisode - 1)]['episodeId'],
-            category: isDub ? 'dub' : 'sub');
-        log(response.toString());
-      } else {
-        response = await fetchStreamingLinksAniwatch(
-            episodesData[(currentEpisode - 1)]['episodeId'],
-            activeServer,
-            isDub ? 'dub' : 'sub');
-      }
+      response = await provider.fetchEpisodesSrcs(
+          episodesData[(currentEpisode - 1)]['episodeId'],
+          category: isDub ? 'dub' : 'sub',
+          lang: activeServer);
 
       if (response != null) {
+        log(response.toString());
         setState(() {
           subtitleTracks = response['tracks'];
           episodeSrc = response['sources'];
@@ -241,13 +236,15 @@ class _DetailsPageState extends State<DetailsPage>
       log('Error fetching episode sources: $e');
     }
 
-    AppData().addWatchedAnime(
+    Provider.of<AppData>(context, listen: false).addWatchedAnime(
       animeId: data['id'].toString(),
       animeTitle: data['name'],
       currentEpisode: currentEpisode.toString(),
       animePosterImageUrl: data['poster'],
       anilistAnimeId: widget.id.toString(),
       currentSource: provider.selectedSource,
+      episodeList: episodesData,
+      animeDescription: data['description'],
     );
 
     if (episodeSrc != null) {
@@ -407,7 +404,7 @@ class _DetailsPageState extends State<DetailsPage>
               )
             else
               SizedBox(
-                height: selectedIndex == 0 ? 1650 : 750,
+                height: selectedIndex == 0 ? 1700 : 750,
                 child: PageView(
                   padEnds: false,
                   physics: NeverScrollableScrollPhysics(),
@@ -465,7 +462,7 @@ class _DetailsPageState extends State<DetailsPage>
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
-              'Found: ${fetchedData?['title'] ?? '??'}',
+              'Found: ${fetchedData?['name'] ?? fetchedData?['title'] ?? data?['name'] ?? '??'}',
               style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontFamily: "Poppins-SemiBold"),
@@ -726,20 +723,267 @@ class _DetailsPageState extends State<DetailsPage>
               : SizedBox(
                   height: layoutIndex == 0 ? 320 : 280,
                   child: EpisodeGrid(
-                      currentEpisode: currentEpisode,
-                      episodeImages: episodeImages,
-                      episodes: filteredEpisodes,
-                      progress: watchProgress,
-                      layoutIndex: layoutIndex,
-                      onEpisodeSelected: (int episode) {
-                        setState(() {
-                          currentEpisode = episode;
-                        });
-                        selectServerDialog(context);
-                      },
-                      coverImage: data?['poster'] ?? widget.posterUrl!),
+                    currentEpisode: currentEpisode,
+                    episodeImages: episodeImages,
+                    episodes: filteredEpisodes,
+                    progress: watchProgress,
+                    layoutIndex: layoutIndex,
+                    onEpisodeSelected: (int episode) {
+                      setState(() {
+                        currentEpisode = episode;
+                      });
+                      selectServerDialog(context);
+                    },
+                    coverImage: data?['poster'] ?? widget.posterUrl!,
+                    onEpisodeDownload:
+                        (String episodeId, String episodeNumber) async {
+                      showDownloadOptions(context,
+                          isLoading: true,
+                          server: '',
+                          source: '',
+                          sourcesData: [],
+                          episodeNumber: '');
+                      final downloadMeta = await downloadHelper(episodeId);
+                      Navigator.pop(context);
+                      showDownloadOptions(context,
+                          isLoading: false,
+                          server: Provider.of<SourcesHandler>(context,
+                                          listen: false)
+                                      .selectedSource ==
+                                  "HiAnime"
+                              ? "MegaCloud"
+                              : "VidStream",
+                          source: Provider.of<SourcesHandler>(context,
+                                  listen: false)
+                              .selectedSource,
+                          sourcesData: downloadMeta,
+                          episodeNumber: "Episode-$episodeNumber");
+                    },
+                  ),
                 ),
         ],
+      ),
+    );
+  }
+
+  Future<dynamic> downloadHelper(String episodeId) async {
+    String? episodeSrc;
+    final provider = Provider.of<SourcesHandler>(context, listen: false);
+    dynamic response;
+
+    try {
+      response = await provider.fetchEpisodesSrcs(episodeId,
+          category: isDub ? 'dub' : 'sub',
+          server: AnimeServers.MegaCloud,
+          lang: activeServer);
+
+      if (response != null) {
+        episodeSrc = response['sources'][0]['url'];
+        final m3u8Url = episodeSrc;
+        final parts = m3u8Url!.split('/');
+        parts.removeLast();
+        final baseUrl = '${parts.join('/')}/';
+        log('base url: $baseUrl');
+        log('m3u8 url: $m3u8Url');
+
+        final qualitiesList = await fetchM3u8Links(m3u8Url, baseUrl);
+
+        if (qualitiesList.isNotEmpty) {
+          return qualitiesList;
+        } else {
+          print('No qualities found.');
+        }
+      } else {
+        print('Error: No sources found in the response.');
+      }
+    } catch (e) {
+      print('Error fetching episode sources: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchM3u8Links(
+      String m3u8Url, String baseUrl) async {
+    final List<Map<String, dynamic>> qualitiesList = [];
+
+    try {
+      final response = await http.get(Uri.parse(m3u8Url));
+
+      if (response.statusCode == 200) {
+        final lines = LineSplitter.split(response.body).toList();
+        String? currentUrl;
+
+        for (String line in lines) {
+          if (line.startsWith('#EXT-X-I-FRAME-STREAM-INF')) {
+            continue;
+          }
+
+          if (line.startsWith('#EXT-X-STREAM-INF')) {
+            final Map<String, String> attributes = {};
+
+            final regex = RegExp(r'(\w+)=["]?([^",]+)["]?');
+            final matches = regex.allMatches(line);
+
+            for (var match in matches) {
+              final key = match.group(1);
+              final value = match.group(2);
+              if (key != null && value != null) {
+                attributes[key] = value;
+              }
+            }
+
+            String quality = attributes['RESOLUTION'] ?? 'Unknown Quality';
+
+            if (quality == '1920x1080') {
+              quality = '1080p';
+            } else if (quality == '1280x720') {
+              quality = '720p';
+            } else if (quality == '640x360') {
+              quality = '360p';
+            } else {
+              quality = attributes['NAME'] ?? 'Unknown Quality';
+            }
+
+            print('Found quality: $quality');
+            final index = lines.indexOf(line) + 1;
+            if (index < lines.length) {
+              currentUrl = lines[index].trim();
+
+              if (!currentUrl.startsWith('http')) {
+                currentUrl = '$baseUrl$currentUrl';
+              }
+
+              qualitiesList.add({
+                'quality': quality,
+                'url': currentUrl,
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching M3U8 links: $e');
+    }
+
+    return qualitiesList;
+  }
+
+  Future<void> showDownloadOptions(
+    BuildContext context, {
+    required bool isLoading,
+    required String server,
+    required String source,
+    required dynamic sourcesData,
+    required String episodeNumber,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 4,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Select Server',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  else
+                    SizedBox(
+                      height: 300,
+                      child: ListView.builder(
+                          itemCount: sourcesData.length,
+                          itemBuilder: (context, index) {
+                            final quality = sourcesData[index]['quality'];
+                            final url = sourcesData[index]['url'];
+                            return _buildTile('$server - $quality', 'M3U8', () {
+                              Downloader downloader = Downloader();
+                              downloader.download(
+                                  url, episodeNumber, data['name']);
+                              Navigator.pop(context);
+                            });
+                          }),
+                    ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTile(String title, String type, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ListTile(
+          title: Text(
+            title,
+            style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
+                color: Theme.of(context).colorScheme.primary),
+          ),
+          subtitle: Text(
+            'M3U8',
+            style: TextStyle(color: Colors.grey[400]),
+          ),
+          trailing: const Icon(Icons.download),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServerTile(String title, String type, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ListTile(
+          title: Text(
+            title,
+            style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
+                color: Theme.of(context).colorScheme.primary),
+          ),
+          subtitle: Text(
+            Provider.of<SourcesHandler>(context).getSelectedSource(),
+            style: TextStyle(color: Colors.grey[400]),
+          ),
+          trailing: const Icon(Iconsax.play5),
+        ),
       ),
     );
   }
@@ -787,12 +1031,10 @@ class _DetailsPageState extends State<DetailsPage>
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        int selectedServer = -1;
         return StatefulBuilder(
           builder: (context, setState) {
             return Container(
               padding: const EdgeInsets.all(16.0),
-              height: 450,
               decoration: BoxDecoration(
                 color:
                     Theme.of(context).colorScheme.surface, // Background color
@@ -811,7 +1053,7 @@ class _DetailsPageState extends State<DetailsPage>
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Column(children: [
+                  Column(children: const [
                     Text(
                       'Select Server',
                       style: TextStyle(
@@ -820,100 +1062,17 @@ class _DetailsPageState extends State<DetailsPage>
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (Provider.of<SourcesHandler>(context).selectedSource ==
-                        "HiAnime")
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('USE API',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-SemiBold',
-                                fontSize: 16,
-                              )),
-                          const SizedBox(width: 5),
-                          Switch(
-                              value: usingAPI,
-                              onChanged: (value) {
-                                setState(() {
-                                  usingAPI = value;
-                                });
-                              }),
-                        ],
-                      ),
                   ]),
                   SizedBox(height: 16),
                   for (int i = 0; i < 3; i++) ...[
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: selectedServer == i
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryFixedVariant
-                              : Theme.of(context).colorScheme.surfaceContainer,
-                          minimumSize: Size(double.infinity, 60),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            selectedServer = i;
-                            activeServer = (serverList[i]).toLowerCase();
-                          });
-                        },
-                        child: Text(
-                          serverList[i],
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+                    _buildServerTile(serverList[i], 'FAST', () async {
+                      setState(() {
+                        activeServer = (serverList[i]).toLowerCase();
+                      });
+                      showLoading();
+                      await fetchEpisodeSrcs();
+                    })
                   ],
-                  Spacer(),
-                  ElevatedButton(
-                    onPressed: selectedServer == -1
-                        ? null
-                        : () async {
-                            episodeSrc = null;
-                            showLoading();
-                            await fetchEpisodeSrcs();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      backgroundColor: selectedServer == -1
-                          ? Colors.grey
-                          : Theme.of(context).colorScheme.primary,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Press to Play',
-                          style: TextStyle(
-                            color: selectedServer == -1
-                                ? Colors.white
-                                : Theme.of(context).colorScheme.surface,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        selectedServer == -1
-                            ? SizedBox()
-                            : Icon(
-                                Icons.play_circle_fill_rounded,
-                                color: selectedServer == -1
-                                    ? Colors.white
-                                    : Theme.of(context).colorScheme.surface,
-                              )
-                      ],
-                    ),
-                  ),
                 ],
               ),
             );
@@ -948,8 +1107,27 @@ class _DetailsPageState extends State<DetailsPage>
                   width: MediaQuery.of(context).size.width - 40,
                   child: ElevatedButton(
                     onPressed: () {
-                      showListEditorModal(
-                          context, data['totalEpisodes'] ?? '?');
+                      if (Provider.of<AniListProvider>(context, listen: false)
+                              .userData?['user']?['name'] ==
+                          null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            content: Text(
+                              'Login on AniList First!',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                          ),
+                        );
+                      } else {
+                        showListEditorModal(
+                            context, data['totalEpisodes'] ?? '?');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -990,7 +1168,50 @@ class _DetailsPageState extends State<DetailsPage>
                     ),
                   ),
                   Expanded(child: SizedBox.shrink()),
-                  IconButton(onPressed: () {}, icon: Icon(Iconsax.heart)),
+                  IconButton(
+                      onPressed: () {
+                        if (data != null && episodesData != null) {
+                          setState(() {
+                            isFavourite = !isFavourite;
+                          });
+                          if (isFavourite) {
+                            Provider.of<AppData>(context, listen: false)
+                                .addWatchedAnime(
+                                    currentSource: Provider.of<SourcesHandler>(
+                                            context,
+                                            listen: false)
+                                        .selectedSource,
+                                    anilistAnimeId: widget.id.toString(),
+                                    animeId:
+                                        fetchedData?['id']?.toString() ?? '',
+                                    animeTitle: data['name'],
+                                    currentEpisode: currentEpisode.toString(),
+                                    animePosterImageUrl: widget.posterUrl!,
+                                    episodeList: episodesData,
+                                    animeDescription: data['description']);
+                          } else {
+                            Provider.of<AppData>(context, listen: false)
+                                .removeAnimeByAnilistId(widget.id.toString());
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              content: Text(
+                                'What are you? flash? you${"'"}re gonna have to wait few secs',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface),
+                              )));
+                        }
+                      },
+                      icon: Icon(
+                          isFavourite ? IconlyBold.heart : IconlyLight.heart)),
                   IconButton(onPressed: () {}, icon: Icon(Icons.share)),
                 ],
               ),
@@ -1440,6 +1661,9 @@ class _DetailsPageState extends State<DetailsPage>
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
+                              Provider.of<AniListProvider>(context,
+                                      listen: false)
+                                  .deleteAnimeFromList(animeId: widget.id);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -1659,36 +1883,136 @@ class _DetailsPageState extends State<DetailsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (Provider.of<AniListProvider>(context).userData?['user']
-                      ?['name'] !=
-                  null)
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 40,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showListEditorModal(
-                          context, data['totalEpisodes'] ?? '?');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                          width: 2,
-                          color: Theme.of(context).colorScheme.surfaceContainer,
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        width: MediaQuery.of(context).size.width - 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (Provider.of<AniListProvider>(context,
+                                        listen: false)
+                                    .userData?['user']?['name'] ==
+                                null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer,
+                                  content: Text(
+                                    'Login on AniList First!',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              showListEditorModal(
+                                  context, data['totalEpisodes'] ?? '?');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                width: 2,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            (checkAvailability(context)).toUpperCase(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontFamily: 'Poppins-Bold',
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    child: Text(
-                      (checkAvailability(context)).toUpperCase(),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontFamily: 'Poppins-Bold',
+                    const SizedBox(width: 10),
+                    AnimatedContainer(
+                      width: 60,
+                      height: 60,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: isFavourite
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest),
+                          color: isFavourite
+                              ? Theme.of(context).colorScheme.secondaryContainer
+                              : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(50)),
+                      duration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: Icon(
+                          isFavourite ? IconlyBold.heart : IconlyLight.heart,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          if (data != null && episodesData != null) {
+                            setState(() {
+                              isFavourite = !isFavourite;
+                            });
+                            if (isFavourite) {
+                              Provider.of<AppData>(context, listen: false)
+                                  .addWatchedAnime(
+                                      currentSource:
+                                          Provider.of<SourcesHandler>(context,
+                                                  listen: false)
+                                              .selectedSource,
+                                      anilistAnimeId: widget.id.toString(),
+                                      animeId:
+                                          fetchedData?['id']?.toString() ?? '',
+                                      animeTitle: data['name'],
+                                      currentEpisode: currentEpisode.toString(),
+                                      animePosterImageUrl: widget.posterUrl!,
+                                      episodeList: episodesData,
+                                      animeDescription: data['description']);
+                            } else {
+                              Provider.of<AppData>(context, listen: false)
+                                  .removeAnimeByAnilistId(widget.id.toString());
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                content: Text(
+                                    'What are you? flash? you${"'"}re gonna have to wait few secs',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface))));
+                          }
+                        },
                       ),
                     ),
-                  ),
+                  ],
                 ),
+              ),
               const SizedBox(height: 30),
               Text('Description',
                   style: TextStyle(fontFamily: 'Poppins-SemiBold')),
