@@ -1,3 +1,4 @@
+import 'package:aurora/pages/user/settings/modals/tile_with_slider.dart';
 import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -83,6 +84,7 @@ class _ResizeTabbarState extends State<ResizeTabbar> {
             icon: Icons.rounded_corner_rounded,
             min: 0.0,
             max: 50,
+            divisions: 10,
           ),
           TileWithSlider(
             sliderValue: tabBarSizeHorizontal,
@@ -97,6 +99,7 @@ class _ResizeTabbarState extends State<ResizeTabbar> {
             icon: Icons.rounded_corner,
             min: 0.0,
             max: 50.0,
+            divisions: 10,
           ),
         ],
       ),

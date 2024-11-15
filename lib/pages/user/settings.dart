@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:aurora/components/common/custom_tile.dart';
 import 'package:aurora/pages/user/settings/settings_about.dart';
+import 'package:aurora/pages/user/settings/settings_download.dart';
 import 'package:aurora/pages/user/settings/settings_layout.dart';
 import 'package:aurora/pages/user/settings/settings_player.dart';
 import 'package:aurora/pages/user/settings/settings_theme.dart';
 import 'package:aurora/utils/downloader/downloader.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -56,15 +62,6 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          // CustomTile(
-          //   icon: Icons.source,
-          //   title: 'Sources',
-          //   description: 'Switch Sources for Animes and Manga',
-          //   onTap: () {
-          //     Navigator.push(
-          //         context, _createSlideRoute(const SourcesSettingPage()));
-          //   },
-          // ),
           CustomTile(
             icon: HugeIcons.strokeRoundedPaintBrush02,
             title: 'UI',
@@ -74,8 +71,17 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           CustomTile(
+            icon: Icons.source,
+            title: 'Downloads',
+            description: 'Tweak Download Settings',
+            onTap: () {
+              Navigator.push(
+                  context, _createSlideRoute(const SettingsDownload()));
+            },
+          ),
+          CustomTile(
             icon: Iconsax.play5,
-            title: 'Player (Soon)',
+            title: 'Player',
             description: 'Change Video Player Settings',
             onTap: () {
               Navigator.push(
@@ -97,26 +103,34 @@ class SettingsPage extends StatelessWidget {
             onTap: () {},
           ),
           CustomTile(
-            icon: Iconsax.info_circle5,
-            title: 'About',
-            description: 'About this app',
-            onTap: () {
-              Navigator.push(context, _createSlideRoute(const AboutPage()));
+            icon: Iconsax.trash,
+            title: 'Clear Cache',
+            description: 'This will remove everything (Fav List)',
+            onTap: () async {
+              await Hive.box('app-data').clear();
             },
           ),
           CustomTile(
             icon: Iconsax.info_circle5,
-            title: 'Fetch Data',
-            description: 'Test',
-            onTap: () async {
-              Downloader downloader = Downloader();
-              downloader.download(
-                'https://fds.biananset.net/_v7/417ddd84ea05034a8fb6d188381db81f00fe0570cfbebe412cc503746b8daa957900444662ad1e19b6551715fad254cf614103c5d6e118894d1eeb47f4a17bec16e500f04e84e18ff053b54584f5c4ca235bb3bae7ea4b758f3cf234afe2b446ab0d13720c2b206b36f092502aa3997fd9fdaecbdad5dca986b65c2c85652260/index-f3-v1-a1.m3u8',
-                "EP1", "DandaDan",
-              );
-              // await GogoAnime().scrapeEpisodesSrcs('https://www16.gogoanimes.fi/naruto-shippuden-episode-500');
+            title: 'About',
+            description: 'About this app',
+            onTap: () {
+              Navigator.push(context, _createSlideRoute( AboutPage()));
             },
           ),
+          // CustomTile(
+          //   icon: Iconsax.info_circle5,
+          //   title: 'Fetch Data',
+          //   description: 'Test FUNC',
+          //   onTap: () async {
+          //     Downloader downloader = Downloader();
+          //     await downloader.download(
+          //         'https://www048.vipanicdn.net/streamhls/c4c226c3ad7a481dc8e8a88e75804fe5/ep.1.1677836526.1080.m3u8',
+          //         'Episode 1',
+          //         'Blue Lock',
+          //         parallelDownloads: 100);
+          //   },
+          // ),
         ],
       ),
     );
