@@ -40,20 +40,26 @@ class AppData extends ChangeNotifier {
     required String animeTitle,
     required String currentEpisode,
     required String animePosterImageUrl,
+    required dynamic episodeList,
     required String currentSource,
+    required String animeDescription,
   }) {
     watchedAnimes ??= [];
-
     final newAnime = {
       'anilistId': anilistAnimeId,
       'animeId': animeId,
       'animeTitle': animeTitle,
       'currentEpisode': currentEpisode,
       'poster': animePosterImageUrl,
-      'currentSource': currentSource
+      'episodeList': episodeList,
+      'currentSource': currentSource,
+      'animeDescription': animeDescription
     };
 
-    watchedAnimes!.removeWhere((anime) => anime['animeId'] == animeId);
+    log('New: $newAnime');
+    log('Total: $watchedAnimes');
+
+    watchedAnimes!.removeWhere((anime) => anime['anilistId'] == anilistAnimeId);
     watchedAnimes!.add(newAnime);
 
     var box = Hive.box('app-data');
@@ -68,6 +74,8 @@ class AppData extends ChangeNotifier {
     required String chapterId,
     required String novelImage,
     required String currentSource,
+    required dynamic chapterList,
+    required String description,
   }) {
     novelList ??= [];
 
@@ -77,7 +85,9 @@ class AppData extends ChangeNotifier {
       'chapterNumber': chapterNumber,
       'chapterId': chapterId,
       'novelImage': novelImage,
-      'currentSource': currentSource
+      'chapterList': chapterList,
+      'currentSource': currentSource,
+      'novelDescription': description
     };
 
     novelList.removeWhere((novel) => novel['novelId'] == novelId);
@@ -104,6 +114,8 @@ class AppData extends ChangeNotifier {
     required String currentChapter,
     required String mangaPosterImage,
     required String currentSource,
+    required dynamic chapterList,
+    required String description,
   }) {
     readMangas ??= [];
 
@@ -113,7 +125,9 @@ class AppData extends ChangeNotifier {
       'mangaTitle': mangaTitle,
       'currentChapter': currentChapter,
       'poster': mangaPosterImage,
-      'currentSource': currentSource
+      'currentSource': currentSource,
+      'chapterList': chapterList,
+      'mangaDescription': description
     };
 
     readMangas!.removeWhere((manga) => manga['mangaId'] == mangaId);
@@ -136,6 +150,38 @@ class AppData extends ChangeNotifier {
       (anime) => anime['animeId'] == animeId,
       orElse: () => {},
     );
+  }
+
+  bool getAnimeAvail(String animeId) {
+    if (watchedAnimes == null) {
+      return false;
+    } else {
+      bool isFavourite =
+          watchedAnimes?.any((anime) => anime['anilistId'] == animeId);
+      log('$animeId - $isFavourite');
+      return isFavourite;
+    }
+  }
+
+  bool getMangaAvail(String mangaId) {
+    if (watchedAnimes == null) {
+      return false;
+    } else {
+      bool isFavourite =
+          readMangas?.any((manga) => manga['anilistId'] == mangaId);
+      log('$mangaId - $isFavourite');
+      return isFavourite;
+    }
+  }
+
+  bool getNovelAvail(String novelId) {
+    if (novelList == null) {
+      return false;
+    } else {
+      bool isFavourite = novelList?.any((novel) => novel['novelId'] == novelId);
+      log('$novelId - $isFavourite');
+      return isFavourite;
+    }
   }
 
   dynamic getMangaById(String mangaId) {
@@ -168,9 +214,13 @@ class AppData extends ChangeNotifier {
   }
 
   void removeAnimeByAnilistId(String anilistId) {
-    watchedAnimes.removeWhere((anime) => anime['anilistId'] == anilistId);
-    var box = Hive.box('app-data');
-    box.put('currently-watching', watchedAnimes);
+    if (watchedAnimes == null) {
+      log('Anime was not here to begin with!');
+    } else {
+      watchedAnimes.removeWhere((anime) => anime['anilistId'] == anilistId);
+      var box = Hive.box('app-data');
+      box.put('currently-watching', watchedAnimes);
+    }
     notifyListeners();
   }
 }
