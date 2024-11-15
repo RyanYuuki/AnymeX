@@ -1,7 +1,6 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -35,10 +34,10 @@ android {
 
     defaultConfig {
         applicationId = "com.anime.anymex"
-        minSdk = 24
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
-        versionName = "2.7.1"
+        versionName = "2.8"
         manifestPlaceholders += [
             'appAuthRedirectScheme': 'anymex'
         ]
