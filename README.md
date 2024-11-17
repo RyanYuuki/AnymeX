@@ -6,11 +6,9 @@
 
 <div align="center">
    <a href="https://discord.gg/azAMuBWd8C">
-   <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
-   </a>
+   <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"/></a>
    <a href="https://t.me/AnymeX_Discussion">
-   <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram">
-   </a>
+   <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"/></a>
 </div>
 
 <div align="center">
@@ -21,8 +19,7 @@
 <div align="center">
     <img src="https://img.shields.io/github/downloads/ryanyuuki/anymex/total.svg?label=Downloads" alt="Total Downloads" style="height: 20px;">
     <a href="https://github.com/ryanyuuki/anymex/releases/latest">
-        <img src="https://img.shields.io/github/v/release/ryanyuuki/anymex" alt="GitHub release">
-    </a>
+        <img src="https://img.shields.io/github/v/release/ryanyuuki/anymex" alt="GitHub release"/></a>
     <a href="https://github.com/ryanyuuki/anymex/stargazers">
         <img src="https://img.shields.io/github/stars/ryanyuuki/anymex" alt="Stars">
     </a>
