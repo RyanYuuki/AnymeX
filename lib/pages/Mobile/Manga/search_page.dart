@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:aurora/pages/Mobile/Manga/details_page.dart';
 import 'package:aurora/utils/apiHooks/anilist/manga/search_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -158,11 +159,14 @@ Stack SearchItem_BOX(BuildContext context, anime, tag) {
         ),
         child: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/manga/details', arguments: {
-              "id": anime['id'],
-              'posterUrl': proxyUrl + anime['image'],
-              'tag': uniqueTag,
-            });
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MangaDetailsPage(
+                          id: anime['id'],
+                          posterUrl: proxyUrl + anime['image'],
+                          tag: uniqueTag,
+                        )));
           },
           child: SizedBox(
             width: double.infinity,
@@ -189,11 +193,14 @@ GestureDetector SearchItem_LIST(BuildContext context, anime, tag) {
   final uniqueTag = tag + random.nextInt(1000).toString();
   return GestureDetector(
     onTap: () {
-      Navigator.pushNamed(context, '/manga/details', arguments: {
-        'id': anime['id'],
-        'posterUrl': proxyUrl + anime['image'],
-        'tag': uniqueTag,
-      });
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MangaDetailsPage(
+                    id: anime['id'],
+                    posterUrl: proxyUrl + anime['image'],
+                    tag: uniqueTag,
+                  )));
     },
     child: Container(
       height: 110,
@@ -243,11 +250,14 @@ GestureDetector SearchItem_COVER(
   final uniqueTag = tag + random.nextInt(1000).toString();
   return GestureDetector(
     onTap: () {
-      Navigator.pushNamed(context, '/manga/details', arguments: {
-        'id': anime['id'],
-        'posterUrl': proxyUrl + anime['image'],
-        'tag': uniqueTag,
-      });
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MangaDetailsPage(
+                    id: anime['id'],
+                    posterUrl: proxyUrl + anime['image'],
+                    tag: uniqueTag,
+                  )));
     },
     child: Container(
       width: MediaQuery.of(context).size.width,
