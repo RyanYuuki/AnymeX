@@ -10,29 +10,11 @@ class NovelSourcesHandler {
     "WuxiaClick": WuxiaClick(),
   };
 
-  String? selectedSourceName;
+  String selectedSourceName = "";
 
-  void setSelectedSource(String sourceName) {
-    if (sourceMap.containsKey(sourceName)) {
-      selectedSourceName = sourceName;
-      log("Selected source set to $sourceName");
-    } else {
-      log("Source $sourceName does not exist in sourceMap");
-    }
-  }
-
-  NovelSourceBase? get selectedSource {
-    if (selectedSourceName == null) {
-      return sourceMap['NovelBuddy'];
-    }
-    return sourceMap[selectedSourceName];
-  }
-
-  String getSelectedSourceName() {
-    if (selectedSourceName == null) {
-      return "NovelBuddy";
-    }
-    return selectedSourceName!;
+  NovelSourcesHandler() {
+    selectedSourceName = getSelectedSource();
+    log("Initialized with selected source: $selectedSourceName");
   }
 
   List<Map<String, String>> getAvailableSources() {
@@ -46,21 +28,40 @@ class NovelSourcesHandler {
     }).toList();
   }
 
-  NovelSourceBase? _getSource([String? sourceName]) {
-    return sourceName != null ? sourceMap[sourceName] : selectedSource;
-  }
-
-  Future<dynamic> fetchNovelWords(String url, String sourceName) async {
-    final source = _getSource(sourceName);
-    if (source != null) {
-      return await source.scrapeNovelWords(url);
+  void setSelectedSource(String sourceName) {
+    if (sourceMap.containsKey(sourceName)) {
+      selectedSourceName = sourceName;
+      log("Selected source changed to $selectedSourceName");
     } else {
-      log("No source available or selected to fetch manga chapters");
+      log("Source $sourceName does not exist in sourceMap");
     }
   }
 
-  Future<dynamic> fetchNovelSearchResults(String query, sourceName) async {
-    final source = _getSource(sourceName);
+  String getSelectedSource() {
+    log("getSelectedSource called, current selectedSourceName: $selectedSourceName");
+    if (selectedSourceName.isNotEmpty) {
+      return selectedSourceName;
+    }
+    log("Selected source name was empty. Defaulting to the first source.");
+    return sourceMap.entries.first.key;
+  }
+
+  NovelSourceBase? _getSource() {
+    log("_getSource called, using source: ${getSelectedSource()}");
+    return sourceMap[getSelectedSource()];
+  }
+
+  Future<dynamic> fetchNovelWords(String url) async {
+    final source = _getSource();
+    if (source != null) {
+      return await source.scrapeNovelWords(url);
+    } else {
+      log("No source available or selected to fetch novel words");
+    }
+  }
+
+  Future<dynamic> fetchNovelSearchResults(String query) async {
+    final source = _getSource();
     if (source != null) {
       return await source.scrapeNovelSearchData(query);
     } else {
@@ -70,13 +71,12 @@ class NovelSourcesHandler {
 
   Future<dynamic> fetchNovelDetails({
     required String url,
-    String? sourceName,
   }) async {
-    final source = _getSource(sourceName);
+    final source = _getSource();
     if (source != null) {
       return await source.scrapeNovelDetails(url);
     } else {
-      log("No source available or selected to fetch chapter images");
+      log("No source available or selected to fetch novel details");
     }
   }
 }
