@@ -1,88 +1,152 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:aurora/utils/sources/manga/base/source_base.dart';
+import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<Map<String, dynamic>>> searchManga(String query) async {
-  final url = Uri.parse(
-      "https://api.comick.fun/v1.0/search?q=${Uri.encodeComponent(query)}&limit=25&page=1");
-  final response = await http.get(url);
+class Comick implements SourceBase {
+  @override
+  Future<List<Map<String, dynamic>>> fetchMangaSearchResults(
+      String query) async {
+    final url = Uri.parse(
+        "https://api.comick.fun/v1.0/search?q=${Uri.encodeComponent(query)}&limit=25&page=1");
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    List<Map<String, dynamic>> results = [];
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      List<Map<String, String>> results = [];
 
-    for (var item in data) {
-      results.add({
-        'id': item['slug'],
-        'title': item['title'] ?? item['slug'],
-        'link': "${item['slug']}",
-        'image': item['md_covers'] != null && item['md_covers'].isNotEmpty
-            ? "https://meo.comick.pictures/${item['md_covers'][0]['b2key']}"
-            : null,
-        'rating': item['rating'] ?? 0,
-        'author': item['author'] ?? "Unknown",
-        'updatedAt': item['created_at'] ?? "",
-        'views': item['view_count'] ?? 0,
-      });
+      for (var item in data) {
+        results.add({
+          'id': item['slug'],
+          'title': item['title'] ?? item['slug'],
+          'link': "${item['slug']}",
+          'image': item['md_covers'] != null && item['md_covers'].isNotEmpty
+              ? "https://meo.comick.pictures/${item['md_covers'][0]['b2key']}"
+              : '',
+          'rating': item['rating']?.toString() ?? '0.0',
+          'author': item['author'] ?? "Unknown",
+          'updatedAt': item['created_at']?.toString() ?? "",
+          'views': item['view_count']?.toString() ?? '0.0',
+        });
+      }
+      log(results.toString());
+      return results;
+    } else {
+      throw Exception("Failed to load manga search results");
     }
-    log(results.toString());
-    return results;
-  } else {
-    throw Exception("Failed to load manga search results");
   }
-}
 
-Future<Map<String, dynamic>> fetchMangaDetails(String mangaId) async {
-  final url = Uri.parse("https://api.comick.fun/comic/$mangaId");
-  final response = await http.get(url);
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body)['comic'];
-
-    List<Map<String, dynamic>> chapterList = [];
-    for (var chapter in data['chapters']) {
-      chapterList.add({
-        'id': chapter['hid'] ?? "",
-        'title': chapter['title'] ?? "Unknown",
-        'path': "/comic/$mangaId/chapter/${chapter['hid']}",
-        'views': chapter['view_count'] ?? 0,
-        'date': chapter['updated_at'] ?? "",
-        'number': chapter['chap'] ?? 0,
-      });
+  Future<Map<String, String>> getComicId(String comickId) async {
+    Dio dio = Dio();
+    try {
+      final resp = await dio.get('https://api.comick.fun/comic/$comickId');
+      final data = resp.data;
+      var id = data['comic']['hid'];
+      var title = data['comic']['title'];
+      return {'id': id, 'title': title ?? '?'};
+    } catch (e) {
+      log('Error fetching comic data: $e');
+      return {};
     }
-
-    return {
-      'id': mangaId,
-      'title': data['title'] ?? "Unknown",
-      'chapterList': chapterList.reversed.toList(),
-    };
-  } else {
-    throw Exception("Failed to load manga details");
   }
-}
 
-Future<Map<String, dynamic>> fetchChapterImages(String chapterId) async {
-  final url = Uri.parse("https://api.comick.fun/chapter/$chapterId");
-  final response = await http.get(url);
+  @override
+  Future<Map<String, dynamic>> fetchMangaChapters(String mangaId) async {
+    Map<String, String> id = await getComicId(mangaId);
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body)['chapter'];
-    List<String> images = [];
+    final url = Uri.parse(
+        "https://api.comick.fun/comic/${id['id']}/chapters?lang=en&page=0&limit=1000000");
+    final response = await http.get(url);
 
-    for (var img in data['md_images']) {
-      images.add("https://meo.comick.pictures/${img['b2key']}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      List<Map<String, dynamic>> chapterList = [];
+
+      for (var chapter in data['chapters']) {
+        var chapterTitle = chapter?['title'] != null
+            ? 'Chapter ${chapter['chap'] ?? '?'}: ${chapter['title']}'
+            : 'Chapter ${chapter['chap'] ?? '?'}';
+        chapterTitle = chapterTitle == 'Chapter ?' && chapter['vol'] != null
+            ? 'Volume ${chapter['vol']}'
+            : chapterTitle;
+        bool credible = chapter['chap'] != null;
+        if (credible) {
+          chapterList.add({
+            'id': chapter['hid'] ?? "",
+            'title': chapterTitle,
+            'path': "/comic/$mangaId/chapter/${chapter['hid']}",
+            'views': chapter['up_count']?.toString() ?? '0.0',
+            'date': chapter?['group_name']
+                ?.toString(), // chapter['updated_at']?.toString() ?? "0.0",
+            'number': chapter['chap']?.toString() ?? '0',
+          });
+        }
+      }
+
+      final manga = {
+        'id': mangaId,
+        'title': id['title'] ?? '??',
+        'chapterList': chapterList.reversed.toList(),
+      };
+
+      log(manga.toString());
+
+      return manga;
+    } else {
+      throw Exception("Failed to load manga details");
     }
-
-    return {
-      'title': data['title'] ?? "Unknown",
-      'currentChapter': chapterId,
-      'nextChapterId': data['next_chapter_id'] ?? "",
-      'prevChapterId': data['prev_chapter_id'] ?? "",
-      'chapterListIds': data['chapter_list_ids'] ?? [],
-      'images': images,
-      'totalImages': images.length,
-    };
-  } else {
-    throw Exception("Failed to load chapter images");
   }
+
+  @override
+  Future<Map<String, dynamic>> fetchChapterImages(
+      {String? chapterId, String? mangaId}) async {
+    final url = Uri.parse("https://api.comick.fun/chapter/$chapterId");
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final document = jsonDecode(response.body);
+      final data = document['chapter'];
+      List<Map<String, String>> images = [];
+
+      for (var img in data['md_images']) {
+        images.add({'image': "https://meo.comick.pictures/${img['b2key']}"});
+      }
+      final mangaData = {
+        'title': data?['md_comics']?['title'] ?? "Unknown",
+        'currentChapter': 'Chapter ${data['chap']}',
+        'nextChapterId': document?['next']?['hid'] ?? "",
+        'prevChapterId': document?['prev']?['hid'] ?? "",
+        'chapterListIds': document?['chapters'] ?? [],
+        'images': images,
+        'totalImages': images.length,
+      };
+      log(mangaData.toString());
+      return mangaData;
+    } else {
+      throw Exception("Failed to load chapter images");
+    }
+  }
+
+  @override
+  String get baseUrl => 'https://comick.io/';
+
+  @override
+  Future<dynamic> mapToAnilist(String id, {int page = 1}) async {
+    final mangaList = await fetchMangaSearchResults(id);
+    String bestMatchId = findBestMatch(id, mangaList);
+    if (bestMatchId.isNotEmpty) {
+      return await fetchMangaChapters(bestMatchId);
+    } else {
+      throw Exception('No suitable match found for the query');
+    }
+  }
+
+  @override
+  String get sourceName => 'ComicK';
+
+  @override
+  String get sourceVersion => '1.0';
 }
