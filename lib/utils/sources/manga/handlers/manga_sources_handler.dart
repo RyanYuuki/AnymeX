@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:aurora/utils/sources/manga/extensions/comick.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangabat.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangakakalot.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangakakalot_unofficial.dart';
@@ -11,9 +12,14 @@ class MangaSourceHandler {
     "MangaKakalot": MangaKakalot(),
     "MangaBat": MangaBat(),
     "MangaNato": MangaNato(),
+    "ComicK": Comick()
   };
 
-  String? selectedSourceName = "MangaKakalotUnofficial";
+  String? selectedSourceName = "";
+
+  MangaSourceHandler() {
+    selectedSourceName = sourceMap.entries.first.key;
+  }
 
   void setSelectedSource(String sourceName) {
     if (sourceMap.containsKey(sourceName)) {
@@ -22,13 +28,6 @@ class MangaSourceHandler {
     } else {
       log("Source $sourceName does not exist in sourceMap");
     }
-  }
-
-  SourceBase? get selectedSource {
-    if (selectedSourceName == null) {
-      return sourceMap['MangaKakalotUnofficial'];
-    }
-    return sourceMap[selectedSourceName];
   }
 
   List<Map<String, String>> getAvailableSources() {
@@ -43,11 +42,11 @@ class MangaSourceHandler {
   }
 
   SourceBase? _getSource([String? sourceName]) {
-    return sourceName != null ? sourceMap[sourceName] : selectedSource;
+    return sourceMap[sourceName];
   }
 
-  Future<dynamic> fetchMangaChapters(String mangaId, String? sourceName) async {
-    final source = _getSource(sourceName);
+  Future<dynamic> fetchMangaChapters(String mangaId) async {
+    final source = _getSource(selectedSourceName);
     if (source != null) {
       return await source.fetchMangaChapters(mangaId);
     } else {
@@ -55,8 +54,8 @@ class MangaSourceHandler {
     }
   }
 
-  Future<dynamic> fetchMangaSearchResults(String query, sourceName) async {
-    final source = _getSource(sourceName);
+  Future<dynamic> fetchMangaSearchResults(String query) async {
+    final source = _getSource(selectedSourceName);
     if (source != null) {
       return await source.fetchMangaSearchResults(query);
     } else {
@@ -67,9 +66,8 @@ class MangaSourceHandler {
   Future<dynamic> fetchChapterImages({
     required String mangaId,
     required String chapterId,
-    String? sourceName,
   }) async {
-    final source = _getSource(sourceName);
+    final source = _getSource(selectedSourceName);
     if (source != null) {
       return await source.fetchChapterImages(
           mangaId: mangaId, chapterId: chapterId);
@@ -78,8 +76,8 @@ class MangaSourceHandler {
     }
   }
 
-  Future<dynamic> mapToAnilist(String query, String sourceName) async {
-    final source = _getSource(sourceName);
+  Future<dynamic> mapToAnilist(String query) async {
+    final source = _getSource(selectedSourceName);
     if (source != null) {
       return await source.mapToAnilist(query);
     } else {
