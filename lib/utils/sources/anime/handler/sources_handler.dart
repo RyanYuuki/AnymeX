@@ -3,9 +3,8 @@ import 'package:aurora/utils/sources/anime/base/source_base.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
 import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
-import 'package:flutter/material.dart';
 
-class SourcesHandler extends ChangeNotifier {
+class SourcesHandler {
   final Map<String, SourceBase> animeSourcesMap = {
     'HiAnime (Scrapper)': HiAnime(),
     "HiAnime (API)": HiAnimeApi(),
