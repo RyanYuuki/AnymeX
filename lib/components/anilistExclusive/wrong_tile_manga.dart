@@ -1,10 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:math';
-import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 class MangaSearchModal extends StatefulWidget {
   final String initialText;
@@ -31,18 +32,20 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    _searchFuture = MangaSourceHandler().fetchMangaSearchResults(
-      widget.initialText,
-      widget.selectedSource,
-    );
+    _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
+        .getMangaInstance()
+        .fetchMangaSearchResults(
+          widget.initialText,
+        );
   }
 
   Future<void> _performSearch(String searchTerm) async {
     setState(() {
-      _searchFuture = MangaSourceHandler().fetchMangaSearchResults(
-        searchTerm,
-        widget.selectedSource,
-      );
+      _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
+          .getMangaInstance()
+          .fetchMangaSearchResults(
+            searchTerm,
+          );
     });
   }
 
