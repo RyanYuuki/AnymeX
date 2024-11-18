@@ -2,7 +2,7 @@
 
 import 'dart:math';
 
-import 'package:aurora/pages/Novel/details_page.dart';
+import 'package:aurora/pages/Mobile/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';

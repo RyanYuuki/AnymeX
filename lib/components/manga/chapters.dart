@@ -1,4 +1,4 @@
-import 'package:aurora/pages/Manga/read_page.dart';
+import 'package:aurora/pages/Mobile/Manga/read_page.dart';
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';
 
@@ -61,7 +61,7 @@ class ChapterList extends StatelessWidget {
                           SizedBox(
                             width: 140,
                             child: TextScroll(
-                              manga['title'],
+                              manga?['title'] ?? '?',
                               mode: TextScrollMode.endless,
                               velocity: const Velocity(
                                   pixelsPerSecond: Offset(30, 0)),

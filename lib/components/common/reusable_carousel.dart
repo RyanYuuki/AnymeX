@@ -3,6 +3,8 @@
 import 'dart:math';
 
 import 'package:aurora/components/helper/scroll_helper.dart';
+import 'package:aurora/pages/Mobile/Anime/details_page.dart';
+import 'package:aurora/pages/Mobile/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -115,25 +117,23 @@ class ReusableCarousel extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     if (isManga) {
-                      Navigator.pushNamed(
-                        context,
-                        '/manga/details',
-                        arguments: {
-                          'id': itemData['id'],
-                          'posterUrl': posterUrl,
-                          'tag': tagg
-                        },
-                      );
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MangaDetailsPage(
+                                    id: itemData['id'],
+                                    posterUrl: posterUrl,
+                                    tag: tagg,
+                                  )));
                     } else {
-                      Navigator.pushNamed(
-                        context,
-                        '/details',
-                        arguments: {
-                          'id': itemData['id'],
-                          'posterUrl': posterUrl,
-                          'tag': tagg
-                        },
-                      );
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailsPage(
+                                    id: itemData['id'],
+                                    posterUrl: posterUrl,
+                                    tag: tagg,
+                                  )));
                     }
                   },
                   child: Column(

@@ -1,9 +1,9 @@
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/main.dart';
-import 'package:aurora/pages/Downloads/download_page.dart';
-import 'package:aurora/pages/Rescue/Anime/home_page.dart';
-import 'package:aurora/pages/user/profile.dart';
-import 'package:aurora/pages/user/settings.dart';
+import 'package:aurora/pages/Mobile/Downloads/download_page.dart';
+import 'package:aurora/pages/Mobile/Rescue/Anime/home_page.dart';
+import 'package:aurora/pages/Mobile/user/profile.dart';
+import 'package:aurora/pages/Mobile/user/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';

@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types, use_build_context_synchronously, must_be_immutable
 import 'dart:math';
 import 'package:aurora/components/helper/scroll_helper.dart';
-import 'package:aurora/pages/Novel/details_page.dart';
+import 'package:aurora/pages/Mobile/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -100,7 +100,7 @@ class ContinueNoveling extends StatelessWidget {
               int random = Random().nextInt(100000);
               final tagg = '$random$index';
               const String proxyUrl = '';
-              dynamic extraData = itemData['chapterNumber'];
+              dynamic extraData = 'Chapter ${itemData['chapterNumber']}';
               return Padding(
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(

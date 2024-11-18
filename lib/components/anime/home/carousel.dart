@@ -2,6 +2,8 @@
 
 import 'dart:math';
 
+import 'package:aurora/pages/Mobile/Anime/details_page.dart';
+import 'package:aurora/pages/Mobile/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -90,25 +92,23 @@ class Carousel extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             if (isManga) {
-                              Navigator.pushNamed(
-                                context,
-                                '/manga/details',
-                                arguments: {
-                                  'id': anime['id'],
-                                  'posterUrl': posterUrl,
-                                  "tag": tag
-                                },
-                              );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MangaDetailsPage(
+                                            id: anime['id'],
+                                            posterUrl: posterUrl,
+                                            tag: tag,
+                                          )));
                             } else {
-                              Navigator.pushNamed(
-                                context,
-                                '/details',
-                                arguments: {
-                                  'id': anime['id'],
-                                  'posterUrl': posterUrl,
-                                  "tag": tag
-                                },
-                              );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailsPage(
+                                            id: anime['id'],
+                                            posterUrl: posterUrl,
+                                            tag: tag,
+                                          )));
                             }
                           },
                           child: Container(

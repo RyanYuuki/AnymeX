@@ -77,6 +77,16 @@ class _EpisodeGridState extends State<EpisodeGrid> {
         final episodeTitle = episode?['title'] ?? 'No Title';
         final isFiller = episode?['isFiller'] ?? false;
         final isSelected = widget.currentEpisode == episodeNumber;
+        double opacity = episodeNumber <= widget.progress
+            ? episodeNumber == widget.progress
+                ? 0.8
+                : 0.5
+            : 1;
+        Color color = isSelected
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : isFiller
+                ? Colors.lightGreen.shade700
+                : Theme.of(context).colorScheme.surfaceContainer;
 
         if (widget.layoutIndex == 0) {
           return GestureDetector(
@@ -84,15 +94,13 @@ class _EpisodeGridState extends State<EpisodeGrid> {
               widget.onEpisodeSelected(episodeNumber);
             },
             child: Opacity(
-              opacity: (episodeNumber) <= widget.progress ? 0.7 : 1,
+              opacity: opacity,
               child: Container(
                 height: 50,
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.onPrimaryFixedVariant
-                      : Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12), 
+                  color: color,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
@@ -191,69 +199,74 @@ class _EpisodeGridState extends State<EpisodeGrid> {
         }
 
         if (widget.layoutIndex == 1) {
-          return Opacity(
-            opacity: episodeNumber < widget.progress ? 0.7 : 1,
-            child: Container(
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: (widget.episodeImages != null &&
-                            widget.episodeImages!.length > index
-                        ? widget.episodeImages![episodeNumber - 1]['image'] ??
-                            widget.coverImage
-                        : widget.coverImage),
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 15, left: 10, right: 5),
-                    decoration: BoxDecoration(
-                      color: isFiller
-                          ? Colors.lightGreen.shade700.withOpacity(0.8)
-                          : Theme.of(context)
-                              .colorScheme
-                              .surfaceContainer
-                              .withOpacity(0.6),
+          return GestureDetector(
+            onTap: () {
+              widget.onEpisodeSelected(episodeNumber);
+            },
+            child: Opacity(
+              opacity: opacity,
+              child: Container(
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: color),
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: (widget.episodeImages != null &&
+                              widget.episodeImages!.length > index
+                          ? widget.episodeImages![episodeNumber - 1]['image'] ??
+                              widget.coverImage
+                          : widget.coverImage),
+                      fit: BoxFit.cover,
                     ),
-                    child: Text(
-                      episodeTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontFamily: 'Poppins-SemiBold'),
+                    Container(
+                      padding:
+                          const EdgeInsets.only(top: 15, left: 10, right: 5),
+                      decoration: BoxDecoration(
+                        color: isFiller
+                            ? Colors.lightGreen.shade700.withOpacity(0.8)
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainer
+                                .withOpacity(0.6),
+                      ),
+                      child: Text(
+                        episodeTitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontStyle: FontStyle.italic,
+                            fontFamily: 'Poppins-SemiBold'),
+                      ),
                     ),
-                  ),
-                  Positioned(
-                      bottom: 5,
-                      right: 20,
-                      child: Text(episodeNumber.toString(),
-                          style: TextStyle(
-                              fontFamily: "Poppins-Bold",
-                              fontSize: 24,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .inverseSurface
-                                  .withOpacity(0.8)))),
-                  Positioned(
-                      bottom: 7,
-                      left: 10,
-                      child: InkWell(
-                          onTap: () => widget.onEpisodeDownload(
-                              episode['episodeId'], episodeNumber.toString()),
-                          child: Icon(Icons.download,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .inverseSurface
-                                  .withOpacity(0.8))))
-                ],
+                    Positioned(
+                        bottom: 5,
+                        right: 20,
+                        child: Text(episodeNumber.toString(),
+                            style: TextStyle(
+                                fontFamily: "Poppins-Bold",
+                                fontSize: 24,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface
+                                    .withOpacity(0.8)))),
+                    Positioned(
+                        bottom: 7,
+                        left: 10,
+                        child: InkWell(
+                            onTap: () => widget.onEpisodeDownload(
+                                episode['episodeId'], episodeNumber.toString()),
+                            child: Icon(Icons.download,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface
+                                    .withOpacity(0.8))))
+                  ],
+                ),
               ),
             ),
           );
@@ -264,17 +277,13 @@ class _EpisodeGridState extends State<EpisodeGrid> {
             widget.onEpisodeSelected(episodeNumber);
           },
           child: Opacity(
-            opacity: episodeNumber < widget.progress ? 0.7 : 1,
+            opacity: opacity,
             child: Container(
               width: isList ? double.infinity : null,
               height: 40,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimaryFixedVariant
-                    : isFiller
-                        ? Colors.lightGreen.shade700
-                        : Theme.of(context).colorScheme.surfaceContainer,
+                color: color,
               ),
               child: Padding(
                 padding: EdgeInsets.only(left: isList ? 8.0 : 0.0),
