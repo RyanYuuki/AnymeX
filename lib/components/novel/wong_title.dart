@@ -1,21 +1,20 @@
 // ignore_for_file: library_private_types_in_public_api
-
-import 'dart:math';
+import 'dart:math' hide log;
 import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 class NovelSearchModal extends StatefulWidget {
   final String initialText;
   final Function(String mangaId) onMangaSelected;
-  final String selectedSource;
 
   const NovelSearchModal({
     super.key,
     required this.initialText,
     required this.onMangaSelected,
-    required this.selectedSource,
   });
 
   @override
@@ -26,22 +25,22 @@ class _NovelSearchModalState extends State<NovelSearchModal> {
   late Future<dynamic> _searchFuture;
   final TextEditingController _controller = TextEditingController();
   final Random _random = Random();
-
+  late NovelSourcesHandler novelInstance;
   @override
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    _searchFuture = NovelSourcesHandler().fetchNovelSearchResults(
+    novelInstance = Provider.of<UnifiedSourcesHandler>(context, listen: false)
+        .getNovelInstance();
+    _searchFuture = novelInstance.fetchNovelSearchResults(
       widget.initialText,
-      widget.selectedSource,
     );
   }
 
   Future<void> _performSearch(String searchTerm) async {
     setState(() {
-      _searchFuture = NovelSourcesHandler().fetchNovelSearchResults(
+      _searchFuture = novelInstance.fetchNovelSearchResults(
         searchTerm,
-        widget.selectedSource,
       );
     });
   }
@@ -173,7 +172,6 @@ void showNovelSearchModal(
   BuildContext context,
   String initialText,
   Function(String) onMangaSelected,
-  String selectedSource,
 ) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -181,7 +179,6 @@ void showNovelSearchModal(
     isScrollControlled: true,
     builder: (BuildContext context) {
       return NovelSearchModal(
-        selectedSource: selectedSource,
         initialText: initialText,
         onMangaSelected: onMangaSelected,
       );
