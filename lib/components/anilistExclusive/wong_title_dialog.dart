@@ -2,6 +2,7 @@
 
 import 'dart:math';
 import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,18 +25,20 @@ class AnimeSearchModal extends StatefulWidget {
 class _AnimeSearchModalState extends State<AnimeSearchModal> {
   late Future<dynamic> _searchFuture;
   final TextEditingController _controller = TextEditingController();
+  late SourcesHandler sourcesHandler;
 
   @override
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    _searchFuture = Provider.of<SourcesHandler>(context, listen: false).fetchSearchResults(widget.initialText);
+    sourcesHandler = Provider.of<UnifiedSourcesHandler>(context, listen: false)
+        .getAnimeInstance();
+    _searchFuture = sourcesHandler.fetchSearchResults(widget.initialText);
   }
 
   void _performSearch(String searchTerm) {
     setState(() {
-      _searchFuture = Provider.of<SourcesHandler>(context, listen: false)
-          .fetchSearchResults(searchTerm);
+      _searchFuture = sourcesHandler.fetchSearchResults(searchTerm);
     });
   }
 
@@ -133,12 +136,11 @@ void showAnimeSearchModal(BuildContext context, String initialText,
 }
 
 GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
-    Function(String) onAnimeSelected
-    ) {
+    Function(String) onAnimeSelected) {
   return GestureDetector(
     onTap: () {
-      onAnimeSelected(anime['id']); 
-      Navigator.pop(context); 
+      onAnimeSelected(anime['id']);
+      Navigator.pop(context);
     },
     child: Container(
       height: 110,
