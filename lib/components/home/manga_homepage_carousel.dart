@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:aurora/components/helper/scroll_helper.dart';
+import 'package:aurora/pages/Mobile/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -97,15 +98,14 @@ class MangaHomepageCarousel extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/manga/details',
-                      arguments: {
-                        'id': int.parse(itemData['anilistId']),
-                        'posterUrl': posterUrl,
-                        'tag': tagg
-                      },
-                    );
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MangaDetailsPage(
+                                  id: int.parse(itemData['anilistId']),
+                                  posterUrl: posterUrl,
+                                  tag: tag,
+                                )));
                   },
                   child: Column(
                     children: [

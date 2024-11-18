@@ -37,7 +37,7 @@ android {
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
-        versionName = "2.8"
+        versionName = "2.8.2"
         manifestPlaceholders += [
             'appAuthRedirectScheme': 'anymex'
         ]

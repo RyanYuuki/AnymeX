@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:aurora/components/helper/scroll_helper.dart';
-import 'package:aurora/pages/Anime/details_page.dart';
+import 'package:aurora/pages/Mobile/Anime/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -106,7 +106,7 @@ class HomepageCarousel extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailsPage(
-                          id: itemData['anilistId'],
+                          id: int.parse(itemData['anilistId']),
                           posterUrl: proxyUrl + posterUrl,
                           tag: tagg,
                         ),
