@@ -147,7 +147,7 @@ class AppData extends ChangeNotifier {
 
   dynamic getAnimeById(String animeId) {
     return watchedAnimes?.firstWhere(
-      (anime) => anime['animeId'] == animeId,
+      (anime) => anime['anilistId'] == animeId,
       orElse: () => {},
     );
   }
