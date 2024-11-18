@@ -33,8 +33,7 @@ class Downloader {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         if (response.actionId != null &&
             response.actionId!.startsWith('cancel_')) {
-          final notificationId = int.parse(
-              response.actionId!.substring(7)); // Extract notificationId
+          final notificationId = int.parse(response.actionId!.substring(7));
           cancelDownload(notificationId);
         }
       },

@@ -28,7 +28,8 @@ String formatAnimeTitle(String animeId) {
 
 class HiAnime implements SourceBase {
   @override
-  Future<Map<String, dynamic>> scrapeEpisodes(String animeId) async {
+  Future<Map<String, dynamic>> scrapeEpisodes(String animeId,
+      {dynamic args}) async {
     const String srcBaseUrl = 'https://hianime.to';
     const String srcAjaxUrl = 'https://hianime.to/ajax/v2/episode/list';
     const String acceptHeader =
@@ -209,47 +210,51 @@ class HiAnime implements SourceBase {
   }) async {
     log('Starting scrapeAnimeEpisodeSources with episodeId: $episodeId, server: $server, category: $category');
 
-    if (episodeId.startsWith('http')) {
-      log('episodeId is a URL, processing accordingly');
-      final serverUrl = Uri.parse(episodeId);
+    const int maxRetries = 5;
+    int attempt = 0;
 
-      switch (server) {
-        case AnimeServers.VidStreaming:
-        case AnimeServers.MegaCloud:
-          log('Processing MegaCloud');
-          final megaCloud = MegaCloud();
-          final extractedData = await megaCloud.extract(serverUrl);
-          log(extractedData.toString());
-          return extractedData;
-        default:
-          throw Exception('Unsupported server: $server');
-      }
-    }
-
-    final epId = Uri.parse('$SRC_BASE_URL/watch/$episodeId').toString();
-    log('Constructed epId: $epId');
-
-    try {
-      final episodeIdParam =
-          Uri.encodeComponent(epId.split("?ep=").lastOrNull ?? '');
-      final serverUrl = Uri.parse(
-          '$SRC_AJAX_URL/v2/episode/servers?episodeId=$episodeIdParam');
-      log('Fetching episode servers from: $serverUrl');
-
-      final resp = await http.get(serverUrl);
-
-      if (resp.statusCode != 200) {
-        log('Failed to fetch episode servers. Status code: ${resp.statusCode}');
-        throw HttpErrors(resp.statusCode, 'Failed to fetch episode servers',
-            responseBody: resp.body);
-      }
-
-      final jsonResponse = json.decode(resp.body);
-      final document = parse(jsonResponse['html']);
-      log('Parsed HTML document');
-
-      String? serverId;
+    while (attempt < maxRetries) {
       try {
+        log('Attempt ${attempt + 1} of $maxRetries');
+
+        if (episodeId.startsWith('http')) {
+          log('episodeId is a URL, processing accordingly');
+          final serverUrl = Uri.parse(episodeId);
+
+          switch (server) {
+            case AnimeServers.VidStreaming:
+            case AnimeServers.MegaCloud:
+              log('Processing MegaCloud');
+              final megaCloud = MegaCloud();
+              final extractedData = await megaCloud.extract(serverUrl);
+              log(extractedData.toString());
+              return extractedData;
+            default:
+              throw Exception('Unsupported server: $server');
+          }
+        }
+
+        final epId = Uri.parse('$SRC_BASE_URL/watch/$episodeId').toString();
+        log('Constructed epId: $epId');
+
+        final episodeIdParam =
+            Uri.encodeComponent(epId.split("?ep=").lastOrNull ?? '');
+        final serverUrl = Uri.parse(
+            '$SRC_AJAX_URL/v2/episode/servers?episodeId=$episodeIdParam');
+        log('Fetching episode servers from: $serverUrl');
+
+        final resp = await http.get(serverUrl);
+        if (resp.statusCode != 200) {
+          log('Failed to fetch episode servers. Status code: ${resp.statusCode}');
+          throw HttpErrors(resp.statusCode, 'Failed to fetch episode servers',
+              responseBody: resp.body);
+        }
+
+        final jsonResponse = json.decode(resp.body);
+        final document = parse(jsonResponse['html']);
+        log('Parsed HTML document');
+
+        String? serverId;
         log('Attempting to retrieve server ID for $server');
         switch (server!) {
           case AnimeServers.VidCloud:
@@ -274,35 +279,43 @@ class HiAnime implements SourceBase {
             break;
         }
         log('Retrieved serverId: $serverId');
+
+        final sourceUrl =
+            Uri.parse('$SRC_AJAX_URL/v2/episode/sources?id=$serverId');
+        log('Fetching episode sources from: $sourceUrl');
+
+        final sourceResp = await http.get(sourceUrl);
+        if (sourceResp.statusCode != 200) {
+          log('Failed to fetch episode sources. Status code: ${sourceResp.statusCode}');
+          throw HttpErrors(
+              sourceResp.statusCode, 'Failed to fetch episode sources',
+              responseBody: sourceResp.body);
+        }
+
+        final sourceJson = json.decode(sourceResp.body);
+        final link = sourceJson['link'];
+        log('Retrieved source link: $link');
+
+        return await scrapeEpisodesSrcs(link, server: server);
       } catch (err) {
-        log('Failed to retrieve server ID: $err');
-        throw HttpError(404, 'Couldn\'t find server. Try another server');
+        attempt++;
+        log('Error in scrapeAnimeEpisodeSources (Attempt $attempt): $err');
+
+        if (attempt >= maxRetries) {
+          log('Max retries reached. Throwing error.');
+          if (err is HttpError) {
+            rethrow;
+          }
+          throw HttpError(
+              500, 'Something went wrong after multiple retries: $err');
+        }
+
+        log('Retrying scrapeAnimeEpisodeSources... Attempts left: ${maxRetries - attempt}');
+        await Future.delayed(const Duration(seconds: 1));
       }
-
-      final sourceUrl =
-          Uri.parse('$SRC_AJAX_URL/v2/episode/sources?id=$serverId');
-      log('Fetching episode sources from: $sourceUrl');
-
-      final sourceResp = await http.get(sourceUrl);
-      if (sourceResp.statusCode != 200) {
-        log('Failed to fetch episode sources. Status code: ${sourceResp.statusCode}');
-        throw HttpErrors(
-            sourceResp.statusCode, 'Failed to fetch episode sources',
-            responseBody: sourceResp.body);
-      }
-
-      final sourceJson = json.decode(sourceResp.body);
-      final link = sourceJson['link'];
-      log('Retrieved source link: $link');
-
-      return await scrapeEpisodesSrcs(link, server: server);
-    } catch (err) {
-      log('Error in scrapeAnimeEpisodeSources: $err');
-      if (err is HttpError) {
-        rethrow;
-      }
-      throw HttpError(500, 'Something went wrong: $err');
     }
+
+    throw HttpError(500, 'Unexpected error: This point should not be reached');
   }
 
   @override

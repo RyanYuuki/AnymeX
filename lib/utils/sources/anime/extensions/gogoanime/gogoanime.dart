@@ -69,7 +69,7 @@ class GogoAnime implements SourceBase {
   }
 
   @override
-  Future<dynamic> scrapeEpisodes(String aliasId) async {
+  Future<dynamic> scrapeEpisodes(String aliasId, {dynamic args}) async {
     final url =
         aliasId.startsWith("http") ? aliasId : '$_baseUrl/category/$aliasId';
     final response = await _httpGet(url);

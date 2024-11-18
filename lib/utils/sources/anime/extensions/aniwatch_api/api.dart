@@ -71,7 +71,8 @@ class HiAnimeApi implements SourceBase {
   bool get isMulti => false;
 
   @override
-  Future<Map<String, dynamic>> scrapeEpisodes(String animeId) async {
+  Future<Map<String, dynamic>> scrapeEpisodes(String animeId,
+      {dynamic args}) async {
     const String srcBaseUrl = 'https://hianime.to';
     const String srcAjaxUrl = 'https://hianime.to/ajax/v2/episode/list';
     const String acceptHeader =
