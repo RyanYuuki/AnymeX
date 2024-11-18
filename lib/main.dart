@@ -1,27 +1,20 @@
 import 'dart:developer';
-import 'dart:io';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/Novel/home_page.dart';
-import 'package:aurora/pages/user/profile.dart';
+import 'package:aurora/pages/Mobile/Novel/home_page.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
-import 'package:aurora/pages/Anime/home_page.dart';
-import 'package:aurora/pages/Manga/home_page.dart';
-import 'package:aurora/pages/home_page.dart';
+import 'package:aurora/pages/Mobile/Anime/home_page.dart';
+import 'package:aurora/pages/Mobile/Manga/home_page.dart';
+import 'package:aurora/pages/r_director_home.dart';
 import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:aurora/pages/Anime/details_page.dart';
-import 'package:aurora/pages/Anime/search_page.dart';
-import 'package:aurora/pages/Manga/details_page.dart';
-import 'package:aurora/pages/Manga/read_page.dart';
-import 'package:aurora/pages/Manga/search_page.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -42,25 +35,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AppData()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => SourcesHandler()),
+        ChangeNotifierProvider(create: (_) => UnifiedSourcesHandler()),
         ChangeNotifierProvider(
             create: (_) => AniListProvider()..tryAutoLogin()),
       ],
       child: const MainApp(),
     ),
   );
-}
-
-Future<void> requestNotificationPermission() async {
-  if (Platform.isAndroid) {
-    final os = await DeviceInfoPlugin().androidInfo;
-    if (os.version.sdkInt >= 33) {
-      final status = await Permission.notification.request();
-      if (!status.isGranted) {
-        print("Notification permission not granted");
-      }
-    }
-  }
 }
 
 class MainApp extends StatefulWidget {
@@ -98,7 +79,7 @@ class _MainAppState extends State<MainApp> {
   }
 
   final routes = [
-    const HomePage(),
+    const ResponsiveDirecctorHome(),
     const AnimeHomePage(),
     const MangaHomePage(),
     const NovelHomePage(),
@@ -189,69 +170,6 @@ class _MainAppState extends State<MainApp> {
           },
         ),
       ),
-      onGenerateRoute: (settings) {
-        final args = settings.arguments as Map<String, dynamic>?;
-
-        switch (settings.name) {
-          case '/details':
-            final posterUrl = args?['posterUrl'] ?? '';
-            final id = args?['id'] ?? 0;
-            final tag = args?['tag'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) => DetailsPage(
-                id: id,
-                posterUrl: posterUrl,
-                tag: tag,
-              ),
-            );
-          case '/anime/search':
-            final id = args?['term'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) => SearchPage(searchTerm: id),
-            );
-          case '/manga/search':
-            final id = args?['term'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) => MangaSearchPage(searchTerm: id),
-            );
-          case '/manga/details':
-            final posterUrl = args?['posterUrl'] ?? '';
-            final id = args?['id'] ?? '';
-            final tag = args?['tag'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) =>
-                  MangaDetailsPage(id: id, posterUrl: posterUrl, tag: tag),
-            );
-          case '/manga/read':
-            final id = args?['id'] ?? '';
-            final mangaId = args?['mangaId'] ?? '';
-            final posterUrl = args?['posterUrl'] ?? '';
-            final currentSource = args?['currentSource'] ?? '';
-            final anilistId = args?['anilistId'] ?? '';
-            return MaterialPageRoute(
-              builder: (context) => ReadingPage(
-                id: id,
-                mangaId: mangaId,
-                posterUrl: posterUrl,
-                currentSource: currentSource,
-                anilistId: anilistId,
-                chapterList: null,
-                description: '',
-              ),
-            );
-          case '/profile':
-            return MaterialPageRoute(
-              builder: (context) => const ProfilePage(),
-            );
-          default:
-            return MaterialPageRoute(
-              builder: (context) => Scaffold(
-                body: Center(
-                    child: Text('No route defined for ${settings.name}')),
-              ),
-            );
-        }
-      },
     );
   }
 }
