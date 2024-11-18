@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:better_player/src/controls/better_player_material_progress_bar.dart';
+import 'package:hive/hive.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class Controls extends StatefulWidget {
@@ -10,7 +14,9 @@ class Controls extends StatefulWidget {
   final Widget topControls;
   final void Function() hideControlsOnTimeout;
   final bool Function() isControlsLocked;
+  final void Function(String) episodeNav;
   final bool isControlsVisible;
+  final Map<String, bool> episodeMap;
 
   const Controls({
     super.key,
@@ -20,6 +26,8 @@ class Controls extends StatefulWidget {
     required this.hideControlsOnTimeout,
     required this.isControlsLocked,
     required this.isControlsVisible,
+    required this.episodeMap,
+    required this.episodeNav,
   });
 
   @override
@@ -32,8 +40,6 @@ class _ControlsState extends State<Controls> {
   IconData? playPause;
   String currentTime = "0:00";
   String maxTime = "0:00";
-  int? skipDuration;
-  bool alreadySkipped = false;
   int? megaSkipDuration;
   bool buffering = false;
   bool wakelockEnabled = false;
@@ -78,8 +84,8 @@ class _ControlsState extends State<Controls> {
 
   Future<void> assignSettings() async {
     setState(() {
-      skipDuration = 10;
-      megaSkipDuration = 85;
+      megaSkipDuration =
+          Hive.box('app-data').get('megaSkipDuration', defaultValue: 85);
     });
   }
 
@@ -123,15 +129,13 @@ class _ControlsState extends State<Controls> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical:  10.0, horizontal: 30),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 40),
+      child: Stack(
         children: [
           widget.topControls,
-          Expanded(
-            child: widget.isControlsLocked()
-                ? lockedCenterControls()
-                : centerControls(context),
-          ),
+          widget.isControlsLocked()
+              ? lockedCenterControls()
+              : centerControls(context),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -152,9 +156,7 @@ class _ControlsState extends State<Controls> {
                       ),
                     ],
                   ),
-                  if (megaSkipDuration != null &&
-                      !widget.isControlsLocked() &&
-                      !alreadySkipped)
+                  if (megaSkipDuration != null && !widget.isControlsLocked())
                     megaSkipButton(),
                 ],
               ),
@@ -212,8 +214,7 @@ class _ControlsState extends State<Controls> {
   ElevatedButton megaSkipButton() {
     return ElevatedButton(
       onPressed: () {
-        fastForward(megaSkipDuration!);
-        alreadySkipped = true;
+        fastForward(megaSkipDuration ?? 85);
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.7),
@@ -245,95 +246,104 @@ class _ControlsState extends State<Controls> {
     );
   }
 
-  Container lockedCenterControls() {
-    return Container(
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (buffering)
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.primary,
+  Positioned lockedCenterControls() {
+    return Positioned(
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (buffering)
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Row centerControls(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        buildControlButton(
-          icon: Icons.fast_rewind_rounded,
-          onTap: () {
-            fastForward(skipDuration != null ? -skipDuration! : -10);
-          },
-        ),
-        Container(
-          child: !buffering
-              ? buildControlButton(
-                  icon: playPause ?? Icons.play_arrow_rounded,
-                  size: 45,
-                  onTap: () {
-                    if (_controller.value.isPlaying) {
-                      playPause = Icons.play_arrow_rounded;
-                      _controller.pause();
-                    } else {
-                      playPause = Icons.pause_rounded;
-                      _controller.play();
-                    }
-                    setState(() {});
-                  },
-                )
-              : Container(
-                  width: 65,
-                  height: 65,
-                  margin: const EdgeInsets.only(left: 5, right: 5),
-                  child: Center(
+  Positioned centerControls(BuildContext context) {
+    return Positioned.fill(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Opacity(
+            opacity: widget.episodeMap['prev'] ?? false ? 1 : 0,
+            child: buildControlButton(
+              icon: Iconsax.previous5,
+              size: 35,
+              onTap: () {
+                final map = widget.episodeMap;
+                if (map['prev'] ?? false) {
+                  widget.episodeNav('prev');
+                }
+              },
+            ),
+          ),
+          const SizedBox(width: 50),
+          buffering || !_controller.value.initialized
+              ? Center(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
                     child: CircularProgressIndicator(
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
+                )
+              : buildControlButton(
+                  icon: playPause ?? Iconsax.play5,
+                  onTap: () {
+                    if (_controller.value.isPlaying) {
+                      playPause = Iconsax.play5;
+                      _controller.pause();
+                    } else {
+                      playPause = Iconsax.pause5;
+                      _controller.play();
+                    }
+                    setState(() {});
+                  },
                 ),
-        ),
-        buildControlButton(
-          icon: Icons.fast_forward_rounded,
-          onTap: () {
-            fastForward(skipDuration ?? 10);
-          },
-        ),
-      ],
+          const SizedBox(width: 50),
+          Opacity(
+            opacity: widget.episodeMap['next'] ?? true ? 1 : 0,
+            child: buildControlButton(
+              icon: Iconsax.next5,
+              size: 35,
+              onTap: () {
+                final map = widget.episodeMap;
+                if (map['next'] ?? true) {
+                  widget.episodeNav('right');
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget buildControlButton({
     required IconData icon,
     required VoidCallback onTap,
-    double size = 40,
+    double size = 45,
+    Color color = Colors.white,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        height: 65,
-        width: 65,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: onTap,
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: size,
-          ),
-        ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Icon(
+        icon,
+        color: color,
+        size: size,
       ),
     );
   }
