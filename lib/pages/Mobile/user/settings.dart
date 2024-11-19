@@ -9,6 +9,7 @@ import 'package:aurora/pages/Mobile/user/settings/settings_player.dart';
 import 'package:aurora/pages/Mobile/user/settings/settings_theme.dart';
 import 'package:aurora/utils/downloader/downloader.dart';
 import 'package:aurora/utils/sources/anime/extensions/animepahe/animepahe.dart';
+import 'package:aurora/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
 import 'package:aurora/utils/sources/anime/extractors/kwik.dart';
 import 'package:aurora/utils/sources/manga/extensions/comick.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -129,9 +130,15 @@ class SettingsPage extends StatelessWidget {
             onTap: () async {
               // final data = await AnimePahe().scrapeEpisodes('',
               //     args: {'animeId': '49', 'animeName': 'Attack on Titan'});
-              final ep = await AnimePahe().scrapeEpisodesSrcs(
-                  'e112f379-be91-7a18-9bde-767e61d9dfe4/b2f61471a902f572c0745b4ed33173f6b749e7df9af269c48cc296d2a8c43371');
-              log(ep.toString());
+
+              // final ep = await AnimePahe().scrapeEpisodesSrcs(
+              //     'e112f379-be91-7a18-9bde-767e61d9dfe4/b2f61471a902f572c0745b4ed33173f6b749e7df9af269c48cc296d2a8c43371');
+              // log(ep.toString());
+              // YugenAnime().scrapeSearchResults('Attack on titan');
+              YugenAnime().scrapeEpisodes('2970/shingeki-no-kyojin');
+              // final episode = await YugenAnime().scrapeEpisodesSrcs(
+              //     '19516/love-live-superstar-3rd-season/1');
+              // log(episode.toString());
             },
           ),
         ],

@@ -6,7 +6,6 @@ import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Mobile/Anime/home_page.dart';
 import 'package:aurora/pages/Mobile/Manga/home_page.dart';
 import 'package:aurora/pages/r_director_home.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
 import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';

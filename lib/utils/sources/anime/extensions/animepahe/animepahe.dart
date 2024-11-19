@@ -43,7 +43,7 @@ class AnimePahe implements SourceBase {
     final jsonResult = json.decode(response);
     final page = jsonResult["current_page"];
     final hasNextPage = page < jsonResult["last_page"];
-    List<Map<String, dynamic>> episodes = [];
+    dynamic episodes = [];
 
     for (var item in jsonResult["data"]) {
       episodes.add({
