@@ -207,7 +207,18 @@ class _DetailsPageState extends State<DetailsPage>
         episodeImages = tempEpisodeImages;
       });
     } catch (e) {
-      log(e.toString());
+      final tempEpisodesData = await sourcesHandler.mapToAnilist(data['name']);
+      setState(() {
+        fetchedData = tempEpisodesData;
+        episodesData = tempEpisodesData['episodes'];
+        availEpisodes = tempEpisodesData['totalEpisodes'];
+        isLoading = false;
+      });
+      final tempEpisodeImages =
+          await HiAnimeApi().fetchStreamingDataConsumet(widget.id.toString());
+      setState(() {
+        episodeImages = tempEpisodeImages;
+      });
     }
   }
 
@@ -752,10 +763,7 @@ class _DetailsPageState extends State<DetailsPage>
                       Navigator.pop(context);
                       showDownloadOptions(context,
                           isLoading: false,
-                          server: Provider.of<SourcesHandler>(context,
-                                          listen: false)
-                                      .selectedSource ==
-                                  "HiAnime"
+                          server: sourcesHandler.selectedSource == "HiAnime"
                               ? "MegaCloud"
                               : "VidStream",
                           source: sourcesHandler.selectedSource,
