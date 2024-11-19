@@ -1,4 +1,4 @@
-name: Generate Full Changelog
+name: Generate Versioned Changelog
 
 on:
   push:
@@ -17,11 +17,32 @@ jobs:
         with:
           fetch-depth: 0  # Fetch the full commit history
 
+      - name: Get list of tags
+        id: tags
+        run: |
+          git fetch --tags
+          tags=$(git tag -l)
+          echo "tags=$tags" >> $GITHUB_ENV
+
       - name: Generate Changelog
         run: |
           echo "# Changelog" > CHANGELOG.md
           echo "" >> CHANGELOG.md
-          git log --pretty=format:"- %h %s (%an, %ad)" --date=short >> CHANGELOG.md
+
+          # Iterate through each tag and grab commits between versions
+          prev_tag=""
+          for tag in $(echo $tags | tr " " "\n"); do
+            if [ -z "$prev_tag" ]; then
+              # For the first tag, get commits from the initial commit to the tag
+              echo "## $tag" >> CHANGELOG.md
+              git log --pretty=format:"- %h %s (%an, %ad)" --date=short $tag >> CHANGELOG.md
+            else
+              # For subsequent tags, get commits between the previous tag and the current tag
+              echo "## $tag" >> CHANGELOG.md
+              git log --pretty=format:"- %h %s (%an, %ad)" --date=short $prev_tag..$tag >> CHANGELOG.md
+            fi
+            prev_tag=$tag
+          done
 
       - name: Commit and Push Changelog
         env:
