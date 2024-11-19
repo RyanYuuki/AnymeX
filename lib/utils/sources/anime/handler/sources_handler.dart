@@ -2,6 +2,7 @@ import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/utils/sources/anime/base/source_base.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
+import 'package:aurora/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
 import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
 
 class SourcesHandler {
@@ -9,6 +10,7 @@ class SourcesHandler {
     'HiAnime (Scrapper)': HiAnime(),
     "HiAnime (API)": HiAnimeApi(),
     "GogoAnime": GogoAnime(),
+    "YugenAnime": YugenAnime(),
   };
 
   SourcesHandler() {
