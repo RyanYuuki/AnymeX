@@ -15,26 +15,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch full history to include all commits
+          fetch-depth: 0  # Fetch the full commit history
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      - name: Generate Changelog
+        run: |
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          git log --pretty=format:"- %h %s (%an, %ad)" --date=short >> CHANGELOG.md
 
-      - name: Install Conventional Changelog CLI
-        run: npm install -g conventional-changelog-cli
-
-      - name: Generate Full Changelog
-        run: conventional-changelog -p angular -i CHANGELOG.md -s -r 0
-
-      - name: Commit Changelog
+      - name: Commit and Push Changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
           git add CHANGELOG.md
           git commit -m "docs: update changelog [skip ci]"
           git push origin ${{ github.ref }}
