@@ -22,7 +22,8 @@ jobs:
         run: |
           git fetch --tags
           tags=$(git tag -l)
-          echo "tags=$tags" >> $GITHUB_ENV
+          echo "Tags found: $tags" # For debugging
+          echo "::set-output name=tags::$tags" # Set output for the next step
 
       - name: Generate Changelog
         run: |
@@ -31,7 +32,7 @@ jobs:
 
           # Iterate through each tag and grab commits between versions
           prev_tag=""
-          for tag in $(echo $tags | tr " " "\n"); do
+          for tag in ${{ steps.tags.outputs.tags }}; do
             if [ -z "$prev_tag" ]; then
               # For the first tag, get commits from the initial commit to the tag
               echo "## $tag" >> CHANGELOG.md
