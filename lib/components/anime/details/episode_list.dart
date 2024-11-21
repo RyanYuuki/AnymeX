@@ -108,32 +108,35 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                       flex: 1,
                       child: Stack(
                         children: [
-                          CachedNetworkImage(
-                            imageUrl: (widget.episodeImages != null &&
-                                    widget.episodeImages!.length > index
-                                ? widget.episodeImages![episodeNumber - 1]
-                                        ['image'] ??
-                                    widget.coverImage
-                                : widget.coverImage),
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) {
-                              return CachedNetworkImage(
-                                imageUrl: widget.coverImage,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorWidget: (context, error, stackTrace) {
-                              return CachedNetworkImage(
-                                imageUrl: widget.coverImage,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              );
-                            },
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                              imageUrl: (widget.episodeImages != null &&
+                                      widget.episodeImages!.length > index
+                                  ? widget.episodeImages![episodeNumber - 1]
+                                          ['image'] ??
+                                      widget.coverImage
+                                  : widget.coverImage),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) {
+                                return CachedNetworkImage(
+                                  imageUrl: widget.coverImage,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                              errorWidget: (context, error, stackTrace) {
+                                return CachedNetworkImage(
+                                  imageUrl: widget.coverImage,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
                           ),
                           Positioned(
                             bottom: 10,
