@@ -151,7 +151,7 @@ class Carousel extends StatelessWidget {
                             child: Text(
                               title,
                               maxLines: 2,
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: 16, fontFamily: 'Poppins-SemiBold'),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -178,18 +178,8 @@ class Carousel extends StatelessWidget {
                               rating,
                               style: TextStyle(
                                   color: Theme.of(context)
-                                              .colorScheme
-                                              .inverseSurface ==
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryFixedVariant
-                                      ? Colors.black
-                                      : Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryFixedVariant ==
-                                              Color(0xffe2e2e2)
-                                          ? Colors.black
-                                          : Colors.white,
+                                      .colorScheme
+                                      .inverseSurface,
                                   fontSize: 14,
                                   fontFamily: 'Poppins-SemiBold'),
                             ),

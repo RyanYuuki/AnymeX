@@ -124,31 +124,10 @@ class _CovercarouselState extends State<Covercarousel> {
                             name: (anime['averageScore'] / 10).toString(),
                             isVertical: false,
                             borderRadius: BorderRadius.circular(5),
-                            backgroundColor: ColorScheme.onPrimaryFixedVariant,
-                            color:
-                                Theme.of(context).colorScheme.inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            const Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white,
+                            backgroundColor: ColorScheme.secondaryContainer,
+                            color: Theme.of(context).colorScheme.inverseSurface,
                             TextColor:
-                                Theme.of(context).colorScheme.inverseSurface ==
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryFixedVariant
-                                    ? Colors.black
-                                    : Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryFixedVariant ==
-                                            const Color(0xffe2e2e2)
-                                        ? Colors.black
-                                        : Colors.white,
+                                Theme.of(context).colorScheme.inverseSurface,
                           ),
                         ],
                       ),
