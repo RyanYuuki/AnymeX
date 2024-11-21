@@ -3,6 +3,7 @@ import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/manga/toggle_bars.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,45 +32,44 @@ class ReadingPage extends StatefulWidget {
 
 class _ReadingPageState extends State<ReadingPage> {
   dynamic mangaData;
-  List<dynamic>? chaptersList;
   List<dynamic>? chapterImages;
   String? currentChapter;
   String? mangaTitle;
   int? totalImages;
-  int? index;
   bool isLoading = true;
   bool hasError = false;
   List<String> modes = ['Webtoon', 'RTL', 'LTR'];
   List<bool> selections = [true, false, false];
   String currentLayout = 'Webtoon';
-
+  late MangaSourceHandler mangaSourceHandler;
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
+    mangaSourceHandler =
+        Provider.of<UnifiedSourcesHandler>(context, listen: false)
+            .getMangaInstance();
     fetchChapterData();
   }
 
   Future<void> fetchChapterData() async {
     try {
       final provider = Provider.of<AppData>(context, listen: false);
-      final tempData = await MangaSourceHandler().fetchChapterImages(
+      final tempData = await mangaSourceHandler.fetchChapterImages(
         mangaId: widget.mangaId,
         chapterId: widget.id,
       );
       setState(() {
         mangaData = tempData;
-        chaptersList = tempData?['chapterListIds'];
         chapterImages = tempData?['images'];
         currentChapter = tempData?['currentChapter'];
         mangaTitle = tempData?['title'];
         totalImages = tempData?['totalImages'];
-        index = tempData?['chapterListIds']
-            ?.indexWhere((chapter) => chapter['name'] == currentChapter);
         isLoading = false;
       });
+      log(mangaData['nextChapterId'].toString());
       await _updateMangaProgress();
       provider.addReadManga(
         mangaId: widget.mangaId,
@@ -91,12 +91,21 @@ class _ReadingPageState extends State<ReadingPage> {
   }
 
   Future<void> _updateMangaProgress() async {
-    final chapterNumber =
-        RegExp(r'\d+').firstMatch(currentChapter!)?.group(0) ?? '';
-    await AniListProvider().updateMangaProgress(
-        mangaId: int.parse(widget.anilistId),
-        chapterProgress: int.parse(chapterNumber),
-        status: 'CURRENT');
+    if (mangaSourceHandler.selectedSourceName == "ComicK") {
+      final chapterNumber =
+          mangaData['currentChapter'].split('Chapter').last.trim();
+      await AniListProvider().updateMangaProgress(
+          mangaId: int.parse(widget.anilistId),
+          chapterProgress: int.parse(chapterNumber),
+          status: 'CURRENT');
+    } else {
+      final chapterNumber =
+          RegExp(r'\d+').firstMatch(currentChapter!)?.group(0) ?? '';
+      await AniListProvider().updateMangaProgress(
+          mangaId: int.parse(widget.anilistId),
+          chapterProgress: int.parse(chapterNumber),
+          status: 'CURRENT');
+    }
   }
 
   Future<void> fetchChapterImages(String chapterId) async {
@@ -105,7 +114,7 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     try {
       final provider = Provider.of<AppData>(context, listen: false);
-      final tempData = await MangaSourceHandler().fetchChapterImages(
+      final tempData = await mangaSourceHandler.fetchChapterImages(
         mangaId: widget.mangaId,
         chapterId: chapterId,
       );
