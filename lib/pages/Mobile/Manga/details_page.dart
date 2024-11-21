@@ -87,6 +87,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
   String selectedSource = '';
   late int chapterProgress;
 
+  // Group Sorting
+  String? activeGroup;
+  dynamic groupChapters;
+
   // Layout Buttons
   List<IconData> layoutIcons = [
     IconlyBold.image,
@@ -321,7 +325,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               )
             else
               SizedBox(
-                height: selectedIndex == 0 ? 1650 : 800,
+                height: selectedIndex == 0 ? 1400 : 900,
                 child: PageView(
                   padEnds: false,
                   physics: NeverScrollableScrollPhysics(),
@@ -341,16 +345,27 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
   }) {
     if (mangaData == null) return null;
     List<dynamic> ChapterList = mangaData['chapterList'];
-    final chapter = ChapterList.firstWhere((chapter) =>
-        chapter['id'].toString().split('-').last == progress.toString());
+    final chapter = ChapterList.firstWhere(
+        (chapter) => chapter['number'].toString() == progress.toString());
     return chapter['id'];
   }
 
   void initializeChapters() {
+    groupChapters = mangaData['chapterList'];
     if (mangaData?['chapterList'] != null) {
+      if (activeGroup == null && mangaData.containsKey('groups')) {
+        activeGroup = mangaData['groups'][0];
+      }
+      if (activeGroup != null && mangaData.containsKey('groups')) {
+        groupChapters = mangaData['chapterList']
+            .where((chapter) => chapter['date'] == activeGroup)
+            .toList();
+      } else {
+        groupChapters = mangaData['chapterList'];
+      }
       setState(() {
         int step;
-        int length = mangaData!['chapterList'].length;
+        int length = groupChapters.length;
 
         if (length > 50 && length < 100) {
           step = 24;
@@ -362,9 +377,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           step = 12;
         }
 
-        chapterRanges = getChapterRanges(mangaData!['chapterList'], step);
+        chapterRanges = getChapterRanges(groupChapters, step);
 
-        filteredChapters = mangaData!['chapterList'].where((chapter) {
+        filteredChapters = groupChapters.where((chapter) {
           double chapterNumber = double.parse(chapter['number']);
           return chapterNumber >= chapterRanges[0][0] &&
               chapterNumber <= chapterRanges[0][1];
@@ -470,6 +485,54 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               fontSize: 16,
             ),
           ),
+          const SizedBox(height: 10),
+          if (mangaData != null && mangaData.containsKey('groups'))
+            DropdownButtonFormField<String>(
+              value: activeGroup,
+              decoration: InputDecoration(
+                labelText: 'Choose ScanGroup',
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surface,
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+                border: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color:
+                          Theme.of(context).colorScheme.onPrimaryFixedVariant),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.primary),
+                ),
+              ),
+              isExpanded: true,
+              items: (mangaData['groups'] as List<String>).map((source) {
+                return DropdownMenuItem<String>(
+                  value: source,
+                  child: Text(
+                    source,
+                    style: const TextStyle(fontFamily: 'Poppins-SemiBold'),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) async {
+                setState(() {
+                  activeGroup = value!;
+                  initializeChapters();
+                });
+              },
+              dropdownColor: Theme.of(context).colorScheme.surface,
+              icon: Icon(Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.primary),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 16,
+              ),
+            ),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
@@ -602,7 +665,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                   chapterRanges: chapterRanges,
                   onRangeSelected: (range) {
                     setState(() {
-                      filteredChapters = mangaData?['chapterList']!
+                      filteredChapters = groupChapters!
                           .where((episode) =>
                               double.parse(episode['number']) >= range[0] &&
                               double.parse(episode['number']) <= range[1])
@@ -1483,7 +1546,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             child: Center(child: CircularProgressIndicator()),
           )
         : SizedBox(
-            height: selectedIndex == 0 ? 1450 : 800,
+            height: selectedIndex == 0 ? 1450 : 900,
             child: PageView(
               padEnds: false,
               physics: NeverScrollableScrollPhysics(),
