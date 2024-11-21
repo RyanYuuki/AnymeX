@@ -1,4 +1,5 @@
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/pages/Mobile/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,8 @@ class AnilistMangaList extends StatelessWidget {
   Widget build(BuildContext context) {
     final mangaList =
         Provider.of<AniListProvider>(context).userData['mangaList'];
-    final userName = Provider.of<AniListProvider>(context).userData['user']['name'];
+    final userName =
+        Provider.of<AniListProvider>(context).userData['user']['name'];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -81,54 +83,70 @@ class MangaListContent extends StatelessWidget {
         itemCount: filteredMangaList.length,
         itemBuilder: (context, index) {
           final item = filteredMangaList[index]['media'];
-          return Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: CachedNetworkImage(
-                  height: 170,
-                  fit: BoxFit.cover,
-                  imageUrl: item?['coverImage']?['large'] ??
-                      'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
-                  placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MangaDetailsPage(
+                            id: (item['id']),
+                            posterUrl: item['coverImage']['large'],
+                            tag: item['id'].toString(),
+                          )));
+            },
+            child: Column(
+              children: [
+                Hero(
+                  tag: item['id'],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: CachedNetworkImage(
+                      height: 170,
+                      fit: BoxFit.cover,
+                      imageUrl: item?['coverImage']?['large'] ??
+                          'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 7),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item?['title']?['english'] ??
-                        item?['title']?['romaji'] ??
-                        '?',
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        mangaData?[index]?['progress']?.toString() ?? '?',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Text(' | ',
+                const SizedBox(height: 7),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item?['title']?['english'] ??
+                          item?['title']?['romaji'] ??
+                          '?',
+                      maxLines: 2,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          mangaData?[index]?['progress']?.toString() ?? '?',
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary)),
-                      Text(
-                        item['chapters']?.toString() ?? '?',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        Text(' | ',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary)),
+                        Text(
+                          item['chapters']?.toString() ?? '?',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
           );
         },
       ),
