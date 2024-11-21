@@ -7,6 +7,7 @@ import 'package:aurora/components/common/IconWithLabel.dart';
 import 'package:aurora/components/anilistExclusive/wong_title_dialog.dart';
 import 'package:aurora/components/anime/details/episode_buttons.dart';
 import 'package:aurora/components/anime/details/episode_list.dart';
+import 'package:aurora/components/common/expandable_page_view.dart';
 import 'package:aurora/components/common/reusable_carousel.dart';
 import 'package:aurora/components/anime/details/character_cards.dart';
 import 'package:aurora/hiveData/appData/database.dart';
@@ -97,7 +98,7 @@ class _DetailsPageState extends State<DetailsPage>
   dynamic episodesData;
   dynamic episodeImages;
   int availEpisodes = 0;
-  List<dynamic>? episodeSrc;
+  dynamic episodeSrc;
   int currentEpisode = 1;
   dynamic subtitleTracks;
   String activeServer = 'vidstream';
@@ -130,7 +131,7 @@ class _DetailsPageState extends State<DetailsPage>
       vsync: this,
     )..repeat(reverse: true);
     watchProgress = returnProgress();
-    _animation = Tween<double>(begin: -1.0, end: -2.0).animate(CurvedAnimation(
+    _animation = Tween<double>(begin: -1.0, end: -3.0).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.linear,
     ));
@@ -237,7 +238,7 @@ class _DetailsPageState extends State<DetailsPage>
         log(response.toString());
         setState(() {
           subtitleTracks = response['tracks'];
-          episodeSrc = response['sources'];
+          episodeSrc = response;
           isLoading = false;
         });
       }
@@ -407,33 +408,36 @@ class _DetailsPageState extends State<DetailsPage>
     return 'Add To List';
   }
 
-  Scaffold saikouDetailsPage(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            saikouTopSection(context),
-            if (isLoading)
-              Padding(
-                padding: const EdgeInsets.only(top: 30.0),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else
-              SizedBox(
-                height: selectedIndex == 0 ? 1700 : 750,
-                child: PageView(
-                  padEnds: false,
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  children: [
-                    saikouDetails(context),
-                    episodeSection(context),
-                  ],
-                ),
-              ),
-          ],
-        ),
+  Widget saikouDetailsPage(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.only(bottom: 100),
+      child: Column(
+        children: [
+          saikouTopSection(context),
+          if (isLoading)
+            Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else
+            ExpandablePageView(
+              controller: pageController,
+              itemCount: 2,
+              onPageChanged: (value) {
+                if (mounted) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                }
+              },
+              itemBuilder: (BuildContext context, int index) {
+                return index == 0
+                    ? saikouDetails(context)
+                    : episodeSection(context);
+              },
+            ),
+        ],
       ),
     );
   }
@@ -544,7 +548,8 @@ class _DetailsPageState extends State<DetailsPage>
           ),
           Row(
             children: [
-              if (sourcesHandler.selectedSource != "GogoAnime") ...[
+              if (sourcesHandler.selectedSource != "GogoAnime" &&
+                  sourcesHandler.selectedSource != "AnimePahe") ...[
                 SizedBox(
                   width: 40,
                   height: 40,
@@ -736,41 +741,38 @@ class _DetailsPageState extends State<DetailsPage>
           const SizedBox(height: 10),
           episodesData == null
               ? Center(child: CircularProgressIndicator())
-              : SizedBox(
-                  height: layoutIndex == 0 ? 320 : 280,
-                  child: EpisodeGrid(
-                    currentEpisode: currentEpisode,
-                    episodeImages: episodeImages,
-                    episodes: filteredEpisodes,
-                    progress: watchProgress,
-                    layoutIndex: layoutIndex,
-                    onEpisodeSelected: (int episode) {
-                      setState(() {
-                        currentEpisode = episode;
-                      });
-                      selectServerDialog(context);
-                    },
-                    coverImage: data?['poster'] ?? widget.posterUrl!,
-                    onEpisodeDownload:
-                        (String episodeId, String episodeNumber) async {
-                      showDownloadOptions(context,
-                          isLoading: true,
-                          server: '',
-                          source: '',
-                          sourcesData: [],
-                          episodeNumber: '');
-                      final downloadMeta = await downloadHelper(episodeId);
-                      Navigator.pop(context);
-                      showDownloadOptions(context,
-                          isLoading: false,
-                          server: sourcesHandler.selectedSource == "HiAnime"
-                              ? "MegaCloud"
-                              : "VidStream",
-                          source: sourcesHandler.selectedSource,
-                          sourcesData: downloadMeta,
-                          episodeNumber: "Episode-$episodeNumber");
-                    },
-                  ),
+              : EpisodeGrid(
+                  currentEpisode: currentEpisode,
+                  episodeImages: episodeImages,
+                  episodes: filteredEpisodes,
+                  progress: watchProgress,
+                  layoutIndex: layoutIndex,
+                  onEpisodeSelected: (int episode) {
+                    setState(() {
+                      currentEpisode = episode;
+                    });
+                    selectServerDialog(context);
+                  },
+                  coverImage: data?['poster'] ?? widget.posterUrl!,
+                  onEpisodeDownload:
+                      (String episodeId, String episodeNumber) async {
+                    showDownloadOptions(context,
+                        isLoading: true,
+                        server: '',
+                        source: '',
+                        sourcesData: [],
+                        episodeNumber: '');
+                    final downloadMeta = await downloadHelper(episodeId);
+                    Navigator.pop(context);
+                    showDownloadOptions(context,
+                        isLoading: false,
+                        server: sourcesHandler.selectedSource == "HiAnime"
+                            ? "MegaCloud"
+                            : "VidStream",
+                        source: sourcesHandler.selectedSource,
+                        sourcesData: downloadMeta,
+                        episodeNumber: "Episode-$episodeNumber");
+                  },
                 ),
         ],
       ),
@@ -789,15 +791,33 @@ class _DetailsPageState extends State<DetailsPage>
           lang: activeServer);
 
       if (response != null) {
-        episodeSrc = response['sources'][0]['url'];
-        final m3u8Url = episodeSrc;
-        final parts = m3u8Url!.split('/');
-        parts.removeLast();
-        final baseUrl = '${parts.join('/')}/';
-        log('base url: $baseUrl');
-        log('m3u8 url: $m3u8Url');
+        List<Map<String, dynamic>> qualitiesList = [];
 
-        final qualitiesList = await fetchM3u8Links(m3u8Url, baseUrl);
+        // Check if `multiSrc` exists in the response
+        if (response['multiSrc'] != null) {
+          for (var src in response['multiSrc']) {
+            qualitiesList.add({
+              'quality': src['quality'] ?? 'Unknown Quality',
+              'url': src['url'] ?? '',
+            });
+          }
+        } else {
+          episodeSrc = response['sources'][0]['url'];
+          String m3u8Url = episodeSrc!;
+          final parts = m3u8Url.split('/');
+          parts.removeLast();
+          final baseUrl = '${parts.join('/')}/';
+          log('base url: $baseUrl');
+          log('m3u8 url: $m3u8Url');
+
+          if (m3u8Url.contains("uwu.m3u8")) {
+            m3u8Url = m3u8Url.replaceAll("uwu.m3u8", "master.m3u8");
+            log('Changed to master.m3u8: $m3u8Url');
+          }
+
+          final fetchedQualities = await fetchM3u8Links(m3u8Url, baseUrl);
+          qualitiesList.addAll(fetchedQualities);
+        }
 
         if (qualitiesList.isNotEmpty) {
           return qualitiesList;
@@ -1739,39 +1759,38 @@ class _DetailsPageState extends State<DetailsPage>
     );
   }
 
-  Scaffold originalDetailsPage(ColorScheme CustomScheme, BuildContext context) {
-    return Scaffold(
-      backgroundColor: CustomScheme.surface,
-      body: isLoading
-          ? Column(
+  Widget originalDetailsPage(ColorScheme CustomScheme, BuildContext context) {
+    return isLoading
+        ? Column(
+            children: [
+              Center(
+                child: Poster(
+                  context,
+                  tag: widget.tag,
+                  poster: widget.posterUrl,
+                  isLoading: true,
+                ),
+              ),
+              const SizedBox(height: 30),
+              CircularProgressIndicator(),
+            ],
+          )
+        : SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.only(bottom: 100),
+            child: Column(
               children: [
-                Center(
-                  child: Poster(
-                    context,
-                    tag: widget.tag,
-                    poster: widget.posterUrl,
-                    isLoading: true,
-                  ),
+                Poster(
+                  context,
+                  isLoading: false,
+                  tag: widget.tag,
+                  poster: widget.posterUrl,
                 ),
                 const SizedBox(height: 30),
-                CircularProgressIndicator(),
+                Info(context),
               ],
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  Poster(
-                    context,
-                    isLoading: false,
-                    tag: widget.tag,
-                    poster: widget.posterUrl,
-                  ),
-                  const SizedBox(height: 30),
-                  Info(context),
-                ],
-              ),
             ),
-    );
+          );
   }
 
   Widget Poster(
@@ -1880,23 +1899,29 @@ class _DetailsPageState extends State<DetailsPage>
 
   Info(BuildContext context) {
     ColorScheme CustomScheme = Theme.of(context).colorScheme;
-    return isLoading
-        ? Padding(
-            padding: const EdgeInsets.only(top: 30.0),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        : SizedBox(
-            height: selectedIndex == 0 ? 1450 : 750,
-            child: PageView(
-              padEnds: false,
-              physics: NeverScrollableScrollPhysics(),
-              controller: pageController,
-              children: [
-                originalInfoPage(CustomScheme, context),
-                episodeSection(context),
-              ],
-            ),
-          );
+    if (isLoading) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 30.0),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    } else {
+      return ExpandablePageView(
+        controller: pageController,
+        itemCount: 2,
+        onPageChanged: (value) {
+          if (mounted) {
+            setState(() {
+              selectedIndex = value;
+            });
+          }
+        },
+        itemBuilder: (BuildContext context, int index) {
+          return index == 0
+              ? originalInfoPage(CustomScheme, context)
+              : episodeSection(context);
+        },
+      );
+    }
   }
 
   Column originalInfoPage(ColorScheme CustomScheme, BuildContext context) {
