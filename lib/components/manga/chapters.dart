@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:aurora/pages/Mobile/Manga/read_page.dart';
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';

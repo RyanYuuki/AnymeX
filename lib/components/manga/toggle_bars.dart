@@ -275,7 +275,8 @@ class _ToggleBarState extends State<ToggleBar> {
                                 .withOpacity(0.80),
                             borderRadius: BorderRadius.circular(20)),
                         child: Slider(
-                          divisions: widget.totalImages ?? 20,
+                          divisions:
+                              widget.totalImages == 0 ? 10 : widget.totalImages,
                           value: widget.currentLayout == 'Webtoon'
                               ? _scrollProgress
                               : (widget.pageNumber! / widget.totalImages!)

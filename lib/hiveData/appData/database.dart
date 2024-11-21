@@ -130,7 +130,7 @@ class AppData extends ChangeNotifier {
       'mangaDescription': description
     };
 
-    readMangas!.removeWhere((manga) => manga['mangaId'] == mangaId);
+    readMangas!.removeWhere((manga) => manga['anilistId'] == anilistMangaId);
     readMangas!.add(newManga);
 
     var box = Hive.box('app-data');
