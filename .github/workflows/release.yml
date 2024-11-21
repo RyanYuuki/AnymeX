@@ -21,9 +21,9 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          # Get all tags and sort them by version in reverse order
-          tags=$(git tag -l | sort -V)  # Use sort -V to sort tags based on version numbers
-          echo "Tags found: $tags"  # For debugging
+          # Get all tags sorted by version in reverse order
+          tags=$(git tag -l | sort -V -r)
+          echo "Tags found: $tags"  # Debugging
           echo "::set-output name=tags::$tags"  # Pass tags to the next step
 
       - name: Generate Changelog
@@ -31,19 +31,23 @@ jobs:
           echo "# Changelog" > CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-          # Initialize previous tag variable
           prev_tag=""
           for tag in ${{ steps.tags.outputs.tags }}; do
+            # Get the release date for the tag
+            release_date=$(git log -1 --format=%ai $tag | cut -d " " -f 1)
+            
             if [ -z "$prev_tag" ]; then
-              # First tag, include all commits up to this tag
-              echo "## $tag" >> CHANGELOG.md
-              git log --pretty=format:"- %h %s (%an, %ad)" --date=short $tag >> CHANGELOG.md
+              # First tag, get all commits up to this tag
+              echo "## ${tag} - ${release_date}" >> CHANGELOG.md
+              git log --pretty=format:"- %s" $tag >> CHANGELOG.md
             else
               # Subsequent tags, get commits between previous tag and current tag
-              echo "## $tag" >> CHANGELOG.md
-              git log --pretty=format:"- %h %s (%an, %ad)" --date=short $prev_tag..$tag >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+              echo "## ${tag} - ${release_date}" >> CHANGELOG.md
+              git log --pretty=format:"- %s" $tag..$prev_tag >> CHANGELOG.md
             fi
-            prev_tag=$tag  # Update previous tag for the next iteration
+            
+            prev_tag=$tag  # Update the previous tag
           done
 
       - name: Commit and Push Changelog
