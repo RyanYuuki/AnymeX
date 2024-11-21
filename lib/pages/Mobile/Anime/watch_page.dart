@@ -5,7 +5,7 @@ import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/videoPlayer/custom_controls.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
+import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +14,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class WatchPage extends StatefulWidget {
-  final List<dynamic> episodeSrc;
+  final dynamic episodeSrc;
   final int animeId;
   final String sourceAnimeId;
   final ThemeData provider;
@@ -153,7 +153,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _initVars() {
-    episodeSrc = widget.episodeSrc;
+    episodeSrc = widget.episodeSrc['sources'];
     tracks = widget.tracks;
     episodeTitle = widget.episodeTitle;
     currentEpisode = widget.currentEpisode;
@@ -164,8 +164,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     filterSubtitles(tracks);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
-      fit: BoxFit.contain,
-      // fit: resizeModesOptions[resizeMode]!,
+      fit: resizeModesOptions[resizeMode]!,
       controlsConfiguration:
           const BetterPlayerControlsConfiguration(showControls: false),
       autoPlay: true,
@@ -225,12 +224,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           .setupDataSource(BetterPlayerDataSource.network(''));
     });
     try {
-      final response = await Provider.of<SourcesHandler>(context, listen: false)
-          .fetchEpisodesSrcs(
-        episodeId,
-        lang: widget.activeServer,
-        category: widget.isDub ? 'dub' : 'sub',
-      );
+      final response =
+          await Provider.of<UnifiedSourcesHandler>(context, listen: false)
+              .getAnimeInstance()
+              .fetchEpisodesSrcs(
+                episodeId,
+                lang: widget.activeServer,
+                category: widget.isDub ? 'dub' : 'sub',
+              );
 
       if (response != null && mounted) {
         setState(() {
@@ -246,10 +247,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 (isOOB ? currentEpisode : currentEpisode! + 1).toString(),
             animePosterImageUrl: widget.posterImage,
             episodeList: widget.episodeData,
-            currentSource: Provider.of<SourcesHandler>(context, listen: false)
-                .selectedSource,
+            currentSource:
+                Provider.of<UnifiedSourcesHandler>(context, listen: false)
+                    .getAnimeInstance()
+                    .selectedSource,
             animeDescription: widget.description);
-        if (Provider.of<SourcesHandler>(context, listen: false)
+        if (Provider.of<UnifiedSourcesHandler>(context, listen: false)
+                .getAnimeInstance()
                 .selectedSource !=
             "GogoAnime") {
           filterSubtitles(tracks);
@@ -381,7 +385,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           children: [
             IconButton(
               onPressed: () {
-                qualityDialog();
+                if (Provider.of<UnifiedSourcesHandler>(context, listen: false)
+                        .getAnimeInstance()
+                        .selectedSource ==
+                    "AnimePahe") {
+                  multiQualityDialog();
+                } else {
+                  qualityDialog();
+                }
               },
               icon: const Icon(
                 Icons.high_quality_rounded,
@@ -638,6 +649,74 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       },
                       child: Text(
                         track?.height == 0 ? 'Auto' : '${track?.height}P',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: selectedQuality == index
+                                ? Colors.black
+                                : Colors.white),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  multiQualityDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          width: 400,
+          height: 300,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+          child: ListView(
+            children: [
+              const Center(
+                child: Text(
+                  "Select Video Quality",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: widget.episodeSrc['multiSrc'].length ?? 0,
+                itemBuilder: (context, index) {
+                  final String quality =
+                      widget.episodeSrc['multiSrc'][index]['quality'];
+                  final String link =
+                      widget.episodeSrc['multiSrc'][index]['url'];
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: selectedQuality == index
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                        minimumSize: const Size(double.infinity, 0),
+                      ),
+                      onPressed: () {
+                        selectedQuality = index;
+                        _betterPlayerController?.setupDataSource(
+                            BetterPlayerDataSource.network(link));
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        quality,
                         style: TextStyle(
                             fontSize: 16,
                             color: selectedQuality == index
