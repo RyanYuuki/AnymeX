@@ -52,6 +52,16 @@ class Comick implements SourceBase {
     }
   }
 
+  List<String> addScanGroup(List<String> group, String groupName) {
+    bool isAvailable = group.any((entry) => entry == groupName);
+    if (isAvailable) {
+      return group;
+    } else {
+      group.add(groupName);
+      return group;
+    }
+  }
+
   @override
   Future<Map<String, dynamic>> fetchMangaChapters(String mangaId) async {
     Map<String, String> id = await getComicId(mangaId);
@@ -64,6 +74,7 @@ class Comick implements SourceBase {
       final data = jsonDecode(response.body);
 
       List<Map<String, dynamic>> chapterList = [];
+      List<String> groupNames = [];
 
       for (var chapter in data['chapters']) {
         var chapterTitle = chapter?['title'] != null
@@ -72,28 +83,36 @@ class Comick implements SourceBase {
         chapterTitle = chapterTitle == 'Chapter ?' && chapter['vol'] != null
             ? 'Volume ${chapter['vol']}'
             : chapterTitle;
-        bool credible = chapter['chap'] != null;
+        bool credible =
+            chapter['chap'] != null && chapter['group_name'] != null;
+
         if (credible) {
-          chapterList.add({
+          String formattedGroup = chapter['group_name']
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '');
+          final chapterData = {
             'id': chapter['hid'] ?? "",
             'title': chapterTitle,
             'path': "/comic/$mangaId/chapter/${chapter['hid']}",
             'views': chapter['up_count']?.toString() ?? '0.0',
-            'date': chapter?['group_name']
-                ?.toString(), // chapter['updated_at']?.toString() ?? "0.0",
+            'date': formattedGroup,
             'number': chapter['chap']?.toString() ?? '0',
-          });
+          };
+          addScanGroup(groupNames, formattedGroup);
+          chapterList.add(chapterData);
         }
       }
+
+      List<String> filteredGroups =
+          groupNames.where((group) => group != 'null' && group != '').toList();
 
       final manga = {
         'id': mangaId,
         'title': id['title'] ?? '??',
         'chapterList': chapterList.reversed.toList(),
+        'groups': filteredGroups,
       };
-
-      log(manga.toString());
-
       return manga;
     } else {
       throw Exception("Failed to load manga details");
@@ -123,7 +142,6 @@ class Comick implements SourceBase {
         'images': images,
         'totalImages': images.length,
       };
-      log(mangaData.toString());
       return mangaData;
     } else {
       throw Exception("Failed to load chapter images");
