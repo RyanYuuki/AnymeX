@@ -1,3 +1,5 @@
+import 'package:aurora/utils/sources/anime/extensions/animepahe/animepahe.dart';
+import 'package:aurora/utils/sources/anime/extensions/anivibe/anivibe.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/utils/sources/anime/base/source_base.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
@@ -11,6 +13,8 @@ class SourcesHandler {
     "HiAnime (API)": HiAnimeApi(),
     "GogoAnime": GogoAnime(),
     "YugenAnime": YugenAnime(),
+    "AnimePahe": AnimePahe(),
+    "AniVibe": AniVibe(),
   };
 
   SourcesHandler() {
