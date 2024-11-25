@@ -1,51 +1,47 @@
 // ignore_for_file: library_private_types_in_public_api
-
-import 'dart:math';
+import 'dart:math' hide log;
+import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
 import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
-class MangaSearchModal extends StatefulWidget {
+class NovelSearchModal extends StatefulWidget {
   final String initialText;
   final Function(String mangaId) onMangaSelected;
-  final String selectedSource;
 
-  const MangaSearchModal({
+  const NovelSearchModal({
     super.key,
     required this.initialText,
     required this.onMangaSelected,
-    required this.selectedSource,
   });
 
   @override
-  _MangaSearchModalState createState() => _MangaSearchModalState();
+  _NovelSearchModalState createState() => _NovelSearchModalState();
 }
 
-class _MangaSearchModalState extends State<MangaSearchModal> {
+class _NovelSearchModalState extends State<NovelSearchModal> {
   late Future<dynamic> _searchFuture;
   final TextEditingController _controller = TextEditingController();
   final Random _random = Random();
-
+  late NovelSourcesHandler novelInstance;
   @override
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
-        .getMangaInstance()
-        .fetchMangaSearchResults(
-          widget.initialText,
-        );
+    novelInstance = Provider.of<UnifiedSourcesHandler>(context, listen: false)
+        .getNovelInstance();
+    _searchFuture = novelInstance.fetchNovelSearchResults(
+      widget.initialText,
+    );
   }
 
   Future<void> _performSearch(String searchTerm) async {
     setState(() {
-      _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
-          .getMangaInstance()
-          .fetchMangaSearchResults(
-            searchTerm,
-          );
+      _searchFuture = novelInstance.fetchNovelSearchResults(
+        searchTerm,
+      );
     });
   }
 
@@ -108,7 +104,7 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
               controller: _controller,
               onSubmitted: _performSearch,
               decoration: InputDecoration(
-                labelText: 'Search Manga',
+                labelText: 'Search Novel',
                 floatingLabelBehavior: FloatingLabelBehavior.auto,
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -172,19 +168,17 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
   }
 }
 
-void showMangaSearchModal(
+void showNovelSearchModal(
   BuildContext context,
   String initialText,
   Function(String) onMangaSelected,
-  String selectedSource,
 ) {
   showModalBottomSheet(
     showDragHandle: true,
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
-      return MangaSearchModal(
-        selectedSource: selectedSource,
+      return NovelSearchModal(
         initialText: initialText,
         onMangaSelected: onMangaSelected,
       );

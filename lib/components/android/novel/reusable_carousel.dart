@@ -1,91 +1,114 @@
-// ignore_for_file: camel_case_types, use_build_context_synchronously, must_be_immutable
+// ignore_for_file: must_be_immutable
+
 import 'dart:math';
-import 'package:aurora/components/helper/scroll_helper.dart';
-import 'package:aurora/pages/Mobile/Anime/details_page.dart';
-import 'package:aurora/pages/Mobile/Manga/details_page.dart';
+
+import 'package:aurora/components/android/helper/scroll_helper.dart';
+import 'package:aurora/pages/Android/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transformable_list_view/transformable_list_view.dart';
 
-class anilistCarousel extends StatelessWidget {
-  final List<dynamic>? carouselData;
-  final String? title;
-  final String? tag;
-  bool isManga;
-  anilistCarousel(
-      {super.key,
-      this.title,
-      this.carouselData,
-      this.tag,
-      this.isManga = false});
+class ReusableCarousel extends StatelessWidget {
+  dynamic carouselData;
+  final String title;
+
+  ReusableCarousel({
+    super.key,
+    required this.title,
+    required this.carouselData,
+  });
 
   final ScrollDirectionHelper _scrollDirectionHelper = ScrollDirectionHelper();
 
   @override
   Widget build(BuildContext context) {
-    final bool usingCompactCards =
-        Hive.box('app-data').get('usingCompactCards', defaultValue: false);
-    final bool usingSaikouCards =
-        Hive.box('app-data').get('usingSaikouCards', defaultValue: true);
-
+    final customScheme = Theme.of(context).colorScheme;
     if (carouselData == null || carouselData!.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    Matrix4 getTransformMatrix(TransformableListItem item) {
-      const maxScale = 1;
-      const minScale = 0.9;
-      final viewportWidth = item.constraints.viewportMainAxisExtent;
-      final itemLeftEdge = item.offset.dx;
-      final itemRightEdge = item.offset.dx + item.size.width;
+    return ValueListenableBuilder(
+      valueListenable: Hive.box('app-data').listenable(),
+      builder: (context, Box box, _) {
+        final bool usingCompactCards =
+            box.get('usingCompactCards', defaultValue: false);
+        final bool usingSaikouCards =
+            box.get('usingSaikouCards', defaultValue: true);
+        final double cardRoundness =
+            box.get('cardRoundness', defaultValue: 18.0);
 
-      bool isScrollingRight =
-          _scrollDirectionHelper.isScrollingRight(item.offset);
+        return normalCard(customScheme, context, usingCompactCards,
+            usingSaikouCards, cardRoundness);
+      },
+    );
+  }
 
-      double visiblePortion;
-      if (isScrollingRight) {
-        visiblePortion = (viewportWidth - itemLeftEdge) / item.size.width;
-      } else {
-        visiblePortion = (itemRightEdge) / item.size.width;
-      }
+  Matrix4 getTransformMatrix(TransformableListItem item) {
+    const maxScale = 1;
+    const minScale = 0.9;
+    final viewportWidth = item.constraints.viewportMainAxisExtent;
+    final itemLeftEdge = item.offset.dx;
+    final itemRightEdge = item.offset.dx + item.size.width;
 
-      if ((isScrollingRight && itemLeftEdge < viewportWidth) ||
-          (!isScrollingRight && itemRightEdge > 0)) {
-        const scaleRange = maxScale - minScale;
-        final scale =
-            minScale + (scaleRange * visiblePortion).clamp(0.0, scaleRange);
+    bool isScrollingRight =
+        _scrollDirectionHelper.isScrollingRight(item.offset);
 
-        return Matrix4.identity()
-          ..translate(item.size.width / 2, 0, 0)
-          ..scale(scale)
-          ..translate(-item.size.width / 2, 0, 0);
-      }
-
-      return Matrix4.identity();
+    double visiblePortion;
+    if (isScrollingRight) {
+      visiblePortion = (viewportWidth - itemLeftEdge) / item.size.width;
+    } else {
+      visiblePortion = (itemRightEdge) / item.size.width;
     }
 
+    if ((isScrollingRight && itemLeftEdge < viewportWidth) ||
+        (!isScrollingRight && itemRightEdge > 0)) {
+      const scaleRange = maxScale - minScale;
+      final scale =
+          minScale + (scaleRange * visiblePortion).clamp(0.0, scaleRange);
+
+      return Matrix4.identity()
+        ..translate(item.size.width / 2, 0, 0)
+        ..scale(scale)
+        ..translate(-item.size.width / 2, 0, 0);
+    }
+
+    return Matrix4.identity();
+  }
+
+  Column normalCard(ColorScheme customScheme, BuildContext context,
+      bool usingCompactCards, bool usingSaikouCards, double cardRoundness) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text(
-            title ?? '??',
-            style: TextStyle(
-              fontSize: 16,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          child: Row(
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  color: customScheme.primary,
+                ),
+              ),
+              const Text(
+                ' Novels',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              const Expanded(child: SizedBox.shrink()),
+              const Icon(Icons.arrow_right)
+            ],
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         SizedBox(
           height: usingSaikouCards
-              ? (usingCompactCards ? 170 : 210)
+              ? (usingCompactCards ? 180 : 210)
               : (usingCompactCards ? 280 : 300),
           child: TransformableListView.builder(
             padding: const EdgeInsets.only(left: 20),
@@ -97,38 +120,26 @@ class anilistCarousel extends StatelessWidget {
             itemExtent: MediaQuery.of(context).size.width /
                 (usingSaikouCards ? 3.3 : 2.3),
             itemBuilder: (context, index) {
-              final itemData = carouselData?[index]['media'];
-              final String posterUrl = itemData?['coverImage']?['large'] ??
-                  'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
-              int random = Random().nextInt(100000);
-              final tagg = '$random$index';
-              const String proxyUrl = '';
-              dynamic extraData =
-                  '${isManga ? 'Chapter' : 'Episode'} ${carouselData?[index]?['progress']?.toString() ?? '?'}';
-              '1';
+              dynamic itemData = carouselData[index];
+              final String posterUrl = itemData['image'] ?? '??';
+              final String title = itemData['title'] ?? '?';
+              final random = Random().nextInt(100000);
+              final tagg = '${itemData['id']}$random';
+              String extraData = itemData['rating']?.toString() ?? '??';
+
               return Padding(
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    if (isManga) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MangaDetailsPage(
-                                    id: itemData['id'],
-                                    tag: tagg,
-                                    posterUrl: proxyUrl + posterUrl,
-                                  )));
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailsPage(
-                                    id: itemData['id'],
-                                    tag: tagg,
-                                    posterUrl: proxyUrl + posterUrl,
-                                  )));
-                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NovelDetailsPage(
+                            id: itemData['id'],
+                            posterUrl: posterUrl,
+                            tag: tagg,
+                          ),
+                        ));
                   },
                   child: Column(
                     children: [
@@ -140,9 +151,10 @@ class anilistCarousel extends StatelessWidget {
                               child: Hero(
                                 tag: tagg,
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
+                                  borderRadius:
+                                      BorderRadius.circular(cardRoundness),
                                   child: CachedNetworkImage(
-                                    imageUrl: proxyUrl + posterUrl,
+                                    imageUrl: posterUrl,
                                     placeholder: (context, url) =>
                                         Shimmer.fromColors(
                                       baseColor: Colors.grey[900]!,
@@ -167,22 +179,36 @@ class anilistCarousel extends StatelessWidget {
                                   right: 0,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 12),
+                                        vertical: 5, horizontal: 8),
                                     decoration: BoxDecoration(
                                         color: Theme.of(context)
                                             .colorScheme
                                             .surfaceContainer,
-                                        borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(18),
-                                            bottomRight: Radius.circular(16))),
-                                    child: Text(
-                                      extraData,
-                                      style: TextStyle(
-                                          fontFamily: 'Poppins-SemiBold',
-                                          fontSize: 11,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                                cardRoundness - 5),
+                                            bottomRight: Radius.circular(
+                                                cardRoundness))),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Iconsax.star5,
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .inverseSurface),
+                                              .primary,
+                                          size: 14,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          extraData,
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              fontFamily: 'Poppins-Bold',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .inverseSurface),
+                                        ),
+                                      ],
                                     ),
                                   )),
                             if (usingCompactCards)
@@ -196,9 +222,11 @@ class anilistCarousel extends StatelessWidget {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .surfaceContainer,
-                                        borderRadius: const BorderRadius.only(
-                                            bottomLeft: Radius.circular(18),
-                                            topRight: Radius.circular(16))),
+                                        borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(
+                                                cardRoundness - 5),
+                                            topRight: Radius.circular(
+                                                cardRoundness))),
                                     child: Text(
                                       extraData,
                                       style: TextStyle(
@@ -236,9 +264,7 @@ class anilistCarousel extends StatelessWidget {
                               left: 10,
                               right: 10,
                               child: Text(
-                                itemData?['title']?['english'] ??
-                                    itemData?['title']?['romaji'] ??
-                                    '?',
+                                title,
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -267,9 +293,7 @@ class anilistCarousel extends StatelessWidget {
                                       (usingSaikouCards ? 3.3 : 2.3),
                                 ),
                                 Text(
-                                  itemData?['title']?['english'] ??
-                                      itemData?['title']?['romaji'] ??
-                                      '?',
+                                  title,
                                   style: TextStyle(
                                     color: Theme.of(context)
                                         .colorScheme

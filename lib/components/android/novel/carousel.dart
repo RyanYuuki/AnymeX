@@ -2,8 +2,7 @@
 
 import 'dart:math';
 
-import 'package:aurora/pages/Mobile/Anime/details_page.dart';
-import 'package:aurora/pages/Mobile/Manga/details_page.dart';
+import 'package:aurora/pages/Android/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -76,12 +75,10 @@ class Carousel extends StatelessWidget {
             scrollDirection: Axis.horizontal,
           ),
           items: animeData!.map((anime) {
-            final String posterUrl = anime['coverImage']['large'] ?? '??';
-            final String rating =
-                (anime['averageScore'] / 10)?.toString() ?? '?';
+            final String posterUrl = anime['image'] ?? '??';
+            final String rating = (anime['rating'])?.toString() ?? '?';
             final tag = '${anime["id"]}${Random().nextInt(100000)}';
-            final String title =
-                anime['title']['english'] ?? anime['title']['romaji'] ?? '?';
+            final String title = anime['title'] ?? '?';
 
             return Builder(
               builder: (BuildContext context) {
@@ -91,25 +88,14 @@ class Carousel extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (isManga) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MangaDetailsPage(
-                                            id: anime['id'],
-                                            posterUrl: posterUrl,
-                                            tag: tag,
-                                          )));
-                            } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DetailsPage(
-                                            id: anime['id'],
-                                            posterUrl: posterUrl,
-                                            tag: tag,
-                                          )));
-                            }
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NovelDetailsPage(
+                                          id: anime['id'],
+                                          posterUrl: anime['image'],
+                                          tag: tag,
+                                        )));
                           },
                           child: Container(
                             height: 300,
@@ -151,7 +137,7 @@ class Carousel extends StatelessWidget {
                             child: Text(
                               title,
                               maxLines: 2,
-                              style: TextStyle(fontSize: 16, fontFamily: 'Poppins-SemiBold'),
+                              style: TextStyle(fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -171,17 +157,25 @@ class Carousel extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(Iconsax.star5,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 18),
+                                color: Theme.of(context).colorScheme.primary, size: 18),
                             const SizedBox(width: 2),
                             Text(
                               rating,
                               style: TextStyle(
                                   color: Theme.of(context)
-                                      .colorScheme
-                                      .inverseSurface,
-                                  fontSize: 14,
-                                  fontFamily: 'Poppins-SemiBold'),
+                                              .colorScheme
+                                              .inverseSurface ==
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryFixedVariant
+                                      ? Colors.black
+                                      : Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryFixedVariant ==
+                                              Color(0xffe2e2e2)
+                                          ? Colors.black
+                                          : Colors.white,
+                                  fontSize: 14, fontFamily: 'Poppins-SemiBold'),
                             ),
                           ],
                         ),

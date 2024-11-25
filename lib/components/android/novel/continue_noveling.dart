@@ -1,94 +1,89 @@
-// ignore_for_file: must_be_immutable
-
+// ignore_for_file: camel_case_types, use_build_context_synchronously, must_be_immutable
 import 'dart:math';
-
-import 'package:aurora/components/helper/scroll_helper.dart';
-import 'package:aurora/pages/Mobile/Anime/details_page.dart';
-import 'package:aurora/pages/Mobile/Manga/details_page.dart';
+import 'package:aurora/components/android/helper/scroll_helper.dart';
+import 'package:aurora/pages/Android/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:hive/hive.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transformable_list_view/transformable_list_view.dart';
 
-class ReusableCarousel extends StatelessWidget {
-  dynamic carouselData;
+class ContinueNoveling extends StatelessWidget {
+  final List<dynamic>? carouselData;
   final String? title;
   final String? tag;
-  final bool? detailsPage;
-  final bool? secondary;
-  final bool isManga;
-
-  ReusableCarousel({
+  ContinueNoveling({
     super.key,
     this.title,
     this.carouselData,
     this.tag,
-    this.secondary = true,
-    this.detailsPage = false,
-    this.isManga = false,
   });
 
   final ScrollDirectionHelper _scrollDirectionHelper = ScrollDirectionHelper();
 
   @override
   Widget build(BuildContext context) {
-    final customScheme = Theme.of(context).colorScheme;
+    final bool usingCompactCards =
+        Hive.box('app-data').get('usingCompactCards', defaultValue: false);
+    final bool usingSaikouCards =
+        Hive.box('app-data').get('usingSaikouCards', defaultValue: true);
+
     if (carouselData == null || carouselData!.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    return ValueListenableBuilder(
-      valueListenable: Hive.box('app-data').listenable(),
-      builder: (context, Box box, _) {
-        final bool usingCompactCards =
-            box.get('usingCompactCards', defaultValue: false);
-        final bool usingSaikouCards =
-            box.get('usingSaikouCards', defaultValue: true);
-        final double cardRoundness =
-            box.get('cardRoundness', defaultValue: 18.0);
+    Matrix4 getTransformMatrix(TransformableListItem item) {
+      const maxScale = 1;
+      const minScale = 0.9;
+      final viewportWidth = item.constraints.viewportMainAxisExtent;
+      final itemLeftEdge = item.offset.dx;
+      final itemRightEdge = item.offset.dx + item.size.width;
 
-        return normalCard(customScheme, context, usingCompactCards,
-            usingSaikouCards, cardRoundness);
-      },
-    );
-  }
+      bool isScrollingRight =
+          _scrollDirectionHelper.isScrollingRight(item.offset);
 
-  Column normalCard(ColorScheme customScheme, BuildContext context,
-      bool usingCompactCards, bool usingSaikouCards, double cardRoundness) {
+      double visiblePortion;
+      if (isScrollingRight) {
+        visiblePortion = (viewportWidth - itemLeftEdge) / item.size.width;
+      } else {
+        visiblePortion = (itemRightEdge) / item.size.width;
+      }
+
+      if ((isScrollingRight && itemLeftEdge < viewportWidth) ||
+          (!isScrollingRight && itemRightEdge > 0)) {
+        const scaleRange = maxScale - minScale;
+        final scale =
+            minScale + (scaleRange * visiblePortion).clamp(0.0, scaleRange);
+
+        return Matrix4.identity()
+          ..translate(item.size.width / 2, 0, 0)
+          ..scale(scale)
+          ..translate(-item.size.width / 2, 0, 0);
+      }
+
+      return Matrix4.identity();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-            children: [
-              Text(
-                title ?? '??',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  color: customScheme.primary,
-                ),
-              ),
-              secondary!
-                  ? Text(
-                      isManga ? ' Manga' : ' Animes',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w500),
-                    )
-                  : const SizedBox.shrink(),
-              const Expanded(child: SizedBox.shrink()),
-              const Icon(Icons.arrow_right)
-            ],
+          child: Text(
+            title ?? '??',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         SizedBox(
           height: usingSaikouCards
-              ? (usingCompactCards ? 180 : 210)
+              ? (usingCompactCards ? 170 : 210)
               : (usingCompactCards ? 280 : 300),
           child: TransformableListView.builder(
             padding: const EdgeInsets.only(left: 20),
@@ -100,41 +95,24 @@ class ReusableCarousel extends StatelessWidget {
             itemExtent: MediaQuery.of(context).size.width /
                 (usingSaikouCards ? 3.3 : 2.3),
             itemBuilder: (context, index) {
-              dynamic itemData = detailsPage!
-                  ? carouselData![index]['node']['mediaRecommendation']
-                  : carouselData[index];
-              final String posterUrl = itemData['coverImage']['large'] ?? '??';
-              final String title = itemData['title']['romaji'] ??
-                  itemData['title']['romaji'] ??
-                  '?';
-              final random = Random().nextInt(100000);
-              final tagg = '${itemData['id']}$tag$random';
-              String extraData =
-                  ((itemData['averageScore'] ?? 0) / 10)?.toString() ?? '??';
-
+              final itemData = carouselData?[index];
+              final String posterUrl = itemData?['novelImage'];
+              int random = Random().nextInt(100000);
+              final tagg = '$random$index';
+              const String proxyUrl = '';
+              dynamic extraData = 'Chapter ${itemData['chapterNumber']}';
               return Padding(
                 padding: const EdgeInsets.only(right: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    if (isManga) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MangaDetailsPage(
-                                    id: itemData['id'],
-                                    posterUrl: posterUrl,
-                                    tag: tagg,
-                                  )));
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailsPage(
-                                    id: itemData['id'],
-                                    posterUrl: posterUrl,
-                                    tag: tagg,
-                                  )));
-                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NovelDetailsPage(
+                                  id: itemData['novelId'],
+                                  posterUrl: posterUrl,
+                                  tag: tag,
+                                )));
                   },
                   child: Column(
                     children: [
@@ -146,10 +124,9 @@ class ReusableCarousel extends StatelessWidget {
                               child: Hero(
                                 tag: tagg,
                                 child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.circular(cardRoundness),
+                                  borderRadius: BorderRadius.circular(18),
                                   child: CachedNetworkImage(
-                                    imageUrl: posterUrl,
+                                    imageUrl: proxyUrl + posterUrl,
                                     placeholder: (context, url) =>
                                         Shimmer.fromColors(
                                       baseColor: Colors.grey[900]!,
@@ -174,36 +151,22 @@ class ReusableCarousel extends StatelessWidget {
                                   right: 0,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 8),
+                                        vertical: 6, horizontal: 12),
                                     decoration: BoxDecoration(
                                         color: Theme.of(context)
                                             .colorScheme
                                             .surfaceContainer,
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(
-                                                cardRoundness - 5),
-                                            bottomRight: Radius.circular(
-                                                cardRoundness))),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Iconsax.star5,
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(18),
+                                            bottomRight: Radius.circular(16))),
+                                    child: Text(
+                                      extraData,
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins-SemiBold',
+                                          fontSize: 11,
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .primary,
-                                          size: 14,
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Text(
-                                          extraData,
-                                          style: TextStyle(
-                                              fontSize: 11,
-                                              fontFamily: 'Poppins-Bold',
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inverseSurface),
-                                        ),
-                                      ],
+                                              .inverseSurface),
                                     ),
                                   )),
                             if (usingCompactCards)
@@ -217,11 +180,9 @@ class ReusableCarousel extends StatelessWidget {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .surfaceContainer,
-                                        borderRadius: BorderRadius.only(
-                                            bottomLeft:
-                                                Radius.circular(cardRoundness),
-                                            topRight: Radius.circular(
-                                                cardRoundness - 5))),
+                                        borderRadius: const BorderRadius.only(
+                                            bottomLeft: Radius.circular(18),
+                                            topRight: Radius.circular(16))),
                                     child: Text(
                                       extraData,
                                       style: TextStyle(
@@ -259,7 +220,7 @@ class ReusableCarousel extends StatelessWidget {
                               left: 10,
                               right: 10,
                               child: Text(
-                                title,
+                                itemData?['novelTitle'] ?? '?',
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -288,7 +249,7 @@ class ReusableCarousel extends StatelessWidget {
                                       (usingSaikouCards ? 3.3 : 2.3),
                                 ),
                                 Text(
-                                  title,
+                                  itemData?['novelTitle'] ?? '??',
                                   style: TextStyle(
                                     color: Theme.of(context)
                                         .colorScheme
@@ -314,37 +275,5 @@ class ReusableCarousel extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Matrix4 getTransformMatrix(TransformableListItem item) {
-    const maxScale = 1;
-    const minScale = 0.9;
-    final viewportWidth = item.constraints.viewportMainAxisExtent;
-    final itemLeftEdge = item.offset.dx;
-    final itemRightEdge = item.offset.dx + item.size.width;
-
-    bool isScrollingRight =
-        _scrollDirectionHelper.isScrollingRight(item.offset);
-
-    double visiblePortion;
-    if (isScrollingRight) {
-      visiblePortion = (viewportWidth - itemLeftEdge) / item.size.width;
-    } else {
-      visiblePortion = (itemRightEdge) / item.size.width;
-    }
-
-    if ((isScrollingRight && itemLeftEdge < viewportWidth) ||
-        (!isScrollingRight && itemRightEdge > 0)) {
-      const scaleRange = maxScale - minScale;
-      final scale =
-          minScale + (scaleRange * visiblePortion).clamp(0.0, scaleRange);
-
-      return Matrix4.identity()
-        ..translate(item.size.width / 2, 0, 0)
-        ..scale(scale)
-        ..translate(-item.size.width / 2, 0, 0);
-    }
-
-    return Matrix4.identity();
   }
 }
