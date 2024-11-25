@@ -1,6 +1,23 @@
 # Changelog
 
-## v2.8.2-preview - 2024-11-19
+## v2.8.3 - 2024-11-22
+- Merge branch 'main' of https://github.com/RyanYuuki/AnymeX
+- refactor: appending instances of sources on the handler
+- feat: scan grouping support for Comick (mapping)
+- feat: AniVibe source
+- fix: fixed the mapping for animepahe completely
+- fix: fixed bad linking on manga list
+- fix: fixed manga prev/next navigation button for ComicK
+- feat: ComicK now supports  scan grouping
+- fix: fixed static handlers causing episode navigation errors
+- style: switched from sized lazy column to laid out column
+- fix: fixed duplicate entries in favourites section
+- feat: expandable page view for dynamic height of episodes
+- style: light mode fix
+- style: rounded the episode images
+- ci: update changelog generation workflow
+- docs: update changelog [skip ci]
+- docs: update README with new badges
 - feat(handler): populate the handler with new source
 - feat(source): added YugenAnime source
 - feat(source): added a fallback for different sources and immediate mapping
