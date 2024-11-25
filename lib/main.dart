@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/Mobile/Novel/home_page.dart';
+import 'package:aurora/pages/Android/Novel/home_page.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
-import 'package:aurora/pages/Mobile/Anime/home_page.dart';
-import 'package:aurora/pages/Mobile/Manga/home_page.dart';
-import 'package:aurora/pages/r_director_home.dart';
+import 'package:aurora/pages/Android/Anime/home_page.dart';
+import 'package:aurora/pages/Android/Manga/home_page.dart';
+import 'package:aurora/pages/home_page.dart';
 import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:aurora/utils/update_notifier.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -62,6 +64,9 @@ class _MainAppState extends State<MainApp> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   checkForUpdate(context);
+    // });
   }
 
   Future<void> _checkAndroidVersion() async {
@@ -78,7 +83,7 @@ class _MainAppState extends State<MainApp> {
   }
 
   final routes = [
-    const ResponsiveDirecctorHome(),
+    const HomePage(),
     const AnimeHomePage(),
     const MangaHomePage(),
     const NovelHomePage(),
@@ -128,43 +133,83 @@ class _MainAppState extends State<MainApp> {
                 .get('tabBarSizeVertical', defaultValue: 30.0);
             double tabBarSizeHorizontal = Hive.box('app-data')
                 .get('tabBarSizeHorizontal', defaultValue: 0.0);
-            return CrystalNavigationBar(
-              borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
-              currentIndex: _selectedIndex,
-              paddingR: const EdgeInsets.all(0),
-              marginR: EdgeInsets.symmetric(
-                horizontal: getProperSize(tabBarSizeHorizontal),
-                vertical: getProperSize(tabBarSizeVertical),
+            return PlatformBuilder(
+              androidBuilder: CrystalNavigationBar(
+                borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
+                currentIndex: _selectedIndex,
+                paddingR: const EdgeInsets.all(0),
+                marginR: EdgeInsets.symmetric(
+                  horizontal: getProperSize(tabBarSizeHorizontal),
+                  vertical: getProperSize(tabBarSizeVertical),
+                ),
+                unselectedItemColor: Colors.white,
+                backgroundColor: Colors.black.withOpacity(0.3),
+                onTap: _onItemTapped,
+                items: [
+                  CrystalNavigationBarItem(
+                    icon: IconlyBold.home,
+                    unselectedIcon: IconlyLight.home,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: Icons.movie_filter_rounded,
+                    unselectedIcon: Icons.movie_filter_outlined,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: Iconsax.book,
+                    unselectedIcon: Iconsax.book,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: HugeIcons.strokeRoundedBookOpen01,
+                    unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                ],
               ),
-              unselectedItemColor: Colors.white,
-              backgroundColor: Colors.black.withOpacity(0.3),
-              onTap: _onItemTapped,
-              items: [
-                CrystalNavigationBarItem(
-                  icon: IconlyBold.home,
-                  unselectedIcon: IconlyLight.home,
-                  selectedColor:
-                      themeProvider.selectedTheme.colorScheme.primary,
+              desktopBuilder: CrystalNavigationBar(
+                borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
+                currentIndex: _selectedIndex,
+                paddingR: const EdgeInsets.all(0),
+                marginR: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.40,
+                  vertical: getProperSize(tabBarSizeVertical),
                 ),
-                CrystalNavigationBarItem(
-                  icon: Icons.movie_filter_rounded,
-                  unselectedIcon: Icons.movie_filter_outlined,
-                  selectedColor:
-                      themeProvider.selectedTheme.colorScheme.primary,
-                ),
-                CrystalNavigationBarItem(
-                  icon: Iconsax.book,
-                  unselectedIcon: Iconsax.book,
-                  selectedColor:
-                      themeProvider.selectedTheme.colorScheme.primary,
-                ),
-                CrystalNavigationBarItem(
-                  icon: HugeIcons.strokeRoundedBookOpen01,
-                  unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
-                  selectedColor:
-                      themeProvider.selectedTheme.colorScheme.primary,
-                ),
-              ],
+                unselectedItemColor: Colors.white,
+                backgroundColor: Colors.black.withOpacity(0.3),
+                onTap: _onItemTapped,
+                items: [
+                  CrystalNavigationBarItem(
+                    icon: IconlyBold.home,
+                    unselectedIcon: IconlyLight.home,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: Icons.movie_filter_rounded,
+                    unselectedIcon: Icons.movie_filter_outlined,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: Iconsax.book,
+                    unselectedIcon: Iconsax.book,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                  CrystalNavigationBarItem(
+                    icon: HugeIcons.strokeRoundedBookOpen01,
+                    unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                    selectedColor:
+                        themeProvider.selectedTheme.colorScheme.primary,
+                  ),
+                ],
+              ),
             );
           },
         ),
