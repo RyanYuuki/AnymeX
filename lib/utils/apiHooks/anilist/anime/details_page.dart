@@ -78,6 +78,7 @@ Future<Map<String, dynamic>> fetchAnimeInfo(int animeId) async {
               coverImage {
                 large
               }
+              type
               averageScore
             }
           }
