@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:aurora/utils/sources/manga/extensions/comick.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangabat.dart';
+import 'package:aurora/utils/sources/manga/extensions/mangafire.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangakakalot.dart';
 import 'package:aurora/utils/sources/manga/extensions/mangakakalot_unofficial.dart';
 import 'package:aurora/utils/sources/manga/extensions/manganato.dart';
@@ -12,7 +13,8 @@ class MangaSourceHandler {
     "MangaKakalot": MangaKakalot(),
     "MangaBat": MangaBat(),
     "MangaNato": MangaNato(),
-    "ComicK": Comick()
+    "ComicK": Comick(),
+    "MangaFire": MangaFire(),
   };
 
   String? selectedSourceName = "";

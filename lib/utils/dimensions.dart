@@ -1,3 +1,3 @@
 // Dimensionsion
-int maxMobileWidth = 768;
+int maxMobileWidth = 500;
 int desktopWidth = 1280;

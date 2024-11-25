@@ -4,6 +4,7 @@ import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/utils/sources/anime/base/source_base.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
+import 'package:aurora/utils/sources/anime/extensions/hiddenleaf/hiddenleaf.dart';
 import 'package:aurora/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
 import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
 
@@ -15,6 +16,7 @@ class SourcesHandler {
     "YugenAnime": YugenAnime(),
     "AnimePahe": AnimePahe(),
     "AniVibe": AniVibe(),
+    "HiddenLeaf": HiddenLeaf()
   };
 
   SourcesHandler() {

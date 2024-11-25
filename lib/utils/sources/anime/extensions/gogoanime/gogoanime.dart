@@ -47,7 +47,6 @@ class GogoAnime implements SourceBase {
     // final streamwishLink = _getServerUrl("streamwish", serverLinks);
     // final vidhideLink = _getServerUrl("vidhide", serverLinks);
 
-    // Initialize the mapped data
     final Map<String, dynamic> mappedData = {
       "sources": [],
       "tracks": [],
