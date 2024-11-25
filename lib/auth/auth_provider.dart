@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 class AniListProvider with ChangeNotifier {
-  final storage = const FlutterSecureStorage();
+  final storage = Hive.box('login-data');
   dynamic _userData = {};
   bool _isLoading = false;
 
@@ -15,7 +15,7 @@ class AniListProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> tryAutoLogin() async {
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     if (token != null) {
       await fetchUserProfile();
       notifyListeners();
@@ -68,7 +68,7 @@ class AniListProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final token = data['access_token'];
-      await storage.write(key: 'auth_token', value: token);
+      await storage.put('auth_token', token);
       await fetchUserProfile();
     } else {
       throw Exception('Failed to exchange code for token: ${response.body}');
@@ -82,7 +82,7 @@ class AniListProvider with ChangeNotifier {
     required String status,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     const String mutation = '''
   mutation UpdateMediaList(\$animeId: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
     SaveMediaListEntry(mediaId: \$animeId, progress: \$progress, score: \$score, status: \$status) {
@@ -135,7 +135,7 @@ class AniListProvider with ChangeNotifier {
     required String status,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     const String mutation = '''
   mutation UpdateMediaList(\$mangaId: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
     SaveMediaListEntry(mediaId: \$mangaId, progress: \$progress, score: \$score, status: \$status) {
@@ -185,7 +185,7 @@ class AniListProvider with ChangeNotifier {
     required int mangaId,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
 
     const String query = '''
   query GetMangaListEntryId(\$mediaId: Int) {
@@ -261,9 +261,8 @@ class AniListProvider with ChangeNotifier {
     required int animeId,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
 
-    // Step 1: Fetch the media list entry ID
     const String query = '''
   query GetAnimeListEntryId(\$mediaId: Int) {
     MediaList(mediaId: \$mediaId) {
@@ -341,7 +340,7 @@ class AniListProvider with ChangeNotifier {
     required String status,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     const String mutation = '''
   mutation UpdateMediaList(\$mangaId: Int, \$progress: Int, \$status: MediaListStatus) {
     SaveMediaListEntry(mediaId: \$mangaId, progress: \$progress, status: \$status) {
@@ -391,7 +390,7 @@ class AniListProvider with ChangeNotifier {
     required String status,
   }) async {
     const String url = 'https://graphql.anilist.co';
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     const String mutation = '''
   mutation UpdateMediaList(\$animeId: Int, \$progress: Int, \$status: MediaListStatus) {
     SaveMediaListEntry(mediaId: \$animeId, progress: \$progress, status: \$status) {
@@ -439,7 +438,7 @@ class AniListProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
 
     if (token == null) {
       log('No token found');
@@ -629,7 +628,6 @@ class AniListProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final dynamic responseData = json.decode(response.body);
       _userData['data'] = responseData['data'];
-      log(responseData['data'].toString());
     } else {
       throw Exception('Failed to load AniList data: ${response.statusCode}');
     }
@@ -794,7 +792,6 @@ class AniListProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final dynamic responseData = json.decode(response.body);
       _userData['mangaData'] = responseData['data'];
-      log(responseData['data'].toString());
     } else {
       throw Exception(
           'Failed to load AniList manga data: ${response.statusCode}');
@@ -806,7 +803,7 @@ class AniListProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     if (token == null) {
       _isLoading = false;
       notifyListeners();
@@ -905,7 +902,7 @@ class AniListProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final token = await storage.read(key: 'auth_token');
+    final token = await storage.get('auth_token');
     if (token == null) {
       _isLoading = false;
       notifyListeners();
@@ -926,11 +923,8 @@ class AniListProvider with ChangeNotifier {
                 native
               }
               chapters
-              volumes
               format
-              genres
               status
-              averageScore
               coverImage {
                 large
               }
@@ -944,12 +938,12 @@ class AniListProvider with ChangeNotifier {
     ''';
 
     try {
-      if (_userData['user']['id'] == null) {
+      if (_userData?['user']?['id'] == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = _userData['user']['id'];
+      final userId = _userData?['user']?['id'];
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
@@ -995,7 +989,7 @@ class AniListProvider with ChangeNotifier {
   }
 
   Future<void> logout(BuildContext context) async {
-    await storage.delete(key: 'auth_token');
+    await storage.delete('auth_token');
     _userData = {};
     notifyListeners();
   }
