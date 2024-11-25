@@ -29,7 +29,6 @@ dependencies:
   shimmer: ^3.0.0
   url_launcher: ^6.3.0
   crypto: ^3.0.5
-  flutter_secure_storage: ^4.2.1
   flutter_dotenv: ^5.1.0
   flutter_web_auth: ^0.5.0
   iconify_flutter: ^0.0.5
