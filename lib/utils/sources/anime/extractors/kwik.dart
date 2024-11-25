@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:http/http.dart';
 import 'package:html/parser.dart' as html;
 
@@ -14,6 +16,7 @@ class Kwik {
       final match = regex.firstMatch(html);
       if (match != null) {
         final unpacked = JsUnpack(html).unpack();
+        log(unpacked);
         final dataMatch = RegExp(r"const\s+source\s*=\s*'([^']+\.m3u8)'")
                 .allMatches(unpacked)
                 .firstOrNull?[1] ??
