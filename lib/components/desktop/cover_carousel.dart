@@ -1,9 +1,9 @@
-import 'dart:async'; // Add this import for Timer
 import 'dart:math';
 import 'package:aurora/components/android/common/IconWithLabel.dart';
 import 'package:aurora/pages/Android/Anime/details_page.dart';
 import 'package:aurora/pages/Android/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
@@ -27,50 +27,6 @@ class DesktopCoverCarousel extends StatefulWidget {
 
 class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
   int activeIndex = 0;
-  final PageController _pageController = PageController();
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoSlide();
-  }
-
-  void _startAutoSlide() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (_pageController.hasClients) {
-        int nextPage = (activeIndex + 1) % widget.animeData!.length;
-        _pageController.animateToPage(
-          nextPage,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-  void slideCarousel(bool left) {
-    if (left) {
-      _pageController.animateToPage(
-        (_pageController.page! - 1).toInt(),
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _pageController.animateToPage(
-        (_pageController.page! + 1).toInt(),
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,167 +41,160 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
 
     return Column(
       children: [
-        SizedBox(
-          height: 360,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: widget.animeData!.length,
-            onPageChanged: (index) {
-              setState(() {
-                activeIndex = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              final anime = widget.animeData![index];
-              final String posterUrl =
-                  anime?['bannerImage'] ?? anime?['coverImage']['large'];
-              final title = anime?['title']?['english'] ??
-                  anime?['title']?['romaji'] ??
-                  '??';
-              final randNum = Random().nextInt(100000);
-              final tag = '$randNum$index';
-
-              return GestureDetector(
-                onTap: () {
-                  if (widget.isManga) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MangaDetailsPage(
-                          id: anime['id'],
-                          posterUrl: posterUrl,
-                          tag: tag,
-                        ),
-                      ),
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailsPage(
-                          id: anime['id'],
-                          posterUrl: posterUrl,
-                          tag: tag,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: Stack(
+        CarouselSlider.builder(
+          itemCount: widget.animeData!.length,
+          itemBuilder: (context, index, realIndex) {
+            final anime = widget.animeData![index];
+            final String posterUrl =
+                anime?['bannerImage'] ?? anime?['coverImage']['large'];
+            final title = anime?['title']?['english'] ??
+                anime?['title']?['romaji'] ??
+                '??';
+            final randNum = Random().nextInt(100000);
+            final tag = '$randNum$index';
+            const String proxyUrl = '';
+        
+            return Stack(
+              children: [
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        Hero(
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.isManga) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MangaDetailsPage(
+                                        id: anime['id'],
+                                        posterUrl: posterUrl,
+                                        tag: tag,
+                                      )));
+                        } else {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                        id: anime['id'],
+                                        posterUrl: posterUrl,
+                                        tag: tag,
+                                      )));
+                        }
+                      },
+                      child: Container(
+                        height: 400,
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Hero(
                           tag: tag,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: posterUrl,
+                              imageUrl: proxyUrl + posterUrl,
                               fit: BoxFit.cover,
                               width: double.infinity,
-                              height: 260,
                               alignment: Alignment.topCenter,
                               placeholder: (context, url) => Shimmer.fromColors(
                                 baseColor: Colors.grey[900]!,
                                 highlightColor: Colors.grey[700]!,
                                 child: Container(
                                   color: Colors.grey[400],
-                                  height: 170,
+                                  height: 250,
                                   width: double.infinity,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              iconWithName(
-                                icon: Iconsax.star5,
-                                name: (anime['averageScore'] / 10).toString(),
-                                isVertical: false,
-                                borderRadius: BorderRadius.circular(5),
-                                backgroundColor: colorScheme.secondaryContainer,
-                                color: colorScheme.inverseSurface,
-                                TextColor: colorScheme.inverseSurface,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            (anime?['description']?.replaceAll(
-                                        RegExp(r'<[^>]*>|&[^;]+;'), ''))
-                                    ?.toString()
-                                    .trim() ??
-                                '',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color:
-                                  colorScheme.inverseSurface.withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
                           ),
+                          const SizedBox(width: 20),
+                          iconWithName(
+                            icon: Iconsax.star5,
+                            name: (anime['averageScore'] / 10).toString(),
+                            isVertical: false,
+                            borderRadius: BorderRadius.circular(5),
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            color: Theme.of(context).colorScheme.inverseSurface,
+                            TextColor:
+                                Theme.of(context).colorScheme.inverseSurface,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        (anime?['description']?.replaceAll(
+                                    RegExp(r'<[^>]*>|&[^;]+;'), ''))
+                                ?.toString()
+                                .trim() ??
+                            '',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .inverseSurface
+                              .withOpacity(0.7),
                         ),
-                      ],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
                     ),
                   ],
                 ),
-              );
+              ],
+            );
+          },
+          options: CarouselOptions(
+            height: 500,
+            viewportFraction: 1,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: false,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (index, reason) {
+              setState(() {
+                activeIndex = index;
+              });
             },
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox.shrink(),
-            AnimatedSmoothIndicator(
-              activeIndex: activeIndex,
-              count: widget.animeData!.length,
-              effect: WormEffect(
-                dotHeight: 8,
-                dotWidth: 8,
-                activeDotColor: colorScheme.primary,
-                dotColor: colorScheme.onSurface.withOpacity(0.5),
-              ),
-              onDotClicked: (index) {
-                _pageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => slideCarousel(true),
-                  icon: const Icon(Icons.arrow_left),
-                ),
-                IconButton(
-                  onPressed: () => slideCarousel(false),
-                  icon: const Icon(Icons.arrow_right),
-                )
-              ],
-            )
-          ],
-        ),
+        smoothIndicator(colorScheme),
       ],
+    );
+  }
+
+  Widget smoothIndicator(ColorScheme colorScheme) {
+    return AnimatedSmoothIndicator(
+      activeIndex: activeIndex,
+      count: widget.animeData!.length,
+      effect: WormEffect(
+        dotHeight: 8,
+        dotWidth: 8,
+        activeDotColor: colorScheme.primary,
+        dotColor: colorScheme.onSurface.withOpacity(0.5),
+      ),
     );
   }
 }
