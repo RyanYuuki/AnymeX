@@ -59,7 +59,7 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
             ? 6
             : widget.layoutIndex == 1
                 ? 4
-                : 2,
+                : 3,
         mainAxisExtent: isList
             ? 120
             : isGrid
