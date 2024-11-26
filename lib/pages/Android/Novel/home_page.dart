@@ -8,6 +8,7 @@ import 'package:aurora/components/android/novel/reusable_carousel.dart';
 import 'package:aurora/components/desktop/novel/cover_carousel.dart';
 import 'package:aurora/components/desktop/novel/horizontal_list.dart';
 import 'package:aurora/components/platform_builder.dart';
+import 'package:aurora/fallbackData/novel_cover_carousel.dart';
 import 'package:aurora/fallbackData/novel_homepage.dart';
 import 'package:aurora/hiveData/themeData/theme_provider.dart';
 import 'package:aurora/pages/Android/Anime/home_page.dart' hide Header;
@@ -67,10 +68,10 @@ class _NovelHomePageState extends State<NovelHomePage> {
                     Header(controller: _searchTerm),
                     PlatformBuilder(
                       androidBuilder: Covercarousel(
-                        animeData: snapshot.data!.sublist(8, 18),
+                        animeData: novelCarouselData,
                       ),
                       desktopBuilder: DesktopCoverCarousel(
-                        animeData: snapshot.data!.sublist(8, 18),
+                        animeData: novelCarouselData,
                       ),
                     ),
                     const SizedBox(height: 10),

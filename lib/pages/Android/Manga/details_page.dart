@@ -11,6 +11,7 @@ import 'package:aurora/components/android/manga/chapter_ranges.dart';
 import 'package:aurora/components/android/manga/chapters.dart';
 import 'package:aurora/components/desktop/anime/character_cards.dart';
 import 'package:aurora/components/desktop/horizontal_list.dart';
+import 'package:aurora/components/desktop/manga/chapters.dart';
 import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/Android/Manga/read_page.dart';
@@ -276,8 +277,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             icon: selectedIndex == 0
                 ? Iconsax.info_circle5
                 : Iconsax.info_circle),
-        CrystalNavigationBarItem(
-            icon: selectedIndex == 1 ? IconlyBold.play : IconlyLight.play),
+        CrystalNavigationBarItem(icon: Iconsax.book),
       ],
     );
   }
@@ -717,14 +717,25 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             SizedBox(
                 height: 200, child: Center(child: CircularProgressIndicator()))
           else
-            ChapterList(
-              id: mangaData?['id'],
-              posterUrl: widget.posterUrl,
-              chaptersData: filteredChapters,
-              currentSource: selectedSource,
-              anilistId: data['id'].toString(),
-              rawChapters: mangaData['chapterList'],
-              description: data['description'],
+            PlatformBuilder(
+              desktopBuilder: DesktopChapterList(
+                id: mangaData?['id'],
+                posterUrl: widget.posterUrl,
+                chaptersData: filteredChapters,
+                currentSource: selectedSource,
+                anilistId: data['id'].toString(),
+                rawChapters: mangaData['chapterList'],
+                description: data['description'],
+              ),
+              androidBuilder: ChapterList(
+                id: mangaData?['id'],
+                posterUrl: widget.posterUrl,
+                chaptersData: filteredChapters,
+                currentSource: selectedSource,
+                anilistId: data['id'].toString(),
+                rawChapters: mangaData['chapterList'],
+                description: data['description'],
+              ),
             )
         ],
       ),
