@@ -1,6 +1,38 @@
 # Changelog
 
-## v2.8.3 - 2024-11-22
+## v2.8.3-2 - 2024-11-26
+- build: added fvp plugin for cross platform plugins
+- build: added video player deps for desktop support
+- refactor: adjusted the code to use the applied stylings
+- style: changed the look of manga chapters
+- style: made carousel slidable
+- style: improved episode layout
+- docs: update changelog [skip ci]
+- feat: made chapters and so many things responsive
+- style: migrated to expandable page view for better layout
+- fix: fixed parsing issue in reader
+- feat: made character cards responsive
+- feat: made episodes section responsive
+- feat: made common cover carousel for desktop
+- feat: made anime continue watching card
+- feat: made manga continue watching card
+- feat: made novel continue watching cards
+- feat: made anime/manga carousel for desktop
+- feat: made cover carousel for desktop
+- feat: made carousel for desktop
+- refactor: changed few files paths
+- feat: implemented a helper for desktop layout
+- feat: responsive layout implementation
+- feat: added desktop support on detail page
+- feat: added desktop support
+- feat: improved reader, reader support desktop
+- refactor: changing filestructure
+- feat: added advanced search beta
+- refactor: updated comic's entry in handler and dimension init
+- feat: added hiddenleaf source
+- feat: added mangafire source
+- feat: implemented update awareness
+- chore: updated deps
 - Merge branch 'main' of https://github.com/RyanYuuki/AnymeX
 - refactor: appending instances of sources on the handler
 - feat: scan grouping support for Comick (mapping)
