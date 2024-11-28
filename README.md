@@ -51,19 +51,32 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
 
 ## 📱 **Screenshots**
 
+### 📱 **Mobile Screenshots**
+
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview1.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview2.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview3.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview4.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview5.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview6.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview7.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview8.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview9.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview10.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview11.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/preview12.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview1.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview2.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview3.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview4.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview5.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview6.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview7.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview8.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview9.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview10.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview11.jpg" width="49%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview12.jpg" width="49%" style="margin: 0;" />
+</div>
+
+### 💻 **Desktop Screenshots**
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_2.png" width="100%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_3.png" width="100%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_4.png" width="100%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_5.png" width="100%" style="margin: 0;" />
+    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_6.png" width="100%" style="margin: 0;" />
 </div>
 
 ---

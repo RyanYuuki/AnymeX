@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "com.anime" "\0"
             VALUE "FileDescription", "anymex" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "anymex" "\0"
+            VALUE "InternalName", "AnymeX" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.anime. All rights reserved." "\0"
             VALUE "OriginalFilename", "anymex.exe" "\0"
-            VALUE "ProductName", "anymex" "\0"
+            VALUE "ProductName", "AnymeX" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
