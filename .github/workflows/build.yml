@@ -82,7 +82,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake g++ libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev libwebkit2gtk-4.1-dev
 
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -142,6 +141,16 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Update macOS deployment target in Podfile
+        run: |
+          # Update the Podfile to set the macOS platform version to 10.14 or higher
+          sed -i '' 's/platform :osx, .*/platform :osx, "10.14"/' macos/Podfile
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd macos
+          pod install
+
       - name: Build macOS
         run: flutter build macos --release
 
@@ -150,3 +159,58 @@ jobs:
         with:
           name: macos-build
           path: build/macos/Build/Products/Release/*
+
+  release:
+    needs: [build-android, build-ios, build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: gh-cli/gh-actions@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ github.ref }}
+          body: "Release for version ${{ github.ref }}"
+
+      - name: Upload Android APKs to GitHub Release
+        uses: actions/upload-release-asset@v3
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/*.apk
+          asset_name: AnymeX-Android.apk
+          asset_content_type: application/octet-stream
+
+      - name: Upload iOS Artifacts to GitHub Release
+        uses: actions/upload-release-asset@v3
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/ios/iphoneos/*.app
+          asset_name: AnymeX-iOS.app
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows ZIP to GitHub Release
+        uses: actions/upload-release-asset@v3
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/windows/x64/runner/Release/AnymeX_Windows.zip
+          asset_name: AnymeX-Windows.zip
+          asset_content_type: application/zip
+
+      - name: Upload macOS Artifacts to GitHub Release
+        uses: actions/upload-release-asset@v3
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/macos/Build/Products/Release/*
+          asset_name: AnymeX-macOS.app
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux Artifact to GitHub Release
+        uses: actions/upload-release-asset@v3
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/linux/x64/release/bundle/*
+          asset_name: AnymeX-linux.zip
+          asset_content_type: application/zip
