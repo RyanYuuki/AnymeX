@@ -1,0 +1,101 @@
+name: Build and Release AnymeX
+
+on:
+  push:
+    tags:
+      - 'v*'  
+  workflow_dispatch:  
+
+jobs:
+  build-mobile:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [android, ios]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.3'  
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build ${{ matrix.platform }}
+        run: |
+          if [ "${{ matrix.platform }}" == "android" ]; then
+            flutter build apk --release
+          elif [ "${{ matrix.platform }}" == "ios" ]; then
+            flutter build ios --release --no-codesign
+          fi
+
+      - name: Upload Artifact (Mobile)
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/ios/iphoneos/*.app
+
+  build-desktop:
+    if: github.ref == 'refs/heads/desktop'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Desktop
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            flutter build linux --release
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            flutter build macos --release
+          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            flutter build windows --release
+          fi
+
+      - name: Upload Artifact (Desktop)
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-build
+          path: build/*/outputs/*
+
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # Get the latest tag
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "Latest tag: $latest_tag"
+          
+          # Generate changelog from commits since the last tag
+          echo "Changelog:" > changelog.txt
+          git log $latest_tag..HEAD --pretty=format:"- %s (%an)" --grep=".*" >> changelog.txt
+          
+          cat changelog.txt
+
+      - name: Upload Changelog
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: changelog.txt
