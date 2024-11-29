@@ -87,6 +87,9 @@ jobs:
         with:
           flutter-version: "3.22.3"
 
+      - name: Replace pubspec.yaml with Desktop Version
+        run: cp pubspec_desktop.yaml pubspec.yaml
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -109,6 +112,9 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.22.3"
+
+      - name: Replace pubspec.yaml with Desktop Version
+        run: Copy-Item -Path pubspec_desktop.yaml -Destination pubspec.yaml -Force
 
       - name: Get Dependencies
         run: flutter pub get
@@ -138,12 +144,14 @@ jobs:
         with:
           flutter-version: "3.22.3"
 
+      - name: Replace pubspec.yaml with Desktop Version
+        run: cp pubspec_desktop.yaml pubspec.yaml
+
       - name: Get Dependencies
         run: flutter pub get
 
       - name: Update macOS deployment target in Podfile
         run: |
-          # Update the Podfile to set the macOS platform version to 10.14 or higher
           sed -i '' 's/platform :osx, .*/platform :osx, "10.14"/' macos/Podfile
 
       - name: Install CocoaPods dependencies
@@ -169,14 +177,17 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: gh-cli/gh-actions@v2
+        uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref }}
           name: Release ${{ github.ref }}
           body: "Release for version ${{ github.ref }}"
+          draft: false
+          prerelease: false
 
       - name: Upload Android APKs to GitHub Release
-        uses: actions/upload-release-asset@v3
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/app/outputs/flutter-apk/*.apk
@@ -184,7 +195,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload iOS Artifacts to GitHub Release
-        uses: actions/upload-release-asset@v3
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/ios/iphoneos/*.app
@@ -192,7 +203,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload Windows ZIP to GitHub Release
-        uses: actions/upload-release-asset@v3
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/windows/x64/runner/Release/AnymeX_Windows.zip
@@ -200,7 +211,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload macOS Artifacts to GitHub Release
-        uses: actions/upload-release-asset@v3
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/macos/Build/Products/Release/*
@@ -208,7 +219,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload Linux Artifact to GitHub Release
-        uses: actions/upload-release-asset@v3
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/linux/x64/release/bundle/*
