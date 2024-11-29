@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/hiveData/appData/database.dart';
@@ -15,15 +16,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
+  MediaKit.ensureInitialized();
+  await windowManager.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
     log('Env file loaded successfully.');
@@ -59,14 +64,16 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    _checkAndroidVersion();
+    if (Platform.isAndroid) {
+      _checkAndroidVersion();
+    }
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   checkForUpdate(context);
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkForUpdate(context);
+    });
   }
 
   Future<void> _checkAndroidVersion() async {
