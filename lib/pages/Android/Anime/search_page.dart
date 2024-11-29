@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:aurora/components/android/common/IconWithLabel.dart';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/search_page.dart';
 import 'package:aurora/pages/Android/Anime/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -58,6 +59,10 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
+    return (screenWidth / itemWidth).floor().clamp(1, 10);
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isList = layoutModes[currentIndex] == 'List';
@@ -72,6 +77,11 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             Row(
               children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded)),
                 Expanded(
                   child: TextField(
                     controller: controller,
@@ -144,35 +154,70 @@ class _SearchPageState extends State<SearchPage> {
               child: Builder(
                 builder: (context) => _searchData == null
                     ? const Center(child: CircularProgressIndicator())
-                    : GridView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        gridDelegate: isList
-                            ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 1,
-                                mainAxisExtent: 100,
-                              )
-                            : (isBox
-                                ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 10.0,
-                                    mainAxisSpacing: 10.0,
-                                    childAspectRatio: 0.7,
-                                  )
-                                : const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 1,
-                                    mainAxisExtent: 170,
-                                  )),
-                        itemCount: _searchData!.length,
-                        itemBuilder: (context, index) {
-                          final anime = _searchData![index];
-                          final tag = anime['name'].toString();
-                          return isList
-                              ? searchItemList(context, anime, tag)
-                              : isBox
-                                  ? searchItemBox(context, anime, tag)
-                                  : searchItemCover(context, anime, tag);
-                        },
+                    : PlatformBuilder(
+                        desktopBuilder: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount:
+                                          getResponsiveCrossAxisCount(
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .width),
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      mainAxisExtent: 200)
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final anime = _searchData![index];
+                            final tag = anime['name'].toString();
+                            return isList
+                                ? searchItemList(context, anime, tag)
+                                : isBox
+                                    ? searchItemBox(context, anime, tag)
+                                    : searchItemCover(context, anime, tag);
+                          },
+                        ),
+                        androidBuilder: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      childAspectRatio: 0.7,
+                                    )
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final anime = _searchData![index];
+                            final tag = anime['name'].toString();
+                            return isList
+                                ? searchItemList(context, anime, tag)
+                                : isBox
+                                    ? searchItemBox(context, anime, tag)
+                                    : searchItemCover(context, anime, tag);
+                          },
+                        ),
                       ),
               ),
             ),
@@ -300,10 +345,13 @@ GestureDetector searchItemList(BuildContext context, anime, tag) {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                anime['name'].length > 26
-                    ? '${anime['name'].toString().substring(0, 26)}...'
-                    : anime['name'].toString(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Text(
+                  anime['name'],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const SizedBox(
                 height: 5,

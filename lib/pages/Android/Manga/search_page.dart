@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/pages/Android/Manga/details_page.dart';
 import 'package:aurora/utils/apiHooks/anilist/manga/search_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -109,33 +110,62 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
               Expanded(
                 child: _searchData == null
                     ? const Center(child: CircularProgressIndicator())
-                    : GridView.builder(
-                        gridDelegate: isList
-                            ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 1,
-                                mainAxisExtent: 100,
-                              )
-                            : (isBox
-                                ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 10.0,
-                                    mainAxisSpacing: 10.0,
-                                    childAspectRatio: 0.7,
-                                  )
-                                : const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 1,
-                                    mainAxisExtent: 170,
-                                  )),
-                        itemCount: _searchData!.length,
-                        itemBuilder: (context, index) {
-                          final anime = _searchData![index];
-                          final tag = _searchData![index]['id'].toString();
-                          return isList
-                              ? SearchItem_LIST(context, anime, tag)
-                              : isBox
-                                  ? SearchItem_BOX(context, anime, tag)
-                                  : SearchItem_COVER(context, anime, tag);
-                        },
+                    : PlatformBuilder(
+                        desktopBuilder: GridView.builder(
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 6,
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      mainAxisExtent: 150)
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final anime = _searchData![index];
+                            final tag = _searchData![index]['id'].toString();
+                            return isList
+                                ? SearchItem_LIST(context, anime, tag)
+                                : isBox
+                                    ? SearchItem_BOX(context, anime, tag)
+                                    : SearchItem_COVER(context, anime, tag);
+                          },
+                        ),
+                        androidBuilder: GridView.builder(
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      childAspectRatio: 0.7,
+                                    )
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final anime = _searchData![index];
+                            final tag = _searchData![index]['id'].toString();
+                            return isList
+                                ? SearchItem_LIST(context, anime, tag)
+                                : isBox
+                                    ? SearchItem_BOX(context, anime, tag)
+                                    : SearchItem_COVER(context, anime, tag);
+                          },
+                        ),
                       ),
               ),
             ],
