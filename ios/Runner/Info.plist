@@ -18,6 +18,24 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>NSAppTransportSecurity</key>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+	<key>UIBackgroundModes</key>
+	<array>
+	    <string>fetch</string>
+	    <string>remote-notification</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Automatic</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to save photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to take pictures.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone for audio recording.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need permission to add photos to your library.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>

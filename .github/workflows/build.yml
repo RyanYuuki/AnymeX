@@ -80,7 +80,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build cmake g++ libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev
+          sudo apt-get install -y ninja-build cmake g++ libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev libwebkit2gtk-4.1-dev
 
 
       - name: Setup Flutter
