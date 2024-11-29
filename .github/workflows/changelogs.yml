@@ -3,7 +3,7 @@ name: Generate Changelog File and Create Release
 on:
   push:
     tags:
-      - "v*"
+      - "v*"  # Trigger on any tag push
   workflow_dispatch:
 
 jobs:
@@ -16,14 +16,47 @@ jobs:
       - name: Get Latest Non-Pre-Release Tag
         id: get_tag
         run: |
+          # Get the latest tag excluding "alpha" and "beta" tags
           LATEST_TAG=$(git tag --list | grep -vE "beta|alpha" | sort -V | tail -n 1)
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
       - name: Generate Changelog
         id: changelog
         run: |
+          # Generate commit list since the latest non-pre-release tag
           COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s")
-          echo -e "### Changelog for ${{ github.ref_name }}\n\n$COMMITS" > changelog.md
+
+          # Format changelog based on commit types
+          FEATS=""
+          FIXES=""
+          OTHERS=""
+          
+          # Process commits and categorize them by type
+          for commit in $COMMITS; do
+            if echo "$commit" | grep -q "^.*feat.*"; then
+              FEATS="${FEATS}\n$commit"
+            elif echo "$commit" | grep -q "^.*fix.*"; then
+              FIXES="${FIXES}\n$commit"
+            else
+              OTHERS="${OTHERS}\n$commit"
+            fi
+          done
+
+          # Construct the changelog with sections for each type of commit
+          CHANGELOG="### Changelog for ${{ github.ref_name }}\n\n"
+
+          if [ -n "$FEATS" ]; then
+            CHANGELOG="${CHANGELOG}\n#### New Features\n$FEATS"
+          fi
+          if [ -n "$FIXES" ]; then
+            CHANGELOG="${CHANGELOG}\n#### Fixes & Improvements\n$FIXES"
+          fi
+          if [ -n "$OTHERS" ]; then
+            CHANGELOG="${CHANGELOG}\n#### Other Changes\n$OTHERS"
+          fi
+
+          # Output the changelog to a markdown file
+          echo -e "$CHANGELOG" > changelog.md
 
       - name: Commit and Push Changelog
         run: |
