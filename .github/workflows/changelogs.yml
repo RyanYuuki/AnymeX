@@ -1,4 +1,4 @@
-name: Generate Changelog File
+name: Generate Changelog File and Create Release
 
 on:
   push:
@@ -25,8 +25,20 @@ jobs:
           COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s")
           echo -e "### Changelog for ${{ github.ref_name }}\n\n$COMMITS" > changelog.md
 
-      - name: Upload Changelog Artifact
-        uses: actions/upload-artifact@v3
+      - name: Commit and Push Changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add changelog.md
+          git commit -m "Add changelog for ${{ github.ref_name }}"
+          git push
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: changelog
-          path: changelog.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          body_path: changelog.md
+          draft: false
+          prerelease: false
