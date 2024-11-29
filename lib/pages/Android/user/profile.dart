@@ -1,8 +1,8 @@
 import 'dart:ui';
-import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/android/anilistExclusive/animeListCarousels.dart';
-import 'package:aurora/components/desktop/animeListCarousels.dart';
-import 'package:aurora/components/platform_builder.dart';
+import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/android/anilistExclusive/animeListCarousels.dart';
+import 'package:anymex/components/desktop/animeListCarousels.dart';
+import 'package:anymex/components/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';

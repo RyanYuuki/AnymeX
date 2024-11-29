@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:aurora/utils/sources/novel/base/source_base.dart';
-import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
-import 'package:aurora/utils/sources/novel/extensions/wuxia_click.dart';
+import 'package:anymex/utils/sources/novel/base/source_base.dart';
+import 'package:anymex/utils/sources/novel/extensions/novel_buddy.dart';
+import 'package:anymex/utils/sources/novel/extensions/wuxia_click.dart';
 
 class NovelSourcesHandler {
   final Map<String, NovelSourceBase> sourceMap = {

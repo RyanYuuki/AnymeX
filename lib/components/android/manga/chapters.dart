@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';
-import 'package:aurora/pages/Android/Manga/read_page.dart';
+import 'package:anymex/pages/Android/Manga/read_page.dart';
 
 class ChapterList extends StatelessWidget {
   final List<dynamic> chaptersData; // Ensure this is a list

@@ -1,8 +1,8 @@
 import 'dart:ui';
-import 'package:aurora/components/android/common/IconWithLabel.dart';
-import 'package:aurora/components/platform_builder.dart';
-import 'package:aurora/pages/Android/Novel/details_page.dart';
-import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
+import 'package:anymex/components/android/common/IconWithLabel.dart';
+import 'package:anymex/components/platform_builder.dart';
+import 'package:anymex/pages/Android/Novel/details_page.dart';
+import 'package:anymex/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';

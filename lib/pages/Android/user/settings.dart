@@ -1,9 +1,9 @@
-import 'package:aurora/components/android/common/custom_tile.dart';
-import 'package:aurora/pages/Android/user/settings/settings_about.dart';
-import 'package:aurora/pages/Android/user/settings/settings_download.dart';
-import 'package:aurora/pages/Android/user/settings/settings_layout.dart';
-import 'package:aurora/pages/Android/user/settings/settings_player.dart';
-import 'package:aurora/pages/Android/user/settings/settings_theme.dart';
+import 'package:anymex/components/android/common/custom_tile.dart';
+import 'package:anymex/pages/Android/user/settings/settings_about.dart';
+import 'package:anymex/pages/Android/user/settings/settings_download.dart';
+import 'package:anymex/pages/Android/user/settings/settings_layout.dart';
+import 'package:anymex/pages/Android/user/settings/settings_player.dart';
+import 'package:anymex/pages/Android/user/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';

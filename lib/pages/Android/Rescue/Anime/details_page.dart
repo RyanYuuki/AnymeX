@@ -2,12 +2,12 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/components/android/anime/details/episode_list.dart';
-import 'package:aurora/pages/Android/Anime/watch_page.dart';
-import 'package:aurora/utils/downloader/downloader.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/components/android/anime/details/episode_list.dart';
+import 'package:anymex/pages/Android/Anime/watch_page.dart';
+import 'package:anymex/utils/downloader/downloader.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';

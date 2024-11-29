@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:aurora/components/android/common/IconWithLabel.dart';
-import 'package:aurora/pages/Android/Rescue/Anime/details_page.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/components/android/common/IconWithLabel.dart';
+import 'package:anymex/pages/Android/Rescue/Anime/details_page.dart';
+import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';

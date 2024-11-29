@@ -1,6 +1,6 @@
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
-import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
-import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
+import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
+import 'package:anymex/utils/sources/manga/handlers/manga_sources_handler.dart';
+import 'package:anymex/utils/sources/novel/handler/novel_sources_handler.dart';
 import 'package:flutter/material.dart';
 
 class UnifiedSourcesHandler extends ChangeNotifier {

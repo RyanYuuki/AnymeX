@@ -1,4 +1,4 @@
-import 'package:aurora/components/android/helper/scroll_helper.dart';
+import 'package:anymex/components/android/helper/scroll_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';

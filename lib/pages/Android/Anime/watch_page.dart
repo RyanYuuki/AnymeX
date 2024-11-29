@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:math' show max;
-import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/android/videoPlayer/custom_controls.dart';
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/android/videoPlayer/custom_controls.dart';
+import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch_api/api.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/services.dart';

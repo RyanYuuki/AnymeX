@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:aurora/utils/sources/anime/base/source_base.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/base/source_base.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:dio/dio.dart';
 
 class YugenAnime implements SourceBase {

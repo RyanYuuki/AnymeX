@@ -1,7 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'dart:math' hide log;
-import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/utils/sources/novel/handler/novel_sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';

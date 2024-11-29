@@ -1,4 +1,4 @@
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 
 abstract class SourceBase {
   String get sourceName;

@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
-import 'package:aurora/utils/sources/manga/base/source_base.dart';
+import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
+import 'package:anymex/utils/sources/manga/base/source_base.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 

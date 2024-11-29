@@ -1,9 +1,9 @@
 // ignore_for_file: unused_field
 
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/hiveData/themeData/theme_provider.dart';
-import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/hiveData/themeData/theme_provider.dart';
+import 'package:anymex/utils/sources/novel/handler/novel_sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';

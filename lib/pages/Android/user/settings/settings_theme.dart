@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:aurora/components/android/setting/scheme_varaint_dialog.dart';
+import 'package:anymex/components/android/setting/scheme_varaint_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:aurora/components/android/common/custom_tile.dart';
-import 'package:aurora/components/android/common/switch_tile_stateless.dart';
-import 'package:aurora/hiveData/themeData/theme_provider.dart';
+import 'package:anymex/components/android/common/custom_tile.dart';
+import 'package:anymex/components/android/common/switch_tile_stateless.dart';
+import 'package:anymex/hiveData/themeData/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconly/iconly.dart';

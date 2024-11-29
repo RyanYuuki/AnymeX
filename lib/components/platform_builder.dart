@@ -1,4 +1,4 @@
-import 'package:aurora/utils/dimensions.dart';
+import 'package:anymex/utils/dimensions.dart';
 import 'package:flutter/material.dart';
 
 class PlatformBuilder extends StatefulWidget {

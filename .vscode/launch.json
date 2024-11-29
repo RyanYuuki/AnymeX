@@ -2,18 +2,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "aurora",
+            "name": "anymex",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "aurora (profile mode)",
+            "name": "anymex (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "aurora (release mode)",
+            "name": "anymex (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

@@ -2,8 +2,8 @@
 
 import 'dart:math';
 
-import 'package:aurora/components/android/helper/scroll_helper.dart';
-import 'package:aurora/pages/Android/Novel/details_page.dart';
+import 'package:anymex/components/android/helper/scroll_helper.dart';
+import 'package:anymex/pages/Android/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

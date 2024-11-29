@@ -1,4 +1,4 @@
-import 'package:aurora/pages/Android/user/settings/settings_about.dart';
+import 'package:anymex/pages/Android/user/settings/settings_about.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfo extends StatelessWidget {

@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print, use_build_context_synchronously
 import 'dart:developer';
-import 'package:aurora/components/android/common/IconWithLabel.dart';
-import 'package:aurora/components/android/novel/wong_title.dart';
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/Android/Novel/reading_page.dart';
-import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
-import 'package:aurora/utils/sources/novel/handler/novel_sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/components/android/common/IconWithLabel.dart';
+import 'package:anymex/components/android/novel/wong_title.dart';
+import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/pages/Android/Novel/reading_page.dart';
+import 'package:anymex/utils/sources/novel/extensions/novel_buddy.dart';
+import 'package:anymex/utils/sources/novel/handler/novel_sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

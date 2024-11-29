@@ -1,6 +1,6 @@
-import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/platform_builder.dart';
-import 'package:aurora/pages/Android/Manga/details_page.dart';
+import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/platform_builder.dart';
+import 'package:anymex/pages/Android/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

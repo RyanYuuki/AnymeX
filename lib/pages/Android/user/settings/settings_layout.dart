@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:aurora/components/android/common/custom_tile.dart';
-import 'package:aurora/components/android/common/switch_tile_stateless.dart';
-import 'package:aurora/pages/Android/user/settings/layout_subs/resize_tabbar.dart';
-import 'package:aurora/pages/Android/user/settings/modals/tile_with_slider.dart';
+import 'package:anymex/components/android/common/custom_tile.dart';
+import 'package:anymex/components/android/common/switch_tile_stateless.dart';
+import 'package:anymex/pages/Android/user/settings/layout_subs/resize_tabbar.dart';
+import 'package:anymex/pages/Android/user/settings/modals/tile_with_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';

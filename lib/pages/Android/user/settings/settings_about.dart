@@ -1,4 +1,4 @@
-import 'package:aurora/pages/Android/user/settings/modals/settings_dep_widgets.dart';
+import 'package:anymex/pages/Android/user/settings/modals/settings_dep_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';

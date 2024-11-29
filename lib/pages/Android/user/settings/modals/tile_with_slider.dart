@@ -1,4 +1,4 @@
-import 'package:aurora/components/android/common/custom_tile_ui.dart';
+import 'package:anymex/components/android/common/custom_tile_ui.dart';
 import 'package:flutter/material.dart';
 
 class TileWithSlider extends StatefulWidget {

@@ -3,29 +3,28 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/android/common/IconWithLabel.dart';
-import 'package:aurora/components/android/anilistExclusive/wong_title_dialog.dart';
-import 'package:aurora/components/android/anime/details/episode_buttons.dart';
-import 'package:aurora/components/android/anime/details/episode_list.dart';
-import 'package:aurora/components/android/common/expandable_page_view.dart';
-import 'package:aurora/components/android/common/reusable_carousel.dart';
-import 'package:aurora/components/android/anime/details/character_cards.dart';
-import 'package:aurora/components/desktop/anime/character_cards.dart';
-import 'package:aurora/components/desktop/anime/episode_grid.dart';
-import 'package:aurora/components/desktop/horizontal_list.dart';
-import 'package:aurora/components/platform_builder.dart';
-import 'package:aurora/fallbackData/anilist_homepage_data.dart';
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/Desktop/watch_page.dart';
-import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
-import 'package:aurora/utils/methods.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
-import 'package:aurora/pages/Android/Anime/watch_page.dart';
-import 'package:aurora/utils/downloader/downloader.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
-import 'package:aurora/utils/sources/anime/handler/sources_handler.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
+import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/android/common/IconWithLabel.dart';
+import 'package:anymex/components/android/anilistExclusive/wong_title_dialog.dart';
+import 'package:anymex/components/android/anime/details/episode_buttons.dart';
+import 'package:anymex/components/android/anime/details/episode_list.dart';
+import 'package:anymex/components/android/common/expandable_page_view.dart';
+import 'package:anymex/components/android/common/reusable_carousel.dart';
+import 'package:anymex/components/android/anime/details/character_cards.dart';
+import 'package:anymex/components/desktop/anime/character_cards.dart';
+import 'package:anymex/components/desktop/anime/episode_grid.dart';
+import 'package:anymex/components/desktop/horizontal_list.dart';
+import 'package:anymex/components/platform_builder.dart';
+import 'package:anymex/fallbackData/anilist_homepage_data.dart';
+import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:anymex/utils/methods.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch_api/api.dart';
+import 'package:anymex/pages/Android/Anime/watch_page.dart';
+import 'package:anymex/utils/downloader/downloader.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -272,47 +271,25 @@ class _DetailsPageState extends State<DetailsPage>
 
     if (episodeSrc != null) {
       Navigator.pop(context);
-      if (Platform.isAndroid) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => WatchPage(
-                      episodeSrc: episodeSrc ?? [],
-                      episodeData: episodesData,
-                      currentEpisode: currentEpisode,
-                      episodeTitle:
-                          episodesData[currentEpisode - 1]['title'] ?? '',
-                      activeServer: activeServer,
-                      isDub: isDub,
-                      animeId: widget.id,
-                      tracks: subtitleTracks,
-                      provider: Theme.of(context),
-                      animeTitle: data['name'] ?? data?['jname'] ?? '',
-                      sourceAnimeId: animeId!,
-                      description: data['description'],
-                      posterImage: data['poster'],
-                    )));
-      } else {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DesktopWatchPage(
-                      episodeSrc: episodeSrc ?? [],
-                      episodeData: episodesData,
-                      currentEpisode: currentEpisode,
-                      episodeTitle:
-                          episodesData[currentEpisode - 1]['title'] ?? '',
-                      activeServer: activeServer,
-                      isDub: isDub,
-                      animeId: widget.id,
-                      tracks: subtitleTracks,
-                      provider: Theme.of(context),
-                      animeTitle: data['name'] ?? data?['jname'] ?? '',
-                      sourceAnimeId: animeId!,
-                      description: data['description'],
-                      posterImage: data['poster'],
-                    )));
-      }
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WatchPage(
+                    episodeSrc: episodeSrc ?? [],
+                    episodeData: episodesData,
+                    currentEpisode: currentEpisode,
+                    episodeTitle:
+                        episodesData[currentEpisode - 1]['title'] ?? '',
+                    activeServer: activeServer,
+                    isDub: isDub,
+                    animeId: widget.id,
+                    tracks: subtitleTracks,
+                    provider: Theme.of(context),
+                    animeTitle: data['name'] ?? data?['jname'] ?? '',
+                    sourceAnimeId: animeId!,
+                    description: data['description'],
+                    posterImage: data['poster'],
+                  )));
     }
   }
 

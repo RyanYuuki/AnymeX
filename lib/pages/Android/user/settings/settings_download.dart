@@ -1,4 +1,4 @@
-import 'package:aurora/pages/Android/user/settings/modals/tile_with_slider.dart';
+import 'package:anymex/pages/Android/user/settings/modals/tile_with_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:iconly/iconly.dart';

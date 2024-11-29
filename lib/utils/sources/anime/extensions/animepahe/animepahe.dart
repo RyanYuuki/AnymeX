@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/utils/sources/anime/base/source_base.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
-import 'package:aurora/utils/sources/anime/extractors/kwik.dart';
+import 'package:anymex/utils/sources/anime/base/source_base.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/extractors/kwik.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 

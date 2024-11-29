@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'package:aurora/utils/sources/anime/base/source_base.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/deps/scraper_megacloud.dart';
+import 'package:anymex/utils/sources/anime/base/source_base.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/deps/scraper_megacloud.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';

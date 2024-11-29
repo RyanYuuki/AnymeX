@@ -1,12 +1,12 @@
-import 'package:aurora/utils/sources/anime/extensions/animepahe/animepahe.dart';
-import 'package:aurora/utils/sources/anime/extensions/anivibe/anivibe.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
-import 'package:aurora/utils/sources/anime/base/source_base.dart';
-import 'package:aurora/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
-import 'package:aurora/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
-import 'package:aurora/utils/sources/anime/extensions/hiddenleaf/hiddenleaf.dart';
-import 'package:aurora/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
-import 'package:aurora/utils/sources/manga/helper/jaro_helper.dart';
+import 'package:anymex/utils/sources/anime/extensions/animepahe/animepahe.dart';
+import 'package:anymex/utils/sources/anime/extensions/anivibe/anivibe.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch_api/api.dart';
+import 'package:anymex/utils/sources/anime/base/source_base.dart';
+import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
+import 'package:anymex/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
+import 'package:anymex/utils/sources/anime/extensions/hiddenleaf/hiddenleaf.dart';
+import 'package:anymex/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
+import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
 
 class SourcesHandler {
   final Map<String, SourceBase> animeSourcesMap = {

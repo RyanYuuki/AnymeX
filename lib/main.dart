@@ -1,34 +1,30 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/platform_builder.dart';
-import 'package:aurora/hiveData/appData/database.dart';
-import 'package:aurora/pages/Android/Novel/home_page.dart';
-import 'package:aurora/hiveData/themeData/theme_provider.dart';
-import 'package:aurora/pages/Android/Anime/home_page.dart';
-import 'package:aurora/pages/Android/Manga/home_page.dart';
-import 'package:aurora/pages/home_page.dart';
-import 'package:aurora/utils/sources/unified_handler.dart';
-import 'package:aurora/utils/update_notifier.dart';
+import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/platform_builder.dart';
+import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/pages/Android/Novel/home_page.dart';
+import 'package:anymex/hiveData/themeData/theme_provider.dart';
+import 'package:anymex/pages/Android/Anime/home_page.dart';
+import 'package:anymex/pages/Android/Manga/home_page.dart';
+import 'package:anymex/pages/home_page.dart';
+import 'package:anymex/utils/sources/unified_handler.dart';
+import 'package:anymex/utils/update_notifier.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:window_manager/window_manager.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
-  MediaKit.ensureInitialized();
-  await windowManager.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
     log('Env file loaded successfully.');
