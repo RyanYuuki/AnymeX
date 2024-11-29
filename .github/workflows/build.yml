@@ -139,7 +139,7 @@ jobs:
 
       - name: Build Installer with Inno Setup
         run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" AnymeX.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno.iss
 
   release:
     needs: [build-android, build-ios, build-linux, build-windows]
