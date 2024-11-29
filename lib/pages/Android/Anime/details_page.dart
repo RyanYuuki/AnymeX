@@ -312,10 +312,10 @@ class _DetailsPageState extends State<DetailsPage>
           Positioned(
             bottom: 0,
             child: SizedBox(
-              height: 140 + tabBarSizeVertical,
+              height: MediaQuery.of(context).size.width < 500 ? 100 + tabBarSizeVertical : 90 + tabBarSizeVertical,
               width: MediaQuery.of(context).size.width,
-              child: bottomBar(
-                  context, false, tabBarRoundness, tabBarSizeVertical),
+              child: bottomBar(context, MediaQuery.of(context).size.width > 500,
+                  tabBarRoundness, tabBarSizeVertical),
             ),
           ),
       ]),
@@ -361,7 +361,7 @@ class _DetailsPageState extends State<DetailsPage>
           : EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width *
                   calculateMultiplier(context),
-              vertical: getProperSize(tabBarSizeVertical)),
+              vertical: 8),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
       onTap: (index) {
