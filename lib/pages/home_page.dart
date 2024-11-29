@@ -2,6 +2,7 @@ import 'package:aurora/components/android/anilistExclusive/animeListCarousels.da
 import 'package:aurora/components/android/anime/details/image_button.dart';
 import 'package:aurora/components/android/home/homepage_carousel.dart';
 import 'package:aurora/components/android/novel/continue_noveling.dart';
+import 'package:aurora/components/desktop/animeListCarousels.dart';
 import 'package:aurora/components/desktop/hive/anime_watching.dart';
 import 'package:aurora/components/desktop/hive/manga_continue.dart';
 import 'package:aurora/components/desktop/hive/novel_continue.dart';
@@ -182,49 +183,12 @@ class _HomePageState extends State<HomePage> {
                   Column(
                     children: [
                       if (isLoggedIn)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ImageButton(
-                                width:
-                                    MediaQuery.of(context).size.width / 2 - 40,
-                                buttonText: 'ANIME LIST',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AnimeList(),
-                                    ),
-                                  );
-                                  Provider.of<AniListProvider>(context,
-                                          listen: false)
-                                      .fetchUserAnimeList();
-                                },
-                                backgroundImage:
-                                    'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
-                              ),
-                              ImageButton(
-                                width:
-                                    MediaQuery.of(context).size.width / 2 - 40,
-                                buttonText: 'MANGA LIST',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AnilistMangaList(),
-                                    ),
-                                  );
-                                  Provider.of<AniListProvider>(context,
-                                          listen: false)
-                                      .fetchUserMangaList();
-                                },
-                                backgroundImage:
-                                    'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
-                              ),
-                            ],
+                        PlatformBuilder(
+                          androidBuilder: Padding(
+                            padding: const EdgeInsets.only(top:  20.0),
+                            child: _buildAndroidButtons(context),
                           ),
+                          desktopBuilder: _buildDesktopButtons(context),
                         ),
                       const SizedBox(height: 20),
                       PlatformBuilder(
@@ -248,7 +212,11 @@ class _HomePageState extends State<HomePage> {
                               carouselData: animeList,
                               tag: 'currently-watching',
                             ),
-                            desktopBuilder: const SizedBox.shrink()),
+                            desktopBuilder: DesktopAnilistCarousel(
+                              title: 'Currently Watching',
+                              carouselData: animeList,
+                              tag: 'currently-watching',
+                            )),
                         PlatformBuilder(
                             androidBuilder: anilistCarousel(
                               title: 'Currently Reading',
@@ -256,7 +224,12 @@ class _HomePageState extends State<HomePage> {
                               tag: 'currently-reading',
                               isManga: true,
                             ),
-                            desktopBuilder: const SizedBox.shrink()),
+                            desktopBuilder: DesktopAnilistCarousel(
+                              title: 'Currently Reading',
+                              carouselData: mangaList,
+                              tag: 'currently-reading',
+                              isManga: true,
+                            )),
                       ] else ...[
                         PlatformBuilder(
                             androidBuilder: HomepageCarousel(
@@ -333,6 +306,87 @@ class _HomePageState extends State<HomePage> {
           },
         );
       },
+    );
+  }
+
+  Row _buildAndroidButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ImageButton(
+          width: MediaQuery.of(context).size.width / 2 - 40,
+          buttonText: 'ANIME LIST',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AnimeList(),
+              ),
+            );
+            Provider.of<AniListProvider>(context, listen: false)
+                .fetchUserAnimeList();
+          },
+          backgroundImage:
+              'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+        ),
+        ImageButton(
+          width: MediaQuery.of(context).size.width / 2 - 40,
+          buttonText: 'MANGA LIST',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AnilistMangaList(),
+              ),
+            );
+            Provider.of<AniListProvider>(context, listen: false)
+                .fetchUserMangaList();
+          },
+          backgroundImage:
+              'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
+        ),
+      ],
+    );
+  }
+
+  Row _buildDesktopButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ImageButton(
+          width: 250,
+          buttonText: 'ANIME LIST',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AnimeList(),
+              ),
+            );
+            Provider.of<AniListProvider>(context, listen: false)
+                .fetchUserAnimeList();
+          },
+          backgroundImage:
+              'https://s4.anilist.co/file/anilistcdn/media/anime/banner/110277-iuGn6F5bK1U1.jpg',
+        ),
+        const SizedBox(width: 30),
+        ImageButton(
+          width: 250,
+          buttonText: 'MANGA LIST',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AnilistMangaList(),
+              ),
+            );
+            Provider.of<AniListProvider>(context, listen: false)
+                .fetchUserMangaList();
+          },
+          backgroundImage:
+              'https://s4.anilist.co/file/anilistcdn/media/manga/banner/30002-3TuoSMl20fUX.jpg',
+        ),
+      ],
     );
   }
 
