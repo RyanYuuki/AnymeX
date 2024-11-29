@@ -65,11 +65,16 @@ jobs:
       - name: Build iOS (macOS only)
         run: flutter build ios --release --no-codesign
 
+      - name: Compress iOS App Directory
+        run: |
+          cd build/ios/iphoneos
+          zip -r AnymeX-iOS.zip *.app
+    
       - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ios-build
-          path: build/ios/iphoneos/*.app
+          path: build/ios/iphoneos/AnymeX-iOS.zip
 
   build-linux:
     runs-on: ubuntu-latest
@@ -163,17 +168,38 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/*.apk
-          asset_name: AnymeX-Android.apk
-          asset_content_type: application/octet-stream
+          asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
+          asset_name: AnymeX-armeabi-v7a.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
+          asset_name: AnymeX-arm64-v8a.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-x86_64-release-split.apk
+          asset_name: AnymeX-x86_64.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release-universal.apk
+          asset_name: AnymeX-universal.apk
+          asset_content_type: application/vnd.android.package-archive
 
       - name: Upload iOS Artifacts to GitHub Release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/ios/iphoneos/*.app
-          asset_name: AnymeX-iOS.app
-          asset_content_type: application/octet-stream
+          asset_path: build/ios/iphoneos/AnymeX-iOS.zip
+          asset_name: AnymeX-iOS.zip
+          asset_content_type: application/zip
 
       - name: Upload Windows ZIP to GitHub Release
         uses: actions/upload-release-asset@v1
