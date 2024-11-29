@@ -1,0 +1,32 @@
+name: Generate Changelog File
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Latest Non-Pre-Release Tag
+        id: get_tag
+        run: |
+          LATEST_TAG=$(git tag --list | grep -vE "beta|alpha" | sort -V | tail -n 1)
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s")
+          echo -e "### Changelog for ${{ github.ref_name }}\n\n$COMMITS" > changelog.md
+
+      - name: Upload Changelog Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: changelog.md
