@@ -1,4 +1,5 @@
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/pages/Android/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:provider/provider.dart';
 class AnilistMangaList extends StatelessWidget {
   final List<String> tabs = [
     'READING',
-    'COMPLETED MANGA',
+    'COMPLETED',
     'PAUSED',
     'DROPPED',
     'PLANNING',
@@ -27,7 +28,9 @@ class AnilistMangaList extends StatelessWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new)),
           title: Text("$userName's Manga List",
               style: TextStyle(
                   fontSize: 16, color: Theme.of(context).colorScheme.primary)),
@@ -56,6 +59,10 @@ class AnilistMangaList extends StatelessWidget {
   }
 }
 
+int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
+  return (screenWidth / itemWidth).floor().clamp(1, 10);
+}
+
 class MangaListContent extends StatelessWidget {
   final String tabType;
   final dynamic mangaData;
@@ -77,78 +84,155 @@ class MangaListContent extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
-        itemCount: filteredMangaList.length,
-        itemBuilder: (context, index) {
-          final item = filteredMangaList[index]['media'];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MangaDetailsPage(
-                            id: (item['id']),
-                            posterUrl: item['coverImage']['large'],
-                            tag: item['id'].toString(),
-                          )));
-            },
-            child: Column(
-              children: [
-                Hero(
-                  tag: item['id'],
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: CachedNetworkImage(
-                      height: 170,
-                      fit: BoxFit.cover,
-                      imageUrl: item?['coverImage']?['large'] ??
-                          'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 7),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item?['title']?['english'] ??
-                          item?['title']?['romaji'] ??
-                          '?',
-                      maxLines: 2,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          mangaData?[index]?['progress']?.toString() ?? '?',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                        Text(' | ',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary)),
-                        Text(
-                          item['chapters']?.toString() ?? '?',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              ],
+      child: PlatformBuilder(
+        androidBuilder: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
+          itemCount: filteredMangaList.length,
+          itemBuilder: (context, index) {
+            final item = filteredMangaList[index]['media'];
+            return mangaItem(context, item, index);
+          },
+        ),
+        desktopBuilder: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: getResponsiveCrossAxisCount(
+                  MediaQuery.of(context).size.width),
+              mainAxisExtent: 270,
+              crossAxisSpacing: 10),
+          itemCount: filteredMangaList.length,
+          itemBuilder: (context, index) {
+            final item = filteredMangaList[index]['media'];
+            return mangaItemDesktop(context, item, index);
+          },
+        ),
+      ),
+    );
+  }
+
+  GestureDetector mangaItem(BuildContext context, item, int index) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MangaDetailsPage(
+                      id: (item['id']),
+                      posterUrl: item['coverImage']['large'],
+                      tag: item['id'].toString(),
+                    )));
+      },
+      child: Column(
+        children: [
+          Hero(
+            tag: item['id'],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: CachedNetworkImage(
+                height: 170,
+                fit: BoxFit.cover,
+                imageUrl: item?['coverImage']?['large'] ??
+                    'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 7),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item?['title']?['english'] ?? item?['title']?['romaji'] ?? '?',
+                maxLines: 2,
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    mangaData?[index]?['progress']?.toString() ?? '?',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ),
+                  Text(' | ',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary)),
+                  Text(
+                    item['chapters']?.toString() ?? '?',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ),
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  GestureDetector mangaItemDesktop(BuildContext context, item, int index) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MangaDetailsPage(
+                      id: (item['id']),
+                      posterUrl: item['coverImage']['large'],
+                      tag: item['id'].toString(),
+                    )));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 200,
+            child: Hero(
+              tag: item['id'],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: CachedNetworkImage(
+                  width: double.maxFinite,
+                  fit: BoxFit.cover,
+                  imageUrl: item?['coverImage']?['large'] ??
+                      'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            item?['title']?['english'] ?? item?['title']?['romaji'] ?? '?',
+            maxLines: 2,
+            style: const TextStyle(fontSize: 12),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                mangaData?[index]?['progress']?.toString() ?? '?',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+              Text(' | ',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.primary)),
+              Text(
+                item['chapters']?.toString() ?? '?',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
@@ -159,7 +243,7 @@ class MangaListContent extends StatelessWidget {
         return mangaList
             .where((manga) => manga['status'] == 'CURRENT')
             .toList();
-      case 'COMPLETED MANGA':
+      case 'COMPLETED':
         return mangaList
             .where((manga) => manga['status'] == 'COMPLETED')
             .toList();
