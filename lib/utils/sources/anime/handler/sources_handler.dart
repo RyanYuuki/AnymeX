@@ -20,7 +20,7 @@ class SourcesHandler {
   };
 
   SourcesHandler() {
-    selectedSource = animeSourcesMap.entries.first.key;
+    selectedSource = animeSourcesMap.entries.elementAt(3).key;
     isMulti = animeSourcesMap[selectedSource]!.isMulti;
   }
   String selectedSource = '';
