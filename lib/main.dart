@@ -142,13 +142,12 @@ class _MainAppState extends State<MainApp> {
                 currentIndex: _selectedIndex,
                 paddingR: const EdgeInsets.all(0),
                 height: 100 + tabBarSizeVertical,
-                marginR: EdgeInsets.symmetric(
-                  horizontal: getProperSize(tabBarSizeHorizontal),
-                  vertical: 15
-                ),
                 unselectedItemColor: Colors.white,
                 backgroundColor: Colors.black.withOpacity(0.3),
                 onTap: _onItemTapped,
+                marginR: EdgeInsets.symmetric(
+                    horizontal: getProperSize(tabBarSizeHorizontal),
+                    vertical: 15),
                 items: [
                   CrystalNavigationBarItem(
                     icon: IconlyBold.home,
@@ -177,16 +176,18 @@ class _MainAppState extends State<MainApp> {
                 ],
               ),
               desktopBuilder: CrystalNavigationBar(
-                borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
+                borderRadius: box.get('tabBarRoundness', defaultValue: 20.0),
                 currentIndex: _selectedIndex,
                 paddingR: const EdgeInsets.all(0),
-                marginR: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.40,
-                  vertical: getProperSize(tabBarSizeVertical),
-                ),
+                height: 170 + tabBarSizeVertical,
                 unselectedItemColor: Colors.white,
                 backgroundColor: Colors.black.withOpacity(0.3),
                 onTap: _onItemTapped,
+                marginR: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.40 -
+                      tabBarSizeHorizontal,
+                  vertical: getProperSize(tabBarSizeVertical),
+                ),
                 items: [
                   CrystalNavigationBarItem(
                     icon: IconlyBold.home,

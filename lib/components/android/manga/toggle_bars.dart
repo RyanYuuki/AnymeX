@@ -205,7 +205,7 @@ class _ToggleBarState extends State<ToggleBar> {
                       onPressed: () {
                         widget.showSettings(context);
                       },
-                      icon: const Icon(IconlyBold.setting))
+                      icon: const Icon(Icons.settings))
                 ],
               ),
             ),

@@ -133,40 +133,13 @@ jobs:
           name: windows-build
           path: build/windows/x64/runner/Release/AnymeX_Windows.zip
 
-  # build-macos:
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
+      - name: Setup Inno Setup
+        run: |
+          choco install innosetup
 
-  #     - name: Setup Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: "3.22.3"
-
-  #     - name: Replace pubspec.yaml with Desktop Version
-  #       run: cp pubspec_desktop.yaml pubspec.yaml
-
-  #     - name: Get Dependencies
-  #       run: flutter pub get
-
-  #     - name: Update macOS deployment target in Podfile
-  #       run: |
-  #         sed -i '' 's/platform :osx, .*/platform :osx, "10.14"/' macos/Podfile
-
-  #     - name: Install CocoaPods dependencies
-  #       run: |
-  #         cd macos
-  #         pod install
-
-  #     - name: Build macOS
-  #       run: flutter build macos --release
-
-  #     - name: Upload macOS Artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: macos-build
-  #         path: build/macos/Build/Products/Release/*
+      - name: Build Installer with Inno Setup
+        run: |
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" AnymeX.iss
 
   release:
     needs: [build-android, build-ios, build-linux, build-windows]
@@ -210,13 +183,13 @@ jobs:
           asset_name: AnymeX-Windows.zip
           asset_content_type: application/zip
 
-      # - name: Upload macOS Artifacts to GitHub Release
-      #   uses: actions/upload-release-asset@v1
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: build/macos/Build/Products/Release/*
-      #     asset_name: AnymeX-macOS.app
-      #     asset_content_type: application/octet-stream
+      - name: Upload Windows Installer to GitHub Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: output/AnymeX-Setup.exe
+          asset_name: AnymeX-Setup.exe
+          asset_content_type: application/x-msdownload
 
       - name: Upload Linux Artifact to GitHub Release
         uses: actions/upload-release-asset@v1
