@@ -35,91 +35,87 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 60),
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              IconlyBroken.arrow_left_2,
-              size: 30,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 60),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                IconlyBroken.arrow_left_2,
+                size: 30,
+              ),
             ),
-          ),
-          const SizedBox(height: 30),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'Settings',
-              style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+            const SizedBox(height: 30),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Settings',
+                style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          const SizedBox(height: 30),
-          CustomTile(
-            icon: HugeIcons.strokeRoundedPaintBrush02,
-            title: 'UI',
-            description: 'Play Around with UI Tweaks',
-            onTap: () {
-              Navigator.push(context, _createSlideRoute(const LayoutPage()));
-            },
-          ),
-          CustomTile(
-            icon: Icons.source,
-            title: 'Downloads',
-            description: 'Tweak Download Settings',
-            onTap: () {
-              Navigator.push(
-                  context, _createSlideRoute(const SettingsDownload()));
-            },
-          ),
-          CustomTile(
-            icon: Iconsax.play5,
-            title: 'Player',
-            description: 'Change Video Player Settings',
-            onTap: () {
-              Navigator.push(
-                  context, _createSlideRoute(const VideoPlayerSettings()));
-            },
-          ),
-          CustomTile(
-            icon: Iconsax.paintbucket5,
-            title: 'Theme',
-            description: 'Change the app theme',
-            onTap: () {
-              Navigator.push(context, _createSlideRoute(const ThemePage()));
-            },
-          ),
-          CustomTile(
-            icon: Icons.language,
-            title: 'Language (Soon)',
-            description: 'Change the app language',
-            onTap: () {},
-          ),
-          CustomTile(
-            icon: Iconsax.trash,
-            title: 'Clear Cache',
-            description: 'This will remove everything (Fav List)',
-            onTap: () async {
-              await Hive.box('app-data').clear();
-            },
-          ),
-          CustomTile(
-            icon: Iconsax.info_circle5,
-            title: 'About',
-            description: 'About this app',
-            onTap: () {
-              Navigator.push(context, _createSlideRoute(const AboutPage()));
-            },
-          ),
-          CustomTile(
-            icon: Iconsax.info_circle5,
-            title: 'Fetch Data',
-            description: 'Test FUNC',
-            onTap: () async {},
-          ),
-        ],
+            const SizedBox(height: 30),
+            CustomTile(
+              icon: HugeIcons.strokeRoundedPaintBrush02,
+              title: 'UI',
+              description: 'Play Around with UI Tweaks',
+              onTap: () {
+                Navigator.push(context, _createSlideRoute(const LayoutPage()));
+              },
+            ),
+            CustomTile(
+              icon: Icons.source,
+              title: 'Downloads',
+              description: 'Tweak Download Settings',
+              onTap: () {
+                Navigator.push(
+                    context, _createSlideRoute(const SettingsDownload()));
+              },
+            ),
+            CustomTile(
+              icon: Iconsax.play5,
+              title: 'Player',
+              description: 'Change Video Player Settings',
+              onTap: () {
+                Navigator.push(
+                    context, _createSlideRoute(const VideoPlayerSettings()));
+              },
+            ),
+            CustomTile(
+              icon: Iconsax.paintbucket5,
+              title: 'Theme',
+              description: 'Change the app theme',
+              onTap: () {
+                Navigator.push(context, _createSlideRoute(const ThemePage()));
+              },
+            ),
+            CustomTile(
+              icon: Icons.language,
+              title: 'Language (Soon)',
+              description: 'Change the app language',
+              onTap: () {},
+            ),
+            CustomTile(
+              icon: Iconsax.trash,
+              title: 'Clear Cache',
+              description: 'This will remove everything (Fav List)',
+              onTap: () async {
+                await Hive.box('app-data').clear();
+              },
+            ),
+            CustomTile(
+              icon: Iconsax.info_circle5,
+              title: 'About',
+              description: 'About this app',
+              onTap: () {
+                Navigator.push(context, _createSlideRoute(const AboutPage()));
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

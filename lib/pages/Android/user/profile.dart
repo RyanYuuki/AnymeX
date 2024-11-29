@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/android/anilistExclusive/animeListCarousels.dart';
+import 'package:aurora/components/desktop/animeListCarousels.dart';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
@@ -260,16 +262,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      anilistCarousel(
-                        title: 'Currently Watching',
-                        carouselData: animeList,
-                        tag: 'currently-watching',
+                      PlatformBuilder(
+                        androidBuilder: anilistCarousel(
+                          title: 'Currently Watching',
+                          carouselData: animeList,
+                          tag: 'currently-watching',
+                        ),
+                        desktopBuilder: DesktopAnilistCarousel(
+                          title: 'Currently Watching',
+                          carouselData: animeList,
+                          tag: 'currently-watching',
+                        ),
                       ),
-                      anilistCarousel(
-                        title: 'Currently Reading',
-                        carouselData: mangaList,
-                        tag: 'currently-reading',
-                        isManga: true,
+                      PlatformBuilder(
+                        androidBuilder: anilistCarousel(
+                          title: 'Currently Reading',
+                          carouselData: mangaList,
+                          tag: 'currently-reading',
+                          isManga: true,
+                        ),
+                        desktopBuilder: DesktopAnilistCarousel(
+                          title: 'Currently Reading',
+                          carouselData: mangaList,
+                          tag: 'currently-reading',
+                          isManga: true,
+                        ),
                       ),
                     ],
                   ),
