@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aurora/components/android/common/custom_tile.dart';
 import 'package:aurora/components/android/common/switch_tile_stateless.dart';
 import 'package:aurora/pages/Android/user/settings/layout_subs/resize_tabbar.dart';
@@ -80,58 +82,60 @@ class _LayoutPageState extends State<LayoutPage> {
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.primary)),
           ),
-          SwitchTileStateless(
-            icon: Iconsax.card5,
-            title: 'Compact Card',
-            description: 'Change carousel card${"'s"} looks',
-            onTap: () {},
-            value: compactCard,
-            onChanged: (value) {
-              setState(() {
-                compactCard = !compactCard;
-                Hive.box('app-data').put('usingCompactCards', compactCard);
-              });
-            },
-          ),
-          SwitchTileStateless(
-            icon: Iconsax.card_add5,
-            title: 'Saikou Like Cards',
-            description: 'You Like small cards like saikou? Turn this on!',
-            onTap: () {},
-            value: saikouCards,
-            onChanged: (value) {
-              setState(() {
-                saikouCards = !saikouCards;
-                Hive.box('app-data').put('usingSaikouCards', saikouCards);
-              });
-            },
-          ),
-          CustomTile(
-            icon: Iconsax.arrow,
-            title: 'Resize TabBar',
-            description: 'Change the TabBar Size.',
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ResizeTabbar()));
-            },
-          ),
-          TileWithSlider(
-            sliderValue: cardRoundness,
-            onChanged: (newValue) {
-              setState(() {
-                cardRoundness = newValue;
-              });
-              Hive.box('app-data').put('cardRoundness', newValue);
-            },
-            title: 'Card Roundness',
-            description: 'Changes the card roundness',
-            icon: Icons.rounded_corner_rounded,
-            max: 50.0,
-            min: 0.0,
-            divisions: 10,
-          ),
+          if (Platform.isAndroid) ...[
+            SwitchTileStateless(
+              icon: Iconsax.card5,
+              title: 'Compact Card',
+              description: 'Change carousel card${"'s"} looks',
+              onTap: () {},
+              value: compactCard,
+              onChanged: (value) {
+                setState(() {
+                  compactCard = !compactCard;
+                  Hive.box('app-data').put('usingCompactCards', compactCard);
+                });
+              },
+            ),
+            SwitchTileStateless(
+              icon: Iconsax.card_add5,
+              title: 'Saikou Like Cards',
+              description: 'You Like small cards like saikou? Turn this on!',
+              onTap: () {},
+              value: saikouCards,
+              onChanged: (value) {
+                setState(() {
+                  saikouCards = !saikouCards;
+                  Hive.box('app-data').put('usingSaikouCards', saikouCards);
+                });
+              },
+            ),
+            CustomTile(
+              icon: Iconsax.arrow,
+              title: 'Resize TabBar',
+              description: 'Change the TabBar Size.',
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ResizeTabbar()));
+              },
+            ),
+            TileWithSlider(
+              sliderValue: cardRoundness,
+              onChanged: (newValue) {
+                setState(() {
+                  cardRoundness = newValue;
+                });
+                Hive.box('app-data').put('cardRoundness', newValue);
+              },
+              title: 'Card Roundness',
+              description: 'Changes the card roundness',
+              icon: Icons.rounded_corner_rounded,
+              max: 50.0,
+              min: 0.0,
+              divisions: 10,
+            ),
+          ],
           TileWithSlider(
             sliderValue: tabBarRoundness,
             onChanged: (newValue) {

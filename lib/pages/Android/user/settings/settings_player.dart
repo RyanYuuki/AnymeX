@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:aurora/pages/Android/user/settings/modals/tile_with_slider.dart';
 import 'package:flutter/material.dart';
@@ -248,50 +249,52 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
             onTap: _showPlaybackSpeedDialog,
           ),
           // Resize Mode
-          ListTile(
-            leading: Icon(Icons.aspect_ratio,
-                color: Theme.of(context).colorScheme.primary),
-            title: const Text(
-              'Resize Mode',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(resizeMode,
-                style: TextStyle(
-                    fontFamily: 'Poppins-SemiBold',
-                    color: Theme.of(context).colorScheme.primary)),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(
-                      'Select Resize Mode',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontFamily: 'Poppins-SemiBold',
-                          fontSize: 20),
-                    ),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: resizeModes
-                          .map((mode) => RadioListTile<String>(
-                                title: Text(mode),
-                                value: mode,
-                                groupValue: resizeMode,
-                                onChanged: (value) {
-                                  setState(() {
-                                    resizeMode = value!;
-                                  });
-                                  Navigator.pop(context);
-                                },
-                              ))
-                          .toList(),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          if (Platform.isAndroid) ...[
+            ListTile(
+              leading: Icon(Icons.aspect_ratio,
+                  color: Theme.of(context).colorScheme.primary),
+              title: const Text(
+                'Resize Mode',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(resizeMode,
+                  style: TextStyle(
+                      fontFamily: 'Poppins-SemiBold',
+                      color: Theme.of(context).colorScheme.primary)),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(
+                        'Select Resize Mode',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: 20),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: resizeModes
+                            .map((mode) => RadioListTile<String>(
+                                  title: Text(mode),
+                                  value: mode,
+                                  groupValue: resizeMode,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      resizeMode = value!;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                    );
+                  },
+                );
+              },
+            )
+          ],
           TileWithSlider(
             sliderValue: skipDuration.toDouble(),
             min: 5,
@@ -350,24 +353,27 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
             },
           ),
           // Subtitle Outline Color
-          ListTile(
-            leading: Icon(Icons.palette,
-                color: Theme.of(context).colorScheme.primary),
-            title: const Text(
-              'Subtitle Outline Color',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onTap: () {
-              _showColorSelectionDialog(
-                  'Select Subtitle Outline Color', subtitleOutlineColor,
-                  (color) {
-                setState(() {
-                  subtitleOutlineColor = colorOptions[color]!;
+          if (Platform.isAndroid) ...[
+            ListTile(
+              leading: Icon(Icons.palette,
+                  color: Theme.of(context).colorScheme.primary),
+              title: const Text(
+                'Subtitle Outline Color',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                _showColorSelectionDialog(
+                    'Select Subtitle Outline Color', subtitleOutlineColor,
+                    (color) {
+                  setState(() {
+                    subtitleOutlineColor = colorOptions[color]!;
+                  });
+                  Hive.box('app-data').put('subtitleOutlineColor', color);
                 });
-                Hive.box('app-data').put('subtitleOutlineColor', color);
-              });
-            },
-          ),
+              },
+            )
+          ],
+
           // Subtitle Background Color
           ListTile(
             leading: Icon(Icons.palette,
