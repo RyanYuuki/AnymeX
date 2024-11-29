@@ -14,6 +14,7 @@ import 'package:anymex/components/desktop/anime/character_cards.dart';
 import 'package:anymex/components/desktop/horizontal_list.dart';
 import 'package:anymex/components/desktop/manga/chapters.dart';
 import 'package:anymex/components/platform_builder.dart';
+import 'package:anymex/fallbackData/anilist_manga_homepage.dart';
 import 'package:anymex/hiveData/appData/database.dart';
 import 'package:anymex/pages/Android/Manga/read_page.dart';
 import 'package:anymex/utils/apiHooks/anilist/anime/details_page.dart';
@@ -193,6 +194,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
   Widget build(BuildContext context) {
     ColorScheme customScheme = Theme.of(context).colorScheme;
 
+    final tabBarRoundness =
+        Hive.box('app-data').get('tabBarRoundness', defaultValue: 20.0);
+    double tabBarSizeVertical =
+        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 0.0);
     Widget currentPage = usingSaikouLayout
         ? saikouDetailsPage(context)
         : originalDetailsPage(customScheme, context);
@@ -206,17 +211,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             data != null)
           Positioned(
             bottom: 0,
-            child: PlatformBuilder(
-              androidBuilder: SizedBox(
-                height: 158,
-                width: MediaQuery.of(context).size.width,
-                child: bottomBar(context, false),
-              ),
-              desktopBuilder: SizedBox(
-                height: 108,
-                width: MediaQuery.of(context).size.width,
-                child: bottomBar(context, true),
-              ),
+            child: SizedBox(
+              height: 140 + tabBarSizeVertical,
+              width: MediaQuery.of(context).size.width,
+              child: bottomBar(
+                  context, false, tabBarRoundness, tabBarSizeVertical),
             ),
           )
       ]),
@@ -249,19 +248,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
     }
   }
 
-  CrystalNavigationBar bottomBar(BuildContext context, bool isDesktop) {
-    final tabBarRoundness =
-        Hive.box('app-data').get('tabBarRoundness', defaultValue: 30.0);
-    double tabBarSizeVertical =
-        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 30.0);
+  CrystalNavigationBar bottomBar(BuildContext context, bool isDesktop,
+      double tabBarRoundness, double tabBarSizeVertical) {
     return CrystalNavigationBar(
       borderRadius: tabBarRoundness,
       currentIndex: selectedIndex,
+      height: 100 + tabBarSizeVertical,
       unselectedItemColor: Colors.white,
       selectedItemColor: Theme.of(context).colorScheme.primary,
       marginR: !isDesktop
-          ? EdgeInsets.symmetric(
-              horizontal: 100, vertical: getProperSize(tabBarSizeVertical))
+          ? EdgeInsets.symmetric(horizontal: 100, vertical: 8)
           : EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width *
                   calculateMultiplier(context),
@@ -341,6 +337,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               ExpandablePageView(
                 controller: pageController,
                 itemCount: 2,
+                onPageChanged: (value) {
+                  if (mounted) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  }
+                },
                 itemBuilder: (context, index) {
                   return selectedIndex == 0
                       ? saikouDetails(context)
@@ -435,7 +438,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.fromLTRB(20.0, 0, 20, 100),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1614,6 +1617,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
         : ExpandablePageView(
             controller: pageController,
             itemCount: 2,
+            onPageChanged: (value) {
+              if (mounted) {
+                setState(() {
+                  selectedIndex = value;
+                });
+              }
+            },
             itemBuilder: (context, index) {
               return selectedIndex == 0
                   ? originalInfoPage(CustomScheme, context)
@@ -1622,212 +1632,231 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           );
   }
 
-  Column originalInfoPage(ColorScheme CustomScheme, BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 60,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (Provider.of<AniListProvider>(context,
-                                      listen: false)
-                                  .userData?['user']?['name'] ==
-                              null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                backgroundColor: Theme.of(context)
+  Widget originalInfoPage(ColorScheme CustomScheme, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 100.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (Provider.of<AniListProvider>(context,
+                                        listen: false)
+                                    .userData?['user']?['name'] ==
+                                null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer,
+                                  content: Text(
+                                    'Login on AniList First!',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              showListEditorModal(
+                                  context, data['chapters'] ?? '?');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                width: 2,
+                                color: Theme.of(context)
                                     .colorScheme
                                     .surfaceContainer,
-                                content: Text(
-                                  'Login on AniList First!',
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                ),
                               ),
-                            );
-                          } else {
-                            showListEditorModal(
-                                context, data['chapters'] ?? '?');
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                              width: 2,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
+                            ),
+                          ),
+                          child: Text(
+                            (checkAvailability(context)).toUpperCase(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontFamily: 'Poppins-Bold',
                             ),
                           ),
                         ),
-                        child: Text(
-                          (checkAvailability(context)).toUpperCase(),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    AnimatedContainer(
+                      width: 60,
+                      height: 60,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: isFavourite
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer
+                                  : Theme.of(context).colorScheme.primary),
+                          color: isFavourite
+                              ? Theme.of(context).colorScheme.secondaryContainer
+                              : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(50)),
+                      duration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: Icon(
+                          isFavourite ? IconlyBold.heart : IconlyLight.heart,
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  AnimatedContainer(
-                    width: 60,
-                    height: 60,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: isFavourite
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .secondaryContainer
-                                : Theme.of(context).colorScheme.primary),
-                        color: isFavourite
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(50)),
-                    duration: Duration(milliseconds: 300),
-                    child: IconButton(
-                      icon: Icon(
-                        isFavourite ? IconlyBold.heart : IconlyLight.heart,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                      ),
-                      onPressed: () {
-                        if (mangaData != null && data != null) {
-                          setState(() {
-                            isFavourite = !isFavourite;
-                          });
-                          if (isFavourite) {
-                            Provider.of<AppData>(context, listen: false)
-                                .addReadManga(
-                                    mangaId: mangaData['id'],
-                                    mangaTitle: mangaData['title'],
-                                    currentChapter: chapterProgress.toString(),
-                                    mangaPosterImage: widget.posterUrl!,
-                                    anilistMangaId: widget.id.toString(),
-                                    currentSource:
-                                        mangaSourceHandler.selectedSourceName!,
-                                    chapterList: mangaData['chapterList'],
-                                    description: data['description']);
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          if (mangaData != null && data != null) {
+                            setState(() {
+                              isFavourite = !isFavourite;
+                            });
+                            if (isFavourite) {
+                              Provider.of<AppData>(context, listen: false)
+                                  .addReadManga(
+                                      mangaId: mangaData['id'],
+                                      mangaTitle: mangaData['title'],
+                                      currentChapter:
+                                          chapterProgress.toString(),
+                                      mangaPosterImage: widget.posterUrl!,
+                                      anilistMangaId: widget.id.toString(),
+                                      currentSource: mangaSourceHandler
+                                          .selectedSourceName!,
+                                      chapterList: mangaData['chapterList'],
+                                      description: data['description']);
+                            } else {
+                              Provider.of<AppData>(context, listen: false)
+                                  .removeMangaByAnilistId(widget.id.toString());
+                            }
                           } else {
-                            Provider.of<AppData>(context, listen: false)
-                                .removeMangaByAnilistId(widget.id.toString());
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                content: Text(
+                                    'What are you? flash? you${"'"}re gonna have to wait few secs',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface))));
                           }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              content: Text(
-                                  'What are you? flash? you${"'"}re gonna have to wait few secs',
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface))));
-                        }
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Text('Description',
-                  style: TextStyle(fontFamily: 'Poppins-SemiBold')),
-              const SizedBox(
-                height: 5,
-              ),
-              Column(
-                children: [
-                  Text(
-                    description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
-                        data?['description']
-                            ?.replaceAll(RegExp(r'<[^>]*>'), '') ??
-                        'Description Not Found',
-                    maxLines: 13,
-                    overflow: TextOverflow.ellipsis,
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Text('Description',
+                    style: TextStyle(fontFamily: 'Poppins-SemiBold')),
+                const SizedBox(
+                  height: 5,
+                ),
+                Column(
+                  children: [
+                    Text(
+                      description?.replaceAll(RegExp(r'<[^>]*>'), '') ??
+                          data?['description']
+                              ?.replaceAll(RegExp(r'<[^>]*>'), '') ??
+                          'Description Not Found',
+                      maxLines: 13,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey[400]),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Text('Statistics',
                     style: TextStyle(
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey[400]),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Text('Statistics',
-                  style:
-                      TextStyle(fontFamily: 'Poppins-SemiBold', fontSize: 16)),
-              infoRow(
-                  field: 'Rating',
-                  value:
-                      '${data?['malscore']?.toString() ?? ((data?['rating'])).toString()}/10'),
-              infoRow(
-                  field: 'Total Chapters',
-                  value: data['totalChapters'].toString()),
-              infoRow(field: 'Type', value: 'TV'),
-              infoRow(
-                  field: 'Romaji Name',
-                  value: data?['jname'] ?? data?['japanese'] ?? '??'),
-              infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
-              infoRow(field: 'Duration', value: '${data?['duration']}' ''),
-            ],
+                        fontFamily: 'Poppins-SemiBold', fontSize: 16)),
+                infoRow(
+                    field: 'Rating',
+                    value:
+                        '${data?['malscore']?.toString() ?? ((data?['rating'])).toString()}/10'),
+                infoRow(
+                    field: 'Total Chapters',
+                    value: data['totalChapters'].toString()),
+                infoRow(field: 'Type', value: 'TV'),
+                infoRow(
+                    field: 'Romaji Name',
+                    value: data?['jname'] ?? data?['japanese'] ?? '??'),
+                infoRow(field: 'Premiered', value: data?['premiered'] ?? '??'),
+                infoRow(field: 'Duration', value: '${data?['duration']}' ''),
+              ],
+            ),
           ),
-        ),
-        PlatformBuilder(
-            androidBuilder: CharacterCards(
-              isManga: true,
-              carouselData: charactersdata,
-            ),
-            desktopBuilder: HorizontalCharacterCards(
-              isManga: true,
-              carouselData: charactersdata,
-            )),
-        PlatformBuilder(
-            androidBuilder: ReusableCarousel(
-              title: 'Related',
-              carouselData: data?['relations'],
-              detailsPage: true,
-              secondary: false,
-            ),
-            desktopBuilder: HorizontalList(
-              title: 'Related',
-              carouselData: data?['relations'],
-              detailsPage: true,
-              secondary: false,
-            )),
-        PlatformBuilder(
-            androidBuilder: ReusableCarousel(
-              title: 'Recommended',
-              carouselData: data?['recommendations'],
-              detailsPage: true,
-              isManga: true,
-            ),
-            desktopBuilder: HorizontalList(
-              title: 'Recommended',
-              carouselData: data?['recommendations'],
-              detailsPage: true,
-              isManga: true,
-            )),
-      ],
+          PlatformBuilder(
+              androidBuilder: CharacterCards(
+                isManga: true,
+                carouselData: charactersdata,
+              ),
+              desktopBuilder: HorizontalCharacterCards(
+                isManga: true,
+                carouselData: charactersdata,
+              )),
+          PlatformBuilder(
+              androidBuilder: ReusableCarousel(
+                title: 'Related',
+                carouselData: data?['relations'],
+                detailsPage: true,
+                secondary: false,
+              ),
+              desktopBuilder: HorizontalList(
+                title: 'Related',
+                carouselData: data?['relations'],
+                detailsPage: true,
+                secondary: false,
+              )),
+          PlatformBuilder(
+              androidBuilder: ReusableCarousel(
+                title: 'Recommended',
+                carouselData: data?['recommendations'],
+                detailsPage: true,
+                isManga: true,
+              ),
+              desktopBuilder: HorizontalList(
+                title: 'Recommended',
+                carouselData: data?['recommendations'],
+                detailsPage: true,
+                isManga: true,
+              )),
+          PlatformBuilder(
+              androidBuilder: ReusableCarousel(
+                title: 'Popular',
+                carouselData: fallbackMangaData?['data']['popularMangas']
+                    ['media'],
+                detailsPage: false,
+                isManga: true,
+              ),
+              desktopBuilder: HorizontalList(
+                title: 'Popular',
+                carouselData: fallbackMangaData?['data']?['popularManga']
+                    ?['media'],
+                detailsPage: false,
+                isManga: true,
+              )),
+        ],
+      ),
     );
   }
 }

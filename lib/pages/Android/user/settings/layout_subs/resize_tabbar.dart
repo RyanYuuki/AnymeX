@@ -1,5 +1,4 @@
 import 'package:anymex/pages/Android/user/settings/modals/tile_with_slider.dart';
-import 'package:anymex/pages/Android/user/settings/settings_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:iconly/iconly.dart';
@@ -14,7 +13,7 @@ class ResizeTabbar extends StatefulWidget {
 
 class _ResizeTabbarState extends State<ResizeTabbar> {
   double tabBarSizeVertical =
-      Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 20.0);
+      Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 0.0);
   double tabBarSizeHorizontal =
       Hive.box('app-data').get('tabBarSizeHorizontal', defaultValue: 50.0);
 
@@ -79,7 +78,7 @@ class _ResizeTabbarState extends State<ResizeTabbar> {
               });
               Hive.box('app-data').put('tabBarSizeVertical', newValue);
             },
-            title: 'Vertical Size',
+            title: 'Vertical Size Multiplier',
             description: 'Changes the Vertical Size of TabBar',
             icon: Icons.rounded_corner_rounded,
             min: 0.0,
@@ -94,7 +93,7 @@ class _ResizeTabbarState extends State<ResizeTabbar> {
               });
               Hive.box('app-data').put('tabBarSizeHorizontal', newValue);
             },
-            title: 'Horizontal Size',
+            title: 'Horizontal Size Multiplier',
             description: 'Changes the Horizontal Size of TabBar',
             icon: Icons.rounded_corner,
             min: 0.0,

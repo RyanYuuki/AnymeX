@@ -325,7 +325,10 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                                   topRight: Radius.circular(5),
                                   bottomRight: Radius.circular(5)),
                               icon: Iconsax.star5,
-                              name: anime['averageScore'].toString())
+                              name: anime?['averageScore'] != null
+                                  ? (anime['averageScore'] / 10)
+                                      .toStringAsFixed(1)
+                                  : '0.0')
                         ],
                       )
                     ],

@@ -133,17 +133,18 @@ class _MainAppState extends State<MainApp> {
           valueListenable: box.listenable(),
           builder: (BuildContext context, Box<dynamic> value, Widget? child) {
             double tabBarSizeVertical = Hive.box('app-data')
-                .get('tabBarSizeVertical', defaultValue: 30.0);
+                .get('tabBarSizeVertical', defaultValue: 0.0);
             double tabBarSizeHorizontal = Hive.box('app-data')
                 .get('tabBarSizeHorizontal', defaultValue: 0.0);
             return PlatformBuilder(
               androidBuilder: CrystalNavigationBar(
-                borderRadius: box.get('tabBarRoundness', defaultValue: 30.0),
+                borderRadius: box.get('tabBarRoundness', defaultValue: 20.0),
                 currentIndex: _selectedIndex,
                 paddingR: const EdgeInsets.all(0),
+                height: 100 + tabBarSizeVertical,
                 marginR: EdgeInsets.symmetric(
                   horizontal: getProperSize(tabBarSizeHorizontal),
-                  vertical: getProperSize(tabBarSizeVertical),
+                  vertical: 15
                 ),
                 unselectedItemColor: Colors.white,
                 backgroundColor: Colors.black.withOpacity(0.3),

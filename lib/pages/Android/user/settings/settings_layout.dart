@@ -109,17 +109,19 @@ class _LayoutPageState extends State<LayoutPage> {
                 });
               },
             ),
-            CustomTile(
-              icon: Iconsax.arrow,
-              title: 'Resize TabBar',
-              description: 'Change the TabBar Size.',
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ResizeTabbar()));
-              },
-            ),
+          ],
+          CustomTile(
+            icon: Iconsax.arrow,
+            title: 'Resize TabBar',
+            description: 'Change the TabBar Size.',
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ResizeTabbar()));
+            },
+          ),
+          if (Platform.isAndroid)
             TileWithSlider(
               sliderValue: cardRoundness,
               onChanged: (newValue) {
@@ -135,7 +137,6 @@ class _LayoutPageState extends State<LayoutPage> {
               min: 0.0,
               divisions: 10,
             ),
-          ],
           TileWithSlider(
             sliderValue: tabBarRoundness,
             onChanged: (newValue) {
