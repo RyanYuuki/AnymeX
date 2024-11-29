@@ -971,8 +971,14 @@ class AniListProvider with ChangeNotifier {
               data['data']['MediaListCollection']['lists'] as List<dynamic>;
           _userData['mangaList'] =
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
+          final entries =
+              lists.expand((list) => list['entries'] as List<dynamic>).toList();
           log('User manga list fetched successfully');
           log('Fetched ${_userData['mangaList'].length} manga entries');
+
+          _userData['currentlyReading'] = entries
+              .where((animeEntry) => animeEntry['status'] == 'CURRENT')
+              .toList();
         } else {
           log('Unexpected response structure: ${response.body}');
         }
