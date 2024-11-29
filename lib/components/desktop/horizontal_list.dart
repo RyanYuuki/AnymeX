@@ -131,8 +131,9 @@ class HorizontalList extends StatelessWidget {
                   '?';
               final random = Random().nextInt(100000);
               final tagg = '${itemData['id']}$tag$random';
-              String extraData =
-                  ((itemData['averageScore'] ?? 0) / 10)?.toString() ?? '??';
+              String extraData = itemData?['averageScore'] != null
+                  ? (itemData['averageScore'] / 10).toStringAsFixed(1)
+                  : '0.0';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 10.0),

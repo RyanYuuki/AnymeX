@@ -121,20 +121,6 @@ class SettingsModal extends StatelessWidget {
               );
             },
           ),
-          if (isLoggedIn)
-            ListTile(
-              leading: const Icon(Iconsax.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                Provider.of<AniListProvider>(context, listen: false)
-                    .logout(context);
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainApp()),
-                  (route) => false,
-                );
-              },
-            ),
         ],
       ),
     );

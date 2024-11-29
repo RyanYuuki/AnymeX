@@ -77,8 +77,9 @@ class Carousel extends StatelessWidget {
           ),
           items: animeData!.map((anime) {
             final String posterUrl = anime['coverImage']['large'] ?? '??';
-            final String rating =
-                (anime['averageScore'] / 10)?.toString() ?? '?';
+            String rating = anime?['averageScore'] != null
+                ? (anime['averageScore'] / 10).toStringAsFixed(1)
+                : '0.0';
             final tag = '${anime["id"]}${Random().nextInt(100000)}';
             final String title =
                 anime['title']['english'] ?? anime['title']['romaji'] ?? '?';
@@ -151,7 +152,8 @@ class Carousel extends StatelessWidget {
                             child: Text(
                               title,
                               maxLines: 2,
-                              style: TextStyle(fontSize: 16, fontFamily: 'Poppins-SemiBold'),
+                              style: TextStyle(
+                                  fontSize: 16, fontFamily: 'Poppins-SemiBold'),
                               textAlign: TextAlign.center,
                             ),
                           ),

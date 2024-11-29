@@ -53,7 +53,10 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
             final randNum = Random().nextInt(100000);
             final tag = '$randNum$index';
             const String proxyUrl = '';
-        
+            String extraData = anime?['averageScore'] != null
+                ? (anime['averageScore'] / 10).toStringAsFixed(1)
+                : '0.0';
+
             return Stack(
               children: [
                 Column(
@@ -122,7 +125,7 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
                           const SizedBox(width: 20),
                           iconWithName(
                             icon: Iconsax.star5,
-                            name: (anime['averageScore'] / 10).toString(),
+                            name: extraData,
                             isVertical: false,
                             borderRadius: BorderRadius.circular(5),
                             backgroundColor: Theme.of(context)
