@@ -32,7 +32,6 @@ jobs:
       - name: Rename and Upload APKs (Split ABI)
         if: matrix.platform == 'android'
         run: |
-          # Rename APKs to ensure the naming convention is kept
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/app-x86_64-release-split.apk
@@ -47,10 +46,11 @@ jobs:
         run: |
           mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-universal.apk
 
-      - name: Build iOS
+      - name: Build iOS (macOS only)
         if: matrix.platform == 'ios'
+        runs-on: macos-latest
         run: |
-          flutter build ios
+          flutter build ios --release --no-codesign
 
       - name: Upload Artifact (Mobile)
         uses: actions/upload-artifact@v3
@@ -87,11 +87,19 @@ jobs:
             flutter build windows --release
           fi
 
+      - name: Zip Windows Release
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd build\windows\x64\runner\Release
+          powershell Compress-Archive -Path * -DestinationPath AnymeX_Windows.zip
+
       - name: Upload Artifact (Desktop)
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}-build
-          path: build/*/outputs/*
+          path: |
+            build/*/outputs/*
+            build/windows/x64/runner/Release/AnymeX_Windows.zip
 
   generate-changelog:
     runs-on: ubuntu-latest
@@ -102,7 +110,6 @@ jobs:
       - name: Get Latest Non-Pre-Release Tag
         id: get_tag
         run: |
-          # List all tags, exclude beta/alpha tags, and get the latest tag
           LATEST_TAG=$(git tag --list | grep -vE "beta|alpha" | sort -V | tail -n 1)
           echo "Latest non-pre-release tag: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
@@ -110,7 +117,6 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          # Fetch commits since the latest tag
           COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"%H %s" --decorate --no-abbrev-commit)
 
           CHANGELOG=""
@@ -120,7 +126,6 @@ jobs:
             CHANGELOG="$CHANGELOG$REPO_URL$HASH $MESSAGE\n"
           done <<< "$COMMITS"
 
-          # Encode special characters
           CHANGELOG="${CHANGELOG//'%'/'%25'}"
           CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
           CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
@@ -132,11 +137,12 @@ jobs:
           repository: RyanYuuki/AnymeX
           make_latest: true
           draft: false
-          tag_name: ${{ steps.extract_version.outputs.version}}
+          tag_name: v${{ github.run_number }}  
           body: |
             ${{ env.CHANGELOG }}
           files: |
             build_final/*
+            build/windows/x64/runner/Release/AnymeX_Windows.zip
           token: ${{ secrets.SNAPSHOTS_REPO_SECRET }}
 
       - name: Upload all APKs
