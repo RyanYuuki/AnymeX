@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/android/common/IconWithLabel.dart';
 import 'package:aurora/components/android/anilistExclusive/wong_title_dialog.dart';
@@ -16,7 +17,9 @@ import 'package:aurora/components/desktop/horizontal_list.dart';
 import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/fallbackData/anilist_homepage_data.dart';
 import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/pages/Desktop/watch_page.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:aurora/utils/methods.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/pages/Android/Anime/watch_page.dart';
 import 'package:aurora/utils/downloader/downloader.dart';
@@ -269,25 +272,47 @@ class _DetailsPageState extends State<DetailsPage>
 
     if (episodeSrc != null) {
       Navigator.pop(context);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WatchPage(
-                    episodeSrc: episodeSrc ?? [],
-                    episodeData: episodesData,
-                    currentEpisode: currentEpisode,
-                    episodeTitle:
-                        episodesData[currentEpisode - 1]['title'] ?? '',
-                    activeServer: activeServer,
-                    isDub: isDub,
-                    animeId: widget.id,
-                    tracks: subtitleTracks,
-                    provider: Theme.of(context),
-                    animeTitle: data['name'] ?? data?['jname'] ?? '',
-                    sourceAnimeId: animeId!,
-                    description: data['description'],
-                    posterImage: data['poster'],
-                  )));
+      if (Platform.isAndroid) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData,
+                      currentEpisode: currentEpisode,
+                      episodeTitle:
+                          episodesData[currentEpisode - 1]['title'] ?? '',
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: widget.id,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      animeTitle: data['name'] ?? data?['jname'] ?? '',
+                      sourceAnimeId: animeId!,
+                      description: data['description'],
+                      posterImage: data['poster'],
+                    )));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DesktopWatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData,
+                      currentEpisode: currentEpisode,
+                      episodeTitle:
+                          episodesData[currentEpisode - 1]['title'] ?? '',
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: widget.id,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      animeTitle: data['name'] ?? data?['jname'] ?? '',
+                      sourceAnimeId: animeId!,
+                      description: data['description'],
+                      posterImage: data['poster'],
+                    )));
+      }
     }
   }
 
@@ -365,7 +390,8 @@ class _DetailsPageState extends State<DetailsPage>
           ? EdgeInsets.symmetric(
               horizontal: 100, vertical: getProperSize(tabBarSizeVertical))
           : EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.45,
+              horizontal: MediaQuery.of(context).size.width *
+                  calculateMultiplier(context),
               vertical: getProperSize(tabBarSizeVertical)),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
@@ -1482,29 +1508,27 @@ class _DetailsPageState extends State<DetailsPage>
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        if (altdata?['cover'] != null)
-          PlatformBuilder(
-            androidBuilder: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Positioned(
-                  left: MediaQuery.of(context).size.width * _animation.value,
-                  child: CachedNetworkImage(
-                    height: 450,
-                    alignment: Alignment.center,
-                    fit: BoxFit.cover,
-                    imageUrl: altdata?['cover'] ?? widget.posterUrl,
-                  ),
-                );
-              },
-            ),
-            desktopBuilder: CachedNetworkImage(
-              height: 450,
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.center,
-              fit: BoxFit.cover,
-              imageUrl: altdata?['cover'] ?? widget.posterUrl,
-            ),
+        if (altdata?['cover'] != null && Platform.isAndroid)
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Positioned(
+                left: MediaQuery.of(context).size.width * _animation.value,
+                child: CachedNetworkImage(
+                  height: 450,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  imageUrl: altdata?['cover'] ?? widget.posterUrl,
+                ),
+              );
+            },
+          )
+        else
+          CachedNetworkImage(
+            height: 450,
+            alignment: Alignment.center,
+            fit: BoxFit.cover,
+            imageUrl: altdata?['cover'] ?? widget.posterUrl,
           ),
         Positioned(
           child: Container(
