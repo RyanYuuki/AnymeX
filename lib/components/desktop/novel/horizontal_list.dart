@@ -97,6 +97,14 @@ class HorizontalList extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
+              const Text(
+                ' Novels',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const Expanded(child: SizedBox.shrink()),
               IconButton(
                 onPressed: () => slideCarousel(true),
@@ -177,10 +185,17 @@ class HorizontalList extends StatelessWidget {
                                       topLeft: Radius.circular(18),
                                       bottomRight: Radius.circular(16))),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Icon(Iconsax.star5),
+                                  Icon(
+                                    Iconsax.star5,
+                                    size: 13,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                   const SizedBox(
-                                    width: 8,
+                                    width: 4,
                                   ),
                                   Text(
                                     extraData,

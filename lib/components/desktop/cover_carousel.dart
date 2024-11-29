@@ -81,7 +81,7 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
                         }
                       },
                       child: Container(
-                        height: 400,
+                        height: 300,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Hero(
                           tag: tag,
@@ -161,7 +161,7 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
             );
           },
           options: CarouselOptions(
-            height: 500,
+            height: 400,
             viewportFraction: 1,
             initialPage: 0,
             enableInfiniteScroll: true,

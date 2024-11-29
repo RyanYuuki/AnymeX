@@ -1,6 +1,5 @@
 import 'dart:math';
-import 'package:aurora/pages/Android/Anime/details_page.dart';
-import 'package:aurora/pages/Android/Manga/details_page.dart';
+import 'package:aurora/pages/Android/Novel/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,11 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 class DesktopCoverCarousel extends StatefulWidget {
   final List<dynamic>? animeData;
   final String? title;
-  final bool isManga;
 
   const DesktopCoverCarousel({
     super.key,
     this.animeData,
     this.title,
-    this.isManga = false,
   });
 
   @override
@@ -54,28 +51,17 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (widget.isManga) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MangaDetailsPage(
-                                    id: anime['id'],
-                                    posterUrl: posterUrl,
-                                    tag: tag,
-                                  )));
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailsPage(
-                                    id: anime['id'],
-                                    posterUrl: posterUrl,
-                                    tag: tag,
-                                  )));
-                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NovelDetailsPage(
+                                  id: anime['id'],
+                                  posterUrl: posterUrl,
+                                  tag: tag,
+                                )));
                   },
                   child: Container(
-                    height: 400,
+                    height: 300,
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     child: Hero(
                       tag: tag,
@@ -114,8 +100,8 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
-                    (anime?['description']?.replaceAll(
-                                RegExp(r'<[^>]*>|&[^;]+;'), ''))
+                    (anime?['description']
+                                ?.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''))
                             ?.toString()
                             .trim() ??
                         '',
@@ -134,7 +120,7 @@ class _DesktopCoverCarouselState extends State<DesktopCoverCarousel> {
             );
           },
           options: CarouselOptions(
-            height: 500,
+            height: 400,
             viewportFraction: 1,
             initialPage: 0,
             enableInfiniteScroll: true,
