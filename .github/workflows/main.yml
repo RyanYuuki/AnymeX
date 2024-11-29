@@ -1,0 +1,176 @@
+name: Build and Release AnymeX
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Android with Split ABI
+        run: |
+          flutter build apk --split-per-abi
+
+      - name: Rename and Upload APKs (Split ABI)
+        run: |
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/app-x86_64-release-split.apk
+
+      - name: Build Universal APK
+        run: |
+          flutter build apk --release
+
+      - name: Rename and Upload Universal APK
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-universal.apk
+
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-build
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build iOS (macOS only)
+        run: |
+          flutter build ios --release --no-codesign
+
+      - name: Upload iOS Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-build
+          path: build/ios/iphoneos/*.app
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Linux
+        run: |
+          flutter build linux --release
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-build
+          path: build/linux/x64/release/bundle/*
+
+    build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: |
+          flutter build windows --release
+
+      - name: Create ZIP file for Windows Build
+        run: |
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath AnymeX_Windows.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: build/windows/x64/runner/Release/AnymeX_Windows.zip
+
+          
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Latest Non-Pre-Release Tag
+        id: get_tag
+        run: |
+          LATEST_TAG=$(git tag --list | grep -vE "beta|alpha" | sort -V | tail -n 1)
+          echo "Latest non-pre-release tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"%H %s" --decorate --no-abbrev-commit)
+
+          CHANGELOG=""
+
+          while IFS= read -r line; do
+            HASH=$(echo "$line" | awk '{print $1}')
+            MESSAGE=$(echo "$line" | cut -d' ' -f2-)
+            CHANGELOG="$CHANGELOG$REPO_URL$HASH $MESSAGE\n"
+          done <<< "$COMMITS"
+
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+
+      - name: Create Snapshot Release
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: RyanYuuki/AnymeX
+          make_latest: true
+          draft: false
+          tag_name: v${{ github.run_number }}  
+          body: |
+            ${{ env.CHANGELOG }}
+          files: |
+            build_final/*
+            build/windows/x64/runner/Release/AnymeX_Windows.zip
+          token: ${{ secrets.SNAPSHOTS_REPO_SECRET }}
+
+      - name: Upload all APKs
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-apks
+          path: build_final/**
