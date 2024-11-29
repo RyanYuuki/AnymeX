@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, must_be_immutable, avoid_print, use_build_context_synchronously
 
 import 'dart:developer';
+import 'dart:io';
 import 'package:aurora/auth/auth_provider.dart';
 import 'package:aurora/components/android/anilistExclusive/wrong_tile_manga.dart';
 import 'package:aurora/components/android/common/IconWithLabel.dart';
@@ -16,6 +17,7 @@ import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/hiveData/appData/database.dart';
 import 'package:aurora/pages/Android/Manga/read_page.dart';
 import 'package:aurora/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:aurora/utils/methods.dart';
 import 'package:aurora/utils/sources/manga/handlers/manga_sources_handler.dart';
 import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -261,7 +263,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           ? EdgeInsets.symmetric(
               horizontal: 100, vertical: getProperSize(tabBarSizeVertical))
           : EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.45,
+              horizontal: MediaQuery.of(context).size.width *
+                  calculateMultiplier(context),
               vertical: getProperSize(tabBarSizeVertical)),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
@@ -1278,7 +1281,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        if (altdata?['cover'] != null)
+        if (altdata?['cover'] != null && Platform.isAndroid)
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
@@ -1292,6 +1295,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                 ),
               );
             },
+          )
+        else
+          CachedNetworkImage(
+            height: 450,
+            alignment: Alignment.center,
+            fit: BoxFit.cover,
+            imageUrl: altdata?['cover'] ?? widget.posterUrl,
           ),
         Positioned(
           child: Container(
