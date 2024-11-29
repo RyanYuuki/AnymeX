@@ -64,8 +64,8 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
             ? 120
             : isGrid
                 ? 60
-                : 150,
-        crossAxisSpacing: 5,
+                : 130,
+        crossAxisSpacing: 20,
         mainAxisSpacing: widget.layoutIndex == 2 ? 5 : 10,
       ),
       padding: const EdgeInsets.symmetric(vertical: 5),
