@@ -7,11 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-mobile:
+  build-android:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [android, ios]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -25,46 +22,32 @@ jobs:
         run: flutter pub get
 
       - name: Build Android with Split ABI
-        if: matrix.platform == 'android'
         run: |
           flutter build apk --split-per-abi
 
       - name: Rename and Upload APKs (Split ABI)
-        if: matrix.platform == 'android'
         run: |
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/app-x86_64-release-split.apk
 
       - name: Build Universal APK
-        if: matrix.platform == 'android'
         run: |
           flutter build apk --release
 
       - name: Rename and Upload Universal APK
-        if: matrix.platform == 'android'
         run: |
           mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-universal.apk
 
-      - name: Build iOS (macOS only)
-        if: matrix.platform == 'ios'
-        runs-on: macos-latest
-        run: |
-          flutter build ios --release --no-codesign
-
-      - name: Upload Artifact (Mobile)
+      - name: Upload Android Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.platform }}-build
+          name: android-build
           path: |
             build/app/outputs/flutter-apk/*.apk
-            build/ios/iphoneos/*.app
 
-  build-desktop:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+  build-ios:
+    runs-on: macos-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -77,30 +60,70 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build Desktop
+      - name: Build iOS (macOS only)
         run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            flutter build linux --release
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            flutter build macos --release
-          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            flutter build windows --release
-          fi
+          flutter build ios --release --no-codesign
 
-      - name: Zip Windows Release
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd build\windows\x64\runner\Release
-          powershell Compress-Archive -Path * -DestinationPath AnymeX_Windows.zip
-
-      - name: Upload Artifact (Desktop)
+      - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.os }}-build
-          path: |
-            build/*/outputs/*
-            build/windows/x64/runner/Release/AnymeX_Windows.zip
+          name: ios-build
+          path: build/ios/iphoneos/*.app
 
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Linux
+        run: |
+          flutter build linux --release
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-build
+          path: build/linux/x64/release/bundle/*
+
+    build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: |
+          flutter build windows --release
+
+      - name: Create ZIP file for Windows Build
+        run: |
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath AnymeX_Windows.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: build/windows/x64/runner/Release/AnymeX_Windows.zip
+
+          
   generate-changelog:
     runs-on: ubuntu-latest
     steps:
@@ -120,6 +143,7 @@ jobs:
           COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"%H %s" --decorate --no-abbrev-commit)
 
           CHANGELOG=""
+
           while IFS= read -r line; do
             HASH=$(echo "$line" | awk '{print $1}')
             MESSAGE=$(echo "$line" | cut -d' ' -f2-)
@@ -150,4 +174,3 @@ jobs:
         with:
           name: all-apks
           path: build_final/**
-
