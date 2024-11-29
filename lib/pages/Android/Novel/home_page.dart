@@ -68,10 +68,10 @@ class _NovelHomePageState extends State<NovelHomePage> {
                     Header(controller: _searchTerm),
                     PlatformBuilder(
                       androidBuilder: Covercarousel(
-                        animeData: novelCarouselData,
+                        animeData: snapshot.data!.sublist(0,10),
                       ),
                       desktopBuilder: DesktopCoverCarousel(
-                        animeData: novelCarouselData,
+                        animeData: snapshot.data!.sublist(0,10),
                       ),
                     ),
                     const SizedBox(height: 10),

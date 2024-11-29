@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:aurora/components/android/common/IconWithLabel.dart';
+import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/pages/Android/Novel/details_page.dart';
 import 'package:aurora/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -60,34 +61,41 @@ class _SearchPageState extends State<SearchPage> {
             const EdgeInsets.only(left: 20.0, right: 20, bottom: 16, top: 50),
         child: Column(
           children: [
-            SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: TextField(
-                controller: controller,
-                onSubmitted: _search,
-                decoration: InputDecoration(
-                  label: const Text('Search Novel'),
-                  floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  hintText: 'Eg.. Omniscient ${"Reader's"} Viewpoint',
-                  prefixIcon: const Icon(Iconsax.search_normal),
-                  suffixIcon: const Icon(IconlyBold.filter),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 1,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      width: 1,
+            Row(
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    onSubmitted: _search,
+                    decoration: InputDecoration(
+                      label: const Text('Search Novel'),
+                      floatingLabelBehavior: FloatingLabelBehavior.auto,
+                      hintText: 'Eg.. Omniscient ${"Reader's"} Viewpoint',
+                      prefixIcon: const Icon(Iconsax.search_normal),
+                      suffixIcon: const Icon(IconlyBold.filter),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.secondary,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          width: 1,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 10),
             Row(
@@ -111,35 +119,66 @@ class _SearchPageState extends State<SearchPage> {
               child: Builder(
                 builder: (context) => _searchData == null
                     ? const Center(child: CircularProgressIndicator())
-                    : GridView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        gridDelegate: isList
-                            ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 1,
-                                mainAxisExtent: 100,
-                              )
-                            : (isBox
-                                ? const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 10.0,
-                                    mainAxisSpacing: 10.0,
-                                    childAspectRatio: 0.7,
-                                  )
-                                : const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 1,
-                                    mainAxisExtent: 170,
-                                  )),
-                        itemCount: _searchData!.length,
-                        itemBuilder: (context, index) {
-                          final novel = _searchData![index];
-                          final tag = novel['title'].toString();
-                          return isList
-                              ? searchItemList(context, novel, tag)
-                              : isBox
-                                  ? searchItemBox(context, novel, tag)
-                                  : searchItemCover(context, novel, tag);
-                        },
+                    : PlatformBuilder(
+                        desktopBuilder: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 6,
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      mainAxisExtent: 150)
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final novel = _searchData![index];
+                            final tag = novel['title'].toString();
+                            return isList
+                                ? searchItemList(context, novel, tag)
+                                : isBox
+                                    ? searchItemBox(context, novel, tag)
+                                    : searchItemCover(context, novel, tag);
+                          },
+                        ),
+                        androidBuilder: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          gridDelegate: isList
+                              ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  mainAxisExtent: 100,
+                                )
+                              : (isBox
+                                  ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10.0,
+                                      mainAxisSpacing: 10.0,
+                                      childAspectRatio: 0.7,
+                                    )
+                                  : const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      mainAxisExtent: 170,
+                                    )),
+                          itemCount: _searchData!.length,
+                          itemBuilder: (context, index) {
+                            final novel = _searchData![index];
+                            final tag = novel['title'].toString();
+                            return isList
+                                ? searchItemList(context, novel, tag)
+                                : isBox
+                                    ? searchItemBox(context, novel, tag)
+                                    : searchItemCover(context, novel, tag);
+                          },
+                        ),
                       ),
               ),
             ),
