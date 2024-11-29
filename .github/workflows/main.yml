@@ -94,7 +94,7 @@ jobs:
           name: linux-build
           path: build/linux/x64/release/bundle/*
 
-    build-windows:
+  build-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout Code
