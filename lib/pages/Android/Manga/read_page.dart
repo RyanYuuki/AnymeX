@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:aurora/auth/auth_provider.dart';
+import 'package:aurora/components/android/common/custom_tile_ui.dart';
 import 'package:aurora/components/android/manga/toggle_bars.dart';
 import 'package:aurora/components/platform_builder.dart';
 import 'package:aurora/hiveData/appData/database.dart';
@@ -46,6 +47,7 @@ class _ReadingPageState extends State<ReadingPage> {
   late MangaSourceHandler mangaSourceHandler;
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
+  double imageWidthFactor = 1.0;
 
   @override
   void initState() {
@@ -193,8 +195,6 @@ class _ReadingPageState extends State<ReadingPage> {
     return _currentPage + 1;
   }
 
-  double? getPageWidth() {}
-
   Widget _buildLayoutContent(bool isDesktop) {
     switch (currentLayout) {
       case 'Webtoon':
@@ -207,7 +207,7 @@ class _ReadingPageState extends State<ReadingPage> {
                 httpHeaders: const {'Referer': 'https://chapmanganato.to/'},
                 fit: BoxFit.cover,
                 width: isDesktop
-                    ? MediaQuery.of(context).size.width * 0.5
+                    ? MediaQuery.of(context).size.width * 0.5 * imageWidthFactor
                     : MediaQuery.of(context).size.width,
                 progressIndicatorBuilder: (context, url, progress) => SizedBox(
                   child: Center(
@@ -328,7 +328,6 @@ class _ReadingPageState extends State<ReadingPage> {
               modes[selections.indexWhere((element) => element)];
 
           return Container(
-            height: 150,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius:
@@ -381,6 +380,21 @@ class _ReadingPageState extends State<ReadingPage> {
                       ),
                     ],
                   ),
+                ),
+                TileWithSlider(
+                  title: 'Image Width',
+                  sliderValue: imageWidthFactor,
+                  onChanged: (double value) {
+                    setModalState(() {
+                      imageWidthFactor = value;
+                    });
+                    setState(() {});
+                  },
+                  description: 'Only Works with webtoon mode',
+                  icon: Icons.image_aspect_ratio_rounded,
+                  min: 0.5,
+                  max: 1.5,
+                  divisions: 10,
                 ),
               ],
             ),
@@ -441,6 +455,78 @@ class _ReadingPageState extends State<ReadingPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class TileWithSlider extends StatefulWidget {
+  const TileWithSlider({
+    super.key,
+    required this.sliderValue,
+    required this.onChanged,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.min,
+    required this.max,
+    this.divisions,
+    this.iconSize,
+  });
+  final String title;
+  final String description;
+  final double sliderValue;
+  final ValueChanged<double> onChanged;
+  final IconData icon;
+  final double min;
+  final double max;
+  final int? divisions;
+  final double? iconSize;
+
+  @override
+  State<TileWithSlider> createState() => _TileWithSliderState();
+}
+
+class _TileWithSliderState extends State<TileWithSlider> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CustomTileUi(
+          icon: widget.icon,
+          title: widget.title,
+          description: widget.description,
+          size: widget.iconSize ?? 30,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 35,
+                child: Text('${(widget.sliderValue * 100).floor()}%',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary)),
+              ),
+              Expanded(
+                child: Slider(
+                  value: widget.sliderValue,
+                  onChanged: (newValue) => widget.onChanged(newValue),
+                  min: widget.min,
+                  max: widget.max,
+                  label: '${(widget.sliderValue * 100).floor()}%',
+                  divisions: widget.divisions ?? (widget.max * 10).toInt(),
+                ),
+              ),
+              SizedBox(
+                width: 35,
+                child: Text('${(widget.max * 100).floor()}%',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary)),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
