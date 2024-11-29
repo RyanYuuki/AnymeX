@@ -1,20 +1,21 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:math' show max;
 import 'package:aurora/auth/auth_provider.dart';
-import 'package:aurora/components/android/videoPlayer/custom_controls.dart';
 import 'package:aurora/hiveData/appData/database.dart';
+import 'package:aurora/pages/Desktop/video_controls.dart';
 import 'package:aurora/utils/sources/anime/extensions/aniwatch_api/api.dart';
 import 'package:aurora/utils/sources/unified_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/services.dart';
-import 'package:fvp/fvp.dart';
-import 'package:fvp/mdk.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
+import 'package:window_manager/window_manager.dart';
 
 class DesktopWatchPage extends StatefulWidget {
   final dynamic episodeSrc;
@@ -54,7 +55,6 @@ class DesktopWatchPage extends StatefulWidget {
 
 class _DesktopWatchPageState extends State<DesktopWatchPage>
     with TickerProviderStateMixin {
-  BetterPlayerController? _betterPlayerController;
   bool showControls = true;
   bool showSubs = true;
   List<BetterPlayerSubtitlesSource>? subtitles;
@@ -83,8 +83,9 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
   };
 
   // Video Player
-  late VideoPlayerController videoPlayerController;
-
+  late Player player;
+  VideoController? videoPlayerController;
+  final FocusNode _focusNode = FocusNode();
   // Video Player Settings
   late String resizeMode;
   late double playbackSpeed;
@@ -102,10 +103,8 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus();
     _initPlayerSettings();
-    registerWith(options: {
-      'platforms': ['windows', 'macos', 'linux']
-    });
     _leftAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -135,9 +134,31 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     );
   }
 
+  void _handleKeyPress(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      final screenWidth = MediaQuery.of(context).size.width;
+
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        setState(() {
+          _doubleTapPosition = Offset(screenWidth * 0.25, 0);
+          _isLeftSide = true;
+        });
+        _handleDoubleTap(true);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        setState(() {
+          _doubleTapPosition = Offset(screenWidth * 0.75, 0);
+          _isLeftSide = false;
+        });
+        _handleDoubleTap(false);
+      } else if (event.logicalKey == LogicalKeyboardKey.space) {
+        player.playOrPause();
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _betterPlayerController?.dispose();
+    player.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -146,6 +167,8 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     _leftAnimationController.dispose();
     _rightAnimationController.dispose();
     _doubleTapTimeout?.cancel();
+    windowManager.setFullScreen(false);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -171,68 +194,16 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
   }
 
   void initializePlayer() {
-    videoPlayerController = VideoPlayerController.networkUrl(episodeSrc![0]['url']);
-    filterSubtitles(tracks);
-    BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
-      fit: resizeModesOptions[resizeMode]!,
-      controlsConfiguration:
-          const BetterPlayerControlsConfiguration(showControls: false),
-      autoPlay: true,
-      expandToFill: true,
-      looping: false,
-      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-        fontSize: subtitleSize,
-        fontColor: colorOptions[subtitleColor]!,
-        outlineColor: colorOptions[subtitleOutlineColor]!,
-        fontFamily: subtitleFont == "Default" ? "Poppins" : subtitleFont,
-        backgroundColor: colorOptions[subtitleBackgroundColor]!,
-      ),
-    );
-
-    _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController!.setupDataSource(_createDataSource());
-
-    _betterPlayerController!.addEventsListener((event) {
-      if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
-        _betterPlayerController!.setSpeed(playbackSpeed);
-      }
-    });
-  }
-
-  BetterPlayerDataSource _createDataSource() {
-    return BetterPlayerDataSource(
-      BetterPlayerDataSourceType.network,
-      episodeSrc![0]['url']!,
-      subtitles: subtitles,
-      videoFormat: BetterPlayerVideoFormat.hls,
-    );
-  }
-
-  void filterSubtitles(List<dynamic>? source) {
-    if (source != null) {
-      subtitles = source
-          .where((data) => data['kind'] == 'captions')
-          .map<BetterPlayerSubtitlesSource>(
-            (caption) => BetterPlayerSubtitlesSource(
-              selectedByDefault: caption['label'] == 'English',
-              type: BetterPlayerSubtitlesSourceType.network,
-              name: caption['label'],
-              urls: [caption['file']],
-            ),
-          )
-          .toList();
-    } else {
-      subtitles = null;
-    }
+    player = Player();
+    videoPlayerController = VideoController(player);
+    player.open(Media(episodeSrc![0]['url']));
+    player.play();
   }
 
   Future<void> fetchSrcHelper(String episodeId) async {
     setState(() {
       episodeSrc == null;
-      _betterPlayerController!.pause();
-      _betterPlayerController!
-          .setupDataSource(BetterPlayerDataSource.network(''));
+      player.open(Media(''));
     });
     try {
       final response =
@@ -251,7 +222,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
         });
         final isOOB = currentEpisode! == widget.episodeData.length;
         if (widget.sourceAnimeId != 'rescue') {
-          Provider.of<AppData>(context).addWatchedAnime(
+          Provider.of<AppData>(context, listen: false).addWatchedAnime(
               anilistAnimeId: widget.animeId.toString(),
               animeId: widget.sourceAnimeId,
               animeTitle: widget.animeTitle,
@@ -270,10 +241,9 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                 .getAnimeInstance()
                 .selectedSource !=
             "GogoAnime") {
-          filterSubtitles(tracks);
           if (widget.isDub) await fetchSubtitles(episodeId);
         }
-        _betterPlayerController?.setupDataSource(_createDataSource());
+        player.open(Media(episodeSrc![0]['url']));
       }
     } catch (e) {
       log('Error fetching episode sources: $e');
@@ -293,8 +263,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
           tracks = response['tracks'];
         });
 
-        filterSubtitles(tracks);
-        _betterPlayerController?.setupDataSource(_createDataSource());
+        player.open(Media(episodeSrc![0]['url']));
       }
     } catch (e) {
       log('Error fetching subtitles: $e');
@@ -384,12 +353,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     );
   }
 
-  void changeResizeMode(int index) {
-    setState(() {
-      _betterPlayerController?.setOverriddenFit(resizeModes[index]);
-    });
-  }
-
+  bool isFullScreen = false;
   Row bottomControls() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -413,37 +377,20 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                 color: Colors.white,
               ),
             ),
-            IconButton(
-              onPressed: () {
-                subtitleDialog();
-              },
-              icon: const Icon(
-                Iconsax.subtitle5,
-                color: Colors.white,
+            if (widget.tracks != null)
+              IconButton(
+                onPressed: () {
+                  subtitleDialog();
+                },
+                icon: const Icon(
+                  Iconsax.subtitle5,
+                  color: Colors.white,
+                ),
               ),
-            ),
           ],
         ),
         Row(
           children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  isLandScapeRight = !isLandScapeRight;
-                  if (isLandScapeRight) {
-                    SystemChrome.setPreferredOrientations(
-                        [DeviceOrientation.landscapeRight]);
-                  } else {
-                    SystemChrome.setPreferredOrientations(
-                        [DeviceOrientation.landscapeLeft]);
-                  }
-                });
-              },
-              icon: const Icon(
-                Icons.screen_rotation_rounded,
-                color: Colors.white,
-              ),
-            ),
             IconButton(
               onPressed: () {
                 showPlaybackSpeedDialog(context);
@@ -453,31 +400,27 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                 color: Colors.white,
               ),
             ),
-            IconButton(
-              onPressed: () {
-                index++;
-                if (index > 2) {
-                  index = 0;
-                  changeResizeMode(index);
-                } else {
-                  changeResizeMode(index);
-                }
-              },
-              icon: const Icon(
-                Icons.fullscreen_rounded,
-                color: Colors.white,
-              ),
-            ),
+            if (!Platform.isAndroid)
+              IconButton(
+                icon: Icon(isFullScreen
+                    ? Icons.fullscreen_exit_rounded
+                    : Icons.fullscreen),
+                onPressed: () {
+                  setState(() {
+                    isFullScreen = !isFullScreen;
+                    windowManager.setFullScreen(isFullScreen);
+                  });
+                },
+              )
           ],
         ),
       ],
     );
   }
 
-  void showPlaybackSpeedDialog(BuildContext context) {
-    BetterPlayerController? playerController = _betterPlayerController;
-    double currentSpeed =
-        playerController?.videoPlayerController?.value.speed ?? 1.0;
+  void showPlaybackSpeedDialog(BuildContext context) async {
+    Player? playerController = player;
+    double currentSpeed = player.state.rate ?? 1.0;
 
     showDialog(
       context: context,
@@ -488,8 +431,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildSpeedOption(
-                    context, playerController!, 0.5, currentSpeed),
+                _buildSpeedOption(context, playerController, 0.5, currentSpeed),
                 _buildSpeedOption(
                     context, playerController, 0.75, currentSpeed),
                 _buildSpeedOption(context, playerController, 1.0, currentSpeed),
@@ -511,17 +453,14 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     );
   }
 
-  Widget _buildSpeedOption(
-      BuildContext context,
-      BetterPlayerController playerController,
-      double speed,
-      double currentSpeed) {
+  Widget _buildSpeedOption(BuildContext context, Player playerController,
+      double speed, double currentSpeed) {
     return RadioListTile<double>(
       value: speed,
       groupValue: currentSpeed,
       onChanged: (value) {
         if (value != null) {
-          playerController.setSpeed(value);
+          player.setRate(value);
           Navigator.of(context).pop();
         }
       },
@@ -635,42 +574,43 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount:
-                    _betterPlayerController?.betterPlayerAsmsTracks.length ?? 0,
+                itemCount: player.state.tracks.video.length,
                 itemBuilder: (context, index) {
-                  final BetterPlayerAsmsTrack? track =
-                      _betterPlayerController?.betterPlayerAsmsTracks[index];
+                  final VideoTrack track = player.state.tracks.video[index];
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: selectedQuality == index
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                        minimumSize: const Size(double.infinity, 0),
-                      ),
-                      onPressed: () {
-                        selectedQuality = index;
-                        _betterPlayerController?.setTrack(track!);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        track?.height == 0 ? 'Auto' : '${track?.height}P',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: selectedQuality == index
-                                ? Colors.black
-                                : Colors.white),
-                      ),
-                    ),
-                  );
+                  return index == 1
+                      ? const SizedBox.shrink()
+                      : Container(
+                          margin: const EdgeInsets.only(bottom: 12.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              backgroundColor: selectedQuality == index
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                              minimumSize: const Size(double.infinity, 0),
+                            ),
+                            onPressed: () {
+                              selectedQuality = index;
+                              player.setVideoTrack(track);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              index == 0 ? 'Auto' : '${track.h}P',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: selectedQuality == index
+                                      ? Colors.black
+                                      : Colors.white),
+                            ),
+                          ),
+                        );
                 },
               ),
             ],
@@ -725,8 +665,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                       ),
                       onPressed: () {
                         selectedQuality = index;
-                        _betterPlayerController?.setupDataSource(
-                            BetterPlayerDataSource.network(link));
+                        player.open(Media(link));
                         Navigator.of(context).pop();
                       },
                       child: Text(
@@ -749,10 +688,20 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
   }
 
   int selectedSub = 0;
-  BetterPlayerSubtitlesSource? nullSub;
+
+  dynamic returnSubs() {
+    var tracks =
+        widget.tracks.where((track) => track['kind'] == 'captions').toList();
+    return tracks;
+  }
+
+  int? returnSubsLength() {
+    var tracks =
+        widget.tracks.where((track) => track['kind'] == 'captions').toList();
+    return tracks.length ?? 0;
+  }
 
   subtitleDialog() {
-    log(widget.tracks.toString());
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -771,14 +720,47 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
               SizedBox(
                 height: 220,
                 child: ListView.builder(
-                  itemCount: _betterPlayerController
-                          ?.betterPlayerSubtitlesSourceList.length ??
-                      0,
+                  itemCount: returnSubsLength()! + 1,
                   itemBuilder: (context, index) {
-                    final BetterPlayerSubtitlesSource? track =
-                        _betterPlayerController
-                            ?.betterPlayerSubtitlesSourceList[index];
+                    final tracks = returnSubs();
 
+                    if (index == returnSubsLength()) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            backgroundColor: selectedSub == index
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              selectedSub = index;
+                              player.setSubtitleTrack(SubtitleTrack.no());
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'None',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: selectedSub == index
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    final track = tracks[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12.0),
                       child: ElevatedButton(
@@ -797,20 +779,19 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                         onPressed: () {
                           setState(() {
                             selectedSub = index;
-                            _betterPlayerController
-                                ?.setupSubtitleSource(track!);
+                            player.setSubtitleTrack(
+                                SubtitleTrack.uri(track['file']));
                           });
                           Navigator.pop(context);
                         },
                         child: Text(
-                          (track?.name == 'Default subtitles'
-                              ? 'None'
-                              : track?.name)!,
+                          track['label'],
                           style: TextStyle(
-                              fontSize: 16,
-                              color: selectedSub == index
-                                  ? Colors.black
-                                  : Colors.white),
+                            fontSize: 16,
+                            color: selectedSub == index
+                                ? Colors.black
+                                : Colors.white,
+                          ),
                         ),
                       ),
                     );
@@ -833,6 +814,38 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
         alignment: Alignment.center,
       ),
     );
+  }
+
+  Map<String, bool> getEpisodeMap() {
+    final episodeMap = {'prev': false, 'next': false};
+
+    if (currentEpisode != null && currentEpisode! > 1) {
+      if (widget.episodeData[currentEpisode! - 2] != null) {
+        episodeMap['prev'] = true;
+      }
+    }
+
+    if (currentEpisode != null && currentEpisode! < widget.episodeData.length) {
+      if (widget.episodeData[currentEpisode!] != null) {
+        episodeMap['next'] = true;
+      }
+    }
+
+    return episodeMap;
+  }
+
+  Future<void> navEpisodes(String direction) async {
+    if (direction == 'prev') {
+      currentEpisode = currentEpisode! - 1;
+    } else {
+      currentEpisode = currentEpisode! + 1;
+    }
+    var episode = widget.episodeData[currentEpisode! - 1];
+    setState(() {
+      episodeTitle = episode['title'];
+      currentEpisode = episode['number'];
+    });
+    await fetchSrcHelper(episode['episodeId']);
   }
 
   String _doubleTapLabel = '';
@@ -863,8 +876,8 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
   }
 
   void _handleDoubleTap(bool isLeft) {
-    final currentPosition =
-        _betterPlayerController!.videoPlayerController?.value.position;
+    final videoPlayerController = player;
+    final currentPosition = player.state.position;
     if (currentPosition == null) return;
 
     setState(() {
@@ -873,12 +886,12 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     });
 
     if (isLeft) {
-      _betterPlayerController!.seekTo(
+      videoPlayerController.seek(
           Duration(seconds: max(0, currentPosition.inSeconds - skipDuration!)));
       _leftAnimationController.forward(from: 0);
     } else {
-      _betterPlayerController!
-          .seekTo(Duration(seconds: currentPosition.inSeconds + skipDuration!));
+      videoPlayerController
+          .seek(Duration(seconds: currentPosition.inSeconds + skipDuration!));
       _rightAnimationController.forward(from: 0);
     }
 
@@ -974,70 +987,57 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
     );
   }
 
-  Map<String, bool> getEpisodeMap() {
-    final episodeMap = {'prev': false, 'next': false};
-
-    if (currentEpisode != null && currentEpisode! > 1) {
-      if (widget.episodeData[currentEpisode! - 2] != null) {
-        episodeMap['prev'] = true;
-      }
-    }
-
-    if (currentEpisode != null && currentEpisode! < widget.episodeData.length) {
-      if (widget.episodeData[currentEpisode!] != null) {
-        episodeMap['next'] = true;
-      }
-    }
-
-    return episodeMap;
-  }
-
-  Future<void> navEpisodes(String direction) async {
-    if (direction == 'prev') {
-      currentEpisode = currentEpisode! - 1;
-    } else {
-      currentEpisode = currentEpisode! + 1;
-    }
-    var episode = widget.episodeData[currentEpisode! - 1];
-    setState(() {
-      episodeTitle = episode['title'];
-      currentEpisode = episode['number'];
-    });
-    await fetchSrcHelper(episode['episodeId']);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTapDown: _handleTap,
-        behavior: HitTestBehavior.opaque,
-        child: Stack(
-          children: [
-            // Video Player
-            BetterPlayer(controller: _betterPlayerController!),
-            Positioned.fill(child: overlay()),
-            Positioned.fill(
-              child: AnimatedOpacity(
-                opacity: showControls ? 1 : 0,
-                duration: const Duration(milliseconds: 300),
-                child: IgnorePointer(
-                  ignoring: !showControls,
-                  child: Controls(
-                    controller: _betterPlayerController!,
-                    bottomControls: bottomControls(),
-                    topControls: topControls(),
-                    hideControlsOnTimeout: () {},
-                    isControlsLocked: () => isControlsLocked,
-                    isControlsVisible: showControls,
-                    episodeMap: getEpisodeMap(),
-                    episodeNav: (direction) => navEpisodes(direction),
+      body: KeyboardListener(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKeyPress,
+        child: GestureDetector(
+          onTapDown: _handleTap,
+          behavior: HitTestBehavior.opaque,
+          child: Stack(
+            children: [
+              // Video Player
+              Video(
+                filterQuality: FilterQuality.high,
+                fit: resizeModesOptions[resizeMode] ?? BoxFit.contain,
+                controller: videoPlayerController!,
+                subtitleViewConfiguration: SubtitleViewConfiguration(
+                    style: TextStyle(
+                        fontSize: subtitleSize,
+                        fontFamily: subtitleFont,
+                        backgroundColor: colorOptions[subtitleBackgroundColor],
+                        inherit: false,
+                        color: colorOptions[subtitleColor])),
+                pauseUponEnteringBackgroundMode: false,
+                controls: (state) {
+                  return const SizedBox.shrink();
+                },
+              ),
+              Positioned.fill(child: overlay()),
+              Positioned.fill(
+                child: AnimatedOpacity(
+                  opacity: showControls ? 1 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IgnorePointer(
+                    ignoring: !showControls,
+                    child: DesktopControls(
+                      controller: player,
+                      bottomControls: bottomControls(),
+                      topControls: topControls(),
+                      hideControlsOnTimeout: () {},
+                      isControlsLocked: () => isControlsLocked,
+                      isControlsVisible: showControls,
+                      episodeMap: getEpisodeMap(),
+                      episodeNav: (direction) => navEpisodes(direction),
+                    ),
                   ),
                 ),
               ),
-            ),
-            _buildRippleEffect(),
-          ],
+              _buildRippleEffect(),
+            ],
+          ),
         ),
       ),
     );
