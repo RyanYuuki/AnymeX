@@ -3,8 +3,8 @@ name: Build and Release AnymeX
 on:
   push:
     tags:
-      - 'v*'  
-  workflow_dispatch:  
+      - 'v*' 
+  workflow_dispatch:
 
 jobs:
   build-mobile:
@@ -20,19 +20,39 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3'  
+          flutter-version: '3.22.3'
 
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build ${{ matrix.platform }}
+      - name: Build Android with Split ABI
+        if: matrix.platform == 'android'
         run: |
-          if [ "${{ matrix.platform }}" == "android" ]; then
-            flutter build apk --release
-          elif [ "${{ matrix.platform }}" == "ios" ]; then
-            flutter build ios --release --no-codesign
-          fi
+          flutter build apk --split-per-abi
 
+      - name: Rename and Upload APKs (Split ABI)
+        if: matrix.platform == 'android'
+        run: |
+          # Rename APKs to ensure the naming convention is kept
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/app-x86_64-release-split.apk
+
+      - name: Build Universal APK
+        if: matrix.platform == 'android'
+        run: |
+          flutter build apk --release
+          
+      - name: Rename and Upload Universal APK
+        if: matrix.platform == 'android'
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-universal.apk
+
+      - name: Build iOS
+        if: matrix.platform == 'ios'
+        run: |
+          flutter build ios --release --no-codesign
+          
       - name: Upload Artifact (Mobile)
         uses: actions/upload-artifact@v3
         with:
@@ -54,7 +74,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: '3.22.3'
 
       - name: Get Dependencies
         run: flutter pub get
@@ -84,9 +104,15 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          # Get the latest tag
-          latest_tag=$(git describe --tags --abbrev=0)
-          echo "Latest tag: $latest_tag"
+          # Get the latest tag (excluding pre-release)
+          latest_tag=$(git tag -l | grep -v -E "(-alpha|-beta)" | sort -V | tail -n 1)
+          
+          # If no valid release tag found, fallback to the first commit
+          if [ -z "$latest_tag" ]; then
+            echo "No release tags found, using the initial commit."
+            latest_tag=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Latest release tag: $latest_tag"
           
           # Generate changelog from commits since the last tag
           echo "Changelog:" > changelog.txt
