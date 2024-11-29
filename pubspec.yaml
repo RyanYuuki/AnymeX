@@ -1,7 +1,7 @@
 name: aurora
-description: "A new Flutter project."
+description: "AnymeX - One Stop for anime, manga, novels"
 publish_to: 'none'
-version: 0.1.0
+version: 2.8.3
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -30,7 +30,6 @@ dependencies:
   url_launcher: ^6.3.0
   crypto: ^3.0.5
   flutter_dotenv: ^5.1.0
-  flutter_web_auth: ^0.5.0
   iconify_flutter: ^0.0.5
   html: any
   transformable_list_view: ^0.6.0
@@ -41,8 +40,11 @@ dependencies:
   dio: ^5.7.0
   permission_handler: ^11.3.1
   flutter_local_notifications: ^18.0.1
-  video_player: ^2.9.2
-  fvp: ^0.28.0
+  media_kit: ^1.1.10+1
+  media_kit_video: ^1.2.4
+  media_kit_libs_video: ^1.0.4
+  window_manager: ^0.4.3
+  flutter_web_auth_2: ^4.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
