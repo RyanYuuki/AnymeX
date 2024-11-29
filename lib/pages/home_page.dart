@@ -73,11 +73,16 @@ class _HomePageState extends State<HomePage> {
                     .toList() ??
                 [])
             : [];
+        final mangaList = isLoggedIn &&
+                anilistProvider.userData != null &&
+                anilistProvider.userData.containsKey('currentlyReading')
+            ? (anilistProvider.userData['currentlyReading'].reversed.toList() ??
+                [])
+            : [];
+
         return ValueListenableBuilder(
           valueListenable: Hive.box('app-data').listenable(),
           builder: (context, Box appBox, _) {
-            // final rawDataManga = anilistProvider.userData['mangaList'];
-            final mangaList = anilistProvider.userData?['mangaList'];
             final dynamic readingMangaList =
                 appBox.get('currently-reading')?.reversed.toList();
             final dynamic readingNovelList =
@@ -185,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                       if (isLoggedIn)
                         PlatformBuilder(
                           androidBuilder: Padding(
-                            padding: const EdgeInsets.only(top:  20.0),
+                            padding: const EdgeInsets.only(top: 20.0),
                             child: _buildAndroidButtons(context),
                           ),
                           desktopBuilder: _buildDesktopButtons(context),

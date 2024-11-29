@@ -207,6 +207,7 @@ class _DetailsPageState extends State<DetailsPage>
         fetchedData = tempEpisodesData;
         episodesData = tempEpisodesData['episodes'];
         availEpisodes = tempEpisodesData['totalEpisodes'];
+        episodeImages = tempEpisodesData['episodes'];
         isLoading = false;
       });
       final tempEpisodeImages =
@@ -215,17 +216,13 @@ class _DetailsPageState extends State<DetailsPage>
         episodeImages = tempEpisodeImages;
       });
     } catch (e) {
-      final tempEpisodesData = await sourcesHandler.mapToAnilist(data['name']);
+      final tempEpisodesData = await sourcesHandler.mapToAnilist(data['jname']);
       setState(() {
         fetchedData = tempEpisodesData;
         episodesData = tempEpisodesData['episodes'];
         availEpisodes = tempEpisodesData['totalEpisodes'];
+        episodeImages = tempEpisodesData['episodes'];
         isLoading = false;
-      });
-      final tempEpisodeImages =
-          await HiAnimeApi().fetchStreamingDataConsumet(widget.id.toString());
-      setState(() {
-        episodeImages = tempEpisodeImages;
       });
     }
   }
@@ -300,6 +297,10 @@ class _DetailsPageState extends State<DetailsPage>
     Widget currentPage = usingSaikouLayout
         ? saikouDetailsPage(context)
         : originalDetailsPage(customScheme, context);
+    final tabBarRoundness =
+        Hive.box('app-data').get('tabBarRoundness', defaultValue: 20.0);
+    double tabBarSizeVertical =
+        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 0.0);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -310,19 +311,13 @@ class _DetailsPageState extends State<DetailsPage>
             data != null)
           Positioned(
             bottom: 0,
-            child: PlatformBuilder(
-              androidBuilder: SizedBox(
-                height: 158,
-                width: MediaQuery.of(context).size.width,
-                child: bottomBar(context, false),
-              ),
-              desktopBuilder: SizedBox(
-                height: 108,
-                width: MediaQuery.of(context).size.width,
-                child: bottomBar(context, true),
-              ),
+            child: SizedBox(
+              height: 140 + tabBarSizeVertical,
+              width: MediaQuery.of(context).size.width,
+              child: bottomBar(
+                  context, false, tabBarRoundness, tabBarSizeVertical),
             ),
-          )
+          ),
       ]),
     );
   }
@@ -353,19 +348,16 @@ class _DetailsPageState extends State<DetailsPage>
     }
   }
 
-  CrystalNavigationBar bottomBar(BuildContext context, bool isDesktop) {
-    final tabBarRoundness =
-        Hive.box('app-data').get('tabBarRoundness', defaultValue: 30.0);
-    double tabBarSizeVertical =
-        Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 30.0);
+  CrystalNavigationBar bottomBar(BuildContext context, bool isDesktop,
+      double tabBarRoundness, double tabBarSizeVertical) {
     return CrystalNavigationBar(
       borderRadius: tabBarRoundness,
       currentIndex: selectedIndex,
       unselectedItemColor: Colors.white,
+      height: 100 + tabBarSizeVertical,
       selectedItemColor: Theme.of(context).colorScheme.primary,
       marginR: !isDesktop
-          ? EdgeInsets.symmetric(
-              horizontal: 100, vertical: getProperSize(tabBarSizeVertical))
+          ? EdgeInsets.symmetric(horizontal: 100, vertical: 8)
           : EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width *
                   calculateMultiplier(context),
