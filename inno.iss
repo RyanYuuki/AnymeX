@@ -12,7 +12,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 
 [Files]
 Source: "build\windows\x64\runner\Release\anymex.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\windows\x64\runner\Release\anymex.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "anymex.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\windows\x64\runner\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 
