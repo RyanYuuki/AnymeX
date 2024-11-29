@@ -3,12 +3,11 @@ name: Build and Release AnymeX
 on:
   push:
     tags:
-      - 'v*' 
+      - "v*"
   workflow_dispatch:
 
 jobs:
   build-mobile:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,7 +19,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3'
+          flutter-version: "3.22.3"
 
       - name: Get Dependencies
         run: flutter pub get
@@ -42,7 +41,7 @@ jobs:
         if: matrix.platform == 'android'
         run: |
           flutter build apk --release
-          
+
       - name: Rename and Upload Universal APK
         if: matrix.platform == 'android'
         run: |
@@ -51,8 +50,8 @@ jobs:
       - name: Build iOS
         if: matrix.platform == 'ios'
         run: |
-          flutter build ios --release --no-codesign
-          
+          flutter build ios
+
       - name: Upload Artifact (Mobile)
         uses: actions/upload-artifact@v3
         with:
@@ -62,7 +61,6 @@ jobs:
             build/ios/iphoneos/*.app
 
   build-desktop:
-    if: github.ref == 'refs/heads/desktop'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -74,7 +72,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3'
+          flutter-version: "3.22.3"
 
       - name: Get Dependencies
         run: flutter pub get
@@ -101,27 +99,48 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Get Latest Non-Pre-Release Tag
+        id: get_tag
+        run: |
+          # List all tags, exclude beta/alpha tags, and get the latest tag
+          LATEST_TAG=$(git tag --list | grep -vE "beta|alpha" | sort -V | tail -n 1)
+          echo "Latest non-pre-release tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Generate Changelog
         id: changelog
         run: |
-          # Get the latest tag (excluding pre-release)
-          latest_tag=$(git tag -l | grep -v -E "(-alpha|-beta)" | sort -V | tail -n 1)
-          
-          # If no valid release tag found, fallback to the first commit
-          if [ -z "$latest_tag" ]; then
-            echo "No release tags found, using the initial commit."
-            latest_tag=$(git rev-list --max-parents=0 HEAD)
-          fi
-          echo "Latest release tag: $latest_tag"
-          
-          # Generate changelog from commits since the last tag
-          echo "Changelog:" > changelog.txt
-          git log $latest_tag..HEAD --pretty=format:"- %s (%an)" --grep=".*" >> changelog.txt
-          
-          cat changelog.txt
+          # Fetch commits since the latest tag
+          COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"%H %s" --decorate --no-abbrev-commit)
 
-      - name: Upload Changelog
+          CHANGELOG=""
+          while IFS= read -r line; do
+            HASH=$(echo "$line" | awk '{print $1}')
+            MESSAGE=$(echo "$line" | cut -d' ' -f2-)
+            CHANGELOG="$CHANGELOG$REPO_URL$HASH $MESSAGE\n"
+          done <<< "$COMMITS"
+
+          # Encode special characters
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+
+      - name: Create Snapshot Release
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: RyanYuuki/AnymeX
+          make_latest: true
+          draft: false
+          tag_name: ${{ steps.extract_version.outputs.version}}
+          body: |
+            ${{ env.CHANGELOG }}
+          files: |
+            build_final/*
+          token: ${{ secrets.SNAPSHOTS_REPO_SECRET }}
+
+      - name: Upload all APKs
         uses: actions/upload-artifact@v3
         with:
-          name: changelog
-          path: changelog.txt
+          name: all-apks
+          path: build_final/**
