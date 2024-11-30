@@ -10,7 +10,6 @@ import 'package:anymex/pages/Android/Anime/home_page.dart';
 import 'package:anymex/pages/Android/Manga/home_page.dart';
 import 'package:anymex/pages/home_page.dart';
 import 'package:anymex/utils/sources/unified_handler.dart';
-import 'package:anymex/utils/update_notifier.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,9 +67,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkForUpdate(context);
-    });
     WidgetsBinding.instance.addObserver(this);
   }
 

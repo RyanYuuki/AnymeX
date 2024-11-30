@@ -82,26 +82,25 @@ void _showUpdateBottomSheet(
             ),
           ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'Update Available',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
+        child: Column(
+          children: [
+            const Text(
+              'Update Available',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 10),
-              Text(
-                name,
-                style: const TextStyle(fontFamily: 'Poppins-SemiBold'),
-              ),
-              const SizedBox(height: 10),
-              Flexible(
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              name,
+              style: const TextStyle(fontFamily: 'Poppins-SemiBold'),
+            ),
+            const SizedBox(height: 10),
+
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: headers.map((header) {
@@ -119,16 +118,22 @@ void _showUpdateBottomSheet(
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                header.replaceAll('**', ''),
+                                header.replaceAll('**', '').replaceAll('##', ''),
                                 style: const TextStyle(
                                   fontFamily: 'Poppins-SemiBold',
                                   fontSize: 16,
                                 ),
                               ),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
-                        ...parsedChanges[header]?.map((change) {
+                        SizedBox(
+                          height: 200,
+                          child: ListView.builder(
+                            itemCount: parsedChanges[header]?.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final change = parsedChanges[header]![index];
                               return Padding(
                                 padding:
                                     const EdgeInsets.only(left: 20, top: 5),
@@ -146,7 +151,7 @@ void _showUpdateBottomSheet(
                                     ),
                                     Expanded(
                                       child: Text(
-                                        change.split('-').last,
+                                        change.split(':').last,
                                         style: const TextStyle(
                                           fontSize: 14,
                                         ),
@@ -155,58 +160,57 @@ void _showUpdateBottomSheet(
                                   ],
                                 ),
                               );
-                            }).toList() ??
-                            [],
+                            },
+                          ),
+                        ),
                       ],
                     );
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 15),
-              const Divider(thickness: 1),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: changelog));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Changelog copied')));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                  color:
-                                      Theme.of(context).colorScheme.primary))),
-                      child: const Text(
-                        'Copy',
-                      ),
+            ),
+
+            const SizedBox(height: 15),
+            const Divider(thickness: 1),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                                color: Theme.of(context).colorScheme.primary))),
+                    child: const Text(
+                      'Cancel',
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        launchUrl(Uri.parse(
-                            'https://github.com/RyanYuuki/AnymeX/releases/latest'));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          backgroundColor: Colors.grey.shade200,
-                          foregroundColor: Colors.black),
-                      child: const Text('Update'),
-                    ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      launchUrl(Uri.parse(
+                          'https://github.com/RyanYuuki/AnymeX/releases/latest'));
+                    },
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        backgroundColor: Colors.grey.shade200,
+                        foregroundColor: Colors.black),
+                    child: const Text('Update'),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       );
     },

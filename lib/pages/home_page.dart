@@ -14,6 +14,7 @@ import 'package:anymex/pages/Android/MyList/mylist_page.dart';
 import 'package:anymex/pages/Android/user/anilist_pages/anime_list.dart';
 import 'package:anymex/pages/Android/user/anilist_pages/manga_list.dart';
 import 'package:anymex/hiveData/themeData/theme_provider.dart';
+import 'package:anymex/utils/update_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,9 @@ class _HomePageState extends State<HomePage> {
         _showWelcomeDialog(context);
       });
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkForUpdate(context);
+    });
   }
 
   @override
