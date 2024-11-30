@@ -69,6 +69,14 @@ jobs:
           # Output the generated changelog
           cat CHANGELOG.md
 
+      - name: Commit and push changelog
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "Update changelog for version $CURRENT_TAG"
+          git push
+
       - name: Update Release with Changelog
         uses: ncipollo/release-action@v1
         with:
