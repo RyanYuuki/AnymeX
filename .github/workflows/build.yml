@@ -223,8 +223,8 @@ jobs:
 
       - name: Replace video file extensions for desktops
         run: |
-          mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
-          mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
+          Move-Item -Path lib\pages\Desktop\video_controls.darts -Destination lib\pages\Desktop\video_controls.dart -Force
+          Move-Item -Path lib\pages\Desktop\watch_page.darts -Destination lib\pages\Desktop\watch_page.dart -Force
 
       - name: Get Dependencies
         run: flutter pub get
