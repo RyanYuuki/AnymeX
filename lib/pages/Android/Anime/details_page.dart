@@ -312,7 +312,7 @@ class _DetailsPageState extends State<DetailsPage>
           Positioned(
             bottom: 0,
             child: SizedBox(
-              height: MediaQuery.of(context).size.width < 500 ? 100 + tabBarSizeVertical : 90 + tabBarSizeVertical,
+              height: MediaQuery.of(context).size.width < 500 ? 140 + tabBarSizeVertical : 90 + tabBarSizeVertical,
               width: MediaQuery.of(context).size.width,
               child: bottomBar(context, MediaQuery.of(context).size.width > 500,
                   tabBarRoundness, tabBarSizeVertical),

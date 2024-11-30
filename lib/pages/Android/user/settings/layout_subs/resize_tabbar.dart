@@ -15,7 +15,7 @@ class _ResizeTabbarState extends State<ResizeTabbar> {
   double tabBarSizeVertical =
       Hive.box('app-data').get('tabBarSizeVertical', defaultValue: 0.0);
   double tabBarSizeHorizontal =
-      Hive.box('app-data').get('tabBarSizeHorizontal', defaultValue: 50.0);
+      Hive.box('app-data').get('tabBarSizeHorizontal', defaultValue: 0.0);
 
   @override
   Widget build(BuildContext context) {

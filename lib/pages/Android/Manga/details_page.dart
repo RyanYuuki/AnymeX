@@ -212,10 +212,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           Positioned(
             bottom: 0,
             child: SizedBox(
-              height: 140 + tabBarSizeVertical,
+              height: MediaQuery.of(context).size.width < 500
+                  ? 140 + tabBarSizeVertical
+                  : 90 + tabBarSizeVertical,
               width: MediaQuery.of(context).size.width,
-              child: bottomBar(
-                  context, false, tabBarRoundness, tabBarSizeVertical),
+              child: bottomBar(context, MediaQuery.of(context).size.width > 500,
+                  tabBarRoundness, tabBarSizeVertical),
             ),
           )
       ]),
@@ -261,7 +263,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           : EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width *
                   calculateMultiplier(context),
-              vertical: getProperSize(tabBarSizeVertical)),
+              vertical: 8),
       paddingR: EdgeInsets.symmetric(horizontal: 10),
       backgroundColor: Colors.black.withOpacity(0.3),
       onTap: (index) {
