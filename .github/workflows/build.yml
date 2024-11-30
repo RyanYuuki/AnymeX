@@ -265,12 +265,13 @@ jobs:
           flutter-version: "3.22.3"
 
       - name: Replace pubspec.yaml with Desktop Version
-        run: cp pubspec_desktop.yaml pubspec.yaml
+        run: cp pubspec_macos.yaml pubspec.yaml
 
       - name: Replace video file extensions for desktops
         run: |
           mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
           mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
+          mv lib/auth/auth_provider_macos.dart lib/auth/auth_provider.dart
 
       - name: Get Dependencies
         run: flutter pub get
