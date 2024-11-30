@@ -1,4 +1,4 @@
-name: Build and Release AnymeX
+name: Build and Release AnymeX 
 
 on:
   push:
