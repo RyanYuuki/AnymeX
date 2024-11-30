@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +14,17 @@ class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
     var box = Hive.box('login-data');
     isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
-    _selectedTheme = isLightMode ? lightMode : darkMode;
+    if (box.get('Theme', defaultValue: 'dark') == 'system') {
+      if (PlatformDispatcher.instance.platformBrightness == Brightness.light) {
+        isLightMode = true;
+        _selectedTheme = lightMode;
+      } else {
+        isLightMode = false;
+        _selectedTheme = darkMode;
+      }
+    } else {
+      _selectedTheme = isLightMode ? lightMode : darkMode;
+    }
     isOled = box.get('isOled', defaultValue: false);
     if (box.get('PaletteMode', defaultValue: 'Material') == 'Material') {
       loadDynamicTheme();
@@ -214,7 +226,8 @@ class ThemeProvider extends ChangeNotifier {
     if (paletteMode == 'Material') {
       loadDynamicTheme();
     } else {
-      int colorValue = box.get('SeedColor', defaultValue: Colors.deepPurple.value);
+      int colorValue =
+          box.get('SeedColor', defaultValue: Colors.deepPurple.value);
       MaterialColor newSeedColor =
           MaterialColor(colorValue, getMaterialColorSwatch(colorValue));
       changeSeedColor(newSeedColor);

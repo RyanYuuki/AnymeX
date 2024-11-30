@@ -17,7 +17,7 @@ class ThemePage extends StatefulWidget {
   State<ThemePage> createState() => _ThemePageState();
 }
 
-class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
+class _ThemePageState extends State<ThemePage> {
   final box = Hive.box('login-data');
   late final palettedMode = box.get('PaletteMode', defaultValue: 'Material');
   late bool isLightMode = box.get('Theme', defaultValue: 'dark') == 'light';
@@ -74,28 +74,12 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     initStates();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangePlatformBrightness() {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    final isLight =
-        PlatformDispatcher.instance.platformBrightness == Brightness.light;
-    if (selectedIndex == 2) {
-      if (isLight) {
-        themeProvider.setLightModeWithoutDB();
-      } else {
-        themeProvider.setDarkModeWithoutDB();
-      }
-    }
   }
 
   void _selectChip(int index) {
@@ -108,7 +92,6 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
         themeProvider.setDarkMode();
       } else if (index == 2) {
         Hive.box('login-data').put('Theme', 'system');
-        didChangePlatformBrightness();
       }
       box.put(
           'Theme',
@@ -197,7 +180,7 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
     value2 = box.get('isOled', defaultValue: false);
     value3 = box.get('PaletteMode') == 'Custom';
     value4 = box.get('PaletteMode') == 'Banner';
-    if(value2!) {
+    if (value2!) {
       isCustomTheme = true;
     } else {
       isCustomTheme = false;
@@ -323,7 +306,6 @@ class _ThemePageState extends State<ThemePage> with WidgetsBindingObserver {
                 title: 'Palette',
                 onTap: _showSchemeVariantDialog,
                 description: 'Change color styles!'),
-
           SwitchTileStateless(
             icon: Iconsax.moon5,
             title: 'Oled Theme Variant',
