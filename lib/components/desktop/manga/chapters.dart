@@ -1,3 +1,4 @@
+import 'package:anymex/pages/Android/user/anilist_pages/manga_list.dart';
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';
 import 'package:anymex/pages/Android/Manga/read_page.dart';
@@ -33,13 +34,20 @@ class DesktopChapterList extends StatelessWidget {
       );
     }
 
+    int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 300}) {
+      return (screenWidth / itemWidth).floor().clamp(1, 3);
+    }
+
     return Container(
       child: GridView.builder(
         itemCount: chaptersData.length,
-        
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisExtent: 90, crossAxisSpacing: 10),
-            shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: getResponsiveCrossAxisCount(
+              MediaQuery.of(context).size.width,
+            ),
+            mainAxisExtent: 90,
+            crossAxisSpacing: 10),
+        shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           final manga = chaptersData[index];
           return Container(
@@ -63,7 +71,8 @@ class DesktopChapterList extends StatelessWidget {
                       child: TextScroll(
                         manga['title'] ?? '?',
                         mode: TextScrollMode.endless,
-                        velocity: const Velocity(pixelsPerSecond: Offset(30, 0)),
+                        velocity:
+                            const Velocity(pixelsPerSecond: Offset(30, 0)),
                         delayBefore: const Duration(milliseconds: 500),
                         pauseBetween: const Duration(milliseconds: 1000),
                         textAlign: TextAlign.start,
