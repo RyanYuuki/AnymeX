@@ -30,27 +30,25 @@ jobs:
       - name: Build Android with Split ABI
         run: flutter build apk --split-per-abi
 
-      - name: Rename and Upload APKs (Split ABI)
+      - name: Rename APKs
         run: |
-          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
-          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
-          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/app-x86_64-release-split.apk
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
 
       - name: Build Universal APK
         run: flutter build apk --release
 
-      - name: Rename and Upload Universal APK
-        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-release-universal.apk
+      - name: Rename Universal APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
 
-      - name: Upload Android Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Release Android APKs
+        uses: ncipollo/release-action@v1
         with:
-          name: android-build
-          path: |
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
-            build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
-            build/app/outputs/flutter-apk/app-x86_64-release-split.apk
-            build/app/outputs/flutter-apk/app-release-universal.apk
+          artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   build-ios:
     runs-on: macos-latest
@@ -72,13 +70,15 @@ jobs:
       - name: Create ZIP of iOS Build
         run: |
           cd build/ios/iphoneos
-          zip -r ../../../ios-release-build.zip *.app
+          zip -r ../../../AnymeX-iOS.zip *.app
 
-      - name: Upload iOS Artifact
-        uses: actions/upload-artifact@v3
+      - name: Release iOS Build
+        uses: ncipollo/release-action@v1
         with:
-          name: ios-build
-          path: ios-release-build.zip
+          artifacts: "AnymeX-iOS.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   build-linux:
     runs-on: ubuntu-latest
@@ -108,13 +108,15 @@ jobs:
       - name: Zip Linux Artifacts
         run: |
           cd build/linux/x64/release/bundle
-          zip -r AnymeX_linux.zip .
+          zip -r ../../../../../AnymeX-Linux.zip .
 
-      - name: Upload Linux Artifact
-        uses: actions/upload-artifact@v3
+      - name: Release Linux Build
+        uses: ncipollo/release-action@v1
         with:
-          name: linux-build
-          path: build/linux/x64/AnymeX_linux.zip
+          artifacts: "AnymeX-Linux.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   build-windows:
     runs-on: windows-latest
@@ -139,13 +141,7 @@ jobs:
       - name: Create ZIP file for Windows Build
         run: |
           cd build/windows/x64/runner/Release
-          Compress-Archive -Path * -DestinationPath AnymeX_Windows.zip
-
-      - name: Upload Windows Build Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-build
-          path: build/windows/x64/runner/Release/AnymeX_Windows.zip
+          Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
       - name: Setup Inno Setup
         run: choco install innosetup -y
@@ -154,91 +150,10 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno.iss
 
-      - name: Upload Inno Setup Installer Artifact
-        uses: actions/upload-artifact@v3
+      - name: Release Windows Builds
+        uses: ncipollo/release-action@v1
         with:
-          name: windows-installer
-          path: output/AnymeX-Setup.exe
-
-  release:
-    needs: [build-android, build-ios, build-linux, build-windows]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ github.ref }}
-        name: Release ${{ github.ref }}
-        body: "Release for version ${{ github.ref }}"
-        draft: false
-        prerelease: false
-
-    - name: Upload Universal APK to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/app/outputs/flutter-apk/app-release-universal.apk
-        asset_name: AnymeX-Android-universal.apk
-        asset_content_type: application/octet-stream
-
-    - name: Upload arm64-v8a APK to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release-split.apk
-        asset_name: AnymeX-Android-arm64.apk
-        asset_content_type: application/octet-stream
-
-    - name: Upload armeabi-v7a APK to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release-split.apk
-        asset_name: AnymeX-Android-armeabi-v7a.apk
-        asset_content_type: application/octet-stream
-
-    - name: Upload x86_64 APK to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/app/outputs/flutter-apk/app-x86_64-release-split.apk
-        asset_name: AnymeX-Android-x86_64.apk
-        asset_content_type: application/octet-stream
-
-
-    - name: Upload iOS ZIP to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ios-release-build.zip 
-        asset_name: AnymeX-iOS.zip
-        asset_content_type: application/zip
-
-    - name: Upload Windows ZIP to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/windows/x64/runner/Release/AnymeX_Windows.zip
-        asset_name: AnymeX-Windows.zip
-        asset_content_type: application/zip
-
-    - name: Upload Windows Installer to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: output/AnymeX-Setup.exe
-        asset_name: AnymeX-Setup.exe
-        asset_content_type: application/x-msdownload
-
-    - name: Upload Linux ZIP to GitHub Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/linux/x64/release/bundle/AnymeX_linux.zip
-        asset_name: AnymeX-Linux.zip
-        asset_content_type: application/zip
+          artifacts: "build/windows/x64/runner/Release/AnymeX-Windows.zip,output/AnymeX-Setup.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
