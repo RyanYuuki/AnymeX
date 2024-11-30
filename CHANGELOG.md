@@ -1,5 +1,5 @@
 # Changelog
-## v2.8.4
+## v2.8.4-beta
 
 ## 🎉 New Features:
 * [`6673194`](https://github.com/RyanYuuki/AnymeX/commit/6673194): feat: added keys support for chapter navigation and scroll multiplier for faster scrolling
