@@ -33,38 +33,38 @@ jobs:
           echo "" >> CHANGELOG.md
 
           # 🎉 New Features: (commits with 'feat')
-          echo "🎉 New Features:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^feat' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🎉 New Features:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^feat' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           echo "" >> CHANGELOG.md
 
           # 🛠️ Bug Fixes & Improvements: (commits with 'fix', 'bug', 'improvement', etc.)
-          echo "🛠️ Bug Fixes & Improvements:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(fix|bug|improvement|patch)' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🛠️ Bug Fixes & Improvements:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(fix|bug|improvement|patch)' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           echo "" >> CHANGELOG.md
 
           # 🔧 Refactors: (commits with 'refactor')
-          echo "🔧 Refactors:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^refactor' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🔧 Refactors:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^refactor' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           echo "" >> CHANGELOG.md
 
           # 🎨 Style Changes: (commits with 'style')
-          echo "🎨 Style Changes:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^style' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🎨 Style Changes:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^style' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           echo "" >> CHANGELOG.md
 
           # 🚀 Performance Improvements: (commits with 'perf')
-          echo "🚀 Performance Improvements:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^perf' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🚀 Performance Improvements:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^perf' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           echo "" >> CHANGELOG.md
 
           # 🧹 Chores & Documentation: (commits with 'chore', 'docs')
-          echo "🧹 Chores & Documentation:" >> CHANGELOG.md
-          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(chore|docs|build|ci)' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+          echo "## 🧹 Chores & Documentation:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(chore|docs|build|ci)' --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
 
           # Output the generated changelog
           cat CHANGELOG.md
@@ -185,6 +185,11 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Replace video file extensions for desktops
+        run: |
+          mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
+          mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
+
       - name: Build Linux
         run: flutter build linux --release
 
@@ -216,6 +221,11 @@ jobs:
       - name: Replace pubspec.yaml with Desktop Version
         run: Copy-Item -Path pubspec_desktop.yaml -Destination pubspec.yaml -Force
 
+      - name: Replace video file extensions for desktops
+        run: |
+          mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
+          mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -238,6 +248,45 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/windows/x64/runner/Release/AnymeX-Windows.zip,output/AnymeX-Setup.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
+
+  build-macos:
+    runs-on: macos-latest
+    needs: generate-changelog
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.22.3"
+
+      - name: Replace pubspec.yaml with Desktop Version
+        run: cp pubspec_desktop.yaml pubspec.yaml
+
+      - name: Replace video file extensions for desktops
+        run: |
+          mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
+          mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        run: flutter build macos --release
+
+      - name: Create DMG file for macOS Build
+        run: |
+          mkdir -p build/macos/Release
+          hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release/AnymeX.app -ov -format UDZO build/macos/Release/AnymeX.dmg
+
+      - name: Release macOS Builds
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/macos/Release/AnymeX.dmg"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
