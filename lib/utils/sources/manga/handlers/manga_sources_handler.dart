@@ -20,7 +20,7 @@ class MangaSourceHandler {
   String? selectedSourceName = "";
 
   MangaSourceHandler() {
-    selectedSourceName = sourceMap.entries.first.key;
+    selectedSourceName = sourceMap.entries.elementAt(4).key;
   }
 
   void setSelectedSource(String sourceName) {
