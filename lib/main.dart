@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/hiveData/appData/database.dart';
@@ -53,7 +54,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   int selectedIndex = 1;
 
@@ -70,6 +71,27 @@ class _MainAppState extends State<MainApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkForUpdate(context);
     });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isLight =
+        PlatformDispatcher.instance.platformBrightness == Brightness.light;
+    if (Hive.box('login-data').get('Theme', defaultValue: 'dark') == 'system') {
+      if (isLight) {
+        themeProvider.setLightModeWithoutDB();
+      } else {
+        themeProvider.setDarkModeWithoutDB();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _checkAndroidVersion() async {

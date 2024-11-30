@@ -232,7 +232,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => DetailsPage(
-                            id: anime['id'],
+                            id: (anime['id']),
                             posterUrl: proxyUrl + anime['coverImage']['large'],
                             tag: title + tag.toString(),
                           )));
