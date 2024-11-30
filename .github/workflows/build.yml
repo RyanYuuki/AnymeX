@@ -9,41 +9,47 @@ on:
 jobs:
   generate-changelog:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Generate Changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          #!/bin/bash
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          
-          if [ -z "$PREVIOUS_TAG" ]; then
-            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-          
-          COMMITS=$(git log $PREVIOUS_TAG..$CURRENT_TAG --pretty=format:'* `%h`: %s')
-          
-          echo "# Changelog" > CHANGELOG.md
-          echo "## $CURRENT_TAG" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "$COMMITS" >> CHANGELOG.md
-          
-          cat CHANGELOG.md
+    - name: Generate Changelog
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        #!/bin/bash
+        PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+        CURRENT_TAG=${GITHUB_REF#refs/tags/}
 
-      - name: Update Release with Changelog
-        uses: ncipollo/release-action@v1
-        with:
-          bodyFile: "CHANGELOG.md"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true  
+        if [ -z "$PREVIOUS_TAG" ]; then
+          PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+        fi
+
+        echo "# Changelog" > CHANGELOG.md
+        echo "## $CURRENT_TAG" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+
+        echo "🎉 New Features:" >> CHANGELOG.md
+        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^feat' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+
+        echo "" >> CHANGELOG.md
+        echo "🛠️ Bug Fixes & Improvements:" >> CHANGELOG.md
+        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(fix|bug)' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+
+        echo "" >> CHANGELOG.md
+        echo "🔧 Chores & Documentation:" >> CHANGELOG.md
+        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(chore|docs)' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+
+        cat CHANGELOG.md
+
+    - name: Update Release with Changelog
+      uses: ncipollo/release-action@v1
+      with:
+        bodyFile: "CHANGELOG.md"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        allowUpdates: true
 
   build-android:
     runs-on: ubuntu-latest
@@ -118,10 +124,10 @@ jobs:
       - name: Release iOS IPA
         uses: ncipollo/release-action@v1
         with:
-            artifacts: "AnymeX-iOS-*.ipa"
-            token: ${{ secrets.GITHUB_TOKEN }}
-            allowUpdates: true
-            tag: ${{ github.ref_name }}
+          artifacts: "AnymeX-iOS-*.ipa"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   build-linux:
     runs-on: ubuntu-latest
