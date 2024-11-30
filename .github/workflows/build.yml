@@ -64,21 +64,24 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build iOS (macOS only)
-        run: flutter build ios --release --no-codesign
-
-      - name: Create ZIP of iOS Build
+      - name: Build iOS
         run: |
+          flutter build ios --release --no-codesign
           cd build/ios/iphoneos
-          zip -r ../../../AnymeX-iOS.zip *.app
+          mkdir -p Payload
+          cd Payload
+          ln -s ../Runner.app
+          cd ..
+          zip -r AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+          mv AnymeX-iOS-${{ github.ref_name }}.ipa ../../../
 
-      - name: Release iOS Build
+      - name: Release iOS IPA
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "AnymeX-iOS.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+            artifacts: "AnymeX-iOS-*.ipa"
+            token: ${{ secrets.GITHUB_TOKEN }}
+            allowUpdates: true
+            tag: ${{ github.ref_name }}
 
   build-linux:
     runs-on: ubuntu-latest
