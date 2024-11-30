@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/components/android/common/custom_tile_ui.dart';
 import 'package:anymex/components/android/manga/toggle_bars.dart';
@@ -8,6 +9,7 @@ import 'package:anymex/utils/sources/manga/handlers/manga_sources_handler.dart';
 import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +50,8 @@ class _ReadingPageState extends State<ReadingPage> {
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
   double imageWidthFactor = 1.0;
+  FocusNode focusNode = FocusNode();
+  double scrollMultiplier = 1.5;
 
   @override
   void initState() {
@@ -56,6 +60,12 @@ class _ReadingPageState extends State<ReadingPage> {
         Provider.of<UnifiedSourcesHandler>(context, listen: false)
             .getMangaInstance();
     fetchChapterData();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
   }
 
   Future<void> fetchChapterData() async {
@@ -161,30 +171,66 @@ class _ReadingPageState extends State<ReadingPage> {
     }
   }
 
+  void handleKeyPress(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+          event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        if (currentLayout == "Webtoon") {
+          _scrollController.animateTo(
+              _scrollController.offset - (200 * scrollMultiplier),
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut);
+        } else {
+          _pageController.animateToPage((_pageController.page! - 1).toInt(),
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut);
+        }
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+          event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        if (currentLayout == "Webtoon") {
+          _scrollController.animateTo(
+              _scrollController.offset + (200 * scrollMultiplier),
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut);
+        } else {
+          _pageController.animateToPage((_pageController.page! + 1).toInt(),
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeInOut);
+        }
+        setState(() {});
+      }
+    }
+  }
+
   int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
-    return ToggleBar(
-      mangaData: mangaData,
-      pageNumber: _getPageNumber(),
-      title: isLoading ? 'Loading...' : mangaTitle ?? 'Unknown Title',
-      chapter: isLoading ? 'Loading...' : currentChapter ?? 'Unknown Chapter',
-      totalImages: totalImages ?? 10,
-      scrollController: _scrollController,
-      handleChapter: handleChapter,
-      showChapters: _showChapters,
-      showSettings: _showSettings,
-      pageController: _pageController,
-      currentLayout: currentLayout,
-      child: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : hasError
-              ? const Text('Failed to load data')
-              : PlatformBuilder(
-                  desktopBuilder: _buildLayoutContent(true),
-                  androidBuilder: _buildLayoutContent(false),
-                ),
+    return KeyboardListener(
+      focusNode: focusNode,
+      onKeyEvent: handleKeyPress,
+      child: ToggleBar(
+        mangaData: mangaData,
+        pageNumber: _getPageNumber(),
+        title: isLoading ? 'Loading...' : mangaTitle ?? 'Unknown Title',
+        chapter: isLoading ? 'Loading...' : currentChapter ?? 'Unknown Chapter',
+        totalImages: totalImages ?? 10,
+        scrollController: _scrollController,
+        handleChapter: handleChapter,
+        showChapters: _showChapters,
+        showSettings: _showSettings,
+        pageController: _pageController,
+        currentLayout: currentLayout,
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : hasError
+                ? const Text('Failed to load data')
+                : PlatformBuilder(
+                    desktopBuilder: _buildLayoutContent(true),
+                    androidBuilder: _buildLayoutContent(false),
+                  ),
+      ),
     );
   }
 
@@ -396,6 +442,23 @@ class _ReadingPageState extends State<ReadingPage> {
                   max: 1.5,
                   divisions: 10,
                 ),
+                if (!Platform.isAndroid)
+                  TileWithSlider(
+                    title: 'Scroll Multiplier',
+                    sliderValue: scrollMultiplier,
+                    onChanged: (double value) {
+                      setModalState(() {
+                        scrollMultiplier = value;
+                      });
+                      setState(() {});
+                    },
+                    description:
+                        'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                    icon: Icons.image_aspect_ratio_rounded,
+                    min: 1.0,
+                    max: 10.0,
+                    divisions: 9,
+                  ),
               ],
             ),
           );
@@ -502,7 +565,7 @@ class _TileWithSliderState extends State<TileWithSlider> {
           child: Row(
             children: [
               SizedBox(
-                width: 35,
+                width: 40,
                 child: Text('${(widget.sliderValue * 100).floor()}%',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary)),
@@ -518,7 +581,7 @@ class _TileWithSliderState extends State<TileWithSlider> {
                 ),
               ),
               SizedBox(
-                width: 35,
+                width: 40,
                 child: Text('${(widget.max * 100).floor()}%',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary)),
