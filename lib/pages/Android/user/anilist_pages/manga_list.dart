@@ -3,9 +3,17 @@ import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/pages/Android/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
-class AnilistMangaList extends StatelessWidget {
+class AnilistMangaList extends StatefulWidget {
+  const AnilistMangaList({super.key});
+
+  @override
+  State<AnilistMangaList> createState() => _AnilistMangaListState();
+}
+
+class _AnilistMangaListState extends State<AnilistMangaList> {
   final List<String> tabs = [
     'READING',
     'COMPLETED',
@@ -16,7 +24,8 @@ class AnilistMangaList extends StatelessWidget {
     'ALL',
   ];
 
-  AnilistMangaList({super.key});
+  bool isReversed = false;
+  bool isItemsReversed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +37,27 @@ class AnilistMangaList extends StatelessWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
+          actions: [
+            IconButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: isReversed
+                        ? Theme.of(context).colorScheme.surfaceContainer
+                        : Colors.transparent),
+                onPressed: () {
+                  setState(() {
+                    isReversed = !isReversed;
+                  });
+                },
+                icon: const Icon(Iconsax.arrow_swap_horizontal)),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    isItemsReversed = !isItemsReversed;
+                  });
+                },
+                icon: Icon(
+                    isItemsReversed ? Iconsax.arrow_up : Iconsax.arrow_bottom)),
+          ],
           leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back_ios_new)),
@@ -35,24 +65,46 @@ class AnilistMangaList extends StatelessWidget {
               style: TextStyle(
                   fontSize: 16, color: Theme.of(context).colorScheme.primary)),
           bottom: TabBar(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            physics: const BouncingScrollPhysics(),
             tabAlignment: TabAlignment.start,
             isScrollable: true,
-            tabs: tabs
-                .map((tab) => Tab(
-                    child: Text(tab,
-                        style:
-                            const TextStyle(fontFamily: 'Poppins-SemiBold'))))
-                .toList(),
+            tabs: isReversed
+                ? tabs.reversed
+                    .toList()
+                    .map((tab) => Tab(
+                        child: Text(tab,
+                            style: const TextStyle(
+                                fontFamily: 'Poppins-SemiBold'))))
+                    .toList()
+                : tabs
+                    .map((tab) => Tab(
+                        child: Text(tab,
+                            style: const TextStyle(
+                                fontFamily: 'Poppins-SemiBold'))))
+                    .toList(),
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: TabBarView(
-          children: tabs
-              .map((tab) => MangaListContent(
-                    tabType: tab,
-                    mangaData: mangaList,
-                  ))
-              .toList(),
+          children: isReversed
+              ? tabs.reversed
+                  .toList()
+                  .map((tab) => MangaListContent(
+                        tabType: tab,
+                        mangaData: isItemsReversed
+                            ? mangaList.reversed.toList()
+                            : mangaList,
+                      ))
+                  .toList()
+              : tabs
+                  .map((tab) => MangaListContent(
+                        tabType: tab,
+                        mangaData: isItemsReversed
+                            ? mangaList.reversed.toList()
+                            : mangaList,
+                      ))
+                  .toList(),
         ),
       ),
     );

@@ -7,7 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
-class AnimeList extends StatelessWidget {
+class AnimeList extends StatefulWidget {
+  const AnimeList({super.key});
+
+  @override
+  State<AnimeList> createState() => _AnimeListState();
+}
+
+class _AnimeListState extends State<AnimeList> {
   final List<String> tabs = [
     'WATCHING',
     'COMPLETED TV',
@@ -20,8 +27,8 @@ class AnimeList extends StatelessWidget {
     'FAVOURITES',
     'ALL',
   ];
-
-  AnimeList({super.key});
+  bool isReversed = false;
+  bool isItemsReversed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +40,27 @@ class AnimeList extends StatelessWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
+          actions: [
+            IconButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: isReversed
+                        ? Theme.of(context).colorScheme.surfaceContainer
+                        : Colors.transparent),
+                onPressed: () {
+                  setState(() {
+                    isReversed = !isReversed;
+                  });
+                },
+                icon: const Icon(Iconsax.arrow_swap_horizontal)),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    isItemsReversed = !isItemsReversed;
+                  });
+                },
+                icon: Icon(
+                    isItemsReversed ? Iconsax.arrow_up : Iconsax.arrow_bottom)),
+          ],
           leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back_ios_new)),
@@ -44,22 +72,42 @@ class AnimeList extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             tabAlignment: TabAlignment.start,
             isScrollable: true,
-            tabs: tabs
-                .map((tab) => Tab(
-                    child: Text(tab,
-                        style:
-                            const TextStyle(fontFamily: 'Poppins-SemiBold'))))
-                .toList(),
+            tabs: isReversed
+                ? tabs.reversed
+                    .toList()
+                    .map((tab) => Tab(
+                        child: Text(tab,
+                            style: const TextStyle(
+                                fontFamily: 'Poppins-SemiBold'))))
+                    .toList()
+                : tabs
+                    .map((tab) => Tab(
+                        child: Text(tab,
+                            style: const TextStyle(
+                                fontFamily: 'Poppins-SemiBold'))))
+                    .toList(),
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: TabBarView(
-          children: tabs
-              .map((tab) => AnimeListContent(
-                    tabType: tab,
-                    animeData: animeList,
-                  ))
-              .toList(),
+          children: isReversed
+              ? tabs.reversed
+                  .toList()
+                  .map((tab) => AnimeListContent(
+                        tabType: tab,
+                        animeData: isItemsReversed
+                            ? animeList.reversed.toList()
+                            : animeList,
+                      ))
+                  .toList()
+              : tabs
+                  .map((tab) => AnimeListContent(
+                        tabType: tab,
+                        animeData: isItemsReversed
+                            ? animeList.reversed.toList()
+                            : animeList,
+                      ))
+                  .toList(),
         ),
       ),
     );
@@ -70,8 +118,11 @@ class AnimeListContent extends StatelessWidget {
   final String tabType;
   final dynamic animeData;
 
-  const AnimeListContent(
-      {super.key, required this.tabType, required this.animeData});
+  const AnimeListContent({
+    super.key,
+    required this.tabType,
+    required this.animeData,
+  });
 
   int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
     return (screenWidth / itemWidth).floor().clamp(1, 10);
@@ -107,7 +158,8 @@ class AnimeListContent extends StatelessWidget {
         ),
         desktopBuilder: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: getResponsiveCrossAxisCount(MediaQuery.of(context).size.width),
+              crossAxisCount: getResponsiveCrossAxisCount(
+                  MediaQuery.of(context).size.width),
               mainAxisExtent: 270,
               crossAxisSpacing: 10),
           itemCount: filteredAnimeList.length,
