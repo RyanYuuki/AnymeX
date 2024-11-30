@@ -190,6 +190,9 @@ jobs:
           mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
           mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
 
+      - name: Replace main.dart with Desktop Version
+        run: mv lib/main.darts lib/main.dart     
+
       - name: Build Linux
         run: flutter build linux --release
 
@@ -220,6 +223,9 @@ jobs:
 
       - name: Replace pubspec.yaml with Desktop Version
         run: Copy-Item -Path pubspec_desktop.yaml -Destination pubspec.yaml -Force
+
+      - name: Replace main.dart with Desktop Version
+        run: Move-Item -Path lib\main.darts -Destination lib\main.dart -Force
 
       - name: Replace video file extensions for desktops
         run: |
@@ -266,6 +272,9 @@ jobs:
 
       - name: Replace pubspec.yaml with Desktop Version
         run: cp pubspec_macos.yaml pubspec.yaml
+
+      - name: Replace main.dart with Desktop Version
+        run: mv lib/main.darts lib/main.dart
 
       - name: Replace video file extensions for desktops
         run: |
