@@ -17,6 +17,7 @@ import 'package:anymex/components/desktop/horizontal_list.dart';
 import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/fallbackData/anilist_homepage_data.dart';
 import 'package:anymex/hiveData/appData/database.dart';
+import 'package:anymex/pages/Desktop/watch_page.dart';
 import 'package:anymex/utils/apiHooks/anilist/anime/details_page.dart';
 import 'package:anymex/utils/methods.dart';
 import 'package:anymex/utils/sources/anime/extensions/aniwatch_api/api.dart';
@@ -268,25 +269,47 @@ class _DetailsPageState extends State<DetailsPage>
 
     if (episodeSrc != null) {
       Navigator.pop(context);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WatchPage(
-                    episodeSrc: episodeSrc ?? [],
-                    episodeData: episodesData,
-                    currentEpisode: currentEpisode,
-                    episodeTitle:
-                        episodesData[currentEpisode - 1]['title'] ?? '',
-                    activeServer: activeServer,
-                    isDub: isDub,
-                    animeId: widget.id,
-                    tracks: subtitleTracks,
-                    provider: Theme.of(context),
-                    animeTitle: data['name'] ?? data?['jname'] ?? '',
-                    sourceAnimeId: animeId!,
-                    description: data['description'],
-                    posterImage: data['poster'],
-                  )));
+      if (Platform.isAndroid || Platform.isIOS) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData,
+                      currentEpisode: currentEpisode,
+                      episodeTitle:
+                          episodesData[currentEpisode - 1]['title'] ?? '',
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: widget.id,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      animeTitle: data['name'] ?? data?['jname'] ?? '',
+                      sourceAnimeId: animeId!,
+                      description: data['description'],
+                      posterImage: data['poster'],
+                    )));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DesktopWatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData,
+                      currentEpisode: currentEpisode,
+                      episodeTitle:
+                          episodesData[currentEpisode - 1]['title'] ?? '',
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: widget.id,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      animeTitle: data['name'] ?? data?['jname'] ?? '',
+                      sourceAnimeId: animeId!,
+                      description: data['description'],
+                      posterImage: data['poster'],
+                    )));
+      }
     }
   }
 
@@ -312,7 +335,9 @@ class _DetailsPageState extends State<DetailsPage>
           Positioned(
             bottom: 0,
             child: SizedBox(
-              height: MediaQuery.of(context).size.width < 500 ? 140 + tabBarSizeVertical : 90 + tabBarSizeVertical,
+              height: MediaQuery.of(context).size.width < 500
+                  ? 140 + tabBarSizeVertical
+                  : 90 + tabBarSizeVertical,
               width: MediaQuery.of(context).size.width,
               child: bottomBar(context, MediaQuery.of(context).size.width > 500,
                   tabBarRoundness, tabBarSizeVertical),
