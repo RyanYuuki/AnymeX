@@ -7,8 +7,47 @@ on:
   workflow_dispatch:
 
 jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #!/bin/bash
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          
+          COMMITS=$(git log $PREVIOUS_TAG..$CURRENT_TAG --pretty=format:'* `%h`: %s')
+          
+          echo "# Changelog" > CHANGELOG.md
+          echo "## $CURRENT_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "$COMMITS" >> CHANGELOG.md
+          
+          cat CHANGELOG.md
+
+      - name: Update Release with Changelog
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true  
+
   build-android:
     runs-on: ubuntu-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -52,6 +91,7 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -85,6 +125,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -123,6 +164,7 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
