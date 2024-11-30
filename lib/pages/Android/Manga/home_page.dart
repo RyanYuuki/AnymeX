@@ -229,9 +229,9 @@ Container ListItem(BuildContext context, {required data, required tag}) {
                 context,
                 MaterialPageRoute(
                     builder: (context) => MangaDetailsPage(
-                          id: anime['id'],
+                          id: (anime['id']),
                           posterUrl: proxyUrl + anime['coverImage']['large'],
-                          tag: tag,
+                          tag: tag.toString(),
                         )));
           },
           child: Container(
