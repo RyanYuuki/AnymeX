@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
-import 'package:anymex/pages/Desktop/video_controls.darts';
+import 'package:anymex/pages/Desktop/video_controls.dart';
 import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/hiveData/appData/database.dart';
 import 'package:anymex/pages/Desktop/video_controls.dart';
