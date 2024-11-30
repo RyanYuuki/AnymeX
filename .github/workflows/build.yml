@@ -10,46 +10,71 @@ jobs:
   generate-changelog:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Generate Changelog
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        #!/bin/bash
-        PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
-        CURRENT_TAG=${GITHUB_REF#refs/tags/}
+      - name: Generate Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #!/bin/bash
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
 
-        if [ -z "$PREVIOUS_TAG" ]; then
-          PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-        fi
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
 
-        echo "# Changelog" > CHANGELOG.md
-        echo "## $CURRENT_TAG" >> CHANGELOG.md
-        echo "" >> CHANGELOG.md
+          # Initialize changelog with the current tag as the version
+          echo "# Changelog" > CHANGELOG.md
+          echo "## $CURRENT_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
 
-        echo "🎉 New Features:" >> CHANGELOG.md
-        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^feat' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+          # 🎉 New Features: (commits with 'feat')
+          echo "🎉 New Features:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^feat' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
 
-        echo "" >> CHANGELOG.md
-        echo "🛠️ Bug Fixes & Improvements:" >> CHANGELOG.md
-        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(fix|bug)' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
 
-        echo "" >> CHANGELOG.md
-        echo "🔧 Chores & Documentation:" >> CHANGELOG.md
-        git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(chore|docs)' --pretty=format:'* `%h`: %s' >> CHANGELOG.md
+          # 🛠️ Bug Fixes & Improvements: (commits with 'fix', 'bug', 'improvement', etc.)
+          echo "🛠️ Bug Fixes & Improvements:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(fix|bug|improvement|patch)' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
 
-        cat CHANGELOG.md
+          echo "" >> CHANGELOG.md
 
-    - name: Update Release with Changelog
-      uses: ncipollo/release-action@v1
-      with:
-        bodyFile: "CHANGELOG.md"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        allowUpdates: true
+          # 🔧 Refactors: (commits with 'refactor')
+          echo "🔧 Refactors:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^refactor' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+
+          # 🎨 Style Changes: (commits with 'style')
+          echo "🎨 Style Changes:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^style' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+
+          # 🚀 Performance Improvements: (commits with 'perf')
+          echo "🚀 Performance Improvements:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^perf' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+
+          # 🧹 Chores & Documentation: (commits with 'chore', 'docs')
+          echo "🧹 Chores & Documentation:" >> CHANGELOG.md
+          git log $PREVIOUS_TAG..$CURRENT_TAG --grep='^(chore|docs|build|ci)' --pretty=format:'* [Commit `%h`](https://github.com/${GITHUB_REPOSITORY}/commit/%h): %s' >> CHANGELOG.md
+
+          # Output the generated changelog
+          cat CHANGELOG.md
+
+      - name: Update Release with Changelog
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
 
   build-android:
     runs-on: ubuntu-latest
