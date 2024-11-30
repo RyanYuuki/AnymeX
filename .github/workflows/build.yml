@@ -33,12 +33,18 @@ jobs:
           echo "Previous Tag: $PREVIOUS_TAG"
           echo "Current Tag: $CURRENT_TAG"
 
+          # Check if there are any commits between the tags
+          if [ -z "$(git log $PREVIOUS_TAG..$CURRENT_TAG --oneline)" ]; then
+            echo "No commits found between $PREVIOUS_TAG and $CURRENT_TAG."
+            exit 0
+          fi
+
           # Initialize Changelog
           echo "# Changelog" > CHANGELOG.md
           echo "## $CURRENT_TAG" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-          # Define Commit Sections
+          # Define Commit Types
           declare -A SECTIONS=(
             ["🎉 New Features"]="^feat"
             ["🛠️ Bug Fixes & Improvements"]="^(fix|bug|improvement|patch)"
@@ -48,13 +54,10 @@ jobs:
             ["🧹 Chores & Documentation"]="^(chore|docs|build|ci)"
           )
 
-          # Generate Empty Sections with Commit Content
+          # Generate Sections
           for SECTION in "${!SECTIONS[@]}"; do
             echo "## $SECTION:" >> CHANGELOG.md
-            LOG=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="${SECTIONS[$SECTION]}" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
-            if [ -n "$LOG" ]; then
-              echo "$LOG" >> CHANGELOG.md
-            fi
+            git log $PREVIOUS_TAG..$CURRENT_TAG --grep="${SECTIONS[$SECTION]}" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
             echo "" >> CHANGELOG.md
           done
 
