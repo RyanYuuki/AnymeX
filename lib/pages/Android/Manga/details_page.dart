@@ -721,7 +721,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             ),
           ),
           const SizedBox(height: 10),
-          if (mangaData == null)
+          if (mangaData == null || filteredChapters == null)
             SizedBox(
                 height: 200, child: Center(child: CircularProgressIndicator()))
           else
