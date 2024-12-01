@@ -46,33 +46,45 @@ class _RescueAnimeHomeState extends State<RescueAnimeHome> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  TextField(
-                    controller: _controller,
-                    onSubmitted: _performSearch,
-                    decoration: InputDecoration(
-                      labelText: 'Search Anime',
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).colorScheme.surfaceContainerHigh,
-                      suffixIcon: const Icon(Iconsax.search_normal),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 1,
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back_ios_new)),
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          onSubmitted: _performSearch,
+                          decoration: InputDecoration(
+                            labelText: 'Search Anime',
+                            floatingLabelBehavior: FloatingLabelBehavior.auto,
+                            filled: true,
+                            fillColor: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHigh,
+                            suffixIcon: const Icon(Iconsax.search_normal),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.transparent,
+                                width: 1,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 20),
+                          ),
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 20),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   DropdownButtonFormField<String>(

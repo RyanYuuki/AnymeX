@@ -59,6 +59,7 @@ class _CovercarouselState extends State<Covercarousel> {
             return Stack(
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
                       onTap: () {

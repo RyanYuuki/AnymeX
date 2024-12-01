@@ -2,8 +2,12 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:anymex/components/android/anime/details/episode_list.dart';
+import 'package:anymex/components/desktop/anime/episode_grid.dart';
+import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/pages/Android/Anime/watch_page.dart';
+import 'package:anymex/pages/Desktop/watch_page.dart';
 import 'package:anymex/utils/downloader/downloader.dart';
 import 'package:anymex/utils/sources/anime/extensions/aniwatch/aniwatch.dart';
 import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
@@ -433,26 +437,49 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
 
     if (episodeSrc != null) {
       Navigator.pop(context);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WatchPage(
-                    episodeSrc: episodeSrc ?? [],
-                    episodeData: episodesData?['episodes'],
-                    currentEpisode: currentEpisode,
-                    episodeTitle: episodesData?['episodes'][currentEpisode - 1]
-                            ['title'] ??
-                        '',
-                    animeTitle: widget.title,
-                    activeServer: activeServer,
-                    isDub: isDub,
-                    animeId: 0,
-                    tracks: subtitleTracks,
-                    provider: Theme.of(context),
-                    sourceAnimeId: episodesData['id'] ?? 'rescue',
-                    description: '',
-                    posterImage: widget.posterUrl!,
-                  )));
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData?['episodes'],
+                      currentEpisode: currentEpisode,
+                      episodeTitle: episodesData?['episodes']
+                              [currentEpisode - 1]['title'] ??
+                          '',
+                      animeTitle: widget.title,
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: 0,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      sourceAnimeId: episodesData['id'] ?? 'rescue',
+                      description: '',
+                      posterImage: widget.posterUrl!,
+                    )));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DesktopWatchPage(
+                      episodeSrc: episodeSrc ?? [],
+                      episodeData: episodesData?['episodes'],
+                      currentEpisode: currentEpisode,
+                      episodeTitle: episodesData?['episodes']
+                              [currentEpisode - 1]['title'] ??
+                          '',
+                      animeTitle: widget.title,
+                      activeServer: activeServer,
+                      isDub: isDub,
+                      animeId: 0,
+                      tracks: subtitleTracks,
+                      provider: Theme.of(context),
+                      sourceAnimeId: episodesData['id'] ?? 'rescue',
+                      description: '',
+                      posterImage: widget.posterUrl!,
+                    )));
+      }
     }
   }
 
@@ -541,7 +568,9 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: CustomScheme.surfaceContainer,
+        color: Platform.isAndroid
+            ? CustomScheme.surfaceContainer
+            : CustomScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
@@ -599,7 +628,6 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
             },
           ),
           const SizedBox(height: 10),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -625,38 +653,71 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
             ],
           ),
           const SizedBox(height: 10),
-
-          // Episode grid displaying filtered episodes
-          EpisodeGrid(
-            episodes: filteredEpisodes,
-            layoutIndex: layoutIndex,
-            currentEpisode: currentEpisode,
-            onEpisodeSelected: (int episode) {
-              setState(() {
-                currentEpisode = episode;
-              });
-              selectServerDialog(context);
-            },
-            progress: watchProgress,
-            coverImage: widget.posterUrl!,
-            onEpisodeDownload: (String episodeId, String episodeNumber) async {
-              showDownloadOptions(
-                isLoading: true,
-                server: '',
-                source: '',
-                sourcesData: [],
-                episodeNumber: '',
-              );
-              final downloadMeta = await downloadHelper(episodeId);
-              Navigator.pop(context);
-              showDownloadOptions(
-                isLoading: false,
-                server: "MegaCloud",
-                source: "HiAnime (API)",
-                sourcesData: downloadMeta,
-                episodeNumber: "Episode-$episodeNumber",
-              );
-            },
+          PlatformBuilder(
+            androidBuilder: EpisodeGrid(
+              episodes: filteredEpisodes,
+              layoutIndex: layoutIndex,
+              currentEpisode: currentEpisode,
+              onEpisodeSelected: (int episode) {
+                setState(() {
+                  currentEpisode = episode;
+                });
+                selectServerDialog(context);
+              },
+              progress: watchProgress,
+              coverImage: widget.posterUrl!,
+              onEpisodeDownload:
+                  (String episodeId, String episodeNumber) async {
+                showDownloadOptions(
+                  isLoading: true,
+                  server: '',
+                  source: '',
+                  sourcesData: [],
+                  episodeNumber: '',
+                );
+                final downloadMeta = await downloadHelper(episodeId);
+                Navigator.pop(context);
+                showDownloadOptions(
+                  isLoading: false,
+                  server: "MegaCloud",
+                  source: "HiAnime (API)",
+                  sourcesData: downloadMeta,
+                  episodeNumber: "Episode-$episodeNumber",
+                );
+              },
+            ),
+            desktopBuilder: DesktopEpisodeGrid(
+              episodes: filteredEpisodes,
+              layoutIndex: layoutIndex,
+              currentEpisode: currentEpisode,
+              onEpisodeSelected: (int episode) {
+                setState(() {
+                  currentEpisode = episode;
+                });
+                selectServerDialog(context);
+              },
+              progress: watchProgress,
+              coverImage: widget.posterUrl!,
+              onEpisodeDownload:
+                  (String episodeId, String episodeNumber) async {
+                showDownloadOptions(
+                  isLoading: true,
+                  server: '',
+                  source: '',
+                  sourcesData: [],
+                  episodeNumber: '',
+                );
+                final downloadMeta = await downloadHelper(episodeId);
+                Navigator.pop(context);
+                showDownloadOptions(
+                  isLoading: false,
+                  server: "MegaCloud",
+                  source: "HiAnime (API)",
+                  sourcesData: downloadMeta,
+                  episodeNumber: "Episode-$episodeNumber",
+                );
+              },
+            ),
           ),
           const SizedBox(height: 100),
         ],
@@ -678,29 +739,58 @@ class Poster extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            height: 400,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  spreadRadius: 5,
-                  blurRadius: 10,
-                  offset: Offset(0, 7),
-                ),
-              ],
-            ),
-            width: MediaQuery.of(context).size.width - 100,
-            child: Hero(
-              tag: tag!,
-              child: ClipRRect(
+          PlatformBuilder(
+            androidBuilder: Container(
+              margin: EdgeInsets.only(top: 30),
+              height: 400,
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                child: CachedNetworkImage(
-                  imageUrl: poster!,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    spreadRadius: 5,
+                    blurRadius: 10,
+                    offset: Offset(0, 7),
+                  ),
+                ],
+              ),
+              width: MediaQuery.of(context).size.width - 100,
+              child: Hero(
+                tag: tag!,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    imageUrl: poster!,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
+              ),
+            ),
+            desktopBuilder: Container(
+              margin: EdgeInsets.only(top: 30),
+              height: 400,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    spreadRadius: 5,
+                    blurRadius: 10,
+                    offset: Offset(0, 7),
+                  ),
+                ],
+              ),
+              width: 300,
+              child: Hero(
+                tag: tag!,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    imageUrl: poster!,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
                 ),
               ),
             ),
