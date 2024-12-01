@@ -1,0 +1,70 @@
+name: Generate Changelog for Latest Release
+
+on:
+  workflow_dispatch:  
+
+jobs:
+  generate-latest-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Latest Release
+        id: get_latest_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_RELEASE=$(gh release list --limit 1 | awk '{print $1}')
+          echo "latest_release=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+          echo "Latest release: $LATEST_RELEASE"
+
+      - name: Generate Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #!/bin/bash
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+          CURRENT_TAG=${{ steps.get_latest_release.outputs.latest_release }}
+
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Initialize changelog
+          echo "# Changelog" > CHANGELOG.md
+          echo "## $CURRENT_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          # Function to add section if commits exist
+          add_section() {
+            local section_title="$1"
+            local grep_pattern="$2"
+            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
+            
+            if [ ! -z "$commits" ]; then
+              echo "## $section_title" >> CHANGELOG.md
+              echo "$commits" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+          }
+
+          # Add sections dynamically
+          add_section "🎉 New Features" "^feat:"
+          add_section "🛠️ Bug Fixes & Improvements" "^fix:"
+          add_section "🔧 Refactors" "^refactor:"
+          add_section "🎨 Style Changes" "^style:"
+          add_section "🚀 Performance Improvements" "^perf:"
+          add_section "🧹 Chores & Documentation" "^(chore|docs):"
+
+          # Output the generated changelog
+          cat CHANGELOG.md
+
+      - name: Update Latest Release with Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release edit ${{ steps.get_latest_release.outputs.latest_release }} \
+            --notes-file CHANGELOG.md
