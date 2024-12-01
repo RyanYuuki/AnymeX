@@ -5,6 +5,7 @@ import 'package:anymex/utils/sources/manga/extensions/mangafire.dart';
 import 'package:anymex/utils/sources/manga/extensions/mangakakalot.dart';
 import 'package:anymex/utils/sources/manga/extensions/mangakakalot_unofficial.dart';
 import 'package:anymex/utils/sources/manga/extensions/manganato.dart';
+import 'package:hive/hive.dart';
 import '../base/source_base.dart';
 
 class MangaSourceHandler {
@@ -18,15 +19,19 @@ class MangaSourceHandler {
   };
 
   String? selectedSourceName = "";
+  int? sourceIndex;
 
   MangaSourceHandler() {
-    selectedSourceName = sourceMap.entries.elementAt(4).key;
+    sourceIndex = Hive.box('app-data').get('mangaSourceIndex', defaultValue: 4);
+    selectedSourceName = sourceMap.entries.elementAt(sourceIndex!).key;
   }
 
   void setSelectedSource(String sourceName) {
     if (sourceMap.containsKey(sourceName)) {
       selectedSourceName = sourceName;
-      log("Selected source set to $sourceName");
+      int index = sourceMap.keys.toList().indexOf(sourceName);
+      Hive.box('app-data').put('mangaSourceIndex', index);
+      sourceIndex = index;
     } else {
       log("Source $sourceName does not exist in sourceMap");
     }

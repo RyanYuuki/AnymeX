@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:anymex/utils/sources/novel/base/source_base.dart';
 import 'package:anymex/utils/sources/novel/extensions/novel_buddy.dart';
 import 'package:anymex/utils/sources/novel/extensions/wuxia_click.dart';
+import 'package:hive/hive.dart';
 
 class NovelSourcesHandler {
   final Map<String, NovelSourceBase> sourceMap = {
@@ -11,10 +12,11 @@ class NovelSourcesHandler {
   };
 
   String selectedSourceName = "";
+  int? sourceIndex;
 
   NovelSourcesHandler() {
-    selectedSourceName = getSelectedSource();
-    log("Initialized with selected source: $selectedSourceName");
+    sourceIndex = Hive.box('app-data').get('novelSourceIndex', defaultValue: 0);
+    selectedSourceName = sourceMap.entries.elementAt(sourceIndex!).key;
   }
 
   List<Map<String, String>> getAvailableSources() {
@@ -31,6 +33,9 @@ class NovelSourcesHandler {
   void setSelectedSource(String sourceName) {
     if (sourceMap.containsKey(sourceName)) {
       selectedSourceName = sourceName;
+      int index = sourceMap.keys.toList().indexOf(sourceName);
+      Hive.box('app-data').put('novelSourceIndex', index);
+      sourceIndex = index;
       log("Selected source changed to $selectedSourceName");
     } else {
       log("Source $sourceName does not exist in sourceMap");

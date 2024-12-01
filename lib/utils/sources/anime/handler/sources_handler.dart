@@ -7,6 +7,7 @@ import 'package:anymex/utils/sources/anime/extensions/gogoanime/gogoanime.dart';
 import 'package:anymex/utils/sources/anime/extensions/hiddenleaf/hiddenleaf.dart';
 import 'package:anymex/utils/sources/anime/extensions/yugenanime/yugenanime.dart';
 import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
+import 'package:hive/hive.dart';
 
 class SourcesHandler {
   final Map<String, SourceBase> animeSourcesMap = {
@@ -20,11 +21,13 @@ class SourcesHandler {
   };
 
   SourcesHandler() {
-    selectedSource = animeSourcesMap.entries.elementAt(3).key;
+    sourceIndex = Hive.box('app-data').get('sourceIndex', defaultValue: 3);
+    selectedSource = animeSourcesMap.entries.elementAt(sourceIndex!).key;
     isMulti = animeSourcesMap[selectedSource]!.isMulti;
   }
   String selectedSource = '';
   bool isMulti = false;
+  int? sourceIndex;
 
   String getSelectedSource() {
     if (selectedSource == '') {
@@ -47,6 +50,9 @@ class SourcesHandler {
   void changeSelectedSource(String sourceName) {
     if (animeSourcesMap.entries.any((entry) => entry.key == sourceName)) {
       selectedSource = sourceName;
+      int index = animeSourcesMap.keys.toList().indexOf(sourceName);
+      Hive.box('app-data').put('sourceIndex', index);
+      sourceIndex = index;
     } else {
       selectedSource = animeSourcesMap.entries.first.key;
     }
