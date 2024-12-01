@@ -82,7 +82,7 @@ class _LayoutPageState extends State<LayoutPage> {
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.primary)),
           ),
-          if (Platform.isAndroid) ...[
+          if (Platform.isAndroid && Platform.isIOS) ...[
             SwitchTileStateless(
               icon: Iconsax.card5,
               title: 'Compact Card',
@@ -121,7 +121,7 @@ class _LayoutPageState extends State<LayoutPage> {
                       builder: (context) => const ResizeTabbar()));
             },
           ),
-          if (Platform.isAndroid)
+          if (Platform.isAndroid && Platform.isIOS)
             TileWithSlider(
               sliderValue: cardRoundness,
               onChanged: (newValue) {

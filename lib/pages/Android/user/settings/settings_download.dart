@@ -55,7 +55,7 @@ class _SettingsDownloadState extends State<SettingsDownload> {
                 IconButton(
                     onPressed: () {},
                     icon: const Icon(
-                      Icons.source,
+                      Icons.download,
                       size: 40,
                     ))
               ],

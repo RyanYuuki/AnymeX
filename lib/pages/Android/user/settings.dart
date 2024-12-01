@@ -3,6 +3,7 @@ import 'package:anymex/pages/Android/user/settings/settings_about.dart';
 import 'package:anymex/pages/Android/user/settings/settings_download.dart';
 import 'package:anymex/pages/Android/user/settings/settings_layout.dart';
 import 'package:anymex/pages/Android/user/settings/settings_player.dart';
+import 'package:anymex/pages/Android/user/settings/settings_sources.dart';
 import 'package:anymex/pages/Android/user/settings/settings_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -59,6 +60,15 @@ class SettingsPage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             CustomTile(
+              icon: Icons.source_rounded,
+              title: 'Source',
+              description: 'Source related settings',
+              onTap: () {
+                Navigator.push(
+                    context, _createSlideRoute(const SettingsSources()));
+              },
+            ),
+            CustomTile(
               icon: HugeIcons.strokeRoundedPaintBrush02,
               title: 'UI',
               description: 'Play Around with UI Tweaks',
@@ -67,7 +77,7 @@ class SettingsPage extends StatelessWidget {
               },
             ),
             CustomTile(
-              icon: Icons.source,
+              icon: Icons.download,
               title: 'Downloads',
               description: 'Tweak Download Settings',
               onTap: () {

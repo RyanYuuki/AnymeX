@@ -290,9 +290,12 @@ class _ReadingPageState extends State<ReadingPage> {
                     imageUrl: imageData['image'],
                     fit: BoxFit.contain,
                     progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
+                        SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: progress.progress,
+                        ),
                       ),
                     ),
                     errorWidget: (context, url, error) =>
@@ -349,9 +352,12 @@ class _ReadingPageState extends State<ReadingPage> {
               return CachedNetworkImage(
                 imageUrl: imageData['image'],
                 fit: BoxFit.contain,
-                progressIndicatorBuilder: (context, url, progress) => Center(
-                  child: CircularProgressIndicator(
-                    value: progress.progress,
+                progressIndicatorBuilder: (context, url, progress) => SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
                   ),
                 ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -427,22 +433,23 @@ class _ReadingPageState extends State<ReadingPage> {
                     ],
                   ),
                 ),
-                TileWithSlider(
-                  title: 'Image Width',
-                  sliderValue: imageWidthFactor,
-                  onChanged: (double value) {
-                    setModalState(() {
-                      imageWidthFactor = value;
-                    });
-                    setState(() {});
-                  },
-                  description: 'Only Works with webtoon mode',
-                  icon: Icons.image_aspect_ratio_rounded,
-                  min: 0.5,
-                  max: 1.5,
-                  divisions: 10,
-                ),
-                if (!Platform.isAndroid)
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  TileWithSlider(
+                    title: 'Image Width',
+                    sliderValue: imageWidthFactor,
+                    onChanged: (double value) {
+                      setModalState(() {
+                        imageWidthFactor = value;
+                      });
+                      setState(() {});
+                    },
+                    description: 'Only Works with webtoon mode',
+                    icon: Icons.image_aspect_ratio_rounded,
+                    min: 0.5,
+                    max: 1.5,
+                    divisions: 10,
+                  ),
+                if (!Platform.isAndroid && !Platform.isIOS)
                   TileWithSlider(
                     title: 'Scroll Multiplier',
                     sliderValue: scrollMultiplier,
