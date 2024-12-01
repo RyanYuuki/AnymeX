@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/components/android/anilistExclusive/wrong_tile_manga.dart';
 import 'package:anymex/components/android/common/IconWithLabel.dart';
-import 'package:anymex/components/android/common/expandable_page_view.dart';
 import 'package:anymex/components/android/common/reusable_carousel.dart';
 import 'package:anymex/components/android/anime/details/character_cards.dart';
 import 'package:anymex/components/android/manga/chapter_ranges.dart';
@@ -336,21 +335,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                 child: Center(child: CircularProgressIndicator()),
               )
             else
-              ExpandablePageView(
-                controller: pageController,
-                itemCount: 2,
-                onPageChanged: (value) {
-                  if (mounted) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  }
-                },
-                itemBuilder: (context, index) {
-                  return selectedIndex == 0
-                      ? saikouDetails(context)
-                      : chapterSection();
-                },
+              SizedBox(
+                height: selectedIndex == 0 ? 1800 : 950,
+                child: PageView(
+                  padEnds: false,
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: pageController,
+                  children: [saikouDetails(context), chapterSection()],
+                ),
               ),
           ],
         ),
@@ -372,14 +364,20 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
   void initializeChapters() {
     groupChapters = mangaData['chapterList'];
     if (mangaData?['chapterList'] != null) {
-      if (activeGroup == null && mangaData.containsKey('groups')) {
+      if (activeGroup == null &&
+          mangaData.containsKey('groups') &&
+          mangaData['groups'].length > 0) {
         activeGroup = mangaData['groups'][0];
       }
-      if (activeGroup != null && mangaData.containsKey('groups')) {
+      if (activeGroup != null &&
+          mangaData.containsKey('groups') &&
+          mangaData['groups'].length > 0) {
+        log(mangaData['chapterList'].toString());
         groupChapters = mangaData['chapterList']
             .where((chapter) => chapter['date'] == activeGroup)
             .toList();
       } else {
+        activeGroup = '';
         groupChapters = mangaData['chapterList'];
       }
       setState(() {
@@ -505,7 +503,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             ),
           ),
           const SizedBox(height: 10),
-          if (mangaData != null && mangaData.containsKey('groups'))
+          if (mangaData != null &&
+              mangaData.containsKey('groups') &&
+              mangaData['hasGroups'])
             DropdownButtonFormField<String>(
               value: activeGroup,
               decoration: InputDecoration(
@@ -540,6 +540,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               }).toList(),
               onChanged: (value) async {
                 setState(() {
+                  filteredChapters = null;
                   activeGroup = value!;
                   initializeChapters();
                 });
@@ -560,14 +561,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                   context,
                   data['name'],
                   (mangaId) async {
+                    setState(() {
+                      filteredChapters = null;
+                    });
                     final chapterData =
                         await mangaSourceHandler.fetchMangaChapters(
                       mangaId,
                     );
                     setState(() {
                       mangaData = chapterData;
+                      activeGroup = null;
+                      initializeChapters();
                     });
-                    initializeChapters();
                   },
                   selectedSource,
                 );
@@ -1241,7 +1246,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           ),
         ),
         const SizedBox(height: 15),
-        Text('Characters', style: TextStyle(fontFamily: 'Poppins-Bold')),
         PlatformBuilder(
             androidBuilder: CharacterCards(
               isManga: true,
@@ -1294,7 +1298,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
                 left: MediaQuery.of(context).size.width * _animation.value,
                 child: CachedNetworkImage(
                   height: 450,
-                  alignment: Alignment.center,
                   fit: BoxFit.cover,
                   imageUrl: altdata?['cover'] ?? widget.posterUrl,
                 ),
@@ -1304,7 +1307,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
         else
           CachedNetworkImage(
             height: 450,
-            alignment: Alignment.center,
             fit: BoxFit.cover,
             imageUrl: altdata?['cover'] ?? widget.posterUrl,
           ),
@@ -1616,21 +1618,17 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
             padding: const EdgeInsets.only(top: 30.0),
             child: Center(child: CircularProgressIndicator()),
           )
-        : ExpandablePageView(
-            controller: pageController,
-            itemCount: 2,
-            onPageChanged: (value) {
-              if (mounted) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              }
-            },
-            itemBuilder: (context, index) {
-              return selectedIndex == 0
-                  ? originalInfoPage(CustomScheme, context)
-                  : chapterSection();
-            },
+        : SizedBox(
+            height: selectedIndex == 0 ? 1750 : 950,
+            child: PageView(
+              padEnds: false,
+              physics: NeverScrollableScrollPhysics(),
+              controller: pageController,
+              children: [
+                originalInfoPage(CustomScheme, context),
+                chapterSection()
+              ],
+            ),
           );
   }
 
