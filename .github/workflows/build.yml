@@ -76,7 +76,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          channel: master
+          flutter-version: a0ba2de
 
       - name: Get Dependencies
         run: flutter pub get
@@ -114,7 +115,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          channel: master
+          flutter-version: a0ba2de
 
       - name: Get Dependencies
         run: flutter pub get
@@ -153,7 +155,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          channel: master
+          flutter-version: a0ba2de
 
       - name: Replace pubspec.yaml with Desktop Version
         run: cp pubspec_desktop.yaml pubspec.yaml
@@ -195,7 +198,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          channel: master
+          flutter-version: a0ba2de
 
       - name: Replace pubspec.yaml with Desktop Version
         run: Copy-Item -Path pubspec_desktop.yaml -Destination pubspec.yaml -Force
@@ -244,7 +248,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          channel: master
+          flutter-version: a0ba2de
 
       - name: Replace pubspec.yaml with Desktop Version
         run: cp pubspec_macos.yaml pubspec.yaml
