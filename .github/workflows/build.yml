@@ -14,64 +14,45 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Generate Changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           #!/bin/bash
-
-          # Determine Previous and Current Tags
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
           CURRENT_TAG=${GITHUB_REF#refs/tags/}
-
-          # Default to the initial commit if no previous tag exists
           if [ -z "$PREVIOUS_TAG" ]; then
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
 
-          echo "Previous Tag: $PREVIOUS_TAG"
-          echo "Current Tag: $CURRENT_TAG"
-
-          # Check if there are any commits between the tags
-          if [ -z "$(git log $PREVIOUS_TAG..$CURRENT_TAG --oneline)" ]; then
-            echo "No commits found between $PREVIOUS_TAG and $CURRENT_TAG."
-            exit 0
-          fi
-
-          # Initialize Changelog
+          # Initialize changelog with the current tag as the version
           echo "# Changelog" > CHANGELOG.md
           echo "## $CURRENT_TAG" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-          # Define Commit Types
-          declare -A SECTIONS=(
-            ["🎉 New Features"]="^feat"
-            ["🛠️ Bug Fixes & Improvements"]="^(fix|bug|improvement|patch)"
-            ["🔧 Refactors"]="^refactor"
-            ["🎨 Style Changes"]="^style"
-            ["🚀 Performance Improvements"]="^perf"
-            ["🧹 Chores & Documentation"]="^(chore|docs|build|ci)"
-          )
+          # Function to add section if commits exist
+          add_section() {
+            local section_title="$1"
+            local grep_pattern="$2"
+            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* `%h`[https://github.com/RyanYuuki/AnymeX/commit/%h]: %s')
+            
+            if [ ! -z "$commits" ]; then
+              echo "## $section_title" >> CHANGELOG.md
+              echo "$commits" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+          }
 
-          # Generate Sections
-          for SECTION in "${!SECTIONS[@]}"; do
-            echo "## $SECTION:" >> CHANGELOG.md
-            git log $PREVIOUS_TAG..$CURRENT_TAG --grep="${SECTIONS[$SECTION]}" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s' >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          done
+          # Add sections dynamically
+          add_section "🎉 New Features" "^feat:"
+          add_section "🛠️ Bug Fixes & Improvements" "^fix:"
+          add_section "🔧 Refactors" "^refactor:"
+          add_section "🎨 Style Changes" "^style:"
+          add_section "🚀 Performance Improvements" "^perf:"
+          add_section "🧹 Chores & Documentation" "^(chore|docs):"
 
+          # Output the generated changelog
           cat CHANGELOG.md
-
-
-      - name: Commit and push changelog
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add CHANGELOG.md
-          git commit -m "Update changelog for version $CURRENT_TAG"
-          git push origin HEAD:main
-
       - name: Update Release with Changelog
         uses: ncipollo/release-action@v1
         with:
@@ -186,7 +167,7 @@ jobs:
           mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
 
       - name: Replace main.dart with Desktop Version
-        run: mv lib/main.darts lib/main.dart     
+        run: mv lib/main.darts lib/main.dart
 
       - name: Build Linux
         run: flutter build linux --release
