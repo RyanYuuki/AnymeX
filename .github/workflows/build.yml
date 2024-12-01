@@ -15,88 +15,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get previous tag
-        id: get_prev_tag
+      - name: Generate Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Getting the previous tag..."
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          echo "Previous tag retrieved: $PREV_TAG"
-          if [ -z "$PREV_TAG" ]; then
-            echo "No previous tag found, using the initial commit."
-            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          #!/bin/bash
+
+          # Determine Previous and Current Tags
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+
+          # Default to the initial commit if no previous tag exists
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
-          echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
-          echo "Previous tag: $PREV_TAG"
 
-      - name: Get commit messages between tags
-        id: get_commits
-        run: |
-          echo "Getting commit messages between tags..."
-          COMMITS=$(git log ${{ env.prev_tag }}..HEAD --pretty=format:'%h %s' | tr '\n' '|')
-          echo "Commits retrieved: $COMMITS"
-          echo "commits=$COMMITS" >> $GITHUB_ENV
+          echo "Previous Tag: $PREVIOUS_TAG"
+          echo "Current Tag: $CURRENT_TAG"
 
-      - name: Categorize commits
-        id: categorize
-        run: |
-          echo "Categorizing commits..."
-          echo "## ${{ github.ref_name }}" > CHANGELOG.md
-          FEATURES=""
-          BUG_FIXES=""
-          REFACTORS=""
-          STYLE_CHANGES=""
-          PERFORMANCE=""
-          CHORES=""
-          REPO_URL="https://github.com/${{ github.repository }}"
-    
-          IFS='|' read -ra COMMIT_LIST <<< "${{ env.commits }}"
-          echo "Commit list: ${COMMIT_LIST[@]}"
-          for LINE in "${COMMIT_LIST[@]}"; do
-            HASH=$(echo "$LINE" | awk '{print $1}')
-            MESSAGE=$(echo "$LINE" | cut -d' ' -f2-)
-            LINK="[$HASH]($REPO_URL/commit/$HASH)"
-        
-            FORMATTED_COMMIT="* $LINK: $MESSAGE"
-            echo "Processing commit: $FORMATTED_COMMIT"
-            if [[ $MESSAGE == feat* ]]; then
-              FEATURES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == fix* || $MESSAGE == bug* || $MESSAGE == improvement* || $MESSAGE == patch* ]]; then
-              BUG_FIXES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == refactor* ]]; then
-              REFACTORS+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == style* ]]; then
-              STYLE_CHANGES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == perf* ]]; then
-              PERFORMANCE+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == chore* || $MESSAGE == docs* || $MESSAGE == build* || $MESSAGE == ci* ]]; then
-              CHORES+="$FORMATTED_COMMIT\n"
-            fi
+          # Check if there are any commits between the tags
+          if [ -z "$(git log $PREVIOUS_TAG..$CURRENT_TAG --oneline)" ]; then
+            echo "No commits found between $PREVIOUS_TAG and $CURRENT_TAG."
+            exit 0
+          fi
+
+          # Initialize Changelog
+          echo "# Changelog" > CHANGELOG.md
+          echo "## $CURRENT_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          # Get the commit messages between the tags and add them to the changelog
+          git log $PREVIOUS_TAG..$CURRENT_TAG --oneline | while read -r line; do
+            echo "- $line" >> CHANGELOG.md
           done
-    
-          if [ -n "$FEATURES" ]; then
-            echo "### 🎉 New Features" >> CHANGELOG.md
-            echo -e "$FEATURES" >> CHANGELOG.md
-          fi
-          if [ -n "$BUG_FIXES" ]; then
-            echo "### 🛠️ Bug Fixes & Improvements" >> CHANGELOG.md
-            echo -e "$BUG_FIXES" >> CHANGELOG.md
-          fi
-          if [ -n "$REFACTORS" ]; then
-            echo "### 🔧 Refactors" >> CHANGELOG.md
-            echo -e "$REFACTORS" >> CHANGELOG.md
-          fi
-          if [ -n "$STYLE_CHANGES" ]; then
-            echo "### 🎨 Style Changes" >> CHANGELOG.md
-            echo -e "$STYLE_CHANGES" >> CHANGELOG.md
-          fi
-          if [ -n "$PERFORMANCE" ]; then
-            echo "### 🚀 Performance Improvements" >> CHANGELOG.md
-            echo -e "$PERFORMANCE" >> CHANGELOG.md
-          fi
-          if [ -n "$CHORES" ]; then
-            echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
-            echo -e "$CHORES" >> CHANGELOG.md
-          fi
 
       - name: Commit and push changelog
         run: |
