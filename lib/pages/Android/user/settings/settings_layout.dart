@@ -34,6 +34,7 @@ class _LayoutPageState extends State<LayoutPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: ListView(
+        physics: const BouncingScrollPhysics(),
         children: [
           const SizedBox(height: 30),
           Row(

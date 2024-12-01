@@ -17,6 +17,7 @@ class _EpisodeButtonsState extends State<EpisodeButtons> {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       children: widget.episodeRanges.map((range) {
         return Row(

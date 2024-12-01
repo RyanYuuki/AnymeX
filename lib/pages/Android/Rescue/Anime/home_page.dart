@@ -150,6 +150,7 @@ class _RescueAnimeHomeState extends State<RescueAnimeHome> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
                         itemCount: snapshot.data!.length,
                         itemBuilder: (BuildContext context, int index) {
                           final anime = snapshot.data![index];

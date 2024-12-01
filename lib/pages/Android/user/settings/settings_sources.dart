@@ -50,6 +50,7 @@ class _SettingsSourcesState extends State<SettingsSources> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: ListView(
+        physics: const BouncingScrollPhysics(),
         children: [
           const SizedBox(height: 30),
           Row(

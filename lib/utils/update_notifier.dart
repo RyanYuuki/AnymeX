@@ -98,7 +98,6 @@ void _showUpdateBottomSheet(
               style: const TextStyle(fontFamily: 'Poppins-SemiBold'),
             ),
             const SizedBox(height: 10),
-
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -118,7 +117,9 @@ void _showUpdateBottomSheet(
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                header.replaceAll('**', '').replaceAll('##', ''),
+                                header
+                                    .replaceAll('**', '')
+                                    .replaceAll('##', ''),
                                 style: const TextStyle(
                                   fontFamily: 'Poppins-SemiBold',
                                   fontSize: 16,
@@ -131,6 +132,7 @@ void _showUpdateBottomSheet(
                         SizedBox(
                           height: 200,
                           child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
                             itemCount: parsedChanges[header]?.length ?? 0,
                             itemBuilder: (context, index) {
                               final change = parsedChanges[header]![index];
@@ -169,7 +171,6 @@ void _showUpdateBottomSheet(
                 ),
               ),
             ),
-
             const SizedBox(height: 15),
             const Divider(thickness: 1),
             const SizedBox(height: 15),

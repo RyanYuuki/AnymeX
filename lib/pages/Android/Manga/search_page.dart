@@ -112,6 +112,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                     ? const Center(child: CircularProgressIndicator())
                     : PlatformBuilder(
                         desktopBuilder: GridView.builder(
+                          physics: const BouncingScrollPhysics(),
                           gridDelegate: isList
                               ? const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 1,
@@ -139,6 +140,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                           },
                         ),
                         androidBuilder: GridView.builder(
+                          physics: const BouncingScrollPhysics(),
                           gridDelegate: isList
                               ? const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 1,

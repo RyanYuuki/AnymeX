@@ -144,6 +144,7 @@ class AnimeListContent extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: PlatformBuilder(
         androidBuilder: GridView.builder(
+          physics: const BouncingScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
           itemCount: filteredAnimeList.length,
@@ -157,6 +158,7 @@ class AnimeListContent extends StatelessWidget {
           },
         ),
         desktopBuilder: GridView.builder(
+          physics: const BouncingScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisCount(
                   MediaQuery.of(context).size.width),

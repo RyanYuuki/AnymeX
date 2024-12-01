@@ -138,6 +138,7 @@ class MangaListContent extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: PlatformBuilder(
         androidBuilder: GridView.builder(
+          physics: const BouncingScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
           itemCount: filteredMangaList.length,
@@ -147,6 +148,7 @@ class MangaListContent extends StatelessWidget {
           },
         ),
         desktopBuilder: GridView.builder(
+          physics: const BouncingScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisCount(
                   MediaQuery.of(context).size.width),

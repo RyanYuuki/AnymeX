@@ -74,6 +74,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
           final baseAnimeData =
               userData['mangaData'] ?? fallbackMangaData?['data'];
           return ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),

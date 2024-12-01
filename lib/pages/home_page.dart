@@ -97,6 +97,7 @@ class _HomePageState extends State<HomePage> {
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               body: ListView(
+                physics: const BouncingScrollPhysics(),
                 children: [
                   Container(
                     constraints: const BoxConstraints(

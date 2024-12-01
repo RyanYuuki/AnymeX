@@ -123,6 +123,7 @@ class _SearchPageState extends State<SearchPage> {
                         desktopBuilder: GridView.builder(
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
+                          physics: const BouncingScrollPhysics(),
                           gridDelegate: isList
                               ? const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 1,
@@ -152,6 +153,7 @@ class _SearchPageState extends State<SearchPage> {
                         androidBuilder: GridView.builder(
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
+                          physics: const BouncingScrollPhysics(),
                           gridDelegate: isList
                               ? const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 1,

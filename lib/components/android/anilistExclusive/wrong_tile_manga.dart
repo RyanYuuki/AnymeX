@@ -148,6 +148,7 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
                       itemCount: mangaList.length,
                       itemBuilder: (BuildContext context, int index) {
                         final manga = mangaList[index];

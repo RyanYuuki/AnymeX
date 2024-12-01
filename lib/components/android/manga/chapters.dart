@@ -37,6 +37,7 @@ class ChapterList extends StatelessWidget {
           SizedBox(
             height: 400,
             child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
               itemCount: chaptersData.length,
               itemBuilder: (context, index) {
                 final manga = chaptersData[index];

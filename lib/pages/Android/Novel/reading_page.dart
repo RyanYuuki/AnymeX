@@ -209,6 +209,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Slider(
+                              year2023: false,
                               value: _fontSize,
                               min: 12,
                               max: 32,
@@ -240,6 +241,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                       SizedBox(
                         height: 40,
                         child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           itemCount: _fontFamilies.length,
                           itemBuilder: (context, index) {
@@ -276,6 +278,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                       SizedBox(
                         height: 40,
                         child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           itemCount: _backgroundColors.length,
                           itemBuilder: (context, index) {
@@ -323,6 +326,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                       SizedBox(
                         height: 40,
                         child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           itemCount: _fontColors.length,
                           itemBuilder: (context, index) {
@@ -418,6 +422,7 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
               }
             },
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16.0),
               children: [
                 const SizedBox(height: 80),

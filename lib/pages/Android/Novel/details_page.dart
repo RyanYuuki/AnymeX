@@ -696,6 +696,7 @@ class _ChapterListState extends State<ChapterList> {
               : SizedBox(
                   height: 400,
                   child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.all(0),
                     itemCount: _filteredChapters.length,
                     itemBuilder: (context, index) {

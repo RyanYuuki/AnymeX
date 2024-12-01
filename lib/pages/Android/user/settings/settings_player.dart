@@ -121,6 +121,7 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
             height: 300,
             width: double.maxFinite,
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               children: colorOptions.entries.map((entry) {
                 return RadioListTile<Color>(
                   title: Text(entry.key),
@@ -184,6 +185,7 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: ListView(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 100),
         children: [
           const SizedBox(height: 30),

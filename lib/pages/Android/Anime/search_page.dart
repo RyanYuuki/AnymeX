@@ -156,6 +156,7 @@ class _SearchPageState extends State<SearchPage> {
                     ? const Center(child: CircularProgressIndicator())
                     : PlatformBuilder(
                         desktopBuilder: GridView.builder(
+                          physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
                           gridDelegate: isList
@@ -189,6 +190,7 @@ class _SearchPageState extends State<SearchPage> {
                           },
                         ),
                         androidBuilder: GridView.builder(
+                          physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
                           gridDelegate: isList
@@ -777,6 +779,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
           SizedBox(
             height: 40,
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               children: genres
                   .map((genre) => Padding(

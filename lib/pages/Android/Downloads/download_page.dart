@@ -71,6 +71,7 @@ class DownloadPageState extends State<DownloadPage>
     return ListView.builder(
       controller: _scrollController,
       itemCount: animeDownloads.length,
+      physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final anime = animeDownloads[index];
         final episodeNumber = anime['episodeNumber'];

@@ -552,6 +552,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               const SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
                   controller: scrollController,
                   itemCount: widget.episodeData.length,
                   itemBuilder: (context, index) {
@@ -613,6 +614,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           height: 300,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
           child: ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               const Center(
                 child: Text(
@@ -623,7 +625,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               const SizedBox(height: 20),
               ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemCount:
                     _betterPlayerController?.betterPlayerAsmsTracks.length ?? 0,
                 itemBuilder: (context, index) {
@@ -679,6 +681,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           height: 300,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
           child: ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               const Center(
                 child: Text(
@@ -689,7 +692,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               const SizedBox(height: 20),
               ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemCount: widget.episodeSrc['multiSrc'].length ?? 0,
                 itemBuilder: (context, index) {
                   final String quality =
@@ -760,6 +763,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               SizedBox(
                 height: 220,
                 child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
                   itemCount: _betterPlayerController
                           ?.betterPlayerSubtitlesSourceList.length ??
                       0,

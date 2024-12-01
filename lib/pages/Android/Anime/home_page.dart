@@ -93,6 +93,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           };
 
           return ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

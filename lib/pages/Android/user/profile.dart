@@ -48,6 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
           final mangaList = filterData(anilistProvider.userData['mangaList']);
 
           return ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               Stack(
                 children: [

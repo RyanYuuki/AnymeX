@@ -1011,6 +1011,7 @@ class _DetailsPageState extends State<DetailsPage>
                     SizedBox(
                       height: 300,
                       child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           itemCount: sourcesData.length,
                           itemBuilder: (context, index) {
                             final quality = sourcesData[index]['quality'];
@@ -1788,6 +1789,7 @@ class _DetailsPageState extends State<DetailsPage>
                             ],
                           ),
                           Slider(
+                            year2023: false,
                             value: score,
                             min: 0.0,
                             max: 10.0,

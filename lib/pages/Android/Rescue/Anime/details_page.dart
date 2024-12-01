@@ -270,6 +270,7 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
                     SizedBox(
                       height: 300,
                       child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           itemCount: sourcesData.length,
                           itemBuilder: (context, index) {
                             final quality = sourcesData[index]['quality'];
@@ -524,6 +525,7 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
               ],
             )
           : ListView(
+              physics: const BouncingScrollPhysics(),
               children: [
                 Column(
                   children: [

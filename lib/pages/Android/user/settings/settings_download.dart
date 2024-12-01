@@ -26,7 +26,7 @@ class _SettingsDownloadState extends State<SettingsDownload> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body: ListView(children: [
+        body: ListView(physics: const BouncingScrollPhysics(), children: [
           const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,

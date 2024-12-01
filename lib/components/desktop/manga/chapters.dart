@@ -41,6 +41,7 @@ class DesktopChapterList extends StatelessWidget {
     return SizedBox(
       height: 500,
       child: GridView.builder(
+        physics: const BouncingScrollPhysics(),
         itemCount: chaptersData.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: getResponsiveCrossAxisCount(

@@ -245,6 +245,7 @@ class _ReadingPageState extends State<ReadingPage> {
     switch (currentLayout) {
       case 'Webtoon':
         return ListView(
+          physics: const BouncingScrollPhysics(),
           controller: _scrollController,
           children: chapterImages!.map((imageData) {
             return Center(
@@ -500,6 +501,7 @@ class _ReadingPageState extends State<ReadingPage> {
               ),
               Expanded(
                 child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
                   itemCount: 50,
                   itemBuilder: (context, index) {
                     return ListTile(
@@ -580,6 +582,7 @@ class _TileWithSliderState extends State<TileWithSlider> {
               ),
               Expanded(
                 child: Slider(
+                  year2023: false,
                   value: widget.sliderValue,
                   onChanged: (newValue) => widget.onChanged(newValue),
                   min: widget.min,

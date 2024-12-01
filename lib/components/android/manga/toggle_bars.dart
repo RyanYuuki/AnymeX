@@ -275,6 +275,7 @@ class _ToggleBarState extends State<ToggleBar> {
                                 .withOpacity(0.80),
                             borderRadius: BorderRadius.circular(20)),
                         child: Slider(
+                          year2023: false,
                           focusNode: FocusNode(canRequestFocus: false),
                           divisions:
                               widget.totalImages == 0 ? 10 : widget.totalImages,

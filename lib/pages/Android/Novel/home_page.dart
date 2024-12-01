@@ -60,6 +60,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           body: ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -68,10 +69,10 @@ class _NovelHomePageState extends State<NovelHomePage> {
                     Header(controller: _searchTerm),
                     PlatformBuilder(
                       androidBuilder: Covercarousel(
-                        animeData: snapshot.data!.sublist(0,10),
+                        animeData: snapshot.data!.sublist(0, 10),
                       ),
                       desktopBuilder: DesktopCoverCarousel(
-                        animeData: snapshot.data!.sublist(0,10),
+                        animeData: snapshot.data!.sublist(0, 10),
                       ),
                     ),
                     const SizedBox(height: 10),
