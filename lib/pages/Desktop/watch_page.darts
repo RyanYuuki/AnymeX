@@ -401,7 +401,7 @@ class _DesktopWatchPageState extends State<DesktopWatchPage>
                 color: Colors.white,
               ),
             ),
-            if (!Platform.isAndroid)
+            if (!Platform.isAndroid && !Platform.isIOS)
               IconButton(
                 icon: Icon(isFullScreen
                     ? Icons.fullscreen_exit_rounded
