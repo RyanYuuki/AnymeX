@@ -92,7 +92,7 @@ class ChapterList extends StatelessWidget {
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                manga['views'],
+                                manga?['views'] ?? '?',
                                 style: const TextStyle(
                                   fontSize: 14,
                                 ),
