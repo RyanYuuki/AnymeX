@@ -438,7 +438,7 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
 
     if (episodeSrc != null) {
       Navigator.pop(context);
-      if (!Platform.isAndroid && !Platform.isIOS) {
+      if (Platform.isAndroid || Platform.isIOS) {
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -570,7 +570,7 @@ class _RescueDetailsPageState extends State<RescueDetailsPage> {
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Platform.isAndroid
+        color: Platform.isAndroid || Platform.isIOS
             ? CustomScheme.surfaceContainer
             : CustomScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.only(

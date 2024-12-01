@@ -1503,7 +1503,7 @@ class _DetailsPageState extends State<DetailsPage>
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        if (altdata?['cover'] != null && Platform.isAndroid)
+        if (altdata?['cover'] != null && (Platform.isAndroid || Platform.isIOS))
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {

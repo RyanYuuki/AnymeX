@@ -251,7 +251,7 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
             onTap: _showPlaybackSpeedDialog,
           ),
           // Resize Mode
-          if (Platform.isAndroid && Platform.isIOS) ...[
+          if (Platform.isAndroid || Platform.isIOS) ...[
             ListTile(
               leading: Icon(Icons.aspect_ratio,
                   color: Theme.of(context).colorScheme.primary),
@@ -355,7 +355,7 @@ class _VideoPlayerSettingsState extends State<VideoPlayerSettings> {
             },
           ),
           // Subtitle Outline Color
-          if (Platform.isAndroid && Platform.isIOS) ...[
+          if (Platform.isAndroid || Platform.isIOS) ...[
             ListTile(
               leading: Icon(Icons.palette,
                   color: Theme.of(context).colorScheme.primary),
