@@ -112,6 +112,7 @@ class Comick implements SourceBase {
         'title': id['title'] ?? '??',
         'chapterList': chapterList.reversed.toList(),
         'groups': filteredGroups,
+        'hasGroups': filteredGroups.isNotEmpty,
       };
       return manga;
     } else {
