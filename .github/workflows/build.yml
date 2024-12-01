@@ -175,6 +175,7 @@ jobs:
       - name: Zip Linux Artifacts
         run: |
           cd build/linux/x64/release
+          cp ../../../../linuxLibs/* bundle/lib/
           zip -r ../../../../AnymeX-Linux.zip .
 
       - name: Release Linux Build
