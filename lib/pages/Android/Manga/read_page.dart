@@ -252,17 +252,15 @@ class _ReadingPageState extends State<ReadingPage> {
                 imageUrl: imageData['image'],
                 httpHeaders: const {'Referer': 'https://chapmanganato.to/'},
                 fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
                 width: isDesktop
                     ? MediaQuery.of(context).size.width * 0.5 * imageWidthFactor
                     : MediaQuery.of(context).size.width,
                 progressIndicatorBuilder: (context, url, progress) => SizedBox(
+                  height: MediaQuery.of(context).size.height,
                   child: Center(
-                    child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
-                      ),
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
                     ),
                   ),
                 ),
@@ -289,6 +287,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   return CachedNetworkImage(
                     imageUrl: imageData['image'],
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                     progressIndicatorBuilder: (context, url, progress) =>
                         SizedBox(
                       height: MediaQuery.of(context).size.height,
@@ -352,6 +351,7 @@ class _ReadingPageState extends State<ReadingPage> {
               return CachedNetworkImage(
                 imageUrl: imageData['image'],
                 fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
                 progressIndicatorBuilder: (context, url, progress) => SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: Center(
@@ -380,6 +380,7 @@ class _ReadingPageState extends State<ReadingPage> {
               modes[selections.indexWhere((element) => element)];
 
           return Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius:
