@@ -38,7 +38,8 @@ class DesktopChapterList extends StatelessWidget {
       return (screenWidth / itemWidth).floor().clamp(1, 3);
     }
 
-    return Container(
+    return SizedBox(
+      height: 500,
       child: GridView.builder(
         itemCount: chaptersData.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

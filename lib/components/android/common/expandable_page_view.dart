@@ -64,26 +64,35 @@ class _ExpandablePageViewState extends State<ExpandablePageView> {
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
-    final item = widget.itemBuilder(context, index);
-    return OverflowBox(
-      minHeight: 0,
-      maxHeight: double.infinity,
-      alignment: Alignment.topCenter,
-      child: SizeReportingWidget(
-        onSizeChange: (size) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                if ((size.height - widget.defaultHeight).abs() > 10) {
-                  _heights[index] = size.height;
-                }
-              });
-            }
-          });
-        },
-        child: item,
-      ),
-    );
+    if (mounted) {
+      final item = widget.itemBuilder(context, index);
+      return OverflowBox(
+        minHeight: 0,
+        maxHeight: double.infinity,
+        alignment: Alignment.topCenter,
+        child: SizeReportingWidget(
+          onSizeChange: (size) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  if ((size.height - widget.defaultHeight).abs() > 10) {
+                    _heights[index] = size.height;
+                  }
+                });
+              }
+            });
+          },
+          child: item,
+        ),
+      );
+    } else {
+      return const SizedBox(
+        height: 500,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 
   void _updatePage() {
