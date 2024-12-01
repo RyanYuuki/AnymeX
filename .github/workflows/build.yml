@@ -34,7 +34,7 @@ jobs:
           add_section() {
             local section_title="$1"
             local grep_pattern="$2"
-            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* `%h`[https://github.com/RyanYuuki/AnymeX/commit/%h]: %s')
+            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
             
             if [ ! -z "$commits" ]; then
               echo "## $section_title" >> CHANGELOG.md
