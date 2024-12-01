@@ -76,8 +76,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
-          flutter-version: a0ba2de
+          flutter-version: "3.22.3"
 
       - name: Get Dependencies
         run: flutter pub get
@@ -115,8 +114,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
-          flutter-version: a0ba2de
+          flutter-version: "3.22.3"
 
       - name: Get Dependencies
         run: flutter pub get
@@ -150,13 +148,12 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build cmake g++ libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev libwebkit2gtk-4.1-dev
+          sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 dpkg-dev
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
-          flutter-version: a0ba2de
+          flutter-version: "3.22.3"
 
       - name: Replace pubspec.yaml with Desktop Version
         run: cp pubspec_desktop.yaml pubspec.yaml
@@ -177,8 +174,8 @@ jobs:
 
       - name: Zip Linux Artifacts
         run: |
-          cd build/linux/x64/release/bundle
-          zip -r ../../../../../AnymeX-Linux.zip .
+          cd build/linux/x64/release
+          zip -r ../../../../AnymeX-Linux.zip .
 
       - name: Release Linux Build
         uses: ncipollo/release-action@v1
@@ -198,8 +195,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
-          flutter-version: a0ba2de
+          flutter-version: "3.22.3"
 
       - name: Replace pubspec.yaml with Desktop Version
         run: Copy-Item -Path pubspec_desktop.yaml -Destination pubspec.yaml -Force
@@ -248,8 +244,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
-          flutter-version: a0ba2de
+          flutter-version: "3.22.3"
 
       - name: Replace pubspec.yaml with Desktop Version
         run: cp pubspec_macos.yaml pubspec.yaml

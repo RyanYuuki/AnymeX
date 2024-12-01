@@ -209,7 +209,6 @@ class _NovelReadingPageState extends State<NovelReadingPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Slider(
-                              year2023: false,
                               value: _fontSize,
                               min: 12,
                               max: 32,

@@ -7,7 +7,7 @@ environment:
   sdk: ">=3.4.4 <4.0.0"
 
 dependencies:
-  carousel_slider: ^5.0.0
+  carousel_slider: ^4.2.1
   crystal_navigation_bar: ^1.0.0
   flutter:
     sdk: flutter

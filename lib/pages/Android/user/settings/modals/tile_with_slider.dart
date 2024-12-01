@@ -51,7 +51,6 @@ class _TileWithSliderState extends State<TileWithSlider> {
               ),
               Expanded(
                 child: Slider(
-                  year2023: false,
                   value: widget.sliderValue,
                   onChanged: (newValue) => widget.onChanged(newValue),
                   min: widget.min,
