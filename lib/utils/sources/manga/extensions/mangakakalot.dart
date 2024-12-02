@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
 import 'package:anymex/utils/sources/manga/base/source_base.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
@@ -122,16 +121,6 @@ class MangaKakalot implements SourceBase {
     }
   }
 
-  @override
-  Future<dynamic> mapToAnilist(String query) async {
-    final mangaList = await fetchMangaSearchResults(query);
-    String bestMatchId = findBestMatch(query, mangaList);
-    if (bestMatchId.isNotEmpty) {
-      return await fetchMangaChapters(bestMatchId);
-    } else {
-      throw Exception('No suitable match found for the query');
-    }
-  }
 
   @override
   Future<dynamic> fetchChapterImages({

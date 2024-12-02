@@ -5,6 +5,7 @@ import 'package:anymex/utils/sources/manga/extensions/mangafire.dart';
 import 'package:anymex/utils/sources/manga/extensions/mangakakalot.dart';
 import 'package:anymex/utils/sources/manga/extensions/mangakakalot_unofficial.dart';
 import 'package:anymex/utils/sources/manga/extensions/manganato.dart';
+import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
 import 'package:hive/hive.dart';
 import '../base/source_base.dart';
 
@@ -84,11 +85,12 @@ class MangaSourceHandler {
   }
 
   Future<dynamic> mapToAnilist(String query) async {
-    final source = _getSource(selectedSourceName);
-    if (source != null) {
-      return await source.mapToAnilist(query);
+    final mangaList = await fetchMangaSearchResults(query);
+    String bestMatchId = findBestMatch(query, mangaList);
+    if (bestMatchId.isNotEmpty) {
+      return await fetchMangaChapters(bestMatchId);
     } else {
-      log("No source available or selected to fetch chapter images");
+      throw Exception('No suitable match found for the query');
     }
   }
 }
