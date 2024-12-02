@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/utils/sources/manga/base/source_base.dart';
-import 'package:anymex/utils/sources/manga/helper/jaro_helper.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
@@ -151,17 +150,6 @@ class Comick implements SourceBase {
 
   @override
   String get baseUrl => 'https://comick.io/';
-
-  @override
-  Future<dynamic> mapToAnilist(String id, {int page = 1}) async {
-    final mangaList = await fetchMangaSearchResults(id);
-    String bestMatchId = findBestMatch(id, mangaList);
-    if (bestMatchId.isNotEmpty) {
-      return await fetchMangaChapters(bestMatchId);
-    } else {
-      throw Exception('No suitable match found for the query');
-    }
-  }
 
   @override
   String get sourceName => 'ComicK';
