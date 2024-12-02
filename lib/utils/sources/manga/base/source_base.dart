@@ -7,5 +7,4 @@ abstract class SourceBase {
   Future<dynamic> fetchMangaSearchResults(String query);
   Future<dynamic> fetchChapterImages(
       {required String mangaId, required String chapterId});
-  Future<dynamic> mapToAnilist(String query);
 }

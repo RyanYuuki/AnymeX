@@ -330,7 +330,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AnimeList(),
+                builder: (context) => const AnimeList(),
               ),
             );
             Provider.of<AniListProvider>(context, listen: false)
@@ -346,7 +346,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AnilistMangaList(),
+                builder: (context) => const AnilistMangaList(),
               ),
             );
             Provider.of<AniListProvider>(context, listen: false)
@@ -370,7 +370,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AnimeList(),
+                builder: (context) => const AnimeList(),
               ),
             );
             Provider.of<AniListProvider>(context, listen: false)
@@ -387,7 +387,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AnilistMangaList(),
+                builder: (context) => const AnilistMangaList(),
               ),
             );
             Provider.of<AniListProvider>(context, listen: false)

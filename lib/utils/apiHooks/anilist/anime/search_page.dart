@@ -29,7 +29,7 @@ Future<List<Map<String, dynamic>>> fetchAnimeBySearch({
     query (\$search: String, \$sort: [MediaSort], \$season: MediaSeason, \$status: MediaStatus, \$format: MediaFormat, \$genre_in: [String]) {
       Page (page: 1) {
         media (
-          ${query != null && query.isNotEmpty ? 'search: \$search,' : ''}
+          ${query.isNotEmpty ? 'search: \$search,' : ''}
           type: ANIME,
           sort: \$sort,
           season: \$season,

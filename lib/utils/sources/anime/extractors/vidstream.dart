@@ -25,7 +25,7 @@ class Vidstream {
 
     final res = (await get(
         Uri.parse(
-            "${epLink.scheme}://${epLink.host}/encrypt-ajax.php?${params}"),
+            "${epLink.scheme}://${epLink.host}/encrypt-ajax.php?$params"),
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
         }));
@@ -40,8 +40,9 @@ class Vidstream {
 
     dynamic qualityList = [];
 
-    if (parsed['source'] == null && parsed['source_bk'] == null)
+    if (parsed['source'] == null && parsed['source_bk'] == null) {
       throw Exception("No stream found");
+    }
 
     for (final src in parsed['source']) {
       qualityList.add({
@@ -78,7 +79,7 @@ class Vidstream {
             .querySelector('script[data-name="episode"]')
             ?.attributes['data-value'] ??
         '';
-    if (val.length == 0) return null;
+    if (val.isEmpty) return null;
     final Encrypter encrypter =
         Encrypter(AES(keys['key'] as Key, mode: AESMode.cbc, padding: null));
     final decrypted =
@@ -90,7 +91,7 @@ class Vidstream {
     final res = await fetch(epLink);
     final doc = html.parse(res);
     final String link = doc.querySelector("iframe")?.attributes['src'] ?? '';
-    if (link.length == 0) return null;
+    if (link.isEmpty) return null;
     return link;
   }
 
