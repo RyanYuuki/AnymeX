@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:anymex/pages/Android/user/settings/modals/tile_with_slider.dart';

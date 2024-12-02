@@ -3,8 +3,8 @@ import 'package:hive/hive.dart';
 
 class AniListProvider with ChangeNotifier {
   final storage = Hive.box('login-data');
-  dynamic _userData = {};
-  bool _isLoading = false;
+  final dynamic _userData = {};
+  final bool _isLoading = false;
 
   dynamic get userData => _userData;
   bool get isLoading => _isLoading;

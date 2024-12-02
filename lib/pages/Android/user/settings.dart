@@ -5,6 +5,8 @@ import 'package:anymex/pages/Android/user/settings/settings_layout.dart';
 import 'package:anymex/pages/Android/user/settings/settings_player.dart';
 import 'package:anymex/pages/Android/user/settings/settings_sources.dart';
 import 'package:anymex/pages/Android/user/settings/settings_theme.dart';
+import 'package:anymex/utils/sources/manga/extensions/asurascans.dart';
+import 'package:anymex/utils/sources/manga/extensions/mangadex.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -122,6 +124,17 @@ class SettingsPage extends StatelessWidget {
               description: 'About this app',
               onTap: () {
                 Navigator.push(context, _createSlideRoute(const AboutPage()));
+              },
+            ),
+            CustomTile(
+              icon: Iconsax.info_circle5,
+              title: 'About',
+              description: 'About this app',
+              onTap: () async {
+                await Asurascans().fetchChapterImages(
+                    mangaId: '',
+                    chapterId:
+                        'https://asuracomic.net/series/solo-leveling-ragnarok-52f3dbb5/chapter/19');
               },
             ),
           ],

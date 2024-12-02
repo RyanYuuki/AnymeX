@@ -8,7 +8,6 @@ import 'package:anymex/components/android/novel/reusable_carousel.dart';
 import 'package:anymex/components/desktop/novel/cover_carousel.dart';
 import 'package:anymex/components/desktop/novel/horizontal_list.dart';
 import 'package:anymex/components/platform_builder.dart';
-import 'package:anymex/fallbackData/novel_cover_carousel.dart';
 import 'package:anymex/fallbackData/novel_homepage.dart';
 import 'package:anymex/hiveData/themeData/theme_provider.dart';
 import 'package:anymex/pages/Android/Anime/home_page.dart' hide Header;

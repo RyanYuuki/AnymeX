@@ -1,4 +1,3 @@
-import 'package:anymex/pages/Android/user/anilist_pages/manga_list.dart';
 import 'package:flutter/material.dart';
 import 'package:text_scroll/text_scroll.dart';
 import 'package:anymex/pages/Android/Manga/read_page.dart';
