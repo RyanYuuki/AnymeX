@@ -37,7 +37,7 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
 
 ---
 
-## 🚀 **Features**
+## 🚀 Features
 
 - **📺 Anime, 📚 Manga, & 📖 Novels**: Stream and read from a vast collection of anime, manga, and novels.
 - **🎨 Multiple Themes**: More than just light and dark—explore various themes to match your style.
@@ -49,13 +49,15 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
 
 ---
 
-## 📱 **Screenshots**
+## 🖼️ Screenshots
 
-### 📱 **Mobile Screenshots**
+### 📱 Mobile
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview1.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview2.jpg" width="49%" style="margin: 0;" />
+    <details>
+       <summary>View More</summary>
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview3.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview4.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview5.jpg" width="49%" style="margin: 0;" />
@@ -66,37 +68,41 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview10.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview11.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview12.jpg" width="49%" style="margin: 0;" />
+    </details>
 </div>
 
-### 💻 **Desktop Screenshots**
+### 💻 Desktop
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
+    <details>
+       <summary>View More</summary>
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_2.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_3.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_4.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_5.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_6.png" width="100%" style="margin: 0;" />
+    </details>
 </div>
 
 ---
 
-## 🔧 **Getting Started**
+## 🔧 Getting Started
 
-### 1. **Clone the Repository**
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/anymex.git
 ```
 
-### 2. **Install Dependencies**
+### 2. Install Dependencies
 
 ```bash
 cd anymex
 flutter pub get
 ```
 
-### 3. **Run the App**
+### 3. Run the App
 
 ```bash
 flutter run
@@ -104,12 +110,12 @@ flutter run
 
 ---
 
-## 📜 **License**
+## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ---
 
-## 📬 **Contact & Feedback**
+## 📬 Contact & Feedback
 
 Got questions or feature requests? Reach out via [email](mailto:rehank220358@gmail.com) or join our [Telegram group](https://t.me/+_pfInbBGQ1g0YjQ9) for more discussions!
