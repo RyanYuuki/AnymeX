@@ -103,7 +103,7 @@ jobs:
           elif [[ "${RELEASE_NAME}" == *beta ]]; then
             ROLE_MENTION="<@&1313087262539518033>"  # Use the actual Role ID for beta channel
           else
-            ROLE_MENTION="<@&1234567>"  # Use the default role ID
+            ROLE_MENTION="<@&1313346791479054456>"  # Use the default role ID
           fi
           
           HEADER="${ROLE_MENTION}
