@@ -3,7 +3,7 @@ name: Notify Release
 on:
   workflow_run:
     workflows:
-      - "Build and Release AnymeX" # Name of the triggering workflow
+      - "changelog" # Name of the triggering workflow
     types:
       - completed
   workflow_dispatch: # Allow manual triggering of this workflow
