@@ -7,9 +7,10 @@ on:
     types:
       - completed
   workflow_dispatch: # Allow manual triggering of this workflow
-  
+
 jobs:
   notify:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
