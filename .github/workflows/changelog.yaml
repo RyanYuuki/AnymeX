@@ -18,6 +18,12 @@ jobs:
         with:
           fetch-depth: 0
     
+     # Clear existing CHANGELOG.md
+      - name: Clear CHANGELOG.md
+        run: |
+          echo ""> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+    
       - name: Get previous tag
         id: get_prev_tag
         run: |
