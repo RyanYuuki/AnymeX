@@ -62,11 +62,8 @@ jobs:
           if [[ "${RELEASE_NAME}" == *alpha ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_ALPHA }}" >> $GITHUB_ENV
             echo "Targeted to Alpha channel"
-          elif [[ "${RELEASE_NAME}" == *beta ]]; then
-            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
-            echo "Targeted to Beta channel"
           else
-            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK }}" >> $GITHUB_ENV
+            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
             echo "Targeted to Default channel"
           fi
       # Telegram - Send Release Notes
