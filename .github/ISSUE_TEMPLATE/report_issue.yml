@@ -47,9 +47,9 @@ body:
         Paste the logs here or upload as an attachment.
       
   - type: input
-    id: dartotsu-version
+    id: anymex-version
     attributes:
-      label: Dartotsu Version
+      label: AnymeX Version
       description: Specify the version of AnymeX in which the issue occurred.
       placeholder: |
         Example: "1.2.3"
