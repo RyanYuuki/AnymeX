@@ -29,17 +29,22 @@ Future<void> checkForUpdate(context) async {
 }
 
 bool _isNewerVersion(String currentVersion, String latestVersion) {
-  currentVersion = currentVersion.replaceFirst('v', '');
-  latestVersion = latestVersion.replaceFirst('v', '');
+  if (latestVersion.split('-').last == "alpha" ||
+      latestVersion.split('-').last == "beta") {
+    return false;
+  } else {
+    currentVersion = currentVersion.replaceFirst('v', '');
+    latestVersion = latestVersion.replaceFirst('v', '');
 
-  currentVersion = currentVersion.replaceAll(RegExp(r'-.*'), '');
-  latestVersion = latestVersion.replaceAll(RegExp(r'-.*'), '');
+    currentVersion = currentVersion.replaceAll(RegExp(r'-.*'), '');
+    latestVersion = latestVersion.replaceAll(RegExp(r'-.*'), '');
 
-  List<int> current = currentVersion.split('.').map(int.parse).toList();
-  List<int> latest = latestVersion.split('.').map(int.parse).toList();
+    List<int> current = currentVersion.split('.').map(int.parse).toList();
+    List<int> latest = latestVersion.split('.').map(int.parse).toList();
 
-  for (int i = 0; i < current.length; i++) {
-    if (latest[i] > current[i]) return true;
+    for (int i = 0; i < current.length; i++) {
+      if (latest[i] > current[i]) return true;
+    }
   }
 
   return false;
