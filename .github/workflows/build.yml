@@ -6,9 +6,61 @@ on:
       - "v*"
   workflow_dispatch:
 
+
 jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate Changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #!/bin/bash
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          # Initialize changelog with the current tag as the version
+          echo "## $CURRENT_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          # Function to add section if commits exist
+          add_section() {
+            local section_title="$1"
+            local grep_pattern="$2"
+            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
+            
+            if [ ! -z "$commits" ]; then
+              echo "## $section_title" >> CHANGELOG.md
+              echo "$commits" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+          }
+          # Add sections dynamically
+          add_section "🎉 New Features" "^feat:"
+          add_section "🛠️ Bug Fixes & Improvements" "^fix:"
+          add_section "🔧 Refactors" "^refactor:"
+          add_section "🎨 Style Changes" "^style:"
+          add_section "🚀 Performance Improvements" "^perf:"
+          add_section "🧹 Chores & Documentation" "^(chore|docs):"
+          # Output the generated changelog
+          cat CHANGELOG.md
+
+      # Step 1: Upload Changelog.md as Artifact
+      - name: Upload Changelog.md as Artifact
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Changelog
+          path: Changelog.md  # Path to your Changelog.md
+          
   build-android:
     runs-on: ubuntu-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -35,7 +87,6 @@ jobs:
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
-
       - name: Build Universal APK
         run: flutter build apk --release
 
@@ -52,6 +103,7 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -74,7 +126,7 @@ jobs:
           cd ..
           zip -r AnymeX-iOS-${{ github.ref_name }}.ipa Payload
           mv AnymeX-iOS-${{ github.ref_name }}.ipa ../../../
-
+          
       - name: Release iOS IPA
         uses: ncipollo/release-action@v1
         with:
@@ -85,6 +137,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -93,7 +146,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 dpkg-dev
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -109,7 +161,6 @@ jobs:
         run: |
           mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
           mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
-
       - name: Replace main.dart with Desktop Version
         run: mv lib/main.darts lib/main.dart
 
@@ -121,7 +172,6 @@ jobs:
           cd build/linux/x64/release
           cp ../../../../linuxLibs/* bundle/lib/
           zip -r ../../../../AnymeX-Linux.zip .
-
       - name: Release Linux Build
         uses: ncipollo/release-action@v1
         with:
@@ -132,6 +182,7 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -151,7 +202,6 @@ jobs:
         run: |
           Move-Item -Path lib\pages\Desktop\video_controls.darts -Destination lib\pages\Desktop\video_controls.dart -Force
           Move-Item -Path lib\pages\Desktop\watch_page.darts -Destination lib\pages\Desktop\watch_page.dart -Force
-
       - name: Get Dependencies
         run: flutter pub get
 
@@ -162,14 +212,12 @@ jobs:
         run: |
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
-
       - name: Setup Inno Setup
         run: choco install innosetup -y
 
       - name: Build Installer with Inno Setup
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno.iss
-
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
@@ -180,6 +228,7 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -200,7 +249,6 @@ jobs:
           mv lib/pages/Desktop/video_controls.darts lib/pages/Desktop/video_controls.dart  
           mv lib/pages/Desktop/watch_page.darts lib/pages/Desktop/watch_page.dart
           mv lib/auth/auth_provider_macos.dart lib/auth/auth_provider.dart
-
       - name: Get Dependencies
         run: flutter pub get
 
@@ -211,7 +259,6 @@ jobs:
         run: |
           mkdir -p build/macos/Release
           hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release/AnymeX.app -ov -format UDZO build/macos/Release/AnymeX.dmg
-
       - name: Release macOS Builds
         uses: ncipollo/release-action@v1
         with:
@@ -219,56 +266,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
-
-  generate-changelog:
-    runs-on: ubuntu-latest
-    needs: [build-android, build-ios, build-macos, build-linux, build-windows]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Generate Changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          #!/bin/bash
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          if [ -z "$PREVIOUS_TAG" ]; then
-            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-
-          # Initialize changelog with the current tag as the version
-          echo "## $CURRENT_TAG" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-
-          # Function to add section if commits exist
-          add_section() {
-            local section_title="$1"
-            local grep_pattern="$2"
-            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
-            
-            if [ ! -z "$commits" ]; then
-              echo "## $section_title" >> CHANGELOG.md
-              echo "$commits" >> CHANGELOG.md
-              echo "" >> CHANGELOG.md
-            fi
-          }
-
-          # Add sections dynamically
-          add_section "🎉 New Features" "^feat:"
-          add_section "🛠️ Bug Fixes & Improvements" "^fix:"
-          add_section "🔧 Refactors" "^refactor:"
-          add_section "🎨 Style Changes" "^style:"
-          add_section "🚀 Performance Improvements" "^perf:"
-          add_section "🧹 Chores & Documentation" "^(chore|docs):"
-
-          # Output the generated changelog
-          cat CHANGELOG.md
-      - name: Update Release with Changelog
-        uses: ncipollo/release-action@v1
-        with:
-          bodyFile: "CHANGELOG.md"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
