@@ -51,7 +51,7 @@ jobs:
       # Step 4: Commit the badge update to the repository
       - name: Commit Badge
         run: |
-          mv badge.json path/to/your/badge.json
+          mv badge.json badges/badge.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
