@@ -80,11 +80,11 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
   </a>
 </details>
 
-## Official Communities
+<!--## Official Communities
 Join our communities to stay updated and contribute to the discussion:
 
 <a href="https://discord.gg/azAMuBWd8C" style="margin-right: 10px; display: inline-block;"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/discord-round-color-icon.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
-<a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" height="40" style="vertical-align: middle;"></a>
+<a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" height="40" style="vertical-align: middle;"></a>-->
 
 ## Contribute
 We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/azAMuBWd8C) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
