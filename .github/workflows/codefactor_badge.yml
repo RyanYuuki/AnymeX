@@ -1,0 +1,59 @@
+name: Update CodeFactor Badge
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Fetch the current grade from CodeFactor
+      - name: Fetch CodeFactor Grade
+        id: fetch-grade
+        run: |
+          # Fetch the badge data
+          GRADE=$(curl -s 'https://www.codefactor.io/repository/github/ryanyuuki/anymex/badge' | grep -oP '(?<=grade-)[A-F]')
+          if [ -z "$GRADE" ]; then
+            echo "Failed to fetch CodeFactor grade. Exiting."
+            exit 1
+          fi
+          echo "GRADE=$GRADE" >> $GITHUB_ENV
+
+      # Step 3: Update the Shields.io custom badge
+      - name: Update Badge
+        id: generate-badge
+        run: |
+          # Determine badge color based on grade
+          case "$GRADE" in
+            A) COLOR="green" ;;
+            B) COLOR="yellow" ;;
+            C) COLOR="orange" ;;
+            D|E|F) COLOR="red" ;;
+            *) COLOR="lightgrey" ;; # Default for unknown grades
+          esac
+
+          # Generate badge JSON
+          echo '{"schemaVersion":1,"label":"CodeFactor","message":"'"$GRADE"'","color":"'"$COLOR"'"}' > badge.json
+
+      # Step 4: Commit the badge update to the repository
+      - name: Commit Badge
+        run: |
+          mv badge.json path/to/your/badge.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Check for changes before committing
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add path/to/your/badge.json
+            git commit -m "Update CodeFactor badge"
+            git push
+          fi
