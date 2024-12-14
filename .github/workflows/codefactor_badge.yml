@@ -59,7 +59,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit."
           else
-            git add path/to/your/badge.json
+            git add badges/badge.json
             git commit -m "Update CodeFactor badge"
             git push
           fi
