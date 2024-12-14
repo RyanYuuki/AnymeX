@@ -9,7 +9,7 @@
    <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
       <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
    <a href="https://www.codefactor.io/repository/github/ryanyuuki/anymex">
-     <img src="https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/path/to/badge.json" alt="CodeFactor Grade" />
+     <img src="https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/badges/badge.json" alt="CodeFactor Grade" />
    </a>
 </div>
 <br/>
