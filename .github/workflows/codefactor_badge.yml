@@ -18,16 +18,18 @@ jobs:
       - name: Fetch CodeFactor Grade
         id: fetch-grade
         run: |
-          # Fetch the badge data
+          # Fetch the badge SVG data
           RESPONSE=$(curl -s 'https://www.codefactor.io/repository/github/ryanyuuki/anymex/badge')
           echo "Response from CodeFactor: $RESPONSE"
+          
+          # Extract the grade using grep (look for text in SVG containing grade)
+          GRADE=$(echo "$RESPONSE" | grep -oP '(?<=<text x="78" y="14">)[A-F](?=</text>)')
 
-          # Extract the grade using sed
-          GRADE=$(echo "$RESPONSE" | sed -n 's/.*grade-\([A-F]\).*/\1/p')
           if [ -z "$GRADE" ]; then
-              echo "Failed to extract CodeFactor grade from the response. Exiting."
+              echo "Failed to extract CodeFactor grade from the SVG. Exiting."
               exit 1
           fi
+          
           echo "GRADE=$GRADE" >> $GITHUB_ENV
 
       # Step 3: Update the Shields.io custom badge
