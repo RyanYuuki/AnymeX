@@ -1,15 +1,15 @@
 name: Update CodeFactor Badge
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
-  workflow_dispatch:  # Allows manual trigger
-  push:  # Runs when code is pushed to the repository
+  workflow_dispatch:
+  push:
     branches:
-      - main  # Or the branch you want to track
-  pull_request:  # Runs when a pull request is opened or updated
+      - main
+  pull_request:
+    types:
+      - closed
     branches:
-      - main  # Or the branch you want to track
+      - main 
 
 jobs:
   update-badge:
