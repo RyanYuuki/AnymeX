@@ -3,18 +3,22 @@
 <h1 style="font-size: 2em; font-weight: bold;">AnymeX</h1>
 <div align="center">
    <a href="https://github.com/RyanYuuki/AnymeX/releases/latest">
-   <img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total.svg?color=white&labelColor=black&style=for-the-badge" alt="Total Downloads" /></a>
+       <img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total.svg?color=white&labelColor=black&style=for-the-badge" alt="Total Downloads" /></a>
    <a href="https://github.com/RyanYuuki/AnymeX/releases/latest">
-   <img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="GitHub release" /></a>
+      <img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="GitHub release" /></a>
    <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
-   <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
+      <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
+   <a href="https://www.codefactor.io/repository/github/ryanyuuki/anymex">
+     <img src="https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/path/to/badge.json" alt="CodeFactor Grade" />
+   </a>
 </div>
 <br/>
 <div align="center">
    <a href="https://discord.gg/azAMuBWd8C">
       <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&color=white&labelColor=black&logoColor=white" alt="Discord"/></a>
    <a href="https://t.me/AnymeX_Discussion">
-      <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&color=white&labelColor=black&logoColor=white" alt="Telegram"/></a>
+      <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&color=white&labelColor=black&logoColor=white" alt="Telegram"/>
+   </a>
 </div>
 </div>
 <br/>
