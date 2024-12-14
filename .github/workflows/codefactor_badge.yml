@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight UTC
   workflow_dispatch:  # Allows manual trigger
+  push:  # Runs when code is pushed to the repository
+    branches:
+      - main  # Or the branch you want to track
+  pull_request:  # Runs when a pull request is opened or updated
+    branches:
+      - main  # Or the branch you want to track
 
 jobs:
   update-badge:
