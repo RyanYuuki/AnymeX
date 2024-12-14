@@ -1,0 +1,71 @@
+name: Update CodeFactor Badge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main 
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Fetch the current grade from CodeFactor
+      - name: Fetch CodeFactor Grade
+        id: fetch-grade
+        run: |
+          # Fetch the badge SVG data
+          RESPONSE=$(curl -s 'https://www.codefactor.io/repository/github/ryanyuuki/anymex/badge')
+          echo "Response from CodeFactor: $RESPONSE"
+          
+          # Extract the grade using grep (look for text in SVG containing grade)
+          GRADE=$(echo "$RESPONSE" | grep -oP '(?<=<text x="78" y="14">)[A-F](?=</text>)')
+
+          if [ -z "$GRADE" ]; then
+              echo "Failed to extract CodeFactor grade from the SVG. Exiting."
+              exit 1
+          fi
+          
+          echo "GRADE=$GRADE" >> $GITHUB_ENV
+
+      # Step 3: Update the Shields.io custom badge
+      - name: Update Badge
+        id: generate-badge
+        run: |
+          # Determine badge color based on grade
+          case "$GRADE" in
+            A) COLOR="green" ;;
+            B) COLOR="yellow" ;;
+            C) COLOR="orange" ;;
+            D|E|F) COLOR="red" ;;
+            *) COLOR="lightgrey" ;; # Default for unknown grades
+          esac
+
+          # Generate badge JSON
+          echo '{"schemaVersion":1,"label":"CodeFactor","message":"'"$GRADE"'","color":"'"$COLOR"'"}' > badge.json
+
+      # Step 4: Commit the badge update to the repository
+      - name: Commit Badge
+        run: |
+          mv badge.json badges/badge.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Check for changes before committing
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add badges/badge.json
+            git commit -m "Update CodeFactor badge"
+            git push
+          fi
