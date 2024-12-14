@@ -8,8 +8,8 @@
       <img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="GitHub release" /></a>
    <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
       <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
-   <a href="https://www.codefactor.io/repository/github/ryanyuuki/anymex">
-     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/badges/badge.json&labelColor=black&style=for-the-badge" alt="CodeFactor Grade" />
+   <a href="https://www.codefactor.io/repository/github/RyanYuuki/AnymeX">
+     <img src="https://img.shields.io/codefactor/grade/github/RyanYuuki/AnymeX?style=for-the-badge&label=Codefactor&labelColor=black&color=white" alt="CodeFactor Grade" />
    </a>
 </div>
 <br/>
