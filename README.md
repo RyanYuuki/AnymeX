@@ -108,6 +108,7 @@ flutter run
 ## Acknowledgments
 A heartfelt thank you to everyone who has contributed to the development of AnymeX.
 Your efforts are invaluable.
+
 <a href="https://github.com/RyanYuuki/AnymeX/graphs/contributors">
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/RyanYuuki/AnymeX?style=flat-square&label=Contributors%20%3A&labelColor=%230f1318&color=%230f1318" align="left">
 </a>
