@@ -19,10 +19,14 @@ jobs:
         id: fetch-grade
         run: |
           # Fetch the badge data
-          GRADE=$(curl -s 'https://www.codefactor.io/repository/github/ryanyuuki/anymex/badge' | grep -oP '(?<=grade-)[A-F]')
+          RESPONSE=$(curl -s 'https://www.codefactor.io/repository/github/ryanyuuki/anymex/badge')
+          echo "Response from CodeFactor: $RESPONSE"
+
+          # Extract the grade using sed
+          GRADE=$(echo "$RESPONSE" | sed -n 's/.*grade-\([A-F]\).*/\1/p')
           if [ -z "$GRADE" ]; then
-            echo "Failed to fetch CodeFactor grade. Exiting."
-            exit 1
+              echo "Failed to extract CodeFactor grade from the response. Exiting."
+              exit 1
           fi
           echo "GRADE=$GRADE" >> $GITHUB_ENV
 
