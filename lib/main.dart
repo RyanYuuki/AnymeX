@@ -20,11 +20,18 @@ import 'package:provider/provider.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
+  WidgetsFlutterBinding.ensureInitialized();
+  if (!Platform.isAndroid && !Platform.isIOS) {
+    await windowManager.ensureInitialized();
+    MediaKit.ensureInitialized();
+  }
   try {
     await dotenv.load(fileName: ".env");
     log('Env file loaded successfully.');
