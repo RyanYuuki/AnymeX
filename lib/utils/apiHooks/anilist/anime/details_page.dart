@@ -154,7 +154,7 @@ Future<Map<String, dynamic>> fetchAnimeInfo(int animeId) async {
             media['title']?['english'] ??
             media['title']?['native'] ??
             '?',
-        'cover': media['bannerImage'] as String? ?? '',
+        'cover': media['bannerImage'] ?? media['coverImage']?['large'],
         'name': media['title']?['english'] ??
             media['title']?['romaji'] ??
             media['title']?['native'] ??
