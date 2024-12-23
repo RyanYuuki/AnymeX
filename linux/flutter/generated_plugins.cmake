@@ -5,6 +5,8 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   dynamic_color
+  flutter_qjs
+  isar_flutter_libs
   media_kit_libs_linux
   media_kit_video
   screen_retriever_linux
