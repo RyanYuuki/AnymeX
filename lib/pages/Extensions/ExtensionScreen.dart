@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
-import '../../Preferences/PrefManager.dart';
-import '../../Preferences/Preferences.dart';
 import '../../StorageProvider.dart';
 import '../../main.dart';
 
@@ -143,9 +141,7 @@ Widget _extensionUpdateNumbers(
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           final entries = snapshot.data!
-              .where((element) => PrefManager.getVal(PrefName.NSFWExtensions)
-                  ? true
-                  : element.isNsfw == false)
+              .where((element) => true ? true : element.isNsfw == false) // @ryan_yuuki this is NSFW filter too lol
               .toList();
           return entries.isEmpty
               ? Container()

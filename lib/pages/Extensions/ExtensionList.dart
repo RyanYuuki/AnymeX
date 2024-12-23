@@ -1,9 +1,9 @@
-import 'package:anymex/Preferences/PrefManager.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
 
-import '../../Preferences/Preferences.dart';
+
 import '../../api/Mangayomi/Extensions/GetSourceList.dart';
 import '../../api/Mangayomi/Extensions/extensions_provider.dart';
 import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
@@ -105,8 +105,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
             widget.query.isEmpty ||
             element.name!.toLowerCase().contains(widget.query.toLowerCase()))
         .where((element) =>
-            PrefManager.getVal(PrefName.NSFWExtensions) ||
-            element.isNsfw == false)
+            true || element.isNsfw == false) // @ryan_yuuki this is NSFW filter
         .toList();
   }
 

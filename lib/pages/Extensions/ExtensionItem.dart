@@ -1,4 +1,3 @@
-import 'package:anymex/Functions/Function.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/source_preference.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/pages/Extensions/alert_dialog_builder.dart';
@@ -139,11 +138,11 @@ class _ExtensionListTileWidgetState
               width: 20,
               child: CircularProgressIndicator(strokeWidth: 2.0),
             )
-          : _BuildButtons(sourceNotEmpty, updateAvailable),
+          : _buildButtons(sourceNotEmpty, updateAvailable),
     );
   }
 
-  Widget _BuildButtons(bool sourceNotEmpty, bool updateAvailable) {
+  Widget _buildButtons(bool sourceNotEmpty, bool updateAvailable) {
     return !sourceNotEmpty
         ? IconButton(
             onPressed: () => _handleSourceAction(),
@@ -217,13 +216,14 @@ class _ExtensionListTileWidgetState
                         .map((e) =>
                             getSourcePreferenceEntry(e.key!, widget.source.id!))
                         .toList();
-                    navigateToPage(
+                    Navigator.push(
                       context,
-                      SourcePreferenceWidget(
+                      MaterialPageRoute(builder: (context) => SourcePreferenceWidget(
                         source: widget.source,
                         sourcePreference: sourcePreference,
-                      ),
+                      ),),
                     );
+
                   },
                   icon: const Icon(Iconsax.speedometer),
                 )

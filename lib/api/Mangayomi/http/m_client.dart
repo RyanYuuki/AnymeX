@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:anymex/Functions/Function.dart';
 import 'package:anymex/api/Mangayomi/Model/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/io_client.dart';
@@ -178,7 +177,7 @@ class LoggerInterceptor extends InterceptorContract {
         "----- Response -----\n${response.request?.method}: ${response.request?.url}, statusCode: ${response.statusCode} ${cloudflare ? "Failed to bypass Cloudflare" : ""}");
     debugPrint("----- Response -----\n${response.request?.method}: ${response.request?.url}, statusCode: ${response.statusCode} ${cloudflare ? "Failed to bypass Cloudflare" : ""}");
     if (cloudflare) {
-      snackString("${response.statusCode} Failed to bypass Cloudflare");
+      debugPrint("${response.statusCode} Failed to bypass Cloudflare");
     }
     return response;
   }
