@@ -516,8 +516,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
-            value:
-                '${activeSource!.name} (${activeSource!.lang?.toUpperCase()})',
+            value: installedExtensions?.isEmpty ?? true
+                ? "No Sources Installed"
+                : '${activeSource!.name} (${activeSource!.lang?.toUpperCase()})',
             decoration: InputDecoration(
               labelText: activeSource != null
                   ? 'Select Source'

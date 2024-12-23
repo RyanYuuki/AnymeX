@@ -691,8 +691,9 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
             height: 20,
           ),
           DropdownButtonFormField<String>(
-            value:
-                '${activeSource!.name} (${activeSource!.lang?.toUpperCase()})',
+            value: installedExtensions?.isEmpty ?? true
+                ? "No Sources Installed"
+                : '${activeSource!.name} (${activeSource!.lang?.toUpperCase()})',
             decoration: InputDecoration(
               labelText: 'Select Source',
               filled: true,
