@@ -1,10 +1,10 @@
 name: anymex
 description: "AnymeX - One Stop for anime, manga, novels"
-publish_to: 'none'
+publish_to: "none"
 version: 2.8.4
 
 environment:
-  sdk: '>=3.4.4 <4.0.0'
+  sdk: ">=3.4.4 <4.0.0"
 
 dependencies:
   carousel_slider: ^4.2.1
@@ -45,6 +45,27 @@ dependencies:
   media_kit_video: ^1.2.4
   media_kit_libs_video: ^1.0.4
   window_manager: ^0.4.3
+  http_interceptor: ^2.0.0
+  js_packer: ^0.0.5
+  xpath_selector_html_parser: ^3.0.1
+  dart_eval: ^0.7.10
+  flutter_qjs:
+    git:
+      url: https://github.com/kodjodevf/flutter_qjs.git
+      ref: main
+  json_annotation: ^4.9.0
+  isar: ^3.1.0+1
+  json_path: ^0.7.4
+  intl: ^0.20.1
+  isar_flutter_libs: 3.1.0+1
+  riverpod_annotation: ^2.6.1
+  pseudom: ^1.0.1
+  flutter_rust_bridge: ^2.7.0
+  freezed_annotation: ^2.4.4
+  flutter_riverpod: ^2.6.1
+  grouped_list: ^6.0.0
+  volume_controller: ^2.0.8
+  screen_brightness: ^0.2.2+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -53,7 +74,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets: 
+  assets:
     - assets/images/logo_transparent.png
     - .env
 
@@ -65,7 +86,7 @@ flutter:
     - family: Poppins-SemiBold
       fonts:
         - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
-        
+
     - family: Poppins-Bold
       fonts:
         - asset: assets/fonts/Poppins/Poppins-Bold.ttf
