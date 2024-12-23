@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/main.dart';
-import 'package:anymex/pages/Android/Downloads/download_page.dart';
-import 'package:anymex/pages/Android/Rescue/Anime/home_page.dart';
-import 'package:anymex/pages/Android/user/profile.dart';
-import 'package:anymex/pages/Android/user/settings.dart';
+import 'package:anymex/pages/Downloads/download_page.dart';
+import 'package:anymex/pages/Extensions/ExtensionScreen.dart';
+import 'package:anymex/pages/Rescue/Anime/home_page.dart';
+import 'package:anymex/pages/user/profile.dart';
+import 'package:anymex/pages/user/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +23,8 @@ class SettingsModal extends StatelessWidget {
     final avatarImagePath =
         anilistProvider.userData?['user']?['avatar']?['large'];
     final isLoggedIn = anilistProvider.userData?['user']?['name'] != null;
+    bool isMobile = Platform.isAndroid || Platform.isIOS;
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -87,6 +92,18 @@ class SettingsModal extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+          ),
+          if(isMobile)
+          ListTile(
+            leading: const Icon(Icons.extension),
+            title: const Text('Extensions'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ExtensionScreen()),
               );
             },
           ),

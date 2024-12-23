@@ -1,3 +1,4 @@
+import 'package:anymex/components/android/common/custom_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -17,6 +18,7 @@ class ToggleBar extends StatefulWidget {
   final LayoutCallback showChapters;
   final String currentLayout;
   final double? pageNumber;
+  final List<bool> validators;
 
   const ToggleBar(
       {super.key,
@@ -31,7 +33,8 @@ class ToggleBar extends StatefulWidget {
       required this.currentLayout,
       required this.pageController,
       required this.pageNumber,
-      this.mangaData});
+      this.mangaData,
+      required this.validators});
 
   @override
   State<ToggleBar> createState() => _ToggleBarState();
@@ -244,7 +247,7 @@ class _ToggleBarState extends State<ToggleBar> {
                           borderRadius: BorderRadius.circular(30)),
                       child: IconButton(
                         icon: Icon(Icons.skip_previous_rounded,
-                            color: widget.mangaData?['prevChapterId'] == ''
+                            color: !widget.validators[0]
                                 ? Colors.grey
                                 : Theme.of(context)
                                             .colorScheme
@@ -268,13 +271,16 @@ class _ToggleBarState extends State<ToggleBar> {
                     const SizedBox(width: 5),
                     Expanded(
                       child: Container(
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                             color: Theme.of(context)
                                 .colorScheme
                                 .surface
                                 .withOpacity(0.80),
                             borderRadius: BorderRadius.circular(20)),
-                        child: Slider(
+                        child: CustomSlider(
+                          enableComfortPadding: true,
+                          disableMinMax: true,
                           focusNode: FocusNode(canRequestFocus: false),
                           divisions:
                               widget.totalImages == 0 ? 10 : widget.totalImages,
@@ -286,7 +292,7 @@ class _ToggleBarState extends State<ToggleBar> {
                               (_scrollProgress * (widget.totalImages! - 1) + 1)
                                   .round()
                                   .toString(),
-                          onChangeStart: (_) {
+                          onDragStart: (_) {
                             setState(() {
                               _isSliderBeingUsed = true;
                             });
@@ -297,7 +303,7 @@ class _ToggleBarState extends State<ToggleBar> {
                             });
                             _onProgressBarTap(value);
                           },
-                          onChangeEnd: (_) {
+                          onDragEnd: (_) {
                             setState(() {
                               _isSliderBeingUsed = false;
                             });
@@ -321,7 +327,7 @@ class _ToggleBarState extends State<ToggleBar> {
                       child: IconButton(
                         icon: Icon(Icons.skip_next_rounded,
                             size: 35,
-                            color: widget.mangaData?['nextChapterId'] == ''
+                            color: !widget.validators[1]
                                 ? Colors.grey
                                 : Theme.of(context)
                                             .colorScheme
