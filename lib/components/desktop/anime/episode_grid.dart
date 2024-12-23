@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
-
 import 'dart:ui';
 
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class DesktopEpisodeGrid extends StatefulWidget {
-  final List<dynamic> episodes;
+  final List<MChapter> episodes;
   final int layoutIndex;
   final Function(int) onEpisodeSelected;
   final Function(String, String) onEpisodeDownload;
@@ -74,9 +74,8 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final episode = filteredEpisodes[index];
-        final episodeNumber = episode?['number'];
-        final episodeTitle = episode?['title'] ?? 'No Title';
-        final isFiller = episode?['isFiller'] ?? false;
+        final episodeNumber = int.parse(episode.name!.split("Episode ").last);
+        final episodeTitle = episode.name ?? 'No Title';
         final isSelected = widget.currentEpisode == episodeNumber;
         double opacity = episodeNumber <= widget.progress
             ? episodeNumber == widget.progress
@@ -85,9 +84,7 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
             : 1;
         Color color = isSelected
             ? Theme.of(context).colorScheme.secondaryContainer
-            : isFiller
-                ? Colors.lightGreen.shade700
-                : Theme.of(context).colorScheme.surfaceContainer;
+            : Theme.of(context).colorScheme.surfaceContainer;
 
         if (widget.layoutIndex == 0) {
           return GestureDetector(
@@ -112,14 +109,9 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: (widget.episodeImages != null &&
-                                      widget.episodeImages!.length > index
-                                  ? widget.episodeImages![episodeNumber - 1]
-                                          ['image'] ??
-                                      widget.coverImage
-                                  : widget.coverImage),
-                                  width: double.maxFinite,
-                                  alignment: Alignment.center,
+                              imageUrl: widget.coverImage,
+                              width: double.maxFinite,
+                              alignment: Alignment.center,
                               fit: BoxFit.cover,
                               placeholder: (context, url) {
                                 return CachedNetworkImage(
@@ -160,7 +152,7 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      'EP ${episodeNumber?.toString() ?? index.toString()}',
+                                      'EP ${episodeNumber.toString()}',
                                       style: const TextStyle(
                                         fontFamily: 'Poppins-Bold',
                                       ),
@@ -218,23 +210,17 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
                   fit: StackFit.expand,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: (widget.episodeImages != null &&
-                              widget.episodeImages!.length > index
-                          ? widget.episodeImages![episodeNumber - 1]['image'] ??
-                              widget.coverImage
-                          : widget.coverImage),
+                      imageUrl: widget.coverImage,
                       fit: BoxFit.cover,
                     ),
                     Container(
                       padding:
                           const EdgeInsets.only(top: 15, left: 10, right: 5),
                       decoration: BoxDecoration(
-                        color: isFiller
-                            ? Colors.lightGreen.shade700.withOpacity(0.8)
-                            : Theme.of(context)
-                                .colorScheme
-                                .surfaceContainer
-                                .withOpacity(0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainer
+                            .withOpacity(0.6),
                       ),
                       child: Text(
                         episodeTitle,

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:anymex/components/android/helper/scroll_helper.dart';
-import 'package:anymex/pages/Android/Manga/details_page.dart';
+import 'package:anymex/pages/Manga/details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
