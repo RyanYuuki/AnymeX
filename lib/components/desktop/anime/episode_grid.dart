@@ -73,7 +73,7 @@ class _DesktopEpisodeGridState extends State<DesktopEpisodeGrid> {
       itemCount: filteredEpisodes.length,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        final episode = filteredEpisodes[index];
+        MChapter episode = filteredEpisodes[index];
         final episodeNumber = int.parse(episode.name!.split("Episode ").last);
         final episodeTitle = episode.name ?? 'No Title';
         final isSelected = widget.currentEpisode == episodeNumber;

@@ -1,35 +1,35 @@
 {
-    "name": "anymex",
-    "short_name": "anymex",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#00000",
-    "theme_color": "#FFFFFF",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
-    "prefer_related_applications": false,
-    "icons": [
-        {
-            "src": "icons/Icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "icons/Icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        },
-        {
-            "src": "icons/Icon-maskable-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "icons/Icon-maskable-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        }
-    ]
+     "name": "AnymeX α",
+     "short_name": "AnymeX α",
+     "start_url": ".",
+     "display": "standalone",
+     "background_color": "#00000",
+     "theme_color": "#FFFFFF",
+     "description": "A new Flutter project.",
+     "orientation": "portrait-primary",
+     "prefer_related_applications": false,
+     "icons": [
+          {
+               "src": "icons/Icon-192.png",
+               "sizes": "192x192",
+               "type": "image/png"
+          },
+          {
+               "src": "icons/Icon-512.png",
+               "sizes": "512x512",
+               "type": "image/png"
+          },
+          {
+               "src": "icons/Icon-maskable-192.png",
+               "sizes": "192x192",
+               "type": "image/png",
+               "purpose": "maskable"
+          },
+          {
+               "src": "icons/Icon-maskable-512.png",
+               "sizes": "512x512",
+               "type": "image/png",
+               "purpose": "maskable"
+          }
+     ]
 }

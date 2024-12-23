@@ -124,21 +124,21 @@ class _HomePageState extends State<HomePage> {
                               desktopBuilder: _buildDesktopButtons(context),
                             ),
                           const SizedBox(height: 20),
-                          PlatformBuilder(
-                              androidBuilder: ImageButton(
-                                  width: 200,
-                                  buttonText: "FAVOURITES",
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MyList()));
-                                  },
-                                  backgroundImage:
-                                      'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
-                              desktopBuilder: const SizedBox.shrink()),
-                          const SizedBox(height: 20),
+                          // // PlatformBuilder(
+                          // //     androidBuilder: ImageButton(
+                          // //         width: 200,
+                          // //         buttonText: "FAVOURITES",
+                          // //         onPressed: () {
+                          // //           Navigator.push(
+                          // //               context,
+                          // //               MaterialPageRoute(
+                          // //                   builder: (context) =>
+                          // //                       const MyList()));
+                          // //         },
+                          // //         backgroundImage:
+                          // //             'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
+                          // //     desktopBuilder: const SizedBox.shrink()),
+                          // const SizedBox(height: 20),
                           if (isLoggedIn) ...[
                             PlatformBuilder(
                                 androidBuilder: anilistCarousel(

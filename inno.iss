@@ -1,6 +1,6 @@
 [Setup]
 AppName=AnymeX
-AppVersion=2.8.4
+AppVersion=2.8.5-alpha
 DefaultDirName={pf}\AnymeX
 DefaultGroupName=AnymeX
 Compression=lzma

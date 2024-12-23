@@ -74,7 +74,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
       itemCount: filteredEpisodes.length,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        final episode = filteredEpisodes[index];
+        MChapter episode = filteredEpisodes[index];
         final episodeNumber = int.parse(episode.name!.split("Episode ").last);
         final episodeTitle = episode.name ?? 'No Title';
         final isSelected = widget.currentEpisode == episodeNumber;
@@ -184,7 +184,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                     ),
                     IconButton(
                       onPressed: () => widget.onEpisodeDownload(
-                          episode['episodeId'], episodeNumber.toString()),
+                          episode.url!, episodeNumber.toString()),
                       icon: Icon(Icons.download,
                           color: Theme.of(context).colorScheme.inverseSurface),
                     ),
@@ -250,7 +250,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                         left: 10,
                         child: InkWell(
                             onTap: () => widget.onEpisodeDownload(
-                                episode['episodeId'], episodeNumber.toString()),
+                                episode.url!, episodeNumber.toString()),
                             child: Icon(Icons.download,
                                 color: Theme.of(context)
                                     .colorScheme

@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/video.dart' as v;
+import 'package:anymex/api/Mangayomi/Eval/dart/model/video.dart';
 import 'package:anymex/api/Mangayomi/Extensions/extensions_provider.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
@@ -568,20 +569,13 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
         coverImage: data?['poster'] ?? widget.posterUrl!,
         onEpisodeDownload: (String episodeId, String episodeNumber) async {
           try {
-            showDownloadOptions(context,
-                isLoading: true,
-                server: '',
-                source: '',
-                sourcesData: [],
-                episodeNumber: '');
+            showLoading();
             final downloadMeta = await downloadHelper(episodeId);
             Navigator.pop(context);
             showDownloadOptions(context,
-                isLoading: false,
-                server: "VidStream",
                 source: activeSource!.name!,
-                sourcesData: downloadMeta,
-                episodeNumber: "Episode-$episodeNumber");
+                Videos: downloadMeta!,
+                episodeNumber: "Episode $episodeNumber");
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -608,19 +602,12 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
         },
         coverImage: data?['poster'] ?? widget.posterUrl!,
         onEpisodeDownload: (String episodeId, String episodeNumber) async {
-          showDownloadOptions(context,
-              isLoading: true,
-              server: '',
-              source: '',
-              sourcesData: [],
-              episodeNumber: '');
+          showLoading();
           final downloadMeta = await downloadHelper(episodeId);
           Navigator.pop(context);
           showDownloadOptions(context,
-              isLoading: false,
-              server: "VidStream",
               source: activeSource!.name!,
-              sourcesData: downloadMeta,
+              Videos: downloadMeta!,
               episodeNumber: "Episode-$episodeNumber");
         },
       ),
@@ -920,53 +907,35 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
     );
   }
 
-  Future<dynamic> downloadHelper(String episodeId) async {
-    String? episodeSrc;
-    dynamic response;
+  Future<List<Video>?> downloadHelper(String episodeId) async {
+    List<Video>? response;
 
     try {
       response = await getVideo(source: activeSource!, url: episodeId);
 
       if (response != null) {
-        List<Map<String, dynamic>> qualitiesList = [];
+        List<Video> qualitiesList = [];
 
-        // Check if `multiSrc` exists in the response
-        if (response['multiSrc'] != null) {
-          for (var src in response['multiSrc']) {
-            qualitiesList.add({
-              'quality': src['quality'] ?? 'Unknown Quality',
-              'url': src['url'] ?? '',
-            });
-          }
-        } else {
-          episodeSrc = response['sources'][0]['url'];
-          String m3u8Url = episodeSrc!;
-          final parts = m3u8Url.split('/');
-          parts.removeLast();
-          final baseUrl = '${parts.join('/')}/';
-          log('base url: $baseUrl');
-          log('m3u8 url: $m3u8Url');
+        for (Video video in response) {
+          String videoUrl = video.url;
 
-          if (m3u8Url.contains("uwu.m3u8")) {
-            m3u8Url = m3u8Url.replaceAll("uwu.m3u8", "master.m3u8");
-            log('Changed to master.m3u8: $m3u8Url');
-          }
-
-          final fetchedQualities = await fetchM3u8Links(m3u8Url, baseUrl);
-          qualitiesList.addAll(fetchedQualities);
+          log('Skipping non-M3U8 URL: $videoUrl');
+          qualitiesList.add(video);
         }
 
         if (qualitiesList.isNotEmpty) {
           return qualitiesList;
         } else {
-          print('No qualities found.');
+          log('No qualities found in processed list.');
         }
       } else {
-        print('Error: No sources found in the response.');
+        log('Error: No sources found in the initial response.');
       }
     } catch (e) {
-      print('Error fetching episode sources: $e');
+      log('Error fetching episode sources: $e');
     }
+
+    return null;
   }
 
   Future<List<Map<String, dynamic>>> fetchM3u8Links(
@@ -1037,10 +1006,8 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
 
   Future<void> showDownloadOptions(
     BuildContext context, {
-    required bool isLoading,
-    required String server,
     required String source,
-    required dynamic sourcesData,
+    required List<Video> Videos,
     required String episodeNumber,
   }) {
     return showModalBottomSheet(
@@ -1083,11 +1050,11 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
                       height: 300,
                       child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          itemCount: sourcesData.length,
+                          itemCount: Videos.length,
                           itemBuilder: (context, index) {
-                            final quality = sourcesData[index]['quality'];
-                            final url = sourcesData[index]['url'];
-                            return _buildTile('$server - $quality', 'M3U8', () {
+                            final quality = Videos[index].quality;
+                            final url = Videos[index].url;
+                            return _buildTile(quality, 'M3U8', () {
                               Downloader downloader = Downloader();
                               downloader.download(
                                   url, episodeNumber, data['name']);
