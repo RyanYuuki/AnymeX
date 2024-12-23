@@ -832,6 +832,7 @@ class AniListProvider with ChangeNotifier {
           }
           progress
           status
+          score
         }
       }
     }
@@ -875,7 +876,9 @@ class AniListProvider with ChangeNotifier {
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
 
           _userData['currentlyWatching'] = animeList
-              .where((animeEntry) => animeEntry['status'] == 'CURRENT')
+              .where((animeEntry) =>
+                  animeEntry['status'] == 'CURRENT' ||
+                  animeEntry['status'] == 'REPEATING')
               .toList();
 
           _userData['animeList'] = animeList;
@@ -931,6 +934,7 @@ class AniListProvider with ChangeNotifier {
             }
             progress
             status
+            score
           }
         }
       }

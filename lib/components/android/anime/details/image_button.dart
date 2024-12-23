@@ -50,8 +50,8 @@ class ImageButton extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                Colors.black.withOpacity(0.5),
+                Colors.black.withOpacity(0.5),
               ]),
               borderRadius: BorderRadius.circular(borderRadius),
             ),

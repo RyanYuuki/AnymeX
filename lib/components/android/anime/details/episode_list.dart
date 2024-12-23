@@ -2,11 +2,12 @@
 
 import 'dart:ui';
 
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EpisodeGrid extends StatefulWidget {
-  final List<dynamic> episodes;
+  final List<MChapter> episodes;
   final int layoutIndex;
   final Function(int) onEpisodeSelected;
   final Function(String, String) onEpisodeDownload;
@@ -74,9 +75,8 @@ class _EpisodeGridState extends State<EpisodeGrid> {
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final episode = filteredEpisodes[index];
-        final episodeNumber = episode?['number'];
-        final episodeTitle = episode?['title'] ?? 'No Title';
-        final isFiller = episode?['isFiller'] ?? false;
+        final episodeNumber = int.parse(episode.name!.split("Episode ").last);
+        final episodeTitle = episode.name ?? 'No Title';
         final isSelected = widget.currentEpisode == episodeNumber;
         double opacity = episodeNumber <= widget.progress
             ? episodeNumber == widget.progress
@@ -85,9 +85,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
             : 1;
         Color color = isSelected
             ? Theme.of(context).colorScheme.secondaryContainer
-            : isFiller
-                ? Colors.lightGreen.shade700
-                : Theme.of(context).colorScheme.surfaceContainer;
+            : Theme.of(context).colorScheme.surfaceContainer;
 
         if (widget.layoutIndex == 0) {
           return GestureDetector(
@@ -112,12 +110,7 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: (widget.episodeImages != null &&
-                                      widget.episodeImages!.length > index
-                                  ? widget.episodeImages![episodeNumber - 1]
-                                          ['image'] ??
-                                      widget.coverImage
-                                  : widget.coverImage),
+                              imageUrl: widget.coverImage,
                               width: double.infinity,
                               height: double.infinity,
                               fit: BoxFit.cover,
@@ -218,23 +211,17 @@ class _EpisodeGridState extends State<EpisodeGrid> {
                   fit: StackFit.expand,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: (widget.episodeImages != null &&
-                              widget.episodeImages!.length > index
-                          ? widget.episodeImages![episodeNumber - 1]['image'] ??
-                              widget.coverImage
-                          : widget.coverImage),
+                      imageUrl: widget.coverImage,
                       fit: BoxFit.cover,
                     ),
                     Container(
                       padding:
                           const EdgeInsets.only(top: 15, left: 10, right: 5),
                       decoration: BoxDecoration(
-                        color: isFiller
-                            ? Colors.lightGreen.shade700.withOpacity(0.8)
-                            : Theme.of(context)
-                                .colorScheme
-                                .surfaceContainer
-                                .withOpacity(0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainer
+                            .withOpacity(0.6),
                       ),
                       child: Text(
                         episodeTitle,

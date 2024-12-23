@@ -1,16 +1,18 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:math';
-import 'package:anymex/utils/sources/unified_handler.dart';
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_pages.dart';
+import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
 
 class MangaSearchModal extends StatefulWidget {
   final String initialText;
   final Function(String mangaId) onMangaSelected;
-  final String selectedSource;
+  final Source selectedSource;
 
   const MangaSearchModal({
     super.key,
@@ -24,7 +26,7 @@ class MangaSearchModal extends StatefulWidget {
 }
 
 class _MangaSearchModalState extends State<MangaSearchModal> {
-  late Future<dynamic> _searchFuture;
+  late Future<MPages?> _searchFuture;
   final TextEditingController _controller = TextEditingController();
   final Random _random = Random();
 
@@ -32,28 +34,27 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
-        .getMangaInstance()
-        .fetchMangaSearchResults(
-          widget.initialText,
-        );
+    _searchFuture = search(
+        query: widget.initialText,
+        source: widget.selectedSource,
+        page: 1,
+        filterList: []);
   }
 
   Future<void> _performSearch(String searchTerm) async {
     setState(() {
-      _searchFuture = Provider.of<UnifiedSourcesHandler>(context, listen: false)
-          .getMangaInstance()
-          .fetchMangaSearchResults(
-            searchTerm,
-          );
+      _searchFuture = search(
+          query: searchTerm,
+          source: widget.selectedSource,
+          page: 1,
+          filterList: []);
     });
   }
 
-  Widget searchItemList(
-      BuildContext context, Map<String, String> manga, String tag) {
+  Widget searchItemList(BuildContext context, MManga manga, String tag) {
     return GestureDetector(
       onTap: () {
-        widget.onMangaSelected(manga['id']!);
+        widget.onMangaSelected(manga.link!);
         Navigator.pop(context);
       },
       child: Container(
@@ -75,7 +76,7 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(7),
                   child: CachedNetworkImage(
-                    imageUrl: manga['image']!,
+                    imageUrl: manga.imageUrl!,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -84,7 +85,7 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
             const SizedBox(width: 14),
             Expanded(
               child: Text(
-                manga['title']!,
+                manga.name!,
                 style: Theme.of(context).textTheme.bodyLarge,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
@@ -133,26 +134,25 @@ class _MangaSearchModalState extends State<MangaSearchModal> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<dynamic>(
+            child: FutureBuilder<MPages?>(
               future: _searchFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData ||
-                    (snapshot.data as List).isEmpty) {
+                } else if (!snapshot.hasData) {
                   return const Center(child: Text('No results found'));
                 } else {
-                  final mangaList = snapshot.data as List;
+                  final mangaList = snapshot.data!.list as List<MManga>?;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: ListView.builder(
                       physics: const BouncingScrollPhysics(),
-                      itemCount: mangaList.length,
+                      itemCount: mangaList!.length,
                       itemBuilder: (BuildContext context, int index) {
                         final manga = mangaList[index];
-                        final tag = '${_random.nextInt(100000)}${manga['id']}';
+                        final tag = '${_random.nextInt(100000)}${manga.link}';
                         return searchItemList(context, manga, tag);
                       },
                     ),
@@ -177,7 +177,7 @@ void showMangaSearchModal(
   BuildContext context,
   String initialText,
   Function(String) onMangaSelected,
-  String selectedSource,
+  Source selectedSource,
 ) {
   showModalBottomSheet(
     showDragHandle: true,

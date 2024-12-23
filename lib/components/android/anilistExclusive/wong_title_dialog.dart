@@ -1,44 +1,49 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:math';
-import 'package:anymex/utils/sources/anime/handler/sources_handler.dart';
-import 'package:anymex/utils/sources/unified_handler.dart';
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
+import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/components/android/common/IconWithLabel.dart';
-import 'package:provider/provider.dart';
 
 const String proxyUrl = '';
 
 class AnimeSearchModal extends StatefulWidget {
   final String initialText;
   final Function(String mangaId) onAnimeSelected;
+  final Source activeSource;
 
   const AnimeSearchModal(
-      {super.key, required this.initialText, required this.onAnimeSelected});
+      {super.key,
+      required this.initialText,
+      required this.onAnimeSelected,
+      required this.activeSource});
 
   @override
   _AnimeSearchModalState createState() => _AnimeSearchModalState();
 }
 
 class _AnimeSearchModalState extends State<AnimeSearchModal> {
-  late Future<dynamic> _searchFuture;
+  late Future<List<MManga>> _searchFuture;
   final TextEditingController _controller = TextEditingController();
-  late SourcesHandler sourcesHandler;
 
   @override
   void initState() {
     super.initState();
     _controller.text = widget.initialText;
-    sourcesHandler = Provider.of<UnifiedSourcesHandler>(context, listen: false)
-        .getAnimeInstance();
-    _searchFuture = sourcesHandler.fetchSearchResults(widget.initialText);
+    _searchFuture = fetchData(widget.initialText);
+  }
+
+  Future<List<MManga>> fetchData(String query) async {
+    final searchList = await search(
+        source: widget.activeSource, query: query, page: 1, filterList: []);
+    return searchList!.list;
   }
 
   void _performSearch(String searchTerm) {
     setState(() {
-      _searchFuture = sourcesHandler.fetchSearchResults(searchTerm);
+      _searchFuture = fetchData(searchTerm);
     });
   }
 
@@ -79,7 +84,7 @@ class _AnimeSearchModalState extends State<AnimeSearchModal> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<dynamic>(
+            child: FutureBuilder<List<MManga>>(
               future: _searchFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -97,7 +102,7 @@ class _AnimeSearchModalState extends State<AnimeSearchModal> {
                       itemBuilder: (BuildContext context, int index) {
                         final anime = snapshot.data![index];
                         final random = Random().nextInt(100000);
-                        final tag = '$random${anime['id']}';
+                        final tag = '$random${anime.link}';
                         return searchItemList(
                           context,
                           anime,
@@ -124,23 +129,26 @@ class _AnimeSearchModalState extends State<AnimeSearchModal> {
 }
 
 void showAnimeSearchModal(BuildContext context, String initialText,
-    Function(String animeId) onAnimeSelected) {
+    Function(String animeId) onAnimeSelected, Source activeSource) {
   showModalBottomSheet(
     showDragHandle: true,
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
       return AnimeSearchModal(
-          initialText: initialText, onAnimeSelected: onAnimeSelected);
+        initialText: initialText,
+        onAnimeSelected: onAnimeSelected,
+        activeSource: activeSource,
+      );
     },
   );
 }
 
-GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
+GestureDetector searchItemList(BuildContext context, MManga anime, String tag,
     Function(String) onAnimeSelected) {
   return GestureDetector(
     onTap: () {
-      onAnimeSelected(anime['id']);
+      onAnimeSelected(anime.link!);
       Navigator.pop(context);
     },
     child: Container(
@@ -161,7 +169,7 @@ GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(7),
                 child: CachedNetworkImage(
-                  imageUrl: proxyUrl + anime['poster'],
+                  imageUrl: proxyUrl + anime.imageUrl!,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -173,9 +181,7 @@ GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                anime['name'].length > 28
-                    ? '${anime['name'].toString().substring(0, 28)}...'
-                    : anime['name'].toString(),
+                anime.name.toString(),
               ),
               const SizedBox(
                 height: 5,
@@ -189,7 +195,7 @@ GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
                           bottomLeft: Radius.circular(5)),
                       icon: Icons.closed_caption,
                       backgroundColor: const Color(0xFFb0e3af),
-                      name: anime?['episodes']?['sub']?.toString() ?? '?'),
+                      name: anime.chapters?.toString() ?? '?'),
                   const SizedBox(width: 2),
                   iconWithName(
                       isVertical: false,
@@ -198,7 +204,7 @@ GestureDetector searchItemList(BuildContext context, dynamic anime, String tag,
                           topRight: Radius.circular(5),
                           bottomRight: Radius.circular(5)),
                       icon: Icons.mic,
-                      name: anime?['episodes']?['dub']?.toString() ?? '?')
+                      name: anime.author?.toString() ?? '?')
                 ],
               )
             ],
