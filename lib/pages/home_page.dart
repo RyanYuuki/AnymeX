@@ -10,9 +10,9 @@ import 'package:anymex/components/desktop/horizontal_list.dart';
 import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/fallbackData/anilist_homepage_data.dart';
 import 'package:anymex/fallbackData/anilist_manga_homepage.dart';
-import 'package:anymex/pages/Android/MyList/mylist_page.dart';
-import 'package:anymex/pages/Android/user/anilist_pages/anime_list.dart';
-import 'package:anymex/pages/Android/user/anilist_pages/manga_list.dart';
+import 'package:anymex/pages/MyList/mylist_page.dart';
+import 'package:anymex/pages/user/anilist_pages/anime_list.dart';
+import 'package:anymex/pages/user/anilist_pages/manga_list.dart';
 import 'package:anymex/hiveData/themeData/theme_provider.dart';
 import 'package:anymex/utils/update_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -51,13 +51,10 @@ class _HomePageState extends State<HomePage> {
   void _checkFirstTime() {
     final loginBox = Hive.box('login-data');
     _isFirstTime = loginBox.get('isFirstTime', defaultValue: true);
-
-    if (_isFirstTime) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showWelcomeDialog(context);
-      });
-    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isFirstTime) {
+        _showWelcomeDialog(context);
+      }
       checkForUpdate(context);
     });
   }
@@ -95,227 +92,292 @@ class _HomePageState extends State<HomePage> {
                 appBox.get('currently-watching')?.reversed.toList();
 
             return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              body: ListView(
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  Container(
-                    constraints: const BoxConstraints(
-                      minHeight: 300,
-                      maxHeight: 450,
-                    ),
-                    padding:
-                        const EdgeInsets.only(top: 20.0, left: 20, right: 20),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+              backgroundColor: Colors.transparent,
+              body: RefreshIndicator(
+                  onRefresh: () async {
+                    try {
+                      await Future.wait([
+                        anilistProvider.fetchUserAnimeList(),
+                        anilistProvider.fetchUserMangaList()
+                      ]);
+                    } catch (error) {
+                      print('Error refreshing data: $error');
+                    }
+                  },
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      PlatformBuilder(
+                        androidBuilder: _buildAndroidHeader(
+                            context, isLoggedIn, avatarImagePath, userName),
+                        desktopBuilder: _buildDesktopHeader(
+                            context, isLoggedIn, avatarImagePath, userName),
+                      ),
+                      Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 50,
-                                height: 70,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Image.asset(
-                                    'assets/images/logo_transparent.png',
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.center,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inverseSurface,
-                                  ),
+                          if (isLoggedIn)
+                            PlatformBuilder(
+                              androidBuilder: Padding(
+                                padding: const EdgeInsets.only(top: 20.0),
+                                child: _buildAndroidButtons(context),
+                              ),
+                              desktopBuilder: _buildDesktopButtons(context),
+                            ),
+                          const SizedBox(height: 20),
+                          PlatformBuilder(
+                              androidBuilder: ImageButton(
+                                  width: 200,
+                                  buttonText: "FAVOURITES",
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MyList()));
+                                  },
+                                  backgroundImage:
+                                      'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
+                              desktopBuilder: const SizedBox.shrink()),
+                          const SizedBox(height: 20),
+                          if (isLoggedIn) ...[
+                            PlatformBuilder(
+                                androidBuilder: anilistCarousel(
+                                  title: 'Currently Watching',
+                                  carouselData: animeList,
+                                  tag: 'currently-watching',
                                 ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(20),
-                                      ),
-                                    ),
-                                    builder: (context) {
-                                      return const SettingsModal();
-                                    },
-                                  );
-                                },
-                                child: CircleAvatar(
-                                  radius: 24,
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainer,
-                                  child: isLoggedIn
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          child: CachedNetworkImage(
-                                              fit: BoxFit.cover,
-                                              imageUrl: avatarImagePath),
-                                        )
-                                      : Icon(
-                                          Icons.person,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inverseSurface,
-                                        ),
+                                desktopBuilder: DesktopAnilistCarousel(
+                                  title: 'Currently Watching',
+                                  carouselData: animeList,
+                                  tag: 'currently-watching',
+                                )),
+                            PlatformBuilder(
+                                androidBuilder: anilistCarousel(
+                                  title: 'Currently Reading',
+                                  carouselData: mangaList,
+                                  tag: 'currently-reading',
+                                  isManga: true,
                                 ),
+                                desktopBuilder: DesktopAnilistCarousel(
+                                  title: 'Currently Reading',
+                                  carouselData: mangaList,
+                                  tag: 'currently-reading',
+                                  isManga: true,
+                                )),
+                          ] else ...[
+                            PlatformBuilder(
+                                androidBuilder: HomepageCarousel(
+                                  title: 'Currently Watching',
+                                  carouselData: currentWatching,
+                                  tag: 'home-page',
+                                ),
+                                desktopBuilder: DesktopAnimeContinue(
+                                  title: 'Currently Watching',
+                                  carouselData: currentWatching,
+                                  tag: 'home-page',
+                                )),
+                            PlatformBuilder(
+                                androidBuilder: MangaHomepageCarousel(
+                                  title: 'Currently Reading',
+                                  carouselData: readingMangaList,
+                                  tag: 'home-page',
+                                ),
+                                desktopBuilder: DesktopMangaContinue(
+                                  title: 'Currently Reading',
+                                  carouselData: readingMangaList,
+                                  tag: 'home-page',
+                                )),
+                          ],
+                          PlatformBuilder(
+                              androidBuilder: ContinueNoveling(
+                                carouselData: readingNovelList,
+                                title: 'Continue Novelling',
+                                tag: 'Novel-Carousel',
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 60),
-                          Text(
-                            'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
-                            style: const TextStyle(
-                                fontSize: 30, fontFamily: 'Poppins-Bold'),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Find your favourite anime or manga, manhwa or whatever you like!',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inverseSurface
-                                    .withOpacity(0.8),
-                              ),
-                              textAlign: TextAlign.center,
+                              desktopBuilder: DesktopNovelContinue(
+                                carouselData: readingNovelList,
+                                title: 'Continue Novelling',
+                                tag: 'Novel-Carousel',
+                              )),
+                          PlatformBuilder(
+                            androidBuilder: ReusableCarousel(
+                              title: 'Recommended',
+                              carouselData: fallbackAnilistData['data']
+                                  ['popularAnimes']['media'],
+                              tag: 'home-page-recommended',
+                              secondary: true,
+                            ),
+                            desktopBuilder: HorizontalList(
+                              title: 'Recommended',
+                              carouselData: fallbackAnilistData['data']
+                                  ['popularAnimes']['media'],
+                              tag: 'home-page-recommended',
+                              secondary: true,
                             ),
                           ),
+                          PlatformBuilder(
+                              androidBuilder: ReusableCarousel(
+                                title: 'Recommended',
+                                carouselData: fallbackMangaData['data']
+                                    ['popularMangas']['media'],
+                                tag: 'home-page-recommended',
+                                secondary: true,
+                                isManga: true,
+                              ),
+                              desktopBuilder: HorizontalList(
+                                title: 'Recommended',
+                                carouselData: fallbackMangaData['data']
+                                    ['popularMangas']['media'],
+                                tag: 'home-page-recommended',
+                                secondary: true,
+                                isManga: true,
+                              )),
                         ],
                       ),
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      if (isLoggedIn)
-                        PlatformBuilder(
-                          androidBuilder: Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: _buildAndroidButtons(context),
-                          ),
-                          desktopBuilder: _buildDesktopButtons(context),
-                        ),
-                      const SizedBox(height: 20),
-                      PlatformBuilder(
-                          androidBuilder: ImageButton(
-                              width: 200,
-                              buttonText: "FAVOURITES",
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const MyList()));
-                              },
-                              backgroundImage:
-                                  'https://images3.alphacoders.com/128/thumb-1920-1283303.png'),
-                          desktopBuilder: const SizedBox.shrink()),
-                      const SizedBox(height: 20),
-                      if (isLoggedIn) ...[
-                        PlatformBuilder(
-                            androidBuilder: anilistCarousel(
-                              title: 'Currently Watching',
-                              carouselData: animeList,
-                              tag: 'currently-watching',
-                            ),
-                            desktopBuilder: DesktopAnilistCarousel(
-                              title: 'Currently Watching',
-                              carouselData: animeList,
-                              tag: 'currently-watching',
-                            )),
-                        PlatformBuilder(
-                            androidBuilder: anilistCarousel(
-                              title: 'Currently Reading',
-                              carouselData: mangaList,
-                              tag: 'currently-reading',
-                              isManga: true,
-                            ),
-                            desktopBuilder: DesktopAnilistCarousel(
-                              title: 'Currently Reading',
-                              carouselData: mangaList,
-                              tag: 'currently-reading',
-                              isManga: true,
-                            )),
-                      ] else ...[
-                        PlatformBuilder(
-                            androidBuilder: HomepageCarousel(
-                              title: 'Currently Watching',
-                              carouselData: currentWatching,
-                              tag: 'home-page',
-                            ),
-                            desktopBuilder: DesktopAnimeContinue(
-                              title: 'Currently Watching',
-                              carouselData: currentWatching,
-                              tag: 'home-page',
-                            )),
-                        PlatformBuilder(
-                            androidBuilder: MangaHomepageCarousel(
-                              title: 'Currently Reading',
-                              carouselData: readingMangaList,
-                              tag: 'home-page',
-                            ),
-                            desktopBuilder: DesktopMangaContinue(
-                              title: 'Currently Reading',
-                              carouselData: readingMangaList,
-                              tag: 'home-page',
-                            )),
-                      ],
-                      PlatformBuilder(
-                          androidBuilder: ContinueNoveling(
-                            carouselData: readingNovelList,
-                            title: 'Continue Novelling',
-                            tag: 'Novel-Carousel',
-                          ),
-                          desktopBuilder: DesktopNovelContinue(
-                            carouselData: readingNovelList,
-                            title: 'Continue Novelling',
-                            tag: 'Novel-Carousel',
-                          )),
-                      PlatformBuilder(
-                        androidBuilder: ReusableCarousel(
-                          title: 'Recommended',
-                          carouselData: fallbackAnilistData['data']
-                              ['popularAnimes']['media'],
-                          tag: 'home-page-recommended',
-                          secondary: true,
-                        ),
-                        desktopBuilder: HorizontalList(
-                          title: 'Recommended',
-                          carouselData: fallbackAnilistData['data']
-                              ['popularAnimes']['media'],
-                          tag: 'home-page-recommended',
-                          secondary: true,
-                        ),
-                      ),
-                      PlatformBuilder(
-                          androidBuilder: ReusableCarousel(
-                            title: 'Recommended',
-                            carouselData: fallbackMangaData['data']
-                                ['popularMangas']['media'],
-                            tag: 'home-page-recommended',
-                            secondary: true,
-                            isManga: true,
-                          ),
-                          desktopBuilder: HorizontalList(
-                            title: 'Recommended',
-                            carouselData: fallbackMangaData['data']
-                                ['popularMangas']['media'],
-                            tag: 'home-page-recommended',
-                            secondary: true,
-                            isManga: true,
-                          )),
                     ],
-                  ),
-                ],
-              ),
+                  )),
             );
           },
         );
       },
+    );
+  }
+
+  Container _buildAndroidHeader(
+      BuildContext context, bool isLoggedIn, avatarImagePath, userName) {
+    return Container(
+      constraints: const BoxConstraints(
+        minHeight: 300,
+        maxHeight: 450,
+      ),
+      padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+      child: IntrinsicHeight(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: 50,
+                  height: 70,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.asset(
+                      'assets/images/logo_transparent.png',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder: (context) {
+                        return const SettingsModal();
+                      },
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    child: isLoggedIn
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                                fit: BoxFit.cover, imageUrl: avatarImagePath),
+                          )
+                        : Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.inverseSurface,
+                          ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 60),
+            Text(
+              'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
+              style: const TextStyle(fontSize: 30, fontFamily: 'Poppins-Bold'),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Find your favourite anime or manga, manhwa or whatever you like!',
+                style: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .inverseSurface
+                      .withOpacity(0.8),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container _buildDesktopHeader(
+      BuildContext context, bool isLoggedIn, avatarImagePath, userName) {
+    return Container(
+      padding: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
+      child: IntrinsicHeight(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hey ${isLoggedIn ? userName : 'Guest'}, What are we doing today?',
+                      style: const TextStyle(
+                          fontSize: 26, fontFamily: 'Poppins-Bold'),
+                    ),
+                    Text(
+                      'Find your favourite anime or manga, manhwa or whatever you like!',
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .inverseSurface
+                            .withOpacity(0.8),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.asset(
+                      'assets/images/logo_transparent.png',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 40)
+          ],
+        ),
+      ),
     );
   }
 
@@ -365,6 +427,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         ImageButton(
           width: 250,
+          height: 80,
           buttonText: 'ANIME LIST',
           onPressed: () {
             Navigator.push(
@@ -382,6 +445,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(width: 30),
         ImageButton(
           width: 250,
+          height: 80,
           buttonText: 'MANGA LIST',
           onPressed: () {
             Navigator.push(
