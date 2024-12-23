@@ -6,6 +6,9 @@ ThemeData lightMode = ThemeData(
   useMaterial3: true,
   fontFamily: 'Poppins',
   brightness: Brightness.light,
+  scaffoldBackgroundColor:
+      ColorScheme.fromSeed(brightness: Brightness.light, seedColor: seedColor)
+          .surface,
   colorScheme: ColorScheme.fromSeed(
     seedColor: seedColor,
     brightness: Brightness.light,
@@ -55,6 +58,9 @@ ThemeData darkMode = ThemeData(
   useMaterial3: true,
   fontFamily: 'Poppins',
   brightness: Brightness.dark,
+  scaffoldBackgroundColor:
+      ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: seedColor)
+          .surface,
   colorScheme: ColorScheme.fromSeed(
     seedColor: seedColor,
     brightness: Brightness.dark,
