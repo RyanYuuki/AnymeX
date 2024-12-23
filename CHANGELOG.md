@@ -6,6 +6,7 @@
 * [2407030](https://github.com/RyanYuuki/AnymeX/commit/2407030): feat: mangadex basic init
 
 ### 🛠️ Bug Fixes & Improvements
+* [fd6d03f](https://github.com/RyanYuuki/AnymeX/commit/fd6d03f): fix: fixed update popups on alpha and beta
 * [98bf3a6](https://github.com/RyanYuuki/AnymeX/commit/98bf3a6): fix: attempt at fixing anilist login on macOS
 * [6992528](https://github.com/RyanYuuki/AnymeX/commit/6992528): fix: workflow (#26)
 * [c063159](https://github.com/RyanYuuki/AnymeX/commit/c063159): fix: role id for stable (#25)

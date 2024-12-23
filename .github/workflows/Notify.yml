@@ -7,7 +7,7 @@ on:
     types:
       - completed
   workflow_dispatch: # Allow manual triggering of this workflow
-
+  
 jobs:
   notify:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -21,109 +21,227 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install jq (if needed)
-        run: sudo apt-get install -y jq    
+      - name: Install jq
+        run: sudo apt-get install -y jq
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests jq    
-
+          pip install requests jq
+          
       - name: Fetch Repository Tags
         id: fetch_tags
         run: |
-          # Fetch all tags from the GitHub API
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
-          # Extract tag names and sort them
           TAGS=$(jq -r '.[].name' tags.json | sort -V)
           LATEST_TAG=$(echo "$TAGS" | tail -n 1)
-
-          echo "Latest Tag: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-
+          
       - name: Use the Latest Tag
         run: |
-          echo "The latest tag is: ${{ env.LATEST_TAG }}"
-
+         echo "The latest tag is: ${{ env.LATEST_TAG }}"
+         
       - name: Get Release Info
         id: release_info
         run: |
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/releases/tags/${{ env.LATEST_TAG }}" -o release.json
           RELEASE_NAME=$(jq -r '.name // "No release name"' release.json)
-          RELEASE_NOTES=$(jq -r '.body // "No release notes"' release.json | sed ':a;N;$!ba;s/\n/\\n/g')
-          ASSET_URLS=$(jq -r '.assets[]?.browser_download_url // empty' release.json)
-          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
-          echo "RELEASE_NOTES=${RELEASE_NOTES}" >> $GITHUB_ENV
-          echo "${ASSET_URLS}" > assets.txt
-      # Determine webhook based on release name
+          RELEASE_NOTES=$(jq -r '.body // "No release notes"' release.json)
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+        
+           # Write release notes as-is with newlines
+            echo -e "RELEASE_NOTES<<EOF\n$RELEASE_NOTES\nEOF" >> $GITHUB_ENV
+      - name: Get and Categorize Assets with Sizes
+        id: categorize_assets
+        run: |
+          # Fetch release assets based on the latest tag
+          curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/releases/tags/${{ env.LATEST_TAG }}" -o release.json
+          
+          # Initialize environment variables
+          for VAR in apk_arm64 apk_armeabi apk_universal apk_x86_64 windows linux ios setup macos; do
+            echo "${VAR}_message=" >> $GITHUB_ENV
+          done
+          # Process each asset
+          jq -r '.assets[] | "\(.browser_download_url) \(.size)"' release.json | while read -r LINE; do
+            ASSET_URL=$(echo "$LINE" | awk '{print $1}')
+            ASSET_SIZE=$(echo "$LINE" | awk '{print $2}')
+            SIZE_HR=$(awk -v size="$ASSET_SIZE" 'BEGIN{
+              split("B KB MB GB TB", unit);
+              for (i=1; size>=1024 && i<5; i++) size/=1024;
+              printf "%.2f %s", size, unit[i]
+            }')
+            FILE_NAME=$(basename "$ASSET_URL")
+            # Categorize and set variables
+            if [[ "$FILE_NAME" == *"-arm64.apk" ]]; then
+              echo "apk_arm64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"-armeabi-v7a.apk" ]]; then
+              echo "apk_armeabi_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"-universal.apk" ]]; then
+              echo "apk_universal_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"-x86_64.apk" ]]; then
+              echo "apk_x86_64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *.ipa ]]; then
+              echo "ios_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Linux.zip" ]]; then
+              echo "linux_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Setup.exe" ]]; then
+              echo "setup_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Windows.zip" ]]; then
+              echo "windows_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *".dmg" ]]; then
+              echo "macos_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            fi
+          done
+          
       - name: Determine Webhook
         id: determine_webhook
         run: |
           if [[ "${RELEASE_NAME}" == *alpha ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_ALPHA }}" >> $GITHUB_ENV
-            echo "Targeted to Alpha channel"
           else
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
-            echo "Targeted to Default channel"
           fi
-      # Telegram - Send Release Notes
+    
       - name: Send Release Notes to Telegram
         run: |
-          ROLE_MENTION="<b>@role</b>"  # Add the actual role username if needed, or leave this empty if no mention
-          MESSAGE="🚀 <b>## New Release: ${RELEASE_NAME}</b>\n\n<b>Release Notes:</b>\n${ROLE_MENTION}\n${RELEASE_NOTES}"
+          # Replace ### with **
+          commit=$(echo "$RELEASE_NOTES" | sed 's/^### /**/g')
+          # Replace * with 🔹 (excluding headings)
+          commit=$(echo "$commit" | sed 's/^* /🔹 /g')
+          # Replace "):" with ") :"
+          tel_commit=$(echo "$commit" | sed -E 's/\): [^:]+:/) :/g')
+
+          # Count total commits
+          commit_count=$(echo "$tel_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)
+
+          # Set Telegram message character limit
+          max_length=3500
+          
+          # Check if the message exceeds the limit
+          if [ ${#tel_commit} -gt $max_length ]; then
+          
+            # Trim the message to the limit and count remaining commits
+            trimmed_commit=$(echo "$tel_commit" | head -c $max_length)
+            trimmed_commit=$(echo "$trimmed_commit" | tr -d '`')
+            trimmed_commit=$(echo "$trimmed_commit" | sed 's/^## /**/g')
+            remaining_commits=$((commit_count - $(echo "$trimmed_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)))
+        
+            # Construct the message with a note about remaining commits
+            MESSAGE="Release Notes: 
+            
+            $trimmed_commit
+
+            📌 Note: There are $remaining_commits more commits.
+            [View Full changelog here](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
+          else
+          # Use the complete commit message
+          MESSAGE="**🚀 New Release: ${RELEASE_NAME}**
+          Release Notes:
+          
+          $tel_commit"
+          fi
+
+          # Log the MESSAGE for debugging
+          echo "Telegram Message: $MESSAGE"
+
+          # Send the message to Telegram
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\", \"parse_mode\": \"HTML\"}"
-      
-      # Telegram - Send Assets
+            -d '{
+              "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+              "text": "'"$MESSAGE"'",
+              "parse_mode": "Markdown",
+              "disable_web_page_preview": true
+            }'
+
+
       - name: Send Assets to Telegram
         run: |
-          ASSET_LINKS=""
-          while IFS= read -r ASSET_URL; do
-            FILE_NAME=$(basename "$ASSET_URL")
-            ASSET_LINKS="$ASSET_LINKS\n[Download $FILE_NAME:]($ASSET_URL)"
-          done < assets.txt
+          MESSAGE="🎉 *${{ env.LATEST_TAG }} Released* 🎉
           
-          MESSAGE="🚀 <b>Assets for Release: ${RELEASE_NAME}</b>\n\n<b>Assets:</b>${ASSET_LINKS}"
+            🔹 ${{ env.apk_arm64_message }} | **APK (arm64)**
+            🔹 ${{ env.apk_armeabi_message }} | **APK (armeabi-v7a)**
+            🔹 ${{ env.apk_universal_message }} | **APK (universal)**
+            🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
+            🔹 ${{ env.windows_message }} | **Windows Zip**
+            🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linux_message }} | **Linux**
+            🔹 ${{ env.ios_message }} | **iOS**
+            🔹 ${{ env.macos_message }} | **macOS**"
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\", \"parse_mode\": \"HTML\"}"
-      
-      # Discord - Send Release Notes
+            -d '{
+              "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
+              "text": "'"$MESSAGE"'",
+              "parse_mode": "Markdown"
+            }'
+     
       - name: Send Release Notes to Discord
         run: |
-          CLEANED_RELEASE_NOTES=$(echo "${RELEASE_NOTES}" | sed 's/\\n//g')
-          echo "Cleaned Release Notes: $CLEANED_RELEASE_NOTES"
-          
-          # Mention the role based on environment
-          if [[ "${RELEASE_NAME}" == *alpha ]]; then
-            ROLE_MENTION="<@&1313089691523878942>"  # Use the actual Role ID for alpha channel
-          elif [[ "${RELEASE_NAME}" == *beta ]]; then
-            ROLE_MENTION="<@&1313087262539518033>"  # Use the actual Role ID for beta channel
+      
+          # Replace "): <text>" with ") : <text>" and format list items
+          discord_commit=$(echo "$RELEASE_NOTES" | sed -E 's/\): [^:]+:/) :/g' | sed 's/^* /> /g')
+        
+          # Count the number of commit IDs
+          commit_count=$(echo "$discord_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)
+        
+          # Define maximum length for Discord messages
+          max_length=3000
+        
+          # Check if the message exceeds the limit
+          if [ ${#discord_commit} -gt $max_length ]; then
+            # Trim the message to the limit and count remaining commits
+            trimmed_commit=$(echo "$discord_commit" | head -c $max_length)
+            remaining_commits=$((commit_count - $(echo "$trimmed_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)))
+        
+            # Construct the message with a note about remaining commits
+            discord_message="Release Notes: 
+            
+            $trimmed_commit
+
+            📌 Note: There are $remaining_commits more commits.* 
+            [View Full changelog here](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
           else
-            ROLE_MENTION="<@&1313346791479054456>"  # Use the default role ID
+            # Use the full message if within the limit
+            discord_message="Release Notes:
+            
+            $discord_commit"
           fi
-          
-          HEADER="${ROLE_MENTION}
-          ## 🚀 New Release: ${RELEASE_NAME}
-          
-          ${CLEANED_RELEASE_NOTES}"
-          PAYLOAD=$(jq -n --arg content "$HEADER" '{ content: $content }')
+
+          # Mention the role based on the release name
+          if [[ "${RELEASE_NAME}" == *alpha* ]]; then
+            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
+          elif [[ "${RELEASE_NAME}" == *beta* ]]; then
+            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
+          else
+            role_mention="<@&1313346791479054456>"  # Default role ID
+          fi
+
+          # Construct the payload for the Discord webhook
+          payload=$(jq -n \
+            --arg content "${role_mention}" \
+            --arg title "🚀 New Release: $RELEASE_NAME" \
+            --arg description "$discord_message" \
+            --argjson color 5814783 \
+            '{ content: $content, embeds: [{ title: $title, description: $description, color: $color }] }')
+
+          # Send the payload to the Discord webhook
           curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
-      # Discord - Send Assets
+            -d "$payload"
+            
       - name: Send Assets to Discord
         run: |
-          ASSET_LINKS=""
-          while IFS= read -r ASSET_URL; do
-            FILE_NAME=$(basename "$ASSET_URL")
-            ASSET_LINKS="$ASSET_LINKS
-            **[$FILE_NAME]($ASSET_URL)**"
-          done < assets.txt
-          
-          MESSAGE="## Assets for Release: ${RELEASE_NAME} ${ASSET_LINKS}"
-          
+          MESSAGE="${{ env.LATEST_TAG }} Released
+            🔹 ${{ env.apk_arm64_message }} | **APK (arm64)**
+            🔹 ${{ env.apk_armeabi_message }} | **APK (armeabi-v7a)**
+            🔹 ${{ env.apk_universal_message }} | **APK (universal)**
+            🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
+            🔹 ${{ env.windows_message }} | **Windows Zip**
+            🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linux_message }} | **Linux**
+            🔹 ${{ env.ios_message }} | **iOS**
+            🔹 ${{ env.macos_message }} | **macOS**"
           PAYLOAD=$(jq -n --arg content "$MESSAGE" '{ content: $content }')
           curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
