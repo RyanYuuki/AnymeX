@@ -1,36 +1,69 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
+import 'package:anymex/Functions/Function.dart';
+import 'package:anymex/Preferences/PrefManager.dart';
+import 'package:anymex/StorageProvider.dart';
 import 'package:anymex/auth/auth_provider.dart';
+import 'package:anymex/components/android/common/settings_modal.dart';
+import 'package:anymex/components/common/custom_bg.dart';
+import 'package:anymex/components/common/navbar.dart';
 import 'package:anymex/components/platform_builder.dart';
 import 'package:anymex/hiveData/appData/database.dart';
-import 'package:anymex/pages/Android/Novel/home_page.dart';
+import 'package:anymex/pages/Extensions/ExtensionScreen.dart';
+import 'package:anymex/pages/Novel/home_page.dart';
 import 'package:anymex/hiveData/themeData/theme_provider.dart';
-import 'package:anymex/pages/Android/Anime/home_page.dart';
-import 'package:anymex/pages/Android/Manga/home_page.dart';
+import 'package:anymex/pages/Anime/home_page.dart';
+import 'package:anymex/pages/Manga/home_page.dart';
 import 'package:anymex/pages/home_page.dart';
+import 'package:anymex/pages/user/settings.dart';
 import 'package:anymex/utils/sources/unified_handler.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
+
+late Isar isar;
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox('login-data');
   await Hive.openBox('app-data');
   WidgetsFlutterBinding.ensureInitialized();
+  isar = await StorageProvider().initDB(null);
+  initializeDateFormatting();
+  PrefManager.init();
+  MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await windowManager.ensureInitialized();
-    MediaKit.ensureInitialized();
+    windowManager.setTitle("AnymeX");
+    windowManager.maximize();
+  } else {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent));
   }
   try {
     await dotenv.load(fileName: ".env");
@@ -48,7 +81,7 @@ void main() async {
         ChangeNotifierProvider(
             create: (_) => AniListProvider()..tryAutoLogin()),
       ],
-      child: const MainApp(),
+      child: const ProviderScope(child: MainApp()),
     ),
   );
 }
@@ -61,19 +94,19 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
-  int _selectedIndex = 0;
-  int selectedIndex = 1;
+  int _selectedIndex = 1;
+  int _mobileSelectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     if (Platform.isAndroid) {
       _checkAndroidVersion();
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
     }
     WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -110,138 +143,170 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     });
   }
 
+  void _onMobileItemTapped(int index) {
+    setState(() {
+      _mobileSelectedIndex = index;
+    });
+  }
+
   final routes = [
+    const SizedBox.shrink(),
+    const HomePage(),
+    const AnimeHomePage(),
+    const MangaHomePage(),
+    const NovelHomePage(),
+    const ExtensionScreen(),
+  ];
+
+  final mobileRoutes = [
     const HomePage(),
     const AnimeHomePage(),
     const MangaHomePage(),
     const NovelHomePage(),
   ];
 
-  double getProperSize(double size) {
-    if (size >= 0.0 && size < 5.0) {
-      return 50.0;
-    } else if (size >= 5.0 && size < 10.0) {
-      return 45.0;
-    } else if (size >= 10.0 && size < 15.0) {
-      return 40.0;
-    } else if (size >= 15.0 && size < 20.0) {
-      return 35.0;
-    } else if (size >= 20.0 && size < 25.0) {
-      return 30.0;
-    } else if (size >= 25.0 && size < 30.0) {
-      return 25.0;
-    } else if (size >= 30.0 && size < 35.0) {
-      return 20.0;
-    } else if (size >= 35.0 && size < 40.0) {
-      return 15.0;
-    } else if (size >= 40.0 && size < 45.0) {
-      return 10.0;
-    } else if (size >= 45.0 && size < 50.0) {
-      return 5.0;
-    } else {
-      return 0.0;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final box = Hive.box('app-data');
+
     return MaterialApp(
+      scrollBehavior: MyCustomScrollBehavior(),
+      title: "AnymeX",
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: themeProvider.selectedTheme,
-      home: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: routes[_selectedIndex],
-        bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: box.listenable(),
-          builder: (BuildContext context, Box<dynamic> value, Widget? child) {
-            double tabBarSizeVertical = Hive.box('app-data')
-                .get('tabBarSizeVertical', defaultValue: 0.0);
-            double tabBarSizeHorizontal = Hive.box('app-data')
-                .get('tabBarSizeHorizontal', defaultValue: 0.0);
-            return PlatformBuilder(
-              androidBuilder: CrystalNavigationBar(
-                borderRadius: box.get('tabBarRoundness', defaultValue: 20.0),
-                currentIndex: _selectedIndex,
-                paddingR: const EdgeInsets.all(0),
-                height: 100 + tabBarSizeVertical,
-                unselectedItemColor: Colors.white,
-                backgroundColor: Colors.black.withOpacity(0.3),
-                onTap: _onItemTapped,
-                marginR: EdgeInsets.symmetric(
-                    horizontal: getProperSize(tabBarSizeHorizontal),
-                    vertical: 15),
-                items: [
-                  CrystalNavigationBarItem(
-                    icon: IconlyBold.home,
-                    unselectedIcon: IconlyLight.home,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: Icons.movie_filter_rounded,
-                    unselectedIcon: Icons.movie_filter_outlined,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: Iconsax.book,
-                    unselectedIcon: Iconsax.book,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: HugeIcons.strokeRoundedBookOpen01,
-                    unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                ],
-              ),
-              desktopBuilder: CrystalNavigationBar(
-                borderRadius: box.get('tabBarRoundness', defaultValue: 20.0),
-                currentIndex: _selectedIndex,
-                paddingR: const EdgeInsets.all(0),
-                height: 170 + tabBarSizeVertical,
-                unselectedItemColor: Colors.white,
-                backgroundColor: Colors.black.withOpacity(0.3),
-                onTap: _onItemTapped,
-                marginR: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.40 -
-                      tabBarSizeHorizontal,
-                  vertical: getProperSize(tabBarSizeVertical),
+      home: PlatformBuilder(
+        desktopBuilder: Glow(
+          child: Scaffold(
+            extendBody: true,
+            extendBodyBehindAppBar: true,
+            backgroundColor: Colors.transparent,
+            body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 120,
+                  child: Consumer<AniListProvider>(
+                      builder: (context, anilistProvider, _) {
+                    final avatarImagePath =
+                        anilistProvider.userData?['user']?['avatar']?['large'];
+                    final isLoggedIn =
+                        anilistProvider.userData?['user']?['name'] != null;
+
+                    return ResponsiveNavBar(
+                      fit: true,
+                      isDesktop: true,
+                      currentIndex: _selectedIndex,
+                      margin: const EdgeInsets.fromLTRB(20, 30, 15, 10),
+                      items: [
+                        NavItem(
+                            unselectedIcon: IconlyBold.profile,
+                            selectedIcon: IconlyBold.profile,
+                            onTap: (index) {
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                builder: (context) {
+                                  return const SettingsModal();
+                                },
+                              );
+                            },
+                            label: 'Profile',
+                            altIcon: isLoggedIn
+                                ? CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: avatarImagePath),
+                                    ))
+                                : null),
+                        NavItem(
+                          unselectedIcon: IconlyLight.home,
+                          selectedIcon: IconlyBold.home,
+                          onTap: _onItemTapped,
+                          label: 'Home',
+                        ),
+                        NavItem(
+                          unselectedIcon: Icons.movie_filter_outlined,
+                          selectedIcon: Icons.movie_filter_rounded,
+                          onTap: _onItemTapped,
+                          label: 'Anime',
+                        ),
+                        NavItem(
+                          unselectedIcon: Iconsax.book,
+                          selectedIcon: Iconsax.book,
+                          onTap: _onItemTapped,
+                          label: 'Manga',
+                        ),
+                        NavItem(
+                          unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                          selectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                          onTap: _onItemTapped,
+                          label: 'Novel',
+                        ),
+                        NavItem(
+                          unselectedIcon: Icons.extension_outlined,
+                          selectedIcon: Icons.extension_rounded,
+                          onTap: _onItemTapped,
+                          label: "Extensions",
+                        ),
+                      ],
+                    );
+                  }),
                 ),
-                items: [
-                  CrystalNavigationBarItem(
-                    icon: IconlyBold.home,
-                    unselectedIcon: IconlyLight.home,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: Icons.movie_filter_rounded,
-                    unselectedIcon: Icons.movie_filter_outlined,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: Iconsax.book,
-                    unselectedIcon: Iconsax.book,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                  CrystalNavigationBarItem(
-                    icon: HugeIcons.strokeRoundedBookOpen01,
-                    unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
-                    selectedColor:
-                        themeProvider.selectedTheme.colorScheme.primary,
-                  ),
-                ],
-              ),
-            );
-          },
+                Expanded(child: routes[_selectedIndex]),
+              ],
+            ),
+          ),
+        ),
+        androidBuilder: Glow(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: mobileRoutes[_mobileSelectedIndex],
+            extendBody: true,
+            bottomNavigationBar: ResponsiveNavBar(
+              isDesktop: false,
+              fit: true,
+              currentIndex: _mobileSelectedIndex,
+              margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+              items: [
+                NavItem(
+                  unselectedIcon: IconlyBold.home,
+                  selectedIcon: IconlyBold.home,
+                  onTap: _onMobileItemTapped,
+                  label: 'Home',
+                ),
+                NavItem(
+                  unselectedIcon: Icons.movie_filter_rounded,
+                  selectedIcon: Icons.movie_filter_rounded,
+                  onTap: _onMobileItemTapped,
+                  label: 'Anime',
+                ),
+                NavItem(
+                  unselectedIcon: Iconsax.book,
+                  selectedIcon: Iconsax.book,
+                  onTap: _onMobileItemTapped,
+                  label: 'Manga',
+                ),
+                NavItem(
+                  unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                  selectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                  onTap: _onMobileItemTapped,
+                  label: 'Novel',
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
