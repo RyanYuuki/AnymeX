@@ -1,13 +1,16 @@
+// ignore_for_file: unused_field
+
+import 'dart:async';
+import 'package:anymex/components/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:better_player/better_player.dart';
-import 'package:better_player/src/video_player/video_player.dart';
-import 'package:better_player/src/controls/better_player_material_progress_bar.dart';
 import 'package:hive/hive.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-class Controls extends StatefulWidget {
-  final BetterPlayerController controller;
+class VideoControls extends StatefulWidget {
+  final Player controller;
   final Widget bottomControls;
   final Widget topControls;
   final void Function() hideControlsOnTimeout;
@@ -16,7 +19,7 @@ class Controls extends StatefulWidget {
   final bool isControlsVisible;
   final Map<String, bool> episodeMap;
 
-  const Controls({
+  const VideoControls({
     super.key,
     required this.controller,
     required this.bottomControls,
@@ -29,56 +32,106 @@ class Controls extends StatefulWidget {
   });
 
   @override
-  State<Controls> createState() => _ControlsState();
+  State<VideoControls> createState() => _ControlsState();
 }
 
-class _ControlsState extends State<Controls> {
-  late VideoPlayerController _controller;
+class _ControlsState extends State<VideoControls> {
+  late Player _controller;
 
   IconData? playPause;
   String currentTime = "0:00";
   String maxTime = "0:00";
   int? megaSkipDuration;
-  bool buffering = false;
+  bool buffering = true;
   bool wakelockEnabled = false;
+
+  StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<Duration?>? _durationSubscription;
+  bool showCursor = true;
+  Timer? _hideCursorTimer;
+
+  void resetCursorTimer() {
+    _hideCursorTimer?.cancel();
+
+    if (!showCursor) {
+      setState(() {
+        showCursor = true;
+      });
+    }
+
+    _hideCursorTimer = Timer(const Duration(seconds: 3), () {
+      if (!widget.isControlsVisible) {
+        setState(() {
+          showCursor = false;
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     WakelockPlus.enable();
     wakelockEnabled = true;
-    _controller = widget.controller.videoPlayerController!;
+    _controller = widget.controller;
     widget.hideControlsOnTimeout();
-    _controller.addListener(playerEventListener);
+    playerEventListener();
     assignSettings();
   }
 
+  StreamSubscription? positionSubscription;
+  StreamSubscription? durationSubscription;
+  StreamSubscription? bufferingSubscription;
+  StreamSubscription? playingSubscription;
+
   void playerEventListener() {
-    if (widget.isControlsVisible) {
-      widget.hideControlsOnTimeout();
-    }
+    positionSubscription = _controller.stream.position.listen((e) {
+      if (mounted) {
+        setState(() {
+          currentTime = getFormattedTime(e.inSeconds) ?? '00:00';
+        });
+      }
+    });
 
-    if (mounted) {
-      setState(() {
-        int duration = _controller.value.duration?.inSeconds ?? 0;
-        int val = _controller.value.position.inSeconds;
-        playPause = _controller.value.isPlaying
-            ? Icons.pause_rounded
-            : Icons.play_arrow_rounded;
-        currentTime = getFormattedTime(val);
-        maxTime = getFormattedTime(duration);
-        buffering = _controller.value.isBuffering;
-      });
-    }
+    durationSubscription = _controller.stream.duration.listen((e) {
+      if (mounted) {
+        setState(() {
+          maxTime = getFormattedTime(e.inSeconds) ?? '00:00';
+        });
+      }
+    });
 
-    if (_controller.value.isPlaying && !wakelockEnabled) {
-      WakelockPlus.enable();
-      wakelockEnabled = true;
-    } else if (!_controller.value.isPlaying && wakelockEnabled) {
-      WakelockPlus.disable();
-      wakelockEnabled = false;
-    }
+    bufferingSubscription =
+        _controller.stream.buffering.listen((bufferingStatus) {
+      if (mounted) {
+        setState(() {
+          buffering = bufferingStatus;
+        });
+      }
+    });
+
+    playingSubscription = _controller.stream.playing.listen((playingStatus) {
+      if (mounted) {
+        setState(() {
+          playPause = playingStatus ? Iconsax.pause5 : Iconsax.play5;
+          isPlaying = playingStatus;
+        });
+      }
+    });
   }
+
+  @override
+  void dispose() {
+    positionSubscription?.cancel();
+    durationSubscription?.cancel();
+    bufferingSubscription?.cancel();
+    playingSubscription?.cancel();
+    WakelockPlus.disable();
+    _hideCursorTimer?.cancel();
+    super.dispose();
+  }
+
+  bool? isPlaying;
 
   Future<void> assignSettings() async {
     setState(() {
@@ -87,7 +140,7 @@ class _ControlsState extends State<Controls> {
     });
   }
 
-  String getFormattedTime(int timeInSeconds) {
+  String? getFormattedTime(int timeInSeconds) {
     String formatTime(int val) {
       return val.toString().padLeft(2, '0');
     }
@@ -104,107 +157,139 @@ class _ControlsState extends State<Controls> {
   }
 
   void fastForward(int seekDuration) {
-    if ((_controller.value.position.inSeconds + seekDuration) <= 0) {
-      _controller.seekTo(const Duration(seconds: 0));
+    if ((_controller.state.position.inSeconds + seekDuration) <= 0) {
+      _controller.seek(const Duration(seconds: 0));
     } else {
-      if ((_controller.value.position.inSeconds + seekDuration) >=
-          _controller.value.duration!.inSeconds) {
-        _controller.seekTo(Duration(
-            milliseconds: _controller.value.duration!.inMilliseconds - 500));
+      if ((_controller.state.position.inSeconds + seekDuration) >=
+          _controller.state.duration.inSeconds) {
+        _controller.seek(Duration(
+            milliseconds: _controller.state.duration.inMilliseconds - 500));
       } else {
-        _controller.seekTo(Duration(
-            seconds: _controller.value.position.inSeconds + seekDuration));
+        _controller.seek(Duration(
+            seconds: _controller.state.position.inSeconds + seekDuration));
       }
     }
   }
 
-  @override
-  void dispose() {
-    WakelockPlus.disable();
-    super.dispose();
+  int timeStringToSeconds(String time) {
+    List<String> parts = time.split(':');
+    if (parts.length == 2) {
+      return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+    } else if (parts.length == 3) {
+      return int.parse(parts[0]) * 3600 +
+          int.parse(parts[1]) * 60 +
+          int.parse(parts[2]);
+    }
+    return 0;
+  }
+
+  String _formatSecondsToTime(int seconds) {
+    int hours = seconds ~/ 3600;
+    int minutes = (seconds % 3600) ~/ 60;
+    int secs = seconds % 60;
+
+    if (hours > 0) {
+      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    } else {
+      return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 40),
-      child: Stack(
-        children: [
-          widget.topControls,
-          widget.isControlsLocked()
-              ? lockedCenterControls()
-              : centerControls(context),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        currentTime,
-                      ),
-                      const Text(
-                        " / ",
-                      ),
-                      Text(
-                        maxTime,
-                      ),
-                    ],
-                  ),
-                  if (megaSkipDuration != null && !widget.isControlsLocked())
-                    megaSkipButton(),
-                ],
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: 20,
-                  child: IgnorePointer(
-                    ignoring: widget.isControlsLocked(),
-                    child: SliderTheme(
-                      data: SliderThemeData(
-                        trackHeight: 1.3,
-                        thumbColor: Theme.of(context).colorScheme.primary,
-                        activeTrackColor: Theme.of(context).colorScheme.primary,
-                        inactiveTrackColor:
-                            const Color.fromARGB(255, 121, 121, 121),
-                        secondaryActiveTrackColor:
-                            const Color.fromARGB(255, 167, 167, 167),
-                        thumbShape:
-                            const RoundSliderThumbShape(enabledThumbRadius: 6),
-                        overlayShape: SliderComponentShape.noThumb,
-                      ),
-                      child: BetterPlayerMaterialVideoProgressBar(
-                        _controller,
-                        widget.controller,
-                        onDragStart: () {
-                          widget.controller.pause();
-                        },
-                        onDragEnd: () {
-                          widget.controller.play();
-                        },
-                        colors: BetterPlayerProgressColors(
-                          playedColor: Theme.of(context).colorScheme.primary,
-                          handleColor: widget.isControlsLocked()
-                              ? Colors.transparent
-                              : Theme.of(context).colorScheme.primary,
-                          bufferedColor:
+    double currentProgress = timeStringToSeconds(currentTime).toDouble();
+    double totalDuration = timeStringToSeconds(maxTime).toDouble();
+    return MouseRegion(
+      cursor: showCursor ? SystemMouseCursors.basic : SystemMouseCursors.none,
+      onHover: (_) => resetCursorTimer(),
+      onEnter: (_) => resetCursorTimer(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 40),
+        child: Stack(
+          children: [
+            widget.topControls,
+            widget.isControlsLocked()
+                ? lockedCenterControls()
+                : centerControls(context),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          currentTime,
+                        ),
+                        const Text(
+                          " / ",
+                        ),
+                        Text(
+                          maxTime,
+                        ),
+                      ],
+                    ),
+                    if (megaSkipDuration != null && !widget.isControlsLocked())
+                      megaSkipButton(),
+                  ],
+                ),
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: 20,
+                    child: IgnorePointer(
+                      ignoring: widget.isControlsLocked(),
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 1.3,
+                          thumbColor: Theme.of(context).colorScheme.primary,
+                          activeTrackColor:
+                              Theme.of(context).colorScheme.primary,
+                          inactiveTrackColor:
+                              const Color.fromARGB(255, 121, 121, 121),
+                          secondaryActiveTrackColor:
                               const Color.fromARGB(255, 167, 167, 167),
-                          backgroundColor:
-                              const Color.fromARGB(255, 94, 94, 94),
+                          thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 6),
+                          overlayShape: SliderComponentShape.noThumb,
+                        ),
+                        child: Slider(
+                          min: 0.0,
+                          max: totalDuration > 0 ? totalDuration : 1.0,
+                          value: currentProgress.clamp(0.0, totalDuration),
+                          onChangeStart: (val) {
+                            widget.controller.pause();
+                          },
+                          onChangeEnd: (val) {
+                            setState(() {
+                              buffering = true;
+                            });
+                            _controller.seek(Duration(seconds: val.toInt()));
+                            _controller.stream.buffering.listen((err) {
+                              buffering = err;
+                            });
+                            widget.controller.play();
+                          },
+                          onChanged: (double value) {
+                            setState(() {
+                              currentTime = _formatSecondsToTime(value.toInt());
+                            });
+                          },
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              widget.bottomControls
-            ],
-          ),
-        ],
+                widget.bottomControls
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -275,19 +360,36 @@ class _ControlsState extends State<Controls> {
         children: [
           Opacity(
             opacity: widget.episodeMap['prev'] ?? false ? 1 : 0,
-            child: buildControlButton(
-              icon: Iconsax.previous5,
-              size: 35,
-              onTap: () {
-                final map = widget.episodeMap;
-                if (map['prev'] ?? false) {
-                  widget.episodeNav('prev');
-                }
-              },
+            child: PlatformBuilder(
+              strictMode: true,
+              androidBuilder: buildControlButton(
+                icon: Iconsax.previous5,
+                onTap: () {
+                  final map = widget.episodeMap;
+                  if (map['prev'] ?? false) {
+                    widget.episodeNav('prev');
+                  }
+                },
+              ),
+              desktopBuilder: Row(
+                children: [
+                  buildControlButton(
+                    icon: Iconsax.previous5,
+                    size: 50,
+                    onTap: () {
+                      final map = widget.episodeMap;
+                      if (map['prev'] ?? false) {
+                        widget.episodeNav('prev');
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 30),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 50),
-          buffering || !_controller.value.initialized
+          buffering
               ? Center(
                   child: SizedBox(
                     width: 50,
@@ -297,31 +399,67 @@ class _ControlsState extends State<Controls> {
                     ),
                   ),
                 )
-              : buildControlButton(
-                  icon: playPause ?? Iconsax.play5,
-                  onTap: () {
-                    if (_controller.value.isPlaying) {
-                      playPause = Iconsax.play5;
-                      _controller.pause();
-                    } else {
-                      playPause = Iconsax.pause5;
-                      _controller.play();
-                    }
-                    setState(() {});
-                  },
+              : PlatformBuilder(
+                  strictMode: true,
+                  androidBuilder: buildControlButton(
+                    icon: playPause ?? Iconsax.pause5,
+                    onTap: () {
+                      setState(() {
+                        if (isPlaying ?? false) {
+                          playPause = Iconsax.play5;
+                          _controller.pause();
+                        } else {
+                          playPause = Iconsax.pause5;
+                          _controller.play();
+                        }
+                      });
+                    },
+                  ),
+                  desktopBuilder: buildControlButton(
+                    size: 60,
+                    icon: playPause ?? Iconsax.pause5,
+                    onTap: () {
+                      setState(() {
+                        if (isPlaying ?? false) {
+                          playPause = IconlyBold.play;
+                          _controller.pause();
+                        } else {
+                          playPause = Iconsax.pause5;
+                          _controller.play();
+                        }
+                      });
+                    },
+                  ),
                 ),
           const SizedBox(width: 50),
           Opacity(
             opacity: widget.episodeMap['next'] ?? true ? 1 : 0,
-            child: buildControlButton(
-              icon: Iconsax.next5,
-              size: 35,
-              onTap: () {
-                final map = widget.episodeMap;
-                if (map['next'] ?? true) {
-                  widget.episodeNav('right');
-                }
-              },
+            child: PlatformBuilder(
+              strictMode: true,
+              androidBuilder: buildControlButton(
+                icon: Iconsax.next5,
+                onTap: () {
+                  final map = widget.episodeMap;
+                  if (map['next'] ?? true) {
+                    widget.episodeNav('right');
+                  }
+                },
+              ),
+              desktopBuilder: Row(
+                children: [
+                  const SizedBox(width: 30),
+                  buildControlButton(
+                    icon: Iconsax.next5,
+                    size: 50,
+                    onTap: () {
+                      final map = widget.episodeMap;
+                      if (map['next'] ?? true) {
+                        widget.episodeNav('right');
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],
