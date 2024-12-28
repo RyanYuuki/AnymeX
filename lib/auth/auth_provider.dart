@@ -25,7 +25,7 @@ class AniListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<void> login() async {
     String clientId = dotenv.get('CLIENT_ID');
     String clientSecret = dotenv.get('CLIENT_SECRET');
     String redirectUri = dotenv.get('REDIRECT_URL');
@@ -41,8 +41,7 @@ class AniListProvider with ChangeNotifier {
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
-        await _exchangeCodeForToken(
-            code, clientId, clientSecret, redirectUri, context);
+        await _exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
       }
     } catch (e) {
       log('Error during login: $e');
@@ -50,7 +49,7 @@ class AniListProvider with ChangeNotifier {
   }
 
   Future<void> _exchangeCodeForToken(String code, String clientId,
-      String clientSecret, String redirectUri, BuildContext context) async {
+      String clientSecret, String redirectUri) async {
     final response = await http.post(
       Uri.parse('https://anilist.co/api/v2/oauth/token'),
       headers: {
@@ -998,7 +997,7 @@ class AniListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> logout(BuildContext context) async {
+  Future<void> logout() async {
     await storage.delete('auth_token');
     _userData = {};
     notifyListeners();
