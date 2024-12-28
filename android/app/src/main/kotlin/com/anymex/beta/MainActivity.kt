@@ -1,4 +1,4 @@
-package com.anymex.alpha
+package com.anymex.beta
 
 import io.flutter.embedding.android.FlutterActivity
 
