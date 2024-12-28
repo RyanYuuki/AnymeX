@@ -117,6 +117,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _initVars();
     initializePlayer();
     _handleVolumeAndBrightness();
+    _playerListener();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
@@ -140,12 +141,22 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
   }
 
+  StreamSubscription? _positionSubscription;
+  Duration? position;
+  late int initialSkipDuration;
+
+  void _playerListener() {
+    _positionSubscription = player.stream.position.listen((e) {
+      position = e;
+    });
+  }
+
   void _handleKeyPress(KeyEvent event) {
     if (event is KeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _handleDoubleTap(TapDownDetails(), isLeft: true);
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        // _handleDoubleTap(TapDownDetails(), isLeft: false);
+        _handleDoubleTap(TapDownDetails(), isLeft: false);
         returnEpisodeProgress();
       } else if (event.logicalKey == LogicalKeyboardKey.space) {
         player.playOrPause();
@@ -155,10 +166,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    player.stream.position.listen((dur) {
-      Hive.box("app-data")
-          .put('${widget.animeTitle}-${widget.currentEpisode}', dur.inSeconds);
-    });
+    Hive.box("app-data").put(
+        '${widget.animeTitle}-${widget.currentEpisode}', position!.inSeconds);
+    _positionSubscription?.cancel();
     player.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -194,6 +204,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     currentEpisode = widget.currentEpisode;
     streams = widget.streams;
     skipDuration = Hive.box('app-data').get('skipDuration', defaultValue: 10);
+    initialSkipDuration =
+        Hive.box('app-data').get('skipDuration', defaultValue: 10);
   }
 
   void initializePlayer() {
@@ -884,42 +896,56 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
-  StreamSubscription? _positionSubscription;
-
+  int accumulatedSkip = 0;
   void _handleDoubleTap(TapDownDetails details, {bool? isLeft}) {
     final screenWidth = MediaQuery.of(context).size.width;
     final tapPosition = details.globalPosition;
     final isNewLeft = isLeft ?? tapPosition.dx < screenWidth / 2;
 
-    _positionSubscription = player.stream.position.listen((dur) {
-      setState(() {
-        _isLeftSide = isNewLeft;
-        _doubleTapLabel = isNewLeft ? '-${skipDuration}s' : '+${skipDuration}s';
-        _doubleTapPosition = tapPosition;
-      });
+    _doubleTapTimeout?.cancel();
+
+    setState(() {
+      if (_doubleTapLabel.isEmpty || _isLeftSide != isNewLeft) {
+        skipDuration = initialSkipDuration;
+        accumulatedSkip = 0;
+      } else {
+        skipDuration = skipDuration! + initialSkipDuration;
+      }
+
+      _isLeftSide = isNewLeft;
+      _doubleTapLabel = isNewLeft ? '-${skipDuration}s' : '+${skipDuration}s';
+      _doubleTapPosition = tapPosition;
+
+      accumulatedSkip = isNewLeft
+          ? accumulatedSkip - initialSkipDuration
+          : accumulatedSkip + initialSkipDuration;
+
       if (isNewLeft) {
-        player.seek(Duration(seconds: (dur.inSeconds - skipDuration!)));
         _leftAnimationController.forward(from: 0);
       } else {
-        player.seek(Duration(seconds: dur.inSeconds + skipDuration!));
         _rightAnimationController.forward(from: 0);
       }
-      _positionSubscription?.cancel();
     });
 
     _resetControlsAfterDelay();
-
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      _positionSubscription?.cancel();
-    });
   }
 
   void _resetControlsAfterDelay() {
     _doubleTapTimeout?.cancel();
-    _doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
+    _doubleTapTimeout = Timer(const Duration(milliseconds: 300), () {
+      if (accumulatedSkip != 0) {
+        setState(() {
+          player.seek(
+            Duration(seconds: max(0, position!.inSeconds + accumulatedSkip)),
+          );
+        });
+      }
+
       setState(() {
-        isControlsLocked = false;
         _doubleTapLabel = '';
+        _doubleTapPosition = null;
+        skipDuration = initialSkipDuration;
+        accumulatedSkip = 0;
       });
     });
   }
@@ -944,7 +970,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               parent: _isLeftSide
                   ? _leftAnimationController
                   : _rightAnimationController,
-              curve: Curves.bounceInOut,
+              curve: Curves.easeInOut,
             ),
           );
 
