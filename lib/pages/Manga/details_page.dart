@@ -12,7 +12,6 @@ import 'package:anymex/auth/auth_provider.dart';
 import 'package:anymex/components/android/anilistExclusive/wrong_tile_manga.dart';
 import 'package:anymex/components/android/common/IconWithLabel.dart';
 import 'package:anymex/components/android/common/custom_slider.dart';
-import 'package:anymex/components/android/common/expandable_page_view.dart';
 import 'package:anymex/components/android/common/reusable_carousel.dart';
 import 'package:anymex/components/android/anime/details/character_cards.dart';
 import 'package:anymex/components/android/manga/chapter_ranges.dart';
@@ -29,6 +28,7 @@ import 'package:anymex/pages/Anime/widgets/goto_extensions.dart';
 import 'package:anymex/pages/Manga/deps/chapter_recognition.dart';
 import 'package:anymex/pages/Manga/read_page.dart';
 import 'package:anymex/utils/apiHooks/anilist/anime/details_page.dart';
+import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as rp;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -326,7 +326,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
       fit: true,
       currentIndex: selectedIndex,
       borderRadius: BorderRadius.circular(16),
-      margin: const EdgeInsets.fromLTRB(80, 0, 80, 20),
+      margin: const EdgeInsets.fromLTRB(80, 0, 100, 30),
       items: [
         NavItem(
             selectedIcon: Iconsax.info_circle5,
@@ -406,12 +406,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               )
             else
               ExpandablePageView(
-                controller: pageController,
-                itemCount: 2,
-                itemBuilder: (context, page) {
-                  return page == 0 ? saikouDetails(context) : chapterSection();
-                },
-              ),
+                  controller: pageController,
+                  onPageChanged: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
+                  children: [saikouDetails(context), chapterSection()]),
           ],
         ),
       ),
@@ -510,9 +511,56 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
-          Text(
-            'Found: ${mangaData?.name ?? '?'}',
-            style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+          Row(
+            children: [
+              Text(
+                'Found: ${mangaData?.name ?? '?'}',
+                style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const Spacer(),
+              const SizedBox(width: 10),
+              TextButton(
+                onPressed: () {
+                  showMangaSearchModal(
+                    context,
+                    data['name'],
+                    (mangaId) async {
+                      setState(() {
+                        filteredChapters = null;
+                      });
+                      final chapterData =
+                          await getDetail(url: mangaId, source: activeSource!);
+                      setState(() {
+                        mangaData = chapterData;
+                        mangaData!.chapters =
+                            chapterData.chapters!.reversed.toList();
+                        activeGroup = null;
+                        initializeChapters();
+                      });
+                    },
+                    activeSource!,
+                  );
+                },
+                child: Stack(
+                  children: [
+                    Text('Wrong Title?',
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                        )),
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        width: 100,
+                        height: 1,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
@@ -591,48 +639,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
               fontSize: 16,
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                showMangaSearchModal(
-                  context,
-                  data['name'],
-                  (mangaId) async {
-                    setState(() {
-                      filteredChapters = null;
-                    });
-                    final chapterData =
-                        await getDetail(url: mangaId, source: activeSource!);
-                    setState(() {
-                      mangaData = chapterData;
-                      mangaData!.chapters =
-                          chapterData.chapters!.reversed.toList();
-                      activeGroup = null;
-                      initializeChapters();
-                    });
-                  },
-                  activeSource!,
-                );
-              },
-              child: Stack(
-                children: [
-                  Text('Wrong Title?',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                      )),
-                  Positioned(
-                    bottom: 0,
-                    child: Container(
-                      width: 100,
-                      height: 1,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
@@ -1632,13 +1639,15 @@ class _MangaDetailsPageState extends State<MangaDetailsPage>
           )
         : ExpandablePageView(
             controller: pageController,
-            itemCount: 2,
-            itemBuilder: (context, page) {
-              return page == 0
-                  ? originalInfoPage(CustomScheme, context)
-                  : chapterSection();
+            onPageChanged: (value) {
+              setState(() {
+                selectedIndex = value;
+              });
             },
-          );
+            children: [
+                originalInfoPage(CustomScheme, context),
+                chapterSection()
+              ]);
   }
 
   Widget originalInfoPage(ColorScheme CustomScheme, BuildContext context) {

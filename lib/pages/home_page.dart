@@ -626,7 +626,7 @@ class _HomePageState extends State<HomePage> {
                                             .put('isFirstTime', false);
                                         Provider.of<AniListProvider>(context,
                                                 listen: false)
-                                            .login(context);
+                                            .login();
                                         Navigator.of(context).pop();
                                       },
                                       label: Text(
