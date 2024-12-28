@@ -932,7 +932,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   void _resetControlsAfterDelay() {
     _doubleTapTimeout?.cancel();
-    _doubleTapTimeout = Timer(const Duration(milliseconds: 300), () {
+    _doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
       if (accumulatedSkip != 0) {
         setState(() {
           player.seek(
