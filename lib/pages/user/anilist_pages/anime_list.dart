@@ -151,7 +151,7 @@ class AnimeListContent extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = filteredAnimeList[index]['media'];
             final tag = '${Random().nextInt(100000)}$index';
-            final posterUrl = item?['coverImage']?['large'] ??
+            final posterUrl = item['coverImage']['large'] ??
                 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
             return animeItem(
                 context, item, tag, posterUrl, filteredAnimeList, index);
@@ -228,7 +228,7 @@ class AnimeListContent extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        (item?['averageScore'] / 10)?.toString() ?? '0.0',
+                        ((item['averageScore'] ?? 0) / 10)?.toString() ?? '0.0',
                         style: TextStyle(
                             fontSize: 11,
                             color:
@@ -253,7 +253,7 @@ class AnimeListContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item?['title']?['english'] ?? item?['title']?['romaji'] ?? '?',
+                item['title']['english'] ?? item['title']['romaji'] ?? '?',
                 maxLines: 2,
                 style: const TextStyle(fontSize: 12),
               ),
@@ -263,7 +263,9 @@ class AnimeListContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    filteredAnimeList[index]?['progress']?.toString() ?? '?',
+                    (filteredAnimeList[index]?['progress'] ?? '?')
+                            ?.toString() ??
+                        '?',
                     style: TextStyle(
                         color:
                             Theme.of(context).colorScheme.onPrimaryContainer),
@@ -275,7 +277,7 @@ class AnimeListContent extends StatelessWidget {
                               .inverseSurface
                               .withOpacity(0.5))),
                   Text(
-                    item['episodes']?.toString() ?? '?',
+                    (item['episodes'] ?? '?')?.toString() ?? '?',
                     style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme
@@ -346,7 +348,7 @@ class AnimeListContent extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        (item?['averageScore'] / 10)?.toString() ?? '0.0',
+                        ((item['averageScore'] ?? 0) / 10)?.toString() ?? '0.0',
                         style: TextStyle(
                             fontSize: 11,
                             color:
@@ -389,7 +391,7 @@ class AnimeListContent extends StatelessWidget {
                           .inverseSurface
                           .withOpacity(0.5))),
               Text(
-                item['episodes']?.toString() ?? '?',
+                (item['episodes'] ?? '?')?.toString() ?? '?',
                 style: TextStyle(
                     color: Theme.of(context)
                         .colorScheme

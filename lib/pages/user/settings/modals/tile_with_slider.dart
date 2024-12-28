@@ -45,7 +45,7 @@ class _TileWithSliderState extends State<TileWithSlider> {
           child: Row(
             children: [
               SizedBox(
-                width: 25,
+                width: 35,
                 child: Text(widget.sliderValue.toStringAsFixed(1),
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary)),
@@ -65,8 +65,8 @@ class _TileWithSliderState extends State<TileWithSlider> {
                 ),
               ),
               SizedBox(
-                width: 25,
-                child: Text(widget.max.floor().toString(),
+                width: 35,
+                child: Text(widget.max.toStringAsFixed(1),
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary)),
               ),
