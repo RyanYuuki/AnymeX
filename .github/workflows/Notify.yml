@@ -127,8 +127,8 @@ jobs:
             remaining_commits=$((commit_count - $(echo "$trimmed_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)))
         
             # Construct the message with a note about remaining commits
-            MESSAGE="Release Notes: 
-            
+            MESSAGE="**🚀 New Release: ${RELEASE_NAME}**
+            Release Notes:
             $trimmed_commit
 
             📌 Note: There are $remaining_commits more commits.
@@ -137,7 +137,6 @@ jobs:
           # Use the complete commit message
           MESSAGE="**🚀 New Release: ${RELEASE_NAME}**
           Release Notes:
-          
           $tel_commit"
           fi
 
@@ -196,7 +195,6 @@ jobs:
         
             # Construct the message with a note about remaining commits
             discord_message="Release Notes: 
-            
             $trimmed_commit
 
             📌 Note: There are $remaining_commits more commits.* 
@@ -204,7 +202,6 @@ jobs:
           else
             # Use the full message if within the limit
             discord_message="Release Notes:
-            
             $discord_commit"
           fi
 
