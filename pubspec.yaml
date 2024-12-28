@@ -66,6 +66,7 @@ dependencies:
   grouped_list: ^6.0.0
   volume_controller: ^2.0.8
   screen_brightness: ^0.2.2+1
+  expandable_page_view: ^1.0.17
 dev_dependencies:
   flutter_test:
     sdk: flutter
