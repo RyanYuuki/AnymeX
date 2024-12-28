@@ -126,27 +126,27 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     Provider.of<AniListProvider>(context, listen: false).updateAnimeProgress(
       animeId: widget.animeId,
-      episodeProgress: widget.currentEpisode,
+      episodeProgress: returnEpisodeProgress(),
       status: 'CURRENT',
     );
   }
 
+  int returnEpisodeProgress() {
+    final validity = getEpisodeMap();
+    if (validity['next'] ?? true) {
+      return currentEpisode! + 1;
+    } else {
+      return currentEpisode!;
+    }
+  }
+
   void _handleKeyPress(KeyEvent event) {
     if (event is KeyDownEvent) {
-      final screenWidth = MediaQuery.of(context).size.width;
-
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        setState(() {
-          _doubleTapPosition = Offset(screenWidth * 0.25, 0);
-          _isLeftSide = true;
-        });
-        _handleDoubleTap(true);
+        _handleDoubleTap(TapDownDetails(), isLeft: true);
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        setState(() {
-          _doubleTapPosition = Offset(screenWidth * 0.75, 0);
-          _isLeftSide = false;
-        });
-        _handleDoubleTap(false);
+        // _handleDoubleTap(TapDownDetails(), isLeft: false);
+        returnEpisodeProgress();
       } else if (event.logicalKey == LogicalKeyboardKey.space) {
         player.playOrPause();
       }
@@ -155,6 +155,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    player.stream.position.listen((dur) {
+      Hive.box("app-data")
+          .put('${widget.animeTitle}-${widget.currentEpisode}', dur.inSeconds);
+    });
     player.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -166,6 +170,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _doubleTapTimeout?.cancel();
     windowManager.setFullScreen(false);
     _focusNode.dispose();
+    _hideCursorTimer?.cancel();
     super.dispose();
   }
 
@@ -194,7 +199,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void initializePlayer() {
     player = Player();
     videoPlayerController = VideoController(player);
-    player.open(Media(episodeSrc!.url));
+    player.open(Media(episodeSrc!.url,
+        start: Duration(
+            seconds: Hive.box("app-data").get(
+                '${widget.animeTitle}-${widget.currentEpisode}',
+                defaultValue: 0))));
     player.play();
   }
 
@@ -239,6 +248,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       children: [
         InkWell(
           onTap: () {
+            player.stream.position.listen((dur) {
+              Hive.box("app-data").put(
+                  '${widget.animeTitle}-${widget.currentEpisode}',
+                  dur.inSeconds);
+            });
             Navigator.pop(context);
           },
           child: const Padding(
@@ -338,7 +352,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         ),
         Row(
           children: [
-            if (isMobile)
+            if (isMobile) ...[
               IconButton(
                 onPressed: () {
                   setState(() {
@@ -357,6 +371,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   color: Colors.white,
                 ),
               ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    SystemChrome.setPreferredOrientations(
+                        [DeviceOrientation.portraitUp]);
+                  });
+                },
+                icon: const Icon(
+                  Icons.crop_portrait_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ],
             IconButton(
               onPressed: () {
                 showPlaybackSpeedDialog(context);
@@ -849,53 +876,42 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Timer? _doubleTapTimeout;
 
   Offset? _doubleTapPosition;
-  DateTime? _lastTapTime;
   bool _isLeftSide = false;
 
-  void _handleTap(TapDownDetails details) {
-    final now = DateTime.now();
-    final screenWidth = MediaQuery.of(context).size.width;
-    final tapPosition = details.globalPosition;
-    final isLeft = tapPosition.dx < screenWidth / 2;
-
-    if (_lastTapTime != null &&
-        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
-      _handleDoubleTap(isLeft);
-      _doubleTapPosition = tapPosition;
-      _isLeftSide = isLeft;
-    } else {
-      setState(() {
-        showControls = !showControls;
-      });
-    }
-
-    _lastTapTime = now;
+  void _handleTap() {
+    setState(() {
+      showControls = !showControls;
+    });
   }
 
-  void _handleDoubleTap(bool isLeft) {
-    Duration? currentPosition;
-    player.stream.position.listen((dur) {
-      currentPosition = dur;
+  StreamSubscription? _positionSubscription;
+
+  void _handleDoubleTap(TapDownDetails details, {bool? isLeft}) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tapPosition = details.globalPosition;
+    final isNewLeft = isLeft ?? tapPosition.dx < screenWidth / 2;
+
+    _positionSubscription = player.stream.position.listen((dur) {
+      setState(() {
+        _isLeftSide = isNewLeft;
+        _doubleTapLabel = isNewLeft ? '-${skipDuration}s' : '+${skipDuration}s';
+        _doubleTapPosition = tapPosition;
+      });
+      if (isNewLeft) {
+        player.seek(Duration(seconds: (dur.inSeconds - skipDuration!)));
+        _leftAnimationController.forward(from: 0);
+      } else {
+        player.seek(Duration(seconds: dur.inSeconds + skipDuration!));
+        _rightAnimationController.forward(from: 0);
+      }
+      _positionSubscription?.cancel();
     });
-
-    if (currentPosition == null) return;
-
-    setState(() {
-      isControlsLocked = true;
-      _doubleTapLabel = isLeft ? '-${skipDuration}s' : '+${skipDuration}s';
-    });
-
-    if (isLeft) {
-      player.seek(Duration(
-          seconds: max(0, currentPosition!.inSeconds - skipDuration!)));
-      _leftAnimationController.forward(from: 0);
-    } else {
-      player
-          .seek(Duration(seconds: currentPosition!.inSeconds + skipDuration!));
-      _rightAnimationController.forward(from: 0);
-    }
 
     _resetControlsAfterDelay();
+
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      _positionSubscription?.cancel();
+    });
   }
 
   void _resetControlsAfterDelay() {
@@ -987,86 +1003,113 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     );
   }
 
+  bool showCursor = true;
+  Timer? _hideCursorTimer;
+
+  void resetCursorTimer() {
+    _hideCursorTimer?.cancel();
+
+    if (!showCursor) {
+      setState(() {
+        showCursor = true;
+      });
+    }
+
+    _hideCursorTimer = Timer(const Duration(seconds: 3), () {
+      if (!showControls) {
+        setState(() {
+          showCursor = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTapDown: _handleTap,
-        behavior: HitTestBehavior.opaque,
-        onVerticalDragUpdate: (e) async {
-          final delta = e.delta.dy;
-          final Offset position = e.localPosition;
+      body: MouseRegion(
+        cursor: showCursor ? SystemMouseCursors.basic : SystemMouseCursors.none,
+        onHover: (_) => resetCursorTimer(),
+        child: GestureDetector(
+          onTap: () => _handleTap(),
+          onDoubleTapDown: (details) => _handleDoubleTap(details),
+          behavior: HitTestBehavior.opaque,
+          onVerticalDragUpdate: (e) async {
+            final delta = e.delta.dy;
+            final Offset position = e.localPosition;
 
-          if (position.dx <= MediaQuery.of(context).size.width / 2) {
-            final brightness = _brightnessValue - delta / 500;
-            final result = brightness.clamp(0.0, 1.0);
-            setBrightness(result);
-          } else {
-            final volume = _volumeValue - delta / 500;
-            final result = volume.clamp(0.0, 1.0);
-            setVolume(result);
-          }
-        },
-        child: KeyboardListener(
-          focusNode: _focusNode,
-          onKeyEvent: _handleKeyPress,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Video Player
-              Video(
-                fit: resizeModesOptions[resizeMode] ?? BoxFit.contain,
-                controller: videoPlayerController!,
-                subtitleViewConfiguration: SubtitleViewConfiguration(
-                    style: TextStyle(
-                        fontSize: subtitleSize,
-                        fontFamily: subtitleFont,
-                        backgroundColor: colorOptions[subtitleBackgroundColor],
-                        inherit: false,
-                        color: colorOptions[subtitleColor])),
-                pauseUponEnteringBackgroundMode: false,
-                controls: null,
-              ),
-              Positioned.fill(child: overlay()),
-              Positioned.fill(
-                child: AnimatedOpacity(
-                  opacity: showControls ? 1 : 0,
-                  duration: const Duration(milliseconds: 300),
-                  child: IgnorePointer(
-                    ignoring: !showControls,
-                    child: VideoControls(
-                      controller: player,
-                      bottomControls: bottomControls(),
-                      topControls: topControls(),
-                      hideControlsOnTimeout: () {},
-                      isControlsLocked: () => isControlsLocked,
-                      isControlsVisible: showControls,
-                      episodeMap: getEpisodeMap(),
-                      episodeNav: (direction) => navEpisodes(direction),
+            if (position.dx <= MediaQuery.of(context).size.width / 2) {
+              final brightness = _brightnessValue - delta / 500;
+              final result = brightness.clamp(0.0, 1.0);
+              setBrightness(result);
+            } else {
+              final volume = _volumeValue - delta / 500;
+              final result = volume.clamp(0.0, 1.0);
+              setVolume(result);
+            }
+          },
+          child: KeyboardListener(
+            focusNode: _focusNode,
+            onKeyEvent: _handleKeyPress,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Video Player
+                Video(
+                  fit: resizeModesOptions[resizeMode] ?? BoxFit.contain,
+                  controller: videoPlayerController!,
+                  subtitleViewConfiguration: SubtitleViewConfiguration(
+                      style: TextStyle(
+                          fontSize: subtitleSize,
+                          fontFamily: subtitleFont,
+                          backgroundColor:
+                              colorOptions[subtitleBackgroundColor],
+                          inherit: false,
+                          color: colorOptions[subtitleColor])),
+                  pauseUponEnteringBackgroundMode: false,
+                  controls: null,
+                ),
+                Positioned.fill(child: overlay()),
+                Positioned.fill(
+                  child: AnimatedOpacity(
+                    opacity: showControls ? 1 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: IgnorePointer(
+                      ignoring: !showControls,
+                      child: VideoControls(
+                        controller: player,
+                        bottomControls: bottomControls(),
+                        topControls: topControls(),
+                        hideControlsOnTimeout: () {},
+                        isControlsLocked: () => isControlsLocked,
+                        isControlsVisible: showControls,
+                        episodeMap: getEpisodeMap(),
+                        episodeNav: (direction) => navEpisodes(direction),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              _buildRippleEffect(),
-              AnimatedOpacity(
-                curve: Curves.easeInOut,
-                opacity: _brightnessIndicator ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: MediaIndicatorBuilder(
-                  value: _brightnessValue,
-                  isVolumeIndicator: false,
+                _buildRippleEffect(),
+                AnimatedOpacity(
+                  curve: Curves.easeInOut,
+                  opacity: _brightnessIndicator ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: MediaIndicatorBuilder(
+                    value: _brightnessValue,
+                    isVolumeIndicator: false,
+                  ),
                 ),
-              ),
-              AnimatedOpacity(
-                curve: Curves.easeInOut,
-                opacity: _volumeIndicator ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: MediaIndicatorBuilder(
-                  value: _volumeValue,
-                  isVolumeIndicator: true,
+                AnimatedOpacity(
+                  curve: Curves.easeInOut,
+                  opacity: _volumeIndicator ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: MediaIndicatorBuilder(
+                    value: _volumeValue,
+                    isVolumeIndicator: true,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

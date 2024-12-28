@@ -390,7 +390,7 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
       fit: true,
       currentIndex: selectedIndex,
       borderRadius: BorderRadius.circular(16),
-      margin: const EdgeInsets.fromLTRB(80, 0, 80, 20),
+      margin: const EdgeInsets.fromLTRB(80, 0, 80, 30),
       items: [
         NavItem(
             selectedIcon: Iconsax.info_circle5,
@@ -629,7 +629,8 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
+              Container(
+                width: MediaQuery.of(context).size.width * 0.55,
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   'Found: ${fetchedData?.name ?? '??'}',
@@ -638,6 +639,7 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
                       fontFamily: "Poppins-SemiBold"),
                 ),
               ),
+              const Spacer(),
               TextButton(
                 onPressed: () {
                   showAnimeSearchModal(context, data['name'], (animeId) async {
@@ -1564,9 +1566,10 @@ class _DetailsPageState extends rp.ConsumerState<DetailsPage>
         else
           CachedNetworkImage(
             height: 450,
+            width: double.infinity,
             alignment: Alignment.center,
             fit: BoxFit.cover,
-            imageUrl: altdata?['cover'] ?? widget.posterUrl,
+            imageUrl: widget.posterUrl!,
           ),
         Positioned(
           child: Container(

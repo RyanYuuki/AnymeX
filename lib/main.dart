@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
-import 'package:anymex/Functions/Function.dart';
 import 'package:anymex/Preferences/PrefManager.dart';
 import 'package:anymex/StorageProvider.dart';
 import 'package:anymex/auth/auth_provider.dart';
@@ -16,7 +15,6 @@ import 'package:anymex/hiveData/themeData/theme_provider.dart';
 import 'package:anymex/pages/Anime/home_page.dart';
 import 'package:anymex/pages/Manga/home_page.dart';
 import 'package:anymex/pages/home_page.dart';
-import 'package:anymex/pages/user/settings.dart';
 import 'package:anymex/utils/sources/unified_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -173,7 +171,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MaterialApp(
       scrollBehavior: MyCustomScrollBehavior(),
       title: "AnymeX",
-      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: themeProvider.selectedTheme,
       home: PlatformBuilder(
@@ -278,7 +275,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               isDesktop: false,
               fit: true,
               currentIndex: _mobileSelectedIndex,
-              margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
               items: [
                 NavItem(
                   unselectedIcon: IconlyBold.home,
