@@ -47,26 +47,6 @@ class _ControlsState extends State<VideoControls> {
 
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration?>? _durationSubscription;
-  bool showCursor = true;
-  Timer? _hideCursorTimer;
-
-  void resetCursorTimer() {
-    _hideCursorTimer?.cancel();
-
-    if (!showCursor) {
-      setState(() {
-        showCursor = true;
-      });
-    }
-
-    _hideCursorTimer = Timer(const Duration(seconds: 3), () {
-      if (!widget.isControlsVisible) {
-        setState(() {
-          showCursor = false;
-        });
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -127,7 +107,6 @@ class _ControlsState extends State<VideoControls> {
     bufferingSubscription?.cancel();
     playingSubscription?.cancel();
     WakelockPlus.disable();
-    _hideCursorTimer?.cancel();
     super.dispose();
   }
 
@@ -199,97 +178,87 @@ class _ControlsState extends State<VideoControls> {
   Widget build(BuildContext context) {
     double currentProgress = timeStringToSeconds(currentTime).toDouble();
     double totalDuration = timeStringToSeconds(maxTime).toDouble();
-    return MouseRegion(
-      cursor: showCursor ? SystemMouseCursors.basic : SystemMouseCursors.none,
-      onHover: (_) => resetCursorTimer(),
-      onEnter: (_) => resetCursorTimer(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 40),
-        child: Stack(
-          children: [
-            widget.topControls,
-            widget.isControlsLocked()
-                ? lockedCenterControls()
-                : centerControls(context),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          currentTime,
-                        ),
-                        const Text(
-                          " / ",
-                        ),
-                        Text(
-                          maxTime,
-                        ),
-                      ],
-                    ),
-                    if (megaSkipDuration != null && !widget.isControlsLocked())
-                      megaSkipButton(),
-                  ],
-                ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    height: 20,
-                    child: IgnorePointer(
-                      ignoring: widget.isControlsLocked(),
-                      child: SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 1.3,
-                          thumbColor: Theme.of(context).colorScheme.primary,
-                          activeTrackColor:
-                              Theme.of(context).colorScheme.primary,
-                          inactiveTrackColor:
-                              const Color.fromARGB(255, 121, 121, 121),
-                          secondaryActiveTrackColor:
-                              const Color.fromARGB(255, 167, 167, 167),
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 6),
-                          overlayShape: SliderComponentShape.noThumb,
-                        ),
-                        child: Slider(
-                          min: 0.0,
-                          max: totalDuration > 0 ? totalDuration : 1.0,
-                          value: currentProgress.clamp(0.0, totalDuration),
-                          onChangeStart: (val) {
-                            widget.controller.pause();
-                          },
-                          onChangeEnd: (val) {
-                            setState(() {
-                              buffering = true;
-                            });
-                            _controller.seek(Duration(seconds: val.toInt()));
-                            _controller.stream.buffering.listen((err) {
-                              buffering = err;
-                            });
-                            widget.controller.play();
-                          },
-                          onChanged: (double value) {
-                            setState(() {
-                              currentTime = _formatSecondsToTime(value.toInt());
-                            });
-                          },
-                        ),
+    return Padding(
+      padding: MediaQuery.of(context).orientation == Orientation.portrait
+          ? const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0)
+          : const EdgeInsets.symmetric(vertical: 15.0, horizontal: 40.0),
+      child: Stack(
+        children: [
+          widget.topControls,
+          widget.isControlsLocked()
+              ? lockedCenterControls()
+              : centerControls(context),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        currentTime,
+                      ),
+                      const Text(
+                        " / ",
+                      ),
+                      Text(
+                        maxTime,
+                      ),
+                    ],
+                  ),
+                  if (megaSkipDuration != null && !widget.isControlsLocked())
+                    megaSkipButton(),
+                ],
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  height: 20,
+                  child: IgnorePointer(
+                    ignoring: widget.isControlsLocked(),
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        trackHeight: 1.3,
+                        thumbColor: Theme.of(context).colorScheme.primary,
+                        activeTrackColor: Theme.of(context).colorScheme.primary,
+                        inactiveTrackColor:
+                            const Color.fromARGB(255, 121, 121, 121),
+                        secondaryActiveTrackColor:
+                            const Color.fromARGB(255, 167, 167, 167),
+                        thumbShape:
+                            const RoundSliderThumbShape(enabledThumbRadius: 6),
+                        overlayShape: SliderComponentShape.noThumb,
+                      ),
+                      child: Slider(
+                        min: 0.0,
+                        max: totalDuration > 0 ? totalDuration : 1.0,
+                        value: currentProgress.clamp(0.0, totalDuration),
+                        onChanged: (double val) {
+                          widget.controller.pause();
+                          setState(() {
+                            buffering = true;
+                            currentTime = _formatSecondsToTime(val.toInt());
+                          });
+                          _controller.seek(Duration(seconds: val.toInt()));
+                          _controller.stream.buffering.listen((err) {
+                            buffering = err;
+                          });
+                          widget.controller.play();
+                        },
                       ),
                     ),
                   ),
                 ),
-                widget.bottomControls
-              ],
-            ),
-          ],
-        ),
+              ),
+              widget.bottomControls
+            ],
+          ),
+        ],
       ),
     );
   }
