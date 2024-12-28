@@ -14,6 +14,7 @@
 * [62d0f05](https://github.com/RyanYuuki/AnymeX/commit/62d0f05): style: added bottom margin to nav bar
 
 ### 🧹 Chores & Documentation
+* [19affb0](https://github.com/RyanYuuki/AnymeX/commit/19affb0): build: changed package & app name
 * [586f621](https://github.com/RyanYuuki/AnymeX/commit/586f621): chore: cleaning changelog
 * [77ad3c0](https://github.com/RyanYuuki/AnymeX/commit/77ad3c0): build: deps update
 * [750451c](https://github.com/RyanYuuki/AnymeX/commit/750451c): chore: remove unwanted files
