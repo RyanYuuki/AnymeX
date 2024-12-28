@@ -150,9 +150,6 @@ jobs:
         with:
           flutter-version: "3.22.3"
 
-      - name: Replace pubspec.yaml with Desktop Version
-        run: cp pubspec_desktop.yaml pubspec.yaml
-
       - name: Get Dependencies
         run: flutter pub get
 
