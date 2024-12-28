@@ -81,7 +81,10 @@ class _ReadingPageState extends State<ReadingPage> {
           source: widget.currentSource, mangaId: widget.id.url!);
       setState(() {
         mangaData = widget.chapterList;
-        chapterImages = tempData;
+        chapterImages = tempData?.map((el) {
+          el.headers = {"Referer": widget.currentSource.baseUrl!};
+          return el;
+        }).toList();
         currentChapter = widget.id;
         currentChapIndex = widget.chapterList.indexOf(widget.id);
         mangaTitle = widget.mangaTitle;
@@ -127,7 +130,10 @@ class _ReadingPageState extends State<ReadingPage> {
       final tempData =
           await getPagesList(source: widget.currentSource, mangaId: chapterId);
       setState(() {
-        chapterImages = tempData;
+        chapterImages = tempData?.map((el) {
+          el.headers = {"Referer": widget.currentSource.baseUrl!};
+          return el;
+        }).toList();
         totalImages = tempData?.length ?? 0;
         isLoading = false;
       });
@@ -253,6 +259,7 @@ class _ReadingPageState extends State<ReadingPage> {
           children: chapterImages!.map((imageData) {
             return Center(
               child: CachedNetworkImage(
+                httpHeaders: imageData.headers,
                 imageUrl: imageData.url,
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.high,
@@ -288,6 +295,7 @@ class _ReadingPageState extends State<ReadingPage> {
                 },
                 children: chapterImages!.map((imageData) {
                   return CachedNetworkImage(
+                    httpHeaders: imageData.headers,
                     imageUrl: imageData.url,
                     fit: BoxFit.contain,
                     filterQuality: FilterQuality.high,
@@ -352,6 +360,7 @@ class _ReadingPageState extends State<ReadingPage> {
             },
             children: chapterImages!.map((imageData) {
               return CachedNetworkImage(
+                httpHeaders: imageData.headers,
                 imageUrl: imageData.url,
                 fit: BoxFit.contain,
                 filterQuality: FilterQuality.high,
