@@ -53,9 +53,11 @@ class SettingsModal extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     if (isLoggedIn) {
-                      anilistProvider.logout(context);
+                      Provider.of<AniListProvider>(context, listen: false)
+                          .logout();
                     } else {
-                      anilistProvider.login(context);
+                      Provider.of<AniListProvider>(context, listen: false)
+                          .login();
                     }
                     Navigator.pushAndRemoveUntil(
                       context,
@@ -95,18 +97,18 @@ class SettingsModal extends StatelessWidget {
               );
             },
           ),
-          if(isMobile)
-          ListTile(
-            leading: const Icon(Icons.extension),
-            title: const Text('Extensions'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const ExtensionScreen()),
-              );
-            },
-          ),
+          if (isMobile)
+            ListTile(
+              leading: const Icon(Icons.extension),
+              title: const Text('Extensions'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ExtensionScreen()),
+                );
+              },
+            ),
           ListTile(
             leading: const Icon(Iconsax.toggle_off_circle),
             title: const Text('Rescue Mode'),
