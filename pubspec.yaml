@@ -1,43 +1,20 @@
 name: anymex
-description: "AnymeX - One Stop for anime, manga, novels"
+description: "A new Flutter project."
 publish_to: "none"
-version: 2.8.5-beta
+version: 0.1.0
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
 
 dependencies:
-  carousel_slider: ^4.2.1
-  crystal_navigation_bar: ^1.0.0
+  dynamic_color: ^1.7.0
   flutter:
     sdk: flutter
-  http: ^1.2.2
-  iconly: ^1.0.1
-  iconsax: ^0.0.8
-  text_scroll: ^0.2.0
-  better_player: ^0.0.84
-  custom_sliding_segmented_control: ^1.8.3
-  provider: ^6.1.2
-  cached_network_image: ^3.4.1
-  animated_segmented_tab_control: ^2.0.0
-  hive_flutter: ^1.1.0
+  get: ^4.6.6
   hive: ^2.2.3
-  smooth_page_indicator: ^1.2.0+3
-  wakelock_plus: ^1.2.8
-  dynamic_color: ^1.7.0
-  device_info_plus: ^10.1.2
-  shimmer: ^3.0.0
-  url_launcher: ^6.3.0
-  crypto: ^3.0.5
-  flutter_dotenv: ^5.1.0
-  iconify_flutter: ^0.0.5
-  html: any
-  transformable_list_view: ^0.6.0
-  encrypt: ^5.0.3
-  hugeicons: ^0.0.7
-  google_fonts: ^6.2.1
-  pointycastle: ^3.9.1
-  dio: ^5.7.0
+  hive_flutter: ^1.1.0
+  http: ^1.2.2
+  iconsax: ^0.0.8
   permission_handler: ^11.3.1
   flutter_local_notifications: ^18.0.1
   flutter_web_auth_2: ^4.0.2
@@ -66,20 +43,27 @@ dependencies:
   grouped_list: ^6.0.0
   volume_controller: ^2.0.8
   screen_brightness: ^0.2.2+1
+  encrypt: ^5.0.3
+  iconly: ^1.0.1
+  hugeicons: ^0.0.7
+  cached_network_image: ^3.4.1
+  provider: ^6.1.2
+  shimmer: ^3.0.0
   expandable_page_view: ^1.0.17
+  checkmark: ^0.0.2+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  rename_app: ^1.6.1
-  change_app_package_name: ^1.4.0
+  build_runner: ^2.4.11
+  hive_generator: ^2.0.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/logo_transparent.png
-    - .env
 
   fonts:
     - family: Poppins

@@ -1,4 +1,5 @@
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 

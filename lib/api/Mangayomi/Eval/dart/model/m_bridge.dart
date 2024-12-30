@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:anymex/api/Mangayomi/Eval/dart/model/video.dart';
 import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';

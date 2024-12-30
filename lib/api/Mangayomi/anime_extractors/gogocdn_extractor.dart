@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http_interceptor/http_interceptor.dart';

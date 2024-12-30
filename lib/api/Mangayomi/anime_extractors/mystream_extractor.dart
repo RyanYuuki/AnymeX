@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../Eval/dart/model/video.dart';

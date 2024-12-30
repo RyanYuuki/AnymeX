@@ -1,0 +1,384 @@
+// ignore_for_file: invalid_use_of_protected_member
+
+import 'dart:convert';
+import 'dart:developer';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:http/http.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+
+class AnilistAuth extends GetxController {
+  RxBool isLoggedIn = false.obs;
+  Rx<AnilistProfile?> profileData = Rx<AnilistProfile?>(null);
+  final storage = Hive.box('loginData');
+
+  RxList<AnilistMediaUser> currentlyWatching = <AnilistMediaUser>[].obs;
+  RxList<AnilistMediaUser> animeList = <AnilistMediaUser>[].obs;
+
+  RxList<AnilistMediaUser> currentlyReading = <AnilistMediaUser>[].obs;
+  RxList<AnilistMediaUser> mangaList = <AnilistMediaUser>[].obs;
+
+  Future<void> tryAutoLogin() async {
+    isLoggedIn.value = false;
+    final token = await storage.get('auth_token');
+    if (token != null) {
+      await fetchUserProfile();
+      await fetchUserAnimeList();
+      await fetchUserMangaList();
+    }
+  }
+
+  Future<void> login() async {
+    String clientId = "20696";
+    String clientSecret = "0tnyRS0QompgaMuimc6zsUwc2I2AkdYJnlxkSUNb";
+    String redirectUri = "anymex://callback";
+
+    final url =
+        'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
+
+    try {
+      final result = await FlutterWebAuth2.authenticate(
+        url: url,
+        callbackUrlScheme: 'anymex',
+      );
+
+      final code = Uri.parse(result).queryParameters['code'];
+      if (code != null) {
+        await _exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
+      }
+    } catch (e) {
+      log('Error during login: $e');
+    }
+  }
+
+  Future<void> _exchangeCodeForToken(String code, String clientId,
+      String clientSecret, String redirectUri) async {
+    final response = await post(
+      Uri.parse('https://anilist.co/api/v2/oauth/token'),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        'grant_type': 'authorization_code',
+        'client_id': clientId,
+        'client_secret': clientSecret,
+        'redirect_uri': redirectUri,
+        'code': code,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final token = data['access_token'];
+      await storage.put('auth_token', token);
+      await fetchUserProfile();
+      await fetchUserAnimeList();
+      await fetchUserMangaList();
+    } else {
+      throw Exception('Failed to exchange code for token: ${response.body}');
+    }
+  }
+
+  Future<void> fetchUserProfile() async {
+    final token = await storage.get('auth_token');
+
+    if (token == null) {
+      log('No token found');
+      return;
+    }
+
+    const query = '''
+  query {
+    Viewer {
+      id
+      name
+      avatar {
+        large
+      }
+      statistics {
+        anime {
+          count
+          episodesWatched
+          meanScore
+          minutesWatched
+        }
+        manga {
+          count
+          chaptersRead
+          volumesRead
+          meanScore
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({'query': query}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        final viewerData = data['data']['Viewer'];
+        final userProfile = AnilistProfile(
+          id: viewerData['id'].toString(),
+          name: viewerData['name'],
+          avatar: viewerData['avatar']['large'],
+          stats: AnilistProfileStatistics(
+            animeStats: AnimeStats(
+              animeCount: viewerData['statistics']['anime']['count'].toString(),
+              episodesWatched: viewerData['statistics']['anime']
+                      ['episodesWatched']
+                  .toString(),
+              meanScore:
+                  viewerData['statistics']['anime']['meanScore'].toString(),
+              minutesWatched: viewerData['statistics']['anime']
+                      ['minutesWatched']
+                  .toString(),
+            ),
+            mangaStats: MangaStats(
+              mangaCount: viewerData['statistics']['manga']['count'].toString(),
+              chaptersRead:
+                  viewerData['statistics']['manga']['chaptersRead'].toString(),
+              volumesRead:
+                  viewerData['statistics']['manga']['volumesRead'].toString(),
+              meanScore:
+                  viewerData['statistics']['manga']['meanScore'].toString(),
+            ),
+          ),
+        );
+
+        log('User profile mapped successfully: ${userProfile.name}');
+        profileData.value = userProfile;
+        isLoggedIn.value = true;
+      } else {
+        log('Failed to load user profile: ${response.statusCode}');
+        throw Exception('Failed to load user profile');
+      }
+    } catch (e) {
+      log('Error fetching user profile: $e');
+    }
+  }
+
+  Future<void> fetchUserAnimeList() async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      return;
+    }
+
+    const query = '''
+  query GetUserAnimeList(\$userId: Int) {
+    MediaListCollection(userId: \$userId, type: ANIME) {
+      lists {
+        name
+        entries {
+          media {
+            id
+            title {
+              romaji
+              english
+              native
+            }
+            format
+            episodes
+            averageScore
+            type
+            coverImage {
+              large
+            }
+          }
+          progress
+          status
+          score
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      if (profileData.value?.id == null) {
+        log('User ID is not available. Fetching user profile first.');
+        await fetchUserProfile();
+      }
+
+      final userId = profileData.value?.id;
+      if (userId == null) {
+        throw Exception('Failed to get user ID');
+      }
+
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': query,
+          'variables': {
+            'userId': userId,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['data'] != null &&
+            data['data']['MediaListCollection'] != null) {
+          final lists =
+              data['data']['MediaListCollection']['lists'] as List<dynamic>;
+
+          final animeListt =
+              lists.expand((list) => list['entries'] as List<dynamic>).toList();
+
+          currentlyWatching.value = animeListt
+              .where((animeEntry) =>
+                  animeEntry['status'] == 'CURRENT' ||
+                  animeEntry['status'] == 'REPEATING')
+              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .toList()
+              .reversed
+              .toList();
+
+          animeList.value = animeListt
+              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .toList()
+              .reversed
+              .toList();
+        } else {
+          log('Unexpected response structure: ${response.body}');
+        }
+      } else {
+        log('Fetch failed with status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Failed to load anime list: $e');
+    }
+  }
+
+  Future<void> fetchUserMangaList() async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      return;
+    }
+
+    const query = '''
+    query GetUserMangaList(\$userId: Int) {
+      MediaListCollection(userId: \$userId, type: MANGA) {
+        lists {
+          name
+          entries {
+            media {
+              id
+              title {
+                romaji
+                english
+                native
+              }
+              chapters
+              format
+              status
+              type
+              coverImage {
+                large
+              }
+            }
+            progress
+            status
+            score
+          }
+        }
+      }
+    }
+    ''';
+
+    try {
+      if (profileData.value?.id == null) {
+        log('User ID is not available. Fetching user profile first.');
+        await fetchUserProfile();
+      }
+
+      final userId = profileData.value?.id;
+      if (userId == null) {
+        throw Exception('Failed to get user ID');
+      }
+
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': query,
+          'variables': {
+            'userId': userId,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['data'] != null &&
+            data['data']['MediaListCollection'] != null) {
+          final lists =
+              data['data']['MediaListCollection']['lists'] as List<dynamic>;
+
+          final animeListt =
+              lists.expand((list) => list['entries'] as List<dynamic>).toList();
+
+          currentlyReading.value = animeListt
+              .where((animeEntry) =>
+                  animeEntry['status'] == 'CURRENT' ||
+                  animeEntry['status'] == 'REPEATING')
+              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .toList()
+              .reversed
+              .toList();
+
+          mangaList.value = animeListt
+              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .toList()
+              .reversed
+              .toList();
+        } else {
+          log('Unexpected response structure: ${response.body}');
+        }
+      } else {
+        log('Fetch failed with status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Failed to load manga list: $e');
+    }
+  }
+
+  AnilistMediaUser returnAvailAnime(String id) {
+    return animeList.value
+        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
+  }
+
+  AnilistMediaUser returnAvailManga(String id) {
+    return mangaList.value
+        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
+  }
+
+  Future<void> logout() async {
+    await storage.delete('auth_token');
+    profileData.value = null;
+    isLoggedIn.value = false;
+  }
+}

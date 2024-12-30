@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:anymex/Functions/Function.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
@@ -717,7 +716,7 @@ extension FutureResponseExtension<T> on Future<T> {
       if (kDebugMode) {
         print("Http error: $error");
       }
-      snackString(error.toString());
+      debugPrint(error.toString());
       throw error.toString();
     });
     return this;
