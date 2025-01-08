@@ -16,23 +16,34 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
+
     return PlayerSettings(
-      speed: fields[0] as String,
-      resizeMode: fields[1] as String,
-      subtitleSize: fields[3] as int,
-      subtitleColor: fields[4] as int,
-      subtitleFont: fields[5] as String,
-      subtitleBackgroundColor: fields[6] as int,
-      subtitleOutlineColor: fields[7] as int,
-      showSubtitle: fields[2] as bool,
-      skipDuration: fields[8] as int,
+      speed: fields[0] != null
+          ? fields[0] as double
+          : 1.0, // Default to 1.0 if null
+      resizeMode: fields[1] as String? ?? 'Cover', // Default to 'Cover' if null
+      showSubtitle: fields[2] as bool? ?? true, // Default to true if null
+      subtitleSize:
+          fields[3] != null ? fields[3] as int : 16, // Default to 16 if null
+      subtitleColor:
+          fields[4] as String? ?? 'White', // Default to 'White' if null
+      subtitleFont:
+          fields[5] as String? ?? 'Poppins', // Default to 'Poppins' if null
+      subtitleBackgroundColor:
+          fields[6] as String? ?? 'Black', // Default to 'Black' if null
+      subtitleOutlineColor:
+          fields[7] as String? ?? 'Black', // Default to 'Black' if null
+      skipDuration:
+          fields[8] != null ? fields[8] as int : 85, // Default to 85 if null
+      seekDuration:
+          fields[9] != null ? fields[9] as int : 10, // Default to 10 if null
     );
   }
 
   @override
   void write(BinaryWriter writer, PlayerSettings obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.speed)
       ..writeByte(1)
@@ -50,7 +61,9 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
       ..writeByte(7)
       ..write(obj.subtitleOutlineColor)
       ..writeByte(8)
-      ..write(obj.skipDuration);
+      ..write(obj.skipDuration)
+      ..writeByte(9)
+      ..write(obj.seekDuration);
   }
 
   @override

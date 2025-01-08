@@ -1,25 +1,26 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:developer';
+import 'dart:io';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/api/Mangayomi/Search/get_detail.dart';
 import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/source_controller.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_data.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-import 'package:anymex/models/Episode/episode.dart';
+import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
-import 'package:anymex/screens/anime/widgets/recommendation.dart';
-import 'package:anymex/screens/anime/widgets/relation.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:anymex/widgets/common/no_source.dart';
+import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
@@ -27,7 +28,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AnimeDetailsPage extends StatefulWidget {
@@ -47,7 +47,8 @@ class AnimeDetailsPage extends StatefulWidget {
 class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // AnilistData
   AnilistMediaData? anilistData;
-  AnilistMediaUser? currentAnime;
+  Rx<AnilistMediaUser?> currentAnime = AnilistMediaUser().obs;
+  final anilist = Get.find<AnilistAuth>();
   // Tracker for Avail Anime
   RxBool isListedAnime = false.obs;
 
@@ -57,6 +58,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   // Page View Tracker
   RxInt selectedPage = 0.obs;
+  RxInt desktopSelectedPage = 1.obs;
 
   // Tracker's Controller
   PageController controller = PageController();
@@ -64,6 +66,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   void _onPageSelected(int index) {
     selectedPage.value = index;
     controller.animateToPage(index,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void _onDesktopPageSelected(int index) {
+    desktopSelectedPage.value = index;
+    controller.animateToPage(index - 1,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
@@ -79,14 +87,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void _checkAnimePresence() {
-    var data = Get.find<AnilistAuth>().returnAvailAnime(widget.anilistId);
+    anilist.setCurrentAnime(widget.anilistId);
+    var data = anilist.currentAnime;
 
-    if (data.id != null || data.id != '') {
+    if (data.value.id != null || data.value.id != '') {
       isListedAnime.value = true;
       currentAnime = data;
     } else {
       isListedAnime.value = false;
-      currentAnime = null;
+      currentAnime.value = null;
     }
   }
 
@@ -141,7 +150,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
     final episodeData = episodeFuture.chapters!.reversed.toList();
     final firstEpisodeNum =
-        int.parse(episodeData[0].name!.split("Episode ").last);
+        ChapterRecognition.parseChapterNumber("", episodeData.first.name ?? '');
     final renewepisodeData = episodeData.map((ep) {
       if (firstEpisodeNum > 3) {
         final index = episodeData.indexOf(ep) + 1;
@@ -154,6 +163,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
     fetchedData.value = episodeFuture;
     episodeList!.value = renewepisodeData;
+    episodeList?.value = await AnilistData.fetchEpisodesFromAnify(
+        widget.anilistId, episodeList!.value);
   }
 
   @override
@@ -161,6 +172,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return PlatformBuilder(
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
+      strictMode: true,
     );
   }
 
@@ -181,6 +193,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   SingleChildScrollView _commonSaikouLayout(BuildContext context) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 100),
       child: Column(
@@ -203,7 +216,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                     variant: ButtonVariant.outline,
                     borderColor: Theme.of(context).colorScheme.surfaceContainer,
                     child: Text(
-                        convertAniListStatus(currentAnime?.watchingStatus),
+                        convertAniListStatus(
+                            currentAnime.value?.watchingStatus),
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontFamily: "Poppins-Bold")),
@@ -212,21 +226,23 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   Row(
                     children: [
                       const SizedBox(width: 10),
-                      AnymexTextSpans(
-                        fontSize: 16,
-                        spans: [
-                          const AnymexTextSpan(text: "Watched "),
-                          AnymexTextSpan(
-                              text: currentAnime?.episodeCount ?? '?',
-                              variant: TextVariant.bold,
-                              color: Theme.of(context).colorScheme.primary),
-                          const AnymexTextSpan(text: ' Out of '),
-                          AnymexTextSpan(
-                              text: currentAnime?.totalEpisodes ?? '?',
-                              variant: TextVariant.bold,
-                              color: Theme.of(context).colorScheme.primary),
-                        ],
-                      ),
+                      Obx(() {
+                        return AnymexTextSpans(
+                          fontSize: 16,
+                          spans: [
+                            const AnymexTextSpan(text: "Watched "),
+                            AnymexTextSpan(
+                                text: currentAnime.value?.episodeCount ?? '?',
+                                variant: TextVariant.bold,
+                                color: Theme.of(context).colorScheme.primary),
+                            const AnymexTextSpan(text: ' Out of '),
+                            AnymexTextSpan(
+                                text: anilistData?.totalEpisodes ?? '?',
+                                variant: TextVariant.bold,
+                                color: Theme.of(context).colorScheme.primary),
+                          ],
+                        );
+                      }),
                       const Spacer(),
                       IconButton(
                           onPressed: () {}, icon: const Icon(Iconsax.heart)),
@@ -237,16 +253,30 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ],
               ),
             ),
-            ExpandablePageView(
-              controller: controller,
-              onPageChanged: (index) {
-                selectedPage.value = index;
-              },
-              children: [
-                _buildCommonInfo(context),
-                _buildEpisodeSection(context),
-              ],
-            ),
+            if (isMobile)
+              ExpandablePageView(
+                physics: const BouncingScrollPhysics(),
+                controller: controller,
+                onPageChanged: (index) {
+                  selectedPage.value = index;
+                },
+                children: [
+                  _buildCommonInfo(context),
+                  _buildEpisodeSection(context),
+                ],
+              )
+            else
+              ExpandablePageView(
+                physics: const BouncingScrollPhysics(),
+                controller: controller,
+                onPageChanged: (index) {
+                  desktopSelectedPage.value = index + 1;
+                },
+                children: [
+                  _buildCommonInfo(context),
+                  _buildEpisodeSection(context),
+                ],
+              ),
           ],
         ],
       ),
@@ -342,11 +372,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       }),
                     ],
                     onChanged: (value) async {
+                      episodeList?.value = [];
                       try {
                         final selectedSource =
-                            await sourceController.getExtensionByName(value!);
+                            sourceController.getExtensionByName(value!);
                         await mapToAnilist(source: selectedSource);
-                        // initializeEpisodes();
                       } catch (e) {
                         log(e.toString());
                       }
@@ -370,18 +400,29 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   ),
                 ],
               ),
-              PlatformBuilder(
-                androidBuilder: EpisodeListBuilder(
-                  episodeList: episodeList!.value,
-                  anilistData: anilistData,
-                  isDesktop: false,
-                ),
-                desktopBuilder: EpisodeListBuilder(
-                  episodeList: episodeList!.value,
-                  anilistData: anilistData,
-                  isDesktop: true,
-                ),
-              )
+              if (sourceController.activeSource.value == null)
+                const NoSourceSelectedWidget()
+              else
+                Obx(() {
+                  if (episodeList!.value.isEmpty || episodeList == null) {
+                    return const SizedBox(
+                        height: 500,
+                        child: Center(child: CircularProgressIndicator()));
+                  }
+
+                  return PlatformBuilder(
+                    androidBuilder: EpisodeListBuilder(
+                      episodeList: episodeList!.value,
+                      anilistData: anilistData,
+                      isDesktop: false,
+                    ),
+                    desktopBuilder: EpisodeListBuilder(
+                      episodeList: episodeList!.value,
+                      anilistData: anilistData,
+                      isDesktop: true,
+                    ),
+                  );
+                })
             ],
           ),
         ));
@@ -402,9 +443,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           ),
         ),
         CharactersCarousel(characters: anilistData!.characters),
-        RecommendationCarousel(
-            data: anilistData!.recommendations, title: "Recommended Animes"),
-        RelationCarousel(data: anilistData!.relations, title: "Relations")
+        ReusableCarousel(
+          data: anilistData!.recommendations,
+          title: "Recommended Animes",
+          variant: DataVariant.recommendation,
+        ),
+        ReusableCarousel(
+          data: anilistData!.relations,
+          title: "Relations",
+          variant: DataVariant.relation,
+        )
       ],
     );
   }
@@ -427,7 +475,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           height: 250,
           child: ResponsiveNavBar(
               isDesktop: true,
-              currentIndex: selectedPage.value + 1,
+              currentIndex: desktopSelectedPage.value,
               items: [
                 NavItem(
                     onTap: (index) {
@@ -437,12 +485,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                     unselectedIcon: Iconsax.back_square,
                     label: "Back"),
                 NavItem(
-                    onTap: (index) => _onPageSelected(index - 1),
+                    onTap: (index) => _onDesktopPageSelected(index),
                     selectedIcon: Iconsax.info_circle5,
                     unselectedIcon: Iconsax.info_circle,
                     label: "Info"),
                 NavItem(
-                    onTap: (index) => _onPageSelected(index - 1),
+                    onTap: (index) => _onDesktopPageSelected(index),
                     selectedIcon: Iconsax.play5,
                     unselectedIcon: Iconsax.play,
                     label: "Watch"),

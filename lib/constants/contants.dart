@@ -45,3 +45,32 @@ String capitalize(String word) {
 }
 
 const maxMobileWidth = 600;
+
+final Map<String, Color> colorOptions = {
+  'Default': Colors.transparent,
+  'White': Colors.white,
+  'Black': Colors.black,
+  'Red': Colors.red,
+  'Green': Colors.green,
+  'Blue': Colors.blue,
+  'Yellow': Colors.yellow,
+  'Cyan': Colors.cyan,
+};
+
+final Map<String, Color> fontColorOptions = {
+  'Default': Colors.white70,
+  'White': Colors.white,
+  'Black': Colors.black,
+  'Red': Colors.red,
+  'Green': Colors.green,
+  'Blue': Colors.blue,
+  'Yellow': Colors.yellow,
+  'Cyan': Colors.cyan,
+};
+
+final cursedSpeed = [
+  ...List.generate(19, (i) => (i + 1) * 0.1),
+  ...List.generate(8, (i) => (i + 3) * 0.5),
+  ...List.generate(15, (i) => (i + 7) * 1.0),
+  ...[25.0, 50.0, 75.0, 100.0],
+];

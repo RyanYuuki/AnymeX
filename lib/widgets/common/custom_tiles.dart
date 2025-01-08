@@ -1,14 +1,14 @@
-import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:provider/provider.dart';
 
 class CustomSwitchTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
   final bool switchValue;
+  final EdgeInsets padding;
   final Function(bool value) onChanged;
 
   const CustomSwitchTile({
@@ -18,12 +18,13 @@ class CustomSwitchTile extends StatelessWidget {
     required this.description,
     required this.switchValue,
     required this.onChanged,
+    this.padding = const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: padding,
       child: Row(
         children: [
           Icon(icon, size: 30, color: Theme.of(context).colorScheme.primary),
@@ -57,22 +58,7 @@ class CustomSwitchTile extends StatelessWidget {
           const SizedBox(width: 6),
           Container(
               decoration: BoxDecoration(
-                boxShadow: switchValue
-                    ? [
-                        BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? 0.3
-                                  : 0.6),
-                          blurRadius: 58.0,
-                          spreadRadius: 10.0,
-                          offset: const Offset(-2.0, 0),
-                        ),
-                      ]
-                    : [],
+                boxShadow: switchValue ? [glowingShadow(context)] : [],
               ),
               child: Switch(value: switchValue, onChanged: onChanged))
         ],
@@ -146,6 +132,7 @@ class CustomSliderTile extends StatelessWidget {
   final String description;
   final double sliderValue;
   final double max;
+  final double min;
   final double? divisions;
   final Function(double value) onChanged;
 
@@ -158,6 +145,7 @@ class CustomSliderTile extends StatelessWidget {
     required this.onChanged,
     required this.max,
     this.divisions,
+    this.min = 0.0,
   });
 
   @override
@@ -202,42 +190,32 @@ class CustomSliderTile extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             children: [
-              Text(sliderValue.toStringAsFixed(1)),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? 0.3
-                                  : 0.6),
-                          blurRadius: 58.0,
-                          spreadRadius: 2.0,
-                          offset: const Offset(-2.0, 0),
-                        ),
-                      ],
-                    ),
-                    child: CustomSlider(
-                      value: double.parse(sliderValue.toStringAsFixed(1)),
-                      onChanged: onChanged,
-                      max: max,
-                      min: 0.0,
-                      divisions: divisions?.toInt() ?? (max * 10).toInt(),
-                      customValueIndicatorSize: RoundedSliderValueIndicator(
-                        Theme.of(context).colorScheme,
-                        width: 40,
-                        height: 40,
-                        radius: 50
-                      ),
-                    )),
+              Text(
+                sliderValue % 1 == 0
+                    ? sliderValue.toInt().toString()
+                    : sliderValue.toStringAsFixed(1),
               ),
               const SizedBox(width: 10),
-              Text(max.toStringAsFixed(1)),
+              Expanded(
+                child: CustomSlider(
+                  value: double.parse(sliderValue.toStringAsFixed(1)),
+                  onChanged: onChanged,
+                  max: max,
+                  min: min,
+                  glowBlurMultiplier: 1,
+                  glowSpreadMultiplier: 1,
+                  divisions: divisions?.toInt() ?? (max * 10).toInt(),
+                  customValueIndicatorSize: RoundedSliderValueIndicator(
+                      Theme.of(context).colorScheme,
+                      width: 40,
+                      height: 40,
+                      radius: 50),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                max % 1 == 0 ? max.toInt().toString() : max.toStringAsFixed(1),
+              )
             ],
           )
         ],

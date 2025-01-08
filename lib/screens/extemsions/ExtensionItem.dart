@@ -60,88 +60,86 @@ class _ExtensionListTileWidgetState
             0;
     final sourceNotEmpty = widget.source.sourceCode?.isNotEmpty ?? false;
 
-    return Material(
-      child: ListTile(
-        tileColor: theme.secondaryContainer.withOpacity(0.5),
-        leading: Container(
-          height: 37,
-          width: 37,
-          decoration: BoxDecoration(
-            color: theme.surface,
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: widget.source.iconUrl!.isEmpty
-              ? const Icon(Icons.extension_rounded)
-              : CachedNetworkImage(
-                  imageUrl: widget.source.iconUrl!,
-                  fit: BoxFit.contain,
-                  width: 37,
-                  height: 37,
-                  placeholder: (context, url) =>
-                      const Icon(Icons.extension_rounded),
-                  errorWidget: (context, url, error) =>
-                      const Icon(Icons.extension_rounded),
-                ),
+    return ListTile(
+      tileColor: Colors.transparent,
+      leading: Container(
+        height: 37,
+        width: 37,
+        decoration: BoxDecoration(
+          color: theme.surface,
+          borderRadius: BorderRadius.circular(32),
         ),
-        title: Text(widget.source.name!),
-        titleTextStyle: TextStyle(
-          color: theme.onSurface,
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.bold,
-          fontSize: 15.0,
-        ),
-        subtitle: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              (widget.source.lang!.toLowerCase()),
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 10.0,
+        child: widget.source.iconUrl!.isEmpty
+            ? const Icon(Icons.extension_rounded)
+            : CachedNetworkImage(
+                imageUrl: widget.source.iconUrl!,
+                fit: BoxFit.contain,
+                width: 37,
+                height: 37,
+                placeholder: (context, url) =>
+                    const Icon(Icons.extension_rounded),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.extension_rounded),
               ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              widget.source.version!,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 10.0,
-              ),
-            ),
-            if (widget.source.isNsfw!) const SizedBox(width: 4),
-            if (widget.source.isNsfw!)
-              const Text(
-                "(18+)",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10.0,
-                ),
-              ),
-            if (widget.source.isObsolete ?? false)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  "OBSOLETE",
-                  style: TextStyle(
-                    color: theme.error,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        trailing: _isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2.0),
-              )
-            : _BuildButtons(sourceNotEmpty, updateAvailable),
       ),
+      title: Text(widget.source.name!),
+      titleTextStyle: TextStyle(
+        color: theme.onSurface,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.bold,
+        fontSize: 15.0,
+      ),
+      subtitle: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            (widget.source.lang!.toLowerCase()),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 10.0,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.source.version!,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 10.0,
+            ),
+          ),
+          if (widget.source.isNsfw!) const SizedBox(width: 4),
+          if (widget.source.isNsfw!)
+            const Text(
+              "(18+)",
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 10.0,
+              ),
+            ),
+          if (widget.source.isObsolete ?? false)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                "OBSOLETE",
+                style: TextStyle(
+                  color: theme.error,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+        ],
+      ),
+      trailing: _isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2.0),
+            )
+          : _BuildButtons(sourceNotEmpty, updateAvailable),
     );
   }
 

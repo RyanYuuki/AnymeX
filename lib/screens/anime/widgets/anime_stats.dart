@@ -3,6 +3,7 @@
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
@@ -57,6 +58,7 @@ class AnimeStats extends StatelessWidget {
             variant: TextVariant.semiBold,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+            maxLines: 100,
           ),
         ),
         const SizedBox(height: 10),
@@ -71,7 +73,7 @@ class AnimeStats extends StatelessWidget {
           itemCount: data.genres.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               childAspectRatio: 1,
-              crossAxisCount: isDesktop ? 4 : 2,
+              crossAxisCount: getResponsiveCrossAxisCount(context, baseColumns: 2, maxColumns: 4),
               mainAxisSpacing: 10,
               mainAxisExtent: isDesktop ? 80 : 60,
               crossAxisSpacing: 10),

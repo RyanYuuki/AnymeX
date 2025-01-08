@@ -34,29 +34,31 @@ class UISettings extends HiveObject {
   @HiveField(9)
   int animationDuration;
 
-  UISettings(
-      {this.glowMultiplier = 1.0,
-      this.radiusMultiplier = 1.0,
-      this.saikouLayout = false,
-      this.tabBarHeight = 50.0,
-      this.tabBarWidth = 180.0,
-      this.tabBarRoundness = 10.0,
-      this.compactCards = false,
-      this.cardRoundness = 0.0,
-      this.blurMultipler = 1.0,
-      this.animationDuration = 200});
+  @HiveField(10)
+  bool translucentTabBar;
 
-  factory UISettings.from(UISettings other) {
-    return UISettings(
-      glowMultiplier: other.glowMultiplier,
-      radiusMultiplier: other.radiusMultiplier,
-      blurMultipler: other.blurMultipler,
-      saikouLayout: other.saikouLayout,
-      tabBarHeight: other.tabBarHeight,
-      tabBarWidth: other.tabBarWidth,
-      tabBarRoundness: other.tabBarRoundness,
-      compactCards: other.compactCards,
-      cardRoundness: other.cardRoundness,
-    );
-  }
+  @HiveField(11)
+  double glowDensity;
+
+  @HiveField(12)
+  Map<String, bool> homePageCards;
+
+  UISettings({
+    this.glowMultiplier = 1.0,
+    this.radiusMultiplier = 1.0,
+    this.saikouLayout = false,
+    this.tabBarHeight = 50.0,
+    this.tabBarWidth = 180.0,
+    this.tabBarRoundness = 10.0,
+    this.compactCards = false,
+    this.cardRoundness = 1.0,
+    this.blurMultipler = 1.0,
+    this.animationDuration = 200,
+    this.glowDensity = 0.3,
+    this.translucentTabBar = true,
+    this.homePageCards = const {
+      "Currently Watching": true,
+      "Currently Reading": true
+    },
+  });
 }

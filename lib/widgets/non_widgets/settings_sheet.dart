@@ -83,30 +83,38 @@ class SettingsSheet extends StatelessWidget {
           ListTile(
             leading: const Icon(Iconsax.user),
             title: const Text('View Profile'),
-            onTap: () {},
+            onTap: () {
+              Get.back();
+            },
           ),
           if (isMobile)
             ListTile(
               leading: const Icon(Icons.extension),
               title: const Text('Extensions'),
               onTap: () {
+                Get.back();
                 Get.to(() => const ExtensionScreen());
               },
             ),
           ListTile(
             leading: const Icon(Iconsax.toggle_off_circle),
             title: const Text('Rescue Mode'),
-            onTap: () {},
+            onTap: () {
+              Get.back();
+            },
           ),
           ListTile(
             leading: const Icon(Iconsax.document_download),
             title: const Text('Downloads'),
-            onTap: () {},
+            onTap: () {
+              Get.back();
+            },
           ),
           ListTile(
             leading: const Icon(Iconsax.setting),
             title: const Text('Settings'),
             onTap: () {
+              Get.back();
               Get.to(() => const SettingsPage());
             },
           ),

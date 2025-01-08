@@ -7,8 +7,9 @@ import 'package:iconsax/iconsax.dart';
 
 class CharactersCarousel extends StatelessWidget {
   final List<Character> characters;
-
-  const CharactersCarousel({super.key, required this.characters});
+  final bool isManga;
+  const CharactersCarousel(
+      {super.key, required this.characters, this.isManga = false});
 
   @override
   Widget build(BuildContext context) {
@@ -88,10 +89,14 @@ class CharactersCarousel extends StatelessWidget {
                                   const SizedBox(width: 3),
                                   Text(
                                     itemData.favourites.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontFamily: "Poppins-Bold",
-                                    ),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontFamily: "Poppins-Bold",
+                                        fontStyle: FontStyle.italic,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface
+                                            .withOpacity(0.9)),
                                   ),
                                   const SizedBox(width: 3),
                                 ],
@@ -116,118 +121,125 @@ class CharactersCarousel extends StatelessWidget {
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Text("Voice Actors",
-              style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.primary)),
-        ),
-        const SizedBox(height: 15),
-        SizedBox(
-          height: isDesktop ? 280 : 220,
-          child: ListView.builder(
-            itemCount: characters.length,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: 20),
-            itemBuilder: (BuildContext context, int index) {
-              final character = characters[index];
-              final characterName = character.name;
-              final itemData = (character.voiceActors.isNotEmpty)
-                  ? character.voiceActors[0]
-                  : null;
-              final tag =
-                  generateTag('${itemData?.name ?? 'No Voice Actor'}-$index');
+        if (!isManga) ...[
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text("Voice Actors",
+                style: TextStyle(
+                    fontFamily: "Poppins-SemiBold",
+                    fontSize: 18,
+                    color: Theme.of(context).colorScheme.primary)),
+          ),
+          const SizedBox(height: 15),
+          SizedBox(
+            height: isDesktop ? 280 : 220,
+            child: ListView.builder(
+              itemCount: characters.length,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: 20),
+              itemBuilder: (BuildContext context, int index) {
+                final character = characters[index];
+                final characterName = character.name;
+                final itemData = (character.voiceActors.isNotEmpty)
+                    ? character.voiceActors[0]
+                    : null;
+                final tag =
+                    generateTag('${itemData?.name ?? 'No Voice Actor'}-$index');
 
-              return SlideAndScaleAnimation(
-                initialScale: 0.0,
-                finalScale: 1.0,
-                initialOffset: const Offset(1.0, 0.0),
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  constraints: BoxConstraints(
-                      maxWidth: isDesktop ? 150 : 110,
-                      maxHeight: isDesktop ? 200 : 155),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Stack(
-                        children: [
-                          Hero(
-                            tag: tag,
-                            child: NetworkSizedImage(
-                              imageUrl: itemData?.image ??
-                                  'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
-                              radius: 16,
-                              height: isDesktop ? 200 : 150,
-                              width: double.infinity,
+                return SlideAndScaleAnimation(
+                  initialScale: 0.0,
+                  finalScale: 1.0,
+                  initialOffset: const Offset(1.0, 0.0),
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    constraints: BoxConstraints(
+                        maxWidth: isDesktop ? 150 : 110,
+                        maxHeight: isDesktop ? 200 : 155),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Hero(
+                              tag: tag,
+                              child: NetworkSizedImage(
+                                imageUrl: itemData?.image ??
+                                    'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
+                                radius: 16,
+                                height: isDesktop ? 200 : 150,
+                                width: double.infinity,
+                              ),
                             ),
-                          ),
-                          if (itemData != null)
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainer,
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Iconsax.microphone5,
-                                      size: 16,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                            if (itemData != null)
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
                                     ),
-                                    const SizedBox(width: 3),
-                                    SizedBox(
-                                      width: 60,
-                                      child: Text(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Iconsax.microphone5,
+                                        size: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
                                         characterName ?? '??',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: "Poppins-Bold",
-                                        ),
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: "Poppins-Bold",
+                                            fontStyle: FontStyle.italic,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .inverseSurface
+                                                .withOpacity(0.9)),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.right,
                                       ),
-                                    ),
-                                    const SizedBox(width: 3),
-                                  ],
+                                      const SizedBox(width: 3),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        itemData?.name ?? 'No Voice Actor',
-                        maxLines: 2,
-                        style: TextStyle(
-                            fontSize: isDesktop ? 14 : 12,
-                            fontFamily: "Poppins-SemiBold"),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          itemData?.name ?? 'No Voice Actor',
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: isDesktop ? 14 : 12,
+                              fontFamily: "Poppins-SemiBold"),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
+        ]
       ],
     );
   }

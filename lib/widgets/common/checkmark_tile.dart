@@ -48,7 +48,6 @@ class ListTileWithCheckMark extends StatelessWidget {
               Text(
                 title!,
                 style: const TextStyle(
-                    fontFamily: "LexendDeca",
                     fontSize: 14,
                     fontWeight: FontWeight.bold),
               ),

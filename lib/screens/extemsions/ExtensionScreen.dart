@@ -1,6 +1,7 @@
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/screens/extemsions/ExtensionList.dart';
 import 'package:anymex/utils/StorageProvider.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,59 +43,62 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).colorScheme;
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Text(
-            'Extensions',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              color: theme.primary,
+    return Glow(
+      child: DefaultTabController(
+        length: 4,
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              'Extensions',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+                color: theme.primary,
+              ),
+            ),
+            iconTheme: IconThemeData(color: theme.primary),
+            bottom: TabBar(
+              physics: const BouncingScrollPhysics(),
+              indicatorSize: TabBarIndicatorSize.label,
+              isScrollable: true,
+              controller: _tabBarController,
+              dragStartBehavior: DragStartBehavior.start,
+              tabs: [
+                _buildTab(context, 'INSTALLED ANIME', false, true),
+                _buildTab(context, 'AVAILABLE ANIME', false, false),
+                _buildTab(context, 'INSTALLED MANGA', true, true),
+                _buildTab(context, 'AVAILABLE MANGA', true, false),
+              ],
             ),
           ),
-          iconTheme: IconThemeData(color: theme.primary),
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.label,
-            isScrollable: true,
+          body: TabBarView(
             controller: _tabBarController,
-            dragStartBehavior: DragStartBehavior.start,
-            tabs: [
-              _buildTab(context, 'INSTALLED ANIME', false, true),
-              _buildTab(context, 'AVAILABLE ANIME', false, false),
-              _buildTab(context, 'INSTALLED MANGA', true, true),
-              _buildTab(context, 'AVAILABLE MANGA', true, false),
+            children: [
+              Extension(
+                installed: true,
+                query: _textEditingController.text,
+                isManga: false,
+              ),
+              Extension(
+                installed: false,
+                query: _textEditingController.text,
+                isManga: false,
+              ),
+              Extension(
+                installed: true,
+                query: _textEditingController.text,
+                isManga: true,
+              ),
+              Extension(
+                installed: false,
+                query: _textEditingController.text,
+                isManga: true,
+              ),
             ],
           ),
-        ),
-        body: TabBarView(
-          controller: _tabBarController,
-          children: [
-            Extension(
-              installed: true,
-              query: _textEditingController.text,
-              isManga: false,
-            ),
-            Extension(
-              installed: false,
-              query: _textEditingController.text,
-              isManga: false,
-            ),
-            Extension(
-              installed: true,
-              query: _textEditingController.text,
-              isManga: true,
-            ),
-            Extension(
-              installed: false,
-              query: _textEditingController.text,
-              isManga: true,
-            ),
-          ],
         ),
       ),
     );
@@ -135,9 +139,7 @@ Widget _extensionUpdateNumbers(
           .watch(fireImmediately: true),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          final entries = snapshot.data!
-              .where((element) => element.isNsfw == false)
-              .toList();
+          final entries = snapshot.data!;
           return entries.isEmpty
               ? Container()
               : Text(

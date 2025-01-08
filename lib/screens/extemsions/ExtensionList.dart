@@ -1,3 +1,4 @@
+import 'package:anymex/utils/language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
@@ -102,7 +103,6 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         .where((element) =>
             widget.query.isEmpty ||
             element.name!.toLowerCase().contains(widget.query.toLowerCase()))
-        .where((element) => element.isNsfw == false)
         .toList();
   }
 
@@ -191,14 +191,17 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       List<Source> notInstalledEntries) {
     return SliverGroupedListView<Source, String>(
       elements: notInstalledEntries,
-      groupBy: (element) => (element.lang!.toLowerCase()),
+      groupBy: (element) => completeLanguageName(element.lang!.toLowerCase()),
       groupSeparatorBuilder: (String groupByValue) => Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         child: Row(
           children: [
             Text(
               groupByValue,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              style: TextStyle(
+                  fontFamily: "Poppins-Bold",
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.primary),
             ),
           ],
         ),

@@ -3,12 +3,22 @@ import 'package:anymex/constants/contants.dart';
 import 'package:flutter/material.dart';
 
 double getResponsiveSize(context,
-    {required double mobileSize, required double dektopSize}) {
+    {required double mobileSize,
+    required double dektopSize,
+    bool isStrict = false}) {
   final currentWidth = MediaQuery.of(context).size.width;
-  if (currentWidth > maxMobileWidth) {
-    return dektopSize;
+  if (isStrict) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return mobileSize;
+    } else {
+      return dektopSize;
+    }
   } else {
-    return mobileSize;
+    if (currentWidth > maxMobileWidth) {
+      return dektopSize;
+    } else {
+      return mobileSize;
+    }
   }
 }
 

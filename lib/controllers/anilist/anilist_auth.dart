@@ -2,8 +2,10 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
@@ -13,6 +15,10 @@ class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
   Rx<AnilistProfile?> profileData = Rx<AnilistProfile?>(null);
   final storage = Hive.box('loginData');
+  final offlineStorage = Get.find<OfflineStorageController>();
+
+  Rx<AnilistMediaUser> currentAnime = AnilistMediaUser().obs;
+  Rx<AnilistMediaUser> currentManga = AnilistMediaUser().obs;
 
   RxList<AnilistMediaUser> currentlyWatching = <AnilistMediaUser>[].obs;
   RxList<AnilistMediaUser> animeList = <AnilistMediaUser>[].obs;
@@ -40,9 +46,10 @@ class AnilistAuth extends GetxController {
 
     try {
       final result = await FlutterWebAuth2.authenticate(
-        url: url,
-        callbackUrlScheme: 'anymex',
-      );
+          url: url,
+          callbackUrlScheme: 'anymex',
+          options:
+              const FlutterWebAuth2Options(windowName: "AnymeX Anilist Login"));
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
@@ -256,6 +263,7 @@ class AnilistAuth extends GetxController {
               .toList()
               .reversed
               .toList();
+          log("Anime List Fetched Successfully!");
         } else {
           log('Unexpected response structure: ${response.body}');
         }
@@ -366,8 +374,126 @@ class AnilistAuth extends GetxController {
     }
   }
 
+  Future<void> updateAnimeStatus({
+    required int animeId,
+    String? status,
+    int? progress,
+    double score = 0.0,
+  }) async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      log('Auth token is not available.');
+      return;
+    }
+
+    const mutation = '''
+  mutation UpdateAnimeStatus(\$mediaId: Int, \$status: MediaListStatus, \$progress: Int, \$score: Float) {
+    SaveMediaListEntry(mediaId: \$mediaId, status: \$status, progress: \$progress, score: \$score) {
+      id
+      status
+      progress
+      score
+    }
+  }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {
+            'mediaId': animeId,
+            'status': status,
+            'progress': progress,
+            'score': score,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        log('Anime status updated successfully: ${response.body}');
+      } else {
+        log('Failed to update anime status: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Error while updating anime status: $e');
+    }
+  }
+
+  Future<void> updateMangaStatus({
+    required int mangaId,
+    String? status,
+    int? progress,
+    double? score,
+  }) async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      log('Auth token is not available.');
+      return;
+    }
+
+    const mutation = '''
+  mutation UpdateMangaStatus(\$mediaId: Int, \$status: MediaListStatus, \$progress: Int, \$score: Float) {
+    SaveMediaListEntry(mediaId: \$mediaId, status: \$status, progress: \$progress, score: \$score) {
+      id
+      status
+      progress
+      score
+    }
+  }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {
+            'mediaId': mangaId,
+            'status': status,
+            'progress': progress,
+            'score': score,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        log('Manga status updated successfully: ${response.body}');
+      } else {
+        log('Failed to update manga status: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Error while updating manga status: $e');
+    }
+  }
+
   AnilistMediaUser returnAvailAnime(String id) {
     return animeList.value
+        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
+  }
+
+  void setCurrentAnime(String id) {
+    final savedAnime = offlineStorage.getAnimeById(id.toInt());
+    currentAnime.value = animeList.value.firstWhere((el) => el.id == id,
+        orElse: () =>
+            AnilistMediaUser(episodeCount: savedAnime?.currentEpisode?.number));
+  }
+
+  void setCurrentManga(String id) {
+    currentManga.value = mangaList.value
         .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
   }
 

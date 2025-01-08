@@ -1,8 +1,11 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/controllers/anilist/anilist_data.dart';
+import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,18 +17,23 @@ class AnimeHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final anilistData = Get.find<AnilistData>();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-
     return Scaffold(
-      body: ListView(
-        padding: EdgeInsets.symmetric(vertical: isDesktop ? 40 : 20),
-        physics: const BouncingScrollPhysics(),
+      body: ScrollWrapper(
         children: [
           const Header(),
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
           Obx(() {
             return Column(
               children: [
+                CustomSearchBar(
+                  onSubmitted: (val) {},
+                  hintText: "Search Anime...",
+                ),
+                BigCarousel(
+                  data: anilistData.trendingAnimes.value,
+                  carouselType: CarouselType.anime,
+                  isManga: true,
+                ),
                 ReusableCarousel(
                   title: "Popular Animes",
                   data: anilistData.popularAnimes.value,

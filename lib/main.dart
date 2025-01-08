@@ -1,14 +1,22 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
-
-import 'package:anymex/controllers/Settings/settings.dart';
-import 'package:anymex/controllers/source_controller.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/controllers/Settings/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/Settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
+import 'package:anymex/screens/library/anime_library.dart';
+import 'package:anymex/screens/library/history.dart';
+import 'package:anymex/screens/library/manga_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
@@ -54,15 +62,15 @@ void main() async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
+  } else {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        statusBarColor: Colors.transparent));
   }
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(systemNavigationBarColor: Colors.transparent));
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ],
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
       child: const ProviderScope(child: MainApp()),
     ),
   );
@@ -70,17 +78,22 @@ void main() async {
 
 Future<void> initializeHive() async {
   await Hive.initFlutter();
+  Hive.registerAdapter(UISettingsAdapter());
+  Hive.registerAdapter(PlayerSettingsAdapter());
+  Hive.registerAdapter(OfflineStorageAdapter());
+  Hive.registerAdapter(OfflineMediaAdapter());
+  Hive.registerAdapter(ChapterAdapter());
+  Hive.registerAdapter(EpisodeAdapter());
   await Hive.openBox('themeData');
   await Hive.openBox('loginData');
   await Hive.openBox('settingsData');
-  Hive.registerAdapter(UISettingsAdapter());
-  Hive.registerAdapter(PlayerSettingsAdapter());
   await Hive.openBox<UISettings>("UiSettings");
   await Hive.openBox<PlayerSettings>("PlayerSettings");
 }
 
 void _initializeGetxController() {
   Get.put(AnilistData());
+  Get.put(OfflineStorageController());
   Get.put(AnilistAuth()..tryAutoLogin());
   Get.put(SourceController()..initExtensions());
   Get.put(Settings());
@@ -97,7 +110,7 @@ class MainApp extends StatelessWidget {
       focusNode: FocusNode(),
       onKeyEvent: (KeyEvent event) {
         if (event.logicalKey == LogicalKeyboardKey.escape) {
-          Get.back();
+          Navigator.pop(context);
         }
       },
       child: GetMaterialApp(
@@ -126,6 +139,8 @@ class FilterScreen extends StatefulWidget {
 class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
+  int _selectedLibraryIndex = 1;
+  bool showLibrary = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -135,13 +150,24 @@ class _FilterScreenState extends State<FilterScreen> {
 
   void _onMobileItemTapped(int index) {
     setState(() {
+      showLibrary = false;
       _mobileSelectedIndex = index;
     });
+  }
+
+  void _onLibraryTapped(int index) {
+    if (mounted) {
+      setState(() {
+        showLibrary = true;
+        _mobileSelectedIndex = index;
+      });
+    }
   }
 
   final routes = [
     const SizedBox.shrink(),
     const HomePage(),
+    const MyAnimeLibrary(),
     const AnimeHomePage(),
     const MangaHomePage(),
     const NovelHomePage(),
@@ -152,7 +178,13 @@ class _FilterScreenState extends State<FilterScreen> {
     const HomePage(),
     const AnimeHomePage(),
     const MangaHomePage(),
-    const NovelHomePage(),
+  ];
+
+  final List<Widget> _libraryRoutes = [
+    const SizedBox.shrink(),
+    const MyAnimeLibrary(),
+    const MyMangaLibrary(),
+    const HistoryPage(),
   ];
 
   @override
@@ -203,6 +235,12 @@ class _FilterScreenState extends State<FilterScreen> {
                         label: 'Home',
                       ),
                       NavItem(
+                        unselectedIcon: HugeIcons.strokeRoundedLibrary,
+                        selectedIcon: HugeIcons.strokeRoundedLibrary,
+                        onTap: _onItemTapped,
+                        label: 'Library',
+                      ),
+                      NavItem(
                         unselectedIcon: Icons.movie_filter_outlined,
                         selectedIcon: Icons.movie_filter_rounded,
                         onTap: _onItemTapped,
@@ -235,13 +273,15 @@ class _FilterScreenState extends State<FilterScreen> {
       ),
       androidBuilder: Glow(
           child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: mobileRoutes[_mobileSelectedIndex],
+              body: showLibrary
+                  ? _libraryRoutes[_mobileSelectedIndex]
+                  : mobileRoutes[_mobileSelectedIndex],
               extendBody: true,
               bottomNavigationBar: ResponsiveNavBar(
                 isDesktop: false,
                 fit: true,
                 currentIndex: _mobileSelectedIndex,
+                isShowingLibrary: showLibrary,
                 margin:
                     const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
                 items: [
@@ -264,10 +304,41 @@ class _FilterScreenState extends State<FilterScreen> {
                     label: 'Manga',
                   ),
                   NavItem(
+                    unselectedIcon: HugeIcons.strokeRoundedLibrary,
+                    selectedIcon: HugeIcons.strokeRoundedLibrary,
+                    onTap: (val) {
+                      _onLibraryTapped(1);
+                    },
+                    label: 'Library',
+                  ),
+                ],
+                libraryItems: [
+                  NavItem(
+                    unselectedIcon: IconlyBold.arrow_left,
+                    selectedIcon: Iconsax.arrow_left,
+                    onTap: (val) => setState(() {
+                      showLibrary = false;
+                      _mobileSelectedIndex = 0;
+                    }),
+                    label: 'Back',
+                  ),
+                  NavItem(
+                    unselectedIcon: Iconsax.play,
+                    selectedIcon: Iconsax.play5,
+                    onTap: _onLibraryTapped,
+                    label: 'Anime',
+                  ),
+                  NavItem(
                     unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
                     selectedIcon: HugeIcons.strokeRoundedBookOpen01,
-                    onTap: _onMobileItemTapped,
-                    label: 'Novel',
+                    onTap: _onLibraryTapped,
+                    label: 'Manga',
+                  ),
+                  NavItem(
+                    unselectedIcon: Iconsax.clock,
+                    selectedIcon: Iconsax.clock5,
+                    onTap: _onLibraryTapped,
+                    label: 'Manga',
                   ),
                 ],
               ))),

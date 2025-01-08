@@ -1,10 +1,19 @@
+import 'dart:math';
+
+import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/widgets/animation/slide_scale.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+
+import 'package:get/get.dart';
 
 class ResponsiveNavBar extends StatefulWidget {
   final bool isDesktop;
   final int currentIndex;
   final List<NavItem> items;
+  final List<NavItem>? libraryItems;
   final bool fit;
   final double? height;
   final EdgeInsets? margin;
@@ -14,12 +23,14 @@ class ResponsiveNavBar extends StatefulWidget {
   final Color? backgroundColor;
   final double? blurIntensity;
   final EdgeInsets? itemPadding;
+  final bool isShowingLibrary;
 
   const ResponsiveNavBar({
     super.key,
     required this.isDesktop,
     required this.currentIndex,
     required this.items,
+    this.libraryItems,
     this.fit = false,
     this.height,
     this.margin,
@@ -29,6 +40,7 @@ class ResponsiveNavBar extends StatefulWidget {
     this.backgroundColor,
     this.blurIntensity,
     this.itemPadding,
+    this.isShowingLibrary = false,
   });
 
   @override
@@ -36,100 +48,114 @@ class ResponsiveNavBar extends StatefulWidget {
 }
 
 class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
-  final GlobalKey _navBarKey = GlobalKey();
-  Size? _contentSize;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateContentSize();
-    });
-  }
-
-  void _updateContentSize() {
-    final RenderBox? renderBox =
-        _navBarKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      setState(() {
-        _contentSize = renderBox.size;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Calculate width without animation
-    final double containerWidth = widget.fit && _contentSize != null
-        ? (widget.isDesktop
-            ? _contentSize!.width + 32
-            : MediaQuery.of(context).size.width)
-        : MediaQuery.of(context).size.width;
+    final int itemsCount = widget.items.length;
+    final double calculatedHeight = widget.isDesktop
+        ? (itemsCount * 69.0)
+            .clamp(400, MediaQuery.of(context).size.height - 100)
+        : widget.height ?? 75;
+    final RxBool translucent = Get.find<Settings>().transculentBar.obs;
 
-    return Container(
-      width: containerWidth,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
       child: AnimatedContainer(
         decoration: BoxDecoration(
-            border: Border.all(
-              color: theme.colorScheme.onSurface.withOpacity(0.2),
-              width: 1,
-            ),
-            borderRadius: widget.borderRadius ??
-                BorderRadius.circular((widget.isDesktop ? 50 : 24))),
+          color: Colors.transparent,
+          border: Border.all(
+            color: theme.colorScheme.onSurface.withOpacity(0.2),
+            width: 1,
+          ),
+          borderRadius: widget.borderRadius ??
+              BorderRadius.circular(widget.isDesktop ? 50 : 24),
+        ),
         padding: widget.padding ?? const EdgeInsets.all(0),
         margin: widget.margin ??
             EdgeInsets.symmetric(
-                horizontal: widget.isDesktop ? 5 : 40,
-                vertical: widget.isDesktop ? 0 : 10),
+              horizontal: widget.isDesktop ? 5 : 40,
+              vertical: widget.isDesktop ? 0 : 20,
+            ),
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        height: widget.height ?? (widget.isDesktop ? 400 : 75),
+        height: calculatedHeight,
         child: ClipRRect(
           borderRadius: widget.borderRadius ??
-              BorderRadius.circular((widget.isDesktop ? 50 : 24)),
+              BorderRadius.circular(widget.isDesktop ? 50 : 24),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: widget.blurIntensity ?? 15,
-                    sigmaY: widget.blurIntensity ?? 15,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: widget.backgroundColor ??
-                          theme.colorScheme.surfaceContainer.withOpacity(0.1),
+              Obx(() {
+                if (translucent.value) {
+                  return Positioned.fill(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: widget.blurIntensity ?? 15,
+                        sigmaY: widget.blurIntensity ?? 15,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.backgroundColor ?? Colors.transparent,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              Flex(
-                key: _navBarKey,
-                direction: widget.isDesktop ? Axis.vertical : Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: widget.fit ? MainAxisSize.min : MainAxisSize.max,
-                children: widget.items.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  return NavBarItem(
-                    altIcon: item.altIcon,
-                    iconSize: item.iconSize,
-                    isSelected: widget.currentIndex == index,
-                    onTap: () => item.onTap(index),
-                    isVertical: widget.isDesktop,
-                    selectedIcon: item.selectedIcon,
-                    unselectedIcon: item.unselectedIcon,
-                    label: item.label,
                   );
-                }).toList(),
-              ),
+                } else {
+                  return Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: widget.backgroundColor ??
+                            theme.colorScheme.secondaryContainer,
+                      ),
+                    ),
+                  );
+                }
+              }),
+              widget.isShowingLibrary
+                  ? _buildFlex(
+                      widget.libraryItems ?? [],
+                      widget.isDesktop,
+                      const Key('libraryItems'),
+                    )
+                  : _buildFlex(
+                      widget.items,
+                      widget.isDesktop,
+                      const Key('normalItems'),
+                    ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFlex(List<NavItem> items, bool isDesktop, Key key) {
+    return Flex(
+      key: key,
+      direction: isDesktop ? Axis.vertical : Axis.horizontal,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: widget.fit ? MainAxisSize.min : MainAxisSize.max,
+      children: items.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+        return SlideAndScaleAnimation(
+          initialScale: 0.0,
+          finalScale: 1.0,
+          initialOffset: const Offset(0.0, 0.0),
+          duration: Duration(milliseconds: getAnimationDuration() + 100),
+          child: NavBarItem(
+            altIcon: item.altIcon,
+            iconSize: item.iconSize,
+            isSelected: widget.currentIndex == index,
+            onTap: () => item.onTap(index),
+            isVertical: isDesktop,
+            selectedIcon: item.selectedIcon,
+            unselectedIcon: item.unselectedIcon,
+            label: item.label,
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -207,7 +233,8 @@ class _NavBarItemState extends State<NavBarItem>
     final theme = Theme.of(context);
     bool isDesktop = MediaQuery.of(context).size.width > 500;
 
-    return ConstrainedBox(
+    return Container(
+      padding: isDesktop ? const EdgeInsets.symmetric(vertical: 5) : null,
       constraints: const BoxConstraints(minWidth: 30),
       child: isDesktop
           ? Row(
@@ -249,14 +276,14 @@ class _NavBarItemState extends State<NavBarItem>
                     duration: const Duration(milliseconds: 500),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: widget.isSelected
-                          ? Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                        color: widget.isSelected
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [lightGlowingShadow(context)]),
                     child: widget.altIcon ??
                         Icon(
                           widget.isSelected
@@ -281,14 +308,15 @@ class _NavBarItemState extends State<NavBarItem>
                     duration: const Duration(milliseconds: 300),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: widget.isSelected
-                          ? Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                        color: (widget.isSelected
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1)
+                            : Colors.transparent),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow:
+                            widget.isSelected ? [glowingShadow(context)] : []),
                     child: widget.altIcon ??
                         Icon(
                           widget.isSelected

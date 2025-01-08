@@ -5,7 +5,7 @@ part 'player_adaptor.g.dart';
 @HiveType(typeId: 3)
 class PlayerSettings {
   @HiveField(0)
-  String speed;
+  double speed;
   @HiveField(1)
   String resizeMode;
   @HiveField(2)
@@ -13,25 +13,27 @@ class PlayerSettings {
   @HiveField(3)
   int subtitleSize;
   @HiveField(4)
-  int subtitleColor;
+  String subtitleColor;
   @HiveField(5)
   String subtitleFont;
   @HiveField(6)
-  int subtitleBackgroundColor;
+  String subtitleBackgroundColor;
   @HiveField(7)
-  int subtitleOutlineColor;
+  String subtitleOutlineColor;
   @HiveField(8)
   int skipDuration;
+  @HiveField(9)
+  int seekDuration;
 
-  PlayerSettings({
-    this.speed = '1x',
-    this.resizeMode = "Cover",
-    this.subtitleSize = 16,
-    this.subtitleColor = 0xFFFFFFFF,
-    this.subtitleFont = 'Poppins',
-    this.subtitleBackgroundColor = 0x80000000,
-    this.subtitleOutlineColor = 0x00000000,
-    this.showSubtitle = true,
-    this.skipDuration = 85,
-  });
+  PlayerSettings(
+      {this.speed = 1.0,
+      this.resizeMode = "Cover",
+      this.subtitleSize = 16,
+      this.subtitleColor = "White",
+      this.subtitleFont = 'Poppins',
+      this.subtitleBackgroundColor = "Black",
+      this.subtitleOutlineColor = "Black",
+      this.showSubtitle = true,
+      this.skipDuration = 85,
+      this.seekDuration = 10});
 }

@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:flutter/material.dart';
 
 class Glow extends StatelessWidget {
@@ -43,9 +44,20 @@ class Glow extends StatelessWidget {
 
 BoxShadow glowingShadow(BuildContext context) {
   return BoxShadow(
-    color: Theme.of(context).colorScheme.primary,
-    blurRadius: 20,
-    spreadRadius: 2.0,
+    color: Theme.of(context).colorScheme.primary.withOpacity(
+        Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.6),
+    blurRadius: 58.0.multiplyBlur(),
+    spreadRadius: 10.0.multiplyGlow(),
     offset: const Offset(-2.0, 0),
+  );
+}
+
+BoxShadow lightGlowingShadow(BuildContext context) {
+  return BoxShadow(
+    color: Theme.of(context).colorScheme.primary.withOpacity(
+        Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.6),
+    blurRadius: 59.0.multiplyBlur(),
+    spreadRadius: 1.0.multiplyGlow(),
+    offset: const Offset(-1.0, 0),
   );
 }

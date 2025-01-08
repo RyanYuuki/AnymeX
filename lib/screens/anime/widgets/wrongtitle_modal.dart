@@ -1,17 +1,22 @@
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_pages.dart';
 import 'package:anymex/api/Mangayomi/Search/search.dart';
-import 'package:anymex/controllers/source_controller.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
 class WrongTitleModal extends StatefulWidget {
   const WrongTitleModal(
-      {super.key, required this.initialText, required this.onTap});
+      {super.key,
+      required this.initialText,
+      required this.onTap,
+      required this.isManga});
   final String initialText;
   final Function(MManga) onTap;
+  final bool isManga;
 
   @override
   State<WrongTitleModal> createState() => _WrongTitleModalState();
@@ -28,8 +33,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   }
 
   Future<MPages?> performSearch(String query) async {
+    final source = widget.isManga
+        ? sourceController.activeMangaSource.value
+        : sourceController.activeSource.value;
     return await search(
-      source: sourceController.activeSource.value!,
+      source: source!,
       query: query,
       page: 1,
       filterList: [],
@@ -39,7 +47,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.6,
+      width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -56,7 +64,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                   });
                 },
                 decoration: InputDecoration(
-                  labelText: 'Search Animes...',
+                  labelText:
+                      widget.isManga ? 'Search Manga...' : 'Search Animes...',
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   suffixIcon: const Padding(
                     padding: EdgeInsets.only(right: 15.0),
@@ -90,12 +99,12 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
                     return GridView.builder(
                       padding: const EdgeInsets.all(20),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
-                              crossAxisSpacing: 20,
-                              mainAxisSpacing: 20,
-                              mainAxisExtent: 200),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: getResponsiveCrossAxisCount(context,
+                              maxColumns: 5, baseColumns: 3),
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                          mainAxisExtent: 230),
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
@@ -114,7 +123,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                                 Center(
                                   child: NetworkSizedImage(
                                     imageUrl: item.imageUrl ?? "",
-                                    height: 140,
+                                    height: 160,
                                     radius: 12,
                                     width: double.infinity,
                                   ),
@@ -122,7 +131,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                                 const SizedBox(height: 10),
                                 Text(
                                   item.name ?? '??',
-                                  maxLines: 2,
+                                  maxLines: 3,
                                 )
                               ],
                             ),
@@ -146,7 +155,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 }
 
 Future<void> showWrongTitleModal(
-    BuildContext context, String initialText, Function(MManga) onTap) {
+    BuildContext context, String initialText, Function(MManga) onTap,
+    {bool isManga = false}) {
   return showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
@@ -155,11 +165,18 @@ Future<void> showWrongTitleModal(
       borderRadius: BorderRadius.circular(12.0),
     ),
     builder: (context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+      final isDesktop = MediaQuery.of(context).size.width > 600;
+      return SizedBox(
+        width: isDesktop
+            ? MediaQuery.of(context).size.width * 0.8
+            : MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: WrongTitleModal(
+              initialText: initialText, onTap: onTap, isManga: isManga),
         ),
-        child: WrongTitleModal(initialText: initialText, onTap: onTap),
       );
     },
   );

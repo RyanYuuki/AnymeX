@@ -17,21 +17,29 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UISettings(
-      glowMultiplier: fields[0] as double,
-      radiusMultiplier: fields[1] as double,
-      saikouLayout: fields[2] as bool,
-      tabBarHeight: fields[3] as double,
-      tabBarWidth: fields[4] as double,
-      tabBarRoundness: fields[5] as double,
-      compactCards: fields[6] as bool,
-      cardRoundness: fields[7] as double,
+      glowMultiplier: fields[0] as double? ?? 1.0,
+      radiusMultiplier: fields[1] as double? ?? 1.0,
+      saikouLayout: fields[2] as bool? ?? false,
+      tabBarHeight: fields[3] as double? ?? 50.0,
+      tabBarWidth: fields[4] as double? ?? 180.0,
+      tabBarRoundness: fields[5] as double? ?? 10.0,
+      compactCards: fields[6] as bool? ?? false,
+      cardRoundness: fields[7] as double? ?? 1.0,
+      blurMultipler: fields[8] as double? ?? 1.0,
+      animationDuration: fields[9] as int? ?? 200,
+      translucentTabBar: fields[10] as bool? ?? true,
+      glowDensity: fields[11] as double? ?? 0.3,
+      homePageCards: (fields[12] as Map?)?.cast<String, bool>() ?? {
+        "Currently Watching": true,
+        "Currently Reading": true,
+      },
     );
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -47,7 +55,17 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(6)
       ..write(obj.compactCards)
       ..writeByte(7)
-      ..write(obj.cardRoundness);
+      ..write(obj.cardRoundness)
+      ..writeByte(8)
+      ..write(obj.blurMultipler)
+      ..writeByte(9)
+      ..write(obj.animationDuration)
+      ..writeByte(10)
+      ..write(obj.translucentTabBar)
+      ..writeByte(11)
+      ..write(obj.glowDensity)
+      ..writeByte(12)
+      ..write(obj.homePageCards);
   }
 
   @override

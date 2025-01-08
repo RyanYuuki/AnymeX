@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
+import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
+import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
@@ -26,8 +29,28 @@ class AnilistData extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _initFallback();
     fetchAnilistHomepage();
     fetchAnilistMangaPage();
+  }
+
+  void _initFallback() {
+    upcomingAnimes.value = fb.upcomingAnimes;
+    popularAnimes.value = fb.popularAnimes;
+    trendingAnimes.value = fb.trendingAnimes;
+    latestAnimes.value = fb.latestAnimes;
+    top10Today.value = fb.top10Today;
+    top10Week.value = fb.top10Week;
+    top10Month.value = fb.top10Month;
+
+    popularMangas.value = fbm.popularMangas;
+    // morePopularMangas.value = fbm.top10Week;
+    latestMangas.value = fbm.latestMangas;
+    // mostFavoriteMangas.value = fbm.top10Today;
+    // topRatedMangas.value = fbm.top10Week;
+    // topUpdatedMangas.value = fbm.upcomingMangas;
+    topOngoingMangas.value = fbm.trendingMangas;
+    trendingMangas.value = fbm.trendingMangas;
   }
 
   Future<void> fetchAnilistHomepage() async {
@@ -364,9 +387,31 @@ class AnilistData extends GetxController {
           chapters: media['chapters']?.toString() ?? "0",
           poster: media['coverImage']['large'],
           cover: media['bannerImage'],
-          description: media['description'],
+          description: (media['description'] ?? "No Description Available")
+              .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
           episodes: media['episodes']);
     }).toList();
+  }
+
+  static Future<List<Episode>> fetchEpisodesFromAnify(
+      String animeId, List<Episode> episodeList) async {
+    final resp = await get(
+        Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
+
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body);
+      final episodes = (data[0]['data'] as List).map((e) {
+        final index = data[0]['data'].indexOf(e);
+        final episode = episodeList[index];
+        episode.title = e['title'];
+        episode.thumbnail = e['img'];
+        episode.desc = e['description'];
+        return episode;
+      }).toList();
+      return episodes.cast<Episode>();
+    } else {
+      return episodeList;
+    }
   }
 
   static Future<AnilistMediaData> fetchAnimeInfo(String animeId) async {

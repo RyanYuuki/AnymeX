@@ -21,7 +21,7 @@ class GradientPoster extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       children: [
         SizedBox(
-          height: isDesktop ? 460 : 350,
+          height: isDesktop ? 460 : 400,
           child: NetworkSizedImage(
             alignment: Alignment.topCenter,
             imageUrl: data?.cover ?? posterUrl,
@@ -31,7 +31,7 @@ class GradientPoster extends StatelessWidget {
           ),
         ),
         Container(
-          height: isDesktop ? 460 : 300,
+          height: isDesktop ? 460 : 400,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -52,7 +52,7 @@ class GradientPoster extends StatelessWidget {
               Hero(
                 tag: tag,
                 child: NetworkSizedImage(
-                    imageUrl: posterUrl, radius: 12, width: 120, height: 170),
+                    imageUrl: posterUrl, radius: 12, width: isDesktop ? 120 : 90, height: isDesktop ? 170 : 120),
               ),
               const SizedBox(width: 20),
               Column(

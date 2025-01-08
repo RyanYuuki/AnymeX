@@ -1,3 +1,4 @@
+import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:js_packer/js_packer.dart';
 
@@ -26,6 +27,12 @@ class JsUtils {
     });
     runtime.onMessage('deobfuscateJsPassword', (dynamic args) {
       return MBridge.deobfuscateJsPassword(args[0]);
+    });
+    runtime.onMessage('evaluateJavascriptViaWebview', (dynamic args) async {
+      return await MBridge.evaluateJavascriptViaWebview(
+          args[0]!,
+          (args[1]! as Map).toMapStringString!,
+          (args[2]! as List).map((e) => e.toString()).toList());
     });
     runtime.onMessage('unpackJsAndCombine', (dynamic args) {
       return JsUnpacker.unpackAndCombine(args[0]) ?? "";
@@ -129,6 +136,12 @@ function parseDates(value, dateFormat, dateFormatLocale) {
     return sendMessage(
         "parseDates",
         JSON.stringify([value, dateFormat, dateFormatLocale])
+    );
+}
+async function evaluateJavascriptViaWebview(url, headers, scripts) {
+    return await sendMessage(
+        "evaluateJavascriptViaWebview",
+        JSON.stringify([url, headers, scripts])
     );
 }
 ''');

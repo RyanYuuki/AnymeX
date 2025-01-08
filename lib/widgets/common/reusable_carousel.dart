@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:anymex/controllers/Settings/methods.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -25,6 +25,9 @@ class ReusableCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (data == null || data.isEmpty) {
+      return const SizedBox.shrink();
+    }
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final newData = convertData(data, variant: variant);
 
@@ -35,9 +38,10 @@ class ReusableCarousel extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20.0),
           child: Text(title,
               style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.primary)),
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.primary,
+              )),
         ),
         const SizedBox(height: 15),
         SizedBox(
@@ -53,7 +57,11 @@ class ReusableCarousel extends StatelessWidget {
               return Obx(() => GestureDetector(
                     onTap: () {
                       if (isManga) {
-                        Get.to(() => const MangaDetailsPage());
+                        Get.to(() => MangaDetailsPage(
+                              anilistId: itemData.id!,
+                              tag: tag,
+                              posterUrl: itemData.poster!,
+                            ));
                       } else {
                         Get.to(() => AnimeDetailsPage(
                               anilistId: itemData.id!,
@@ -70,7 +78,7 @@ class ReusableCarousel extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius:
-                                BorderRadius.circular(16.multiplyRadius())),
+                                BorderRadius.circular(16.multiplyRoundness())),
                         clipBehavior: Clip.antiAlias,
                         margin: const EdgeInsets.only(right: 10),
                         constraints:
@@ -84,7 +92,7 @@ class ReusableCarousel extends StatelessWidget {
                                   tag: tag,
                                   child: NetworkSizedImage(
                                       imageUrl: itemData.poster!,
-                                      radius: 16.multiplyRadius(),
+                                      radius: 16.multiplyRoundness(),
                                       height: isDesktop ? 200 : 155,
                                       width: double.infinity),
                                 ),
@@ -119,11 +127,11 @@ class ReusableCarousel extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(12),
-            bottomRight: Radius.circular(12),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.multiplyRadius()),
+            bottomRight: Radius.circular(12.multiplyRadius()),
           ),
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.secondaryContainer,
         ),
         clipBehavior: Clip.antiAlias,
         child: Row(

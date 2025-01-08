@@ -57,14 +57,12 @@ class Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: ClipRRect(
-                      child: Image.asset(
-                        'assets/images/logo_transparent.png',
-                        fit: BoxFit.cover,
-                        color: Theme.of(context).colorScheme.inverseSurface,
-                      ),
+                    width: 50,
+                    height: 70,
+                    child: Image.asset(
+                      'assets/images/logo_transparent.png',
+                      fit: BoxFit.cover,
+                      color: Theme.of(context).colorScheme.inverseSurface,
                     )),
                 const Spacer(),
                 _profileIcon(context, profileData)
@@ -110,9 +108,9 @@ class Header extends StatelessWidget {
       onTap: () {
         return SettingsSheet.show(context);
       },
-      child: SizedBox(
-        width: 50,
-        height: 50,
+      child: CircleAvatar(
+        radius: 24,
+        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
         child: profileData.isLoggedIn.value
             ? NetworkSizedImage(
                 width: 50,

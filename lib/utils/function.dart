@@ -1,14 +1,15 @@
-import 'dart:developer';
-
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
-import 'package:anymex/models/Episode/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart' as offline;
+import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 String convertAniListStatus(String? status) {
   switch (status?.toUpperCase()) {
@@ -156,10 +157,45 @@ Episode mChapterToEpisode(MChapter chapter, MManga? selectedMedia) {
     number: episodeNumber != -1 ? episodeNumber.toString() : chapter.name ?? '',
     link: chapter.url,
     title: chapter.name,
-    thumb: null,
+    thumbnail: null,
     desc: null,
     filler: false,
   );
+}
+
+String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
+  final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp));
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays <= 14) {
+    if (difference.inDays == 0) {
+      if (difference.inHours < 1) {
+        return "${difference.inMinutes} minutes ago";
+      }
+      return "${difference.inHours} hours ago";
+    }
+    return "${difference.inDays} days ago";
+  }
+
+  return DateFormat(format).format(dateTime);
+}
+
+String dateFormatHour(String timestamp) {
+  final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp));
+  return DateFormat.Hm().format(dateTime);
+}
+
+List<Chapter> mChapterToChapter(List<MChapter> chapters, String title) {
+  return chapters.map((e) {
+    return Chapter(
+        title: e.name,
+        link: e.url,
+        scanlator: e.scanlator,
+        number:
+            ChapterRecognition.parseChapterNumber(title, e.name!).toDouble(),
+        releaseDate: calcTime(e.dateUpload ?? ''));
+  }).toList();
 }
 
 int calculateChunkSize(List<Episode> episodes) {
@@ -182,7 +218,7 @@ List<List<Episode>> chunkEpisodes(List<Episode> episodes, int chunkSize) {
     return [];
   }
 
-  return List.generate(
+  final chunks = List.generate(
     (episodes.length / chunkSize).ceil(),
     (index) => episodes.sublist(
       index * chunkSize,
@@ -191,6 +227,47 @@ List<List<Episode>> chunkEpisodes(List<Episode> episodes, int chunkSize) {
           : (index + 1) * chunkSize,
     ),
   );
+
+  return [
+    episodes,
+    ...chunks,
+  ];
+}
+
+int calculateChapterChunkSize(List<Chapter> chapters) {
+  final total = chapters.length;
+  if (total <= 12) {
+    return total;
+  } else if (total <= 50) {
+    return 12;
+  } else if (total <= 250) {
+    return 25;
+  } else if (total <= 500) {
+    return 50;
+  } else {
+    return 75;
+  }
+}
+
+List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
+  if (chapters.isEmpty) {
+    return [];
+  }
+
+  final chunks = List.generate(
+    (chapters.length / chunkSize).ceil(),
+    (index) => chapters.sublist(
+      index * chunkSize,
+      (index + 1) * chunkSize > chapters.length
+          ? chapters.length
+          : (index + 1) * chunkSize,
+    ),
+  );
+
+  return [
+    chapters,
+    ...chunks,
+  ];
 }
 
 enum DataVariant { regular, recommendation, relation, anilist }
@@ -220,7 +297,7 @@ List<CarouselData> convertData(List<dynamic> data,
     }
 
     return CarouselData(
-      id: e.id,
+      id: e.id.toString(),
       title: e.title,
       poster: e.poster,
       extraData: extra,

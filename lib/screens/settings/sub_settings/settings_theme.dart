@@ -146,7 +146,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
+            padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -167,12 +167,14 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ],
                 ),
                 const SizedBox(height: 30),
-                Text("Appearance",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+                  child: Text("Appearance",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
                 _buildModeTemplates(),
                 const SizedBox(height: 30),
                 CustomSwitchTile(

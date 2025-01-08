@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/Settings/settings.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
 
 extension UIMultiplierExtension on num {
@@ -10,6 +10,16 @@ extension UIMultiplierExtension on num {
   double multiplyGlow() {
     final settings = Get.find<Settings>();
     return this * settings.glowMultiplier;
+  }
+
+  double multiplyRoundness() {
+    final settings = Get.find<Settings>();
+    return this * settings.cardRoundness;
+  }
+
+  double multiplyBlur() {
+    final settings = Get.find<Settings>();
+    return this * settings.blurMultiplier;
   }
 }
 
