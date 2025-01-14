@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' show Random;
 
 import 'package:anymex/controllers/settings/methods.dart';
@@ -27,7 +26,7 @@ class ReusableCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (data == null || data.isEmpty) {
+    if (data.isEmpty) {
       return const SizedBox.shrink();
     }
     final isDesktop = MediaQuery.of(context).size.width > 600;

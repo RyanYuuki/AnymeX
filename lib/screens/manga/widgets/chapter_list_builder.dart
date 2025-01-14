@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';

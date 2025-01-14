@@ -1,4 +1,3 @@
-import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 
 final dynamic fallbackMangaData = {

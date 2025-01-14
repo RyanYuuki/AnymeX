@@ -13,7 +13,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 enum CarouselType { anime, manga, novel }
@@ -186,7 +185,7 @@ class _BigCarouselState extends State<BigCarousel> {
           const SizedBox(height: 16),
           AnimatedSmoothIndicator(
             activeIndex: activeIndex,
-            count: widget.data!.length,
+            count: widget.data.length,
             effect: WormEffect(
               dotHeight: 8,
               dotWidth: 8,

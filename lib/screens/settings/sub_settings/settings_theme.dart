@@ -1,4 +1,3 @@
-import 'dart:math' show Random;
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';

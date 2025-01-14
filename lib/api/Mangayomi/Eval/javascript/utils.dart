@@ -1,5 +1,4 @@
 import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
-import 'package:anymex/api/Mangayomi/log.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:js_packer/js_packer.dart';
 
