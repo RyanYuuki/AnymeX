@@ -1,8 +1,8 @@
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http_interceptor/http_interceptor.dart';
 
-import '../Eval/dart/model/video.dart';
+import '../../../models/Offline/Hive/video.dart';
 import '../http/m_client.dart';
 
 class MytvExtractor {

@@ -29,7 +29,7 @@ class CryptoAES {
       Uint8List encryptedBytesWithSalt = base64.decode(encrypted.trim());
 
       Uint8List encryptedBytes =
-          encryptedBytesWithSalt.sublist(16, encryptedBytesWithSalt.length);
+      encryptedBytesWithSalt.sublist(16, encryptedBytesWithSalt.length);
       final salt = encryptedBytesWithSalt.sublist(8, 16);
       var keyndIV = deriveKeyAndIV(passphrase.trim(), salt);
       final key = encrypt.Key(keyndIV.$1);
@@ -38,7 +38,7 @@ class CryptoAES {
       final encrypter = encrypt.Encrypter(
           encrypt.AES(key, mode: encrypt.AESMode.cbc, padding: "PKCS7"));
       final decrypted =
-          encrypter.decrypt64(base64.encode(encryptedBytes), iv: iv);
+      encrypter.decrypt64(base64.encode(encryptedBytes), iv: iv);
       return decrypted;
     } catch (error) {
       rethrow;

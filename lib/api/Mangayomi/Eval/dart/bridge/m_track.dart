@@ -1,7 +1,8 @@
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
+import 'package:hive/hive.dart';
 
-import '../model/video.dart';
+import '../../../../../models/Offline/Hive/video.dart';
 
 class $MTrack implements Track, $Instance {
   $MTrack.wrap(this.$value) : _superclass = $Object($value);
@@ -81,4 +82,19 @@ class $MTrack implements Track, $Instance {
   Map<String, dynamic> toJson() {
     throw UnimplementedError();
   }
+
+  @override
+  BoxBase? get box => null;
+
+  @override
+  Future<void> delete() async {}
+
+  @override
+  bool get isInBox => false;
+
+  @override
+  get key => '';
+
+  @override
+  Future<void> save() async {}
 }

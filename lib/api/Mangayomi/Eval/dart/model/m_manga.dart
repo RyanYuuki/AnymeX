@@ -1,4 +1,4 @@
-import 'package:anymex/Functions/string_extensions.dart';
+import 'package:anymex/utils/string_extensions.dart';
 
 import '../../../Model/Manga.dart';
 import 'm_chapter.dart';

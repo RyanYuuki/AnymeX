@@ -1,13 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-
+import 'package:http/http.dart' as http;
 import '../../http/m_client.dart';
 
 class JsHttpClient {
   late JavascriptRuntime runtime;
-
   JsHttpClient(this.runtime);
 
   void init() {
@@ -17,33 +17,19 @@ class JsHttpClient {
     }
 
     runtime.onMessage('http_get', (dynamic args) async {
-      return jsonEncode((await client(args[1]).get(Uri.parse(args[2]),
-              headers: (args[3] as Map?)?.toMapStringString))
-          .toJson());
+      return await _toHttpResponse(client(args[1]), "GET", args);
     });
     runtime.onMessage('http_post', (dynamic args) async {
-      return jsonEncode((await client(args[1]).post(Uri.parse(args[2]),
-              headers: (args[3] as Map?)?.toMapStringString,
-              body: (args[4] as Map?)?.toMapStringString))
-          .toJson());
+      return await _toHttpResponse(client(args[1]), "POST", args);
     });
     runtime.onMessage('http_put', (dynamic args) async {
-      return (await client(args[1]).put(Uri.parse(args[2]),
-              headers: (args[3] as Map?)?.toMapStringString, body: args[4]))
-          .toJson();
+      return await _toHttpResponse(client(args[1]), "PUT", args);
     });
     runtime.onMessage('http_delete', (dynamic args) async {
-      return jsonEncode((await client(args[1]).delete(Uri.parse(args[2]),
-              headers: (args[3] as Map?)?.map(
-                  (key, value) => MapEntry(key.toString(), value.toString())),
-              body: (args[4] as Map?)?.toMapStringString))
-          .toJson());
+      return await _toHttpResponse(client(args[1]), "DELETE", args);
     });
     runtime.onMessage('http_patch', (dynamic args) async {
-      return jsonEncode((await client(args[1]).patch(Uri.parse(args[2]),
-              headers: (args[3] as Map?)?.toMapStringString,
-              body: (args[4] as Map?)?.toMapStringString))
-          .toJson());
+      return await _toHttpResponse(client(args[1]), "PATCH", args);
     });
     runtime.evaluate('''
 class Client {
@@ -95,25 +81,57 @@ class Client {
   }
 }
 
+Future<String> _toHttpResponse(Client client, String method, List args) async {
+  final url = args[2] as String;
+  final headers = (args[3] as Map?)?.toMapStringString;
+  final body = args.length >= 5 ? (args[4] as Map?)?.toMapStringDynamic : null;
+  var request = http.Request(method, Uri.parse(url));
+  request.headers.addAll(headers ?? {});
+  if ((request.headers[HttpHeaders.contentTypeHeader]
+      ?.contains("application/json")) ??
+      false) {
+    request.body = json.encode(body);
+    request.headers.addAll(headers ?? {});
+    http.StreamedResponse response = await client.send(request);
+    final res = Response("", response.statusCode,
+        request: response.request,
+        headers: response.headers,
+        isRedirect: response.isRedirect,
+        persistentConnection: response.persistentConnection,
+        reasonPhrase: response.reasonPhrase);
+    Map<String, dynamic> resMap = res.toJson();
+    resMap["body"] = await response.stream.bytesToString();
+    return jsonEncode(resMap);
+  }
+  final future = switch (method) {
+    "GET" => client.get(Uri.parse(url), headers: headers),
+    "POST" => client.post(Uri.parse(url), headers: headers, body: body),
+    "PUT" => client.put(Uri.parse(url), headers: headers, body: body),
+    "DELETE" => client.delete(Uri.parse(url), headers: headers, body: body),
+    _ => client.patch(Uri.parse(url), headers: headers, body: body),
+  };
+  return jsonEncode((await future).toJson());
+}
+
 extension ResponseExtexsion on Response {
   Map<String, dynamic> toJson() => {
-        'body': body,
-        'headers': headers,
-        'isRedirect': isRedirect,
-        'persistentConnection': persistentConnection,
-        'reasonPhrase': reasonPhrase,
-        'statusCode': statusCode,
-        'request': {
-          'contentLength': request?.contentLength,
-          'finalized': request?.finalized,
-          'followRedirects': request?.followRedirects,
-          'headers': request?.headers,
-          'maxRedirects': request?.maxRedirects,
-          'method': request?.method,
-          'persistentConnection': request?.persistentConnection,
-          'url': request?.url.toString()
-        }
-      };
+    'body': body,
+    'headers': headers,
+    'isRedirect': isRedirect,
+    'persistentConnection': persistentConnection,
+    'reasonPhrase': reasonPhrase,
+    'statusCode': statusCode,
+    'request': {
+      'contentLength': request?.contentLength,
+      'finalized': request?.finalized,
+      'followRedirects': request?.followRedirects,
+      'headers': request?.headers,
+      'maxRedirects': request?.maxRedirects,
+      'method': request?.method,
+      'persistentConnection': request?.persistentConnection,
+      'url': request?.url.toString()
+    }
+  };
 }
 
 extension ToMapExtension on Map? {

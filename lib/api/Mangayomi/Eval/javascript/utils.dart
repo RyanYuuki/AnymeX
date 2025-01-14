@@ -1,8 +1,9 @@
+import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
+import 'package:anymex/api/Mangayomi/log.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:js_packer/js_packer.dart';
 
 import '../../cryptoaes/js_unpacker.dart';
-import '../../log.dart';
 import '../dart/model/m_bridge.dart';
 
 class JsUtils {
@@ -11,10 +12,6 @@ class JsUtils {
   JsUtils(this.runtime);
 
   void init() {
-    runtime.onMessage('log', (dynamic args) {
-      Logger.add(LoggerLevel.warning, "${args[0]}");
-      return null;
-    });
     runtime.onMessage('cryptoHandler', (dynamic args) {
       return MBridge.cryptoHandler(args[0], args[1], args[2], args[3]);
     });
@@ -33,7 +30,12 @@ class JsUtils {
     runtime.onMessage('unpackJs', (dynamic args) {
       return JSPacker(args[0]).unpack() ?? "";
     });
-
+    runtime.onMessage('evaluateJavascriptViaWebview', (dynamic args) async {
+      return await MBridge.evaluateJavascriptViaWebview(
+          args[0]!,
+          (args[1]! as Map).toMapStringString!,
+          (args[2]! as List).map((e) => e.toString()).toList());
+    });
     runtime.evaluate('''
 console.log = function (message) {
     if (typeof message === "object") {
@@ -129,6 +131,12 @@ function parseDates(value, dateFormat, dateFormatLocale) {
     return sendMessage(
         "parseDates",
         JSON.stringify([value, dateFormat, dateFormatLocale])
+    );
+}
+async function evaluateJavascriptViaWebview(url, headers, scripts) {
+    return await sendMessage(
+        "evaluateJavascriptViaWebview",
+        JSON.stringify([url, headers, scripts])
     );
 }
 ''');

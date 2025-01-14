@@ -1,4 +1,4 @@
-import 'package:anymex/api/Mangayomi/Eval/dart/model/video.dart';
+import 'package:anymex/models/Offline/Hive/video.dart';
 
 import 'filter.dart';
 import 'm_manga.dart';
@@ -24,6 +24,10 @@ abstract class MProvider {
   Future<List<dynamic>> getPageList(String url);
 
   Future<List<Video>> getVideoList(String url);
+
+  Future<String> getHtmlContent(String url);
+
+  Future<String> cleanHtmlContent(String html);
 
   List<dynamic> getFilterList();
 

@@ -18,8 +18,7 @@ class $MStatus implements $Instance {
   ], methods: {}, getters: {}, setters: {}, fields: {});
   static final $values = Status.values.asNameMap().map(
         (key, value) => MapEntry(key, $MStatus.wrap(value)),
-      );
-
+  );
   const $MStatus.wrap(this.$value);
 
   @override

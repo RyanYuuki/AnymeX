@@ -103,13 +103,11 @@ class $MChapter implements MChapter, $Instance {
 
   @override
   String? get scanlator => $value.scanlator;
-
   @override
   set name(String? name) {}
 
   @override
   set url(String? url) {}
-
   @override
   set dateUpload(String? dateUpload) {}
 
@@ -118,9 +116,9 @@ class $MChapter implements MChapter, $Instance {
 
   @override
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'url': url,
-        'dateUpload': dateUpload,
-        'scanlator': scanlator
-      };
+    'name': name,
+    'url': url,
+    'dateUpload': dateUpload,
+    'scanlator': scanlator
+  };
 }
