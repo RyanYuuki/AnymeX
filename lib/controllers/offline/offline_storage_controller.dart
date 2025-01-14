@@ -213,8 +213,13 @@ class OfflineStorageController extends GetxController {
     if (anime != null) {
       Episode? episode = anime.watchedEpisodes
           ?.firstWhereOrNull((e) => e.number == episodeOrChapterNumber);
-      log("Found Episode! Episode Title is ${episode?.title}");
-      return episode;
+      if (episode != null) {
+        log("Found Episode! Episode Title is ${episode.title}");
+        return episode;
+      } else {
+        log('No watched episode with number $episodeOrChapterNumber found for anime with ID: $anilistId');
+        return null;
+      }
     }
     return null;
   }
@@ -224,7 +229,11 @@ class OfflineStorageController extends GetxController {
     if (manga != null) {
       Chapter? chapter =
           manga.readChapters?.firstWhereOrNull((c) => c.number == number);
-      return chapter;
+      if (chapter != null) {
+        return chapter;
+      } else {
+        log('No read chapter with number $number found for manga with ID: $anilistId');
+      }
     }
     log('No data found for AniList ID: $anilistId with number $number');
     return null;

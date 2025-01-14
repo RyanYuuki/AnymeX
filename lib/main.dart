@@ -67,7 +67,6 @@ void main() async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
-    windowManager.setTitle("AnymeX β");
     final availableVersion = await WebViewEnvironment.getAvailableVersion();
     assert(availableVersion != null,
         'Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.');
