@@ -1,7 +1,8 @@
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
+import 'package:hive/hive.dart';
 
-import '../model/video.dart';
+import '../../../../../models/Offline/Hive/video.dart';
 import 'm_track.dart';
 
 class $MVideo implements Video, $Instance {
@@ -144,4 +145,19 @@ class $MVideo implements Video, $Instance {
   Map<String, dynamic> toJson() {
     throw UnimplementedError();
   }
+
+  @override
+  BoxBase? get box => null;
+
+  @override
+  Future<void> delete() async {}
+
+  @override
+  bool get isInBox => false;
+
+  @override
+  get key => '';
+
+  @override
+  Future<void> save() async {}
 }

@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.anymex.beta">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ryan.anymexbeta">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -29,6 +29,7 @@
 
         <meta-data android:name="flutterEmbedding" android:value="2"/>
         <meta-data android:name="flutter.deeplinking.enabled" android:value="true"/>
+        <meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false"/>
     </application>
 
     <queries>

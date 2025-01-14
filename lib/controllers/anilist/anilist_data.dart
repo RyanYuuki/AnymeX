@@ -1,14 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
+import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/api/Mangayomi/Search/get_popular.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
 class AnilistData extends GetxController {
+  // Anime Data
   RxList<AnilistMediaSmall> upcomingAnimes = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> popularAnimes = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> trendingAnimes = <AnilistMediaSmall>[].obs;
@@ -17,6 +23,7 @@ class AnilistData extends GetxController {
   RxList<AnilistMediaSmall> top10Week = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> top10Month = <AnilistMediaSmall>[].obs;
 
+  // Manga Data
   RxList<AnilistMediaSmall> popularMangas = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> morePopularMangas = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> latestMangas = <AnilistMediaSmall>[].obs;
@@ -25,6 +32,9 @@ class AnilistData extends GetxController {
   RxList<AnilistMediaSmall> topUpdatedMangas = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> topOngoingMangas = <AnilistMediaSmall>[].obs;
   RxList<AnilistMediaSmall> trendingMangas = <AnilistMediaSmall>[].obs;
+
+  // Novel Data
+  Map<Source, List<MManga>?> novelData = {};
 
   @override
   void onInit() {
@@ -51,6 +61,22 @@ class AnilistData extends GetxController {
     // topUpdatedMangas.value = fbm.upcomingMangas;
     topOngoingMangas.value = fbm.trendingMangas;
     trendingMangas.value = fbm.trendingMangas;
+  }
+
+  Future<void> fetchDataForAllSources() async {
+    final sources = Get.find<SourceController>().installedNovelExtensions;
+    await Future.wait(
+      sources.map((source) async {
+        try {
+          List<MManga>? data = await getPopular(source: source);
+          novelData[source] = data;
+          update();
+        } catch (error) {
+          snackBar('Error fetching data for ${source.name}: $error',
+              duration: 1000);
+        }
+      }),
+    );
   }
 
   Future<void> fetchAnilistHomepage() async {
@@ -399,18 +425,141 @@ class AnilistData extends GetxController {
         Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
 
     if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body);
-      final episodes = (data[0]['data'] as List).map((e) {
-        final index = data[0]['data'].indexOf(e);
-        final episode = episodeList[index];
-        episode.title = e['title'];
-        episode.thumbnail = e['img'];
-        episode.desc = e['description'];
-        return episode;
-      }).toList();
-      return episodes.cast<Episode>();
+      try {
+        final data = jsonDecode(resp.body);
+        final episodesData = data[0]['data'];
+
+        if (episodesData == null || episodesData.isEmpty) {
+          return episodeList;
+        }
+
+        for (int i = 0; i < episodeList.length; i++) {
+          if (i < episodesData.length) {
+            final episodeData = episodesData[i];
+            episodeList[i].title = episodeData['title'] ?? episodeList[i].title;
+            episodeList[i].thumbnail =
+                episodeData['img'] ?? episodeList[i].thumbnail;
+            episodeList[i].desc =
+                episodeData['description'] ?? episodeList[i].desc;
+          }
+        }
+
+        return episodeList;
+      } catch (e) {
+        return episodeList;
+      }
     } else {
       return episodeList;
+    }
+  }
+
+  static Future<List<AnilistMediaSmall>> anilistSearch({
+    required bool isManga,
+    String? query,
+    String? sort,
+    String? season,
+    String? status,
+    String? format,
+    List<String>? genres,
+  }) async {
+    const url = 'https://graphql.anilist.co/';
+    final headers = {'Content-Type': 'application/json'};
+
+    final Map<String, dynamic> variables = {
+      if (query != null && query.isNotEmpty) 'search': query,
+      if (sort != null) 'sort': [sort],
+      if (season != null) 'season': season.toUpperCase(),
+      if (status != null) 'status': status.toUpperCase(),
+      if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
+      if (genres != null && genres.isNotEmpty) 'genre_in': genres,
+      'isAdult': false, // This ensures NSFW content is excluded
+    };
+
+    // Common fields for both anime and manga
+    final String commonFields = '''
+    id
+    title {
+      english
+      romaji
+      native
+    }
+    coverImage {
+      large
+    }
+    averageScore
+    ${isManga ? 'chapters' : 'episodes'}
+  ''';
+
+    dynamic body;
+    if (query != null && query.isNotEmpty) {
+      body = jsonEncode({
+        'query': '''
+  query (\$search: String, \$sort: [MediaSort], \$season: MediaSeason, \$status: MediaStatus, \$format: MediaFormat, \$genre_in: [String], \$isAdult: Boolean) {
+    Page (page: 1) {
+      media (
+        ${query.isNotEmpty ? 'search: \$search,' : ''}
+        type: ${isManga ? "MANGA" : "ANIME"},
+        sort: \$sort,
+        season: \$season,
+        status: \$status,
+        format: \$format,
+        genre_in: \$genre_in,
+        isAdult: \$isAdult
+      ) {
+        $commonFields
+      }
+    }
+  }
+  ''',
+        'variables': variables,
+      });
+    } else {
+      body = jsonEncode({
+        'query': '''
+  query (\$sort: [MediaSort], \$season: MediaSeason, \$status: MediaStatus, \$format: MediaFormat, \$genre_in: [String], \$isAdult: Boolean) {
+    Page (page: 1) {
+      media (
+        type: ${isManga ? "MANGA" : "ANIME"},
+        sort: \$sort,
+        season: \$season,
+        status: \$status,
+        format: \$format,
+        genre_in: \$genre_in,
+        isAdult: \$isAdult
+      ) {
+        $commonFields
+      }
+    }
+  }
+  ''',
+        'variables': variables,
+      });
+    }
+
+    try {
+      final response = await post(Uri.parse(url), headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        final mediaList = jsonData['data']['Page']['media'];
+
+        final mappedData = mediaList.map<AnilistMediaSmall>((media) {
+          return AnilistMediaSmall(
+            id: media['id'].toString(),
+            title: media['title']['english'] ?? media['title']['romaji'] ?? '',
+            poster: media['coverImage']['large'] ?? '',
+            episodes: isManga ? media['chapters'] ?? 0 : media['episodes'] ?? 0,
+            averageScore: ((media['averageScore'] ?? 0) / 10),
+          );
+        }).toList();
+        return mappedData;
+      } else {
+        log('Failed to fetch ${isManga ? "manga" : "anime"} data. Status code: ${response.statusCode} \n response body: ${response.body}');
+        return [];
+      }
+    } catch (e) {
+      log('Error occurred while fetching ${isManga ? "manga" : "anime"} data: $e');
+      return [];
     }
   }
 

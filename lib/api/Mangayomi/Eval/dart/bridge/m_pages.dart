@@ -15,17 +15,17 @@ class $MPages implements MPages, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-          BridgeParameter(
-              'list',
-              BridgeTypeAnnotation(
-                  BridgeTypeRef(CoreTypes.list, [$MManga.$type])),
-              false),
-          BridgeParameter(
-              'hasNextPage',
-              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool),
-                  nullable: true),
-              true),
-        ]))
+              BridgeParameter(
+                  'list',
+                  BridgeTypeAnnotation(
+                      BridgeTypeRef(CoreTypes.list, [$MManga.$type])),
+                  false),
+              BridgeParameter(
+                  'hasNextPage',
+                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool),
+                      nullable: true),
+                  true),
+            ]))
       },
       fields: {
         'list': BridgeFieldDef(
@@ -87,12 +87,7 @@ class $MPages implements MPages, $Instance {
 
   @override
   Map<String, dynamic> toJson() => {
-        'list': list.map((v) => v.toJson()).toList(),
-        'hasNextPage': hasNextPage,
-      };
-
-  @override
-  List<String> toMedia() {
-    return [""];
-  }
+    'list': list.map((v) => v.toJson()).toList(),
+    'hasNextPage': hasNextPage,
+  };
 }

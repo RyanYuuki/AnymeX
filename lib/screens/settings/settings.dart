@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/models/Offline/Hive/offline_storage.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
@@ -9,7 +9,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -49,9 +48,16 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 30),
           CustomTile(
+              icon: HugeIcons.strokeRoundedBulb,
+              title: "Common",
+              description: "Tweak Settings",
+              onTap: () {
+                Get.to(() => const SettingsCommon());
+              }),
+          CustomTile(
               icon: HugeIcons.strokeRoundedPaintBoard,
               title: "UI",
-              description: "Play around with App theme",
+              description: "Play around with App UI",
               onTap: () {
                 Get.to(() => const SettingsUi());
               }),
@@ -81,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: HugeIcons.strokeRoundedInformationCircle,
             title: "About",
             description: "About the App",
-            onTap: () {},
+            onTap: () async {},
           ),
         ],
       )),

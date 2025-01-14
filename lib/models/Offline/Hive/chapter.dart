@@ -26,13 +26,16 @@ class Chapter extends HiveObject {
   int? totalPages;
 
   @HiveField(7)
-  String? readDate;
+  int? lastReadTime;
 
   @HiveField(8)
   double? currentOffset;
 
   @HiveField(9)
   double? maxOffset;
+
+  @HiveField(10)
+  String? sourceName;
 
   Chapter(
       {this.link,
@@ -41,8 +44,9 @@ class Chapter extends HiveObject {
       this.number,
       this.scanlator,
       this.pageNumber,
-      this.readDate,
+      this.lastReadTime,
       this.totalPages,
       this.currentOffset,
-      this.maxOffset});
+      this.maxOffset,
+      this.sourceName});
 }

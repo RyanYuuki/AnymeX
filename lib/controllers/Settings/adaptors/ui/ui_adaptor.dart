@@ -57,8 +57,19 @@ class UISettings extends HiveObject {
     this.glowDensity = 0.3,
     this.translucentTabBar = true,
     this.homePageCards = const {
-      "Currently Watching": true,
-      "Currently Reading": true
+      "Continue Watching": true,
+      "Continue Reading": true,
+      "Completed TV": false,
+      "Completed Manga": false,
+      "Completed Movie": false,
+      "Paused Animes": false,
+      "Paused Manga": false,
+      "Dropped Animes": false,
+      "Dropped Manga": false,
+      "Planning Animes": false,
+      "Planning Manga": false,
+      "Rewatching Animes": false,
+      "Rewatching Manga": false,
     },
   });
 }

@@ -301,24 +301,24 @@ class $MElement implements MElement, $Instance {
   }
 
   static const $Function __getElementsByClassName =
-      $Function(_getElementsByClassName);
+  $Function(_getElementsByClassName);
 
   static $Value? _getElementsByClassName(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res =
-        (target!.$value as MElement).getElementsByClassName(args[0]?.$value);
+    (target!.$value as MElement).getElementsByClassName(args[0]?.$value);
     return res == null
         ? const $null()
         : $List.wrap(res.map((e) => $MElement.wrap(e)).toList());
   }
 
   static const $Function __getElementsByTagName =
-      $Function(_getElementsByTagName);
+  $Function(_getElementsByTagName);
 
   static $Value? _getElementsByTagName(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res =
-        (target!.$value as MElement).getElementsByTagName(args[0]?.$value);
+    (target!.$value as MElement).getElementsByTagName(args[0]?.$value);
     return res == null
         ? const $null()
         : $List.wrap(res.map((e) => $MElement.wrap(e)).toList());

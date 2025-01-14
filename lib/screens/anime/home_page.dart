@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/controllers/anilist/anilist_data.dart';
+import 'package:anymex/screens/anime/search_page.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -26,13 +27,15 @@ class AnimeHomePage extends StatelessWidget {
             return Column(
               children: [
                 CustomSearchBar(
-                  onSubmitted: (val) {},
+                  onSubmitted: (val) {
+                    Get.to(() => SearchPage(searchTerm: val));
+                  },
                   hintText: "Search Anime...",
                 ),
                 BigCarousel(
                   data: anilistData.trendingAnimes.value,
                   carouselType: CarouselType.anime,
-                  isManga: true,
+                  isManga: false,
                 ),
                 ReusableCarousel(
                   title: "Popular Animes",

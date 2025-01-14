@@ -1,18 +1,17 @@
 import 'dart:convert';
 
+import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
-
 import '../../../extension_preferences_providers.dart';
-import '../../../log.dart';
 import '../model/filter.dart';
 import '../model/m_bridge.dart';
 import '../model/m_manga.dart';
 import '../model/m_pages.dart';
 import '../model/m_provider.dart';
-import '../model/video.dart';
 import 'document.dart';
 import 'filter.dart';
 import 'm_manga.dart';
@@ -98,6 +97,20 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
             ])),
             params: [
               BridgeParameter('url',
+                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+            ])),
+        'getHtmlContent': BridgeMethodDef(BridgeFunctionDef(
+            returns: BridgeTypeAnnotation(BridgeTypeRef(
+                CoreTypes.future, [BridgeTypeRef(CoreTypes.string)])),
+            params: [
+              BridgeParameter('url',
+                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+            ])),
+        'cleanHtmlContent': BridgeMethodDef(BridgeFunctionDef(
+            returns: BridgeTypeAnnotation(BridgeTypeRef(
+                CoreTypes.future, [BridgeTypeRef(CoreTypes.string)])),
+            params: [
+              BridgeParameter('html',
                   BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
             ])),
         'getFilterList': BridgeMethodDef(BridgeFunctionDef(
@@ -329,6 +342,82 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
                     'prefix',
                     BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string),
                         nullable: true),
+                    false),
+              ]),
+        ),
+        'quarkVideosExtractor': BridgeMethodDef(
+          BridgeFunctionDef(
+              returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.future, [
+                BridgeTypeRef(CoreTypes.list, [$MVideo.$type])
+              ])),
+              params: [
+                BridgeParameter(
+                    'url',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                    false),
+                BridgeParameter(
+                    'cookie',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                    false),
+              ]),
+        ),
+        'ucVideosExtractor': BridgeMethodDef(
+          BridgeFunctionDef(
+              returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.future, [
+                BridgeTypeRef(CoreTypes.list, [$MVideo.$type])
+              ])),
+              params: [
+                BridgeParameter(
+                    'url',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                    false),
+                BridgeParameter(
+                    'cookie',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                    false),
+              ]),
+        ),
+        'quarkFilesExtractor': BridgeMethodDef(
+          BridgeFunctionDef(
+              returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.future, [
+                BridgeTypeRef(CoreTypes.list, [
+                  BridgeTypeRef(CoreTypes.map, [
+                    BridgeTypeRef(CoreTypes.string),
+                    BridgeTypeRef(CoreTypes.string)
+                  ])
+                ])
+              ])),
+              params: [
+                BridgeParameter(
+                    'url',
+                    BridgeTypeAnnotation(BridgeTypeRef(
+                        CoreTypes.list, [BridgeTypeRef(CoreTypes.string)])),
+                    false),
+                BridgeParameter(
+                    'cookie',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                    false),
+              ]),
+        ),
+        'ucFilesExtractor': BridgeMethodDef(
+          BridgeFunctionDef(
+              returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.future, [
+                BridgeTypeRef(CoreTypes.list, [
+                  BridgeTypeRef(CoreTypes.map, [
+                    BridgeTypeRef(CoreTypes.string),
+                    BridgeTypeRef(CoreTypes.string)
+                  ])
+                ])
+              ])),
+              params: [
+                BridgeParameter(
+                    'url',
+                    BridgeTypeAnnotation(BridgeTypeRef(
+                        CoreTypes.list, [BridgeTypeRef(CoreTypes.string)])),
+                    false),
+                BridgeParameter(
+                    'cookie',
+                    BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
                     false),
               ]),
         ),
@@ -795,10 +884,6 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
   @override
   $Value? $bridgeGet(String identifier) {
     return switch (identifier) {
-      'print' => $Function((_, __, List<$Value?> args) {
-          Logger.add(LoggerLevel.warning, "${args[0]!.$reified}");
-          return null;
-        }),
       'evalJs' => $Function((_, __, List<$Value?> args) {
           final runtime = getJavascriptRuntime();
           return $Future.wrap(runtime
@@ -806,15 +891,7 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
               .then((value) => $String(value.stringResult)));
         }),
       'getUrlWithoutDomain' => $Function((_, __, List<$Value?> args) {
-          final uri = Uri.parse(args[0]!.$value.replaceAll(' ', '%20'));
-          String out = uri.path;
-          if (uri.query.isNotEmpty) {
-            out += '?${uri.query}';
-          }
-          if (uri.fragment.isNotEmpty) {
-            out += '#${uri.fragment}';
-          }
-          return $String(out);
+          return $String((args[0]!.$value as String).getUrlWithoutDomain);
         }),
       'parseHtml' => $Function((_, __, List<$Value?> args) {
           final res = MBridge.parsHtml(args[0]!.$reified);
@@ -932,6 +1009,35 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
                   args[0]!.$value, args[1]?.$value ?? "", args[2]?.$value ?? "")
               .then((value) =>
                   $List.wrap(value.map((e) => _toMVideo(e)).toList())))),
+      "quarkVideosExtractor" => $Function((_, __, List<$Value?> args) => $Future
+          .wrap(MBridge.quarkVideosExtractor(args[0]!.$value, args[1]!.$value)
+              .then((value) =>
+                  $List.wrap(value.map((e) => _toMVideo(e)).toList())))),
+      "ucVideosExtractor" => $Function((_, __, List<$Value?> args) => $Future
+          .wrap(MBridge.ucVideosExtractor(args[0]!.$value, args[1]!.$value)
+              .then((value) =>
+                  $List.wrap(value.map((e) => _toMVideo(e)).toList())))),
+      "quarkFilesExtractor" => $Function((_, __, List<$Value?> args) =>
+          $Future.wrap(
+              MBridge.quarkFilesExtractor(args[0]!.$value, args[1]!.$value)
+                  .then((value) {
+            return $List.wrap(value
+                .map((e) => $Map.wrap({
+                      $String('name'): $String(e['name'] ?? ''),
+                      $String('url'): $String(e['url'] ?? ''),
+                    }))
+                .toList());
+          }))),
+      "ucFilesExtractor" => $Function((_, __, List<$Value?> args) => $Future
+              .wrap(MBridge.ucFilesExtractor(args[0]!.$value, args[1]!.$value)
+                  .then((value) {
+            return $List.wrap(value
+                .map((e) => $Map.wrap({
+                      $String('name'): $String(e['name'] ?? ''),
+                      $String('url'): $String(e['url'] ?? ''),
+                    }))
+                .toList());
+          }))),
       "evaluateJavascriptViaWebview" => $Function((_, __, List<$Value?> args) =>
           $Future.wrap(MBridge.evaluateJavascriptViaWebview(
                   args[0]!.$value,
@@ -1080,6 +1186,14 @@ class $MProvider extends MProvider with $Bridge<MProvider> {
 
     return list.map((e) => (e is $Value ? e.$reified : e) as Video).toList();
   }
+
+  @override
+  Future<String> getHtmlContent(String url) async =>
+      await $_invoke('getHtmlContent', [$String(url)]);
+
+  @override
+  Future<String> cleanHtmlContent(String html) async =>
+      await $_invoke('cleanHtmlContent', [$String(html)]);
 
   @override
   Map<String, String> get headers {

@@ -1,5 +1,6 @@
 import 'package:anymex/api/Mangayomi/Eval/dart/model/source_preference.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'package:isar/isar.dart';
 import '../../api/Mangayomi/Extensions/GetSourceList.dart';
 import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
 import '../../api/Mangayomi/Extensions/fetch_manga_sources.dart';
+import '../../api/Mangayomi/Extensions/fetch_novel_sources.dart';
+import '../../api/Mangayomi/Model/Manga.dart';
 import '../../api/Mangayomi/extension_preferences_providers.dart';
 import '../../api/Mangayomi/get_source_preference.dart';
 import '../../main.dart';
@@ -38,15 +41,17 @@ class _ExtensionListTileWidgetState
   Future<void> _handleSourceAction() async {
     setState(() => _isLoading = true);
 
-    if (widget.source.isManga!) {
-      await ref.read(
-          fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
-              .future);
-    } else {
-      await ref.read(
-          fetchAnimeSourcesListProvider(id: widget.source.id, reFresh: true)
-              .future);
-    }
+    widget.source.itemType == ItemType.manga
+        ? await ref.watch(
+            fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
+                .future)
+        : widget.source.itemType == ItemType.anime
+            ? await ref.watch(fetchAnimeSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
+                .future)
+            : await ref.watch(fetchNovelSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
+                .future);
 
     if (mounted) setState(() => _isLoading = false);
   }
@@ -66,7 +71,7 @@ class _ExtensionListTileWidgetState
         height: 37,
         width: 37,
         decoration: BoxDecoration(
-          color: theme.surface,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(32),
         ),
         child: widget.source.iconUrl!.isEmpty
@@ -93,7 +98,7 @@ class _ExtensionListTileWidgetState
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            (widget.source.lang!.toLowerCase()),
+            completeLanguageName(widget.source.lang!.toLowerCase()),
             style: const TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
@@ -157,13 +162,17 @@ class _ExtensionListTileWidgetState
                   onPressed: () async {
                     if (updateAvailable) {
                       setState(() => _isLoading = true);
-                      widget.source.isManga!
+                      widget.source.itemType == ItemType.manga
                           ? await ref.watch(fetchMangaSourcesListProvider(
                                   id: widget.source.id, reFresh: true)
                               .future)
-                          : await ref.watch(fetchAnimeSourcesListProvider(
-                                  id: widget.source.id, reFresh: true)
-                              .future);
+                          : widget.source.itemType == ItemType.anime
+                              ? await ref.watch(fetchAnimeSourcesListProvider(
+                                      id: widget.source.id, reFresh: true)
+                                  .future)
+                              : await ref.watch(fetchNovelSourcesListProvider(
+                                      id: widget.source.id, reFresh: true)
+                                  .future);
                       if (mounted) {
                         setState(() => _isLoading = false);
                       }
@@ -218,7 +227,7 @@ class _ExtensionListTileWidgetState
                             getSourcePreferenceEntry(e.key!, widget.source.id!))
                         .toList();
                     Get.to(
-                      () => SourcePreferenceWidget(
+                      SourcePreferenceWidget(
                         source: widget.source,
                         sourcePreference: sourcePreference,
                       ),

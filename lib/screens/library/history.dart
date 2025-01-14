@@ -2,6 +2,8 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/library/anime_library.dart';
+import 'package:anymex/screens/library/manga_library.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -32,6 +34,9 @@ class _HistoryPageState extends State<HistoryPage> {
             style: TextStyle(fontSize: 20),
           ),
           bottom: TabBar(
+              indicatorColor: Theme.of(context).colorScheme.primary,
+              unselectedLabelColor: Colors.grey[400],
+              labelStyle: const TextStyle(fontFamily: "Poppins-Bold"),
               tabs: List.generate(
                   tabs.length,
                   (int index) => Tab(
@@ -59,7 +64,18 @@ class WatchingTab extends StatelessWidget {
     final offlineStorage = Get.find<OfflineStorageController>();
     final animeData =
         index == 1 ? offlineStorage.mangaLibrary : offlineStorage.animeLibrary;
-    return GridContent(title: 'Watching', data: animeData);
+    return animeData.isEmpty
+        ? const Center(
+            child: Text("So Empty..."),
+          )
+        : ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            itemCount: animeData.length,
+            itemBuilder: (context, i) {
+              return index == 0
+                  ? AnimeHistoryCard(data: animeData[i])
+                  : MangaHistoryCard(data: animeData[i]);
+            });
   }
 }
 

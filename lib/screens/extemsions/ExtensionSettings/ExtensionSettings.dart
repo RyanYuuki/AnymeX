@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
 
 import '../../../api/Mangayomi/Eval/dart/model/source_preference.dart';
@@ -20,29 +21,35 @@ class _SourcePreferenceWidgetState extends State<SourcePreferenceWidget> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).colorScheme;
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Text(
-            '${widget.source.name} Settings',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              color: theme.primary,
+    return Glow(
+      child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              '${widget.source.name} Settings',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+                color: theme.primary,
+              ),
             ),
+            iconTheme: IconThemeData(color: theme.primary),
           ),
-          iconTheme: IconThemeData(color: theme.primary),
-        ),
-        body: ListView.builder(
-          shrinkWrap: true,
-          itemCount: widget.sourcePreference.length,
-          itemBuilder: (context, index) {
-            final preference = widget.sourcePreference[index];
-            return _buildPreferenceWidget(preference, theme);
-          },
-        ));
+          body: widget.sourcePreference.isEmpty
+              ? const Center(
+                  child: Text("No Settings Available"),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.sourcePreference.length,
+                  itemBuilder: (context, index) {
+                    final preference = widget.sourcePreference[index];
+                    return _buildPreferenceWidget(preference, theme);
+                  },
+                )),
+    );
   }
 
   Widget _buildPreferenceWidget(

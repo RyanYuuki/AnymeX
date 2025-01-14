@@ -1,10 +1,11 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
 import 'dart:developer';
 import 'dart:ui';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/video.dart';
+import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
@@ -49,10 +50,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> selectedEpisode = Episode(number: "1").obs;
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
+  List<Episode> offlineEpisodes = [];
 
   @override
   void initState() {
     super.initState();
+    _initEpisodes();
     _initUserProgress();
     _initEpisodes();
 
@@ -64,6 +67,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
       if (savedData?.currentEpisode != null) {
         savedEpisode.value = savedData!.currentEpisode!;
+        offlineEpisodes = savedData.episodes ?? [];
         _initEpisodes();
       }
     });
@@ -86,14 +90,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   void _initEpisodes() {
+    final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
     final nextEpisode = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
-    continueEpisode.value = nextEpisode ?? widget.episodeList[0];
-
-    final saved =
-        offlineStorage.getAnimeById(widget.anilistData!.id)?.currentEpisode;
+    final saved = savedData?.currentEpisode;
     savedEpisode.value = saved ?? widget.episodeList[0];
+    offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
     selectedEpisode.value = nextEpisode ?? savedEpisode.value;
+    continueEpisode.value = nextEpisode ?? savedEpisode.value;
   }
 
   void _handleEpisodeSelection(Episode episode) {
@@ -283,9 +287,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     streamList.value = videoList;
   }
 
-  Container _normalEpisode(
+  Widget _normalEpisode(
       bool isSelected, BuildContext context, Episode episode) {
+    final savedEP =
+        offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+    final progress = savedEP?.timeStampInMilliseconds != null &&
+            savedEP?.durationInMilliseconds != null
+        ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+        : null;
+
     return Container(
+      clipBehavior: Clip.antiAlias,
       height: 100,
       decoration: BoxDecoration(
         color: isSelected
@@ -296,54 +308,74 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       child: Row(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: episode.thumbnail ??
-                        widget.anilistData?.cover ??
-                        widget.anilistData?.poster ??
-                        '',
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                  ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black.withOpacity(0.2),
-                          border: Border.all(
-                              width: 2,
-                              color: Theme.of(context).colorScheme.primary),
-                          boxShadow: [glowingShadow(context)],
+            child: LayoutBuilder(
+              builder: (context, imageConstraints) {
+                return Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                      child: CachedNetworkImage(
+                        imageUrl: episode.thumbnail ??
+                            widget.anilistData?.cover ??
+                            widget.anilistData?.poster ??
+                            '',
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                      ),
+                    ),
+                    if (progress != null) ...[
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius:
+                                  BorderRadius.circular(12.multiplyRadius())),
+                          height: 2,
+                          width: imageConstraints.maxWidth * progress,
                         ),
-                        child: AnymexText(
-                          text: "EP ${episode.number}",
-                          variant: TextVariant.bold,
+                      ),
+                    ],
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.black.withOpacity(0.2),
+                              border: Border.all(
+                                  width: 2,
+                                  color: Theme.of(context).colorScheme.primary),
+                              boxShadow: [glowingShadow(context)],
+                            ),
+                            child: AnymexText(
+                              text: "EP ${episode.number}",
+                              variant: TextVariant.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-              child: AnymexText(
-            text: episode.title ?? '?',
-            variant: TextVariant.bold,
-          ))
+            child: AnymexText(
+              text: episode.title ?? '?',
+              variant: TextVariant.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -351,8 +383,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   Container _anifyEpisode(
       bool isSelected, BuildContext context, Episode episode) {
+    final savedEP =
+        offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+    final progress = savedEP?.timeStampInMilliseconds != null &&
+            savedEP?.durationInMilliseconds != null
+        ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+        : null;
+    log('${savedEP?.number} :${savedEP?.timeStampInMilliseconds.toString()}');
+
     return Container(
       padding: const EdgeInsets.all(8),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isSelected
             ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
@@ -375,6 +416,21 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   width: 170,
                   height: 100,
                 ),
+                if (progress != null) ...[
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius:
+                              BorderRadius.circular(12.multiplyRadius())),
+                      height: 2,
+                      width: 170 * progress,
+                    ),
+                  ),
+                ],
                 Positioned(
                   bottom: 8,
                   left: 8,

@@ -25,6 +25,9 @@ class PlayerSettings {
   @HiveField(9)
   int seekDuration;
 
+  @HiveField(10)
+  double bottomMargin;
+
   PlayerSettings(
       {this.speed = 1.0,
       this.resizeMode = "Cover",
@@ -35,5 +38,6 @@ class PlayerSettings {
       this.subtitleOutlineColor = "Black",
       this.showSubtitle = true,
       this.skipDuration = 85,
-      this.seekDuration = 10});
+      this.seekDuration = 10,
+      this.bottomMargin = 5});
 }

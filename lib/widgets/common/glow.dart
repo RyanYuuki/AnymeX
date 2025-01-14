@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Glow extends StatelessWidget {
   final Widget child;
@@ -24,7 +25,7 @@ class Glow extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 theme.surface.withOpacity(0.3),
-                theme.primary.withOpacity(0.3)
+                theme.primary.withOpacity(0.4)
               ],
               begin: begin,
               end: end,
@@ -59,5 +60,17 @@ BoxShadow lightGlowingShadow(BuildContext context) {
     blurRadius: 59.0.multiplyBlur(),
     spreadRadius: 1.0.multiplyGlow(),
     offset: const Offset(-1.0, 0),
+  );
+}
+
+Shimmer placeHolderWidget(BuildContext context) {
+  return Shimmer.fromColors(
+    baseColor: Theme.of(context).colorScheme.surfaceContainer,
+    highlightColor: Theme.of(context).colorScheme.primary,
+    child: Container(
+      width: 80,
+      height: 80,
+      color: Theme.of(context).colorScheme.secondaryContainer,
+    ),
   );
 }

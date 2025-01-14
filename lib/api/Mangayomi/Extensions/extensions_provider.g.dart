@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: deprecated_member_use
-
 part of 'extensions_provider.dart';
 
 // **************************************************************************
@@ -9,7 +7,7 @@ part of 'extensions_provider.dart';
 // **************************************************************************
 
 String _$getExtensionsStreamHash() =>
-    r'010b67dcc4ccc0736c5ca779c33751302ab28cd8';
+    r'3c5d6625c40c222f25fc8141df078dd46bcc762f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -43,19 +41,19 @@ class GetExtensionsStreamFamily extends Family<AsyncValue<List<Source>>> {
 
   /// See also [getExtensionsStream].
   GetExtensionsStreamProvider call(
-    bool? isManga,
-  ) {
+      ItemType itemType,
+      ) {
     return GetExtensionsStreamProvider(
-      isManga,
+      itemType,
     );
   }
 
   @override
   GetExtensionsStreamProvider getProviderOverride(
-    covariant GetExtensionsStreamProvider provider,
-  ) {
+      covariant GetExtensionsStreamProvider provider,
+      ) {
     return call(
-      provider.isManga,
+      provider.itemType,
     );
   }
 
@@ -79,50 +77,50 @@ class GetExtensionsStreamProvider
     extends AutoDisposeStreamProvider<List<Source>> {
   /// See also [getExtensionsStream].
   GetExtensionsStreamProvider(
-    bool? isManga,
-  ) : this._internal(
-          (ref) => getExtensionsStream(
-            ref as GetExtensionsStreamRef,
-            isManga,
-          ),
-          from: getExtensionsStreamProvider,
-          name: r'getExtensionsStreamProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$getExtensionsStreamHash,
-          dependencies: GetExtensionsStreamFamily._dependencies,
-          allTransitiveDependencies:
-              GetExtensionsStreamFamily._allTransitiveDependencies,
-          isManga: isManga,
-        );
+      ItemType itemType,
+      ) : this._internal(
+        (ref) => getExtensionsStream(
+      ref as GetExtensionsStreamRef,
+      itemType,
+    ),
+    from: getExtensionsStreamProvider,
+    name: r'getExtensionsStreamProvider',
+    debugGetCreateSourceHash:
+    const bool.fromEnvironment('dart.vm.product')
+        ? null
+        : _$getExtensionsStreamHash,
+    dependencies: GetExtensionsStreamFamily._dependencies,
+    allTransitiveDependencies:
+    GetExtensionsStreamFamily._allTransitiveDependencies,
+    itemType: itemType,
+  );
 
   GetExtensionsStreamProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.isManga,
-  }) : super.internal();
+      super._createNotifier, {
+        required super.name,
+        required super.dependencies,
+        required super.allTransitiveDependencies,
+        required super.debugGetCreateSourceHash,
+        required super.from,
+        required this.itemType,
+      }) : super.internal();
 
-  final bool? isManga;
+  final ItemType itemType;
 
   @override
   Override overrideWith(
-    Stream<List<Source>> Function(GetExtensionsStreamRef provider) create,
-  ) {
+      Stream<List<Source>> Function(GetExtensionsStreamRef provider) create,
+      ) {
     return ProviderOverride(
       origin: this,
       override: GetExtensionsStreamProvider._internal(
-        (ref) => create(ref as GetExtensionsStreamRef),
+            (ref) => create(ref as GetExtensionsStreamRef),
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        isManga: isManga,
+        itemType: itemType,
       ),
     );
   }
@@ -134,21 +132,23 @@ class GetExtensionsStreamProvider
 
   @override
   bool operator ==(Object other) {
-    return other is GetExtensionsStreamProvider && other.isManga == isManga;
+    return other is GetExtensionsStreamProvider && other.itemType == itemType;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, isManga.hashCode);
+    hash = _SystemHash.combine(hash, itemType.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
+
+// ignore: unused_element
 mixin GetExtensionsStreamRef on AutoDisposeStreamProviderRef<List<Source>> {
-  /// The parameter `isManga` of this provider.
-  bool? get isManga;
+  /// The parameter `itemType` of this provider.
+  ItemType get itemType;
 }
 
 class _GetExtensionsStreamProviderElement
@@ -157,7 +157,7 @@ class _GetExtensionsStreamProviderElement
   _GetExtensionsStreamProviderElement(super.provider);
 
   @override
-  bool? get isManga => (origin as GetExtensionsStreamProvider).isManga;
+  ItemType get itemType => (origin as GetExtensionsStreamProvider).itemType;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

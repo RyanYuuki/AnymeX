@@ -1,9 +1,8 @@
 import 'package:anymex/utils/string_extensions.dart';
-
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:js_packer/js_packer.dart';
 
-import '../Eval/dart/model/video.dart';
+import '../../../models/Offline/Hive/video.dart';
 import '../http/m_client.dart';
 import '../xpath_selector.dart';
 
@@ -11,8 +10,7 @@ class Mp4uploadExtractor {
   static final RegExp qualityRegex = RegExp(r'\WHEIGHT=(\d+)');
   static const String referer = "https://mp4upload.com/";
   final InterceptedClient client =
-      MClient.init(reqcopyWith: {'useDartHttpClient': true});
-
+  MClient.init(reqcopyWith: {'useDartHttpClient': true});
   Future<List<Video>> videosFromUrl(String url, Map<String, String> headers,
       {String prefix = '', String suffix = ''}) async {
     final newHeaders = Map<String, String>.from(headers)
@@ -23,7 +21,7 @@ class Mp4uploadExtractor {
 
       final scriptElementWithEval = xpathSelector(response.body)
           .queryXPath(
-              '//script[contains(text(), "eval") and contains(text(), "p,a,c,k,e,d")]/text()')
+          '//script[contains(text(), "eval") and contains(text(), "p,a,c,k,e,d")]/text()')
           .attrs;
 
       if (scriptElementWithEval.isNotEmpty) {

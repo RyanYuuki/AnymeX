@@ -19,17 +19,23 @@ class OfflineStorageAdapter extends TypeAdapter<OfflineStorage> {
     return OfflineStorage(
       animeLibrary: (fields[0] as List?)?.cast<OfflineMedia>(),
       mangaLibrary: (fields[1] as List?)?.cast<OfflineMedia>(),
+      animeCustomList: (fields[2] as List?)?.cast<CustomList>(),
+      mangaCustomList: (fields[3] as List?)?.cast<CustomList>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, OfflineStorage obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.animeLibrary)
       ..writeByte(1)
-      ..write(obj.mangaLibrary);
+      ..write(obj.mangaLibrary)
+      ..writeByte(2)
+      ..write(obj.animeCustomList)
+      ..writeByte(3)
+      ..write(obj.mangaCustomList);
   }
 
   @override

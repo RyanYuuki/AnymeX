@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsPlayer extends StatefulWidget {
-  const SettingsPlayer({super.key});
+  final bool isModal;
+  const SettingsPlayer({super.key, this.isModal = false});
 
   @override
   State<SettingsPlayer> createState() => _SettingsPlayerState();
@@ -75,56 +76,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
-                            ),
-                            child: Text('Cancel',
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primaryFixed,
-                            ),
-                            child: const Text('Confirm',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ));
@@ -178,56 +129,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
-                            ),
-                            child: Text('Cancel',
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primaryFixed,
-                            ),
-                            child: const Text('Confirm',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ));
@@ -277,6 +178,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
+        backgroundColor: widget.isModal
+            ? Theme.of(context).colorScheme.surfaceContainer
+            : Colors.transparent,
         body: SingleChildScrollView(
           child: Padding(
             padding: getResponsiveValue(context,
@@ -286,24 +190,32 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                      ),
-                      onPressed: () {
-                        Get.back();
-                      },
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text("Player Settings",
+                if (widget.isModal) ...[
+                  const Center(
+                    child: Text("Player Settings",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20)),
-                  ],
-                ),
+                  )
+                ] else ...[
+                  Row(
+                    children: [
+                      IconButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                        ),
+                        onPressed: () {
+                          Get.back();
+                        },
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text("Player Settings",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20)),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 30),
                 Obx(() => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

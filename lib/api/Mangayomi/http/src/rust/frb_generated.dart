@@ -1803,9 +1803,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case HttpHeaders_List(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_list_record_string_string(field0, serializer);
-      default:
-        throw UnimplementedError('');
-    }
+      }
   }
 
   @protected
@@ -1836,9 +1834,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_strict(field0, serializer);
       case HttpResponseBody_Stream():
         sse_encode_i_32(2, serializer);
-      default:
-        throw UnimplementedError('');
-    }
+      }
   }
 
   @protected
@@ -2043,9 +2039,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case RedirectSettings_LimitedRedirects(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_i_32(field0, serializer);
-      default:
-        throw UnimplementedError('');
-    }
+      }
   }
 
   @protected
@@ -2076,9 +2070,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case RhttpError_RhttpUnknownError(field0: final field0):
         sse_encode_i_32(6, serializer);
         sse_encode_String(field0, serializer);
-      default:
-        throw UnimplementedError('');
-    }
+      }
   }
 
   @protected

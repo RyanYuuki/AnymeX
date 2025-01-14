@@ -37,6 +37,9 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
           fields[8] != null ? fields[8] as int : 85, // Default to 85 if null
       seekDuration:
           fields[9] != null ? fields[9] as int : 10, // Default to 10 if null
+      bottomMargin: fields[10] != null
+          ? fields[10] as double
+          : 5.0, // Default to 10 if null
     );
   }
 

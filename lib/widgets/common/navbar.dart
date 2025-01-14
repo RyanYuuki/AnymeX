@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
@@ -54,7 +52,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
 
     final int itemsCount = widget.items.length;
     final double calculatedHeight = widget.isDesktop
-        ? (itemsCount * 69.0)
+        ? (itemsCount * 71.0)
             .clamp(400, MediaQuery.of(context).size.height - 100)
         : widget.height ?? 75;
     final RxBool translucent = Get.find<Settings>().transculentBar.obs;
@@ -69,7 +67,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
             width: 1,
           ),
           borderRadius: widget.borderRadius ??
-              BorderRadius.circular(widget.isDesktop ? 50 : 24),
+              BorderRadius.circular(widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
         ),
         padding: widget.padding ?? const EdgeInsets.all(0),
         margin: widget.margin ??
@@ -82,7 +80,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
         height: calculatedHeight,
         child: ClipRRect(
           borderRadius: widget.borderRadius ??
-              BorderRadius.circular(widget.isDesktop ? 50 : 24),
+              BorderRadius.circular(widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -379,4 +377,140 @@ class NavItem {
       this.iconSize,
       this.altIcon,
       required this.onTap});
+}
+
+class BlurredContainer extends StatelessWidget {
+  final List<Widget> children;
+  final double? height;
+  final EdgeInsets? margin;
+  final EdgeInsets? padding;
+  final double? elevation;
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final double blurIntensity;
+  final Color? borderColor;
+  final double borderWidth;
+
+  const BlurredContainer({
+    super.key,
+    required this.children,
+    this.height,
+    this.margin,
+    this.padding,
+    this.elevation,
+    this.borderRadius,
+    this.backgroundColor,
+    this.blurIntensity = 15.0,
+    this.borderColor,
+    this.borderWidth = 1.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: height,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        padding: padding ?? const EdgeInsets.all(16),
+        margin: margin ?? const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: borderRadius ?? BorderRadius.circular(24),
+          border: Border.all(
+            color: borderColor ?? theme.colorScheme.onSurface.withOpacity(0.2),
+            width: borderWidth,
+          ),
+          boxShadow: elevation != null
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: elevation!,
+                    offset: const Offset(0, 2),
+                  )
+                ]
+              : null,
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(24),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: blurIntensity,
+                  sigmaY: blurIntensity,
+                ),
+                child: Container(),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: children,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BlurredContainerItem extends StatelessWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+  final IconData selectedIcon;
+  final IconData unselectedIcon;
+  final String label;
+
+  const BlurredContainerItem({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+    required this.selectedIcon,
+    required this.unselectedIcon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isSelected
+                  ? theme.colorScheme.primary.withOpacity(0.2)
+                  : Colors.transparent,
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Icon(
+              isSelected ? selectedIcon : unselectedIcon,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface,
+              size: 24,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -1,10 +1,9 @@
 import 'package:anymex/utils/string_extensions.dart';
-
 import 'package:anymex/api/Mangayomi/anime_extractors/streamlare_extractor.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:js_packer/js_packer.dart';
 
-import '../Eval/dart/model/video.dart';
+import '../../../models/Offline/Hive/video.dart';
 import '../http/m_client.dart';
 import '../xpath_selector.dart';
 

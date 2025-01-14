@@ -1,9 +1,11 @@
-import 'dart:math';
+import 'dart:developer';
+import 'dart:math' show Random;
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
@@ -53,22 +55,30 @@ class ReusableCarousel extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               final itemData = newData[index];
               final tag = generateTag('${itemData.id}-$index');
+              final isMangaAlt = itemData.extraData == "MANGA";
 
               return Obx(() => GestureDetector(
                     onTap: () {
-                      if (isManga) {
-                        Get.to(() => MangaDetailsPage(
-                              anilistId: itemData.id!,
-                              tag: tag,
-                              posterUrl: itemData.poster!,
-                            ));
-                      } else {
-                        Get.to(() => AnimeDetailsPage(
-                              anilistId: itemData.id!,
-                              tag: tag,
-                              posterUrl: itemData.poster!,
-                            ));
-                      }
+                      final isMangaPage =
+                          (variant == DataVariant.relation && isMangaAlt) ||
+                              isManga;
+
+                      final page = variant == DataVariant.extension
+                          ? const NovelDetailsPage()
+                          : isMangaPage
+                              ? MangaDetailsPage(
+                                  key: ValueKey(itemData.id),
+                                  anilistId: itemData.id!,
+                                  tag: tag,
+                                  posterUrl: itemData.poster!,
+                                )
+                              : AnimeDetailsPage(
+                                  key: ValueKey(itemData.id),
+                                  anilistId: itemData.id!,
+                                  tag: tag,
+                                  posterUrl: itemData.poster!,
+                                );
+                      Get.to(() => page, preventDuplicates: false);
                     },
                     child: SlideAndScaleAnimation(
                       initialScale: 0.0,
@@ -78,11 +88,11 @@ class ReusableCarousel extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius:
-                                BorderRadius.circular(16.multiplyRoundness())),
+                                BorderRadius.circular(12.multiplyRoundness())),
                         clipBehavior: Clip.antiAlias,
                         margin: const EdgeInsets.only(right: 10),
                         constraints:
-                            BoxConstraints(maxWidth: isDesktop ? 150 : 110),
+                            BoxConstraints(maxWidth: isDesktop ? 150 : 105),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -92,8 +102,8 @@ class ReusableCarousel extends StatelessWidget {
                                   tag: tag,
                                   child: NetworkSizedImage(
                                       imageUrl: itemData.poster!,
-                                      radius: 16.multiplyRoundness(),
-                                      height: isDesktop ? 200 : 155,
+                                      radius: 12.multiplyRoundness(),
+                                      height: isDesktop ? 200 : 160,
                                       width: double.infinity),
                                 ),
                                 _buildExtraData(context, itemData)
@@ -166,6 +176,8 @@ class ReusableCarousel extends StatelessWidget {
       case DataVariant.relation:
         final icon = extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
         return icon;
+      case DataVariant.extension:
+        return Iconsax.status;
       default:
         return Iconsax.star5;
     }

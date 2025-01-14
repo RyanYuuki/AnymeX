@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/screens/library/online/widgets/items.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -115,10 +118,17 @@ int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
 
 class MangaListContent extends StatelessWidget {
   final String tabType;
-  final List<AnilistMediaUser> mangaData;
+  final List<AnilistMediaUser>? mangaData;
 
-  const MangaListContent(
-      {super.key, required this.tabType, required this.mangaData});
+  const MangaListContent({
+    super.key,
+    required this.tabType,
+    required this.mangaData,
+  });
+
+  int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
+    return (screenWidth / itemWidth).floor().clamp(1, 10);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,10 +136,10 @@ class MangaListContent extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final filteredMangaList = _filterMangaByStatus(mangaData, tabType);
+    final filteredAnimeList = _filterMangaByStatus(mangaData!, tabType);
 
-    if (filteredMangaList.isEmpty) {
-      return Center(child: Text('No manga found for $tabType'));
+    if (filteredAnimeList.isEmpty) {
+      return Center(child: Text('No anime found for $tabType'));
     }
 
     return Padding(
@@ -139,10 +149,14 @@ class MangaListContent extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
-          itemCount: filteredMangaList.length,
+          itemCount: filteredAnimeList.length,
           itemBuilder: (context, index) {
-            final item = filteredMangaList[index];
-            return mangaItem(context, item, index);
+            final item = filteredAnimeList[index];
+            final tag = '${Random().nextInt(100000)}$index';
+            final posterUrl = item.poster ??
+                'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
+            return listItem(
+                context, item, tag, posterUrl, filteredAnimeList, index);
           },
         ),
         desktopBuilder: GridView.builder(
@@ -152,124 +166,16 @@ class MangaListContent extends StatelessWidget {
                   MediaQuery.of(context).size.width),
               mainAxisExtent: 270,
               crossAxisSpacing: 10),
-          itemCount: filteredMangaList.length,
+          itemCount: filteredAnimeList.length,
           itemBuilder: (context, index) {
-            final item = filteredMangaList[index]['media'];
-            return mangaItemDesktop(context, item, index);
+            final item = filteredAnimeList[index] as AnilistMediaUser;
+            final tag = '${Random().nextInt(100000)}$index';
+            final posterUrl = item.poster ??
+                'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
+            return listItemDesktop(
+                context, item, tag, posterUrl, filteredAnimeList, index);
           },
         ),
-      ),
-    );
-  }
-
-  GestureDetector mangaItem(
-      BuildContext context, AnilistMediaUser item, int index) {
-    return GestureDetector(
-      onTap: () {},
-      child: Column(
-        children: [
-          Hero(
-            tag: item.id!,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: CachedNetworkImage(
-                height: 170,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                imageUrl: item.poster ??
-                    'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
-                placeholder: (context, url) =>
-                    const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-            ),
-          ),
-          const SizedBox(height: 7),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.title ?? '?',
-                maxLines: 2,
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(height: 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.episodeCount?.toString() ?? '?',
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
-                  ),
-                  Text(' | ',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary)),
-                  Text(
-                    item.chapterCount?.toString() ?? '?',
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
-                  ),
-                ],
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  GestureDetector mangaItemDesktop(
-      BuildContext context, AnilistMediaUser item, int index) {
-    return GestureDetector(
-      onTap: () {},
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 200,
-            child: Hero(
-              tag: item.id!,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: CachedNetworkImage(
-                  width: double.maxFinite,
-                  fit: BoxFit.cover,
-                  imageUrl: item.poster ??
-                      'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/default.jpg',
-                  placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            item.title ?? '?',
-            maxLines: 2,
-            style: const TextStyle(fontSize: 12),
-          ),
-          const SizedBox(height: 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.episodeCount?.toString() ?? '?',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
-              Text(' | ',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary)),
-              Text(
-                item.chapterCount?.toString() ?? '?',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
-            ],
-          )
-        ],
       ),
     );
   }

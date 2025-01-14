@@ -218,7 +218,6 @@ class $MDocument implements MDocument, $Instance {
   void $setProperty(Runtime runtime, String identifier, $Value value) {}
 
   static const $Function __select = $Function(_select);
-
   static $Value? _select(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).select(args[0]?.$value);
@@ -228,7 +227,6 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __selectFirst = $Function(_selectFirst);
-
   static $Value? _selectFirst(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).selectFirst(args[0]?.$value);
@@ -241,31 +239,28 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __getElementsByClassName =
-      $Function(_getElementsByClassName);
-
+  $Function(_getElementsByClassName);
   static $Value? _getElementsByClassName(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res =
-        (target!.$value as MDocument).getElementsByClassName(args[0]?.$value);
+    (target!.$value as MDocument).getElementsByClassName(args[0]?.$value);
     return res == null
         ? const $null()
         : $List.wrap(res.map((e) => $MElement.wrap(e)).toList());
   }
 
   static const $Function __getElementsByTagName =
-      $Function(_getElementsByTagName);
-
+  $Function(_getElementsByTagName);
   static $Value? _getElementsByTagName(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res =
-        (target!.$value as MDocument).getElementsByTagName(args[0]?.$value);
+    (target!.$value as MDocument).getElementsByTagName(args[0]?.$value);
     return res == null
         ? const $null()
         : $List.wrap(res.map((e) => $MElement.wrap(e)).toList());
   }
 
   static const $Function __getElementById = $Function(_getElementById);
-
   static $Value? _getElementById(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).getElementById(args[0]?.$value);
@@ -273,7 +268,6 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __xpath = $Function(_xpath);
-
   static $Value? _xpath(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).xpath(args[0]?.$value);
@@ -281,7 +275,6 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __xpathFirst = $Function(_xpathFirst);
-
   static $Value? _xpathFirst(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).xpathFirst(args[0]?.$value);
@@ -289,7 +282,6 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __attr = $Function(_attr);
-
   static $Value? _attr(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).attr(args[0]?.$value ?? "");
@@ -297,7 +289,6 @@ class $MDocument implements MDocument, $Instance {
   }
 
   static const $Function __hasAttr = $Function(_hasAttr);
-
   static $Value? _hasAttr(
       final Runtime runtime, final $Value? target, final List<$Value?> args) {
     final res = (target!.$value as MDocument).attr(args[0]?.$value ?? "");

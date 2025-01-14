@@ -36,9 +36,12 @@ class Settings extends GetxController {
   }
 
   Map<String, bool> get homePageCards => uiSettings.value.homePageCards;
-  set homePageCards(Map<String, bool> value) {
+
+  void updateHomePageCard(String key, bool value) {
+    final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
+    currentCards[key] = value;
     uiSettings.update((settings) {
-      settings?.homePageCards = value;
+      settings?.homePageCards = currentCards;
     });
     saveUISettings();
   }
@@ -204,6 +207,14 @@ class Settings extends GetxController {
     savePlayerSettings();
   }
 
+  double get bottomMargin => playerSettings.value.bottomMargin;
+  set bottomMargin(double value) {
+    playerSettings.update((settings) {
+      settings?.bottomMargin = value;
+    });
+    savePlayerSettings();
+  }
+
   void savePlayerSettings() {
     var playerBox = Hive.box<PlayerSettings>("PlayerSettings");
     playerBox.put('settings', playerSettings.value);
@@ -212,5 +223,6 @@ class Settings extends GetxController {
   void saveUISettings() {
     var uiBox = Hive.box<UISettings>("UiSettings");
     uiBox.put('settings', uiSettings.value);
+    update();
   }
 }

@@ -6,6 +6,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -84,21 +85,12 @@ class _BigCarouselState extends State<BigCarousel> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
-                                imageUrl: posterUrl,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                alignment: Alignment.topCenter,
-                                placeholder: (context, url) =>
-                                    Shimmer.fromColors(
-                                  baseColor: Colors.grey[900]!,
-                                  highlightColor: Colors.grey[700]!,
-                                  child: Container(
-                                    color: Colors.grey[400],
-                                    height: 250,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                              ),
+                                  imageUrl: posterUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  alignment: Alignment.topCenter,
+                                  placeholder: (context, url) =>
+                                      placeHolderWidget(context)),
                             ),
                           ),
                         ),

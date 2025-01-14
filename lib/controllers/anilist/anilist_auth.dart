@@ -276,6 +276,154 @@ class AnilistAuth extends GetxController {
     }
   }
 
+  Future<void> deleteMediaFromList(int listId, {bool isAnime = true}) async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      return;
+    }
+
+    const mutation = '''
+  mutation DeleteMediaListEntry(\$id: Int) {
+    DeleteMediaListEntry(id: \$id) {
+      deleted
+    }
+  }
+  ''';
+
+    try {
+      if (profileData.value?.id == null) {
+        log('User ID is not available. Fetching user profile first.');
+        await fetchUserProfile();
+      }
+
+      final userId = profileData.value?.id;
+      if (userId == null) {
+        throw Exception('Failed to get user ID');
+      }
+
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {
+            'id': listId,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['data'] != null &&
+            data['data']['DeleteMediaListEntry'] != null &&
+            data['data']['DeleteMediaListEntry']['deleted']) {
+          log("Media with list ID $listId deleted successfully!");
+
+          if (isAnime) {
+            await fetchUserAnimeList();
+          } else {
+            await fetchUserMangaList();
+          }
+        } else {
+          log('Failed to delete media with list ID $listId');
+        }
+      } else {
+        log('Delete failed with status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Failed to delete media: $e');
+    }
+  }
+
+  Future<void> updateListEntry({
+    required int listId,
+    double? score,
+    String? status,
+    int? progress,
+    bool isAnime = true,
+  }) async {
+    final token = await storage.get('auth_token');
+    if (token == null) {
+      return;
+    }
+
+    const String mutation = '''
+  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
+    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status) {
+      id
+      status
+      progress
+      score
+    }
+  }
+  ''';
+
+    try {
+      if (profileData.value?.id == null) {
+        log('User ID is not available. Fetching user profile first.');
+        await fetchUserProfile();
+      }
+
+      final userId = profileData.value?.id;
+      if (userId == null) {
+        throw Exception('Failed to get user ID');
+      }
+
+      final variables = <String, dynamic>{
+        'id': listId,
+      };
+
+      if (score != null) {
+        variables['score'] = score;
+      }
+      if (status != null) {
+        variables['status'] = status;
+      }
+      if (progress != null) {
+        variables['progress'] = progress;
+      }
+
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': variables,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['data'] != null &&
+            data['data']['UpdateMediaListEntry'] != null) {
+          log("Media with list ID $listId updated successfully!");
+
+          if (isAnime) {
+            await fetchUserAnimeList();
+          } else {
+            await fetchUserMangaList();
+          }
+        } else {
+          log('Failed to update media with list ID $listId');
+        }
+      } else {
+        log('Update failed with status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
+      }
+    } catch (e) {
+      log('Failed to update media: $e');
+    }
+  }
+
   Future<void> fetchUserMangaList() async {
     final token = await storage.get('auth_token');
     if (token == null) {

@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -149,17 +150,7 @@ class NetworkSizedImage extends StatelessWidget {
           fit: BoxFit.cover,
           alignment: alignment,
           imageUrl: imageUrl,
-          placeholder: (context, url) {
-            return Shimmer.fromColors(
-              baseColor: Theme.of(context).colorScheme.surfaceContainer,
-              highlightColor: Theme.of(context).colorScheme.primary,
-              child: Container(
-                width: 80,
-                height: 80,
-                color: Theme.of(context).colorScheme.secondaryContainer,
-              ),
-            );
-          },
+          placeholder: (context, url) => placeHolderWidget(context),
         ));
   }
 }

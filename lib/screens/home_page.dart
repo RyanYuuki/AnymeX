@@ -1,7 +1,10 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:developer';
+
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
@@ -23,7 +26,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final anilistAuth = Get.find<AnilistAuth>();
+    final settings = Get.find<Settings>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
+    final acceptedLists = settings.homePageCards.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
+
     return RefreshIndicator(
       onRefresh: () {
         if (!anilistAuth.isLoggedIn.value) {
@@ -102,17 +111,20 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    ReusableCarousel(
-                      data: anilistAuth.currentlyWatching.value,
-                      title: "Currently Watching",
-                      variant: DataVariant.anilist,
-                    ),
-                    ReusableCarousel(
-                      data: anilistAuth.currentlyReading.value,
-                      title: "Currently Reading",
-                      isManga: true,
-                      variant: DataVariant.anilist,
-                    )
+                    Obx(() => Column(
+                          children: acceptedLists.map((e) {
+                            return ReusableCarousel(
+                              data: filterListByLabel(
+                                  e.contains("Manga") || e.contains("Reading")
+                                      ? anilistAuth.mangaList
+                                      : anilistAuth.animeList,
+                                  e),
+                              title: e,
+                              variant: DataVariant.anilist,
+                              isManga: e.contains("Manga"),
+                            );
+                          }).toList(),
+                        ))
                   ],
                 );
               } else {
@@ -207,8 +219,10 @@ class ImageButton extends StatelessWidget {
                 shadowColor: Colors.black.withOpacity(0.2),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                  ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.7)),
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),

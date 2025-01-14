@@ -1,7 +1,7 @@
 name: anymex
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.0
+version: 2.8.6
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
@@ -34,7 +34,9 @@ dependencies:
   isar: ^3.1.0+1
   json_path: ^0.7.4
   intl: ^0.20.1
-  isar_flutter_libs: 3.1.0+1
+  isar_flutter_libs:
+    git: 
+      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
   riverpod_annotation: ^2.6.1
   pseudom: ^1.0.1
   flutter_rust_bridge: ^2.7.0
@@ -51,6 +53,12 @@ dependencies:
   shimmer: ^3.0.0
   expandable_page_view: ^1.0.17
   checkmark: ^0.0.2+1
+  flutter_inappwebview: ^6.1.5
+  extended_image: ^9.1.0
+  carousel_slider: ^5.0.0
+  smooth_page_indicator: ^1.2.0+3
+  blur: ^4.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +66,8 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   build_runner: ^2.4.11
   hive_generator: ^2.0.1
+  rename_app: ^1.6.2
+  change_app_package_name: ^1.4.0
 
 flutter:
   uses-material-design: true

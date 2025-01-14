@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:anymex/api/Mangayomi/Eval/dart/model/page.dart';
 import 'package:anymex/api/Mangayomi/Search/get_pages.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
@@ -12,7 +11,6 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -91,18 +89,22 @@ class _ReadingPageState extends State<ReadingPage> {
   }
 
   void _initTracker() {
+    currentChapter.value.sourceName =
+        sourceController.activeMangaSource.value?.name;
     offlineStorage.addOrUpdateManga(
         widget.anilistData, widget.chapterList, currentChapter.value);
     final savedChapter = offlineStorage.getReadChapter(
         widget.anilistData.id, currentChapter.value.number ?? -10);
-    if ((savedChapter?.pageNumber ?? 0) < mangaPages.length &&
-        savedChapter?.pageNumber != null) {
-      navigateToPage(savedChapter!.pageNumber!.toInt());
+    if (savedChapter != null && savedChapter.currentOffset != null) {
+      currentChapter.value.maxOffset = savedChapter.maxOffset;
+      scrollToProgress(savedChapter);
     }
     updateAnilist(false);
   }
 
   Future<void> updateAnilist(bool next) async {
+    currentChapter.value.sourceName =
+        sourceController.activeMangaSource.value!.name;
     offlineStorage.addOrUpdateManga(
         anilistData.value, chapterList, currentChapter.value);
     offlineStorage.addOrUpdateReadChapter(
@@ -126,6 +128,26 @@ class _ReadingPageState extends State<ReadingPage> {
     scrollController.removeListener(_updateScrollProgress);
     scrollController.dispose();
     super.dispose();
+  }
+
+  void scrollToProgress(Chapter chapter) {
+    currentPageIndex.value = chapter.pageNumber ?? 1;
+
+    if (activeMode.value != ReadingMode.webtoon) {
+      pageController.animateToPage(
+        chapter.pageNumber ?? 0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        scrollController.jumpTo(
+          chapter.currentOffset ?? 0,
+        );
+      });
+    }
+
+    _updateNavigationState();
   }
 
   void navigateToPage(int pageIndex) {
@@ -167,15 +189,13 @@ class _ReadingPageState extends State<ReadingPage> {
         currentPageIndex.value = 0;
         currentChapter.value.totalPages = mangaPages.length;
         _updateNavigationState();
+        _initTracker();
       }
     } catch (e) {
       debugPrint('Error fetching images: $e');
       mangaPages.clear();
     } finally {
       isLoading.value = false;
-      Future.delayed(const Duration(seconds: 1), () {
-        _initTracker();
-      });
     }
   }
 
@@ -280,6 +300,8 @@ class _ReadingPageState extends State<ReadingPage> {
 
       final currentPage = (progress * (mangaPages.length - 1)).round();
       currentChapter.value.pageNumber = currentPage;
+      currentChapter.value.currentOffset = currentScroll;
+      currentChapter.value.maxOffset = maxScrollExtent;
 
       _debounce = Timer(const Duration(milliseconds: 300), () {
         if (currentPage != currentPageIndex.value) {
@@ -421,7 +443,10 @@ class _ReadingPageState extends State<ReadingPage> {
                     mobileSize: double.infinity,
                     dektopSize: defaultWidth.value * pageWidthMultiplier.value),
                 progressIndicatorBuilder: (context, url, progress) => SizedBox(
-                    height: MediaQuery.of(context).size.height,
+                    height: ((currentChapter.value.maxOffset ??
+                            (MediaQuery.of(context).size.height *
+                                mangaPages.length)) /
+                        mangaPages.length),
                     width: double.infinity,
                     child: Center(
                       child: CircularProgressIndicator(

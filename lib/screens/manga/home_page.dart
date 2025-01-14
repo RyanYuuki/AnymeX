@@ -1,6 +1,10 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:developer';
+
 import 'package:anymex/controllers/anilist/anilist_data.dart';
+import 'package:anymex/screens/manga/widgets/search_selector.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -27,8 +31,10 @@ class MangaHomePage extends StatelessWidget {
             return Column(
               children: [
                 CustomSearchBar(
-                  onSubmitted: (val) {},
-                  hintText: "Search Manga...",
+                  onSubmitted: (val) {
+                    searchTypeSheet(context, val);
+                  },
+                  hintText: "Search...",
                 ),
                 BigCarousel(
                   isManga: true,
@@ -55,6 +61,16 @@ class MangaHomePage extends StatelessWidget {
                   data: anilistData.latestMangas.value,
                   isManga: true,
                 ),
+                ...anilistData.novelData.entries.map<Widget>((entry) {
+                  final key = entry.key;
+                  final val = entry.value;
+
+                  return ReusableCarousel(
+                    data: val!,
+                    title: key.name!,
+                    variant: DataVariant.extension,
+                  );
+                })
               ],
             );
           }),

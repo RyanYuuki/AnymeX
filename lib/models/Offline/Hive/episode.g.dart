@@ -25,13 +25,16 @@ class EpisodeAdapter extends TypeAdapter<Episode> {
       filler: fields[5] as bool?,
       timeStampInMilliseconds: fields[6] as int?,
       durationInMilliseconds: fields[7] as int?,
+      lastWatchedTime: fields[8] as int?,
+      currentTrack: (fields[9] as Video?),
+      videoTracks: (fields[10] as List?)?.cast<Video>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Episode obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.number)
       ..writeByte(1)
@@ -47,7 +50,13 @@ class EpisodeAdapter extends TypeAdapter<Episode> {
       ..writeByte(6)
       ..write(obj.timeStampInMilliseconds)
       ..writeByte(7)
-      ..write(obj.durationInMilliseconds);
+      ..write(obj.durationInMilliseconds)
+      ..writeByte(8)
+      ..write(obj.lastWatchedTime)
+      ..writeByte(9)
+      ..write(obj.currentTrack)
+      ..writeByte(10)
+      ..write(obj.videoTracks);
   }
 
   @override

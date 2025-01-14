@@ -4,13 +4,13 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:js_packer/js_packer.dart';
 
-import '../Eval/dart/model/video.dart';
+import '../../../models/Offline/Hive/video.dart';
 import '../http/m_client.dart';
 import '../xpath_selector.dart';
 
 class FilemoonExtractor {
   final InterceptedClient client =
-      MClient.init(reqcopyWith: {'useDartHttpClient': true});
+  MClient.init(reqcopyWith: {'useDartHttpClient': true});
 
   Future<List<Video>> videosFromUrl(
       String url, String prefix, String suffix) async {
@@ -41,7 +41,7 @@ class FilemoonExtractor {
       if (subUrl.isNotEmpty) {
         try {
           final subResponse =
-              await client.get(Uri.parse(subUrl), headers: videoHeaders);
+          await client.get(Uri.parse(subUrl), headers: videoHeaders);
           final subList = jsonDecode(subResponse.body) as List;
           for (var item in subList) {
             subtitleTracks.add(Track(file: item["file"], label: item["label"]));

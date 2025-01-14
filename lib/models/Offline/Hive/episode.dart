@@ -1,3 +1,4 @@
+import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:hive/hive.dart';
 
 part 'episode.g.dart';
@@ -28,6 +29,15 @@ class Episode extends HiveObject {
   @HiveField(7)
   int? durationInMilliseconds;
 
+  @HiveField(8)
+  int? lastWatchedTime;
+
+  @HiveField(9)
+  Video? currentTrack;
+
+  @HiveField(10)
+  List<Video>? videoTracks;
+
   Episode(
       {required this.number,
       this.link,
@@ -36,5 +46,8 @@ class Episode extends HiveObject {
       this.thumbnail,
       this.filler,
       this.timeStampInMilliseconds,
-      this.durationInMilliseconds});
+      this.durationInMilliseconds,
+      this.lastWatchedTime,
+      this.currentTrack,
+      this.videoTracks});
 }

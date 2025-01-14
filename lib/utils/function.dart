@@ -7,9 +7,24 @@ import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart' as offline;
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+extension StringExtensions on String {
+  String get getUrlWithoutDomain {
+    final uri = Uri.parse(replaceAll(' ', '%20'));
+    String out = uri.path;
+    if (uri.query.isNotEmpty) {
+      out += '?${uri.query}';
+    }
+    if (uri.fragment.isNotEmpty) {
+      out += '#${uri.fragment}';
+    }
+    return out;
+  }
+}
 
 String convertAniListStatus(String? status) {
   switch (status?.toUpperCase()) {
@@ -270,7 +285,7 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
   ];
 }
 
-enum DataVariant { regular, recommendation, relation, anilist }
+enum DataVariant { regular, recommendation, relation, anilist, extension }
 
 List<CarouselData> convertData(List<dynamic> data,
     {DataVariant variant = DataVariant.regular}) {
@@ -294,13 +309,184 @@ List<CarouselData> convertData(List<dynamic> data,
         final ext = data.episodeCount;
         extra = ext ?? "??";
         break;
+      case DataVariant.extension:
+      // TODO: Handle this case.
+    }
+    if (variant == DataVariant.extension) {
+      final data = e as MManga;
+      return CarouselData(
+        id: data.link,
+        title: data.name,
+        poster: data.imageUrl,
+        extraData: data.author?.toUpperCase() ?? 'NOVEL',
+      );
+    } else {
+      return CarouselData(
+        id: e.id.toString(),
+        title: e.title,
+        poster: e.poster,
+        extraData: extra,
+      );
+    }
+  }).toList();
+}
+
+String formatTimeAgo(int millisecondsSinceEpoch) {
+  final now = DateTime.now();
+  final date = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+
+  final difference = now.difference(date);
+
+  if (difference.inSeconds < 60) {
+    return "${difference.inSeconds} seconds ago";
+  } else if (difference.inMinutes < 60) {
+    return "${difference.inMinutes} minutes ago";
+  } else if (difference.inHours < 24) {
+    return "${difference.inHours} hours ago";
+  } else if (difference.inDays < 7) {
+    return "${difference.inDays} days ago";
+  } else {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+}
+
+AnilistMediaData convertOfflineToAnilistMediaData(OfflineMedia offlineMedia) {
+  return AnilistMediaData(
+    id: offlineMedia.id ?? 0,
+    jname: offlineMedia.jname ?? '',
+    name: offlineMedia.name ?? '',
+    english: offlineMedia.english ?? '',
+    japanese: offlineMedia.japanese ?? '',
+    description: offlineMedia.description ?? '',
+    poster: offlineMedia.poster ?? '',
+    cover: offlineMedia.cover,
+    totalEpisodes: offlineMedia.totalEpisodes ?? '',
+    type: offlineMedia.type ?? '',
+    season: offlineMedia.season ?? '',
+    premiered: offlineMedia.premiered ?? '',
+    duration: offlineMedia.duration ?? '',
+    status: offlineMedia.status ?? '',
+    rating: offlineMedia.rating ?? '',
+    popularity: offlineMedia.popularity ?? '',
+    format: offlineMedia.format ?? '',
+    aired: offlineMedia.aired ?? '',
+    totalChapters: offlineMedia.totalChapters ?? '',
+    genres: offlineMedia.genres ?? [],
+    studios: offlineMedia.studios ?? [],
+    characters: [],
+    relations: [],
+    recommendations: [],
+    nextAiringEpisode: null,
+    rankings: [],
+  );
+}
+
+List<AnilistMediaUser> filterListByStatus(
+    List<AnilistMediaUser> animeList, String status) {
+  switch (status.toUpperCase()) {
+    case 'WATCHING':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'CURRENT')
+          .toList();
+    case 'READING':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'CURRENT')
+          .toList();
+    case 'COMPLETED TV':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'TV')
+          .toList();
+    case 'COMPLETED MOVIE':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'MOVIE')
+          .toList();
+    case 'COMPLETED OVA':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'OVA')
+          .toList();
+    case 'COMPLETED SPECIAL':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'SPECIAL')
+          .toList();
+    case 'PAUSED':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'PAUSED')
+          .toList();
+    case 'DROPPED':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'DROPPED')
+          .toList();
+    case 'PLANNING':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'PLANNING')
+          .toList();
+    case 'REWATCHING':
+      return animeList
+          .where((anime) => anime.watchingStatus == "REPEATING")
+          .toList();
+
+    case 'CURRENTLY WATCHING':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'CURRENT')
+          .toList();
+    case 'CURRENTLY READING':
+      return animeList
+          .where((anime) => anime.watchingStatus == 'CURRENT')
+          .toList();
+    case 'ALL':
+      return animeList;
+    default:
+      return [];
+  }
+}
+
+List<AnilistMediaUser> filterListByLabel(
+    List<AnilistMediaUser> animeList, String label) {
+  return animeList.where((anime) {
+    if (label == "Continue Watching" && anime.watchingStatus == 'CURRENT') {
+      return true;
+    }
+    if (label == "Continue Reading" && anime.watchingStatus == 'CURRENT') {
+      return true;
+    }
+    if (label == "Completed TV" && anime.watchingStatus == 'COMPLETED') {
+      return true;
+    }
+    if (label == "Completed Manga" && anime.watchingStatus == 'COMPLETED') {
+      return true;
+    }
+    if (label == "Completed Movie" && anime.watchingStatus == 'COMPLETED') {
+      return true;
+    }
+    if (label == "Paused Animes" && anime.watchingStatus == 'PAUSED') {
+      return true;
+    }
+    if (label == "Paused Manga" && anime.watchingStatus == 'PAUSED') {
+      return true;
+    }
+    if (label == "Dropped Animes" && anime.watchingStatus == 'DROPPED') {
+      return true;
+    }
+    if (label == "Dropped Manga" && anime.watchingStatus == 'DROPPED') {
+      return true;
+    }
+    if (label == "Planning Animes" && anime.watchingStatus == 'PLANNING') {
+      return true;
+    }
+    if (label == "Planning Manga" && anime.watchingStatus == 'PLANNING') {
+      return true;
+    }
+    if (label == "Rewatching Animes" && anime.watchingStatus == 'REPEATING') {
+      return true;
+    }
+    if (label == "Rewatching Manga" && anime.watchingStatus == 'REPEATING') {
+      return true;
     }
 
-    return CarouselData(
-      id: e.id.toString(),
-      title: e.title,
-      poster: e.poster,
-      extraData: extra,
-    );
+    return false;
   }).toList();
 }

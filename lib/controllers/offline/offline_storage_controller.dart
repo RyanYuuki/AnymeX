@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:get/get.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
@@ -10,6 +11,10 @@ import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 class OfflineStorageController extends GetxController {
   var animeLibrary = <OfflineMedia>[].obs;
   var mangaLibrary = <OfflineMedia>[].obs;
+  List<CustomList> animeCustomLists = [CustomList()];
+  List<CustomList> mangaCustomLists = [CustomList()];
+  RxList<CustomListData> animeCustomListData = <CustomListData>[].obs;
+  RxList<CustomListData> mangaCustomListData = <CustomListData>[].obs;
 
   late Box<OfflineStorage> _offlineStorageBox;
 
@@ -30,38 +35,73 @@ class OfflineStorageController extends GetxController {
 
     animeLibrary.assignAll(offlineStorage.animeLibrary ?? []);
     mangaLibrary.assignAll(offlineStorage.mangaLibrary ?? []);
+    animeCustomLists
+        .assignAll(offlineStorage.animeCustomList ?? [CustomList()]);
+    mangaCustomLists
+        .assignAll(offlineStorage.mangaCustomList ?? [CustomList()]);
+    _initListData();
+  }
+
+  void _initListData() {
+    for (var e in animeCustomLists) {
+      final field = e.mediaIds
+          ?.map((e) => getAnimeById(e))
+          .where((media) => media != null)
+          .cast<OfflineMedia>()
+          .toList();
+
+      animeCustomListData
+          .add(CustomListData(listData: field!, listName: e.listName!));
+    }
+    for (var e in mangaCustomLists) {
+      final field = e.mediaIds
+          ?.map((e) => getMangaById(e))
+          .where((media) => media != null)
+          .cast<OfflineMedia>()
+          .toList();
+
+      mangaCustomListData
+          .add(CustomListData(listData: field!, listName: e.listName!));
+    }
+    animeCustomListData[0].listData = animeLibrary;
+    mangaCustomListData[0].listData = mangaLibrary;
   }
 
   void addOrUpdateAnime(AnilistMediaData original, List<Episode>? episodes,
       Episode? currentEpisode) {
     OfflineMedia? existingAnime = getAnimeById(original.id);
+
     if (existingAnime != null) {
       existingAnime.episodes = episodes;
       existingAnime.currentEpisode = currentEpisode;
       log('Updated anime: ${existingAnime.name}');
+      animeLibrary.remove(existingAnime);
+      animeLibrary.insert(0, existingAnime);
     } else {
-      animeLibrary.add(
+      animeLibrary.insert(0,
           _createOfflineMedia(original, null, episodes, null, currentEpisode));
       log('Added new anime: ${original.name}');
     }
+
     _saveLibraries();
   }
 
-  void addOrUpdateManga(
-    AnilistMediaData original,
-    List<Chapter>? chapters,
-    Chapter? currentChapter,
-  ) {
+  void addOrUpdateManga(AnilistMediaData original, List<Chapter>? chapters,
+      Chapter? currentChapter) {
     OfflineMedia? existingManga = getMangaById(original.id);
+
     if (existingManga != null) {
       existingManga.chapters = chapters;
       existingManga.currentChapter = currentChapter;
       log('Updated manga: ${existingManga.name}');
+      mangaLibrary.remove(existingManga);
+      mangaLibrary.insert(0, existingManga);
     } else {
-      mangaLibrary.add(
+      mangaLibrary.insert(0,
           _createOfflineMedia(original, chapters, null, currentChapter, null));
       log('Added new manga: ${original.name}');
     }
+
     _saveLibraries();
   }
 
@@ -72,9 +112,11 @@ class OfflineStorageController extends GetxController {
       int index = existingManga.readChapters!
           .indexWhere((c) => c.number == chapter.number);
       if (index != -1) {
+        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
         existingManga.readChapters![index] = chapter;
         log('Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
       } else {
+        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
         existingManga.readChapters!.add(chapter);
         log('Added new chapter: ${chapter.title} for manga ID: $mangaId');
       }
@@ -91,9 +133,11 @@ class OfflineStorageController extends GetxController {
       int index = existingAnime.watchedEpisodes!
           .indexWhere((e) => e.number == episode.number);
       if (index != -1) {
+        episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
         existingAnime.watchedEpisodes![index] = episode;
         log('Overwritten episode: ${episode.number} for anime ID: $animeId');
       } else {
+        episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
         existingAnime.watchedEpisodes!.add(episode);
         log('Added new episode: ${episode.title} for anime ID: $animeId');
       }
@@ -142,9 +186,10 @@ class OfflineStorageController extends GetxController {
 
   void _saveLibraries() {
     final updatedStorage = OfflineStorage(
-      animeLibrary: animeLibrary.toList(),
-      mangaLibrary: mangaLibrary.toList(),
-    );
+        animeLibrary: animeLibrary.toList(),
+        mangaLibrary: mangaLibrary.toList(),
+        animeCustomList: animeCustomLists,
+        mangaCustomList: mangaCustomLists);
 
     try {
       _offlineStorageBox.put('storage', updatedStorage);
@@ -152,6 +197,7 @@ class OfflineStorageController extends GetxController {
     } catch (e) {
       log('Error saving libraries: $e');
     }
+    refresh();
   }
 
   OfflineMedia? getAnimeById(int id) {
@@ -167,13 +213,8 @@ class OfflineStorageController extends GetxController {
     if (anime != null) {
       Episode? episode = anime.watchedEpisodes
           ?.firstWhereOrNull((e) => e.number == episodeOrChapterNumber);
-      if (episode != null) {
-        log("Found Episode! Episode Title is ${episode.title}");
-        return episode;
-      } else {
-        log('No watched episode with number $episodeOrChapterNumber found for anime with ID: $anilistId');
-        return null;
-      }
+      log("Found Episode! Episode Title is ${episode?.title}");
+      return episode;
     }
     return null;
   }
@@ -183,11 +224,7 @@ class OfflineStorageController extends GetxController {
     if (manga != null) {
       Chapter? chapter =
           manga.readChapters?.firstWhereOrNull((c) => c.number == number);
-      if (chapter != null) {
-        return chapter;
-      } else {
-        log('No read chapter with number $number found for manga with ID: $anilistId');
-      }
+      return chapter;
     }
     log('No data found for AniList ID: $anilistId with number $number');
     return null;
@@ -223,4 +260,11 @@ class OfflineStorageController extends GetxController {
     animeLibrary.clear();
     mangaLibrary.clear();
   }
+}
+
+class CustomListData {
+  String listName;
+  List<OfflineMedia> listData;
+
+  CustomListData({required this.listData, required this.listName});
 }
