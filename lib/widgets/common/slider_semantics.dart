@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
 

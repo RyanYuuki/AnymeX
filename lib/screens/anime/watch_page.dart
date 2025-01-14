@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
 
@@ -817,7 +818,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
-                      final e = subtitles[index - 1];
+                      final e = subtitles?[index - 1];
                       return GestureDetector(
                         onTap: () {
                           selectedSubIndex.value = index;
@@ -1257,7 +1258,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       {required Function() onTap,
       IconData? icon,
       double size = 60,
-      Color? color}) {
+      Color? color = null}) {
     return InkWell(
       onTap: onTap,
       child: Padding(

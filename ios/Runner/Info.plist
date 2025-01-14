@@ -18,27 +18,6 @@
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
     <string>$(FLUTTER_BUILD_NAME)</string>
-    <!-- Corrected NSAppTransportSecurity block -->
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-    </dict>
-    <key>UIBackgroundModes</key>
-    <array>
-      <string>fetch</string>
-      <string>remote-notification</string>
-    </array>
-    <key>UIUserInterfaceStyle</key>
-    <string>Automatic</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photo library to save photos.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera to take pictures.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to your microphone for audio recording.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>We need permission to add photos to your library.</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
@@ -49,6 +28,11 @@
     <string>LaunchScreen</string>
     <key>UIMainStoryboardFile</key>
     <string>Main</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>

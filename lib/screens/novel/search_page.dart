@@ -1,6 +1,8 @@
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/api/Mangayomi/Search/get_popular.dart';
+import 'package:anymex/api/Mangayomi/Search/search.dart';
+import 'package:anymex/controllers/anilist/anilist_data.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';

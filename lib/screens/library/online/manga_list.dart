@@ -4,6 +4,7 @@ import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/library/online/widgets/items.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
