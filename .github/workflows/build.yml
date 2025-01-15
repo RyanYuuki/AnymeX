@@ -7,59 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  generate-changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Generate Changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          #!/bin/bash
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -vE '(-alpha|-beta|-rc)' | head -n 2 | tail -n 1)
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          if [ -z "$PREVIOUS_TAG" ]; then
-            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-          # Initialize changelog with the current tag as the version
-          echo "## $CURRENT_TAG" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          # Function to add section if commits exist
-          add_section() {
-            local section_title="$1"
-            local grep_pattern="$2"
-            local commits=$(git log $PREVIOUS_TAG..$CURRENT_TAG --grep="$grep_pattern" --pretty=format:'* [`%h`](https://github.com/RyanYuuki/AnymeX/commit/%h): %s')
-            
-            if [ ! -z "$commits" ]; then
-              echo "## $section_title" >> CHANGELOG.md
-              echo "$commits" >> CHANGELOG.md
-              echo "" >> CHANGELOG.md
-            fi
-          }
-          # Add sections dynamically
-          add_section "🎉 New Features" "^feat:"
-          add_section "🛠️ Bug Fixes & Improvements" "^fix:"
-          add_section "🔧 Refactors" "^refactor:"
-          add_section "🎨 Style Changes" "^style:"
-          add_section "🚀 Performance Improvements" "^perf:"
-          add_section "🧹 Chores & Documentation" "^(chore|docs):"
-          # Output the generated changelog
-          cat CHANGELOG.md
-
-      # Step 1: Upload Changelog.md as Artifact
-      - name: Upload Changelog.md as Artifact
-        id: upload-artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Changelog
-          path: Changelog.md # Path to your Changelog.md
-
   build-android:
     runs-on: ubuntu-latest
-    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -102,7 +51,6 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
-    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -136,7 +84,6 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
-    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -170,7 +117,6 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
-    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -184,29 +130,25 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows
-        run: flutter build windows --release
+        run: dart run inno_bundle:build --release
 
       - name: Create ZIP file for Windows Build
         run: |
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
-      - name: Setup Inno Setup
-        run: choco install innosetup -y
 
-      - name: Build Installer with Inno Setup
-        run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno.iss
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/windows/x64/runner/Release/AnymeX-Windows.zip,output/AnymeX-Setup.exe"
+          artifacts: |
+            build/windows/x64/runner/Release/AnymeX-Windows.zip,
+            build/windows/x64/installer/Release/AnymeX-x86_64-2.8.6-Installer.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
 
   build-macos:
     runs-on: macos-latest
-    needs: generate-changelog
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

@@ -67,6 +67,7 @@ void main() async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
+    windowManager.setTitle("AnymeX Beta");
     if (defaultTargetPlatform == TargetPlatform.windows) {
       final availableVersion = await WebViewEnvironment.getAvailableVersion();
       assert(availableVersion != null,
