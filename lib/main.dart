@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settingss/settings.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/controllers/settingss/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/settingss/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';

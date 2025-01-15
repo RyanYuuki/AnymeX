@@ -1,5 +1,5 @@
 import 'package:anymex/constants/contants.dart';
-import 'package:anymex/controllers/settingss/settings.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';

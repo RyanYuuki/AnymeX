@@ -2,9 +2,9 @@
 
 import 'dart:developer';
 
-import 'package:anymex/controllers/settingss/methods.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/settingss/settings.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';

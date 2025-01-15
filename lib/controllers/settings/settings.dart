@@ -1,5 +1,5 @@
-import 'package:anymex/controllers/settingss/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/settingss/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
+import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 

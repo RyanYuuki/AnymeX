@@ -2,7 +2,7 @@
 
 import 'dart:math';
 
-import 'package:anymex/controllers/settingss/methods.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';

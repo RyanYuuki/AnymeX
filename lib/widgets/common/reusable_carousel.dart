@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:math' show Random;
 
-import 'package:anymex/controllers/settingss/methods.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
