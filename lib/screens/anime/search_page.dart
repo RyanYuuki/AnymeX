@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:anymex/controllers/anilist/anilist_data.dart';
-import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settingss/methods.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/widgets/common/glow.dart';

@@ -1,5 +1,5 @@
-import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/settingss/methods.dart';
+import 'package:anymex/controllers/settingss/settings.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';

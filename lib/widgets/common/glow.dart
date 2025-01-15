@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settingss/methods.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

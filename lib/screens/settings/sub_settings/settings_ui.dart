@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/settingss/settings.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';

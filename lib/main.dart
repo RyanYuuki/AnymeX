@@ -1,13 +1,12 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/settingss/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/controllers/settingss/adaptors/player/player_adaptor.dart';
+import 'package:anymex/controllers/settingss/adaptors/ui/ui_adaptor.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
@@ -28,6 +27,7 @@ import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -67,13 +67,15 @@ void main() async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
-    final availableVersion = await WebViewEnvironment.getAvailableVersion();
-    assert(availableVersion != null,
-        'Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.');
-    final document = await getApplicationDocumentsDirectory();
-    webViewEnvironment = await WebViewEnvironment.create(
-        settings: WebViewEnvironmentSettings(
-            userDataFolder: p.join(document.path, 'flutter_inappwebview')));
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      final availableVersion = await WebViewEnvironment.getAvailableVersion();
+      assert(availableVersion != null,
+          'Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.');
+      final document = await getApplicationDocumentsDirectory();
+      webViewEnvironment = await WebViewEnvironment.create(
+          settings: WebViewEnvironmentSettings(
+              userDataFolder: p.join(document.path, 'flutter_inappwebview')));
+    }
   } else {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settingss/methods.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/manga/search_page.dart';
 import 'package:anymex/screens/novel/search_page.dart';
