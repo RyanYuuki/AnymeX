@@ -92,8 +92,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 dpkg-dev fuse
-          wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage
+          wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage"
           chmod +x appimagetool
+          sudo mv appimagetool /usr/local/bin/
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -108,35 +109,51 @@ jobs:
 
       - name: Create AppImage
         run: |
-          cd build/linux/x64/release/bundle
+          # Create fresh AppDir structure
+          rm -rf AppDir
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
           mkdir -p AppDir/usr/share/applications
 
-          # Copy built files
-          cp -r ./* AppDir/usr/bin/
-          cp ../../../../../assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
-
-
+          # Copy built files - now with correct paths
+          cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+          cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
 
           # Create desktop file
           cat <<EOF > AppDir/usr/share/applications/anymex.desktop
           [Desktop Entry]
           Name=AnymeX
-          Exec=/usr/bin/anymex
+          Exec=anymex
           Icon=anymex
           Type=Application
           Categories=Utility;
           EOF
 
+          # Create AppRun file
+          cat <<EOF > AppDir/AppRun
+          #!/bin/sh
+          SELF=\$(readlink -f "\$0")
+          HERE=\${SELF%/*}
+          export PATH="\${HERE}/usr/bin/:\${PATH}"
+          export LD_LIBRARY_PATH="\${HERE}/usr/lib/:\${LD_LIBRARY_PATH}"
+          exec "\${HERE}/usr/bin/anymex" "\$@"
+          EOF
+          chmod +x AppDir/AppRun
+
           # Make AppImage
-          ARCH=x86_64 ./appimagetool AppDir AnymeX-Linux.AppImage
+          /usr/local/bin/appimagetool AppDir
+          mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
+
+      - name: Create ZIP archive
+        run: |
+          cd build/linux/x64/release/bundle
+          zip -r ../AnymeX-Linux.zip ./*
 
       - name: Release Linux Build and AppImage
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            build/linux/x64/release/AnymeX-Linux.zip,
+            build/linux/x64/release/AnymeX-Linux.zip
             build/linux/x64/release/AnymeX-Linux.AppImage
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
