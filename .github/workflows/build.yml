@@ -113,17 +113,16 @@ jobs:
           rm -rf AppDir
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          mkdir -p AppDir/usr/share/applications
 
-          # Copy built files - now with correct paths
+          # Copy built files
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
 
-          # Create desktop file
-          cat <<EOF > AppDir/usr/share/applications/anymex.desktop
+          # Create desktop file in AppDir root
+          cat <<EOF > AppDir/anymex.desktop
           [Desktop Entry]
           Name=AnymeX
-          Exec=anymex
+          Exec=usr/bin/anymex
           Icon=anymex
           Type=Application
           Categories=Utility;
