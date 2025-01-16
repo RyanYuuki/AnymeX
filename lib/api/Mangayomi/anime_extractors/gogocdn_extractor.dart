@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http_interceptor/http_interceptor.dart';
@@ -11,7 +12,7 @@ import '../http/m_client.dart';
 
 class GogoCdnExtractor {
   final InterceptedClient client =
-  MClient.init(reqcopyWith: {'useDartHttpClient': true});
+      MClient.init(reqcopyWith: {'useDartHttpClient': true});
   final JsonCodec json = const JsonCodec();
 
   Future<List<Video>> videosFromUrl(String serverUrl) async {
@@ -33,7 +34,7 @@ class GogoCdnExtractor {
           .last;
       RegExp(r'container-(\d+)').firstMatch(document)?.group(1);
       final decryptionKey =
-      RegExp(r'videocontent-(\d+)').firstMatch(document)?.group(1);
+          RegExp(r'videocontent-(\d+)').firstMatch(document)?.group(1);
       final encryptAjaxParams = MBridge.cryptoHandler(
         RegExp(r'data-value="([^"]+)').firstMatch(document)?.group(1) ?? "",
         iv,
@@ -57,7 +58,7 @@ class GogoCdnExtractor {
       final jsonResponse = encryptAjaxResponse.body;
       final data = json.decode(jsonResponse)["data"];
       final decryptedData =
-      MBridge.cryptoHandler(data ?? "", iv, decryptionKey!, false);
+          MBridge.cryptoHandler(data ?? "", iv, decryptionKey!, false);
       final videoList = <Video>[];
       final autoList = <Video>[];
       final array = json.decode(decryptedData)["source"];
@@ -71,7 +72,7 @@ class GogoCdnExtractor {
         final masterPlaylist = masterPlaylistResponse.body;
         if (masterPlaylist.contains(separator)) {
           for (var it
-          in masterPlaylist.substringAfter(separator).split(separator)) {
+              in masterPlaylist.substringAfter(separator).split(separator)) {
             final quality =
                 "${it.substringAfter("RESOLUTION=").substringAfter("x").substringBefore(",").substringBefore("\n")}p";
 
@@ -79,7 +80,7 @@ class GogoCdnExtractor {
 
             if (!videoUrl.startsWith("http")) {
               videoUrl =
-              "${fileURL.split("/").sublist(0, fileURL.split("/").length - 1).join("/")}/$videoUrl";
+                  "${fileURL.split("/").sublist(0, fileURL.split("/").length - 1).join("/")}/$videoUrl";
             }
             videoList.add(Video(videoUrl, "$qualityPrefix$quality", videoUrl));
           }
@@ -89,7 +90,7 @@ class GogoCdnExtractor {
       } else if (array != null && array is List) {
         for (var it in array) {
           final label =
-          it["label"].toString().toLowerCase().trim().replaceAll(" ", "");
+              it["label"].toString().toLowerCase().trim().replaceAll(" ", "");
           final fileURL = it["file"].toString().trim();
           final videoHeaders = {"Referer": serverUrl};
           if (label == "auto") {

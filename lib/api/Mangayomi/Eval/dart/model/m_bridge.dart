@@ -1,19 +1,20 @@
 import 'dart:convert';
 
 import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' hide Text;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:js_packer/js_packer.dart';
 import 'package:json_path/json_path.dart';
 import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import '../../../../../main.dart';
+
 import '../../../Model/Manga.dart';
 import '../../../anime_extractors/dood_extractor.dart';
 import '../../../anime_extractors/filemoon.dart';
@@ -21,7 +22,6 @@ import '../../../anime_extractors/gogocdn_extractor.dart';
 import '../../../anime_extractors/mp4upload_extractor.dart';
 import '../../../anime_extractors/mytv_extractor.dart';
 import '../../../anime_extractors/okru_extractor.dart';
-import '../../../anime_extractors/quarkuc_extractor.dart';
 import '../../../anime_extractors/sendvid_extractor.dart';
 import '../../../anime_extractors/sibnet_extractor.dart';
 import '../../../anime_extractors/streamlare_extractor.dart';
@@ -81,7 +81,7 @@ class MBridge {
       //Return one attr
       else if (query.nodes.length == 1) {
         String attr =
-        query.attr != null ? query.attr!.trim().trimLeft().trimRight() : "";
+            query.attr != null ? query.attr!.trim().trimLeft().trimRight() : "";
         if (attr.isNotEmpty) {
           attrs = [attr];
         }
@@ -147,7 +147,7 @@ class MBridge {
     }
   }
 
-  ///Read values in parsed JSON object and return resut to List&lt;String&gt;
+  ///Read values in parsed JSON object and return resut to List<String>
   static const $Function jsonPathToList = $Function(_jsonPathToList);
 
   static $Value? _jsonPathToList(_, __, List<$Value?> args) {
@@ -286,7 +286,7 @@ class MBridge {
             date,
             dateFormat,
             dateFormatLocale,
-                (val) {
+            (val) {
               dateFormat = val.$1;
               dateFormatLocale = val.$2;
               error = val.$3;
@@ -344,34 +344,6 @@ class MBridge {
     }
     return await Mp4uploadExtractor()
         .videosFromUrl(url, newHeaders, prefix: prefix, suffix: suffix);
-  }
-
-  static Future<List<Map<String, String>>> quarkFilesExtractor(
-      List<String> url, String cookie) async {
-    QuarkUcExtractor quark = QuarkUcExtractor();
-    await quark.initCloudDrive(cookie, CloudDriveType.quark);
-    return await quark.videoFilesFromUrl(url);
-  }
-
-  static Future<List<Map<String, String>>> ucFilesExtractor(
-      List<String> url, String cookie) async {
-    QuarkUcExtractor uc = QuarkUcExtractor();
-    await uc.initCloudDrive(cookie, CloudDriveType.uc);
-    return await uc.videoFilesFromUrl(url);
-  }
-
-  static Future<List<Video>> quarkVideosExtractor(
-      String url, String cookie) async {
-    QuarkUcExtractor quark = QuarkUcExtractor();
-    await quark.initCloudDrive(cookie, CloudDriveType.quark);
-    return await quark.videosFromUrl(url);
-  }
-
-  static Future<List<Video>> ucVideosExtractor(
-      String url, String cookie) async {
-    QuarkUcExtractor uc = QuarkUcExtractor();
-    await uc.initCloudDrive(cookie, CloudDriveType.uc);
-    return await uc.videosFromUrl(url);
   }
 
   static Future<List<Video>> streamTapeExtractor(
@@ -435,7 +407,7 @@ class MBridge {
       ]).anyWordIn(date)) {
         return cal.subtract(Duration(hours: number)).millisecondsSinceEpoch;
       } else if (WordSet(
-          ["menit", "dakika", "min", "minute", "minuto", "นาที", "دقائق"])
+              ["menit", "dakika", "min", "minute", "minuto", "นาที", "دقائق"])
           .anyWordIn(date)) {
         return cal.subtract(Duration(minutes: number)).millisecondsSinceEpoch;
       } else if (WordSet(["detik", "segundo", "second", "วินาที", "sec"])
@@ -475,8 +447,8 @@ class MBridge {
         final cleanedDate = date
             .split(" ")
             .map((it) => it.contains(RegExp(r"\d\D\D"))
-            ? it.replaceAll(RegExp(r"\D"), "")
-            : it)
+                ? it.replaceAll(RegExp(r"\D"), "")
+                : it)
             .join(" ");
         return DateFormat(dateFormat, dateFormatLocale)
             .parse(cleanedDate)
@@ -517,8 +489,8 @@ class MBridge {
               final cleanedDate = date
                   .split(" ")
                   .map((it) => it.contains(RegExp(r"\d\D\D"))
-                  ? it.replaceAll(RegExp(r"\D"), "")
-                  : it)
+                      ? it.replaceAll(RegExp(r"\D"), "")
+                      : it)
                   .join(" ");
               return DateFormat(dateFormat, locale)
                   .parse(cleanedDate)
@@ -623,6 +595,7 @@ class MBridge {
       return text;
     }
   }
+
   static Future<String> evaluateJavascriptViaWebview(
       String url, Map<String, String> headers, List<String> scripts,
       {int time = 30}) async {
@@ -632,7 +605,7 @@ class MBridge {
     String response = "";
     HeadlessInAppWebView? headlessWebView;
     headlessWebView = HeadlessInAppWebView(
-      webViewEnvironment: webViewEnvironment,
+      // webViewEnvironment: webViewEnvironment,
       onWebViewCreated: (controller) {
         controller.addJavaScriptHandler(
           handlerName: 'setResponse',
@@ -649,7 +622,9 @@ class MBridge {
         }
       },
     );
+
     headlessWebView.run();
+
     await Future.doWhile(() async {
       timeOut = time == t;
       if (timeOut || isOk) {
@@ -662,6 +637,7 @@ class MBridge {
     try {
       headlessWebView.dispose();
     } catch (_) {}
+
     return response;
   }
 }

@@ -406,58 +406,62 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Stack(children: [
-                NetworkSizedImage(
-                  imageUrl: episode.thumbnail ??
-                      widget.anilistData?.cover ??
-                      widget.anilistData?.poster ??
-                      '',
-                  radius: 12,
-                  width: 170,
-                  height: 100,
-                ),
-                if (progress != null) ...[
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius:
-                              BorderRadius.circular(12.multiplyRadius())),
-                      height: 2,
-                      width: 170 * progress,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(children: [
+                    NetworkSizedImage(
+                      imageUrl: episode.thumbnail ??
+                          widget.anilistData?.cover ??
+                          widget.anilistData?.poster ??
+                          '',
+                      radius: 12,
+                      width: 170,
+                      height: 100,
                     ),
-                  ),
-                ],
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black.withOpacity(0.2),
-                          border: Border.all(
-                              width: 2,
-                              color: Theme.of(context).colorScheme.primary),
-                          boxShadow: [glowingShadow(context)],
+                    if (progress != null) ...[
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius:
+                                  BorderRadius.circular(12.multiplyRadius())),
+                          height: 2,
+                          width: constraints.maxWidth * progress,
                         ),
-                        child: AnymexText(
-                          text: "EP ${episode.number}",
-                          variant: TextVariant.bold,
+                      ),
+                    ],
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.black.withOpacity(0.2),
+                              border: Border.all(
+                                  width: 2,
+                                  color: Theme.of(context).colorScheme.primary),
+                              boxShadow: [glowingShadow(context)],
+                            ),
+                            child: AnymexText(
+                              text: "EP ${episode.number}",
+                              variant: TextVariant.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ]),
+                  ]);
+                }
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: AnymexText(

@@ -13,12 +13,12 @@ class $FilterList implements FilterList, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter(
-                  'filters',
-                  BridgeTypeAnnotation(BridgeTypeRef(
-                      CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
-                  false),
-            ]))
+          BridgeParameter(
+              'filters',
+              BridgeTypeAnnotation(BridgeTypeRef(
+                  CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
+              false),
+        ]))
       },
       fields: {
         'filters': BridgeFieldDef(
@@ -88,18 +88,18 @@ class $SelectFilter implements SelectFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('state',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), false),
-              BridgeParameter(
-                  'values',
-                  BridgeTypeAnnotation(BridgeTypeRef(
-                      CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
-                  false),
-            ]))
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('state',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), false),
+          BridgeParameter(
+              'values',
+              BridgeTypeAnnotation(BridgeTypeRef(
+                  CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
+              false),
+        ]))
       },
       fields: {
         'type': BridgeFieldDef(
@@ -230,11 +230,11 @@ class $SelectFilterOption implements SelectFilterOption, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('value',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-            ]))
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('value',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+        ]))
       },
       fields: {
         'name': BridgeFieldDef(
@@ -320,9 +320,9 @@ class $SeparatorFilter implements SeparatorFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
-            ]))
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
+        ]))
       },
       fields: {
         'type': BridgeFieldDef(
@@ -395,11 +395,11 @@ class $HeaderFilter implements HeaderFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
-            ]))
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
+        ]))
       },
       fields: {
         'name': BridgeFieldDef(
@@ -485,11 +485,11 @@ class $TextFilter implements TextFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-            ]))
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+        ]))
       },
       fields: {
         'type': BridgeFieldDef(
@@ -546,6 +546,7 @@ class $TextFilter implements TextFilter, $Instance {
 
   @override
   String? get type => $value.type ?? '';
+
   @override
   String get name => $value.name;
 
@@ -583,18 +584,18 @@ class $SortFilter implements SortFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter(
-                  'state', BridgeTypeAnnotation($SortState.$type), false),
-              BridgeParameter(
-                  'values',
-                  BridgeTypeAnnotation(BridgeTypeRef(
-                      CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
-                  false),
-            ]))
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter(
+              'state', BridgeTypeAnnotation($SortState.$type), false),
+          BridgeParameter(
+              'values',
+              BridgeTypeAnnotation(BridgeTypeRef(
+                  CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
+              false),
+        ]))
       },
       fields: {
         'type': BridgeFieldDef(
@@ -616,7 +617,7 @@ class $SortFilter implements SortFilter, $Instance {
         args[2]!.$value,
         (args[3]!.$value as List)
             .map((e) =>
-            SelectFilterOption(e.$reified.name, e.$reified.value, null))
+                SelectFilterOption(e.$reified.name, e.$reified.value, null))
             .toList(),
         null));
   }
@@ -711,11 +712,11 @@ class $SortState implements SortState, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('index',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), false),
-              BridgeParameter('ascending',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool)), false),
-            ]))
+          BridgeParameter('index',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), false),
+          BridgeParameter('ascending',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool)), false),
+        ]))
       },
       fields: {
         'index': BridgeFieldDef(BridgeTypeAnnotation(
@@ -802,16 +803,16 @@ class $TriStateFilter implements TriStateFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('value',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
-            ], namedParams: [
-              BridgeParameter(
-                  'state', BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), true)
-            ]))
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('value',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
+        ], namedParams: [
+          BridgeParameter(
+              'state', BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int)), true)
+        ]))
       },
       fields: {
         'name': BridgeFieldDef(
@@ -923,16 +924,16 @@ class $GroupFilter implements GroupFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter(
-                  'state',
-                  BridgeTypeAnnotation(BridgeTypeRef(
-                      CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
-                  false),
-            ]))
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter(
+              'state',
+              BridgeTypeAnnotation(BridgeTypeRef(
+                  CoreTypes.list, [BridgeTypeRef(CoreTypes.dynamic)])),
+              false),
+        ]))
       },
       fields: {
         'type': BridgeFieldDef(
@@ -1054,16 +1055,16 @@ class $CheckBoxFilter implements CheckBoxFilter, $Instance {
       constructors: {
         '': BridgeConstructorDef(
             BridgeFunctionDef(returns: BridgeTypeAnnotation($type), params: [
-              BridgeParameter('name',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('value',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
-              BridgeParameter('type',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
-            ], namedParams: [
-              BridgeParameter('state',
-                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool)), true),
-            ]))
+          BridgeParameter('name',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('value',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), false),
+          BridgeParameter('type',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)), true),
+        ], namedParams: [
+          BridgeParameter('state',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool)), true),
+        ]))
       },
       fields: {
         'name': BridgeFieldDef(

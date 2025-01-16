@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -80,13 +81,15 @@ class SettingsSheet extends StatelessWidget {
                 icon: const Icon(Iconsax.notification))
           ]),
           const SizedBox(height: 10),
-          ListTile(
-            leading: const Icon(Iconsax.user),
-            title: const Text('View Profile'),
-            onTap: () {
-              Get.back();
-            },
-          ),
+          if (anilistAuth.isLoggedIn.value)
+            ListTile(
+              leading: const Icon(Iconsax.user),
+              title: const Text('View Profile'),
+              onTap: () {
+                Get.back();
+                Get.to(() => const ProfilePage());
+              },
+            ),
           if (isMobile)
             ListTile(
               leading: const Icon(Icons.extension),
@@ -98,14 +101,14 @@ class SettingsSheet extends StatelessWidget {
             ),
           ListTile(
             leading: const Icon(Iconsax.toggle_off_circle),
-            title: const Text('Rescue Mode'),
+            title: const Text('Rescue Mode (WIP)'),
             onTap: () {
               Get.back();
             },
           ),
           ListTile(
             leading: const Icon(Iconsax.document_download),
-            title: const Text('Downloads'),
+            title: const Text('Downloads (WIP)'),
             onTap: () {
               Get.back();
             },

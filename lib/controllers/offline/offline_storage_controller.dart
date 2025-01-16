@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:anymex/api/Mangayomi/Model/Manga.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -8,11 +9,13 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:hive/hive.dart';
 import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 
+enum EditType { add, remove }
+
 class OfflineStorageController extends GetxController {
   var animeLibrary = <OfflineMedia>[].obs;
   var mangaLibrary = <OfflineMedia>[].obs;
-  List<CustomList> animeCustomLists = [CustomList()];
-  List<CustomList> mangaCustomLists = [CustomList()];
+  RxList<CustomList> animeCustomLists = [CustomList()].obs;
+  RxList<CustomList> mangaCustomLists = [CustomList()].obs;
   RxList<CustomListData> animeCustomListData = <CustomListData>[].obs;
   RxList<CustomListData> mangaCustomListData = <CustomListData>[].obs;
 
@@ -42,7 +45,26 @@ class OfflineStorageController extends GetxController {
     _initListData();
   }
 
+  void removeDuplicateMediaIds() {
+    mangaCustomListData.clear();
+    animeCustomListData.clear();
+    for (var list in animeCustomLists) {
+      if (list.mediaIds != null) {
+        list.mediaIds = list.mediaIds!.toSet().toList();
+        list.mediaIds!.removeWhere((id) => id == 0);
+      }
+    }
+
+    for (var list in mangaCustomLists) {
+      if (list.mediaIds != null) {
+        list.mediaIds = list.mediaIds!.toSet().toList();
+        list.mediaIds!.removeWhere((id) => id == 0);
+      }
+    }
+  }
+
   void _initListData() {
+    removeDuplicateMediaIds();
     for (var e in animeCustomLists) {
       final field = e.mediaIds
           ?.map((e) => getAnimeById(e))
@@ -51,8 +73,9 @@ class OfflineStorageController extends GetxController {
           .toList();
 
       animeCustomListData
-          .add(CustomListData(listData: field!, listName: e.listName!));
+          .add(CustomListData(listData: field ?? [], listName: e.listName!));
     }
+
     for (var e in mangaCustomLists) {
       final field = e.mediaIds
           ?.map((e) => getMangaById(e))
@@ -61,14 +84,78 @@ class OfflineStorageController extends GetxController {
           .toList();
 
       mangaCustomListData
-          .add(CustomListData(listData: field!, listName: e.listName!));
+          .add(CustomListData(listData: field ?? [], listName: e.listName!));
     }
-    animeCustomListData[0].listData = animeLibrary;
-    mangaCustomListData[0].listData = mangaLibrary;
+    _saveLibraries();
   }
 
-  void addOrUpdateAnime(AnilistMediaData original, List<Episode>? episodes,
-      Episode? currentEpisode) {
+  void addCustomList(String listName, {ItemType mediaType = ItemType.anime}) {
+    if (mediaType == ItemType.anime) {
+      animeCustomLists.add(CustomList(listName: listName, mediaIds: []));
+    } else {
+      mangaCustomLists.add(CustomList(listName: listName, mediaIds: []));
+    }
+    _initListData();
+  }
+
+  void removeCustomList(String listName,
+      {ItemType mediaType = ItemType.anime}) {
+    if (mediaType == ItemType.anime) {
+      animeCustomLists.removeWhere((e) => e.listName == listName);
+    } else {
+      mangaCustomLists.removeWhere((e) => e.listName == listName);
+    }
+    _initListData();
+  }
+
+  void addMedia(String listName, AnilistMediaData original, bool isManga) {
+    Chapter chapter = Chapter(number: 1);
+    Episode currentEpisode = Episode(number: '1');
+
+    if (isManga) {
+      if (mangaLibrary.firstWhereOrNull((e) => e.id == original.id) == null) {
+        mangaLibrary.insert(
+            0, _createOfflineMedia(original, null, null, chapter, null));
+      }
+
+      mangaCustomLists
+          .firstWhere((e) => e.listName == listName)
+          .mediaIds
+          ?.add(original.id);
+    } else {
+      if (animeLibrary.firstWhereOrNull((e) => e.id == original.id) == null) {
+        animeLibrary.insert(
+            0, _createOfflineMedia(original, null, null, null, currentEpisode));
+
+        animeCustomLists
+            .firstWhere((e) => e.listName == listName)
+            .mediaIds
+            ?.add(original.id);
+      }
+    }
+    _initListData();
+  }
+
+  void removeMedia(String listName, int id, bool isManga) {
+    if (isManga) {
+      mangaCustomLists
+          .firstWhere((e) => e.listName == listName)
+          .mediaIds
+          ?.removeWhere((e) => e == id);
+    } else {
+      animeCustomLists
+          .firstWhere((e) => e.listName == listName)
+          .mediaIds
+          ?.removeWhere((e) => e == id);
+    }
+    _initListData();
+  }
+
+  void addOrUpdateAnime(
+    AnilistMediaData original,
+    List<Episode>? episodes,
+    Episode? currentEpisode,
+  ) {
     OfflineMedia? existingAnime = getAnimeById(original.id);
 
     if (existingAnime != null) {

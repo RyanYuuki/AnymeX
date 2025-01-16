@@ -55,8 +55,8 @@ void searchTypeSheet(BuildContext context, String searchTerm) {
                         'https://images8.alphacoders.com/136/1362712.jpeg',
                     borderRadius: 16.multiplyRadius(),
                     onPressed: () {
-                      Get.back();
-                      Get.to(() => NovelSearchPage(searchTerm: searchTerm));
+                      // Get.back();
+                      // Get.to(() => NovelSearchPage(searchTerm: searchTerm));
                     },
                   ),
                 ],

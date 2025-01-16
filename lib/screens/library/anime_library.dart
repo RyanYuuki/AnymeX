@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -29,6 +30,7 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
   RxList<OfflineMedia> animeLibrary = <OfflineMedia>[].obs;
   RxList<CustomListData> customListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
+  RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
 
   RxString searchQuery = ''.obs;
 
@@ -37,6 +39,9 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
     super.initState();
     animeLibrary.value = offlineStorage.animeLibrary;
     customListData.value = offlineStorage.animeCustomListData;
+    historyData.value = offlineStorage.animeLibrary
+        .where((e) => e.currentEpisode?.currentTrack != null)
+        .toList();
     _tabController = TabController(
         length: offlineStorage.animeCustomListData.length, vsync: this);
   }
@@ -90,20 +95,23 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                         ),
 
                         // Tab Bar
-                        TabBar(
-                          controller: _tabController,
-                          isScrollable: true,
-                          tabAlignment: TabAlignment.start,
-                          indicatorColor: Theme.of(context).colorScheme.primary,
-                          unselectedLabelColor: Colors.grey[400],
-                          labelStyle:
-                              const TextStyle(fontFamily: "Poppins-Bold"),
-                          tabs: List.generate(customListData.length, (index) {
-                            final tabName =
-                                offlineStorage.animeCustomLists[index].listName;
-                            return Tab(text: tabName);
-                          }),
-                        ),
+                        Obx(() => TabBar(
+                              controller: _tabController,
+                              isScrollable: true,
+                              tabAlignment: TabAlignment.start,
+                              indicatorColor:
+                                  Theme.of(context).colorScheme.primary,
+                              unselectedLabelColor: Colors.grey[400],
+                              labelStyle:
+                                  const TextStyle(fontFamily: "Poppins-Bold"),
+                              tabs: List.generate(
+                                  offlineStorage.animeCustomLists.length,
+                                  (index) {
+                                final tabName = offlineStorage
+                                    .animeCustomLists[index].listName;
+                                return Tab(text: tabName);
+                              }),
+                            )),
 
                         // Tab Content
                         Expanded(
@@ -111,36 +119,41 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                             controller: _tabController,
                             children: List.generate(
                               customListData.length,
-                              (index) => GridView.builder(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 16, 16, 130),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: getResponsiveCrossAxisCount(
-                                      context,
-                                      baseColumns: 2,
-                                      maxColumns: 5,
-                                      mobileItemWidth: 300,
-                                      tabletItemWidth: 300,
-                                      desktopItemWidth: 300),
-                                  mainAxisExtent: 270,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                ),
-                                itemBuilder: (context, i) {
-                                  final data = searchQuery.isNotEmpty &&
-                                          index == _tabController.index
-                                      ? filteredData[i]
-                                      : customListData[index].listData[i];
-                                  return _AnimeCard(
-                                    data: data,
-                                  );
-                                },
-                                itemCount: searchQuery.isNotEmpty &&
-                                        index == _tabController.index
-                                    ? filteredData.length
-                                    : customListData[index].listData.length,
-                              ),
+                              (index) => (customListData[index].listData)
+                                      .isEmpty
+                                  ? const EmptyLibrary()
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 16, 16, 130),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            getResponsiveCrossAxisCount(context,
+                                                baseColumns: 2,
+                                                maxColumns: 5,
+                                                mobileItemWidth: 300,
+                                                tabletItemWidth: 300,
+                                                desktopItemWidth: 300),
+                                        mainAxisExtent: 270,
+                                        crossAxisSpacing: 16,
+                                        mainAxisSpacing: 16,
+                                      ),
+                                      itemBuilder: (context, i) {
+                                        final data = searchQuery.isNotEmpty &&
+                                                index == _tabController.index
+                                            ? filteredData[i]
+                                            : customListData[index].listData[i];
+                                        return _AnimeCard(
+                                          data: data,
+                                        );
+                                      },
+                                      itemCount: searchQuery.isNotEmpty &&
+                                              index == _tabController.index
+                                          ? filteredData.length
+                                          : customListData[index]
+                                              .listData
+                                              .length,
+                                    ),
                             ),
                           ),
                         ),
@@ -170,14 +183,19 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                           ),
                           const SizedBox(height: 40),
                           Expanded(
-                            child: ListView.builder(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              itemCount: animeLibrary.length,
-                              itemBuilder: (context, index) => AnimeHistoryCard(
-                                data: animeLibrary[index],
-                              ),
-                            ),
+                            child: historyData.isEmpty
+                                ? const EmptyLibrary(
+                                    isHistory: true,
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    itemCount: historyData.length,
+                                    itemBuilder: (context, index) =>
+                                        AnimeHistoryCard(
+                                      data: historyData[index],
+                                    ),
+                                  ),
                           ),
                         ],
                       ),

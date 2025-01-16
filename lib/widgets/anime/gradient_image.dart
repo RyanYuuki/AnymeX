@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,10 @@ class GradientPoster extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+                Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withOpacity(0.5),
                 Theme.of(context).colorScheme.surfaceContainer,
               ],
               begin: Alignment.topCenter,
@@ -52,7 +56,10 @@ class GradientPoster extends StatelessWidget {
               Hero(
                 tag: tag,
                 child: NetworkSizedImage(
-                    imageUrl: posterUrl, radius: 12, width: isDesktop ? 120 : 90, height: isDesktop ? 170 : 120),
+                    imageUrl: posterUrl,
+                    radius: 16.multiplyRoundness(),
+                    width: isDesktop ? 120 : 90,
+                    height: isDesktop ? 170 : 120),
               ),
               const SizedBox(width: 20),
               Column(

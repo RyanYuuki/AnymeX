@@ -96,18 +96,22 @@ class ReusableCarousel extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Stack(
-                              children: [
-                                Hero(
-                                  tag: tag,
-                                  child: NetworkSizedImage(
-                                      imageUrl: itemData.poster!,
-                                      radius: 12.multiplyRoundness(),
-                                      height: isDesktop ? 200 : 160,
-                                      width: double.infinity),
-                                ),
-                                _buildExtraData(context, itemData)
-                              ],
+                            ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(12.multiplyRoundness()),
+                              child: Stack(
+                                children: [
+                                  Hero(
+                                    tag: tag,
+                                    child: NetworkSizedImage(
+                                        imageUrl: itemData.poster!,
+                                        radius: 0,
+                                        height: isDesktop ? 210 : 160,
+                                        width: double.infinity),
+                                  ),
+                                  _buildExtraData(context, itemData)
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -138,8 +142,7 @@ class ReusableCarousel extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.multiplyRadius()),
-            bottomRight: Radius.circular(12.multiplyRadius()),
+            topLeft: Radius.circular(12.multiplyRoundness()),
           ),
           color: Theme.of(context).colorScheme.secondaryContainer,
         ),

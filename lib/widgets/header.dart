@@ -36,16 +36,21 @@ class Header extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              IconButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer),
-                  onPressed: () {
-                    provider.toggleTheme();
-                  },
-                  icon: Icon(Get.theme.brightness == Brightness.light
-                      ? HugeIcons.strokeRoundedSun03
-                      : HugeIcons.strokeRoundedMoon01))
+              CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
+                child: IconButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondaryContainer),
+                    onPressed: () {
+                      provider.toggleTheme();
+                    },
+                    icon: Icon(Get.theme.brightness == Brightness.light
+                        ? HugeIcons.strokeRoundedSun03
+                        : HugeIcons.strokeRoundedMoon01)),
+              )
             ],
           ),
         );
@@ -111,7 +116,8 @@ class Header extends StatelessWidget {
       },
       child: CircleAvatar(
         radius: 24,
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        backgroundColor:
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
         child: profileData.isLoggedIn.value
             ? NetworkSizedImage(
                 width: 50,
@@ -119,7 +125,8 @@ class Header extends StatelessWidget {
                 radius: 50,
                 imageUrl: profileData.profileData.value!.avatar!,
               )
-            : const Icon(IconlyBold.profile),
+            : Icon(IconlyBold.profile,
+                color: Theme.of(context).colorScheme.onSecondaryContainer),
       ),
     );
   }

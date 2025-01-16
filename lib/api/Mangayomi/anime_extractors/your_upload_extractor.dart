@@ -1,4 +1,5 @@
 import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../../../models/Offline/Hive/video.dart';

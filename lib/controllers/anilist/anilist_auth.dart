@@ -14,7 +14,7 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
   Rx<AnilistProfile?> profileData = Rx<AnilistProfile?>(null);
-  final storage = Hive.box('loginData');
+  final storage = Hive.box('auth');
   final offlineStorage = Get.find<OfflineStorageController>();
 
   Rx<AnilistMediaUser> currentAnime = AnilistMediaUser().obs;
@@ -46,13 +46,13 @@ class AnilistAuth extends GetxController {
 
     try {
       final result = await FlutterWebAuth2.authenticate(
-          url: url,
-          callbackUrlScheme: 'anymex',
-          options:
-              const FlutterWebAuth2Options(windowName: "AnymeX Anilist Login"));
+        url: url,
+        callbackUrlScheme: 'anymex',
+      );
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
+        log("token found: $code");
         await _exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
       }
     } catch (e) {
@@ -137,33 +137,7 @@ class AnilistAuth extends GetxController {
         final data = json.decode(response.body);
 
         final viewerData = data['data']['Viewer'];
-        final userProfile = AnilistProfile(
-          id: viewerData['id'].toString(),
-          name: viewerData['name'],
-          avatar: viewerData['avatar']['large'],
-          stats: AnilistProfileStatistics(
-            animeStats: AnimeStats(
-              animeCount: viewerData['statistics']['anime']['count'].toString(),
-              episodesWatched: viewerData['statistics']['anime']
-                      ['episodesWatched']
-                  .toString(),
-              meanScore:
-                  viewerData['statistics']['anime']['meanScore'].toString(),
-              minutesWatched: viewerData['statistics']['anime']
-                      ['minutesWatched']
-                  .toString(),
-            ),
-            mangaStats: MangaStats(
-              mangaCount: viewerData['statistics']['manga']['count'].toString(),
-              chaptersRead:
-                  viewerData['statistics']['manga']['chaptersRead'].toString(),
-              volumesRead:
-                  viewerData['statistics']['manga']['volumesRead'].toString(),
-              meanScore:
-                  viewerData['statistics']['manga']['meanScore'].toString(),
-            ),
-          ),
-        );
+        final userProfile = AnilistProfile.fromJson(viewerData);
 
         log('User profile mapped successfully: ${userProfile.name}');
         profileData.value = userProfile;

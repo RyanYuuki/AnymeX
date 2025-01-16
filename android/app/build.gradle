@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anymex.alpha"
+    namespace = "com.ryan.anymexbeta"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

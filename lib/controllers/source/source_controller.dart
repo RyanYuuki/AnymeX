@@ -22,18 +22,18 @@ class SourceController extends GetxController {
   Future<void> initExtensions({bool refresh = true}) async {
     try {
       final container = ProviderContainer();
-      final extensions = await container
-          .read(getExtensionsStreamProvider(ItemType.anime).future);
-      final mangaExtensions = await container
-          .read(getExtensionsStreamProvider(ItemType.manga).future);
-      final novelExtensions = await container
-          .read(getExtensionsStreamProvider(ItemType.novel).future);
+      final extensions =
+          await container.read(getExtensionsStreamProvider(false).future);
+      final mangaExtensions =
+          await container.read(getExtensionsStreamProvider(true).future);
+      // final novelExtensions = await container
+      //     .read(getExtensionsStreamProvider(ItemType.novel).future);
       installedExtensions.value =
           extensions.where((e) => e.isAdded ?? false).toList();
       installedMangaExtensions.value =
           mangaExtensions.where((e) => e.isAdded ?? false).toList();
-      installedNovelExtensions.value =
-          novelExtensions.where((e) => e.isAdded ?? false).toList();
+      // installedNovelExtensions.value =
+      //     novelExtensions.where((e) => e.isAdded ?? false).toList();
 
       final box = Hive.box('themeData');
       final savedActiveSourceId = box.get('activeSourceId') as int?;
@@ -51,9 +51,9 @@ class SourceController extends GetxController {
           installedMangaExtensions.isNotEmpty) {
         activeMangaSource.value = installedMangaExtensions[0];
       }
-      if (!refresh) {
-        await Get.find<AnilistData>().fetchDataForAllSources();
-      }
+      // if (!refresh) {
+      //   await Get.find<AnilistData>().fetchDataForAllSources();
+      // }
       log('Extensions initialized.');
     } catch (e) {
       log('Error initializing extensions: $e');

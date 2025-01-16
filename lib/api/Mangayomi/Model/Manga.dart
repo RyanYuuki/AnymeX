@@ -26,9 +26,6 @@ class Manga {
 
   bool? isManga;
 
-  @enumerated
-  late ItemType itemType;
-
   List<String>? genre;
 
   bool? favorite;
@@ -56,26 +53,25 @@ class Manga {
 
   Manga(
       {this.id = Isar.autoIncrement,
-        required this.source,
-        required this.author,
-        required this.artist,
-        this.favorite = false,
-        required this.genre,
-        required this.imageUrl,
-        required this.lang,
-        required this.link,
-        required this.name,
-        required this.status,
-        required this.description,
-        this.isManga = true,
-        this.itemType = ItemType.manga,
-        this.dateAdded,
-        this.lastUpdate,
-        this.categories,
-        this.lastRead = 0,
-        this.isLocalArchive = false,
-        this.customCoverImage,
-        this.customCoverFromTracker});
+      required this.source,
+      required this.author,
+      required this.artist,
+      this.favorite = false,
+      required this.genre,
+      required this.imageUrl,
+      required this.lang,
+      required this.link,
+      required this.name,
+      required this.status,
+      required this.description,
+      this.isManga = true,
+      this.dateAdded,
+      this.lastUpdate,
+      this.categories,
+      this.lastRead = 0,
+      this.isLocalArchive = false,
+      this.customCoverImage,
+      this.customCoverFromTracker});
 
   Manga.fromJson(Map<String, dynamic> json) {
     author = json['author'];
@@ -90,7 +86,6 @@ class Manga {
     imageUrl = json['imageUrl'];
     isLocalArchive = json['isLocalArchive'];
     isManga = json['isManga'];
-    itemType = ItemType.values[json['itemType'] ?? 0];
     lang = json['lang'];
     lastRead = json['lastRead'];
     lastUpdate = json['lastUpdate'];
@@ -102,27 +97,27 @@ class Manga {
   }
 
   Map<String, dynamic> toJson() => {
-    'author': author,
-    'artist': artist,
-    'categories': categories,
-    'customCoverImage': customCoverImage,
-    'dateAdded': dateAdded,
-    'description': description,
-    'favorite': favorite,
-    'genre': genre,
-    'id': id,
-    'imageUrl': imageUrl,
-    'isLocalArchive': isLocalArchive,
-    'itemType': itemType.index,
-    'lang': lang,
-    'lastRead': lastRead,
-    'lastUpdate': lastUpdate,
-    'link': link,
-    'name': name,
-    'source': source,
-    'status': status.index,
-    'customCoverFromTracker': customCoverFromTracker,
-  };
+        'author': author,
+        'artist': artist,
+        'categories': categories,
+        'customCoverImage': customCoverImage,
+        'dateAdded': dateAdded,
+        'description': description,
+        'favorite': favorite,
+        'genre': genre,
+        'id': id,
+        'imageUrl': imageUrl,
+        'isLocalArchive': isLocalArchive,
+        'isManga': isManga,
+        'lang': lang,
+        'lastRead': lastRead,
+        'lastUpdate': lastUpdate,
+        'link': link,
+        'name': name,
+        'source': source,
+        'status': status.index,
+        'customCoverFromTracker': customCoverFromTracker,
+      };
 }
 
 enum Status {
@@ -133,4 +128,5 @@ enum Status {
   onHiatus,
   publishingFinished
 }
-enum ItemType { manga, anime, novel }
+
+enum ItemType { anime, manga }

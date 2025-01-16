@@ -16,7 +16,7 @@ class $MSource implements MSource, $Instance {
       },
       fields: {
         'id':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int))),
         'name': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'baseUrl': BridgeFieldDef(
@@ -24,9 +24,9 @@ class $MSource implements MSource, $Instance {
         'lang': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'isFullData':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
         'hasCloudflare':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
         'dateFormat': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'dateFormatLocale': BridgeFieldDef(
@@ -172,15 +172,15 @@ class $MSource implements MSource, $Instance {
 
   @override
   Map<String, dynamic> toJson() => {
-    'apiUrl': apiUrl,
-    'baseUrl': baseUrl,
-    'dateFormat': dateFormat,
-    'dateFormatLocale': dateFormatLocale,
-    'hasCloudflare': hasCloudflare,
-    'id': id,
-    'isFullData': isFullData,
-    'lang': lang,
-    'name': name,
-    'additionalParams': additionalParams
-  };
+        'apiUrl': apiUrl,
+        'baseUrl': baseUrl,
+        'dateFormat': dateFormat,
+        'dateFormatLocale': dateFormatLocale,
+        'hasCloudflare': hasCloudflare,
+        'id': id,
+        'isFullData': isFullData,
+        'lang': lang,
+        'name': name,
+        'additionalParams': additionalParams
+      };
 }

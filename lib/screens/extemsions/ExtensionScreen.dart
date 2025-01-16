@@ -1,6 +1,5 @@
 import 'package:anymex/api/Mangayomi/Extensions/fetch_anime_sources.dart';
 import 'package:anymex/api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import 'package:anymex/api/Mangayomi/Extensions/fetch_novel_sources.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/screens/extemsions/ExtensionList.dart';
 import 'package:anymex/utils/StorageProvider.dart';
@@ -30,7 +29,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   void initState() {
     super.initState();
     _checkPermission();
-    _tabBarController = TabController(length: 6, vsync: this);
+    _tabBarController = TabController(length: 4, vsync: this);
     _tabBarController.animateTo(0);
     _tabBarController.addListener(() {
       setState(() {
@@ -43,7 +42,6 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   Future<void> _fetchData() async {
     ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
     ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
-    ref.watch(fetchNovelSourcesListProvider(id: null, reFresh: false));
   }
 
   _checkPermission() async {
@@ -59,7 +57,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     var theme = Theme.of(context).colorScheme;
     return Glow(
       child: DefaultTabController(
-        length: 6,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -113,10 +111,6 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       context, ItemType.manga, "Manga Installed", true, true),
                   _buildTab(
                       context, ItemType.manga, "Manga Available", true, false),
-                  _buildTab(
-                      context, ItemType.novel, "Novel Installed", false, true),
-                  _buildTab(
-                      context, ItemType.novel, "Novel Available", false, false),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -154,18 +148,18 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       itemType: ItemType.manga,
                       selectedLanguage: _selectedLanguage,
                     ),
-                    Extension(
-                      installed: true,
-                      query: _textEditingController.text,
-                      itemType: ItemType.novel,
-                      selectedLanguage: _selectedLanguage,
-                    ),
-                    Extension(
-                      installed: false,
-                      query: _textEditingController.text,
-                      itemType: ItemType.novel,
-                      selectedLanguage: _selectedLanguage,
-                    ),
+                    // Extension(
+                    //   installed: true,
+                    //   query: _textEditingController.text,
+                    //   itemType: ItemType.novel,
+                    //   selectedLanguage: _selectedLanguage,
+                    // ),
+                    // Extension(
+                    //   installed: false,
+                    //   query: _textEditingController.text,
+                    //   itemType: ItemType.novel,
+                    //   selectedLanguage: _selectedLanguage,
+                    // ),
                   ],
                 ),
               ),
@@ -208,7 +202,7 @@ Widget _extensionUpdateNumbers(BuildContext context, ItemType itemType,
         .and()
         .isAddedEqualTo(installed)
         .isActiveEqualTo(true)
-        .itemTypeEqualTo(itemType)
+        .isMangaEqualTo(itemType == ItemType.manga)
         .watch(fireImmediately: true),
     builder: (context, snapshot) {
       if (snapshot.hasData && snapshot.data!.isNotEmpty) {

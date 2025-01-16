@@ -5,12 +5,12 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/anime_library.dart';
 import 'package:anymex/screens/library/manga_library.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
+import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -62,11 +62,15 @@ class WatchingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final offlineStorage = Get.find<OfflineStorageController>();
-    final animeData =
-        index == 1 ? offlineStorage.mangaLibrary : offlineStorage.animeLibrary;
+    final animeData = (index == 1
+            ? offlineStorage.mangaLibrary
+                .where((e) => e.currentChapter?.pageNumber != null)
+            : offlineStorage.animeLibrary.where(
+                (e) => e.currentEpisode?.timeStampInMilliseconds != null))
+        .toList();
     return animeData.isEmpty
-        ? const Center(
-            child: Text("So Empty..."),
+        ? const EmptyLibrary(
+            isHistory: true,
           )
         : ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),

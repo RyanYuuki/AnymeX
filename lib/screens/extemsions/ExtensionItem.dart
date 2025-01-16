@@ -12,7 +12,6 @@ import 'package:isar/isar.dart';
 import '../../api/Mangayomi/Extensions/GetSourceList.dart';
 import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
 import '../../api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import '../../api/Mangayomi/Extensions/fetch_novel_sources.dart';
 import '../../api/Mangayomi/Model/Manga.dart';
 import '../../api/Mangayomi/extension_preferences_providers.dart';
 import '../../api/Mangayomi/get_source_preference.dart';
@@ -22,12 +21,13 @@ import 'ExtensionSettings/ExtensionSettings.dart';
 class ExtensionListTileWidget extends ConsumerStatefulWidget {
   final Source source;
   final bool isTestSource;
+  final ItemType itemType;
 
-  const ExtensionListTileWidget({
-    super.key,
-    required this.source,
-    this.isTestSource = false,
-  });
+  const ExtensionListTileWidget(
+      {super.key,
+      required this.source,
+      this.isTestSource = false,
+      required this.itemType});
 
   @override
   ConsumerState<ExtensionListTileWidget> createState() =>
@@ -41,16 +41,12 @@ class _ExtensionListTileWidgetState
   Future<void> _handleSourceAction() async {
     setState(() => _isLoading = true);
 
-    widget.source.itemType == ItemType.manga
+    widget.itemType == ItemType.manga
         ? await ref.watch(
             fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
                 .future)
-        : widget.source.itemType == ItemType.anime
-            ? await ref.watch(fetchAnimeSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
-                .future)
-            : await ref.watch(fetchNovelSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
+        : await ref.watch(
+            fetchAnimeSourcesListProvider(id: widget.source.id, reFresh: true)
                 .future);
 
     if (mounted) setState(() => _isLoading = false);
@@ -162,17 +158,13 @@ class _ExtensionListTileWidgetState
                   onPressed: () async {
                     if (updateAvailable) {
                       setState(() => _isLoading = true);
-                      widget.source.itemType == ItemType.manga
+                      widget.itemType == ItemType.manga
                           ? await ref.watch(fetchMangaSourcesListProvider(
                                   id: widget.source.id, reFresh: true)
                               .future)
-                          : widget.source.itemType == ItemType.anime
-                              ? await ref.watch(fetchAnimeSourcesListProvider(
-                                      id: widget.source.id, reFresh: true)
-                                  .future)
-                              : await ref.watch(fetchNovelSourcesListProvider(
-                                      id: widget.source.id, reFresh: true)
-                                  .future);
+                          : await ref.watch(fetchAnimeSourcesListProvider(
+                                  id: widget.source.id, reFresh: true)
+                              .future);
                       if (mounted) {
                         setState(() => _isLoading = false);
                       }

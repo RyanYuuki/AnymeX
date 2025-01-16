@@ -77,44 +77,38 @@ const MangaSchema = CollectionSchema(
       name: r'isManga',
       type: IsarType.bool,
     ),
-    r'itemType': PropertySchema(
-      id: 12,
-      name: r'itemType',
-      type: IsarType.byte,
-      enumMap: _MangaitemTypeEnumValueMap,
-    ),
     r'lang': PropertySchema(
-      id: 13,
+      id: 12,
       name: r'lang',
       type: IsarType.string,
     ),
     r'lastRead': PropertySchema(
-      id: 14,
+      id: 13,
       name: r'lastRead',
       type: IsarType.long,
     ),
     r'lastUpdate': PropertySchema(
-      id: 15,
+      id: 14,
       name: r'lastUpdate',
       type: IsarType.long,
     ),
     r'link': PropertySchema(
-      id: 16,
+      id: 15,
       name: r'link',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 17,
+      id: 16,
       name: r'name',
       type: IsarType.string,
     ),
     r'source': PropertySchema(
-      id: 18,
+      id: 17,
       name: r'source',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 19,
+      id: 18,
       name: r'status',
       type: IsarType.byte,
       enumMap: _MangastatusEnumValueMap,
@@ -143,10 +137,10 @@ const MangaSchema = CollectionSchema(
 );
 
 int _mangaEstimateSize(
-    Manga object,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Manga object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   {
     final value = object.artist;
@@ -230,11 +224,11 @@ int _mangaEstimateSize(
 }
 
 void _mangaSerialize(
-    Manga object,
-    IsarWriter writer,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Manga object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   writer.writeString(offsets[0], object.artist);
   writer.writeString(offsets[1], object.author);
   writer.writeLongList(offsets[2], object.categories);
@@ -247,22 +241,21 @@ void _mangaSerialize(
   writer.writeString(offsets[9], object.imageUrl);
   writer.writeBool(offsets[10], object.isLocalArchive);
   writer.writeBool(offsets[11], object.isManga);
-  writer.writeByte(offsets[12], object.itemType.index);
-  writer.writeString(offsets[13], object.lang);
-  writer.writeLong(offsets[14], object.lastRead);
-  writer.writeLong(offsets[15], object.lastUpdate);
-  writer.writeString(offsets[16], object.link);
-  writer.writeString(offsets[17], object.name);
-  writer.writeString(offsets[18], object.source);
-  writer.writeByte(offsets[19], object.status.index);
+  writer.writeString(offsets[12], object.lang);
+  writer.writeLong(offsets[13], object.lastRead);
+  writer.writeLong(offsets[14], object.lastUpdate);
+  writer.writeString(offsets[15], object.link);
+  writer.writeString(offsets[16], object.name);
+  writer.writeString(offsets[17], object.source);
+  writer.writeByte(offsets[18], object.status.index);
 }
 
 Manga _mangaDeserialize(
-    Id id,
-    IsarReader reader,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Manga(
     artist: reader.readStringOrNull(offsets[0]),
     author: reader.readStringOrNull(offsets[1]),
@@ -277,26 +270,24 @@ Manga _mangaDeserialize(
     imageUrl: reader.readStringOrNull(offsets[9]),
     isLocalArchive: reader.readBoolOrNull(offsets[10]),
     isManga: reader.readBoolOrNull(offsets[11]),
-    itemType: _MangaitemTypeValueEnumMap[reader.readByteOrNull(offsets[12])] ??
-        ItemType.manga,
-    lang: reader.readStringOrNull(offsets[13]),
-    lastRead: reader.readLongOrNull(offsets[14]),
-    lastUpdate: reader.readLongOrNull(offsets[15]),
-    link: reader.readStringOrNull(offsets[16]),
-    name: reader.readStringOrNull(offsets[17]),
-    source: reader.readStringOrNull(offsets[18]),
-    status: _MangastatusValueEnumMap[reader.readByteOrNull(offsets[19])] ??
+    lang: reader.readStringOrNull(offsets[12]),
+    lastRead: reader.readLongOrNull(offsets[13]),
+    lastUpdate: reader.readLongOrNull(offsets[14]),
+    link: reader.readStringOrNull(offsets[15]),
+    name: reader.readStringOrNull(offsets[16]),
+    source: reader.readStringOrNull(offsets[17]),
+    status: _MangastatusValueEnumMap[reader.readByteOrNull(offsets[18])] ??
         Status.ongoing,
   );
   return object;
 }
 
 P _mangaDeserializeProp<P>(
-    IsarReader reader,
-    int propertyId,
-    int offset,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
@@ -323,21 +314,18 @@ P _mangaDeserializeProp<P>(
     case 11:
       return (reader.readBoolOrNull(offset)) as P;
     case 12:
-      return (_MangaitemTypeValueEnumMap[reader.readByteOrNull(offset)] ??
-          ItemType.manga) as P;
-    case 13:
       return (reader.readStringOrNull(offset)) as P;
+    case 13:
+      return (reader.readLongOrNull(offset)) as P;
     case 14:
       return (reader.readLongOrNull(offset)) as P;
     case 15:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 16:
       return (reader.readStringOrNull(offset)) as P;
     case 17:
       return (reader.readStringOrNull(offset)) as P;
     case 18:
-      return (reader.readStringOrNull(offset)) as P;
-    case 19:
       return (_MangastatusValueEnumMap[reader.readByteOrNull(offset)] ??
           Status.ongoing) as P;
     default:
@@ -345,16 +333,6 @@ P _mangaDeserializeProp<P>(
   }
 }
 
-const _MangaitemTypeEnumValueMap = {
-  'manga': 0,
-  'anime': 1,
-  'novel': 2,
-};
-const _MangaitemTypeValueEnumMap = {
-  0: ItemType.manga,
-  1: ItemType.anime,
-  2: ItemType.novel,
-};
 const _MangastatusEnumValueMap = {
   'ongoing': 0,
   'completed': 1,
@@ -408,19 +386,19 @@ extension MangaQueryWhere on QueryBuilder<Manga, Manga, QWhereClause> {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        )
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        );
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        )
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        );
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
@@ -444,11 +422,11 @@ extension MangaQueryWhere on QueryBuilder<Manga, Manga, QWhereClause> {
   }
 
   QueryBuilder<Manga, Manga, QAfterWhereClause> idBetween(
-      Id lowerId,
-      Id upperId, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: lowerId,
@@ -478,9 +456,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'artist',
@@ -491,10 +469,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -506,10 +484,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -521,12 +499,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'artist',
@@ -540,9 +518,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'artist',
@@ -553,9 +531,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> artistEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'artist',
@@ -623,9 +601,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'author',
@@ -636,10 +614,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -651,10 +629,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -666,12 +644,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'author',
@@ -685,9 +663,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'author',
@@ -698,9 +676,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> authorEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'author',
@@ -778,10 +756,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  categoriesElementGreaterThan(
-      int value, {
-        bool include = false,
-      }) {
+      categoriesElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -792,9 +770,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> categoriesElementLessThan(
-      int value, {
-        bool include = false,
-      }) {
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -805,11 +783,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> categoriesElementBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'categories',
@@ -859,9 +837,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> categoriesLengthLessThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'categories',
@@ -874,9 +852,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> categoriesLengthGreaterThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'categories',
@@ -889,11 +867,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> categoriesLengthBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'categories',
@@ -906,7 +884,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerIsNull() {
+      customCoverFromTrackerIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'customCoverFromTracker',
@@ -915,7 +893,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerIsNotNull() {
+      customCoverFromTrackerIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'customCoverFromTracker',
@@ -924,10 +902,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'customCoverFromTracker',
@@ -938,11 +916,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -954,11 +932,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -970,13 +948,13 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'customCoverFromTracker',
@@ -990,10 +968,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'customCoverFromTracker',
@@ -1004,10 +982,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      customCoverFromTrackerEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'customCoverFromTracker',
@@ -1018,8 +996,8 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerContains(String value,
-      {bool caseSensitive = true}) {
+      customCoverFromTrackerContains(String value,
+          {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'customCoverFromTracker',
@@ -1030,8 +1008,8 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerMatches(String pattern,
-      {bool caseSensitive = true}) {
+      customCoverFromTrackerMatches(String pattern,
+          {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'customCoverFromTracker',
@@ -1042,7 +1020,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerIsEmpty() {
+      customCoverFromTrackerIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'customCoverFromTracker',
@@ -1052,7 +1030,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverFromTrackerIsNotEmpty() {
+      customCoverFromTrackerIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'customCoverFromTracker',
@@ -1070,7 +1048,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageIsNotNull() {
+      customCoverImageIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'customCoverImage',
@@ -1079,7 +1057,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageElementEqualTo(int value) {
+      customCoverImageElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'customCoverImage',
@@ -1089,10 +1067,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageElementGreaterThan(
-      int value, {
-        bool include = false,
-      }) {
+      customCoverImageElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1103,10 +1081,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageElementLessThan(
-      int value, {
-        bool include = false,
-      }) {
+      customCoverImageElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1117,12 +1095,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageElementBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+      customCoverImageElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'customCoverImage',
@@ -1135,7 +1113,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageLengthEqualTo(int length) {
+      customCoverImageLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'customCoverImage',
@@ -1160,7 +1138,7 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageIsNotEmpty() {
+      customCoverImageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'customCoverImage',
@@ -1173,10 +1151,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageLengthLessThan(
-      int length, {
-        bool include = false,
-      }) {
+      customCoverImageLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'customCoverImage',
@@ -1189,10 +1167,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageLengthGreaterThan(
-      int length, {
-        bool include = false,
-      }) {
+      customCoverImageLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'customCoverImage',
@@ -1205,12 +1183,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition>
-  customCoverImageLengthBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+      customCoverImageLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'customCoverImage',
@@ -1249,9 +1227,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> dateAddedGreaterThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1262,9 +1240,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> dateAddedLessThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1275,11 +1253,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> dateAddedBetween(
-      int? lower,
-      int? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dateAdded',
@@ -1308,9 +1286,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'description',
@@ -1321,10 +1299,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1336,10 +1314,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1351,12 +1329,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'description',
@@ -1370,9 +1348,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'description',
@@ -1383,9 +1361,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> descriptionEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'description',
@@ -1480,9 +1458,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementEqualTo(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'genre',
@@ -1493,10 +1471,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementGreaterThan(
-      String value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1508,10 +1486,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementLessThan(
-      String value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1523,12 +1501,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementBetween(
-      String lower,
-      String upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'genre',
@@ -1542,9 +1520,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'genre',
@@ -1555,9 +1533,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreElementEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'genre',
@@ -1647,9 +1625,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreLengthLessThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'genre',
@@ -1662,9 +1640,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreLengthGreaterThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'genre',
@@ -1677,11 +1655,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> genreLengthBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'genre',
@@ -1719,9 +1697,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> idGreaterThan(
-      Id? value, {
-        bool include = false,
-      }) {
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1732,9 +1710,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> idLessThan(
-      Id? value, {
-        bool include = false,
-      }) {
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1745,11 +1723,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> idBetween(
-      Id? lower,
-      Id? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id? lower,
+    Id? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
@@ -1778,9 +1756,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'imageUrl',
@@ -1791,10 +1769,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1806,10 +1784,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1821,12 +1799,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'imageUrl',
@@ -1840,9 +1818,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'imageUrl',
@@ -1853,9 +1831,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> imageUrlEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'imageUrl',
@@ -1959,59 +1937,6 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Manga, Manga, QAfterFilterCondition> itemTypeEqualTo(
-      ItemType value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterFilterCondition> itemTypeGreaterThan(
-      ItemType value, {
-        bool include = false,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterFilterCondition> itemTypeLessThan(
-      ItemType value, {
-        bool include = false,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterFilterCondition> itemTypeBetween(
-      ItemType lower,
-      ItemType upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'itemType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2029,9 +1954,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lang',
@@ -2042,10 +1967,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2057,10 +1982,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2072,12 +1997,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'lang',
@@ -2091,9 +2016,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'lang',
@@ -2104,9 +2029,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> langEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'lang',
@@ -2183,9 +2108,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastReadGreaterThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2196,9 +2121,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastReadLessThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2209,11 +2134,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastReadBetween(
-      int? lower,
-      int? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'lastRead',
@@ -2252,9 +2177,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastUpdateGreaterThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2265,9 +2190,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastUpdateLessThan(
-      int? value, {
-        bool include = false,
-      }) {
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2278,11 +2203,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> lastUpdateBetween(
-      int? lower,
-      int? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'lastUpdate',
@@ -2311,9 +2236,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'link',
@@ -2324,10 +2249,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2339,10 +2264,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2354,12 +2279,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'link',
@@ -2373,9 +2298,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'link',
@@ -2386,9 +2311,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> linkEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'link',
@@ -2455,9 +2380,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'name',
@@ -2468,10 +2393,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2483,10 +2408,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2498,12 +2423,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'name',
@@ -2517,9 +2442,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'name',
@@ -2530,9 +2455,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> nameEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'name',
@@ -2599,9 +2524,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'source',
@@ -2612,10 +2537,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2627,10 +2552,10 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2642,12 +2567,12 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'source',
@@ -2661,9 +2586,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'source',
@@ -2674,9 +2599,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> sourceEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'source',
@@ -2738,9 +2663,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> statusGreaterThan(
-      Status value, {
-        bool include = false,
-      }) {
+    Status value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2751,9 +2676,9 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> statusLessThan(
-      Status value, {
-        bool include = false,
-      }) {
+    Status value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2764,11 +2689,11 @@ extension MangaQueryFilter on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> statusBetween(
-      Status lower,
-      Status upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Status lower,
+    Status upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'status',
@@ -2811,29 +2736,29 @@ extension MangaQueryLinks on QueryBuilder<Manga, Manga, QFilterCondition> {
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> chaptersLengthLessThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'chapters', 0, true, length, include);
     });
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> chaptersLengthGreaterThan(
-      int length, {
-        bool include = false,
-      }) {
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'chapters', length, include, 999999, true);
     });
   }
 
   QueryBuilder<Manga, Manga, QAfterFilterCondition> chaptersLengthBetween(
-      int lower,
-      int upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
           r'chapters', lower, includeLower, upper, includeUpper);
@@ -2947,18 +2872,6 @@ extension MangaQuerySortBy on QueryBuilder<Manga, Manga, QSortBy> {
   QueryBuilder<Manga, Manga, QAfterSortBy> sortByIsMangaDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isManga', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterSortBy> sortByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterSortBy> sortByItemTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.desc);
     });
   }
 
@@ -3168,18 +3081,6 @@ extension MangaQuerySortThenBy on QueryBuilder<Manga, Manga, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Manga, Manga, QAfterSortBy> thenByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Manga, Manga, QAfterSortBy> thenByItemTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.desc);
-    });
-  }
-
   QueryBuilder<Manga, Manga, QAfterSortBy> thenByLang() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lang', Sort.asc);
@@ -3344,12 +3245,6 @@ extension MangaQueryWhereDistinct on QueryBuilder<Manga, Manga, QDistinct> {
     });
   }
 
-  QueryBuilder<Manga, Manga, QDistinct> distinctByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemType');
-    });
-  }
-
   QueryBuilder<Manga, Manga, QDistinct> distinctByLang(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3423,7 +3318,7 @@ extension MangaQueryProperty on QueryBuilder<Manga, Manga, QQueryProperty> {
   }
 
   QueryBuilder<Manga, String?, QQueryOperations>
-  customCoverFromTrackerProperty() {
+      customCoverFromTrackerProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'customCoverFromTracker');
     });
@@ -3474,12 +3369,6 @@ extension MangaQueryProperty on QueryBuilder<Manga, Manga, QQueryProperty> {
   QueryBuilder<Manga, bool?, QQueryOperations> isMangaProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isManga');
-    });
-  }
-
-  QueryBuilder<Manga, ItemType, QQueryOperations> itemTypeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemType');
     });
   }
 

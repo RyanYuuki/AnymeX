@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -7,6 +9,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -87,7 +90,9 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: HugeIcons.strokeRoundedInformationCircle,
             title: "About",
             description: "About the App",
-            onTap: () async {},
+            onTap: () async {
+              snackBar("Not yet Added, Got a lil lazy...", duration: 1000);
+            },
           ),
         ],
       )),

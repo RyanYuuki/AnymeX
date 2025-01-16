@@ -2,14 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
-import 'package:anymex/api/Mangayomi/Search/get_popular.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
@@ -63,21 +60,21 @@ class AnilistData extends GetxController {
     trendingMangas.value = fbm.trendingMangas;
   }
 
-  Future<void> fetchDataForAllSources() async {
-    final sources = Get.find<SourceController>().installedNovelExtensions;
-    await Future.wait(
-      sources.map((source) async {
-        try {
-          List<MManga>? data = await getPopular(source: source);
-          novelData[source] = data;
-          update();
-        } catch (error) {
-          snackBar('Error fetching data for ${source.name}: $error',
-              duration: 1000);
-        }
-      }),
-    );
-  }
+  // Future<void> fetchDataForAllSources() async {
+  //   final sources = Get.find<SourceController>().installedNovelExtensions;
+  //   await Future.wait(
+  //     sources.map((source) async {
+  //       try {
+  //         List<MManga>? data = await getPopular(source: source);
+  //         novelData[source] = data;
+  //         update();
+  //       } catch (error) {
+  //         snackBar('Error fetching data for ${source.name}: $error',
+  //             duration: 1000);
+  //       }
+  //     }),
+  //   );
+  // }
 
   Future<void> fetchAnilistHomepage() async {
     const String url = 'https://graphql.anilist.co';

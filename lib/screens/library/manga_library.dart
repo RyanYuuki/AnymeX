@@ -9,6 +9,7 @@ import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -32,6 +33,7 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
   RxList<OfflineMedia> mangaLibrary = <OfflineMedia>[].obs;
   RxList<CustomListData> customListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
+  RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
 
   RxString searchQuery = ''.obs;
 
@@ -40,6 +42,9 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
     super.initState();
     mangaLibrary.value = offlineStorage.mangaLibrary;
     customListData.value = offlineStorage.mangaCustomListData;
+    historyData.value = offlineStorage.mangaLibrary
+        .where((e) => e.currentChapter?.pageNumber != null)
+        .toList();
     _tabController = TabController(
         length: offlineStorage.mangaCustomListData.length, vsync: this);
   }
@@ -91,21 +96,19 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
                             color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
-
-                    Obx(
-                      () => TabBar(
-                        controller: _tabController,
-                        isScrollable: true,
-                        tabAlignment: TabAlignment.start,
-                        indicatorColor: Theme.of(context).colorScheme.primary,
-                        unselectedLabelColor: Colors.grey[400],
-                        labelStyle: const TextStyle(fontFamily: "Poppins-Bold"),
-                        tabs: List.generate(customListData.length, (index) {
-                          final tabName =
-                              offlineStorage.animeCustomLists[index].listName;
-                          return Tab(text: tabName);
-                        }),
-                      ),
+                    TabBar(
+                      controller: _tabController,
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      indicatorColor: Theme.of(context).colorScheme.primary,
+                      unselectedLabelColor: Colors.grey[400],
+                      labelStyle: const TextStyle(fontFamily: "Poppins-Bold"),
+                      tabs: List.generate(
+                          offlineStorage.mangaCustomLists.length, (index) {
+                        final tabName =
+                            offlineStorage.mangaCustomLists[index].listName;
+                        return Tab(text: tabName);
+                      }),
                     ),
 
                     // Tab Content
@@ -115,36 +118,38 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
                           controller: _tabController,
                           children: List.generate(
                             customListData.length,
-                            (index) => GridView.builder(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 16, 16, 130),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: getResponsiveCrossAxisCount(
-                                    context,
-                                    baseColumns: 2,
-                                    maxColumns: 5,
-                                    mobileItemWidth: 300,
-                                    tabletItemWidth: 300,
-                                    desktopItemWidth: 300),
-                                mainAxisExtent: 260,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                              ),
-                              itemBuilder: (context, i) {
-                                final data = searchQuery.isNotEmpty &&
-                                        index == _tabController.index
-                                    ? filteredData[i]
-                                    : customListData[index].listData[i];
-                                return _MangaCard(
-                                  data: data,
-                                );
-                              },
-                              itemCount: searchQuery.isNotEmpty &&
-                                      index == _tabController.index
-                                  ? filteredData.length
-                                  : customListData[index].listData.length,
-                            ),
+                            (index) => (customListData[index].listData).isEmpty
+                                ? const EmptyLibrary()
+                                : GridView.builder(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        16, 16, 16, 130),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount:
+                                          getResponsiveCrossAxisCount(context,
+                                              baseColumns: 2,
+                                              maxColumns: 5,
+                                              mobileItemWidth: 300,
+                                              tabletItemWidth: 300,
+                                              desktopItemWidth: 300),
+                                      mainAxisExtent: 260,
+                                      crossAxisSpacing: 16,
+                                      mainAxisSpacing: 16,
+                                    ),
+                                    itemBuilder: (context, i) {
+                                      final data = searchQuery.isNotEmpty &&
+                                              index == _tabController.index
+                                          ? filteredData[i]
+                                          : customListData[index].listData[i];
+                                      return _MangaCard(
+                                        data: data,
+                                      );
+                                    },
+                                    itemCount: searchQuery.isNotEmpty &&
+                                            index == _tabController.index
+                                        ? filteredData.length
+                                        : customListData[index].listData.length,
+                                  ),
                           ),
                         ),
                       ),
@@ -175,13 +180,19 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
                       ),
                       const SizedBox(height: 40),
                       Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: mangaLibrary.length,
-                          itemBuilder: (context, index) => MangaHistoryCard(
-                            data: mangaLibrary[index],
-                          ),
-                        ),
+                        child: historyData.isEmpty
+                            ? const EmptyLibrary(
+                                isHistory: true,
+                              )
+                            : ListView.builder(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: historyData.length,
+                                itemBuilder: (context, index) =>
+                                    MangaHistoryCard(
+                                  data: historyData[index],
+                                ),
+                              ),
                       ),
                     ],
                   ),

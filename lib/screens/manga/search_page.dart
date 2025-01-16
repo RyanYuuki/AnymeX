@@ -154,7 +154,7 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
                                                     .width),
                                         crossAxisSpacing: 10.0,
                                         mainAxisSpacing: 10.0,
-                                        mainAxisExtent: 200)
+                                        mainAxisExtent: 230)
                                     : const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 1,
                                         mainAxisExtent: 170,
@@ -212,77 +212,88 @@ class _MangaSearchPageState extends State<MangaSearchPage> {
     );
   }
 
-  Stack searchItemBox(
+  Column searchItemBox(
       BuildContext context, AnilistMediaSmall anime, String tag) {
-    return Stack(
+    return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MangaDetailsPage(
-                            anilistId: anime.id!,
-                            posterUrl: proxyUrl + (anime.poster ?? ''),
-                            tag: tag,
-                          )));
-            },
-            child: SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: Hero(
-                tag: tag,
-                child: ClipRRect(
+        Expanded(
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: proxyUrl + (anime.poster ?? ''),
-                    fit: BoxFit.cover,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MangaDetailsPage(
+                                  anilistId: anime.id!,
+                                  posterUrl: proxyUrl + (anime.poster ?? ''),
+                                  tag: tag,
+                                )));
+                  },
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Hero(
+                      tag: tag,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CachedNetworkImage(
+                          imageUrl: proxyUrl + (anime.poster ?? ''),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12.multiplyRadius()),
-                bottomRight: Radius.circular(12.multiplyRadius()),
-              ),
-              color: Theme.of(context).colorScheme.secondaryContainer,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Iconsax.book,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  anime.episodes.toString(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontFamily: "Poppins-Bold",
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.multiplyRadius()),
+                      bottomRight: Radius.circular(12.multiplyRadius()),
+                    ),
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Iconsax.book,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        anime.episodes.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontFamily: "Poppins-Bold",
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 3),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+        const SizedBox(height: 5),
+        AnymexText(
+          text: anime.title ?? '??',
+          maxLines: 1,
+        )
       ],
     );
   }

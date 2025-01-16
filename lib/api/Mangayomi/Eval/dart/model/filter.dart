@@ -2,10 +2,13 @@ import 'package:anymex/api/Mangayomi/Eval/javascript/http.dart';
 
 class FilterList {
   List<dynamic> filters;
+
   FilterList(this.filters);
+
   factory FilterList.fromJson(Map<String, dynamic> json) {
-    return FilterList(fromJsonFilterValuesToList(json['filters']));
+    return FilterList(fromJsonFilterValuestoList(json['filters']));
   }
+
   Map<String, dynamic> toJson() => {'filters': filterValuesListToJson(filters)};
 }
 
@@ -17,17 +20,19 @@ class SelectFilter {
   String? typeName;
 
   SelectFilter(this.type, this.name, this.state, this.values, this.typeName);
+
   factory SelectFilter.fromJson(Map<String, dynamic> json) {
     return SelectFilter(json['type'], json['name'], json['state'] ?? 0,
-        fromJsonFilterValuesToList(json['values']), json['type_name']);
+        fromJsonFilterValuestoList(json['values']), json['type_name']);
   }
+
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'name': name,
-    'state': state,
-    'values': filterValuesListToJson(values),
-    'type_name': "SelectFilter"
-  };
+        'type': type,
+        'name': name,
+        'state': state,
+        'values': filterValuesListToJson(values),
+        'type_name': "SelectFilter"
+      };
 }
 
 class SelectFilterOption {
@@ -36,9 +41,11 @@ class SelectFilterOption {
   String? typeName;
 
   SelectFilterOption(this.name, this.value, this.typeName);
+
   factory SelectFilterOption.fromJson(Map<String, dynamic> json) {
     return SelectFilterOption(json['name'], json['value'], json['type_name']);
   }
+
   Map<String, dynamic> toJson() =>
       {'value': value, 'name': name, 'type_name': "SelectOption"};
 }
@@ -46,10 +53,13 @@ class SelectFilterOption {
 class SeparatorFilter {
   String? type;
   String? typeName;
+
   SeparatorFilter(this.typeName, {this.type = ''});
+
   factory SeparatorFilter.fromJson(Map<String, dynamic> json) {
     return SeparatorFilter(type: json['type'], json['type_name']);
   }
+
   Map<String, dynamic> toJson() =>
       {'type': type, 'type_name': "SeparatorFilter"};
 }
@@ -58,10 +68,13 @@ class HeaderFilter {
   String? type;
   String name;
   String? typeName;
+
   HeaderFilter(this.name, this.typeName, {this.type = ''});
+
   factory HeaderFilter.fromJson(Map<String, dynamic> json) {
     return HeaderFilter(json['name'], json['type_name'], type: json['value']);
   }
+
   Map<String, dynamic> toJson() =>
       {'type': type, 'name': name, 'type_name': "HeaderFilter"};
 }
@@ -73,10 +86,12 @@ class TextFilter {
   String? typeName;
 
   TextFilter(this.type, this.name, this.typeName, {this.state = ""});
+
   factory TextFilter.fromJson(Map<String, dynamic> json) {
     return TextFilter(json['type'], json['name'], json['type_name'],
         state: json['state'] ?? "");
   }
+
   Map<String, dynamic> toJson() =>
       {'type': type, 'name': name, 'state': state, 'type_name': "TextFilter"};
 }
@@ -89,6 +104,7 @@ class SortFilter {
   String? typeName;
 
   SortFilter(this.type, this.name, this.state, this.values, this.typeName);
+
   factory SortFilter.fromJson(Map<String, dynamic> json) {
     return SortFilter(
         json['type'],
@@ -96,16 +112,17 @@ class SortFilter {
         json['state'] == null
             ? SortState(0, false, "")
             : SortState.fromJson(json['state']),
-        fromJsonFilterValuesToList(json['values']),
+        fromJsonFilterValuestoList(json['values']),
         json['type_name']);
   }
+
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'name': name,
-    'state': state.toJson(),
-    'values': filterValuesListToJson(values),
-    'type_name': "SortFilter"
-  };
+        'type': type,
+        'name': name,
+        'state': state.toJson(),
+        'values': filterValuesListToJson(values),
+        'type_name': "SortFilter"
+      };
 }
 
 class SortState {
@@ -114,9 +131,11 @@ class SortState {
   String? typeName;
 
   SortState(this.index, this.ascending, this.typeName);
+
   factory SortState.fromJson(Map<String, dynamic> json) {
     return SortState(json['index'], json['ascending'], json['type_name']);
   }
+
   Map<String, dynamic> toJson() =>
       {'index': index, 'ascending': ascending, 'type_name': "SortState"};
 }
@@ -133,15 +152,17 @@ class TriStateFilter {
         json['type'], json['name'], json['value'], json['type_name'],
         state: json['state'] ?? 0);
   }
+
   TriStateFilter(this.type, this.name, this.value, this.typeName,
       {this.state = 0});
+
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'name': name,
-    'value': value,
-    'state': state,
-    'type_name': "TriState"
-  };
+        'type': type,
+        'name': name,
+        'value': value,
+        'state': state,
+        'type_name': "TriState"
+      };
 }
 
 class GroupFilter {
@@ -151,16 +172,18 @@ class GroupFilter {
   String? typeName;
 
   GroupFilter(this.type, this.name, this.state, this.typeName);
+
   factory GroupFilter.fromJson(Map<String, dynamic> json) {
     return GroupFilter(json['type'], json['name'],
-        fromJsonFilterValuesToList(json['state']), json['type_name']);
+        fromJsonFilterValuestoList(json['state']), json['type_name']);
   }
+
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'name': name,
-    'state': filterValuesListToJson(state),
-    'type_name': "GroupFilter"
-  };
+        'type': type,
+        'name': name,
+        'state': filterValuesListToJson(state),
+        'type_name': "GroupFilter"
+      };
 }
 
 class CheckBoxFilter {
@@ -172,43 +195,47 @@ class CheckBoxFilter {
 
   CheckBoxFilter(this.type, this.name, this.value, this.typeName,
       {this.state = false});
+
   factory CheckBoxFilter.fromJson(Map<String, dynamic> json) {
     return CheckBoxFilter(
         json['type'], json['name'], json['value'], json['type_name'],
         state: json['state'] ?? false);
   }
+
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'name': name,
-    'value': value,
-    'state': state,
-    'type_name': "CheckBox"
-  };
+        'type': type,
+        'name': name,
+        'value': value,
+        'state': state,
+        'type_name': "CheckBox"
+      };
 }
 
-List<dynamic> fromJsonFilterValuesToList(List list) {
-  return list
-      .map((e) {
+List<dynamic> fromJsonFilterValuestoList(List list) {
+  return list.map((e) {
     final map = (e as Map).toMapStringDynamic!;
-
-    return switch (map['type_name']) {
-      'TriState' => TriStateFilter.fromJson(map.toMapStringDynamic!),
-      'CheckBox' => CheckBoxFilter.fromJson(map.toMapStringDynamic!),
-      'SelectOption' =>
-          SelectFilterOption.fromJson(map.toMapStringDynamic!),
-      'SelectFilter' => SelectFilter.fromJson(map.toMapStringDynamic!),
-      'SeparatorFilter' =>
-          SeparatorFilter.fromJson(map.toMapStringDynamic!),
-      'HeaderFilter' => HeaderFilter.fromJson(map.toMapStringDynamic!),
-      'TextFilter' => TextFilter.fromJson(map.toMapStringDynamic!),
-      'SortFilter' => SortFilter.fromJson(map.toMapStringDynamic!),
-      'SortState' => SortState.fromJson(map.toMapStringDynamic!),
-      'GroupFilter' => GroupFilter.fromJson(map.toMapStringDynamic!),
-      _ => null,
-    };
-  })
-      .where((filter) => filter != null)
-      .toList();
+    if (map['type_name'] == 'TriState') {
+      return TriStateFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'CheckBox') {
+      return CheckBoxFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'SelectOption') {
+      return SelectFilterOption.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'SelectFilter') {
+      return SelectFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'SeparatorFilter') {
+      return SeparatorFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'HeaderFilter') {
+      return HeaderFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'TextFilter') {
+      return TextFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'SortFilter') {
+      return SortFilter.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'SortState') {
+      return SortState.fromJson(map.toMapStringDynamic!);
+    } else if (map['type_name'] == 'GroupFilter') {
+      return GroupFilter.fromJson(map.toMapStringDynamic!);
+    }
+  }).toList();
 }
 
 List<Map<String, dynamic>?> filterValuesListToJson(List<dynamic> values) {

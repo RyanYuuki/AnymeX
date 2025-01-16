@@ -93,7 +93,7 @@ class $MTrack implements Track, $Instance {
   bool get isInBox => false;
 
   @override
-  get key => '';
+  get key => false;
 
   @override
   Future<void> save() async {}

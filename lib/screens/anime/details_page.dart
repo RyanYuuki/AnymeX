@@ -8,12 +8,15 @@ import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:anymex/api/Mangayomi/extension_preferences_providers.dart';
 import 'package:anymex/api/Mangayomi/get_source_preference.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_data.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
+import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
@@ -30,10 +33,12 @@ import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AnimeDetailsPage extends StatefulWidget {
@@ -58,6 +63,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // Tracker for Avail Anime
   RxBool isListedAnime = false.obs;
 
+  // Offline Storage
+  final offlineStorage = Get.find<OfflineStorageController>();
+
   // Extension Data
   Rx<MManga?> fetchedData = MManga().obs;
   RxList<Episode>? episodeList = <Episode>[].obs;
@@ -70,6 +78,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // Page View Tracker
   RxInt selectedPage = 0.obs;
   RxInt desktopSelectedPage = 1.obs;
+
+  // Error tracker
+  RxBool episodeError = false.obs;
 
   // Tracker's Controller
   PageController controller = PageController();
@@ -128,6 +139,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Future<void> mapToAnilist({bool isFirstTime = true, Source? source}) async {
+    episodeError.value = false;
     try {
       final finalSource = source ?? sourceController.activeSource.value;
 
@@ -163,30 +175,37 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Future<void> getDetailsFromSource(String url) async {
-    final episodeFuture = await getDetail(
-      url: url,
-      source: sourceController.activeSource.value!,
-    );
+    episodeError.value = false;
+    try {
+      final episodeFuture = await getDetail(
+        url: url,
+        source: sourceController.activeSource.value!,
+      );
 
-    final episodeData = episodeFuture.chapters!.reversed.toList();
-    final convertedEpisodeData = episodeData.map((ep) {
-      return mChapterToEpisode(ep, episodeFuture);
-    }).toList();
+      final episodeData = episodeFuture.chapters!.reversed.toList();
+      final convertedEpisodeData = episodeData.map((ep) {
+        return mChapterToEpisode(ep, episodeFuture);
+      }).toList();
 
-    final renewepisodeData = convertedEpisodeData.first.number.toInt() > 3
-        ? convertedEpisodeData.asMap().entries.map((entry) {
-            final index = entry.key + 1;
-            entry.value.number = index.toString();
-            return entry.value;
-          }).toList()
-        : convertedEpisodeData;
+      final renewepisodeData = convertedEpisodeData.first.number.toInt() > 3
+          ? convertedEpisodeData.asMap().entries.map((entry) {
+              final index = entry.key + 1;
+              entry.value.number = index.toString();
+              return entry.value;
+            }).toList()
+          : convertedEpisodeData;
 
-    fetchedData.value = episodeFuture;
-    episodeList!.value = renewepisodeData;
-    final temp = await AnilistData.fetchEpisodesFromAnify(
-        widget.anilistId, episodeList!.value);
-    episodeList?.value = temp;
-    setState(() {});
+      fetchedData.value = episodeFuture;
+      episodeList!.value = renewepisodeData;
+      final temp = await AnilistData.fetchEpisodesFromAnify(
+          widget.anilistId, episodeList!.value);
+      episodeList?.value = temp;
+      setState(() {});
+    } catch (e) {
+      episodeError.value = true;
+      snackBar("Ooops! Look like we ran into an Error, Try again please",
+          duration: 2000);
+    }
   }
 
   @override
@@ -230,21 +249,45 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
               child: Column(
                 children: [
-                  AnymeXButton(
-                    onTap: () {
-                      showListEditorModal(context);
-                    },
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    borderRadius: BorderRadius.circular(20),
-                    variant: ButtonVariant.outline,
-                    borderColor: Theme.of(context).colorScheme.surfaceContainer,
-                    child: Text(
-                        convertAniListStatus(
-                            currentAnime.value?.watchingStatus),
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontFamily: "Poppins-Bold")),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AnymeXButton(
+                          onTap: () {
+                            if (anilist.isLoggedIn.value) {
+                              showListEditorModal(context);
+                            } else {
+                              snackBar("You aren't logged in Genius.",
+                                  duration: 1000);
+                            }
+                          },
+                          height: 50,
+                          width: double.infinity,
+                          borderRadius: BorderRadius.circular(20),
+                          variant: ButtonVariant.outline,
+                          borderColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          child: Text(
+                              convertAniListStatus(
+                                  currentAnime.value?.watchingStatus),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontFamily: "Poppins-Bold")),
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      AnymeXButton(
+                          onTap: () {
+                            showCustomListDialog(context, anilistData!,
+                                offlineStorage.animeCustomLists, false);
+                          },
+                          height: 50,
+                          borderRadius: BorderRadius.circular(20),
+                          variant: ButtonVariant.outline,
+                          borderColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          child: const Icon(HugeIcons.strokeRoundedLibrary))
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -472,6 +515,21 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 const NoSourceSelectedWidget()
               else
                 Obx(() {
+                  if (episodeError.value) {
+                    return const SizedBox(
+                      height: 300,
+                      child: Center(
+                        child: AnymexText(
+                          text:
+                              "Looks like even the episodes are avoiding your taste in shows\n:(",
+                          size: 20,
+                          textAlign: TextAlign.center,
+                          variant: TextVariant.semiBold,
+                        ),
+                      ),
+                    );
+                  }
+
                   if (episodeList!.value.isEmpty || episodeList == null) {
                     return const SizedBox(
                         height: 500,

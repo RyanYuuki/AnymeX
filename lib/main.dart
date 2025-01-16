@@ -105,7 +105,7 @@ Future<void> initializeHive() async {
   Hive.registerAdapter(EpisodeAdapter());
   await Hive.openBox('themeData');
   await Hive.openBox('loginData');
-  await Hive.openBox('settingsData');
+  await Hive.openBox('auth');
   await Hive.openBox<UISettings>("UiSettings");
   await Hive.openBox<PlayerSettings>("PlayerSettings");
 }
@@ -225,6 +225,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     final authService = Get.find<AnilistAuth>();
     return PlatformBuilder(
+      strictMode: true,
       desktopBuilder: Glow(
         child: Scaffold(
           extendBody: true,

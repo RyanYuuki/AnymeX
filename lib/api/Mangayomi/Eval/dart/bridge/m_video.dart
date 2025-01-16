@@ -156,7 +156,7 @@ class $MVideo implements Video, $Instance {
   bool get isInBox => false;
 
   @override
-  get key => '';
+  get key => false;
 
   @override
   Future<void> save() async {}

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
@@ -107,6 +109,12 @@ class ChapterRecognition {
     name = name.replaceAll(_unwantedWhiteSpace, "");
 
     name = name.replaceAll(_unwanted, "");
+
+    final episodeMatch = RegExp(r"e(\d+)").firstMatch(name);
+    if (episodeMatch != null) {
+      return int.parse(episodeMatch.group(1)!);
+    }
+
     const numberPat = "*$_numberPattern";
     const ch = r"(?<=ch\.)";
     var match = RegExp("$ch $numberPat").firstMatch(name);

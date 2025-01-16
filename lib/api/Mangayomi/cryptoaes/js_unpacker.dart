@@ -12,7 +12,7 @@ class JsUnpacker {
       multiLine: true);
 
   static final RegExp _unpackReplaceRegex =
-  RegExp(r"\b\w+\b", caseSensitive: false, multiLine: true);
+      RegExp(r"\b\w+\b", caseSensitive: false, multiLine: true);
 
   static bool detect(String scriptBlock) {
     return _packedRegex.hasMatch(scriptBlock);
@@ -42,7 +42,7 @@ class JsUnpacker {
 
       if (symtab != null && symtab.length == count) {
         final unpackedPayload =
-        payload!.replaceAllMapped(_unpackReplaceRegex, (match) {
+            payload!.replaceAllMapped(_unpackReplaceRegex, (match) {
           final word = match.group(0)!;
           final unbased = symtab[unbaser.unbase(word)];
           return unbased.isEmpty ? word : unbased;

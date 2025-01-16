@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: deprecated_member_use
+
 part of 'fetch_manga_sources.dart';
 
 // **************************************************************************
@@ -7,7 +9,7 @@ part of 'fetch_manga_sources.dart';
 // **************************************************************************
 
 String _$fetchMangaSourcesListHash() =>
-    r'f66f3011e72a3b234d7729ef203fc5f255870db3';
+    r'9c17a230c69c18c07a68f566d295bfc7316dc6b7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -52,8 +54,8 @@ class FetchMangaSourcesListFamily extends Family<AsyncValue> {
 
   @override
   FetchMangaSourcesListProvider getProviderOverride(
-      covariant FetchMangaSourcesListProvider provider,
-      ) {
+    covariant FetchMangaSourcesListProvider provider,
+  ) {
     return call(
       id: provider.id,
       reFresh: provider.reFresh,
@@ -82,46 +84,46 @@ class FetchMangaSourcesListProvider extends AutoDisposeFutureProvider<Object?> {
     int? id,
     required dynamic reFresh,
   }) : this._internal(
-        (ref) => fetchMangaSourcesList(
-      ref as FetchMangaSourcesListRef,
-      id: id,
-      reFresh: reFresh,
-    ),
-    from: fetchMangaSourcesListProvider,
-    name: r'fetchMangaSourcesListProvider',
-    debugGetCreateSourceHash:
-    const bool.fromEnvironment('dart.vm.product')
-        ? null
-        : _$fetchMangaSourcesListHash,
-    dependencies: FetchMangaSourcesListFamily._dependencies,
-    allTransitiveDependencies:
-    FetchMangaSourcesListFamily._allTransitiveDependencies,
-    id: id,
-    reFresh: reFresh,
-  );
+          (ref) => fetchMangaSourcesList(
+            ref as FetchMangaSourcesListRef,
+            id: id,
+            reFresh: reFresh,
+          ),
+          from: fetchMangaSourcesListProvider,
+          name: r'fetchMangaSourcesListProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$fetchMangaSourcesListHash,
+          dependencies: FetchMangaSourcesListFamily._dependencies,
+          allTransitiveDependencies:
+              FetchMangaSourcesListFamily._allTransitiveDependencies,
+          id: id,
+          reFresh: reFresh,
+        );
 
   FetchMangaSourcesListProvider._internal(
-      super._createNotifier, {
-        required super.name,
-        required super.dependencies,
-        required super.allTransitiveDependencies,
-        required super.debugGetCreateSourceHash,
-        required super.from,
-        required this.id,
-        required this.reFresh,
-      }) : super.internal();
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+    required this.reFresh,
+  }) : super.internal();
 
   final int? id;
   final dynamic reFresh;
 
   @override
   Override overrideWith(
-      FutureOr<Object?> Function(FetchMangaSourcesListRef provider) create,
-      ) {
+    FutureOr<Object?> Function(FetchMangaSourcesListRef provider) create,
+  ) {
     return ProviderOverride(
       origin: this,
       override: FetchMangaSourcesListProvider._internal(
-            (ref) => create(ref as FetchMangaSourcesListRef),
+        (ref) => create(ref as FetchMangaSourcesListRef),
         from: from,
         name: null,
         dependencies: null,
@@ -155,8 +157,6 @@ class FetchMangaSourcesListProvider extends AutoDisposeFutureProvider<Object?> {
   }
 }
 
-
-// ignore: unused_element
 mixin FetchMangaSourcesListRef on AutoDisposeFutureProviderRef<Object?> {
   /// The parameter `id` of this provider.
   int? get id;
@@ -172,8 +172,9 @@ class _FetchMangaSourcesListProviderElement
 
   @override
   int? get id => (origin as FetchMangaSourcesListProvider).id;
+
   @override
   dynamic get reFresh => (origin as FetchMangaSourcesListProvider).reFresh;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -5,11 +5,13 @@ import 'package:anymex/api/Mangayomi/Model/Source.dart';
 import 'package:anymex/api/Mangayomi/Search/get_detail.dart';
 import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/anilist/anilist_data.dart';
 import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
@@ -30,6 +32,7 @@ import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MangaDetailsPage extends StatefulWidget {
@@ -53,6 +56,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   final anilist = Get.find<AnilistAuth>();
   // Tracker for Avail Anime
   RxBool isListedManga = false.obs;
+
+  // Offline Storage
+  final offlineStorage = Get.find<OfflineStorageController>();
 
   // Extension Data
   Rx<MManga?> fetchedData = MManga().obs;
@@ -205,21 +211,40 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
               child: Column(
                 children: [
-                  AnymeXButton(
-                    onTap: () {
-                      showListEditorModal(context);
-                    },
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    borderRadius: BorderRadius.circular(20),
-                    variant: ButtonVariant.outline,
-                    borderColor: Theme.of(context).colorScheme.surfaceContainer,
-                    child: Text(
-                        convertAniListStatus(
-                            currentManga.value?.watchingStatus),
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontFamily: "Poppins-Bold")),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AnymeXButton(
+                          onTap: () {
+                            showListEditorModal(context);
+                          },
+                          width: MediaQuery.of(context).size.width,
+                          height: 50,
+                          borderRadius: BorderRadius.circular(20),
+                          variant: ButtonVariant.outline,
+                          borderColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          child: Text(
+                              convertAniListStatus(
+                                  currentManga.value?.watchingStatus),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontFamily: "Poppins-Bold")),
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      AnymeXButton(
+                          onTap: () {
+                            showCustomListDialog(context, anilistData!,
+                                offlineStorage.mangaCustomLists, true);
+                          },
+                          height: 50,
+                          borderRadius: BorderRadius.circular(20),
+                          variant: ButtonVariant.outline,
+                          borderColor:
+                              Theme.of(context).colorScheme.surfaceContainer,
+                          child: const Icon(HugeIcons.strokeRoundedLibrary))
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Row(

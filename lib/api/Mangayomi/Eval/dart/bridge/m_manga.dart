@@ -1,4 +1,5 @@
 import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 
@@ -111,10 +112,10 @@ class $MManga implements MManga, $Instance {
       case 'chapters':
         $value.chapters = (value.$reified as List)
             .map((e) => MChapter(
-            dateUpload: e.dateUpload,
-            url: e.url,
-            name: e.name,
-            scanlator: e.scanlator))
+                dateUpload: e.dateUpload,
+                url: e.url,
+                name: e.name,
+                scanlator: e.scanlator))
             .toList();
 
       default:
@@ -194,14 +195,14 @@ class $MManga implements MManga, $Instance {
 
   @override
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'link': link,
-    'imageUrl': imageUrl,
-    'description': description,
-    'author': author,
-    'artist': artist,
-    'status': status.toString().substringAfter("."),
-    'genre': genre,
-    'chapters': chapters?.map((e) => e.toJson()).toList()
-  };
+        'name': name,
+        'link': link,
+        'imageUrl': imageUrl,
+        'description': description,
+        'author': author,
+        'artist': artist,
+        'status': status.toString().substringAfter("."),
+        'genre': genre,
+        'chapters': chapters?.map((e) => e.toJson()).toList()
+      };
 }

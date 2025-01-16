@@ -1,7 +1,4 @@
 // ignore_for_file: invalid_use_of_protected_member
-
-import 'dart:developer';
-
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/settings/settings.dart';

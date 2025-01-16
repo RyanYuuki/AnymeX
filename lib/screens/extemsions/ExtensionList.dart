@@ -7,7 +7,6 @@ import '../../api/Mangayomi/Extensions/GetSourceList.dart';
 import '../../api/Mangayomi/Extensions/extensions_provider.dart';
 import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
 import '../../api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import '../../api/Mangayomi/Extensions/fetch_novel_sources.dart';
 import '../../api/Mangayomi/Model/Manga.dart';
 import '../../api/Mangayomi/Model/Source.dart';
 import 'ExtensionItem.dart';
@@ -40,29 +39,21 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
     } else if (widget.itemType == ItemType.anime) {
       return await ref.refresh(
           fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
-    } else {
-      return await ref.refresh(
-          fetchNovelSourcesListProvider(id: null, reFresh: true).future);
     }
   }
 
   Future<void> _fetchData() async {
     if (widget.itemType == ItemType.manga) {
-       ref.watch(
-          fetchMangaSourcesListProvider(id: null, reFresh: false));
+      ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
     } else if (widget.itemType == ItemType.anime) {
-      ref.watch(
-          fetchAnimeSourcesListProvider(id: null, reFresh: false));
-    } else {
-       ref.watch(
-          fetchNovelSourcesListProvider(id: null, reFresh: false));
+      ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final streamExtensions =
-        ref.watch(getExtensionsStreamProvider(widget.itemType));
+    final streamExtensions = ref
+        .watch(getExtensionsStreamProvider(widget.itemType == ItemType.manga));
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -152,17 +143,13 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
             ElevatedButton(
               onPressed: () async {
                 for (var source in updateEntries) {
-                  source.itemType == ItemType.manga
+                  widget.itemType == ItemType.manga
                       ? await ref.watch(fetchMangaSourcesListProvider(
                               id: source.id, reFresh: true)
                           .future)
-                      : source.itemType == ItemType.anime
-                          ? await ref.watch(fetchAnimeSourcesListProvider(
-                                  id: source.id, reFresh: true)
-                              .future)
-                          : await ref.watch(fetchNovelSourcesListProvider(
-                                  id: source.id, reFresh: true)
-                              .future);
+                      : await ref.watch(fetchAnimeSourcesListProvider(
+                              id: source.id, reFresh: true)
+                          .future);
                 }
               },
               child: const Text(
@@ -173,8 +160,10 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
           ],
         ),
       ),
-      itemBuilder: (context, Source element) =>
-          ExtensionListTileWidget(source: element),
+      itemBuilder: (context, Source element) => ExtensionListTileWidget(
+        source: element,
+        itemType: widget.itemType,
+      ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
       order: GroupedListOrder.ASC,
@@ -190,8 +179,10 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         padding: EdgeInsets.symmetric(horizontal: 12),
         child: SizedBox(),
       ),
-      itemBuilder: (context, Source element) =>
-          ExtensionListTileWidget(source: element),
+      itemBuilder: (context, Source element) => ExtensionListTileWidget(
+        source: element,
+        itemType: widget.itemType,
+      ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
       order: GroupedListOrder.ASC,
@@ -214,8 +205,10 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
           ],
         ),
       ),
-      itemBuilder: (context, Source element) =>
-          ExtensionListTileWidget(source: element),
+      itemBuilder: (context, Source element) => ExtensionListTileWidget(
+        source: element,
+        itemType: widget.itemType,
+      ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
       order: GroupedListOrder.ASC,

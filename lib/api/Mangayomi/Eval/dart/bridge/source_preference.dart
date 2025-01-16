@@ -34,7 +34,7 @@ class $CheckBoxPreference implements SourcePreference, $Instance {
         'summary': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'value':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
       },
       wrap: true);
 
@@ -170,7 +170,7 @@ class $SwitchPreferenceCompat implements SourcePreference, $Instance {
         'summary': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'value':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool))),
       },
       wrap: true);
 
@@ -316,7 +316,7 @@ class $ListPreference implements SourcePreference, $Instance {
         'summary': BridgeFieldDef(
             BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string))),
         'valueIndex':
-        BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int))),
+            BridgeFieldDef(BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int))),
         'entries': BridgeFieldDef(BridgeTypeAnnotation(
             BridgeTypeRef(CoreTypes.list, [BridgeTypeRef(CoreTypes.string)]))),
         'entryValues': BridgeFieldDef(BridgeTypeAnnotation(

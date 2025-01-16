@@ -107,55 +107,49 @@ const SourceSchema = CollectionSchema(
       name: r'isTorrent',
       type: IsarType.bool,
     ),
-    r'itemType': PropertySchema(
-      id: 18,
-      name: r'itemType',
-      type: IsarType.byte,
-      enumMap: _SourceitemTypeEnumValueMap,
-    ),
     r'lang': PropertySchema(
-      id: 19,
+      id: 18,
       name: r'lang',
       type: IsarType.string,
     ),
     r'lastUsed': PropertySchema(
-      id: 20,
+      id: 19,
       name: r'lastUsed',
       type: IsarType.bool,
     ),
     r'name': PropertySchema(
-      id: 21,
+      id: 20,
       name: r'name',
       type: IsarType.string,
     ),
     r'sourceCode': PropertySchema(
-      id: 22,
+      id: 21,
       name: r'sourceCode',
       type: IsarType.string,
     ),
     r'sourceCodeLanguage': PropertySchema(
-      id: 23,
+      id: 22,
       name: r'sourceCodeLanguage',
       type: IsarType.byte,
       enumMap: _SourcesourceCodeLanguageEnumValueMap,
     ),
     r'sourceCodeUrl': PropertySchema(
-      id: 24,
+      id: 23,
       name: r'sourceCodeUrl',
       type: IsarType.string,
     ),
     r'typeSource': PropertySchema(
-      id: 25,
+      id: 24,
       name: r'typeSource',
       type: IsarType.string,
     ),
     r'version': PropertySchema(
-      id: 26,
+      id: 25,
       name: r'version',
       type: IsarType.string,
     ),
     r'versionLast': PropertySchema(
-      id: 27,
+      id: 26,
       name: r'versionLast',
       type: IsarType.string,
     )
@@ -175,10 +169,10 @@ const SourceSchema = CollectionSchema(
 );
 
 int _sourceEstimateSize(
-    Source object,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Source object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   {
     final value = object.additionalParams;
@@ -274,11 +268,11 @@ int _sourceEstimateSize(
 }
 
 void _sourceSerialize(
-    Source object,
-    IsarWriter writer,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Source object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   writer.writeString(offsets[0], object.additionalParams);
   writer.writeString(offsets[1], object.apiUrl);
   writer.writeString(offsets[2], object.appMinVerReq);
@@ -297,24 +291,23 @@ void _sourceSerialize(
   writer.writeBool(offsets[15], object.isObsolete);
   writer.writeBool(offsets[16], object.isPinned);
   writer.writeBool(offsets[17], object.isTorrent);
-  writer.writeByte(offsets[18], object.itemType.index);
-  writer.writeString(offsets[19], object.lang);
-  writer.writeBool(offsets[20], object.lastUsed);
-  writer.writeString(offsets[21], object.name);
-  writer.writeString(offsets[22], object.sourceCode);
-  writer.writeByte(offsets[23], object.sourceCodeLanguage.index);
-  writer.writeString(offsets[24], object.sourceCodeUrl);
-  writer.writeString(offsets[25], object.typeSource);
-  writer.writeString(offsets[26], object.version);
-  writer.writeString(offsets[27], object.versionLast);
+  writer.writeString(offsets[18], object.lang);
+  writer.writeBool(offsets[19], object.lastUsed);
+  writer.writeString(offsets[20], object.name);
+  writer.writeString(offsets[21], object.sourceCode);
+  writer.writeByte(offsets[22], object.sourceCodeLanguage.index);
+  writer.writeString(offsets[23], object.sourceCodeUrl);
+  writer.writeString(offsets[24], object.typeSource);
+  writer.writeString(offsets[25], object.version);
+  writer.writeString(offsets[26], object.versionLast);
 }
 
 Source _sourceDeserialize(
-    Id id,
-    IsarReader reader,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Source(
     additionalParams: reader.readStringOrNull(offsets[0]),
     apiUrl: reader.readStringOrNull(offsets[1]),
@@ -334,29 +327,27 @@ Source _sourceDeserialize(
     isNsfw: reader.readBoolOrNull(offsets[14]),
     isObsolete: reader.readBoolOrNull(offsets[15]),
     isPinned: reader.readBoolOrNull(offsets[16]),
-    itemType: _SourceitemTypeValueEnumMap[reader.readByteOrNull(offsets[18])] ??
-        ItemType.manga,
-    lang: reader.readStringOrNull(offsets[19]),
-    lastUsed: reader.readBoolOrNull(offsets[20]),
-    name: reader.readStringOrNull(offsets[21]),
-    sourceCode: reader.readStringOrNull(offsets[22]),
-    sourceCodeUrl: reader.readStringOrNull(offsets[24]),
-    typeSource: reader.readStringOrNull(offsets[25]),
-    version: reader.readStringOrNull(offsets[26]),
-    versionLast: reader.readStringOrNull(offsets[27]),
+    lang: reader.readStringOrNull(offsets[18]),
+    lastUsed: reader.readBoolOrNull(offsets[19]),
+    name: reader.readStringOrNull(offsets[20]),
+    sourceCode: reader.readStringOrNull(offsets[21]),
+    sourceCodeUrl: reader.readStringOrNull(offsets[23]),
+    typeSource: reader.readStringOrNull(offsets[24]),
+    version: reader.readStringOrNull(offsets[25]),
+    versionLast: reader.readStringOrNull(offsets[26]),
   );
   object.sourceCodeLanguage = _SourcesourceCodeLanguageValueEnumMap[
-  reader.readByteOrNull(offsets[23])] ??
+          reader.readByteOrNull(offsets[22])] ??
       SourceCodeLanguage.dart;
   return object;
 }
 
 P _sourceDeserializeProp<P>(
-    IsarReader reader,
-    int propertyId,
-    int offset,
-    Map<Type, List<int>> allOffsets,
-    ) {
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
@@ -395,43 +386,30 @@ P _sourceDeserializeProp<P>(
     case 17:
       return (reader.readBool(offset)) as P;
     case 18:
-      return (_SourceitemTypeValueEnumMap[reader.readByteOrNull(offset)] ??
-          ItemType.manga) as P;
-    case 19:
       return (reader.readStringOrNull(offset)) as P;
-    case 20:
+    case 19:
       return (reader.readBoolOrNull(offset)) as P;
+    case 20:
+      return (reader.readStringOrNull(offset)) as P;
     case 21:
       return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readStringOrNull(offset)) as P;
-    case 23:
       return (_SourcesourceCodeLanguageValueEnumMap[
-      reader.readByteOrNull(offset)] ??
+              reader.readByteOrNull(offset)] ??
           SourceCodeLanguage.dart) as P;
+    case 23:
+      return (reader.readStringOrNull(offset)) as P;
     case 24:
       return (reader.readStringOrNull(offset)) as P;
     case 25:
       return (reader.readStringOrNull(offset)) as P;
     case 26:
       return (reader.readStringOrNull(offset)) as P;
-    case 27:
-      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-const _SourceitemTypeEnumValueMap = {
-  'manga': 0,
-  'anime': 1,
-  'novel': 2,
-};
-const _SourceitemTypeValueEnumMap = {
-  0: ItemType.manga,
-  1: ItemType.anime,
-  2: ItemType.novel,
-};
 const _SourcesourceCodeLanguageEnumValueMap = {
   'dart': 0,
   'javascript': 1,
@@ -476,19 +454,19 @@ extension SourceQueryWhere on QueryBuilder<Source, Source, QWhereClause> {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        )
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        );
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        )
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        );
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
@@ -512,11 +490,11 @@ extension SourceQueryWhere on QueryBuilder<Source, Source, QWhereClause> {
   }
 
   QueryBuilder<Source, Source, QAfterWhereClause> idBetween(
-      Id lowerId,
-      Id upperId, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: lowerId,
@@ -538,7 +516,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  additionalParamsIsNotNull() {
+      additionalParamsIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'additionalParams',
@@ -547,9 +525,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> additionalParamsEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'additionalParams',
@@ -560,11 +538,11 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  additionalParamsGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      additionalParamsGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -576,10 +554,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> additionalParamsLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -591,12 +569,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> additionalParamsBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'additionalParams',
@@ -610,10 +588,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  additionalParamsStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      additionalParamsStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'additionalParams',
@@ -624,9 +602,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> additionalParamsEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'additionalParams',
@@ -661,7 +639,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  additionalParamsIsEmpty() {
+      additionalParamsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'additionalParams',
@@ -671,7 +649,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  additionalParamsIsNotEmpty() {
+      additionalParamsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'additionalParams',
@@ -697,9 +675,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'apiUrl',
@@ -710,10 +688,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -725,10 +703,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -740,12 +718,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'apiUrl',
@@ -759,9 +737,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'apiUrl',
@@ -772,9 +750,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> apiUrlEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'apiUrl',
@@ -843,9 +821,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'appMinVerReq',
@@ -856,10 +834,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -871,10 +849,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -886,12 +864,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'appMinVerReq',
@@ -905,9 +883,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'appMinVerReq',
@@ -918,9 +896,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> appMinVerReqEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'appMinVerReq',
@@ -989,9 +967,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'baseUrl',
@@ -1002,10 +980,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1017,10 +995,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1032,12 +1010,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'baseUrl',
@@ -1051,9 +1029,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'baseUrl',
@@ -1064,9 +1042,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> baseUrlEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'baseUrl',
@@ -1135,9 +1113,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'dateFormat',
@@ -1148,10 +1126,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1163,10 +1141,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1178,12 +1156,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dateFormat',
@@ -1197,9 +1175,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'dateFormat',
@@ -1210,9 +1188,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'dateFormat',
@@ -1273,7 +1251,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  dateFormatLocaleIsNotNull() {
+      dateFormatLocaleIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'dateFormatLocale',
@@ -1282,9 +1260,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatLocaleEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'dateFormatLocale',
@@ -1295,11 +1273,11 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  dateFormatLocaleGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      dateFormatLocaleGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1311,10 +1289,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatLocaleLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1326,12 +1304,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatLocaleBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dateFormatLocale',
@@ -1345,10 +1323,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  dateFormatLocaleStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      dateFormatLocaleStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'dateFormatLocale',
@@ -1359,9 +1337,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> dateFormatLocaleEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'dateFormatLocale',
@@ -1396,7 +1374,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  dateFormatLocaleIsEmpty() {
+      dateFormatLocaleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'dateFormatLocale',
@@ -1406,7 +1384,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  dateFormatLocaleIsNotEmpty() {
+      dateFormatLocaleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'dateFormatLocale',
@@ -1458,9 +1436,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'headers',
@@ -1471,10 +1449,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1486,10 +1464,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1501,12 +1479,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'headers',
@@ -1520,9 +1498,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'headers',
@@ -1533,9 +1511,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> headersEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'headers',
@@ -1604,9 +1582,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'iconUrl',
@@ -1617,10 +1595,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1632,10 +1610,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1647,12 +1625,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'iconUrl',
@@ -1666,9 +1644,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'iconUrl',
@@ -1679,9 +1657,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> iconUrlEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'iconUrl',
@@ -1759,9 +1737,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> idGreaterThan(
-      Id? value, {
-        bool include = false,
-      }) {
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -1772,9 +1750,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> idLessThan(
-      Id? value, {
-        bool include = false,
-      }) {
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -1785,11 +1763,11 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> idBetween(
-      Id? lower,
-      Id? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id? lower,
+    Id? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
@@ -2019,59 +1997,6 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Source, Source, QAfterFilterCondition> itemTypeEqualTo(
-      ItemType value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterFilterCondition> itemTypeGreaterThan(
-      ItemType value, {
-        bool include = false,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterFilterCondition> itemTypeLessThan(
-      ItemType value, {
-        bool include = false,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'itemType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterFilterCondition> itemTypeBetween(
-      ItemType lower,
-      ItemType upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'itemType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<Source, Source, QAfterFilterCondition> langIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2089,9 +2014,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'lang',
@@ -2102,10 +2027,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2117,10 +2042,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2132,12 +2057,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'lang',
@@ -2151,9 +2076,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'lang',
@@ -2164,9 +2089,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> langEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'lang',
@@ -2260,9 +2185,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'name',
@@ -2273,10 +2198,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2288,10 +2213,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2303,12 +2228,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'name',
@@ -2322,9 +2247,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'name',
@@ -2335,9 +2260,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> nameEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'name',
@@ -2405,9 +2330,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'sourceCode',
@@ -2418,10 +2343,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2433,10 +2358,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2448,12 +2373,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'sourceCode',
@@ -2467,9 +2392,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'sourceCode',
@@ -2480,9 +2405,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'sourceCode',
@@ -2545,10 +2470,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  sourceCodeLanguageGreaterThan(
-      SourceCodeLanguage value, {
-        bool include = false,
-      }) {
+      sourceCodeLanguageGreaterThan(
+    SourceCodeLanguage value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2559,10 +2484,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  sourceCodeLanguageLessThan(
-      SourceCodeLanguage value, {
-        bool include = false,
-      }) {
+      sourceCodeLanguageLessThan(
+    SourceCodeLanguage value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2573,11 +2498,11 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeLanguageBetween(
-      SourceCodeLanguage lower,
-      SourceCodeLanguage upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    SourceCodeLanguage lower,
+    SourceCodeLanguage upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'sourceCodeLanguage',
@@ -2606,9 +2531,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'sourceCodeUrl',
@@ -2619,10 +2544,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2634,10 +2559,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2649,12 +2574,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'sourceCodeUrl',
@@ -2668,9 +2593,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'sourceCodeUrl',
@@ -2681,9 +2606,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> sourceCodeUrlEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'sourceCodeUrl',
@@ -2727,7 +2652,7 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition>
-  sourceCodeUrlIsNotEmpty() {
+      sourceCodeUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'sourceCodeUrl',
@@ -2753,9 +2678,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'typeSource',
@@ -2766,10 +2691,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2781,10 +2706,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2796,12 +2721,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'typeSource',
@@ -2815,9 +2740,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'typeSource',
@@ -2828,9 +2753,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> typeSourceEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'typeSource',
@@ -2899,9 +2824,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'version',
@@ -2912,10 +2837,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -2927,10 +2852,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -2942,12 +2867,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'version',
@@ -2961,9 +2886,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'version',
@@ -2974,9 +2899,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'version',
@@ -3045,9 +2970,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'versionLast',
@@ -3058,10 +2983,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -3073,10 +2998,10 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -3088,12 +3013,12 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'versionLast',
@@ -3107,9 +3032,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'versionLast',
@@ -3120,9 +3045,9 @@ extension SourceQueryFilter on QueryBuilder<Source, Source, QFilterCondition> {
   }
 
   QueryBuilder<Source, Source, QAfterFilterCondition> versionLastEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'versionLast',
@@ -3393,18 +3318,6 @@ extension SourceQuerySortBy on QueryBuilder<Source, Source, QSortBy> {
   QueryBuilder<Source, Source, QAfterSortBy> sortByIsTorrentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isTorrent', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterSortBy> sortByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterSortBy> sortByItemTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.desc);
     });
   }
 
@@ -3746,18 +3659,6 @@ extension SourceQuerySortThenBy on QueryBuilder<Source, Source, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Source, Source, QAfterSortBy> thenByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Source, Source, QAfterSortBy> thenByItemTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemType', Sort.desc);
-    });
-  }
-
   QueryBuilder<Source, Source, QAfterSortBy> thenByLang() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lang', Sort.asc);
@@ -3986,12 +3887,6 @@ extension SourceQueryWhereDistinct on QueryBuilder<Source, Source, QDistinct> {
     });
   }
 
-  QueryBuilder<Source, Source, QDistinct> distinctByItemType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemType');
-    });
-  }
-
   QueryBuilder<Source, Source, QDistinct> distinctByLang(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4170,12 +4065,6 @@ extension SourceQueryProperty on QueryBuilder<Source, Source, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Source, ItemType, QQueryOperations> itemTypeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemType');
-    });
-  }
-
   QueryBuilder<Source, String?, QQueryOperations> langProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lang');
@@ -4201,7 +4090,7 @@ extension SourceQueryProperty on QueryBuilder<Source, Source, QQueryProperty> {
   }
 
   QueryBuilder<Source, SourceCodeLanguage, QQueryOperations>
-  sourceCodeLanguageProperty() {
+      sourceCodeLanguageProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'sourceCodeLanguage');
     });

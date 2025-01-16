@@ -1,10 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
-
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
 import 'package:anymex/constants/contants.dart';
@@ -18,10 +15,12 @@ import 'package:anymex/models/Anilist/anilist_media_full.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_watch_screen.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -495,6 +494,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     }
                   },
                   child: AnimatedOpacity(
+                    curve: Curves.bounceInOut,
                     duration: const Duration(milliseconds: 300),
                     opacity: showControls.value ? 1 : 0,
                     child: Container(
@@ -517,6 +517,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               child: IgnorePointer(
                 ignoring: !showControls.value,
                 child: AnimatedOpacity(
+                  curve: Curves.bounceInOut,
                   opacity: showControls.value ? 1 : 0,
                   duration: const Duration(milliseconds: 300),
                   child: _buildControls(),
@@ -527,7 +528,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           _buildSubtitle(),
           Obx(() => _buildRippleEffect()),
           Obx(() => AnimatedOpacity(
-                curve: Curves.easeInOut,
+                curve: Curves.bounceInOut,
                 opacity: _brightnessIndicator.value ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 300),
                 child: MediaIndicatorBuilder(
@@ -536,7 +537,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 ),
               )),
           Obx(() => AnimatedOpacity(
-                curve: Curves.easeInOut,
+                curve: Curves.bounceInOut,
                 opacity: _volumeIndicator.value ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 300),
                 child: MediaIndicatorBuilder(
@@ -550,7 +551,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Obx _buildSubtitle() {
-    return Obx(() =>  AnimatedPositioned(
+    return Obx(() => AnimatedPositioned(
         right: 0,
         left: 0,
         top: 0,
@@ -679,13 +680,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   void playerSettingsSheet(BuildContext context) {
     showModalBottomSheet(
-        context: context,
-        clipBehavior: Clip.antiAlias,
-        builder: (context) {
-          return ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: const SettingsPlayer(isModal: true));
-        });
+      context: context,
+      clipBehavior: Clip.antiAlias,
+      isScrollControlled: true, // Allows the modal to take full height
+      builder: (context) {
+        return Wrap(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height, // Full screen height
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const SettingsPlayer(isModal: true),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   showTrackSelector() {
@@ -711,7 +722,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 itemCount: episodeTracks.length,
                 itemBuilder: (context, index) {
                   final e = episodeTracks[index];
-                  final isSelected = episode.value == e;
+                  final isSelected = episode.value.quality == e.quality;
                   return GestureDetector(
                     onTap: () {
                       episode.value = e;
@@ -865,332 +876,379 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildControls() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: 15.0, horizontal: isEpisodeDialogOpen.value ? 0 : 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (!isLocked.value) ...[
-                IconButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-                const SizedBox(width: 5),
-                Container(
-                  width: isEpisodeDialogOpen.value ? 200 : Get.width * 0.3,
-                  padding: const EdgeInsets.only(top: 3.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnymexText(
-                        text: (currentEpisode.value.title ??
-                                    "Episode ${currentEpisode.value.number}")
-                                .contains("Episode")
-                            ? '${anilistData.value.name}: ${currentEpisode.value.title ?? "Episode ${currentEpisode.value.number}"}'
-                            : currentEpisode.value.title ?? '?',
-                        variant: TextVariant.semiBold,
-                        maxLines: 4,
-                      ),
-                      AnymexText(
-                        text: anilistData.value.name,
-                        variant: TextVariant.bold,
-                        color: Colors.white54,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              const Spacer(),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      if (!isLocked.value) ...[
-                        _buildIcon(
-                            onTap: () {
-                              isEpisodeDialogOpen.value =
-                                  !isEpisodeDialogOpen.value;
-                              if (MediaQuery.of(context).orientation ==
-                                  Orientation.portrait) {
-                                isEpisodeDialogOpen.value = false;
-                                showModalBottomSheet(
-                                    context: context,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    clipBehavior: Clip.antiAlias,
-                                    builder: (context) {
-                                      return EpisodeWatchScreen(
-                                        episodeList: episodeList.value,
-                                        anilistData: anilistData.value,
-                                        currentEpisode: currentEpisode.value,
-                                        onEpisodeSelected:
-                                            (src, streamList, selectedEpisode) {
-                                          episode.value = src;
-                                          episodeTracks.value = streamList;
-                                          currentEpisode.value =
-                                              selectedEpisode;
-                                          _initPlayer(false);
-                                          isEpisodeDialogOpen.value = false;
-                                        },
-                                      );
-                                    });
-                              }
-                            },
-                            icon: HugeIcons.strokeRoundedPlayList),
-                        _buildIcon(
-                            onTap: () {
-                              showPlaybackSpeedDialog(context);
-                            },
-                            icon: HugeIcons.strokeRoundedTimer01),
-                      ],
-                      _buildIcon(
-                          onTap: () {
-                            isLocked.value = !isLocked.value;
-                          },
-                          icon: isLocked.value ? Icons.lock : Icons.lock_open),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  if (!isLocked.value) ...[
-                    AnymexText(
-                      text:
-                          'Quality: ${extractQuality(episode.value.quality).toUpperCase()}',
-                      variant: TextVariant.semiBold,
-                      size: 16,
-                      color: Colors.white70,
-                      fontStyle: FontStyle.italic,
-                    )
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-        const Spacer(),
-        if (!isLocked.value) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildPlaybackButton(
-                  icon: Iconsax.previous5,
-                  color: currentEpisode.value.number.toInt() <= 1
-                      ? Colors.grey[800]
-                      : null,
-                  onTap: () async {
-                    if (currentEpisode.value.number.toInt() <= 1) {
-                      snackBar(
-                          "Seriously? You're trying to rewind? You haven't even made it past the intro.");
-                    } else {
-                      await fetchEpisode(true);
-                    }
-                  }),
-              isBuffering.value
-                  ? _buildBufferingIndicator()
-                  : _buildPlaybackButton(
-                      icon: isPlaying.value ? Iconsax.pause5 : Iconsax.play5,
-                      onTap: () {
-                        player.playOrPause();
-                      }),
-              _buildPlaybackButton(
-                  icon: Iconsax.next5,
-                  color: currentEpisode.value.number.toInt() >=
-                          episodeList.value.last.number.toInt()
-                      ? Colors.grey[800]
-                      : null,
-                  onTap: () async {
-                    if (currentEpisode.value.number.toInt() >=
-                        episodeList.value.last.number.toInt()) {
-                      snackBar(
-                          "That's it, genius. You ran out of episodes. Try a book next time.");
-                    } else {
-                      await fetchEpisode(false);
-                    }
-                  }),
-            ],
-          ),
-          const Spacer(),
-        ],
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              padding: EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: isEpisodeDialogOpen.value ? 0 : 10),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymexTextSpans(
-                    spans: [
-                      AnymexTextSpan(
-                        text: '${formattedTime.value} ',
+                  if (!isLocked.value) ...[
+                    BlurWrapper(
+                      child: IconButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white)),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: getResponsiveSize(context,
+                          mobileSize: Get.width * 0.3,
+                          dektopSize: isEpisodeDialogOpen.value
+                              ? Get.width * 0.3
+                              : (Get.width * 0.6)),
+                      padding: const EdgeInsets.only(top: 3.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymexText(
+                            text:
+                                'Episode ${currentEpisode.value.number}: ${currentEpisode.value.title}',
+                            variant: TextVariant.semiBold,
+                            maxLines: 3,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          AnymexText(
+                            text: anilistData.value.name.toUpperCase(),
+                            variant: TextVariant.bold,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ],
                       ),
-                      AnymexTextSpan(
-                          text: ' /  ${formattedDuration.value}',
-                          color: Colors.white54),
-                    ],
+                    ),
+                  ],
+                  const Spacer(),
+                  BlurWrapper(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (!isLocked.value) ...[
+                          _buildIcon(
+                              onTap: () {
+                                isEpisodeDialogOpen.value =
+                                    !isEpisodeDialogOpen.value;
+                                if (MediaQuery.of(context).orientation ==
+                                    Orientation.portrait) {
+                                  isEpisodeDialogOpen.value = false;
+                                  showModalBottomSheet(
+                                      context: context,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      clipBehavior: Clip.antiAlias,
+                                      builder: (context) {
+                                        return EpisodeWatchScreen(
+                                          episodeList: episodeList.value,
+                                          anilistData: anilistData.value,
+                                          currentEpisode: currentEpisode.value,
+                                          onEpisodeSelected: (src, streamList,
+                                              selectedEpisode) {
+                                            episode.value = src;
+                                            episodeTracks.value = streamList;
+                                            currentEpisode.value =
+                                                selectedEpisode;
+                                            _initPlayer(false);
+                                            isEpisodeDialogOpen.value = false;
+                                          },
+                                        );
+                                      });
+                                }
+                              },
+                              icon: HugeIcons.strokeRoundedFolder03),
+                          _buildIcon(
+                              onTap: () {
+                                showPlaybackSpeedDialog(context);
+                              },
+                              icon: HugeIcons.strokeRoundedClock01),
+                        ],
+                        _buildIcon(
+                            onTap: () {
+                              isLocked.value = !isLocked.value;
+                            },
+                            icon:
+                                isLocked.value ? Icons.lock : Icons.lock_open),
+                      ],
+                    ),
                   ),
-                  if (!isLocked.value)
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(120, 50),
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
-                                borderRadius:
-                                    BorderRadius.circular(16.multiplyRadius())),
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer),
-                        onPressed: () {
-                          player.seek(Duration(
-                              seconds: currentPosition.value.inSeconds +
-                                  settings.skipDuration));
-                        },
-                        child: Row(
-                          children: [
-                            AnymexText(
-                              text: "+${settings.skipDuration}s",
-                              variant: TextVariant.semiBold,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                            ),
-                            const SizedBox(width: 5),
-                            Icon(
-                              Icons.fast_forward_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                            )
-                          ],
-                        ))
                 ],
               ),
             ),
+            const Spacer(),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-              child: IgnorePointer(
-                ignoring: isLocked.value,
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    trackHeight: 1.3,
-                    thumbColor: Theme.of(context).colorScheme.primary,
-                    activeTrackColor: Theme.of(context).colorScheme.primary,
-                    inactiveTrackColor:
-                        const Color.fromARGB(255, 121, 121, 121),
-                    secondaryActiveTrackColor:
-                        const Color.fromARGB(255, 167, 167, 167),
-                    thumbShape: RoundSliderThumbShape(
-                        enabledThumbRadius: isLocked.value ? 0 : 6),
-                    overlayShape: isLocked.value
-                        ? SliderComponentShape.noOverlay
-                        : SliderComponentShape.noThumb,
-                  ),
-                  child: Slider(
-                      min: 0,
-                      value: currentPosition.value.inMilliseconds.toDouble(),
-                      max:
-                          episodeDuration.value.inMilliseconds.toDouble() == 0.0
-                              ? 9999999999999999.0
-                              : episodeDuration.value.inMilliseconds.toDouble(),
-                      secondaryTrackValue:
-                          bufferred.value.inMilliseconds.toDouble(),
-                      onChangeStart: (val) {
-                        player.pause();
-                      },
-                      onChangeEnd: (val) {
-                        player.seek(Duration(milliseconds: val.toInt()));
-                        player.play();
-                      },
-                      onChanged: (val) {
-                        currentPosition.value =
-                            Duration(milliseconds: val.toInt());
-                        formattedTime.value =
-                            formatDuration(currentPosition.value);
-                      }),
-                ),
-              ),
-            ),
-            if (!isLocked.value)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _buildIcon(
-                        onTap: () {
-                          playerSettingsSheet(context);
-                        },
-                        icon: Icons.video_settings_rounded),
-                    _buildIcon(
-                        onTap: () {
-                          showTrackSelector();
-                        },
-                        icon: Icons.source),
-                    _buildIcon(
-                        onTap: () {
-                          showSubtitleSelector();
-                        },
-                        icon: HugeIcons.strokeRoundedSubtitle),
-                    const Spacer(),
-                    if (Platform.isAndroid || Platform.isIOS) ...[
-                      _buildIcon(
-                          onTap: () async {
-                            SystemChrome.setPreferredOrientations([
-                              DeviceOrientation.portraitUp,
-                            ]);
-                          },
-                          icon: Icons.phone_android),
-                      _buildIcon(
-                          onTap: () async {
-                            leftOriented.value = !leftOriented.value;
-                            if (!leftOriented.value) {
-                              SystemChrome.setPreferredOrientations([
-                                DeviceOrientation.landscapeLeft,
-                              ]);
-                            } else {
-                              SystemChrome.setPreferredOrientations([
-                                DeviceOrientation.landscapeRight,
-                              ]);
-                            }
-                          },
-                          icon: Icons.screen_rotation),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymexTextSpans(
+                        maxLines: 1,
+                        spans: [
+                          AnymexTextSpan(
+                              text: '${formattedTime.value} ',
+                              variant: TextVariant.semiBold,
+                              color: Theme.of(context).colorScheme.primary),
+                          AnymexTextSpan(
+                            variant: TextVariant.semiBold,
+                            text: ' /  ${formattedDuration.value}',
+                          ),
+                        ],
+                      ),
+                      if (!isLocked.value) _buildSkipButton(false),
                     ],
-                    _buildIcon(
-                        onTap: () {
-                          final newIndex =
-                              (resizeModeList.indexOf(resizeMode.value) + 1) %
-                                  resizeModeList.length;
-                          resizeMode.value = resizeModeList[newIndex];
-                          snackBar(resizeMode.value);
-                        },
-                        icon: Icons.aspect_ratio_rounded),
-                    if (!Platform.isAndroid && !Platform.isIOS)
-                      _buildIcon(
-                          onTap: () async {
-                            isFullscreen.value = !isFullscreen.value;
-                            await windowManager
-                                .setFullScreen(isFullscreen.value);
-                          },
-                          icon: !isFullscreen.value
-                              ? Icons.fullscreen
-                              : Icons.fullscreen_exit_rounded),
-                  ],
-                ),
-              )
+                  ),
+                  IgnorePointer(
+                    ignoring: isLocked.value,
+                    child: SizedBox(
+                      height: 27,
+                      child: VideoSliderTheme(
+                        child: Slider(
+                            min: 0,
+                            value: currentPosition.value.inMilliseconds
+                                .toDouble(),
+                            max: episodeDuration.value.inMilliseconds
+                                        .toDouble() ==
+                                    0.0
+                                ? const Duration(minutes: 20)
+                                    .inMilliseconds
+                                    .toDouble()
+                                : episodeDuration.value.inMilliseconds
+                                    .toDouble(),
+                            secondaryTrackValue:
+                                bufferred.value.inMilliseconds.toDouble(),
+                            onChangeStart: (val) {
+                              if (episodeDuration.value.inMilliseconds
+                                      .toDouble() !=
+                                  0.0) {
+                                player.pause();
+                              }
+                            },
+                            onChangeEnd: (val) {
+                              if (episodeDuration.value.inMilliseconds
+                                      .toDouble() !=
+                                  0.0) {
+                                player
+                                    .seek(Duration(milliseconds: val.toInt()));
+                                player.play();
+                              }
+                            },
+                            onChanged: (val) {
+                              if (episodeDuration.value.inMilliseconds
+                                      .toDouble() !=
+                                  0.0) {
+                                currentPosition.value =
+                                    Duration(milliseconds: val.toInt());
+                                formattedTime.value =
+                                    formatDuration(currentPosition.value);
+                              }
+                            }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  if (!isLocked.value)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        BlurWrapper(
+                          child: Row(
+                            children: [
+                              _buildIcon(
+                                  onTap: () {
+                                    playerSettingsSheet(context);
+                                  },
+                                  icon: HugeIcons.strokeRoundedSettings01),
+                              _buildIcon(
+                                  onTap: () {
+                                    showTrackSelector();
+                                  },
+                                  icon: HugeIcons.strokeRoundedFolderVideo),
+                              _buildIcon(
+                                  onTap: () {
+                                    showSubtitleSelector();
+                                  },
+                                  icon: HugeIcons.strokeRoundedSubtitle),
+                            ],
+                          ),
+                        ),
+                        BlurWrapper(
+                          child: Row(
+                            children: [
+                              if (Platform.isAndroid || Platform.isIOS) ...[
+                                _buildIcon(
+                                    onTap: () async {
+                                      SystemChrome.setPreferredOrientations([
+                                        DeviceOrientation.portraitUp,
+                                      ]);
+                                    },
+                                    icon: Icons.phone_android),
+                                _buildIcon(
+                                    onTap: () async {
+                                      leftOriented.value = !leftOriented.value;
+                                      if (!leftOriented.value) {
+                                        SystemChrome.setPreferredOrientations([
+                                          DeviceOrientation.landscapeLeft,
+                                        ]);
+                                      } else {
+                                        SystemChrome.setPreferredOrientations([
+                                          DeviceOrientation.landscapeRight,
+                                        ]);
+                                      }
+                                    },
+                                    icon: Icons.screen_rotation),
+                              ],
+                              _buildIcon(
+                                  onTap: () {
+                                    final newIndex = (resizeModeList
+                                                .indexOf(resizeMode.value) +
+                                            1) %
+                                        resizeModeList.length;
+                                    resizeMode.value = resizeModeList[newIndex];
+                                    snackBar(resizeMode.value);
+                                  },
+                                  icon: Icons.aspect_ratio_rounded),
+                              if (!Platform.isAndroid && !Platform.isIOS)
+                                _buildIcon(
+                                    onTap: () async {
+                                      isFullscreen.value = !isFullscreen.value;
+                                      await windowManager
+                                          .setFullScreen(isFullscreen.value);
+                                    },
+                                    icon: !isFullscreen.value
+                                        ? Icons.fullscreen
+                                        : Icons.fullscreen_exit_rounded),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                ],
+              ),
+            )
           ],
-        )
+        ),
+        if (!isLocked.value) ...[
+          Positioned.fill(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildPlaybackButton(
+                    icon: Icons.skip_previous_rounded,
+                    color: currentEpisode.value.number.toInt() <= 1
+                        ? Colors.grey[800]
+                        : null,
+                    onTap: () async {
+                      if (currentEpisode.value.number.toInt() <= 1) {
+                        snackBar(
+                            "Seriously? You're trying to rewind? You haven't even made it past the intro.");
+                      } else {
+                        await fetchEpisode(true);
+                      }
+                    }),
+                isBuffering.value
+                    ? _buildBufferingIndicator()
+                    : _buildPlaybackButton(
+                        icon: isPlaying.value
+                            ? Iconsax.pause5
+                            : Icons.play_arrow_rounded,
+                        onTap: () {
+                          player.playOrPause();
+                        }),
+                _buildPlaybackButton(
+                    icon: Icons.skip_next_rounded,
+                    color: currentEpisode.value.number.toInt() >=
+                            episodeList.value.last.number.toInt()
+                        ? Colors.grey[800]
+                        : null,
+                    onTap: () async {
+                      if (currentEpisode.value.number.toInt() >=
+                          episodeList.value.last.number.toInt()) {
+                        snackBar(
+                            "That's it, genius. You ran out of episodes. Try a book next time.");
+                      } else {
+                        await fetchEpisode(false);
+                      }
+                    }),
+              ],
+            ),
+          ),
+        ],
       ],
+    );
+  }
+
+  _buildSkipButton(bool invert) {
+    return BlurWrapper(
+      child: AnymeXButton(
+        height: 50,
+        width: 120,
+        variant: ButtonVariant.simple,
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          if (invert) {
+            final duration = Duration(
+                seconds:
+                    currentPosition.value.inSeconds - settings.skipDuration);
+            if (duration.inMilliseconds < 0) {
+              currentPosition.value = const Duration(milliseconds: 0);
+              player.seek(const Duration(seconds: 0));
+            } else {
+              currentPosition.value = duration;
+              player.seek(duration);
+            }
+          } else {
+            final duration = Duration(
+                seconds:
+                    currentPosition.value.inSeconds + settings.skipDuration);
+            currentPosition.value = duration;
+            player.seek(duration);
+          }
+        },
+        child: invert
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.fast_rewind_rounded,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 5),
+                  AnymexText(
+                    text: "-${settings.skipDuration}s",
+                    variant: TextVariant.semiBold,
+                    color: Colors.white,
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnymexText(
+                    text: "+${settings.skipDuration}s",
+                    variant: TextVariant.semiBold,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 5),
+                  Icon(
+                    Icons.fast_forward_rounded,
+                    color: Colors.white,
+                  )
+                ],
+              ),
+      ),
     );
   }
 
@@ -1254,21 +1312,37 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     );
   }
 
-  InkWell _buildPlaybackButton(
+  Widget _buildPlaybackButton(
       {required Function() onTap,
       IconData? icon,
-      double size = 60,
-      Color? color = null}) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: getResponsiveSize(context,
-                mobileSize: 20, dektopSize: 50, isStrict: true)),
+      double size = 80,
+      Color? color}) {
+    final isPlay = icon == (Icons.play_arrow_rounded) || icon == Iconsax.pause5;
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+    return Container(
+      decoration: BoxDecoration(
+        color: isPlay
+            ? Theme.of(context).colorScheme.primary
+            : Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(30.multiplyRadius()),
+      ),
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.symmetric(
+          vertical: isPlay ? 30 : 20,
+          horizontal: isPlay ? (isMobile ? 20 : 50) : 20),
+      child: BlurWrapper(
+        borderRadius: BorderRadius.circular(30.multiplyRadius()),
         child: IconButton(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+                vertical: isPlay ? (isMobile ? 25 : 30) : 20,
+                horizontal: isPlay ? (isMobile ? 25 : 30) : 20),
+          ),
           onPressed: onTap,
           icon: Icon(icon,
-              color: color,
+              color: isPlay
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Colors.white,
               size: getResponsiveSize(context,
                   mobileSize: 40, dektopSize: size, isStrict: true)),
         ),
@@ -1289,8 +1363,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Widget _buildIcon({VoidCallback? onTap, IconData? icon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-      child: IconButton(onPressed: onTap, icon: Icon(icon)),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
+      child: IconButton(
+          onPressed: onTap,
+          icon: Icon(
+            icon,
+            color: Colors.white,
+          )),
     );
   }
 }

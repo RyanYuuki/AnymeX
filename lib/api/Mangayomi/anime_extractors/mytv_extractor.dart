@@ -1,4 +1,5 @@
 import 'package:anymex/utils/string_extensions.dart';
+
 import 'package:html/parser.dart' show parse;
 import 'package:http_interceptor/http_interceptor.dart';
 
