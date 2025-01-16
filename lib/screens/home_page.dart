@@ -118,7 +118,7 @@ class HomePage extends StatelessWidget {
                                   e),
                               title: e,
                               variant: DataVariant.anilist,
-                              isManga: e.contains("Manga"),
+                              isManga: e.contains("Manga") || e.contains("Reading"),
                             );
                           }).toList(),
                         ))
