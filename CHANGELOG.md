@@ -1,23 +1,21 @@
 
 
 ### 🎉 New Features
-* [0a2aa4a](https://github.com/RyanYuuki/AnymeX/commit/0a2aa4a): feat: supports accumulated seek and  fixed seekbar glitching
-* [d56da68](https://github.com/RyanYuuki/AnymeX/commit/d56da68): feat: improved tracking, remember timestamp (barebone)
-* [bb268cc](https://github.com/RyanYuuki/AnymeX/commit/bb268cc): feat: portrait switcher in video player
+* [3e97b71](https://github.com/RyanYuuki/AnymeX/commit/3e97b71): feat: video player new settings and revamped ui for player
+* [28496de](https://github.com/RyanYuuki/AnymeX/commit/28496de): feat: revamp wave (absolute tracking, revamped ui etc etc)
+* [aa2ea6b](https://github.com/RyanYuuki/AnymeX/commit/aa2ea6b): feat: 70% app is done revamping
+* [107d675](https://github.com/RyanYuuki/AnymeX/commit/107d675): feat: revamped everything
 
 ### 🛠️ Bug Fixes & Improvements
-* [735c0f6](https://github.com/RyanYuuki/AnymeX/commit/735c0f6): fix: increased dTap time to be more human
-* [695e80f](https://github.com/RyanYuuki/AnymeX/commit/695e80f): fix: fixed gray boxes in anime list
-* [b782437](https://github.com/RyanYuuki/AnymeX/commit/b782437): fix: fixed manga pages not loading
-* [9b0356d](https://github.com/RyanYuuki/AnymeX/commit/9b0356d): fix: fixed double tap to seek not working
-* [4f3f890](https://github.com/RyanYuuki/AnymeX/commit/4f3f890): fix: fixed login
-
-### 🎨 Style Changes
-* [62d0f05](https://github.com/RyanYuuki/AnymeX/commit/62d0f05): style: added bottom margin to nav bar
+* [0ed2ec3](https://github.com/RyanYuuki/AnymeX/commit/0ed2ec3): fix: fixed linux tantrum
+* [a2c0c63](https://github.com/RyanYuuki/AnymeX/commit/a2c0c63): fix: fixes imports
 
 ### 🧹 Chores & Documentation
-* [19affb0](https://github.com/RyanYuuki/AnymeX/commit/19affb0): build: changed package & app name
-* [586f621](https://github.com/RyanYuuki/AnymeX/commit/586f621): chore: cleaning changelog
-* [77ad3c0](https://github.com/RyanYuuki/AnymeX/commit/77ad3c0): build: deps update
-* [750451c](https://github.com/RyanYuuki/AnymeX/commit/750451c): chore: remove unwanted files
+* [a45871a](https://github.com/RyanYuuki/AnymeX/commit/a45871a): build: added app icons for desktops and inno bundle
+* [9c9efb5](https://github.com/RyanYuuki/AnymeX/commit/9c9efb5): build: fixed android fuckery
+* [130cf9b](https://github.com/RyanYuuki/AnymeX/commit/130cf9b): build: fixed linux fuckery
+* [d165cd0](https://github.com/RyanYuuki/AnymeX/commit/d165cd0): build: dep updates
+* [0add882](https://github.com/RyanYuuki/AnymeX/commit/0add882): build: fixed mac build error
+* [e0fde9f](https://github.com/RyanYuuki/AnymeX/commit/e0fde9f): docs: added more desktop screenshot
+* [4632ede](https://github.com/RyanYuuki/AnymeX/commit/4632ede): docs: update desktop screenshots
 
