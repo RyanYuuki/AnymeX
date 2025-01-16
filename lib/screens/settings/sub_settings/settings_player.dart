@@ -19,7 +19,7 @@ class SettingsPlayer extends StatefulWidget {
 class _SettingsPlayerState extends State<SettingsPlayer> {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
-  RxString resizeMode = "Cover".obs;
+  RxString resizeMode = "Contain".obs;
   Rx<Color> subtitleColor = Colors.white.obs;
   Rx<Color> backgroundColor = Colors.black.obs;
   Rx<Color> outlineColor = Colors.black.obs;
