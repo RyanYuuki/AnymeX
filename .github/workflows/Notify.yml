@@ -82,9 +82,11 @@ jobs:
               echo "apk_x86_64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *.ipa ]]; then
               echo "ios_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Linux.AppImage" ]]; then
+              echo "linuximg_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Linux.zip" ]]; then
               echo "linux_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Setup.exe" ]]; then
+            elif [[ "$FILE_NAME" == *"Installer.exe" ]]; then
               echo "setup_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Windows.zip" ]]; then
               echo "windows_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
@@ -164,6 +166,7 @@ jobs:
             🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linuximg_message }} | **Linux appimage**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
@@ -236,6 +239,7 @@ jobs:
             🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linuximg_message }} | **Linux appimage**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
