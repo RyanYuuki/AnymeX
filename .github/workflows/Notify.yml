@@ -29,38 +29,57 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests jq
           
-      - name: Fetch Repository Tags by Date
+      - name: Fetch Repository Tags by Date and Time
         id: fetch_tags
         run: |
+          # Fetch tags from the GitHub repository
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
           TAGS=$(jq -r '.[].name' tags.json)
-  
-          # Initialize an empty array for storing tag details with timestamps
+
           declare -a TAGS_WITH_DATES=()
-    
+
           for TAG in $TAGS; do
-          # Fetch tag reference details to get the object URL
+          # Fetch tag reference details
           TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
           OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
-  
+
           if [ -n "$OBJECT_URL" ]; then
-          # Fetch object details (annotated tag or commit)
+          # Fetch object details for date
           OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
           DATE=$(echo "$OBJECT_DETAILS" | jq -r '.tagger.date // .committer.date // empty')
-  
+
           if [ -n "$DATE" ]; then
           # Append date and tag pair
           TAGS_WITH_DATES+=("$DATE $TAG")
+          else
+          echo "No date found for tag $TAG"
           fi
+          else
+          echo "No object URL found for tag $TAG"
           fi
           done
-  
-          # Sort tags by date
-          SORTED_TAGS=$(printf "%s\n" "${TAGS_WITH_DATES[@]}" | sort)
-  
-          # Get the latest tag
-          LATEST_TAG=$(echo "$SORTED_TAGS" | tail -n 1 | awk '{print $2}')
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV          
+
+          # Debugging: Print unsorted tags
+          echo "Unsorted tags with dates:"
+          printf "%s\n" "${TAGS_WITH_DATES[@]}"
+
+          # Find the tag with the latest date (no sorting)
+          LATEST_TAG=""
+          LATEST_DATE=""
+
+          for TAG_DATE in "${TAGS_WITH_DATES[@]}"; do
+          TAG_DATE_TIME=$(echo "$TAG_DATE" | awk '{print $1}')
+          TAG_NAME=$(echo "$TAG_DATE" | awk '{print $2}')
+
+          if [[ -z "$LATEST_DATE" || "$TAG_DATE_TIME" > "$LATEST_DATE" ]]; then
+          LATEST_DATE="$TAG_DATE_TIME"
+          LATEST_TAG="$TAG_NAME"
+          fi
+          done
+
+          # Output the latest tag found
+          echo "The selected latest tag is: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           
       - name: Use the Latest Tag
         run: |
