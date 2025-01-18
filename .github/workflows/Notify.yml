@@ -29,13 +29,38 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests jq
           
-      - name: Fetch Repository Tags
+      - name: Fetch Repository Tags by Date
         id: fetch_tags
         run: |
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
-          TAGS=$(jq -r '.[].name' tags.json | sort -V)
-          LATEST_TAG=$(echo "$TAGS" | tail -n 1)
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          TAGS=$(jq -r '.[].name' tags.json)
+  
+          # Initialize an empty array for storing tag details with timestamps
+          declare -a TAGS_WITH_DATES=()
+    
+          for TAG in $TAGS; do
+          # Fetch tag reference details to get the object URL
+          TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
+          OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
+  
+          if [ -n "$OBJECT_URL" ]; then
+          # Fetch object details (annotated tag or commit)
+          OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
+          DATE=$(echo "$OBJECT_DETAILS" | jq -r '.tagger.date // .committer.date // empty')
+  
+          if [ -n "$DATE" ]; then
+          # Append date and tag pair
+          TAGS_WITH_DATES+=("$DATE $TAG")
+          fi
+          fi
+          done
+  
+          # Sort tags by date
+          SORTED_TAGS=$(printf "%s\n" "${TAGS_WITH_DATES[@]}" | sort)
+  
+          # Get the latest tag
+          LATEST_TAG=$(echo "$SORTED_TAGS" | tail -n 1 | awk '{print $2}')
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV          
           
       - name: Use the Latest Tag
         run: |
