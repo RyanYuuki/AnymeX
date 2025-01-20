@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
@@ -358,13 +358,11 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
   }
 }
 
-AnilistMediaData convertOfflineToAnilistMediaData(OfflineMedia offlineMedia) {
-  return AnilistMediaData(
+Media convertOfflineToMedia(OfflineMedia offlineMedia) {
+  return Media(
     id: offlineMedia.id ?? 0,
-    jname: offlineMedia.jname ?? '',
-    name: offlineMedia.name ?? '',
-    english: offlineMedia.english ?? '',
-    japanese: offlineMedia.japanese ?? '',
+    romajiTitle: offlineMedia.jname ?? '',
+    title: offlineMedia.english ?? offlineMedia.name ?? '',
     description: offlineMedia.description ?? '',
     poster: offlineMedia.poster ?? '',
     cover: offlineMedia.cover,

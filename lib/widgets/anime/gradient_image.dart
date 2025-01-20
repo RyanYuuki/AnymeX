@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class GradientPoster extends StatelessWidget {
     required this.posterUrl,
   });
 
-  final AnilistMediaData? data;
+  final Media? data;
   final String posterUrl;
   final String tag;
 
@@ -67,7 +67,7 @@ class GradientPoster extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
-                    child: Text(data?.name ?? 'Loading...',
+                    child: Text(data?.title ?? 'Loading...',
                         style: const TextStyle(
                             fontFamily: "Poppins-Bold", fontSize: 16)),
                   ),

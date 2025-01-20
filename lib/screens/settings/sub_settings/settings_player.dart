@@ -6,6 +6,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsPlayer extends StatefulWidget {
@@ -229,6 +230,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 fontWeight: FontWeight.bold,
                               )),
                         ),
+                        CustomSwitchTile(
+                            padding: const EdgeInsets.all(10),
+                            icon: HugeIcons.strokeRoundedBlur,
+                            title: "Tranculent Controls",
+                            description:
+                                "Toggle for enabling/disabling Blurred Video Player Controls",
+                            switchValue: settings.transculentControls,
+                            onChanged: (val) =>
+                                settings.transculentControls = val),
                         ListTile(
                           leading: Icon(Icons.speed,
                               color: Theme.of(context).colorScheme.primary),
