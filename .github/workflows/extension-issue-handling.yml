@@ -13,8 +13,8 @@ jobs:
         with:
           script: |
             const repos = [
-              "https://kodjodevf.github.io/mangayomi-extensions/index.json",
-              "https://kodjodevf.github.io/mangayomi-extensions/anime_index.json"
+              "https://ryanyuuki.github.io/anymex-extensions/index.json",
+              "https://ryanyuuki.github.io/anymex-extensions/anime_index.json"
             ];
             
             const extensionNames = new Set();

@@ -9,7 +9,7 @@ Future fetchMangaSourcesList(FetchMangaSourcesListRef ref,
   if ((true ?? true) || reFresh) { // @ryan_yuuki update the condition
     await fetchSourcesList(
         sourcesIndexUrl:
-            "https://kodjodevf.github.io/mangayomi-extensions/index.json",
+            "https://ryanyuuki.github.io/anymex-extensions/index.json",
         refresh: reFresh,
         id: id,
         ref: ref,
