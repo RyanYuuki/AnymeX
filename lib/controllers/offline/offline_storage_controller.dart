@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:anymex/api/Mangayomi/Model/Manga.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
@@ -108,7 +108,7 @@ class OfflineStorageController extends GetxController {
     _initListData();
   }
 
-  void addMedia(String listName, AnilistMediaData original, bool isManga) {
+  void addMedia(String listName, Media original, bool isManga) {
     Chapter chapter = Chapter(number: 1);
     Episode currentEpisode = Episode(number: '1');
 
@@ -152,7 +152,7 @@ class OfflineStorageController extends GetxController {
   }
 
   void addOrUpdateAnime(
-    AnilistMediaData original,
+    Media original,
     List<Episode>? episodes,
     Episode? currentEpisode,
   ) {
@@ -167,14 +167,14 @@ class OfflineStorageController extends GetxController {
     } else {
       animeLibrary.insert(0,
           _createOfflineMedia(original, null, episodes, null, currentEpisode));
-      log('Added new anime: ${original.name}');
+      log('Added new anime: ${original.title}');
     }
 
     _saveLibraries();
   }
 
-  void addOrUpdateManga(AnilistMediaData original, List<Chapter>? chapters,
-      Chapter? currentChapter) {
+  void addOrUpdateManga(
+      Media original, List<Chapter>? chapters, Chapter? currentChapter) {
     OfflineMedia? existingManga = getMangaById(original.id);
 
     if (existingManga != null) {
@@ -186,7 +186,7 @@ class OfflineStorageController extends GetxController {
     } else {
       mangaLibrary.insert(0,
           _createOfflineMedia(original, chapters, null, currentChapter, null));
-      log('Added new manga: ${original.name}');
+      log('Added new manga: ${original.title}');
     }
 
     _saveLibraries();
@@ -235,17 +235,17 @@ class OfflineStorageController extends GetxController {
   }
 
   OfflineMedia _createOfflineMedia(
-      AnilistMediaData original,
+      Media original,
       List<Chapter>? chapters,
       List<Episode>? episodes,
       Chapter? currentChapter,
       Episode? currentEpisode) {
     return OfflineMedia(
       id: original.id,
-      jname: original.jname,
-      name: original.name,
-      english: original.english,
-      japanese: original.japanese,
+      jname: original.romajiTitle,
+      name: original.title,
+      english: original.title,
+      japanese: original.romajiTitle,
       description: original.description,
       poster: original.poster,
       cover: original.cover,

@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';

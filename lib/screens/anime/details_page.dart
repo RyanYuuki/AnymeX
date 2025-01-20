@@ -7,11 +7,12 @@ import 'package:anymex/api/Mangayomi/Search/get_detail.dart';
 import 'package:anymex/api/Mangayomi/Search/search.dart';
 import 'package:anymex/api/Mangayomi/extension_preferences_providers.dart';
 import 'package:anymex/api/Mangayomi/get_source_preference.dart';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/anilist/anilist_data.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_storage.dart';
@@ -57,7 +58,7 @@ class AnimeDetailsPage extends StatefulWidget {
 
 class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // AnilistData
-  AnilistMediaData? anilistData;
+  Media? anilistData;
   Rx<AnilistMediaUser?> currentAnime = AnilistMediaUser().obs;
   final anilist = Get.find<AnilistAuth>();
   // Tracker for Avail Anime
@@ -145,15 +146,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
       var searchData = await search(
         source: finalSource!,
-        query: anilistData!.name,
+        query: anilistData!.title,
         page: 1,
         filterList: [],
       );
       if (searchData!.list.isEmpty) {
         searchData = await search(
           source: finalSource,
-          query: anilistData?.name.split(' ').first ??
-              anilistData!.jname.split(' ').first,
+          query: anilistData?.title.split(' ').first ??
+              anilistData!.romajiTitle.split(' ').first,
           page: 1,
           filterList: [],
         );
@@ -165,7 +166,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
       final animeList = searchData!.list;
       final matchedAnime = animeList.firstWhere(
-        (an) => an.name == anilistData?.jname || an.name == anilistData?.name,
+        (an) =>
+            an.name == anilistData?.romajiTitle ||
+            an.name == anilistData?.title,
         orElse: () => animeList[0],
       );
       await getDetailsFromSource(matchedAnime.link!);
@@ -282,7 +285,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 offlineStorage.animeCustomLists, false);
                           },
                           height: 50,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(12.multiplyRadius()),
                           variant: ButtonVariant.outline,
                           borderColor:
                               Theme.of(context).colorScheme.surfaceContainer,
@@ -320,30 +323,21 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ],
               ),
             ),
-            if (isMobile)
-              ExpandablePageView(
-                physics: const BouncingScrollPhysics(),
-                controller: controller,
-                onPageChanged: (index) {
+            ExpandablePageView(
+              physics: const BouncingScrollPhysics(),
+              controller: controller,
+              onPageChanged: (index) {
+                if (isMobile) {
                   selectedPage.value = index;
-                },
-                children: [
-                  _buildCommonInfo(context),
-                  _buildEpisodeSection(context),
-                ],
-              )
-            else
-              ExpandablePageView(
-                physics: const BouncingScrollPhysics(),
-                controller: controller,
-                onPageChanged: (index) {
+                } else {
                   desktopSelectedPage.value = index + 1;
-                },
-                children: [
-                  _buildCommonInfo(context),
-                  _buildEpisodeSection(context),
-                ],
-              ),
+                }
+              },
+              children: [
+                _buildCommonInfo(context),
+                _buildEpisodeSection(context),
+              ],
+            )
           ] else ...[
             const SizedBox(
               height: 400,
@@ -374,7 +368,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      showWrongTitleModal(context, anilistData?.name ?? '',
+                      showWrongTitleModal(context, anilistData?.title ?? '',
                           (manga) async {
                         episodeList?.value = [];
                         await getDetailsFromSource(manga.link!);
@@ -568,14 +562,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             ],
           ),
         ),
-        CharactersCarousel(characters: anilistData!.characters),
+        CharactersCarousel(characters: anilistData!.characters ?? []),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Animes",
           variant: DataVariant.recommendation,
         ),
         ReusableCarousel(
-          data: anilistData!.relations,
+          data: anilistData!.relations ?? [],
           title: "Relations",
           variant: DataVariant.relation,
         )
@@ -740,7 +734,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.add),
                                 suffixText:
-                                    '${animeProgress.value}/${currentAnime.value?.totalEpisodes}',
+                                    '${animeProgress.value}/${currentAnime.value?.totalEpisodes ?? '??'}',
                                 filled: true,
                                 fillColor: Colors.transparent,
                                 enabledBorder: OutlineInputBorder(

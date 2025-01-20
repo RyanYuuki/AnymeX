@@ -19,7 +19,7 @@ class VideoSliderThemeState extends State<VideoSliderTheme> {
         data: SliderThemeData(
           thumbColor: colorScheme.primary,
           activeTrackColor: colorScheme.primary,
-          inactiveTrackColor: Colors.black.withOpacity(0.8),
+          inactiveTrackColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
           secondaryActiveTrackColor: colorScheme.primary.withAlpha(144),
           trackHeight: 6,
           thumbShape: RoundedRectangularThumbShape(

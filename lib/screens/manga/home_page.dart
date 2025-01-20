@@ -2,7 +2,7 @@
 
 import 'dart:developer';
 
-import 'package:anymex/controllers/anilist/anilist_data.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';

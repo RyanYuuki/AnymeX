@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/online/widgets/items.dart';

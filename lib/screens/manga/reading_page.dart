@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/page.dart';
 import 'package:anymex/api/Mangayomi/Search/get_pages.dart';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
@@ -25,7 +25,7 @@ enum ReadingMode {
 }
 
 class ReadingPage extends StatefulWidget {
-  final AnilistMediaData anilistData;
+  final Media anilistData;
   final List<Chapter> chapterList;
   final Chapter currentChapter;
 
@@ -47,7 +47,7 @@ class _ReadingPageState extends State<ReadingPage> {
   final isMenuToggled = true.obs;
 
   late Rx<Chapter> currentChapter;
-  late Rx<AnilistMediaData> anilistData;
+  late Rx<Media> anilistData;
   late RxList<Chapter> chapterList;
 
   final mangaPages = <PageUrl>[].obs;
@@ -507,7 +507,7 @@ class _ReadingPageState extends State<ReadingPage> {
                 const SizedBox(height: 3),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 190,
-                  child: Text(anilistData.value.name,
+                  child: Text(anilistData.value.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style:

@@ -215,6 +215,14 @@ class Settings extends GetxController {
     savePlayerSettings();
   }
 
+  bool get transculentControls => playerSettings.value.transculentControls;
+  set transculentControls(bool value) {
+    playerSettings.update((settings) {
+      settings?.transculentControls = value;
+    });
+    savePlayerSettings();
+  }
+
   void savePlayerSettings() {
     var playerBox = Hive.box<PlayerSettings>("PlayerSettings");
     playerBox.put('settings', playerSettings.value);

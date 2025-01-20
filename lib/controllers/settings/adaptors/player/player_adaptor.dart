@@ -24,13 +24,14 @@ class PlayerSettings {
   int skipDuration;
   @HiveField(9)
   int seekDuration;
-
   @HiveField(10)
   double bottomMargin;
+  @HiveField(11)
+  bool transculentControls;
 
   PlayerSettings(
       {this.speed = 1.0,
-      this.resizeMode = "Cover",
+      this.resizeMode = "Contain",
       this.subtitleSize = 16,
       this.subtitleColor = "White",
       this.subtitleFont = 'Poppins',
@@ -39,5 +40,6 @@ class PlayerSettings {
       this.showSubtitle = true,
       this.skipDuration = 85,
       this.seekDuration = 10,
-      this.bottomMargin = 5});
+      this.bottomMargin = 5,
+      this.transculentControls = false});
 }

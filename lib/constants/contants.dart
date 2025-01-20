@@ -74,3 +74,22 @@ final cursedSpeed = [
   ...List.generate(15, (i) => (i + 7) * 1.0),
   ...[25.0, 50.0, 75.0, 100.0],
 ];
+
+final List<String> extensions = [
+  '.srt',
+  '.vtt',
+  '.ssa',
+  '.ass',
+  '.sub',
+  '.idx',
+  '.txt',
+  '.dfxp',
+  '.ttml',
+  '.lrc',
+  '.stl',
+  '.sbv',
+  '.xml',
+  '.cap',
+  '.mks',
+  '.sup',
+];

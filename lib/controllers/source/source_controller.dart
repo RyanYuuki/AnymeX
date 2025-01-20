@@ -2,7 +2,7 @@
 
 import 'dart:developer';
 import 'package:anymex/api/Mangayomi/Model/Manga.dart';
-import 'package:anymex/controllers/anilist/anilist_data.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:anymex/api/Mangayomi/Extensions/extensions_provider.dart';
@@ -18,6 +18,8 @@ class SourceController extends GetxController {
 
   var installedNovelExtensions = <Source>[].obs;
   var activeNovelSource = Rxn<Source>();
+
+  
 
   Future<void> initExtensions({bool refresh = true}) async {
     try {

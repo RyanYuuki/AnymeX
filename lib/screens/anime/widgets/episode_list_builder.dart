@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
@@ -32,7 +32,7 @@ class EpisodeListBuilder extends StatefulWidget {
 
   final bool isDesktop;
   final List<Episode> episodeList;
-  final AnilistMediaData? anilistData;
+  final Media? anilistData;
 
   @override
   State<EpisodeListBuilder> createState() => _EpisodeListBuilderState();
@@ -386,10 +386,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final savedEP =
         offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
     final progress = savedEP?.timeStampInMilliseconds != null &&
-            savedEP?.durationInMilliseconds != null
-        ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
-        : null;
-    log('${savedEP?.number} :${savedEP?.timeStampInMilliseconds.toString()}');
+            savedEP?.durationInMilliseconds != null &&
+            savedEP!.durationInMilliseconds! > 0
+        ? (savedEP.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+        : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -406,62 +406,63 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Stack(children: [
-                    NetworkSizedImage(
-                      imageUrl: episode.thumbnail ??
-                          widget.anilistData?.cover ??
-                          widget.anilistData?.poster ??
-                          '',
-                      radius: 12,
-                      width: 170,
-                      height: 100,
-                    ),
-                    if (progress != null) ...[
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius:
-                                  BorderRadius.circular(12.multiplyRadius())),
-                          height: 2,
-                          width: constraints.maxWidth * progress,
-                        ),
-                      ),
-                    ],
+              LayoutBuilder(builder: (context, constraints) {
+                return Stack(children: [
+                  NetworkSizedImage(
+                    imageUrl: episode.thumbnail ??
+                        widget.anilistData?.cover ??
+                        widget.anilistData?.poster ??
+                        '',
+                    radius: 12,
+                    width: 170,
+                    height: 100,
+                  ),
+                  if (progress > 0.0 && progress <= 1.0) ...[
                     Positioned(
-                      bottom: 8,
-                      left: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.black.withOpacity(0.2),
-                              border: Border.all(
-                                  width: 2,
-                                  color: Theme.of(context).colorScheme.primary),
-                              boxShadow: [glowingShadow(context)],
-                            ),
-                            child: AnymexText(
-                              text: "EP ${episode.number}",
-                              variant: TextVariant.bold,
-                            ),
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius:
+                                BorderRadius.circular(12.multiplyRadius())),
+                        height: 2,
+                        width: (constraints.maxWidth > 0
+                                ? constraints.maxWidth
+                                : 100) *
+                            progress,
+                      ),
+                    ),
+                  ],
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withOpacity(0.2),
+                            border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary),
+                            boxShadow: [glowingShadow(context)],
+                          ),
+                          child: AnymexText(
+                            text: "EP ${episode.number}",
+                            variant: TextVariant.bold,
                           ),
                         ),
                       ),
                     ),
-                  ]);
-                }
-              ),
+                  ),
+                ]);
+              }),
               const SizedBox(width: 12),
               Expanded(
                 child: AnymexText(

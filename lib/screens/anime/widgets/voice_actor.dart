@@ -1,5 +1,5 @@
 import 'dart:math' show Random;
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';

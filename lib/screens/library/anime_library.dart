@@ -10,6 +10,7 @@ import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -366,13 +367,23 @@ class AnimeHistoryCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => WatchPage(
-              episodeSrc: data.currentEpisode!.currentTrack!,
-              episodeList: data.episodes!,
-              anilistData: convertOfflineToAnilistMediaData(data),
-              currentEpisode: data.currentEpisode!,
-              episodeTracks: data.currentEpisode!.videoTracks!,
-            ));
+        if (data.currentEpisode == null ||
+            data.currentEpisode!.currentTrack == null ||
+            data.episodes == null ||
+            data.currentEpisode!.videoTracks == null) {
+          snackBar(
+              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+              duration: 2000,
+              maxLines: 3, maxWidth: Get.width * 0.6);
+        } else {
+          Get.to(() => WatchPage(
+                episodeSrc: data.currentEpisode!.currentTrack!,
+                episodeList: data.episodes!,
+                anilistData: convertOfflineToMedia(data),
+                currentEpisode: data.currentEpisode!,
+                episodeTracks: data.currentEpisode!.videoTracks!,
+              ));
+        }
       },
       child: Container(
         clipBehavior: Clip.antiAlias,

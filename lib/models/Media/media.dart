@@ -1,9 +1,9 @@
-class AnilistMediaData {
+import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
+
+class Media {
   final int id;
-  final String jname;
-  final String name;
-  final String english;
-  final String japanese;
+  final String title;
+  final String romajiTitle;
   final String description;
   final String poster;
   final String? cover;
@@ -17,21 +17,20 @@ class AnilistMediaData {
   final String popularity;
   final String format;
   final String aired;
-  final String totalChapters;
+
+  final String? totalChapters;
   final List<String> genres;
-  final List<String> studios;
-  final List<Character> characters;
-  final List<Relation> relations;
+  final List<String>? studios;
+  final List<Character>? characters;
+  final List<Relation>? relations;
   final List<Recommendation> recommendations;
   final NextAiringEpisode? nextAiringEpisode;
   final List<Ranking> rankings;
 
-  AnilistMediaData({
+  Media({
     required this.id,
-    required this.jname,
-    required this.name,
-    required this.english,
-    required this.japanese,
+    required this.title,
+    required this.romajiTitle,
     required this.description,
     required this.poster,
     this.cover,
@@ -55,13 +54,40 @@ class AnilistMediaData {
     required this.rankings,
   });
 
-  factory AnilistMediaData.fromJson(Map<String, dynamic> json) {
-    return AnilistMediaData(
+  factory Media.fromManga(MManga manga) {
+    return Media(
+      id: 0,
+      title: manga.name ?? "Unknown Title",
+      romajiTitle: manga.name ?? "Unknown Title",
+      description: manga.description ?? "No description available.",
+      poster: manga.imageUrl ?? "",
+      cover: null,
+      totalEpisodes: "0",
+      type: "MANGA",
+      season: "Unknown",
+      premiered: "Unknown",
+      duration: "0",
+      status: manga.status.toString(),
+      rating: "0",
+      popularity: "0",
+      format: "MANGA",
+      aired: "Unknown",
+      totalChapters: manga.chapters?.length.toString(),
+      genres: manga.genre ?? [],
+      studios: null,
+      characters: [],
+      relations: [],
+      recommendations: [],
+      nextAiringEpisode: null,
+      rankings: [],
+    );
+  }
+
+  factory Media.fromJson(Map<String, dynamic> json) {
+    return Media(
       id: json['id'] as int,
-      jname: json['title']['romaji'] ?? '?',
-      name: json['title']['english'] ?? json['title']['romaji'] ?? '?',
-      english: json['title']['english'] ?? '?',
-      japanese: json['title']['native'] ?? '?',
+      romajiTitle: json['title']['romaji'] ?? '?',
+      title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '?',
       poster: json['coverImage']['large'] ?? '?',
       cover: json['bannerImage'],

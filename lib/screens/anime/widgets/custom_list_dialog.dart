@@ -1,12 +1,12 @@
 import 'package:anymex/api/Mangayomi/Model/Manga.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustomListDialog extends StatefulWidget {
-  final AnilistMediaData original;
+  final Media original;
   final List<CustomList> customLists;
   final bool isManga;
 
@@ -161,7 +161,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 }
 
-void showCustomListDialog(BuildContext context, AnilistMediaData media,
+void showCustomListDialog(BuildContext context, Media media,
     List<CustomList> lists, bool isManga) {
   showDialog(
     context: context,

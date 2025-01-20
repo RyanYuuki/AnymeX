@@ -1,10 +1,10 @@
 import 'dart:developer';
 
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
@@ -19,7 +19,7 @@ import 'package:get/get.dart';
 
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter>? chapters;
-  final AnilistMediaData anilistData;
+  final Media anilistData;
   const ChapterListBuilder(
       {super.key, required this.chapters, required this.anilistData});
 

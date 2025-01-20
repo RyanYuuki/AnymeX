@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
 import 'package:anymex/api/Mangayomi/Model/Source.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -560,7 +560,7 @@ class AnilistData extends GetxController {
     }
   }
 
-  static Future<AnilistMediaData> fetchAnimeInfo(String animeId) async {
+  static Future<Media> fetchAnimeInfo(String animeId) async {
     log("Anime ID: $animeId");
     const String url = 'https://graphql.anilist.co/';
 
@@ -706,7 +706,7 @@ class AnilistData extends GetxController {
           }
         }
 
-        return AnilistMediaData.fromJson(media);
+        return Media.fromJson(media);
       } else {
         throw Exception('Failed to fetch anime info, Network Error');
       }

@@ -346,7 +346,7 @@ class MangaHistoryCard extends StatelessWidget {
         Get.find<SourceController>()
             .getMangaExtensionByName(data.currentChapter!.sourceName!);
         Get.to(() => ReadingPage(
-              anilistData: convertOfflineToAnilistMediaData(data),
+              anilistData: convertOfflineToMedia(data),
               chapterList: data.chapters!,
               currentChapter: data.currentChapter!,
             ));
