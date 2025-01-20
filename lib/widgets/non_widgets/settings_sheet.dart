@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';

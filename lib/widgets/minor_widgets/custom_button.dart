@@ -1,6 +1,9 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 enum ButtonVariant { simple, outline }
 
@@ -80,6 +83,7 @@ class BlurWrapper extends StatelessWidget {
   final Color? blurColor;
   final double colorOpacity;
   final Widget child;
+  final bool enableGlow;
 
   const BlurWrapper({
     super.key,
@@ -88,38 +92,39 @@ class BlurWrapper extends StatelessWidget {
     this.blurColor,
     this.colorOpacity = 0.1,
     required this.child,
+    this.enableGlow = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<Settings>();
     final theme = Theme.of(context);
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Blur(
-            blur: blurAmount,
-            blurColor: blurColor ??
-                Theme.of(context).colorScheme.primary.withAlpha(175),
-            colorOpacity: colorOpacity,
-            borderRadius: borderRadius ?? BorderRadius.circular(12),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-        Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-                borderRadius:
-                    borderRadius ?? BorderRadius.circular(12.multiplyRadius()),
-                border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withOpacity(0.1))),
-            child: child),
-      ],
-    );
+    return Obx(() => Stack(
+          children: [
+            if (controller.transculentControls)
+              Positioned.fill(
+                child: Blur(
+                  blur: blurAmount,
+                  blurColor:
+                      blurColor ?? theme.colorScheme.primary.withAlpha(175),
+                  colorOpacity: colorOpacity,
+                  borderRadius: borderRadius ?? BorderRadius.circular(12),
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+              ),
+            Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                    boxShadow: enableGlow ? [glowingShadow(context)] : [],
+                    borderRadius: borderRadius ??
+                        BorderRadius.circular(12.multiplyRadius()),
+                    border: Border.all(
+                        color: theme.colorScheme.primary.withOpacity(0.1))),
+                child: child),
+          ],
+        ));
   }
 }
