@@ -58,6 +58,7 @@ dependencies:
   carousel_slider: ^5.0.0
   smooth_page_indicator: ^1.2.0+3
   blur: ^4.0.0
+  file_picker: ^8.1.7
 
 dev_dependencies:
   flutter_test:

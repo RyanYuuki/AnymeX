@@ -2,24 +2,34 @@ import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void snackBar(String message, {int duration = 700}) {
+void snackBar(
+  String message, {
+  int duration = 700,
+  String? title,
+  Color? backgroundColor,
+  SnackPosition? snackPosition,
+  double? maxWidth,
+  int? maxLines,
+}) {
   Get.snackbar(
     "",
     "",
-    titleText: const AnymexText(
+    titleText: AnymexText(
       textAlign: TextAlign.center,
-      text: 'AnymeX',
+      text: title ?? 'AnymeX',
       variant: TextVariant.bold,
       size: 18,
+      maxLines: maxLines,
     ),
     messageText: AnymexText(
       textAlign: TextAlign.center,
       text: message,
       size: 16,
+      maxLines: maxLines,
     ),
-    backgroundColor: Get.theme.colorScheme.surfaceContainer,
+    backgroundColor: backgroundColor ?? Get.theme.colorScheme.surfaceContainer,
     duration: Duration(milliseconds: duration),
-    snackPosition: SnackPosition.BOTTOM,
-    maxWidth: 300,
+    snackPosition: snackPosition ?? SnackPosition.BOTTOM,
+    maxWidth: maxWidth ?? Get.width * 0.6,
   );
 }
