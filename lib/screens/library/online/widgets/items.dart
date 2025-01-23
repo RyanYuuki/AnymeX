@@ -1,5 +1,6 @@
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,11 +9,17 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 GestureDetector listItem(BuildContext context, AnilistMediaUser item,
-    String tag, posterUrl, List<dynamic> filteredAnimeList, int index) {
+    String tag, posterUrl, List<dynamic> filteredAnimeList, int index,
+    [bool? isManga]) {
   return GestureDetector(
     onTap: () {
-      Get.to(() => AnimeDetailsPage(
-          anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      if (isManga != null && isManga) {
+        Get.to(() => MangaDetailsPage(
+            anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      } else {
+        Get.to(() => AnimeDetailsPage(
+            anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      }
     },
     child: Column(
       children: [
@@ -112,9 +119,18 @@ GestureDetector listItem(BuildContext context, AnilistMediaUser item,
 }
 
 GestureDetector listItemDesktop(BuildContext context, AnilistMediaUser item,
-    String tag, posterUrl, List<dynamic> filteredAnimeList, int index) {
+    String tag, posterUrl, List<dynamic> filteredAnimeList, int index,
+    [bool? isManga]) {
   return GestureDetector(
-    onTap: () {},
+    onTap: () {
+      if (isManga != null && isManga) {
+        Get.to(() => MangaDetailsPage(
+            anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      } else {
+        Get.to(() => AnimeDetailsPage(
+            anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      }
+    },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
