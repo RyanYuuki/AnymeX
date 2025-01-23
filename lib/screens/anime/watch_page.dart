@@ -829,7 +829,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
-                      final e = subtitles?[index - 1];
+                      final e = subtitles[index - 1];
                       return GestureDetector(
                         onTap: () {
                           selectedSubIndex.value = index;
@@ -1221,7 +1221,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.fast_rewind_rounded,
                     color: Colors.white,
                   ),
@@ -1242,7 +1242,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     color: Colors.white,
                   ),
                   const SizedBox(width: 5),
-                  Icon(
+                  const Icon(
                     Icons.fast_forward_rounded,
                     color: Colors.white,
                   )

@@ -91,7 +91,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                     ..show();
                 },
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
             ],
           ),
           body: Column(
