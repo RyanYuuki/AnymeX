@@ -91,10 +91,11 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 dpkg-dev fuse
+          sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage"
           chmod +x appimagetool
           sudo mv appimagetool /usr/local/bin/
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -107,7 +108,7 @@ jobs:
         run: flutter build linux --release
 
       - name: Create AppImage
-        run: |        
+        run: |
           # Create fresh AppDir structure
           rm -rf AppDir
           mkdir -p AppDir/usr/bin
@@ -138,16 +139,65 @@ jobs:
           # Make AppImage
           /usr/local/bin/appimagetool AppDir
           mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
-      - name: Create ZIP archive
+
+      - name: Create RPM Package
+        run: |
+          mkdir -p rpm_build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cp -r build/linux/x64/release/bundle rpm_build/SOURCES/anymex-1.0.0
+          tar czf rpm_build/SOURCES/anymex-1.0.0.tar.gz -C rpm_build/SOURCES anymex-1.0.0
+          mkdir -p rpm_build/SOURCES/usr/share/icons/hicolor/256x256/apps
+          cp assets/images/logo.png rpm_build/SOURCES/usr/share/icons/hicolor/256x256/apps/anymex.png
+          # RPM Spec File
+          cat <<EOF > rpm_build/SPECS/anymex.spec
+          Name: anymex
+          Version: 1.0.0
+          Release: 1%{?dist}
+          Summary: AnymeX is a Flutter-based opensource app for watching anime, reading mangas and novels
+          License: MIT
+          Source0: %{name}-%{version}.tar.gz
+          BuildArch: x86_64
+
+          %description
+          AnymeX is a Flutter-based opensource app for watching anime, reading mangas and novels.
+
+          %prep
+          %setup -q
+
+          %install
+          mkdir -p %{buildroot}/usr/bin
+          mkdir -p %{buildroot}/usr/share/applications
+          mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
+          cp -r * %{buildroot}/usr/bin/
+          cp -r %{_sourcedir}/usr/share/* %{buildroot}/usr/share/
+          cat <<EOL > %{buildroot}/usr/share/applications/anymex.desktop
+          [Desktop Entry]
+          Name=AnymeX
+          Exec=/usr/bin/anymex
+          Icon=anymex
+          Type=Application
+          Categories=Utility;
+          EOL
+          %files
+          /usr/bin/*
+          /usr/share/applications/anymex.desktop
+          /usr/share/icons/hicolor/256x256/apps/anymex.png
+          EOF
+
+          rpmbuild --define "_topdir $(pwd)/rpm_build" -ba rpm_build/SPECS/anymex.spec
+          mv rpm_build/RPMS/x86_64/*.rpm build/linux/x64/release/AnymeX-Linux.rpm
+
+      - name: Create ZIP Archive
         run: |
           cd build/linux/x64/release/bundle
           zip -r ../AnymeX-Linux.zip ./*
-      - name: Release Linux Build and AppImage
+
+      - name: Release Linux Bundle, AppImage & RPM
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
             build/linux/x64/release/AnymeX-Linux.zip
             build/linux/x64/release/AnymeX-Linux.AppImage
+            build/linux/x64/release/AnymeX-Linux.rpm
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
