@@ -24,6 +24,16 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
+      - name: Create .env File
+        run: |
+          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
+          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
+          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
+          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
+          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
+          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
+          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -60,6 +70,16 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
+      - name: Create .env File
+        run: |
+          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
+          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
+          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
+          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
+          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
+          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
+          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -81,7 +101,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
-          
+
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -100,6 +120,16 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
+
+      - name: Create .env File
+        run: |
+          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
+          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
+          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
+          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
+          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
+          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
+          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
@@ -213,6 +243,16 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
+      - name: Create .env File
+        run: |
+          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
+          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
+          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
+          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
+          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
+          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
+          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -244,6 +284,16 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
+
+      - name: Create .env File
+        run: |
+          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
+          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
+          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
+          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
+          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
+          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
+          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
