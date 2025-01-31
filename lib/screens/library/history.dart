@@ -14,10 +14,11 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  List<String> tabs = ["Anime", "Manga"];
-
   @override
   Widget build(BuildContext context) {
+    bool isSimkl =
+        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
+    List<String> tabs = isSimkl ? ["Movies", "Series"] : ["Anime", "Manga"];
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
