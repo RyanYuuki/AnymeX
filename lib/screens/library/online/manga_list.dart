@@ -156,7 +156,7 @@ class MangaListContent extends StatelessWidget {
             final posterUrl = item.poster ??
                 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
             return listItem(
-                context, item, tag, posterUrl, filteredAnimeList, index);
+                context, item, tag, posterUrl, filteredAnimeList, index, true);
           },
         ),
         desktopBuilder: GridView.builder(
@@ -173,7 +173,7 @@ class MangaListContent extends StatelessWidget {
             final posterUrl = item.poster ??
                 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
             return listItemDesktop(
-                context, item, tag, posterUrl, filteredAnimeList, index);
+                context, item, tag, posterUrl, filteredAnimeList, index, true);
           },
         ),
       ),
