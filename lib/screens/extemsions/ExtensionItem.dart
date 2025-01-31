@@ -1,5 +1,6 @@
-import 'package:anymex/api/Mangayomi/Eval/dart/model/source_preference.dart';
-import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/core/Eval/dart/model/source_preference.dart';
+import 'package:anymex/core/Model/Source.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,25 +10,24 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:isar/isar.dart';
 
-import '../../api/Mangayomi/Extensions/GetSourceList.dart';
-import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
-import '../../api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import '../../api/Mangayomi/Model/Manga.dart';
-import '../../api/Mangayomi/extension_preferences_providers.dart';
-import '../../api/Mangayomi/get_source_preference.dart';
+import '../../core/Extensions/GetSourceList.dart';
+import '../../core/Extensions/fetch_anime_sources.dart';
+import '../../core/Extensions/fetch_manga_sources.dart';
+import '../../core/extension_preferences_providers.dart';
+import '../../core/get_source_preference.dart';
 import '../../main.dart';
 import 'ExtensionSettings/ExtensionSettings.dart';
 
 class ExtensionListTileWidget extends ConsumerStatefulWidget {
   final Source source;
   final bool isTestSource;
-  final ItemType itemType;
+  final MediaType mediaType;
 
   const ExtensionListTileWidget(
       {super.key,
       required this.source,
       this.isTestSource = false,
-      required this.itemType});
+      required this.mediaType});
 
   @override
   ConsumerState<ExtensionListTileWidget> createState() =>
@@ -41,7 +41,7 @@ class _ExtensionListTileWidgetState
   Future<void> _handleSourceAction() async {
     setState(() => _isLoading = true);
 
-    widget.itemType == ItemType.manga
+    widget.mediaType == MediaType.manga
         ? await ref.watch(
             fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
                 .future)
@@ -158,7 +158,7 @@ class _ExtensionListTileWidgetState
                   onPressed: () async {
                     if (updateAvailable) {
                       setState(() => _isLoading = true);
-                      widget.itemType == ItemType.manga
+                      widget.mediaType == MediaType.manga
                           ? await ref.watch(fetchMangaSourcesListProvider(
                                   id: widget.source.id, reFresh: true)
                               .future)

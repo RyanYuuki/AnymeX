@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:anymex/api/Mangayomi/Model/Manga.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -51,14 +51,14 @@ class OfflineStorageController extends GetxController {
     for (var list in animeCustomLists) {
       if (list.mediaIds != null) {
         list.mediaIds = list.mediaIds!.toSet().toList();
-        list.mediaIds!.removeWhere((id) => id == 0);
+        list.mediaIds!.removeWhere((id) => id == '0');
       }
     }
 
     for (var list in mangaCustomLists) {
       if (list.mediaIds != null) {
         list.mediaIds = list.mediaIds!.toSet().toList();
-        list.mediaIds!.removeWhere((id) => id == 0);
+        list.mediaIds!.removeWhere((id) => id == '0');
       }
     }
   }
@@ -89,8 +89,8 @@ class OfflineStorageController extends GetxController {
     _saveLibraries();
   }
 
-  void addCustomList(String listName, {ItemType mediaType = ItemType.anime}) {
-    if (mediaType == ItemType.anime) {
+  void addCustomList(String listName, {MediaType mediaType = MediaType.anime}) {
+    if (mediaType == MediaType.anime) {
       animeCustomLists.add(CustomList(listName: listName, mediaIds: []));
     } else {
       mangaCustomLists.add(CustomList(listName: listName, mediaIds: []));
@@ -99,8 +99,8 @@ class OfflineStorageController extends GetxController {
   }
 
   void removeCustomList(String listName,
-      {ItemType mediaType = ItemType.anime}) {
-    if (mediaType == ItemType.anime) {
+      {MediaType mediaType = MediaType.anime}) {
+    if (mediaType == MediaType.anime) {
       animeCustomLists.removeWhere((e) => e.listName == listName);
     } else {
       mangaCustomLists.removeWhere((e) => e.listName == listName);
@@ -136,7 +136,7 @@ class OfflineStorageController extends GetxController {
     _initListData();
   }
 
-  void removeMedia(String listName, int id, bool isManga) {
+  void removeMedia(String listName, String id, bool isManga) {
     if (isManga) {
       mangaCustomLists
           .firstWhere((e) => e.listName == listName)
@@ -192,7 +192,7 @@ class OfflineStorageController extends GetxController {
     _saveLibraries();
   }
 
-  void addOrUpdateReadChapter(int mangaId, Chapter chapter) {
+  void addOrUpdateReadChapter(String mangaId, Chapter chapter) {
     OfflineMedia? existingManga = getMangaById(mangaId);
     if (existingManga != null) {
       existingManga.readChapters ??= [];
@@ -213,7 +213,7 @@ class OfflineStorageController extends GetxController {
     _saveLibraries();
   }
 
-  void addOrUpdateWatchedEpisode(int animeId, Episode episode) {
+  void addOrUpdateWatchedEpisode(String animeId, Episode episode) {
     OfflineMedia? existingAnime = getAnimeById(animeId);
     if (existingAnime != null) {
       existingAnime.watchedEpisodes ??= [];
@@ -240,35 +240,36 @@ class OfflineStorageController extends GetxController {
       List<Episode>? episodes,
       Chapter? currentChapter,
       Episode? currentEpisode) {
+    final handler = Get.find<ServiceHandler>();
     return OfflineMedia(
-      id: original.id,
-      jname: original.romajiTitle,
-      name: original.title,
-      english: original.title,
-      japanese: original.romajiTitle,
-      description: original.description,
-      poster: original.poster,
-      cover: original.cover,
-      totalEpisodes: original.totalEpisodes,
-      type: original.type,
-      season: original.season,
-      premiered: original.premiered,
-      duration: original.duration,
-      status: original.status,
-      rating: original.rating,
-      popularity: original.popularity,
-      format: original.format,
-      aired: original.aired,
-      totalChapters: original.totalChapters,
-      genres: original.genres,
-      studios: original.studios,
-      chapters: chapters,
-      episodes: episodes,
-      currentEpisode: currentEpisode,
-      currentChapter: currentChapter,
-      watchedEpisodes: episodes ?? [],
-      readChapters: chapters ?? [],
-    );
+        id: original.id,
+        jname: original.romajiTitle,
+        name: original.title,
+        english: original.title,
+        japanese: original.romajiTitle,
+        description: original.description,
+        poster: original.poster,
+        cover: original.cover,
+        totalEpisodes: original.totalEpisodes,
+        type: original.type,
+        season: original.season,
+        premiered: original.premiered,
+        duration: original.duration,
+        status: original.status,
+        rating: original.rating,
+        popularity: original.popularity,
+        format: original.format,
+        aired: original.aired,
+        totalChapters: original.totalChapters,
+        genres: original.genres,
+        studios: original.studios,
+        chapters: chapters,
+        episodes: episodes,
+        currentEpisode: currentEpisode,
+        currentChapter: currentChapter,
+        watchedEpisodes: episodes ?? [],
+        readChapters: chapters ?? [],
+        serviceIndex: handler.serviceType.value.index);
   }
 
   void _saveLibraries() {
@@ -287,15 +288,15 @@ class OfflineStorageController extends GetxController {
     refresh();
   }
 
-  OfflineMedia? getAnimeById(int id) {
+  OfflineMedia? getAnimeById(String id) {
     return animeLibrary.firstWhereOrNull((anime) => anime.id == id);
   }
 
-  OfflineMedia? getMangaById(int id) {
+  OfflineMedia? getMangaById(String id) {
     return mangaLibrary.firstWhereOrNull((manga) => manga.id == id);
   }
 
-  Episode? getWatchedEpisode(int anilistId, String episodeOrChapterNumber) {
+  Episode? getWatchedEpisode(String anilistId, String episodeOrChapterNumber) {
     OfflineMedia? anime = getAnimeById(anilistId);
     if (anime != null) {
       Episode? episode = anime.watchedEpisodes
@@ -311,7 +312,7 @@ class OfflineStorageController extends GetxController {
     return null;
   }
 
-  Chapter? getReadChapter(int anilistId, double number) {
+  Chapter? getReadChapter(String anilistId, double number) {
     OfflineMedia? manga = getMangaById(anilistId);
     if (manga != null) {
       Chapter? chapter =
@@ -322,11 +323,10 @@ class OfflineStorageController extends GetxController {
         log('No read chapter with number $number found for manga with ID: $anilistId');
       }
     }
-    log('No data found for AniList ID: $anilistId with number $number');
     return null;
   }
 
-  Chapter? getHighestChapter(int anilistId) {
+  Chapter? getHighestChapter(String anilistId) {
     OfflineMedia? manga = getMangaById(anilistId);
     if (manga != null &&
         manga.readChapters != null &&
@@ -338,7 +338,7 @@ class OfflineStorageController extends GetxController {
     return null;
   }
 
-  Episode? getHighestEpisode(int anilistId) {
+  Episode? getHighestEpisode(String anilistId) {
     OfflineMedia? anime = getAnimeById(anilistId);
     if (anime != null &&
         anime.watchedEpisodes != null &&

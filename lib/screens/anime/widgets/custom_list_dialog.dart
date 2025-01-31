@@ -1,4 +1,3 @@
-import 'package:anymex/api/Mangayomi/Model/Manga.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -82,12 +81,12 @@ class _CustomListDialogState extends State<CustomListDialog> {
     if (newListName != null && newListName.isNotEmpty) {
       setState(() {
         storage.addCustomList(newListName,
-            mediaType: widget.isManga ? ItemType.manga : ItemType.anime);
+            mediaType: widget.isManga ? MediaType.manga : MediaType.anime);
         initialState[newListName] = false;
         modifiedLists = widget.customLists
             .map((list) => CustomList(
                   listName: list.listName,
-                  mediaIds: List<int>.from(list.mediaIds ?? []),
+                  mediaIds: List<String>.from(list.mediaIds ?? []),
                 ))
             .toList();
       });
@@ -161,8 +160,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 }
 
-void showCustomListDialog(BuildContext context, Media media,
-    List<CustomList> lists, bool isManga) {
+void showCustomListDialog(
+    BuildContext context, Media media, List<CustomList> lists, bool isManga) {
   showDialog(
     context: context,
     builder: (context) => CustomListDialog(

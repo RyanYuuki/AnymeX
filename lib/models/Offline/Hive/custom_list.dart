@@ -8,10 +8,10 @@ class CustomList extends HiveObject {
   String? listName;
 
   @HiveField(1)
-  List<int>? mediaIds;
+  List<String>? mediaIds;
 
   CustomList({
     this.listName = "Default",
-    this.mediaIds = const [0],
+    this.mediaIds = const ['0'],
   });
 }

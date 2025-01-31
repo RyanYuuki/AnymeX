@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/models/Offline/Hive/video.dart';
-import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
+import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -311,6 +311,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   radius: 12,
                   width: 170,
                   height: 100,
+                  errorImage: widget.anilistData?.cover,
                 ),
                 Positioned(
                   bottom: 8,
@@ -352,7 +353,9 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           ),
           const SizedBox(height: 8),
           AnymexText(
-            text: episode.desc ?? 'No Description Available',
+            text: (episode.desc?.isEmpty ?? true)
+                ? 'No Description Available'
+                : episode.desc ?? 'No Description Available',
             variant: TextVariant.regular,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,

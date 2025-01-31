@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
+import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AnimeStats extends StatelessWidget {
   final Media data;
@@ -16,6 +19,21 @@ class AnimeStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final isSimkl = serviceHandler.serviceType.value == ServicesType.simkl;
+    final covers = (isSimkl
+            ? [
+                ...serviceHandler.simklService.trendingMovies,
+                ...serviceHandler.simklService.trendingSeries
+              ]
+            : [
+                ...serviceHandler.anilistService.trendingAnimes,
+                ...serviceHandler.anilistService.trendingMangas,
+                ...trendingAnimes,
+                ...trendingMangas
+              ])
+        .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
+        .toList();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,6 +86,7 @@ class AnimeStats extends StatelessWidget {
         ),
         GridView.builder(
           padding: EdgeInsets.only(top: 15),
+          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: data.genres.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -84,9 +103,7 @@ class AnimeStats extends StatelessWidget {
                 height: 80,
                 width: 1000,
                 onPressed: () {},
-                backgroundImage: trendingAnimes[index].cover ??
-                    trendingAnimes[index].poster ??
-                    '');
+                backgroundImage: covers[index].cover!);
           },
         ),
       ],

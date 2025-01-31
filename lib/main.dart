@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/mal/mal_service.dart';
+import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -27,10 +29,12 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:get/get.dart';
@@ -49,6 +53,14 @@ import 'package:path/path.dart' as p;
 late Isar isar;
 WebViewEnvironment? webViewEnvironment;
 
+class MyHttpoverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (cert, String host, int port) => true;
+  }
+}
+
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
@@ -61,6 +73,8 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpoverrides();
+  await dotenv.load(fileName: ".env");
   await initializeHive();
   isar = await StorageProvider().initDB(null);
   _initializeGetxController();
@@ -68,15 +82,19 @@ void main() async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
-    windowManager.setTitle("AnymeX Beta");
+    windowManager.setTitle("AnymeX");
     if (defaultTargetPlatform == TargetPlatform.windows) {
       final availableVersion = await WebViewEnvironment.getAvailableVersion();
-      assert(availableVersion != null,
-          'Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.');
-      final document = await getApplicationDocumentsDirectory();
-      webViewEnvironment = await WebViewEnvironment.create(
-          settings: WebViewEnvironmentSettings(
-              userDataFolder: p.join(document.path, 'flutter_inappwebview')));
+      if (availableVersion == null) {
+        snackBar(
+          "Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.",
+        );
+      } else {
+        final document = await getApplicationDocumentsDirectory();
+        webViewEnvironment = await WebViewEnvironment.create(
+            settings: WebViewEnvironmentSettings(
+                userDataFolder: p.join(document.path, 'flutter_inappwebview')));
+      }
     }
   } else {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -93,7 +111,7 @@ void main() async {
 }
 
 Future<void> initializeHive() async {
-  await Hive.initFlutter();
+  Hive.init((await StorageProvider().getDatabaseDirectory())!.path);
   Hive.deleteFromDisk();
   Hive.registerAdapter(VideoAdapter());
   Hive.registerAdapter(TrackAdapter());
@@ -112,12 +130,14 @@ Future<void> initializeHive() async {
 }
 
 void _initializeGetxController() {
-  Get.put(ServiceHandler());
-  Get.put(AnilistData());
-  Get.put(SourceController()..initExtensions(refresh: false));
   Get.put(OfflineStorageController());
-  Get.put(AnilistAuth()..tryAutoLogin());
+  Get.put(AnilistAuth());
+  Get.put(AnilistData());
+  Get.put(SimklService());
+  Get.put(MalService());
+  Get.put(SourceController()..initExtensions(refresh: false));
   Get.put(Settings());
+  Get.put(ServiceHandler());
 }
 
 class MainApp extends StatelessWidget {
@@ -137,6 +157,7 @@ class MainApp extends StatelessWidget {
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
+        title: "AnymeX",
         theme: theme.lightTheme,
         darkTheme: theme.darkTheme,
         themeMode: theme.isSystemMode
@@ -225,7 +246,9 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Get.find<AnilistAuth>();
+    final authService = Get.find<ServiceHandler>();
+    final isSimkl =
+        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return PlatformBuilder(
       strictMode: true,
       desktopBuilder: Glow(
@@ -263,6 +286,10 @@ class _FilterScreenState extends State<FilterScreen> {
                                               BorderRadius.circular(59),
                                           child: CachedNetworkImage(
                                               fit: BoxFit.cover,
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                          IconlyBold.profile),
                                               imageUrl: authService.profileData
                                                       .value?.avatar ??
                                                   ''),
@@ -281,8 +308,10 @@ class _FilterScreenState extends State<FilterScreen> {
                             label: 'Anime',
                           ),
                           NavItem(
-                            unselectedIcon: Iconsax.book,
-                            selectedIcon: Iconsax.book,
+                            unselectedIcon:
+                                isSimkl ? Iconsax.monitor : Iconsax.book,
+                            selectedIcon:
+                                isSimkl ? Iconsax.monitor5 : Iconsax.book,
                             onTap: _onItemTapped,
                             label: 'Manga',
                           ),
@@ -322,9 +351,12 @@ class _FilterScreenState extends State<FilterScreen> {
                                 label: 'Library',
                               ),
                               NavItem(
-                                unselectedIcon:
-                                    HugeIcons.strokeRoundedBookOpen01,
-                                selectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                                unselectedIcon: isSimkl
+                                    ? Iconsax.monitor
+                                    : HugeIcons.strokeRoundedBookOpen01,
+                                selectedIcon: isSimkl
+                                    ? Iconsax.monitor5
+                                    : HugeIcons.strokeRoundedBookOpen01,
                                 onTap: _onLibraryTappedDesktop,
                                 label: 'Library',
                               ),
@@ -354,7 +386,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 currentIndex: _mobileSelectedIndex,
                 isShowingLibrary: showLibrary,
                 margin:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
+                    const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
                 items: [
                   NavItem(
                     unselectedIcon: IconlyBold.home,
@@ -369,8 +401,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     label: 'Anime',
                   ),
                   NavItem(
-                    unselectedIcon: Iconsax.book,
-                    selectedIcon: Iconsax.book,
+                    unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+                    selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
                     onTap: _onMobileItemTapped,
                     label: 'Manga',
                   ),
@@ -400,8 +432,12 @@ class _FilterScreenState extends State<FilterScreen> {
                     label: 'Anime',
                   ),
                   NavItem(
-                    unselectedIcon: HugeIcons.strokeRoundedBookOpen01,
-                    selectedIcon: HugeIcons.strokeRoundedBookOpen01,
+                    unselectedIcon: isSimkl
+                        ? Iconsax.monitor
+                        : HugeIcons.strokeRoundedBookOpen01,
+                    selectedIcon: isSimkl
+                        ? Iconsax.monitor5
+                        : HugeIcons.strokeRoundedBookOpen01,
                     onTap: _onLibraryTapped,
                     label: 'Manga',
                   ),
@@ -409,7 +445,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     unselectedIcon: Iconsax.clock,
                     selectedIcon: Iconsax.clock5,
                     onTap: _onLibraryTapped,
-                    label: 'Manga',
+                    label: 'History',
                   ),
                 ],
               ))),

@@ -1,116 +1,129 @@
 import 'dart:math';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/online/widgets/items.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AnimeList extends StatefulWidget {
-  const AnimeList({super.key});
+  final List<TrackedMedia>? data;
+  final String? title;
+  const AnimeList({super.key, this.data, this.title});
 
   @override
   State<AnimeList> createState() => _AnimeListState();
 }
 
 class _AnimeListState extends State<AnimeList> {
-  final List<String> tabs = [
-    'WATCHING',
-    'COMPLETED TV',
-    'COMPLETED MOVIE',
-    'COMPLETED OVA',
-    'COMPLETED SPECIAL',
-    'PAUSED',
-    'DROPPED',
-    'PLANNING',
-    "REWATCHING",
-    'ALL',
-  ];
+  final anilistAuth = Get.find<ServiceHandler>();
+  final List<String> tabs =
+      Get.find<ServiceHandler>().serviceType.value != ServicesType.anilist
+          ? [
+              'WATCHING',
+              'COMPLETED',
+              'PAUSED',
+              'DROPPED',
+              'PLANNING',
+              'ALL',
+            ]
+          : [
+              'WATCHING',
+              'COMPLETED TV',
+              'COMPLETED MOVIE',
+              'COMPLETED OVA',
+              'COMPLETED SPECIAL',
+              'PAUSED',
+              'DROPPED',
+              'PLANNING',
+              "REWATCHING",
+              'ALL',
+            ];
   bool isReversed = false;
   bool isItemsReversed = false;
 
   @override
   Widget build(BuildContext context) {
-    final anilistAuth = Get.find<AnilistAuth>();
-    final animeList = anilistAuth.animeList;
-    final userName = anilistAuth.profileData.value!.name;
-    return DefaultTabController(
-      length: tabs.length,
-      child: Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: isReversed
-                        ? Theme.of(context).colorScheme.surfaceContainer
-                        : Colors.transparent),
-                onPressed: () {
-                  setState(() {
-                    isReversed = !isReversed;
-                  });
-                },
-                icon: const Icon(Iconsax.arrow_swap_horizontal)),
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    isItemsReversed = !isItemsReversed;
-                  });
-                },
-                icon: Icon(
-                    isItemsReversed ? Iconsax.arrow_up : Iconsax.arrow_bottom)),
-          ],
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back_ios_new)),
-          title: Text("$userName's Anime List",
-              style: TextStyle(
-                  fontSize: 16, color: Theme.of(context).colorScheme.primary)),
-          bottom: TabBar(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            physics: const BouncingScrollPhysics(),
-            tabAlignment: TabAlignment.start,
-            isScrollable: true,
-            tabs: isReversed
+    final animeList = widget.data ?? anilistAuth.animeList.value;
+    final userName = anilistAuth.profileData.value.name;
+    return Glow(
+      child: DefaultTabController(
+        length: tabs.length,
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              IconButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: isReversed
+                          ? Theme.of(context).colorScheme.surfaceContainer
+                          : Colors.transparent),
+                  onPressed: () {
+                    setState(() {
+                      isReversed = !isReversed;
+                    });
+                  },
+                  icon: const Icon(Iconsax.arrow_swap_horizontal)),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isItemsReversed = !isItemsReversed;
+                    });
+                  },
+                  icon: Icon(isItemsReversed
+                      ? Iconsax.arrow_up
+                      : Iconsax.arrow_bottom)),
+            ],
+            leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_ios_new)),
+            title: Text("$userName's ${widget.title ?? 'Anime'} List",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.primary)),
+            bottom: TabBar(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              physics: const BouncingScrollPhysics(),
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              tabs: isReversed
+                  ? tabs.reversed
+                      .toList()
+                      .map((tab) => Tab(
+                          child: Text(tab,
+                              style: const TextStyle(
+                                  fontFamily: 'Poppins-SemiBold'))))
+                      .toList()
+                  : tabs
+                      .map((tab) => Tab(
+                          child: Text(tab,
+                              style: const TextStyle(
+                                  fontFamily: 'Poppins-SemiBold'))))
+                      .toList(),
+            ),
+          ),
+          body: TabBarView(
+            children: isReversed
                 ? tabs.reversed
                     .toList()
-                    .map((tab) => Tab(
-                        child: Text(tab,
-                            style: const TextStyle(
-                                fontFamily: 'Poppins-SemiBold'))))
+                    .map((tab) => AnimeListContent(
+                          tabType: tab,
+                          animeData: isItemsReversed
+                              ? animeList.reversed.toList()
+                              : animeList,
+                        ))
                     .toList()
                 : tabs
-                    .map((tab) => Tab(
-                        child: Text(tab,
-                            style: const TextStyle(
-                                fontFamily: 'Poppins-SemiBold'))))
+                    .map((tab) => AnimeListContent(
+                          tabType: tab,
+                          animeData: isItemsReversed
+                              ? animeList.reversed.toList()
+                              : animeList,
+                        ))
                     .toList(),
           ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: TabBarView(
-          children: isReversed
-              ? tabs.reversed
-                  .toList()
-                  .map((tab) => AnimeListContent(
-                        tabType: tab,
-                        animeData: isItemsReversed
-                            ? animeList.reversed.toList()
-                            : animeList,
-                      ))
-                  .toList()
-              : tabs
-                  .map((tab) => AnimeListContent(
-                        tabType: tab,
-                        animeData: isItemsReversed
-                            ? animeList.reversed.toList()
-                            : animeList,
-                      ))
-                  .toList(),
         ),
       ),
     );
@@ -119,7 +132,7 @@ class _AnimeListState extends State<AnimeList> {
 
 class AnimeListContent extends StatelessWidget {
   final String tabType;
-  final List<AnilistMediaUser>? animeData;
+  final List<TrackedMedia>? animeData;
 
   const AnimeListContent({
     super.key,
@@ -157,7 +170,7 @@ class AnimeListContent extends StatelessWidget {
             final posterUrl = item.poster ??
                 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
             return listItem(
-                context, item, tag, posterUrl, filteredAnimeList, index);
+                context, item, tag, posterUrl, filteredAnimeList, index, false);
           },
         ),
         desktopBuilder: GridView.builder(
@@ -169,12 +182,12 @@ class AnimeListContent extends StatelessWidget {
               crossAxisSpacing: 10),
           itemCount: filteredAnimeList.length,
           itemBuilder: (context, index) {
-            final item = filteredAnimeList[index] as AnilistMediaUser;
+            final item = filteredAnimeList[index];
             final tag = '${Random().nextInt(100000)}$index';
             final posterUrl = item.poster ??
                 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
             return listItemDesktop(
-                context, item, tag, posterUrl, filteredAnimeList, index);
+                context, item, tag, posterUrl, filteredAnimeList, index, false);
           },
         ),
       ),

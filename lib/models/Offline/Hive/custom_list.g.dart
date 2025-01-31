@@ -18,7 +18,7 @@ class CustomListAdapter extends TypeAdapter<CustomList> {
     };
     return CustomList(
       listName: fields[0] as String?,
-      mediaIds: (fields[1] as List?)?.cast<int>(),
+      mediaIds: (fields[1] as List?)?.cast<String>(),
     );
   }
 

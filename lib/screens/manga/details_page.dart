@@ -1,50 +1,42 @@
-// ignore_for_file: invalid_use_of_protected_member
-import 'dart:developer';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
-import 'package:anymex/api/Mangayomi/Model/Source.dart';
-import 'package:anymex/api/Mangayomi/Search/get_detail.dart';
-import 'package:anymex/api/Mangayomi/Search/search.dart';
+// ignore_for_file: invalid_use_of_protected_member, unused_element
+import 'package:anymex/controllers/source/source_mapper.dart';
+import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
+import 'package:anymex/core/Search/get_detail.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
+import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
-import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
+import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/manga/widgets/manga_stats.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MangaDetailsPage extends StatefulWidget {
-  final String anilistId;
-  final String posterUrl;
+  final Media media;
   final String tag;
-  const MangaDetailsPage(
-      {super.key,
-      required this.anilistId,
-      required this.posterUrl,
-      required this.tag});
+  const MangaDetailsPage({super.key, required this.media, required this.tag});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -53,8 +45,9 @@ class MangaDetailsPage extends StatefulWidget {
 class _MangaDetailsPageState extends State<MangaDetailsPage> {
   // AnilistData
   Media? anilistData;
-  Rx<AnilistMediaUser?> currentManga = AnilistMediaUser().obs;
+  Rx<TrackedMedia?> currentManga = TrackedMedia().obs;
   final anilist = Get.find<AnilistAuth>();
+  final fetcher = Get.find<ServiceHandler>();
   // Tracker for Avail Anime
   RxBool isListedManga = false.obs;
 
@@ -62,7 +55,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   final offlineStorage = Get.find<OfflineStorageController>();
 
   // Extension Data
-  Rx<MManga?> fetchedData = MManga().obs;
+  RxString searchedTitle = ''.obs;
   RxList<Chapter>? chapterList = <Chapter>[].obs;
 
   // Page View Tracker
@@ -70,7 +63,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   // Current Manga
   RxDouble mangaScore = 0.0.obs;
-  Rx<int> mangaProgress = 0.obs;
+  RxInt mangaProgress = 0.obs;
   RxString mangaStatus = "CURRENT".obs;
 
   // Tracker's Controller
@@ -93,13 +86,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   void initState() {
     super.initState();
     sourceController.initExtensions();
-    _checkMangaPresence();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _checkMangaPresence();
+    });
     _fetchAnilistData();
   }
 
   void _checkMangaPresence() {
-    anilist.setCurrentManga(widget.anilistId);
-    var data = anilist.currentManga;
+    fetcher.onlineService
+        .setCurrentMedia(widget.media.id.toString(), isManga: true);
+    var data = fetcher.onlineService.currentMedia;
 
     if (data.value.id != null || data.value.id != '') {
       isListedManga.value = true;
@@ -118,61 +114,69 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Future<void> _fetchAnilistData() async {
-    final tempData = await AnilistData.fetchAnimeInfo(widget.anilistId);
-    setState(() {
-      anilistData = tempData;
-    });
-    mapToAnilist();
-  }
-
-  Future<void> mapToAnilist({bool isFirstTime = true, Source? source}) async {
     try {
-      final finalSource = source ?? sourceController.activeMangaSource.value;
+      final tempData = await fetcher.fetchDetails(widget.media.id.toString());
+      final isExtensions = fetcher.serviceType.value == ServicesType.extemsions;
 
-      var searchData = await search(
-        source: finalSource!,
-        query: anilistData!.title,
-        page: 1,
-        filterList: [],
-      );
-      if (searchData!.list.isEmpty) {
-        searchData = await search(
-          source: finalSource,
-          query: anilistData?.title.split(' ').first ??
-              anilistData!.romajiTitle.split(' ').first,
-          page: 1,
-          filterList: [],
-        );
+      setState(() {
+        anilistData = tempData
+          ..title = widget.media.title
+          ..poster = widget.media.poster;
+      });
+
+      if (isExtensions) {
+        _processExtensionData(tempData);
+      } else {
+        await _mapToService();
       }
-
-      if (searchData?.list.isEmpty ?? true) {
-        throw Exception("No anime found for the provided query.");
-      }
-
-      final mangaList = searchData!.list;
-      final matchedManga = mangaList.firstWhere(
-        (an) =>
-            an.name == anilistData?.romajiTitle ||
-            an.name == anilistData?.title,
-        orElse: () => mangaList[0],
-      );
-      await getDetailsFromSource(matchedManga.link!);
     } catch (e) {
-      log(e.toString());
+      snackBar("Ooops! Looks like we ran into an error, try again please",
+          duration: 2000);
     }
   }
 
-  Future<void> getDetailsFromSource(String url) async {
-    final chapterEpisode = await getDetail(
-      url: url,
-      source: sourceController.activeMangaSource.value!,
-    );
+  Future<void> _mapToService() async {
+    final mappedData =
+        await mapMedia(formatTitles(anilistData!) ?? [], searchedTitle);
+    await _fetchSourceDetails(mappedData);
+  }
 
-    final episodeData = mChapterToChapter(
-        chapterEpisode.chapters!.reversed.toList(),
-        anilistData?.title ?? anilistData?.romajiTitle ?? '');
-    fetchedData.value = chapterEpisode;
-    chapterList!.value = episodeData;
+  void _processExtensionData(Media tempData) async {
+    final chapters = tempData.mediaContent!.reversed.toList();
+    final convertedEpisodes = _convertChapters(chapters, tempData.title);
+
+    chapterList?.value = convertedEpisodes;
+    searchedTitle.value = tempData.title;
+    setState(() {});
+  }
+
+  Future<void> _fetchSourceDetails(Media media) async {
+    try {
+      final episodeFuture = await getDetail(
+        url: media.id,
+        source: sourceController.activeMangaSource.value!,
+      );
+
+      final episodes = _convertChapters(
+        episodeFuture.chapters!.reversed.toList(),
+        episodeFuture.name ?? '',
+      );
+      chapterList?.value = episodes;
+      searchedTitle.value = media.title;
+
+      setState(() {});
+    } catch (e) {
+      snackBar("Ooops! Looks like we ran into an error, try again please",
+          duration: 2000);
+    }
+  }
+
+  List<String> formatTitles(Media media) {
+    return ['${media.title}*MANGA', media.romajiTitle];
+  }
+
+  List<Chapter> _convertChapters(List<MChapter> chapters, String title) {
+    return mChapterToChapter(chapters, title);
   }
 
   @override
@@ -207,7 +211,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           GradientPoster(
             data: anilistData,
             tag: widget.tag,
-            posterUrl: widget.posterUrl,
+            posterUrl: widget.media.poster,
           ),
           if (anilistData != null) ...[
             Padding(
@@ -216,26 +220,35 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                        child: AnymeXButton(
-                          onTap: () {
-                            showListEditorModal(context);
-                          },
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          borderRadius: BorderRadius.circular(20),
-                          variant: ButtonVariant.outline,
-                          borderColor:
-                              Theme.of(context).colorScheme.surfaceContainer,
-                          child: Text(
-                              convertAniListStatus(
-                                  currentManga.value?.watchingStatus),
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontFamily: "Poppins-Bold")),
+                      if (fetcher.serviceType.value !=
+                          ServicesType.extemsions) ...[
+                        Expanded(
+                          child: AnymeXButton(
+                            onTap: () {
+                              if (fetcher.isLoggedIn.value) {
+                                showListEditorModal(context);
+                              } else {
+                                snackBar("You aren't logged in Genius.",
+                                    duration: 1000);
+                              }
+                            },
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            borderRadius: BorderRadius.circular(20),
+                            variant: ButtonVariant.outline,
+                            borderColor:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            child: Text(
+                                convertAniListStatus(
+                                    currentManga.value?.watchingStatus),
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontFamily: "Poppins-Bold")),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 7),
+                        const SizedBox(width: 7),
+                      ],
                       AnymeXButton(
                           onTap: () {
                             showCustomListDialog(context, anilistData!,
@@ -289,7 +302,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               },
               children: [
                 _buildCommonInfo(context),
-                _buildEpisodeSection(context),
+                _buildChapterSection(context),
               ],
             ),
           ] else ...[
@@ -303,148 +316,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     );
   }
 
-  Widget _buildEpisodeSection(BuildContext context) {
-    return Obx(() => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 2),
-                    width: Get.width * 0.6,
-                    child: AnymexTextSpans(
-                      spans: [
-                        const AnymexTextSpan(
-                          text: "Found: ",
-                          variant: TextVariant.semiBold,
-                          size: 16,
-                        ),
-                        AnymexTextSpan(
-                          text: fetchedData.value?.name ?? '??',
-                          variant: TextVariant.semiBold,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      showWrongTitleModal(context, anilistData?.title ?? '',
-                          (manga) async {
-                        chapterList?.value = [];
-                        await getDetailsFromSource(manga.link!);
-                      }, isManga: true);
-                    },
-                    child: AnymexText(
-                      text: "Wrong Title?",
-                      variant: TextVariant.semiBold,
-                      size: 16,
-                      maxLines: 1,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Obx(() => DropdownButtonFormField<String>(
-                    value: sourceController.installedMangaExtensions.isEmpty
-                        ? "No Sources Installed"
-                        : '${sourceController.activeMangaSource.value?.name} (${sourceController.activeMangaSource.value?.lang?.toUpperCase()})',
-                    decoration: InputDecoration(
-                      label: TextButton.icon(
-                        onPressed: () {},
-                        label: const AnymexText(
-                          text: "Select Source",
-                          variant: TextVariant.bold,
-                        ),
-                        icon: const Icon(Iconsax.folder5),
-                      ),
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.inverseSurface),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryFixedVariant),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                    isExpanded: true,
-                    items: [
-                      if (sourceController
-                          .installedMangaExtensions.value.isEmpty)
-                        const DropdownMenuItem<String>(
-                          value: "No Sources Installed",
-                          child: Text(
-                            "No Sources Installed",
-                            style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-                          ),
-                        ),
-                      ...sourceController.installedMangaExtensions.value
-                          .map<DropdownMenuItem<String>>((source) {
-                        return DropdownMenuItem<String>(
-                          value:
-                              '${source.name} (${source.lang?.toUpperCase()})',
-                          child: Text(
-                            '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
-                            style:
-                                const TextStyle(fontFamily: 'Poppins-SemiBold'),
-                          ),
-                        );
-                      }),
-                    ],
-                    onChanged: (value) async {
-                      chapterList?.value = [];
-                      try {
-                        final selectedSource =
-                            sourceController.getMangaExtensionByName(value!);
-                        await mapToAnilist(source: selectedSource);
-                      } catch (e) {
-                        log(e.toString());
-                      }
-                    },
-                    dropdownColor:
-                        Theme.of(context).colorScheme.secondaryContainer,
-                    icon: Icon(Icons.arrow_drop_down,
-                        color: Theme.of(context).colorScheme.primary),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 16,
-                    ),
-                  )),
-              const SizedBox(height: 20),
-              const Row(
-                children: [
-                  AnymexText(
-                    text: "Chapters",
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                ],
-              ),
-              if (sourceController.activeMangaSource.value == null)
-                const NoSourceSelectedWidget()
-              else
-                ChapterListBuilder(
-                    chapters: chapterList?.value ?? [],
-                    anilistData: anilistData!)
-            ],
-          ),
-        ));
+  Widget _buildChapterSection(BuildContext context) {
+    return ChapterSection(
+      searchedTitle: searchedTitle,
+      anilistData: anilistData!,
+      chapterList: chapterList!,
+      sourceController: sourceController,
+      mapToAnilist: _mapToService,
+      getDetailsFromSource: _fetchSourceDetails,
+      showWrongTitleModal: showWrongTitleModal,
+    );
   }
 
   // Common Info Section
@@ -513,7 +394,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     onTap: (index) => _onPageSelected(index - 1),
                     selectedIcon: Iconsax.book,
                     unselectedIcon: Iconsax.book,
-                    label: "Watch"),
+                    label: "Read"),
               ]),
         ));
   }
@@ -524,7 +405,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Obx(() => ResponsiveNavBar(
             isDesktop: false,
             currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 30),
+            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
             items: [
               NavItem(
                   onTap: _onPageSelected,
@@ -548,237 +429,25 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return Obx(
-          () {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 30.0,
-                  right: 30.0,
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 80.0,
-                  top: 20.0,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'List Editor',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 55,
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.transparent,
-                          prefixIcon: const Icon(Icons.playlist_add),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: 1,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          labelText: 'Status',
-                          labelStyle: const TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: mangaStatus.value,
-                            items: [
-                              'PLANNING',
-                              'CURRENT',
-                              'COMPLETED',
-                              'REPEATING',
-                              'PAUSED',
-                              'DROPPED',
-                            ].map((String status) {
-                              return DropdownMenuItem<String>(
-                                value: status,
-                                child: Text(status),
-                              );
-                            }).toList(),
-                            onChanged: (String? newStatus) {
-                              setState(() {
-                                mangaStatus.value = newStatus!;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 55,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.add),
-                                suffixText:
-                                    '${mangaProgress.value}/${currentManga.value?.totalEpisodes}',
-                                filled: true,
-                                fillColor: Colors.transparent,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondaryContainer,
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                labelText: 'Progress',
-                                labelStyle: const TextStyle(
-                                  fontFamily: 'Poppins-Bold',
-                                ),
-                              ),
-                              initialValue: mangaProgress.value.toString(),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              onChanged: (String value) {
-                                int? newProgress = int.tryParse(value);
-                                if (newProgress != null && newProgress >= 0) {
-                                  if (currentManga.value!.totalEpisodes ==
-                                      '?') {
-                                    mangaProgress.value = newProgress;
-                                  } else {
-                                    int totalEp = int.parse(
-                                        currentManga.value!.totalEpisodes!);
-                                    mangaProgress.value = newProgress <= totalEp
-                                        ? newProgress
-                                        : totalEp;
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.star,
-                                  color: Theme.of(context).colorScheme.primary),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Score: ${mangaScore.value.toStringAsFixed(1)}/10',
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins-Bold',
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          CustomSlider(
-                            value: mangaScore.value,
-                            min: 0.0,
-                            max: 10.0,
-                            divisions: 100,
-                            label: mangaScore.value.toStringAsFixed(1),
-                            activeColor: Theme.of(context).colorScheme.primary,
-                            inactiveColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            onChanged: (double newValue) {
-                              setState(() {
-                                mangaScore.value = newValue;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          height: 50,
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              anilist.deleteMediaFromList(
-                                widget.anilistId.toInt(),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              side: BorderSide(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondaryContainer),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18)),
-                            ),
-                            child: const Text('Delete'),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 50,
-                          width: 120,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Get.back();
-                              anilist.updateListEntry(
-                                  listId: widget.anilistId.toInt(),
-                                  score: mangaScore.value,
-                                  status: mangaStatus.value,
-                                  isAnime: false,
-                                  progress: mangaProgress.value);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              side: BorderSide(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondaryContainer),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18)),
-                            ),
-                            child: const Text('Save'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
+        return ListEditorModal(
+          animeStatus: mangaStatus,
+          animeScore: mangaScore,
+          animeProgress: mangaProgress,
+          currentAnime: currentManga,
+          media: anilistData ?? widget.media,
+          onUpdate: (id, score, status, progress) async {
+            await fetcher.onlineService.updateListEntry(
+                listId: id,
+                isAnime: false,
+                score: score,
+                status: status,
+                progress: progress);
+            setState(() {});
+          },
+          onDelete: (s) async {
+            final id = fetcher.onlineService.currentMedia.value.mediaListId;
+            await fetcher.onlineService.deleteListEntry(id!, isAnime: false);
+            setState(() {});
           },
         );
       },

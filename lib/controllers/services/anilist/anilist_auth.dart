@@ -6,6 +6,8 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
@@ -13,18 +15,17 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
-  Rx<AnilistProfile?> profileData = Rx<AnilistProfile?>(null);
+  Rx<Profile> profileData = Profile().obs;
   final storage = Hive.box('auth');
   final offlineStorage = Get.find<OfflineStorageController>();
 
-  Rx<AnilistMediaUser> currentAnime = AnilistMediaUser().obs;
-  Rx<AnilistMediaUser> currentManga = AnilistMediaUser().obs;
+  Rx<TrackedMedia> currentMedia = TrackedMedia().obs;
 
-  RxList<AnilistMediaUser> currentlyWatching = <AnilistMediaUser>[].obs;
-  RxList<AnilistMediaUser> animeList = <AnilistMediaUser>[].obs;
+  RxList<TrackedMedia> currentlyWatching = <TrackedMedia>[].obs;
+  RxList<TrackedMedia> animeList = <TrackedMedia>[].obs;
 
-  RxList<AnilistMediaUser> currentlyReading = <AnilistMediaUser>[].obs;
-  RxList<AnilistMediaUser> mangaList = <AnilistMediaUser>[].obs;
+  RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
+  RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
@@ -37,9 +38,9 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login() async {
-    String clientId = "20696";
-    String clientSecret = "0tnyRS0QompgaMuimc6zsUwc2I2AkdYJnlxkSUNb";
-    String redirectUri = "anymex://callback";
+    String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
+    String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
+    String redirectUri = dotenv.env['CALLBACK_SCHEME'] ?? '';
 
     final url =
         'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
@@ -137,7 +138,7 @@ class AnilistAuth extends GetxController {
         final data = json.decode(response.body);
 
         final viewerData = data['data']['Viewer'];
-        final userProfile = AnilistProfile.fromJson(viewerData);
+        final userProfile = Profile.fromJson(viewerData);
 
         log('User profile mapped successfully: ${userProfile.name}');
         profileData.value = userProfile;
@@ -169,6 +170,9 @@ class AnilistAuth extends GetxController {
               romaji
               english
               native
+            }
+            mediaListEntry {
+              id
             }
             format
             episodes
@@ -227,13 +231,13 @@ class AnilistAuth extends GetxController {
               .where((animeEntry) =>
                   animeEntry['status'] == 'CURRENT' ||
                   animeEntry['status'] == 'REPEATING')
-              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
               .toList();
 
           animeList.value = animeListt
-              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
               .toList();
@@ -250,18 +254,18 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  Future<void> deleteMediaFromList(int listId, {bool isAnime = true}) async {
+  Future<void> deleteMediaFromList(String listId, {bool isAnime = true}) async {
     final token = await storage.get('auth_token');
     if (token == null) {
       return;
     }
 
-    const mutation = '''
-  mutation DeleteMediaListEntry(\$id: Int) {
-    DeleteMediaListEntry(id: \$id) {
-      deleted
+    const String mutation = r'''
+    mutation Mutation($deleteMediaListEntryId: Int) {
+      DeleteMediaListEntry(id: $deleteMediaListEntryId) {
+        deleted
+      }
     }
-  }
   ''';
 
     try {
@@ -285,29 +289,23 @@ class AnilistAuth extends GetxController {
         body: json.encode({
           'query': mutation,
           'variables': {
-            'id': listId,
+            'deleteMediaListEntryId': listId,
           },
         }),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['data'] != null &&
-            data['data']['DeleteMediaListEntry'] != null &&
-            data['data']['DeleteMediaListEntry']['deleted']) {
-          log("Media with list ID $listId deleted successfully!");
-
-          if (isAnime) {
-            await fetchUserAnimeList();
-          } else {
-            await fetchUserMangaList();
-          }
+        snackBar(
+            "${isAnime ? "Anime" : "Manga"} successfully deleted from your list!");
+        currentMedia.value = TrackedMedia();
+        if (isAnime) {
+          fetchUserAnimeList();
         } else {
-          log('Failed to delete media with list ID $listId');
+          fetchUserMangaList();
         }
       } else {
-        log('Delete failed with status code: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        log('Failed to delete media with list ID $listId');
+        log('${response.statusCode}: ${response.body}');
       }
     } catch (e) {
       log('Failed to delete media: $e');
@@ -315,7 +313,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> updateListEntry({
-    required int listId,
+    required String listId,
     double? score,
     String? status,
     int? progress,
@@ -376,19 +374,19 @@ class AnilistAuth extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['data'] != null &&
-            data['data']['UpdateMediaListEntry'] != null) {
-          log("Media with list ID $listId updated successfully!");
-
-          if (isAnime) {
-            await fetchUserAnimeList();
-          } else {
-            await fetchUserMangaList();
-          }
+        snackBar(
+            "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
+        final newMedia = currentMedia.value
+          ..episodeCount = progress.toString()
+          ..watchingStatus = status
+          ..score = score.toString();
+        currentMedia.value = newMedia;
+        if (isAnime) {
+          fetchUserAnimeList();
         } else {
-          log('Failed to update media with list ID $listId');
+          fetchUserMangaList();
         }
+        setCurrentMedia(listId, isManga: !isAnime);
       } else {
         log('Update failed with status code: ${response.statusCode}');
         log('Response body: ${response.body}');
@@ -417,10 +415,14 @@ class AnilistAuth extends GetxController {
                 english
                 native
               }
+              mediaListEntry {
+                id
+              }
               chapters
               format
               status
               type
+              averageScore
               coverImage {
                 large
               }
@@ -474,13 +476,13 @@ class AnilistAuth extends GetxController {
               .where((animeEntry) =>
                   animeEntry['status'] == 'CURRENT' ||
                   animeEntry['status'] == 'REPEATING')
-              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
               .toList();
 
           mangaList.value = animeListt
-              .map((animeEntry) => AnilistMediaUser.fromJson(animeEntry))
+              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
               .toList();
@@ -497,7 +499,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> updateAnimeStatus({
-    required int animeId,
+    required String animeId,
     String? status,
     int? progress,
     double score = 0.0,
@@ -530,7 +532,7 @@ class AnilistAuth extends GetxController {
         body: json.encode({
           'query': mutation,
           'variables': {
-            'mediaId': animeId,
+            'mediaId': animeId.toInt(),
             'status': status,
             'progress': progress,
             'score': score,
@@ -550,7 +552,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> updateMangaStatus({
-    required int mangaId,
+    required String mangaId,
     String? status,
     int? progress,
     double? score,
@@ -602,31 +604,35 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  AnilistMediaUser returnAvailAnime(String id) {
+  TrackedMedia returnAvailAnime(String id) {
     return animeList.value
-        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
+        .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
   }
 
-  void setCurrentAnime(String id) {
-    final savedAnime = offlineStorage.getAnimeById(id.toInt());
-    currentAnime.value = animeList.value.firstWhere((el) => el.id == id,
-        orElse: () =>
-            AnilistMediaUser(episodeCount: savedAnime?.currentEpisode?.number));
+  void setCurrentMedia(String id, {bool isManga = false}) {
+    if (isManga) {
+      final savedManga = offlineStorage.getMangaById(id);
+      currentMedia.value = mangaList.value.firstWhere((el) => el.id == id,
+          orElse: () => TrackedMedia(
+              episodeCount: savedManga?.currentChapter?.number?.toString() ??
+                  savedManga?.currentEpisode?.number ??
+                  '0'));
+    } else {
+      final savedAnime = offlineStorage.getAnimeById(id);
+      currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
+          orElse: () =>
+              TrackedMedia(episodeCount: savedAnime?.currentEpisode?.number));
+    }
   }
 
-  void setCurrentManga(String id) {
-    currentManga.value = mangaList.value
-        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
-  }
-
-  AnilistMediaUser returnAvailManga(String id) {
+  TrackedMedia returnAvailManga(String id) {
     return mangaList.value
-        .firstWhere((el) => el.id == id, orElse: () => AnilistMediaUser());
+        .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
   }
 
   Future<void> logout() async {
     await storage.delete('auth_token');
-    profileData.value = null;
+    profileData.value = Profile();
     isLoggedIn.value = false;
   }
 }

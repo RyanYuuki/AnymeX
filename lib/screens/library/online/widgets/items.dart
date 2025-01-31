@@ -1,5 +1,7 @@
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,12 +9,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-GestureDetector listItem(BuildContext context, AnilistMediaUser item,
-    String tag, posterUrl, List<dynamic> filteredAnimeList, int index) {
+GestureDetector listItem(
+    BuildContext context,
+    TrackedMedia item,
+    String tag,
+    posterUrl,
+    List<dynamic> filteredAnimeList,
+    int index,
+    bool isManga) {
   return GestureDetector(
     onTap: () {
-      Get.to(() => AnimeDetailsPage(
-          anilistId: item.id!, posterUrl: posterUrl, tag: tag));
+      if (isManga) {
+        Get.to(
+          () => MangaDetailsPage(
+            media: Media(
+                id: item.id!,
+                title: item.title ?? '??',
+                poster: item.poster ?? ''),
+            tag: tag,
+          ),
+        );
+      } else {
+        Get.to(() => AnimeDetailsPage(
+            media: Media(
+                id: item.id!,
+                title: item.title ?? '??',
+                poster: item.poster ?? ''),
+            tag: tag));
+      }
     },
     child: Column(
       children: [
@@ -111,10 +135,35 @@ GestureDetector listItem(BuildContext context, AnilistMediaUser item,
   );
 }
 
-GestureDetector listItemDesktop(BuildContext context, AnilistMediaUser item,
-    String tag, posterUrl, List<dynamic> filteredAnimeList, int index) {
+GestureDetector listItemDesktop(
+    BuildContext context,
+    TrackedMedia item,
+    String tag,
+    posterUrl,
+    List<dynamic> filteredAnimeList,
+    int index,
+    bool isManga) {
   return GestureDetector(
-    onTap: () {},
+    onTap: () {
+      if (isManga) {
+        Get.to(
+          () => MangaDetailsPage(
+            media: Media(
+                id: item.id!,
+                title: item.title ?? '??',
+                poster: item.poster ?? ''),
+            tag: tag,
+          ),
+        );
+      } else {
+        Get.to(() => AnimeDetailsPage(
+            media: Media(
+                id: item.id!,
+                title: item.title ?? '??',
+                poster: item.poster ?? ''),
+            tag: tag));
+      }
+    },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,7 +203,7 @@ GestureDetector listItemDesktop(BuildContext context, AnilistMediaUser item,
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      ((item.rating?.toDouble() ?? 0) / 10).toString(),
+                      item.rating.toString(),
                       style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(context).colorScheme.inverseSurface ==

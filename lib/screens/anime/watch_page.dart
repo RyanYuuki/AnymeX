@@ -2,8 +2,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
-import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
+import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
@@ -106,7 +107,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   //
   final sourceController = Get.find<SourceController>();
-  final anilist = Get.find<AnilistAuth>();
+  final serviceHandler = Get.find<ServiceHandler>();
   final isEpisodeDialogOpen = false.obs;
   late bool isLoggedIn;
   final leftOriented = true.obs;
@@ -149,15 +150,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Future<void> trackAnilistAndLocal(int epNum, Episode currentEpisode) async {
-    await anilist.updateAnimeStatus(
-      animeId: anilistData.value.id,
-      status: "CURRENT",
-      progress: epNum,
-    );
-    await anilist.fetchUserAnimeList();
-    anilist.setCurrentAnime(anilistData.value.id.toString());
-    offlineStorage.addOrUpdateAnime(
-        widget.anilistData, widget.episodeList, currentEpisode);
+    final temp = serviceHandler.onlineService.animeList
+        .firstWhereOrNull((e) => e.id == anilistData.value.id);
+    if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
+      await serviceHandler.updateListEntry(
+          listId: anilistData.value.id,
+          status: "CURRENT",
+          progress: epNum,
+          isAnime: true);
+      serviceHandler.onlineService
+          .setCurrentMedia(anilistData.value.id.toString());
+      offlineStorage.addOrUpdateAnime(
+          widget.anilistData, widget.episodeList, currentEpisode);
+    }
     offlineStorage.addOrUpdateWatchedEpisode(
         widget.anilistData.id, currentEpisode);
   }
@@ -188,6 +193,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       currentPosition.value = e;
       currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       formattedTime.value = formatDuration(e);
+      if (e.inMilliseconds == episodeDuration.value.inMilliseconds) {
+        fetchEpisode(false);
+      }
     });
     player.stream.duration.listen((e) {
       episodeDuration.value = e;
@@ -215,6 +223,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     episodeList = RxList<Episode>(widget.episodeList);
     anilistData = Rx<anymex.Media>(widget.anilistData);
     currentEpisode = Rx<Episode>(widget.currentEpisode);
+    currentEpisode.value.source = sourceController.activeSource.value!.name;
     episodeTracks = RxList<model.Video>(widget.episodeTracks);
     currentEpisode.value.currentTrack = episode.value;
     currentEpisode.value.videoTracks = episodeTracks;
@@ -240,14 +249,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void _initHiveVariables() {
     playerSettings = settings.playerSettings.value;
     resizeMode.value = settings.resizeMode;
-    isLoggedIn = anilist.isLoggedIn.value;
+    isLoggedIn = serviceHandler.isLoggedIn.value;
     skipDuration.value = settings.seekDuration;
   }
 
   String formatDuration(Duration duration) {
+    final hours = duration.inHours.toString().padLeft(2, '0');
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+    return duration.inHours > 0
+        ? '$hours:$minutes:$seconds'
+        : '$minutes:$seconds';
   }
 
   String extractQuality(String quality) {
@@ -367,6 +379,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _skipSegments(bool isLeft) {
+    player.pause();
     if (isLeftSide.value != isLeft) {
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
@@ -374,6 +387,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     isLeftSide.value = isLeft;
     doubleTapLabel.value += 10;
     skipDuration.value += 10;
+    if (isLeft) {
+      final duration = Duration(
+        seconds: max(0, currentPosition.value.inSeconds - skipDuration.value),
+      );
+      formattedTime.value = formatDuration(duration);
+    } else {
+      final dur = Duration(
+        seconds: currentPosition.value.inSeconds + skipDuration.value,
+      );
+      formattedTime.value = formatDuration(dur);
+    }
     isLeft
         ? _leftAnimationController.forward(from: 0)
         : _rightAnimationController.forward(from: 0);
@@ -383,23 +407,21 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
       if (currentPosition.value == const Duration(seconds: 0)) return;
       if (isLeft) {
-        player.seek(
-          Duration(
-            seconds:
-                max(0, currentPosition.value.inSeconds - skipDuration.value),
-          ),
+        final duration = Duration(
+          seconds: max(0, currentPosition.value.inSeconds - skipDuration.value),
         );
+        player.seek(duration);
       } else {
-        player.seek(
-          Duration(
-            seconds: currentPosition.value.inSeconds + skipDuration.value,
-          ),
+        final dur = Duration(
+          seconds: currentPosition.value.inSeconds + skipDuration.value,
         );
+        player.seek(dur);
       }
       _leftAnimationController.stop();
       _rightAnimationController.stop();
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
+      player.play();
     });
   }
 
@@ -595,10 +617,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildRippleEffect() {
-    if (doubleTapLabel.value == 0) {
-      return const SizedBox();
-    }
     return Obx(() {
+      if (doubleTapLabel.value == 0) {
+        return const SizedBox();
+      }
       return AnimatedPositioned(
         left: isLeftSide.value ? 0 : MediaQuery.of(context).size.width / 1.5,
         width: MediaQuery.of(context).size.width / 2.5,
@@ -905,18 +927,21 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             type: FileType.custom,
                             allowedExtensions: extensions,
                           );
-                          if (result != null) {
-                            final file = result.files.single;
-                            final filePath = result.files.single.path;
-                            if (filePath != null) {
-                              selectedSubIndex.value = index;
-                              subtitles.add(model.Track(
-                                  file: filePath, label: file.name));
-                              player.setSubtitleTrack(SubtitleTrack(
-                                  filePath, file.name, file.name,
-                                  uri: false, data: false));
-                              Get.back();
-                            }
+
+                          if (result?.files.single.path != null) {
+                            final file = result!.files.single;
+                            final filePath = file.path!;
+                            selectedSubIndex.value = index;
+                            subtitles.add(
+                                model.Track(file: filePath, label: file.name));
+                            player.setSubtitleTrack(
+                              SubtitleTrack(filePath, file.name, file.name,
+                                  uri: false, data: false),
+                            );
+                            Get.back();
+                          } else {
+                            snackBar('No subtitle file selected.',
+                                duration: 2000);
                           }
                         },
                         child: Padding(
@@ -951,7 +976,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       );
                     } else {
                       // Existing subtitles
-                      final e = subtitles?[index - 1];
+                      final e = subtitles[index - 1];
                       return GestureDetector(
                         onTap: () {
                           selectedSubIndex.value = index;

@@ -1,8 +1,8 @@
-import 'dart:developer';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
@@ -30,7 +30,6 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
   late TabController _tabController;
   final TextEditingController controller = TextEditingController();
   final offlineStorage = Get.find<OfflineStorageController>();
-  RxList<OfflineMedia> mangaLibrary = <OfflineMedia>[].obs;
   RxList<CustomListData> customListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
@@ -40,10 +39,20 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
   @override
   void initState() {
     super.initState();
-    mangaLibrary.value = offlineStorage.mangaLibrary;
-    customListData.value = offlineStorage.mangaCustomListData;
+    final handler = Get.find<ServiceHandler>();
+    customListData.value = offlineStorage.mangaCustomListData
+        .map((e) => CustomListData(
+              listName: e.listName,
+              listData: e.listData
+                  .where((item) =>
+                      item.serviceIndex == handler.serviceType.value.index)
+                  .toList(),
+            ))
+        .toList();
     historyData.value = offlineStorage.mangaLibrary
-        .where((e) => e.currentChapter?.pageNumber != null)
+        .where((e) =>
+            e.currentChapter?.pageNumber != null &&
+            e.serviceIndex == handler.serviceType.value.index)
         .toList();
     _tabController = TabController(
         length: offlineStorage.mangaCustomListData.length, vsync: this);
@@ -67,6 +76,8 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
 
   @override
   Widget build(BuildContext context) {
+    final isSimkl =
+        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Glow(
       child: Scaffold(
         body: Padding(
@@ -91,7 +102,7 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: AnymexText(
-                            text: "MANGA",
+                            text: isSimkl ? "SERIES" : "MANGA",
                             variant: TextVariant.bold,
                             color: Theme.of(context).colorScheme.onPrimary),
                       ),
@@ -215,8 +226,7 @@ class _MangaCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.to(() => MangaDetailsPage(
-            anilistId: data.id.toString(),
-            posterUrl: data.poster!,
+            media: Media.fromOfflineMedia(data, MediaType.manga),
             tag: '${data.id!}${UniqueKey().toString()}'));
       },
       child: Container(
@@ -342,7 +352,6 @@ class MangaHistoryCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        log(data.currentChapter?.sourceName ?? 'N.');
         Get.find<SourceController>()
             .getMangaExtensionByName(data.currentChapter!.sourceName!);
         Get.to(() => ReadingPage(

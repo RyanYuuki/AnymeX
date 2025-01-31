@@ -17,7 +17,7 @@ class OfflineMediaAdapter extends TypeAdapter<OfflineMedia> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return OfflineMedia(
-      id: fields[0] as int?,
+      id: fields[0] as String?,
       jname: fields[1] as String?,
       name: fields[2] as String?,
       english: fields[3] as String?,
@@ -44,13 +44,14 @@ class OfflineMediaAdapter extends TypeAdapter<OfflineMedia> {
       currentChapter: fields[24] as Chapter?,
       watchedEpisodes: (fields[25] as List?)?.cast<Episode>(),
       readChapters: (fields[26] as List?)?.cast<Chapter>(),
+      serviceIndex: (fields[27] as int),
     );
   }
 
   @override
   void write(BinaryWriter writer, OfflineMedia obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(28)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -104,7 +105,9 @@ class OfflineMediaAdapter extends TypeAdapter<OfflineMedia> {
       ..writeByte(25)
       ..write(obj.watchedEpisodes)
       ..writeByte(26)
-      ..write(obj.readChapters);
+      ..write(obj.readChapters)
+      ..writeByte(27)
+      ..write(obj.serviceIndex);
   }
 
   @override

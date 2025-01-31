@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/page.dart';
-import 'package:anymex/api/Mangayomi/Search/get_pages.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/core/Eval/dart/model/page.dart';
+import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -11,6 +12,7 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +69,16 @@ class _ReadingPageState extends State<ReadingPage> {
 
   // Offline Storage
   final offlineStorage = Get.find<OfflineStorageController>();
-  final anilist = Get.find<AnilistAuth>();
+  final anilist = Get.find<ServiceHandler>();
 
   // Timers
 
   Timer? _scrollDelayTimer;
   Timer? _scrollTimer;
   Timer? _keyPressTimer;
+
+  // Flag to prevent multiple chapter loads
+  final _isLoadingNextChapter = false.obs;
 
   @override
   void initState() {
@@ -86,6 +91,17 @@ class _ReadingPageState extends State<ReadingPage> {
     fetchImages();
     _focusNode.requestFocus();
     updateAnilist(false);
+  }
+
+  void _loadNextChapter() {
+    if (canGoForward.value && !_isLoadingNextChapter.value) {
+      debugPrint("Loading next chapter...");
+      _isLoadingNextChapter.value = true;
+      navigateToChapter(false).then((_) {
+        _isLoadingNextChapter.value = false;
+        navigateToPage(1);
+      });
+    }
   }
 
   void _initTracker() {
@@ -109,15 +125,14 @@ class _ReadingPageState extends State<ReadingPage> {
         anilistData.value, chapterList, currentChapter.value);
     offlineStorage.addOrUpdateReadChapter(
         widget.anilistData.id, currentChapter.value);
-    await anilist.updateMangaStatus(
-        mangaId: anilistData.value.id,
-        status: "CURRENT",
-        progress: next
-            ? currentChapter.value.number!.toInt()
-            : currentChapter.value.number!.toInt() - 1,
-        score: 0.0);
-    await anilist.fetchUserMangaList();
-    anilist.setCurrentManga(anilistData.value.id.toString());
+    await anilist.updateListEntry(
+      listId: anilistData.value.id,
+      status: "CURRENT",
+      isAnime: false,
+      progress: next
+          ? currentChapter.value.number!.toInt()
+          : currentChapter.value.number!.toInt() - 1,
+    );
   }
 
   @override
@@ -195,6 +210,8 @@ class _ReadingPageState extends State<ReadingPage> {
       debugPrint('Error fetching images: $e');
       mangaPages.clear();
     } finally {
+      navigateToPage(1);
+
       isLoading.value = false;
     }
   }
@@ -303,6 +320,13 @@ class _ReadingPageState extends State<ReadingPage> {
       currentChapter.value.currentOffset = currentScroll;
       currentChapter.value.maxOffset = maxScrollExtent;
 
+      if (scrollController.position.pixels.floor() ==
+          (scrollController.position.maxScrollExtent + 150).floor()) {
+        _loadNextChapter();
+      }
+
+      log("Current: ${scrollController.position.pixels} Max: ${scrollController.position.maxScrollExtent}");
+
       _debounce = Timer(const Duration(milliseconds: 300), () {
         if (currentPage != currentPageIndex.value) {
           currentPageIndex.value = currentPage;
@@ -382,47 +406,27 @@ class _ReadingPageState extends State<ReadingPage> {
       },
       itemCount: mangaPages.length,
       itemBuilder: (context, index) {
-        return ExtendedImage.network(
-          mangaPages[index].url,
-          fit: BoxFit.cover,
-          headers: {
-            'Referer': sourceController.activeMangaSource.value!.baseUrl!,
-          },
-          mode: ExtendedImageMode.gesture,
-          initGestureConfigHandler: (state) {
-            return GestureConfig(
-              minScale: 0.9,
-              animationMinScale: 0.7,
-              maxScale: 3.0,
-              animationMaxScale: 3.5,
-              speed: 1.0,
-              inertialSpeed: 100.0,
-              initialScale: 1.0,
-              inPageView: true,
-            );
-          },
-          loadStateChanged: (ExtendedImageState state) {
-            switch (state.extendedImageLoadState) {
-              case LoadState.loading:
-                return const SizedBox(
+        return Center(
+          child: CachedNetworkImage(
+              imageUrl: mangaPages[index].url,
+              fit: BoxFit.contain,
+              httpHeaders: {
+                'Referer': sourceController.activeMangaSource.value!.baseUrl!,
+              },
+              width: getResponsiveSize(context,
+                  mobileSize: double.infinity,
+                  dektopSize: defaultWidth.value * pageWidthMultiplier.value),
+              progressIndicatorBuilder: (context, url, progress) => SizedBox(
+                  height: ((currentChapter.value.maxOffset ??
+                          (MediaQuery.of(context).size.height *
+                              mangaPages.length)) /
+                      mangaPages.length),
                   width: double.infinity,
-                  height: double.infinity,
                   child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              case LoadState.completed:
-                final imageInfo = state.extendedImageInfo;
-                return ExtendedRawImage(
-                  image: imageInfo!.image,
-                  fit: BoxFit.contain,
-                );
-              case LoadState.failed:
-                return const Center(
-                  child: Icon(Icons.error, size: 40),
-                );
-            }
-          },
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
+                  ))),
         );
       },
     );
@@ -434,27 +438,40 @@ class _ReadingPageState extends State<ReadingPage> {
       physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: mangaPages.map((page) {
-          return Center(
-            child: CachedNetworkImage(
-                imageUrl: page.url,
-                fit: BoxFit.cover,
-                width: getResponsiveSize(context,
-                    mobileSize: double.infinity,
-                    dektopSize: defaultWidth.value * pageWidthMultiplier.value),
-                progressIndicatorBuilder: (context, url, progress) => SizedBox(
-                    height: ((currentChapter.value.maxOffset ??
-                            (MediaQuery.of(context).size.height *
-                                mangaPages.length)) /
-                        mangaPages.length),
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: progress.progress,
-                      ),
-                    ))),
-          );
-        }).toList(),
+        children: [
+          ...mangaPages.map((page) {
+            return Center(
+              child: CachedNetworkImage(
+                  imageUrl: page.url,
+                  fit: BoxFit.cover,
+                  httpHeaders: {
+                    'Referer':
+                        sourceController.activeMangaSource.value!.baseUrl!,
+                  },
+                  width: getResponsiveSize(context,
+                      mobileSize: double.infinity,
+                      dektopSize:
+                          defaultWidth.value * pageWidthMultiplier.value),
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      SizedBox(
+                          height: ((currentChapter.value.maxOffset ??
+                                  (MediaQuery.of(context).size.height *
+                                      mangaPages.length)) /
+                              mangaPages.length),
+                          width: double.infinity,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: progress.progress,
+                            ),
+                          ))),
+            );
+          }),
+          const SizedBox(height: 10),
+          const AnymexText(
+            text: "Scroll To Next Chapter!",
+            variant: TextVariant.semiBold,
+          )
+        ],
       ),
     );
   }

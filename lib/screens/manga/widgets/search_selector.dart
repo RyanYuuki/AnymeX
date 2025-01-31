@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/home_page.dart';
-import 'package:anymex/screens/manga/search_page.dart';
-import 'package:anymex/screens/novel/search_page.dart';
+import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,7 +41,10 @@ void searchTypeSheet(BuildContext context, String searchTerm) {
                     onPressed: () {
                       Get.back();
 
-                      Get.to(() => MangaSearchPage(searchTerm: searchTerm));
+                      Get.to(() => SearchPage(
+                            searchTerm: searchTerm,
+                            isManga: true,
+                          ));
                     },
                   ),
                   ImageButton(

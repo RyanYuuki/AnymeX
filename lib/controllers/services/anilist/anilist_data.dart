@@ -1,44 +1,179 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
-import 'package:anymex/api/Mangayomi/Model/Source.dart';
+import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/core/Model/Source.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
+import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Service/base_service.dart';
+import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/screens/library/online/anime_list.dart';
+import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
-class AnilistData extends GetxController {
+class AnilistData extends GetxController implements BaseService, OnlineService {
+  final anilistAuth = Get.find<AnilistAuth>();
+
   // Anime Data
-  RxList<AnilistMediaSmall> upcomingAnimes = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> popularAnimes = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> trendingAnimes = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> latestAnimes = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> top10Today = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> top10Week = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> top10Month = <AnilistMediaSmall>[].obs;
+  RxList<Media> upcomingAnimes = <Media>[].obs;
+  RxList<Media> popularAnimes = <Media>[].obs;
+  RxList<Media> trendingAnimes = <Media>[].obs;
+  RxList<Media> latestAnimes = <Media>[].obs;
+  RxList<Media> top10Today = <Media>[].obs;
+  RxList<Media> top10Week = <Media>[].obs;
+  RxList<Media> top10Month = <Media>[].obs;
 
   // Manga Data
-  RxList<AnilistMediaSmall> popularMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> morePopularMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> latestMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> mostFavoriteMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> topRatedMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> topUpdatedMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> topOngoingMangas = <AnilistMediaSmall>[].obs;
-  RxList<AnilistMediaSmall> trendingMangas = <AnilistMediaSmall>[].obs;
+  RxList<Media> popularMangas = <Media>[].obs;
+  RxList<Media> morePopularMangas = <Media>[].obs;
+  RxList<Media> latestMangas = <Media>[].obs;
+  RxList<Media> mostFavoriteMangas = <Media>[].obs;
+  RxList<Media> topRatedMangas = <Media>[].obs;
+  RxList<Media> topUpdatedMangas = <Media>[].obs;
+  RxList<Media> topOngoingMangas = <Media>[].obs;
+  RxList<Media> trendingMangas = <Media>[].obs;
 
   // Novel Data
   Map<Source, List<MManga>?> novelData = {};
 
   @override
+  RxList<Widget> get homeWidgets {
+    final settings = Get.find<Settings>();
+    final acceptedLists = settings.homePageCards.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
+    final isDesktop = Get.width > 600;
+    return [
+      if (anilistAuth.isLoggedIn.value) ...[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ImageButton(
+              width: isDesktop ? 300 : Get.width / 2 - 40,
+              height: !isDesktop ? 70 : 90,
+              buttonText: "ANIME LIST",
+              backgroundImage:
+                  trendingAnimes.firstWhere((e) => e.cover != null).cover ?? '',
+              borderRadius: 16.multiplyRadius(),
+              onPressed: () {
+                Get.to(() => const AnimeList());
+              },
+            ),
+            const SizedBox(width: 15),
+            ImageButton(
+              width: isDesktop ? 300 : Get.width / 2 - 40,
+              height: !isDesktop ? 70 : 90,
+              buttonText: "MANGA LIST",
+              borderRadius: 16.multiplyRadius(),
+              backgroundImage:
+                  trendingMangas.firstWhere((e) => e.cover != null).cover ?? '',
+              onPressed: () {
+                Get.to(() => const AnilistMangaList());
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 30),
+        Obx(() => Column(
+              children: acceptedLists.map((e) {
+                return ReusableCarousel(
+                  data: filterListByLabel(
+                      e.contains("Manga") || e.contains("Reading")
+                          ? anilistAuth.mangaList
+                          : anilistAuth.animeList,
+                      e),
+                  title: e,
+                  variant: DataVariant.anilist,
+                  isManga: e.contains("Manga") || e.contains("Reading"),
+                );
+              }).toList(),
+            )),
+      ],
+      Column(
+        children: [
+          ReusableCarousel(
+            title: "Recommended Animes",
+            data: popularAnimes + trendingAnimes,
+          ),
+          ReusableCarousel(
+            title: "Recommended Mangas",
+            data: popularMangas + trendingMangas,
+            isManga: true,
+          )
+        ],
+      )
+    ].obs;
+  }
+
+  @override
+  RxList<Widget> get animeWidgets {
+    return [
+      CustomSearchBar(
+        onSubmitted: (val) {
+          Get.to(() => SearchPage(
+                searchTerm: val,
+                isManga: false,
+              ));
+        },
+        suffixIconWidget: buildChip("ANIME"),
+        disableIcons: true,
+        hintText: "Search Anime...",
+      ),
+      buildBigCarousel(trendingAnimes, false),
+      buildSection('Trending Animes', trendingAnimes),
+      buildSection('Popular Animes', popularAnimes),
+      buildSection('Recently Completed', latestAnimes),
+      buildSection('Upcoming Animes', upcomingAnimes),
+    ].obs;
+  }
+
+  @override
+  RxList<Widget> get mangaWidgets {
+    return [
+      CustomSearchBar(
+        onSubmitted: (val) {
+          Get.to(() => SearchPage(
+                searchTerm: val,
+                isManga: true,
+              ));
+        },
+        suffixIconWidget: buildChip("MANGA"),
+        disableIcons: true,
+        hintText: "Search Manga...",
+      ),
+      buildBigCarousel(trendingMangas, true),
+      buildMangaSection('Trending Mangas', trendingMangas),
+      buildMangaSection('Latest Mangas', latestMangas),
+      buildMangaSection('Popular Mangas', popularMangas),
+      buildMangaSection('More Popular Mangas', morePopularMangas),
+      buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
+      buildMangaSection('Top Rated Mangas', topRatedMangas),
+      buildMangaSection('Top Updated Mangas', topUpdatedMangas),
+      buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
+    ].obs;
+  }
+
+  @override
   void onInit() {
     super.onInit();
     _initFallback();
-    fetchAnilistHomepage();
-    fetchAnilistMangaPage();
+    fetchHomePage();
   }
 
   void _initFallback() {
@@ -60,41 +195,26 @@ class AnilistData extends GetxController {
     trendingMangas.value = fbm.trendingMangas;
   }
 
-  // Future<void> fetchDataForAllSources() async {
-  //   final sources = Get.find<SourceController>().installedNovelExtensions;
-  //   await Future.wait(
-  //     sources.map((source) async {
-  //       try {
-  //         List<MManga>? data = await getPopular(source: source);
-  //         novelData[source] = data;
-  //         update();
-  //       } catch (error) {
-  //         snackBar('Error fetching data for ${source.name}: $error',
-  //             duration: 1000);
-  //       }
-  //     }),
-  //   );
-  // }
-
   Future<void> fetchAnilistHomepage() async {
     const String url = 'https://graphql.anilist.co';
 
     const String query = '''
   query {
     upcomingAnimes: Page(page: 1, perPage: 15) {
-      media(type: ANIME, status: NOT_YET_RELEASED) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        averageScore
-        coverImage {
-          large
-        }
+    media(type: ANIME, status: NOT_YET_RELEASED, sort: [POPULARITY_DESC, TRENDING_DESC]) {
+      id
+      title {
+        romaji
+        english
+        native
+      }
+      type
+      averageScore
+      coverImage {
+        large
       }
     }
+  }
     popularAnimes: Page(page: 1, perPage: 15) {
       media(type: ANIME, sort: POPULARITY_DESC) {
         id
@@ -104,7 +224,8 @@ class AnilistData extends GetxController {
           native
         }
         episodes
-        averageScore
+        type
+averageScore
         coverImage {
           large
         }
@@ -120,71 +241,35 @@ class AnilistData extends GetxController {
         }
         description
         bannerImage
-        averageScore
-        coverImage {
-          large
-        }
-      }
-    }
-    top10Today: Page(page: 1, perPage: 15) {
-      media(type: ANIME, sort: [POPULARITY_DESC]) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        episodes
-        averageScore
-        coverImage {
-          large
-        }
-      }
-    }
-    top10Week: Page(page: 2, perPage: 15) {
-      media(type: ANIME, sort: [POPULARITY_DESC]) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        episodes
-        averageScore
-        coverImage {
-          large
-        }
-      }
-    }
-    top10Month: Page(page: 3, perPage: 15) {
-      media(type: ANIME, sort: [POPULARITY_DESC]) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        episodes
-        averageScore
+        type
+averageScore
         coverImage {
           large
         }
       }
     }
     latestAnimes: Page(page: 1, perPage: 15) {
-      media(type: ANIME, sort: [START_DATE]) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        averageScore
-        coverImage {
-          large
-        }
+    media(
+      type: ANIME, 
+      status: FINISHED, 
+      sort: [END_DATE_DESC, SCORE_DESC, POPULARITY_DESC], 
+      averageScore_greater: 70, 
+      popularity_greater: 10000
+    ) {
+      id
+      title {
+        romaji
+        english
+        native
       }
+      type
+      averageScore
+      coverImage {
+        large
+      }
+      
     }
+  }
   }
   ''';
 
@@ -210,9 +295,6 @@ class AnilistData extends GetxController {
           parseMediaList(responseData['trendingAnimes']['media']);
       latestAnimes.value =
           parseMediaList(responseData['latestAnimes']['media']);
-      top10Today.value = parseMediaList(responseData['top10Today']['media']);
-      top10Week.value = parseMediaList(responseData['top10Week']['media']);
-      top10Month.value = parseMediaList(responseData['top10Month']['media']);
     } else {
       throw Exception('Failed to load AniList data: ${response.statusCode}');
     }
@@ -235,7 +317,8 @@ class AnilistData extends GetxController {
         coverImage {
           large
         }
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -251,13 +334,17 @@ class AnilistData extends GetxController {
         coverImage {
           large
         }
-        averageScore
+        type
+averageScore
       }
     }
 
     # Latest Mangas (Page 1)
     latestMangas: Page(page: 1, perPage: \$perPage) {
-      media(sort: START_DATE_DESC, type: MANGA) {
+      media(status: FINISHED, 
+      sort: [END_DATE_DESC, SCORE_DESC, POPULARITY_DESC], 
+      averageScore_greater: 70, 
+      popularity_greater: 10000, type: MANGA) {
         id
         title {
           romaji
@@ -267,7 +354,8 @@ class AnilistData extends GetxController {
         coverImage {
           large
         }
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -283,7 +371,8 @@ class AnilistData extends GetxController {
         coverImage {
           large
         }
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -300,7 +389,8 @@ class AnilistData extends GetxController {
           large
         }
         chapters
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -317,7 +407,8 @@ class AnilistData extends GetxController {
           large
         }
         chapters
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -334,7 +425,8 @@ class AnilistData extends GetxController {
           large
         }
         chapters
-        averageScore
+        type
+averageScore
       }
     }
 
@@ -352,7 +444,8 @@ class AnilistData extends GetxController {
         coverImage {
           large
         }
-        averageScore
+        type
+averageScore
       }
     }
   }
@@ -397,22 +490,9 @@ class AnilistData extends GetxController {
     }
   }
 
-  List<AnilistMediaSmall> parseMediaList(List<dynamic> mediaList) {
+  List<Media> parseMediaList(List<dynamic> mediaList) {
     return mediaList.map((media) {
-      return AnilistMediaSmall(
-          id: media['id'].toString(),
-          title: media['title']['english'] ??
-              media['title']['romaji'] ??
-              media['title']['native'],
-          averageScore:
-              (double.tryParse(media?['averageScore']?.toString() ?? "0")! /
-                  10),
-          chapters: media['chapters']?.toString() ?? "0",
-          poster: media['coverImage']['large'],
-          cover: media['bannerImage'],
-          description: (media['description'] ?? "No Description Available")
-              .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
-          episodes: media['episodes']);
+      return Media.fromSmallJson(media, media['type'] == 'MANGA');
     }).toList();
   }
 
@@ -450,7 +530,21 @@ class AnilistData extends GetxController {
     }
   }
 
-  static Future<List<AnilistMediaSmall>> anilistSearch({
+  @override
+  Future<List<Media>> search(String query,
+      {bool isManga = false, Map<String, dynamic>? filters}) async {
+    final data = await anilistSearch(
+        isManga: isManga,
+        query: query,
+        sort: filters?['sort'],
+        season: filters?['season'],
+        status: filters?['status'],
+        format: filters?['format'],
+        genres: filters?['genres']);
+    return data;
+  }
+
+  static Future<List<Media>> anilistSearch({
     required bool isManga,
     String? query,
     String? sort,
@@ -469,10 +563,9 @@ class AnilistData extends GetxController {
       if (status != null) 'status': status.toUpperCase(),
       if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
       if (genres != null && genres.isNotEmpty) 'genre_in': genres,
-      'isAdult': false, // This ensures NSFW content is excluded
+      'isAdult': false,
     };
 
-    // Common fields for both anime and manga
     final String commonFields = '''
     id
     title {
@@ -483,7 +576,8 @@ class AnilistData extends GetxController {
     coverImage {
       large
     }
-    averageScore
+    type
+averageScore
     ${isManga ? 'chapters' : 'episodes'}
   ''';
 
@@ -540,14 +634,8 @@ class AnilistData extends GetxController {
         final jsonData = jsonDecode(response.body);
         final mediaList = jsonData['data']['Page']['media'];
 
-        final mappedData = mediaList.map<AnilistMediaSmall>((media) {
-          return AnilistMediaSmall(
-            id: media['id'].toString(),
-            title: media['title']['english'] ?? media['title']['romaji'] ?? '',
-            poster: media['coverImage']['large'] ?? '',
-            episodes: isManga ? media['chapters'] ?? 0 : media['episodes'] ?? 0,
-            averageScore: ((media['averageScore'] ?? 0) / 10),
-          );
+        final mappedData = mediaList.map<Media>((media) {
+          return Media.fromSmallJson(media, isManga);
         }).toList();
         return mappedData;
       } else {
@@ -560,159 +648,113 @@ class AnilistData extends GetxController {
     }
   }
 
-  static Future<Media> fetchAnimeInfo(String animeId) async {
-    log("Anime ID: $animeId");
+  @override
+  Future<Media> fetchDetails(dynamic animeId) async {
     const String url = 'https://graphql.anilist.co/';
-
-    const String query = '''
-    query (\$id: Int) {
-      Media(id: \$id) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        description
-        coverImage {
-          large   
-        }
-        bannerImage
-        averageScore
-        episodes
-        type
-        season
-        seasonYear
-        duration
-        status
-        chapters
-        format
-        popularity
-        startDate {
-          year
-          month
-          day
-        }
-        endDate {
-          year
-          month
-          day
-        }
-        genres
-        studios {
-          nodes {
-            name
-          }
-        }
-        characters {
-          edges {
-            node {
-              name {
-                full
-              }
-              favourites
-              image {
-                large
-              }
-            }
-            voiceActors(language: JAPANESE) {
-              name {
-                full
-              }
-              image {
-                large
-              }
-            }
-          }
-        }
-        relations {
-          edges {
-            node {
-              id
-              title {
-                romaji
-                english
-              }
-              coverImage {
-                large
-              }
-              type
-              averageScore
-            }
-          }
-        }
-        recommendations {
-          edges {
-            node {
-              mediaRecommendation {
-                id
-                title {
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                }
-                averageScore
-              }
-            }
-          }
-        }
-        nextAiringEpisode {
-          airingAt
-          timeUntilAiring
-        }
-        rankings {
-          rank
-          type
-          year
-        }
-      }
-    }
-  ''';
-
     final Map<String, dynamic> variables = {
       'id': int.parse(animeId),
     };
 
     final Map<String, dynamic> body = {
-      'query': query,
+      'query': detailsQuery,
       'variables': variables,
     };
 
-    try {
-      final response = await post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode(body),
-      );
+    final response = await post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: json.encode(body),
+    );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final media = data['data']['Media'];
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final media = data['data']['Media'];
 
-        final startDate = media['startDate'];
-        final endDate = media['endDate'];
-        String aired = '';
-        if (startDate != null) {
-          aired =
-              '${startDate['year']}-${startDate['month']?.toString().padLeft(2, '0')}-${startDate['day']?.toString().padLeft(2, '0')}';
-          if (endDate != null && endDate['year'] != null) {
-            aired +=
-                ' to ${endDate['year']}-${endDate['month']?.toString().padLeft(2, '0')}-${endDate['day']?.toString().padLeft(2, '0')}';
-          }
-        }
+      // final startDate = media['startDate'];
+      // final endDate = media['endDate'];
+      // String aired = '';
 
-        return Media.fromJson(media);
-      } else {
-        throw Exception('Failed to fetch anime info, Network Error');
-      }
-    } catch (e) {
-      log('Error: $e');
-      throw Exception('Error fetching anime info');
+      // if (startDate != null) {
+      //   aired =
+      //       '${startDate['year']}-${startDate['month']?.toString().padLeft(2, '0')}-${startDate['day']?.toString().padLeft(2, '0')}';
+      //   if (endDate != null && endDate['year'] != null) {
+      //     aired +=
+      //         ' to ${endDate['year']}-${endDate['month']?.toString().padLeft(2, '0')}-${endDate['day']?.toString().padLeft(2, '0')}';
+      //   }
+      // }
+      return Media.fromJson(media);
+    } else {
+      throw Exception('Failed to fetch anime info, Network Error');
     }
+  }
+
+  @override
+  Future<void> fetchHomePage() async {
+    Future.wait([
+      fetchAnilistHomepage(),
+      fetchAnilistMangaPage(),
+    ]);
+  }
+
+  @override
+  RxBool get isLoggedIn => anilistAuth.isLoggedIn;
+
+  @override
+  Rx<Profile> get profileData => anilistAuth.profileData;
+
+  @override
+  Future<void> updateListEntry(
+          {required String listId,
+          double? score,
+          String? status,
+          int? progress,
+          bool isAnime = true}) =>
+      anilistAuth.updateListEntry(
+          listId: listId,
+          score: score,
+          status: status,
+          progress: progress,
+          isAnime: isAnime);
+
+  @override
+  Future<void> deleteListEntry(String listId, {bool isAnime = true}) async =>
+      anilistAuth.deleteMediaFromList(listId, isAnime: isAnime);
+
+  @override
+  RxList<TrackedMedia> get animeList => anilistAuth.animeList;
+
+  @override
+  Rx<TrackedMedia> get currentMedia => anilistAuth.currentMedia;
+
+  @override
+  void setCurrentMedia(String id, {bool isManga = false}) {
+    anilistAuth.setCurrentMedia(id, isManga: isManga);
+  }
+
+  @override
+  RxList<TrackedMedia> get mangaList => anilistAuth.mangaList;
+
+  @override
+  Future<void> login() async {
+    anilistAuth.login();
+  }
+
+  @override
+  Future<void> logout() async {
+    anilistAuth.logout();
+  }
+
+  @override
+  Future<void> autoLogin() => anilistAuth.tryAutoLogin();
+
+  @override
+  Future<void> refresh() async {
+    Future.wait([
+      anilistAuth.fetchUserAnimeList(),
+      anilistAuth.fetchUserMangaList(),
+    ]);
   }
 }

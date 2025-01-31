@@ -1,12 +1,14 @@
-class AnilistProfile {
+import 'dart:developer';
+
+class Profile {
   String? id;
   String? name;
   String? avatar;
-  AnilistProfileStatistics? stats;
+  ProfileStatistics? stats;
   int? followers; // Count of followers
   int? following; // Count of following
 
-  AnilistProfile({
+  Profile({
     this.id,
     this.name,
     this.avatar,
@@ -15,32 +17,54 @@ class AnilistProfile {
     this.following,
   });
 
-  factory AnilistProfile.fromJson(Map<String, dynamic> json) {
-    return AnilistProfile(
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
       id: json['id']?.toString(),
       name: json['name'],
       avatar: json['avatar']?['large'],
       stats: json['statistics'] != null
-          ? AnilistProfileStatistics.fromJson(json['statistics'])
+          ? ProfileStatistics.fromJson(json['statistics'])
           : null,
       followers: json['followers']?['pageInfo']?['total'] as int?,
       following: json['following']?['pageInfo']?['total'] as int?,
     );
   }
+
+  factory Profile.fromKitsu(Map<String, dynamic> json) {
+    return Profile(
+      id: json['data']?['mal_id']?.toString(),
+      name: json['data']?['username'],
+      avatar: json['picture'] ??
+          json['data']?['images']?['jpg']?['image_url'] ??
+          json['data']?['images']?['webp']?['image_url'],
+      stats: ProfileStatistics.fromKitsu(json['data']?['statistics']),
+      followers: null,
+      following: null,
+    );
+  }
 }
 
-class AnilistProfileStatistics {
+class ProfileStatistics {
   AnimeStats? animeStats;
   MangaStats? mangaStats;
 
-  AnilistProfileStatistics({this.animeStats, this.mangaStats});
+  ProfileStatistics({this.animeStats, this.mangaStats});
 
-  factory AnilistProfileStatistics.fromJson(Map<String, dynamic> json) {
-    return AnilistProfileStatistics(
+  factory ProfileStatistics.fromJson(Map<String, dynamic> json) {
+    return ProfileStatistics(
       animeStats:
           json['anime'] != null ? AnimeStats.fromJson(json['anime']) : null,
       mangaStats:
           json['manga'] != null ? MangaStats.fromJson(json['manga']) : null,
+    );
+  }
+
+  factory ProfileStatistics.fromKitsu(Map<String, dynamic>? json) {
+    return ProfileStatistics(
+      animeStats:
+          json?['anime'] != null ? AnimeStats.fromKitsu(json!['anime']) : null,
+      mangaStats:
+          json?['manga'] != null ? MangaStats.fromKitsu(json!['manga']) : null,
     );
   }
 }
@@ -66,6 +90,14 @@ class AnimeStats {
       minutesWatched: json['minutesWatched']?.toString(),
     );
   }
+
+  factory AnimeStats.fromKitsu(Map<String, dynamic> json) {
+    return AnimeStats(
+        animeCount: json['total_entries']?.toString(),
+        episodesWatched: json['episodes_watched']?.toString(),
+        meanScore: json['mean_score']?.toString(),
+        minutesWatched: '??');
+  }
 }
 
 class MangaStats {
@@ -87,6 +119,15 @@ class MangaStats {
       chaptersRead: json['chaptersRead']?.toString(),
       volumesRead: json['volumesRead']?.toString(),
       meanScore: json['meanScore']?.toString(),
+    );
+  }
+
+  factory MangaStats.fromKitsu(Map<String, dynamic> json) {
+    return MangaStats(
+      mangaCount: json['total_entries']?.toString(),
+      chaptersRead: json['chapters_read']?.toString(),
+      volumesRead: json['volumes_read']?.toString(),
+      meanScore: json['mean_score']?.toString(),
     );
   }
 }
