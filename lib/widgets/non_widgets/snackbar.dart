@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void snackBar(
   String message, {
-  int duration = 700,
+  int duration = 2000,
   String? title,
   Color? backgroundColor,
   SnackPosition? snackPosition,
   double? maxWidth,
   int? maxLines,
 }) {
+  final isMobile = Platform.isAndroid || Platform.isIOS;
   Get.snackbar(
     "",
     "",
@@ -30,6 +33,6 @@ void snackBar(
     backgroundColor: backgroundColor ?? Get.theme.colorScheme.surfaceContainer,
     duration: Duration(milliseconds: duration),
     snackPosition: snackPosition ?? SnackPosition.BOTTOM,
-    maxWidth: maxWidth ?? Get.width * 0.6,
+    maxWidth: maxWidth ?? Get.width * (isMobile ? 0.9 : 0.6),
   );
 }
