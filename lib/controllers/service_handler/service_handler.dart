@@ -65,6 +65,7 @@ class ServiceHandler extends GetxController {
         anilistService.autoLogin(),
         simklService.autoLogin(),
       ]);
+  @override
   Future<void> refresh() => onlineService.refresh();
 
   Future<void> updateListEntry({
