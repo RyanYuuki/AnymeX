@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/models/Anilist/anime_media_small.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -13,21 +13,19 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-enum CarouselType { anime, manga, novel }
+enum CarouselType { anime, manga, simkl }
 
 class BigCarousel extends StatefulWidget {
-  final List<AnilistMediaSmall> data;
-  final bool isManga;
+  final List<Media> data;
   final CarouselType carouselType;
 
-  const BigCarousel(
-      {super.key,
-      required this.data,
-      this.carouselType = CarouselType.anime,
-      required this.isManga});
+  const BigCarousel({
+    super.key,
+    required this.data,
+    this.carouselType = CarouselType.anime,
+  });
 
   @override
   _BigCarouselState createState() => _BigCarouselState();
@@ -53,7 +51,7 @@ class _BigCarouselState extends State<BigCarousel> {
               final title = anime.title;
               final randNum = Random().nextInt(100000);
               final tag = '$randNum$index${anime.title}';
-              String extraData = anime.averageScore.toString();
+              String extraData = anime.rating.toString();
 
               return Stack(
                 children: [
@@ -62,38 +60,19 @@ class _BigCarouselState extends State<BigCarousel> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (widget.isManga) {
+                          if (widget.carouselType == CarouselType.manga) {
                             Get.to(() => MangaDetailsPage(
-                                  anilistId: anime.id!,
+                                  media: anime,
                                   tag: tag,
-                                  posterUrl: posterUrl,
                                 ));
                           } else {
-                            Get.to(() => AnimeDetailsPage(
-                                  anilistId: anime.id!,
-                                  tag: tag,
-                                  posterUrl: posterUrl,
-                                ));
+                            Get.to(AnimeDetailsPage(
+                              media: anime,
+                              tag: tag,
+                            ));
                           }
                         },
-                        child: Container(
-                          height: getResponsiveSize(context,
-                              mobileSize: 170, dektopSize: 330),
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Hero(
-                            tag: tag,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: CachedNetworkImage(
-                                  imageUrl: posterUrl,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  alignment: Alignment.topCenter,
-                                  placeholder: (context, url) =>
-                                      placeHolderWidget(context)),
-                            ),
-                          ),
-                        ),
+                        child: _buildItem(context, tag, posterUrl),
                       ),
                       const SizedBox(height: 10),
                       Padding(
@@ -186,7 +165,7 @@ class _BigCarouselState extends State<BigCarousel> {
           const SizedBox(height: 16),
           AnimatedSmoothIndicator(
             activeIndex: activeIndex,
-            count: widget.data!.length,
+            count: widget.data.length,
             effect: WormEffect(
               dotHeight: 8,
               dotWidth: 8,
@@ -198,5 +177,26 @@ class _BigCarouselState extends State<BigCarousel> {
         ],
       ),
     );
+  }
+
+  Container _buildItem(BuildContext context, String tag, String posterUrl) {
+    return Container(
+                        height: getResponsiveSize(context,
+                            mobileSize: 170, dektopSize: 330),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Hero(
+                          tag: tag,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                                imageUrl: posterUrl,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                alignment: Alignment.topCenter,
+                                placeholder: (context, url) =>
+                                    placeHolderWidget(context)),
+                          ),
+                        ),
+                      );
   }
 }

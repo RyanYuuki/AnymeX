@@ -1,7 +1,9 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
 class GradientPoster extends StatelessWidget {
   const GradientPoster({
@@ -23,12 +25,17 @@ class GradientPoster extends StatelessWidget {
       children: [
         SizedBox(
           height: isDesktop ? 460 : 400,
-          child: NetworkSizedImage(
-            alignment: Alignment.topCenter,
-            imageUrl: data?.cover ?? posterUrl,
-            radius: 0,
-            height: 300,
-            width: double.infinity,
+          child: KenBurns(
+            maxScale: 2.5,
+            minAnimationDuration: const Duration(milliseconds: 6000),
+            maxAnimationDuration: const Duration(milliseconds: 20000),
+            child: NetworkSizedImage(
+              imageUrl: data?.cover ?? posterUrl,
+              errorImage: data?.poster,
+              radius: 0,
+              height: 300,
+              width: double.infinity,
+            ),
           ),
         ),
         Container(
@@ -48,6 +55,15 @@ class GradientPoster extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(
+          height: isDesktop ? 460 : 400,
+          child: Blur(
+            colorOpacity: 0.0,
+            blur: 10,
+            blurColor: Colors.transparent,
+            child: Container(),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.only(left: 20.0, bottom: 20),
           child: Row(
@@ -58,8 +74,8 @@ class GradientPoster extends StatelessWidget {
                 child: NetworkSizedImage(
                     imageUrl: posterUrl,
                     radius: 16.multiplyRoundness(),
-                    width: isDesktop ? 120 : 90,
-                    height: isDesktop ? 170 : 120),
+                    width: isDesktop ? 150 : 120,
+                    height: isDesktop ? 200 : 180),
               ),
               const SizedBox(width: 20),
               Column(
