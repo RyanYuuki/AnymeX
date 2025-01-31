@@ -45,11 +45,42 @@ jobs:
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
+
       - name: Build Universal APK
         run: flutter build apk --release
 
       - name: Rename Universal APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
+
+      - name: Sign APKs
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          for apk in build/app/outputs/flutter-apk/*.apk; do
+            jarsigner \
+              -verbose \
+              -sigalg SHA256withRSA \
+              -digestalg SHA-256 \
+              -keystore keystore.jks \
+              -storepass $KEYSTORE_PASSWORD \
+              -keypass $KEY_PASSWORD \
+              $apk $KEY_ALIAS
+          done
+
+      # Verify APK Signatures
+      - name: Verify APKs
+        run: |
+          for apk in build/app/outputs/flutter-apk/*.apk; do
+            apksigner verify $apk
+          done
 
       - name: Release Android APKs
         uses: ncipollo/release-action@v1
