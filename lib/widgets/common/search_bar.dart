@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -11,6 +12,7 @@ class CustomSearchBar extends StatelessWidget {
   final VoidCallback? onSuffixIconPressed;
   final IconData prefixIcon;
   final IconData suffixIcon;
+  final Widget? suffixIconWidget;
   final Widget? suffixWidget;
   final bool disableIcons;
   final String hintText;
@@ -27,6 +29,7 @@ class CustomSearchBar extends StatelessWidget {
     this.disableIcons = false,
     this.hintText = 'Search...',
     this.suffixWidget,
+    this.suffixIconWidget,
   });
 
   @override
@@ -34,6 +37,7 @@ class CustomSearchBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
+      clipBehavior: Clip.antiAlias,
       child: TextField(
         controller: controller,
         onSubmitted: onSubmitted,
@@ -49,7 +53,7 @@ class CustomSearchBar extends StatelessWidget {
           ),
           suffix: suffixWidget,
           suffixIcon: disableIcons
-              ? null
+              ? suffixIconWidget
               : IconButton(
                   icon: Icon(suffixIcon),
                   onPressed: onSuffixIconPressed,
@@ -67,6 +71,76 @@ class CustomSearchBar extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondaryContainer,
               width: 1,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TappableSearchBar extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData prefixIcon;
+  final IconData suffixIcon;
+  final Widget? suffixWidget;
+  final Widget? suffixIconWidget;
+  final bool disableIcons;
+  final String hintText;
+
+  const TappableSearchBar({
+    super.key,
+    required this.onTap,
+    this.prefixIcon = IconlyLight.search,
+    this.suffixIcon = IconlyLight.filter,
+    this.disableIcons = false,
+    this.hintText = 'Search...',
+    this.suffixWidget,
+    this.suffixIconWidget,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+      decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16.multiplyRadius()),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context)
+                .colorScheme
+                .secondaryContainer
+                .withOpacity(0.5),
+            borderRadius: BorderRadius.circular(16.multiplyRadius()),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                prefixIcon,
+                color: Theme.of(context).hintColor,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AnymexText(
+                  text: hintText,
+                  color: Theme.of(context).hintColor,
+                  size: 16,
+                ),
+              ),
+              if (suffixWidget != null) suffixWidget!,
+              if (!disableIcons)
+                IconButton(
+                  icon: suffixIconWidget ?? Icon(suffixIcon),
+                  onPressed: null,
+                ),
+            ],
           ),
         ),
       ),
