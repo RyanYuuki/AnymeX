@@ -1,4 +1,4 @@
-import 'package:anymex/models/Anilist/anime_media_small.dart';
+import 'package:anymex/models/Media/media.dart';
 
 dynamic fallbackAnilistData = {
   "data": {
@@ -1015,19 +1015,8 @@ final top10Today = parseMediaList(data['top10Today']['media']);
 final top10Week = parseMediaList(data['top10Week']['media']);
 final top10Month = parseMediaList(data['top10Month']['media']);
 
-List<AnilistMediaSmall> parseMediaList(List<dynamic> mediaList) {
+List<Media> parseMediaList(List<dynamic> mediaList) {
   return mediaList.map((media) {
-    return AnilistMediaSmall(
-        id: media['id'].toString(),
-        title: media['title']['english'] ??
-            media['title']['romaji'] ??
-            media['title']['native'],
-        averageScore:
-            (double.tryParse(media?['averageScore']?.toString() ?? "0")! / 10),
-        chapters: media['chapters']?.toString() ?? "0",
-        poster: media['coverImage']['large'],
-        cover: media['bannerImage'],
-        description: media['description'],
-        episodes: media['episodes']);
+    return Media.fromSmallJson(media, false);
   }).toList();
 }

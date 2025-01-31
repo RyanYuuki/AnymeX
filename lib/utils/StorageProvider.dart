@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:anymex/api/Mangayomi/Model/settings.dart';
+import 'package:anymex/core/Model/settings.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../api/Mangayomi/Eval/dart/model/source_preference.dart';
-import '../api/Mangayomi/Model/Manga.dart';
-import '../api/Mangayomi/Model/Source.dart';
-import '../api/Mangayomi/Model/chapter.dart';
+import '../core/Eval/dart/model/source_preference.dart';
+import '../core/Model/Manga.dart';
+import '../core/Model/Source.dart';
+import '../core/Model/chapter.dart';
 
 class StorageProvider {
   Future<bool> requestPermission() async {
