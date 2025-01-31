@@ -33,7 +33,7 @@ Welcome to <b>AnymeX</b>—a multi-service client built with Flutter and Dart! �
 | Category       | Highlights                                                                                                                                          |
 |----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Experience** | 🎨 **Personalized Themes**: Explore unique themes<br>⚡ **Blazing Fast Performance**: Lightweight and lightning-fast<br>✨ **Elegant Material UI**: Modern and sleek |
-| **Connectivity** | 📌 **Multiple Integrations**: Easily connect with various services<br>📊 **Sync Support**: Keep your data in sync effortlessly<br>🔄 **Frequent Updates**: Enjoy fresh content and features |
+| **Connectivity** | 📌 **Multiple Integrations**: Easily connect with various services<br>📊 **Sync Support**: Keep your data in sync effortlessly |
 
 ## Screenshots
 
