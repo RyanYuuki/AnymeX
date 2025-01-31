@@ -1,9 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/utils/updater.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';

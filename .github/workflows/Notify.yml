@@ -29,12 +29,56 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests jq
           
-      - name: Fetch Repository Tags
+      - name: Fetch Repository Tags by Date and Time
         id: fetch_tags
         run: |
+          # Fetch tags from the GitHub repository
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
-          TAGS=$(jq -r '.[].name' tags.json | sort -V)
-          LATEST_TAG=$(echo "$TAGS" | tail -n 1)
+          TAGS=$(jq -r '.[].name' tags.json)
+
+          declare -a TAGS_WITH_DATES=()
+
+          for TAG in $TAGS; do
+          # Fetch tag reference details
+          TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
+          OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
+
+          if [ -n "$OBJECT_URL" ]; then
+          # Fetch object details for date
+          OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
+          DATE=$(echo "$OBJECT_DETAILS" | jq -r '.tagger.date // .committer.date // empty')
+
+          if [ -n "$DATE" ]; then
+          # Append date and tag pair
+          TAGS_WITH_DATES+=("$DATE $TAG")
+          else
+          echo "No date found for tag $TAG"
+          fi
+          else
+          echo "No object URL found for tag $TAG"
+          fi
+          done
+
+          # Debugging: Print unsorted tags
+          echo "Unsorted tags with dates:"
+          printf "%s\n" "${TAGS_WITH_DATES[@]}"
+
+          # Find the tag with the latest date (no sorting)
+          LATEST_TAG=""
+          LATEST_DATE=""
+
+          for TAG_DATE in "${TAGS_WITH_DATES[@]}"; do
+          TAG_DATE_TIME=$(echo "$TAG_DATE" | awk '{print $1}')
+          TAG_NAME=$(echo "$TAG_DATE" | awk '{print $2}')
+
+          if [[ -z "$LATEST_DATE" || "$TAG_DATE_TIME" > "$LATEST_DATE" ]]; then
+          LATEST_DATE="$TAG_DATE_TIME"
+          LATEST_TAG="$TAG_NAME"
+          fi
+          done
+
+          # Output the latest tag found
+          echo "The selected latest tag is: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           
       - name: Use the Latest Tag
@@ -82,9 +126,11 @@ jobs:
               echo "apk_x86_64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *.ipa ]]; then
               echo "ios_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Linux.AppImage" ]]; then
+              echo "linuximg_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Linux.zip" ]]; then
               echo "linux_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Setup.exe" ]]; then
+            elif [[ "$FILE_NAME" == *"Installer.exe" ]]; then
               echo "setup_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Windows.zip" ]]; then
               echo "windows_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
@@ -164,6 +210,7 @@ jobs:
             🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linuximg_message }} | **Linux appimage**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
@@ -236,6 +283,7 @@ jobs:
             🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
+            🔹 ${{ env.linuximg_message }} | **Linux appimage**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
