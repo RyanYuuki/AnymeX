@@ -183,39 +183,41 @@ class MalService extends GetxController implements BaseService, OnlineService {
     return [
       Obx(() => Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ImageButton(
-                    width: isDesktop ? 300 : Get.width / 2 - 40,
-                    height: !isDesktop ? 70 : 90,
-                    buttonText: "ANIME LIST",
-                    backgroundImage: fb.trendingAnimes
-                            .firstWhere((e) => e.cover != null)
-                            .cover ??
-                        '',
-                    borderRadius: 16.multiplyRadius(),
-                    onPressed: () {
-                      Get.to(() => const AnimeList());
-                    },
-                  ),
-                  const SizedBox(width: 15),
-                  ImageButton(
-                    width: isDesktop ? 300 : Get.width / 2 - 40,
-                    height: !isDesktop ? 70 : 90,
-                    buttonText: "MANGA LIST",
-                    borderRadius: 16.multiplyRadius(),
-                    backgroundImage: trendingMangas
-                            .firstWhere((e) => e.cover != null)
-                            .cover ??
-                        '',
-                    onPressed: () {
-                      Get.to(() => const AnilistMangaList());
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
+              isLoggedIn.value
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ImageButton(
+                          width: isDesktop ? 300 : Get.width / 2 - 40,
+                          height: !isDesktop ? 70 : 90,
+                          buttonText: "ANIME LIST",
+                          backgroundImage: fb.trendingAnimes
+                                  .firstWhere((e) => e.cover != null)
+                                  .cover ??
+                              '',
+                          borderRadius: 16.multiplyRadius(),
+                          onPressed: () {
+                            Get.to(() => const AnimeList());
+                          },
+                        ),
+                        const SizedBox(width: 15),
+                        ImageButton(
+                          width: isDesktop ? 300 : Get.width / 2 - 40,
+                          height: !isDesktop ? 70 : 90,
+                          buttonText: "MANGA LIST",
+                          borderRadius: 16.multiplyRadius(),
+                          backgroundImage: trendingMangas
+                                  .firstWhere((e) => e.cover != null)
+                                  .cover ??
+                              '',
+                          onPressed: () {
+                            Get.to(() => const AnilistMangaList());
+                          },
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+              if (isLoggedIn.value) const SizedBox(height: 30),
               buildSection("Continue Watching", continueWatching.value,
                   variant: DataVariant.anilist),
               buildSection("Continue Reading", continueReading.value,
