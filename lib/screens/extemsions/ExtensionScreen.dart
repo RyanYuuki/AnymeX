@@ -108,7 +108,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                             hintText: "Add Anime Repo...",
                             disableIcons: true,
                           ),
-                          SizedBox(height: 10), // Add spacing between fields
+                          const SizedBox(height: 10), // Add spacing between fields
                           CustomSearchBar(
                             controller: mangaRepoController,
                             onSubmitted: (value) {},
