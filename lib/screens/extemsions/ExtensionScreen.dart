@@ -11,10 +11,12 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:isar/isar.dart';
 import '../../main.dart';
@@ -86,7 +88,8 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
               IconButton(
-                icon: Icon(Icons.language_rounded, color: theme.primary),
+                icon:
+                    Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
                 onPressed: () {
                   final controller = Get.find<SourceController>();
                   final animeRepoController = TextEditingController(
@@ -97,23 +100,33 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                   );
 
                   AlertDialogBuilder(context)
-                    ..setTitle("Add Repo")
+                    ..setTitleWidget(const Center(
+                      child: AnymexText(
+                        text: "Add Repo",
+                        size: 20,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ))
                     ..setCustomView(
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CustomSearchBar(
+                            prefixIcon: HugeIcons.strokeRoundedGithub,
                             controller: animeRepoController,
                             onSubmitted: (value) {},
                             hintText: "Add Anime Repo...",
                             disableIcons: true,
+                            padding: const EdgeInsets.all(0),
                           ),
-                          SizedBox(height: 10), // Add spacing between fields
+                          const SizedBox(height: 10),
                           CustomSearchBar(
+                            prefixIcon: HugeIcons.strokeRoundedGithub,
                             controller: mangaRepoController,
                             onSubmitted: (value) {},
                             hintText: "Add Manga Repo...",
                             disableIcons: true,
+                            padding: const EdgeInsets.all(0),
                           ),
                         ],
                       ),

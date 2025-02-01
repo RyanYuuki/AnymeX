@@ -16,6 +16,7 @@ class CustomSearchBar extends StatelessWidget {
   final Widget? suffixWidget;
   final bool disableIcons;
   final String hintText;
+  final EdgeInsets? padding;
 
   const CustomSearchBar({
     super.key,
@@ -30,12 +31,14 @@ class CustomSearchBar extends StatelessWidget {
     this.hintText = 'Search...',
     this.suffixWidget,
     this.suffixIconWidget,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+      padding:
+          padding ?? const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
       child: TextField(
