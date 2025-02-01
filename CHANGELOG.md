@@ -15,6 +15,9 @@
 * [b05089b](https://github.com/RyanYuuki/AnymeX/commit/b05089b): feat: blur controls toggler for player
 
 ### 🛠️ Bug Fixes & Improvements
+* [112cf9c](https://github.com/RyanYuuki/AnymeX/commit/112cf9c): fix: dart warning fixes
+* [c39a5c1](https://github.com/RyanYuuki/AnymeX/commit/c39a5c1): fix: fixed layouts of few ui comps
+* [4a8bf7e](https://github.com/RyanYuuki/AnymeX/commit/4a8bf7e): fix: fixed update notifier
 * [5e17fd9](https://github.com/RyanYuuki/AnymeX/commit/5e17fd9): fix: fixed login elements showing up w/o login
 * [3da0a84](https://github.com/RyanYuuki/AnymeX/commit/3da0a84): fix: fixed history labels
 * [bafe502](https://github.com/RyanYuuki/AnymeX/commit/bafe502): fix: lots and lots of fix related to tracking and ui
