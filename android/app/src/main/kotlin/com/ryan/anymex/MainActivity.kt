@@ -1,4 +1,4 @@
-package com.example.anymex
+package com.ryan.anymex
 
 import io.flutter.embedding.android.FlutterActivity
 

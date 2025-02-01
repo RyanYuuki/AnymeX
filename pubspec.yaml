@@ -110,6 +110,6 @@ inno_bundle:
   id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
   publisher: Ryan Yuuki
   name: AnymeX
-  version: 2.8.6
+  version: 2.9.0
   admin: auto
   installer_icon: ./anymex.ico

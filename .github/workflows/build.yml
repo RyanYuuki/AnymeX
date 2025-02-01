@@ -24,6 +24,21 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
+      - name: Download keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/anymex.jks
+      - name: Set up signing variables
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS}}
+        run: |
+          echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+          echo "storeFile=anymex.jks" >> android/key.properties
+
       - name: Create .env File
         run: |
           echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
@@ -51,36 +66,6 @@ jobs:
 
       - name: Rename Universal APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
-
-      - name: Decode Keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
-
-      - name: Sign APKs
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          for apk in build/app/outputs/flutter-apk/*.apk; do
-            jarsigner \
-              -verbose \
-              -sigalg SHA256withRSA \
-              -digestalg SHA-256 \
-              -keystore keystore.jks \
-              -storepass $KEYSTORE_PASSWORD \
-              -keypass $KEY_PASSWORD \
-              $apk $KEY_ALIAS
-          done
-
-      # Verify APK Signatures
-      - name: Verify APKs
-        run: |
-          for apk in build/app/outputs/flutter-apk/*.apk; do
-            apksigner verify $apk
-          done
 
       - name: Release Android APKs
         uses: ncipollo/release-action@v1
@@ -213,13 +198,13 @@ jobs:
           Name: anymex
           Version: 1.0.0
           Release: 1%{?dist}
-          Summary: AnymeX is a Flutter-based opensource app for watching anime, reading mangas and novels
+          Summary: AnymeX is a Flutter-based opensource app for tracking anime, mangas and novels
           License: MIT
           Source0: %{name}-%{version}.tar.gz
           BuildArch: x86_64
 
           %description
-          AnymeX is a Flutter-based opensource app for watching anime, reading mangas and novels.
+          AnymeX is a Flutter-based opensource app for tracking anime, mangas and novels.
 
           %prep
           %setup -q
@@ -300,7 +285,7 @@ jobs:
         with:
           artifacts: |
             build/windows/x64/runner/Release/AnymeX-Windows.zip,
-            build/windows/x64/installer/Release/AnymeX-x86_64-2.8.6-Installer.exe
+            build/windows/x64/installer/Release/AnymeX-x86_64-2.9.0-Installer.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
