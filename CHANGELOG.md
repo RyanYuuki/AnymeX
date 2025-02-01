@@ -15,6 +15,9 @@
 * [b05089b](https://github.com/RyanYuuki/AnymeX/commit/b05089b): feat: blur controls toggler for player
 
 ### 🛠️ Bug Fixes & Improvements
+* [e4f708f](https://github.com/RyanYuuki/AnymeX/commit/e4f708f): fix: fixed padding on all pages
+* [78a62f6](https://github.com/RyanYuuki/AnymeX/commit/78a62f6): fix: fixed windows anilist login
+* [8231f51](https://github.com/RyanYuuki/AnymeX/commit/8231f51): fix: fixed manga mapper
 * [112cf9c](https://github.com/RyanYuuki/AnymeX/commit/112cf9c): fix: dart warning fixes
 * [c39a5c1](https://github.com/RyanYuuki/AnymeX/commit/c39a5c1): fix: fixed layouts of few ui comps
 * [4a8bf7e](https://github.com/RyanYuuki/AnymeX/commit/4a8bf7e): fix: fixed update notifier
