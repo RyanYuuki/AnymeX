@@ -25,6 +25,7 @@ class MangaHomePage extends StatelessWidget {
               children: serviceHandler.mangaWidgets.value,
             );
           }),
+          const SizedBox(height: 50)
         ],
       ),
     );

@@ -24,6 +24,7 @@ class AnimeHomePage extends StatelessWidget {
               children: serviceHandler.animeWidgets.value,
             );
           }),
+          const SizedBox(height: 50)
         ],
       ),
     );

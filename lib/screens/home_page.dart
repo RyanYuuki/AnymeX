@@ -66,6 +66,7 @@ class HomePage extends StatelessWidget {
                 children: serviceHandler.homeWidgets.value,
               );
             }),
+            const SizedBox(height: 50)
           ],
         ),
       ),
