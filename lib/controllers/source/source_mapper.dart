@@ -1,4 +1,3 @@
-
 import 'package:algorithmic/algorithmic.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
@@ -39,6 +38,7 @@ Future<Media> mapMedia(List<String> animeId, RxString searchedTitle) async {
       final resultTitle = (result?.name ?? '').trim();
       final cleanedQuery = query.trim();
       searchedTitle.value = "Searching: $resultTitle";
+      print("matching $query with $resultTitle");
 
       final similarity =
           jaroWinklerSimilarityOf(cleanedQuery, resultTitle, threshold: 0.5);
@@ -52,7 +52,7 @@ Future<Media> mapMedia(List<String> animeId, RxString searchedTitle) async {
   }
 
   await searchAndCompare(romajiTitle);
-  if (highestSimilarity < 0.85) {
+  if (highestSimilarity < 0.98) {
     await searchAndCompare(englishTitle);
   }
 

@@ -240,7 +240,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                 Theme.of(context).colorScheme.surfaceContainer,
                             child: Text(
                                 convertAniListStatus(
-                                    currentManga.value?.watchingStatus),
+                                    currentManga.value?.watchingStatus,
+                                    isManga: true),
                                 style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.primary,

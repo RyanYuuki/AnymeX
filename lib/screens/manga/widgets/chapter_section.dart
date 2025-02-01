@@ -51,12 +51,12 @@ class ChapterSection extends StatelessWidget {
                     width: Get.width * 0.6,
                     child: AnymexTextSpans(
                       spans: [
-                        if(!searchedTitle.value.contains('Searching'))
-                        const AnymexTextSpan(
-                          text: "Found: ",
-                          variant: TextVariant.semiBold,
-                          size: 16,
-                        ),
+                        if (!searchedTitle.value.contains('Searching'))
+                          const AnymexTextSpan(
+                            text: "Found: ",
+                            variant: TextVariant.semiBold,
+                            size: 16,
+                          ),
                         AnymexTextSpan(
                           text: searchedTitle.value,
                           variant: TextVariant.semiBold,
@@ -73,7 +73,8 @@ class ChapterSection extends StatelessWidget {
                         anilistData.title,
                         (manga) async {
                           chapterList.value = [];
-                          await getDetailsFromSource(manga.link!);
+                          await getDetailsFromSource(
+                              Media.fromManga(manga, MediaType.manga));
                         },
                         isManga: true,
                       );

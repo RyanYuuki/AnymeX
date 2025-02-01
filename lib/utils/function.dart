@@ -24,12 +24,12 @@ extension StringExtensions on String {
   }
 }
 
-String convertAniListStatus(String? status) {
+String convertAniListStatus(String? status, {bool isManga = false}) {
   switch (status?.toUpperCase()) {
     case 'CURRENT':
-      return 'CURRENTLY WATCHING';
+      return isManga ? "CURRENTLY READING" : 'CURRENTLY WATCHING';
     case 'PLANNING':
-      return 'PLANNING TO WATCH';
+      return 'PLANNING TO ${isManga ? 'READ' : 'WATCH'}';
     case 'COMPLETED':
       return 'COMPLETED';
     case 'DROPPED':
@@ -37,7 +37,7 @@ String convertAniListStatus(String? status) {
     case 'PAUSED':
       return 'PAUSED';
     case 'REPEATING':
-      return 'REWATCHING';
+      return isManga ? "REREADING" : 'REWATCHING';
     default:
       return 'ADD TO LIST';
   }

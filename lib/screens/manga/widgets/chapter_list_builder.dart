@@ -116,9 +116,9 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                 final savedChaps = offlineStorage.getReadChapter(
                     widget.anilistData.id, chapter.number!);
                 final isSelected = chapter.number ==
-                    (readChap?.number ?? continueChapter!.number);
+                    (readChap?.number ?? continueChapter?.number);
                 final alreadyRead = chapter.number! <
-                    (readChap?.number ?? continueChapter!.number)!;
+                    (readChap?.number ?? continueChapter?.number ?? 0);
                 return Opacity(
                   opacity: alreadyRead ? 0.5 : 1,
                   child: Container(
