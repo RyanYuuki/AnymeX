@@ -113,7 +113,7 @@ jobs:
       - name: Release iOS IPA
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "AnymeX-iOS-*.ipa"
+          artifacts: "AnymeX-iOS-${{ github.ref_name }}.ipa"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
