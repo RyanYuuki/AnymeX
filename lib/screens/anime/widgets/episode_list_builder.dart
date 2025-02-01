@@ -1,23 +1,22 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
-import 'dart:developer';
 import 'dart:ui';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
-import 'package:anymex/api/Mangayomi/Search/getVideo.dart';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -32,17 +31,17 @@ class EpisodeListBuilder extends StatefulWidget {
 
   final bool isDesktop;
   final List<Episode> episodeList;
-  final AnilistMediaData? anilistData;
+  final Media? anilistData;
 
   @override
   State<EpisodeListBuilder> createState() => _EpisodeListBuilderState();
 }
 
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
-  final selectedChunkIndex = 0.obs;
+  final selectedChunkIndex = 1.obs;
   final RxList<Video> streamList = <Video>[].obs;
   final sourceController = Get.find<SourceController>();
-  final auth = Get.find<AnilistAuth>();
+  final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
 
   final RxBool isLogged = false.obs;
@@ -61,7 +60,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
     ever(auth.isLoggedIn, (_) => _initUserProgress());
     ever(userProgress, (_) => _initEpisodes());
-    ever(auth.currentAnime, (_) => {_initUserProgress(), _initEpisodes()});
+    ever(auth.currentMedia, (_) => {_initUserProgress(), _initEpisodes()});
 
     offlineStorage.addListener(() {
       final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
@@ -77,7 +76,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     isLogged.value = auth.isLoggedIn.value;
 
     final progress = isLogged.value
-        ? auth.currentAnime.value.episodeCount?.toInt()
+        ? auth.currentMedia.value.episodeCount?.toInt()
         : offlineStorage
             .getAnimeById(widget.anilistData!.id)
             ?.currentEpisode
@@ -93,11 +92,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
     final nextEpisode = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
+    final fallbackEP = widget.episodeList
+        .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value));
     final saved = savedData?.currentEpisode;
     savedEpisode.value = saved ?? widget.episodeList[0];
     offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
-    selectedEpisode.value = nextEpisode ?? savedEpisode.value;
-    continueEpisode.value = nextEpisode ?? savedEpisode.value;
+    selectedEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;
+    continueEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;
   }
 
   void _handleEpisodeSelection(Episode episode) {
@@ -116,6 +117,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           widget.anilistData!.poster,
       episode: continueEpisode.value,
       progressEpisode: savedEpisode.value,
+      data: widget.anilistData!,
     );
   }
 
@@ -314,12 +316,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.multiplyRadius()),
-                      child: CachedNetworkImage(
+                      child: NetworkSizedImage(
                         imageUrl: episode.thumbnail ??
                             widget.anilistData?.cover ??
                             widget.anilistData?.poster ??
                             '',
-                        fit: BoxFit.cover,
+                        radius: 0,
+                        errorImage: widget.anilistData?.cover ??
+                            widget.anilistData?.poster,
                         height: double.infinity,
                         width: double.infinity,
                       ),
@@ -386,10 +390,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final savedEP =
         offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
     final progress = savedEP?.timeStampInMilliseconds != null &&
-            savedEP?.durationInMilliseconds != null
-        ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
-        : null;
-    log('${savedEP?.number} :${savedEP?.timeStampInMilliseconds.toString()}');
+            savedEP?.durationInMilliseconds != null &&
+            savedEP!.durationInMilliseconds! > 0
+        ? (savedEP.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+        : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -406,62 +410,65 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Stack(children: [
-                    NetworkSizedImage(
-                      imageUrl: episode.thumbnail ??
-                          widget.anilistData?.cover ??
-                          widget.anilistData?.poster ??
-                          '',
-                      radius: 12,
-                      width: 170,
-                      height: 100,
-                    ),
-                    if (progress != null) ...[
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius:
-                                  BorderRadius.circular(12.multiplyRadius())),
-                          height: 2,
-                          width: constraints.maxWidth * progress,
-                        ),
-                      ),
-                    ],
+              LayoutBuilder(builder: (context, constraints) {
+                return Stack(children: [
+                  NetworkSizedImage(
+                    imageUrl: episode.thumbnail ??
+                        widget.anilistData?.cover ??
+                        widget.anilistData?.poster ??
+                        '',
+                    radius: 12,
+                    width: 170,
+                    height: 100,
+                    errorImage:
+                        widget.anilistData?.cover ?? widget.anilistData?.poster,
+                  ),
+                  if (progress > 0.0 && progress <= 1.0) ...[
                     Positioned(
-                      bottom: 8,
-                      left: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.black.withOpacity(0.2),
-                              border: Border.all(
-                                  width: 2,
-                                  color: Theme.of(context).colorScheme.primary),
-                              boxShadow: [glowingShadow(context)],
-                            ),
-                            child: AnymexText(
-                              text: "EP ${episode.number}",
-                              variant: TextVariant.bold,
-                            ),
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius:
+                                BorderRadius.circular(12.multiplyRadius())),
+                        height: 2,
+                        width: (constraints.maxWidth > 0
+                                ? constraints.maxWidth
+                                : 100) *
+                            progress,
+                      ),
+                    ),
+                  ],
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withOpacity(0.2),
+                            border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary),
+                            boxShadow: [glowingShadow(context)],
+                          ),
+                          child: AnymexText(
+                            text: "EP ${episode.number}",
+                            variant: TextVariant.bold,
                           ),
                         ),
                       ),
                     ),
-                  ]);
-                }
-              ),
+                  ),
+                ]);
+              }),
               const SizedBox(width: 12),
               Expanded(
                 child: AnymexText(
@@ -475,7 +482,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           ),
           const SizedBox(height: 15),
           AnymexText(
-            text: episode.desc ?? 'No Description Available',
+            text: (episode.desc?.isEmpty ?? true)
+                ? 'No Description Available'
+                : episode.desc ?? 'No Description Available',
             variant: TextVariant.regular,
             maxLines: 3,
             fontStyle: FontStyle.italic,
@@ -498,6 +507,7 @@ class ContinueEpisodeButton extends StatelessWidget {
   final TextStyle? textStyle;
   final Episode episode;
   final Episode progressEpisode;
+  final Media data;
 
   const ContinueEpisodeButton({
     super.key,
@@ -509,6 +519,7 @@ class ContinueEpisodeButton extends StatelessWidget {
     this.textStyle,
     required this.episode,
     required this.progressEpisode,
+    required this.data,
   });
 
   @override
@@ -533,11 +544,6 @@ class ContinueEpisodeButton extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(
-              width: 1,
-              color:
-                  Theme.of(context).colorScheme.inverseSurface.withOpacity(0.3),
-            ),
           ),
           child: Stack(
             alignment: Alignment.center,
@@ -545,12 +551,13 @@ class ContinueEpisodeButton extends StatelessWidget {
               Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  child: CachedNetworkImage(
+                  child: NetworkSizedImage(
                     height: height,
                     width: double.infinity,
                     imageUrl: backgroundImage,
-                    fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
+                    radius: 0,
+                    errorImage: data.cover ?? data.poster,
                   ),
                 ),
               ),
@@ -567,17 +574,12 @@ class ContinueEpisodeButton extends StatelessWidget {
                 ),
               ),
               Positioned.fill(
-                child: ElevatedButton(
-                  onPressed: onPressed,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    backgroundColor: Colors.transparent,
-                    elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                    ),
-                  ),
+                child: AnymexButton(
+                  onTap: onPressed,
+                  padding: EdgeInsets.zero,
+                  border: BorderSide(color: Colors.transparent),
+                  color: Colors.transparent,
+                  radius: borderRadius,
                   child: SizedBox(
                     width: getResponsiveValue(context,
                         mobileValue: (Get.width * 0.8), desktopValue: null),
@@ -626,7 +628,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                   ),
                 ),

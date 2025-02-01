@@ -38,6 +38,9 @@ class Episode extends HiveObject {
   @HiveField(10)
   List<Video>? videoTracks;
 
+  @HiveField(11)
+  String? source;
+
   Episode(
       {required this.number,
       this.link,
@@ -49,5 +52,6 @@ class Episode extends HiveObject {
       this.durationInMilliseconds,
       this.lastWatchedTime,
       this.currentTrack,
-      this.videoTracks});
+      this.videoTracks,
+      this.source});
 }

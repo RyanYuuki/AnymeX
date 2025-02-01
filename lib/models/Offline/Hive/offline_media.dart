@@ -6,7 +6,7 @@ part 'offline_media.g.dart';
 @HiveType(typeId: 7)
 class OfflineMedia extends HiveObject {
   @HiveField(0)
-  int? id;
+  String? id;
 
   @HiveField(1)
   String? jname;
@@ -86,33 +86,36 @@ class OfflineMedia extends HiveObject {
   @HiveField(26)
   List<Chapter>? readChapters;
 
-  OfflineMedia({
-    this.id,
-    this.jname,
-    this.name,
-    this.english,
-    this.japanese,
-    this.description,
-    this.poster,
-    this.cover,
-    this.totalEpisodes,
-    this.type,
-    this.season,
-    this.premiered,
-    this.duration,
-    this.status,
-    this.rating,
-    this.popularity,
-    this.format,
-    this.aired,
-    this.totalChapters,
-    this.genres,
-    this.studios,
-    this.chapters,
-    this.episodes,
-    this.currentEpisode,
-    this.currentChapter,
-    this.watchedEpisodes,
-    this.readChapters,
-  });
+  @HiveField(27)
+  int? serviceIndex;
+
+  OfflineMedia(
+      {this.id,
+      this.jname,
+      this.name,
+      this.english,
+      this.japanese,
+      this.description,
+      this.poster,
+      this.cover,
+      this.totalEpisodes,
+      this.type,
+      this.season,
+      this.premiered,
+      this.duration,
+      this.status,
+      this.rating,
+      this.popularity,
+      this.format,
+      this.aired,
+      this.totalChapters,
+      this.genres,
+      this.studios,
+      this.chapters,
+      this.episodes,
+      this.currentEpisode,
+      this.currentChapter,
+      this.watchedEpisodes,
+      this.readChapters,
+      this.serviceIndex = 0});
 }

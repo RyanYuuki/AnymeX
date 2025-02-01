@@ -23,7 +23,7 @@
 </div>
 <br/>
 <p style="text-align: center;">
-Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and novel reading app built with Flutter and Dart! 🌟 It's designed to give you fast and free access to your favourite content in a beautiful, user-friendly app that keeps improving. Explore a growing library of anime, manga, and novels, all in one place, with seamless performance and sleek design updates.
+Welcome to <b>AnymeX</b>—a multi-service client built with Flutter and Dart! 🌟 It's designed to provide a seamless and user-friendly experience with a modern interface and excellent performance.
 </p>
 
 ---
@@ -32,9 +32,8 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
 
 | Category       | Highlights                                                                                                                                          |
 |----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Content**    | 📺 **Anime**: Stream your favorite shows<br>📚 **Manga**: Dive into captivating stories<br>📖 **Novels**: Read a wide variety of engaging novels       |
 | **Experience** | 🎨 **Personalized Themes**: Explore unique themes<br>⚡ **Blazing Fast Performance**: Lightweight and lightning-fast<br>✨ **Elegant Material UI**: Modern and sleek |
-| **Connectivity** | 📌 **Multiple Sources**: Access content from multiple providers<br>📊 **AniList Sync**: Track anime and manga progress seamlessly<br>🔄 **Frequent Updates**: Enjoy fresh content and features |
+| **Connectivity** | 📌 **Multiple Integrations**: Easily connect with various services<br>📊 **Sync Support**: Keep your data in sync effortlessly |
 
 ## Screenshots
 
@@ -42,43 +41,15 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview1.jpg" width="49%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview2.jpg" width="49%" style="margin: 0;" />
-    <details>
-       <summary>View More</summary>
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview3.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview4.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview5.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview6.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview7.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview8.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview9.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview10.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview11.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview12.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview13.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview14.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview15.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview16.jpg" width="49%" style="margin: 0;" />
-    </details>
 </div>
 
 ### 💻 Desktop
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_2.png" width="100%" style="margin: 0;" />
-    <details>
-       <summary>View More</summary>
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_3.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_4.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_5.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_6.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_7.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_8.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_9.png" width="100%" style="margin: 0;" />
-    </details>
 </div>
 
 ## Support Us
-<!--<a href='https://ko-fi.com/RyanYuuki' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>-->
 > ⭐ **Star This Repository To Support The Developer And Encourage The Development Of The Application!**
 <details>
   <summary>Star History</summary>
@@ -86,12 +57,6 @@ Welcome to <b>AnymeX</b>—an open-source anime streaming, manga reading, and no
       <img alt="Star History Chart" src="https://starchart.cc/RyanYuuki/AnymeX.svg?variant=adaptive" width="370" height="235" />
   </a>
 </details>
-
-<!--## Official Communities
-Join our communities to stay updated and contribute to the discussion:
-
-<a href="https://discord.gg/azAMuBWd8C" style="margin-right: 10px; display: inline-block;"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/discord-round-color-icon.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
-<a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" height="40" style="vertical-align: middle;"></a>-->
 
 ## Contribute
 We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/azAMuBWd8C) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
@@ -111,10 +76,6 @@ flutter pub get
 flutter run
 ```
 > 💡 **Pro Tip**: Ensure you install Flutter and Dart SDK before starting!
-<!--<details>
-<summary>Weblate Translation Graph</summary>
-<a href="https://hosted.weblate.org/projects/AnymeX/#languages"><img src="https://hosted.weblate.org/widget/AnymeX/app/multi-auto.svg" alt="Translation status" /></a>
-</details>-->
 
 ## Acknowledgments
 A heartfelt thank you to everyone who has contributed to the development of AnymeX.

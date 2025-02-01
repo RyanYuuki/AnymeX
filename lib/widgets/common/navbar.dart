@@ -2,6 +2,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -53,7 +54,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
     final int itemsCount = widget.items.length;
     final double calculatedHeight = widget.isDesktop
         ? (itemsCount * 71.0)
-            .clamp(400, MediaQuery.of(context).size.height - 100)
+            .clamp(100, MediaQuery.of(context).size.height - 100)
         : widget.height ?? 75;
     final RxBool translucent = Get.find<Settings>().transculentBar.obs;
 
@@ -67,7 +68,8 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
             width: 1,
           ),
           borderRadius: widget.borderRadius ??
-              BorderRadius.circular(widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
+              BorderRadius.circular(
+                  widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
         ),
         padding: widget.padding ?? const EdgeInsets.all(0),
         margin: widget.margin ??
@@ -80,7 +82,8 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
         height: calculatedHeight,
         child: ClipRRect(
           borderRadius: widget.borderRadius ??
-              BorderRadius.circular(widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
+              BorderRadius.circular(
+                  widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -116,11 +119,26 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                       widget.isDesktop,
                       const Key('libraryItems'),
                     )
-                  : _buildFlex(
-                      widget.items,
-                      widget.isDesktop,
-                      const Key('normalItems'),
-                    ),
+                  : getResponsiveValue(context,
+                      strictMode: true,
+                      mobileValue: getResponsiveValue(context,
+                          mobileValue: _buildFlex(
+                            widget.items,
+                            widget.isDesktop,
+                            const Key('normalItems'),
+                          ),
+                          desktopValue: SingleChildScrollView(
+                            child: _buildFlex(
+                              widget.items,
+                              widget.isDesktop,
+                              const Key('normalItems'),
+                            ),
+                          )),
+                      desktopValue: _buildFlex(
+                        widget.items,
+                        widget.isDesktop,
+                        const Key('normalItems'),
+                      )),
             ],
           ),
         ),

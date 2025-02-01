@@ -1,5 +1,8 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
@@ -10,6 +13,7 @@ import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,7 +31,7 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
   late TabController _tabController;
   final TextEditingController controller = TextEditingController();
   final offlineStorage = Get.find<OfflineStorageController>();
-  RxList<OfflineMedia> animeLibrary = <OfflineMedia>[].obs;
+
   RxList<CustomListData> customListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
@@ -37,10 +41,21 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
   @override
   void initState() {
     super.initState();
-    animeLibrary.value = offlineStorage.animeLibrary;
-    customListData.value = offlineStorage.animeCustomListData;
+    final handler = Get.find<ServiceHandler>();
+    customListData.value = offlineStorage.animeCustomListData
+        .map((e) => CustomListData(
+              listName: e.listName,
+              listData: e.listData
+                  .where((item) =>
+                      item.serviceIndex == handler.serviceType.value.index)
+                  .toList(),
+            ))
+        .toList();
+
     historyData.value = offlineStorage.animeLibrary
-        .where((e) => e.currentEpisode?.currentTrack != null)
+        .where((e) =>
+            e.currentEpisode?.currentTrack != null &&
+            e.serviceIndex == handler.serviceType.value.index)
         .toList();
     _tabController = TabController(
         length: offlineStorage.animeCustomListData.length, vsync: this);
@@ -64,6 +79,8 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
 
   @override
   Widget build(BuildContext context) {
+    final isSimkl =
+        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Obx(() => Glow(
           child: Scaffold(
             body: Padding(
@@ -88,7 +105,7 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: AnymexText(
-                                text: "ANIME",
+                                text: isSimkl ? "SERIES" : "MANGA",
                                 variant: TextVariant.bold,
                                 color: Theme.of(context).colorScheme.onPrimary),
                           ),
@@ -218,8 +235,7 @@ class _AnimeCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.to(() => AnimeDetailsPage(
-            anilistId: data.id.toString(),
-            posterUrl: data.poster!,
+            media: Media.fromOfflineMedia(data, MediaType.anime),
             tag: '${data.id!}${UniqueKey().toString()}'));
       },
       child: Container(
@@ -366,13 +382,26 @@ class AnimeHistoryCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => WatchPage(
-              episodeSrc: data.currentEpisode!.currentTrack!,
-              episodeList: data.episodes!,
-              anilistData: convertOfflineToAnilistMediaData(data),
-              currentEpisode: data.currentEpisode!,
-              episodeTracks: data.currentEpisode!.videoTracks!,
-            ));
+        if (data.currentEpisode == null ||
+            data.currentEpisode!.currentTrack == null ||
+            data.episodes == null ||
+            data.currentEpisode!.videoTracks == null) {
+          snackBar(
+              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+              duration: 2000,
+              maxLines: 3,
+              maxWidth: Get.width * 0.6);
+        } else {
+          Get.find<SourceController>()
+              .getExtensionByName(data.currentEpisode!.source!);
+          Get.to(() => WatchPage(
+                episodeSrc: data.currentEpisode!.currentTrack!,
+                episodeList: data.episodes!,
+                anilistData: convertOfflineToMedia(data),
+                currentEpisode: data.currentEpisode!,
+                episodeTracks: data.currentEpisode!.videoTracks!,
+              ));
+        }
       },
       child: Container(
         clipBehavior: Clip.antiAlias,

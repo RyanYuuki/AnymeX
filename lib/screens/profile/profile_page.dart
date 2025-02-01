@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
@@ -14,7 +15,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = Get.find<AnilistAuth>();
-    final profileData = Get.find<AnilistAuth>().profileData;
+    final profileData = Get.find<ServiceHandler>().profileData;
     return Glow(
       child: Scaffold(
         body: Obx(
@@ -35,7 +36,7 @@ class ProfilePage extends StatelessWidget {
                               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                               child: SizedBox.expand(
                                 child: Image.network(
-                                  profileData.value?.avatar ?? '',
+                                  profileData.value.avatar ?? '',
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -110,12 +111,12 @@ class ProfilePage extends StatelessWidget {
                             backgroundColor:
                                 Theme.of(context).colorScheme.surfaceContainer,
                             backgroundImage:
-                                NetworkImage(profileData.value?.avatar ?? ''),
+                                NetworkImage(profileData.value.avatar ?? ''),
                           ),
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          profileData.value?.name ?? 'Guest',
+                          profileData.value.name ?? 'Guest',
                           style: TextStyle(
                             fontSize: 24,
                             color: Theme.of(context).colorScheme.primary,
@@ -130,7 +131,7 @@ class ProfilePage extends StatelessWidget {
                               isFirst: true,
                               isLast: false,
                               label: 'Followers',
-                              value: profileData.value?.followers?.toString() ??
+                              value: profileData.value.followers?.toString() ??
                                   '0',
                             ),
                             _buildStatContainer(
@@ -138,7 +139,7 @@ class ProfilePage extends StatelessWidget {
                               isFirst: false,
                               isLast: false,
                               label: 'Following',
-                              value: profileData.value?.following?.toString() ??
+                              value: profileData.value.following?.toString() ??
                                   '0',
                             ),
                             _buildStatContainer(
@@ -147,7 +148,7 @@ class ProfilePage extends StatelessWidget {
                               isLast: false,
                               label: 'Anime',
                               value: profileData
-                                      .value?.stats?.animeStats?.animeCount
+                                      .value.stats?.animeStats?.animeCount
                                       ?.toString() ??
                                   '0',
                             ),
@@ -157,7 +158,7 @@ class ProfilePage extends StatelessWidget {
                               isLast: true,
                               label: 'Manga',
                               value: profileData
-                                      .value?.stats?.mangaStats?.mangaCount
+                                      .value.stats?.mangaStats?.mangaCount
                                       ?.toString() ??
                                   '0',
                             ),
@@ -187,43 +188,43 @@ class ProfilePage extends StatelessWidget {
                                   children: [
                                     StatsRow(
                                       name: 'Episodes Watched',
-                                      value: profileData.value?.stats
-                                              ?.animeStats?.episodesWatched
+                                      value: profileData.value.stats?.animeStats
+                                              ?.episodesWatched
                                               ?.toString() ??
                                           '0',
                                     ),
                                     StatsRow(
                                       name: 'Minutes Watched',
-                                      value: profileData.value?.stats
-                                              ?.animeStats?.minutesWatched
+                                      value: profileData.value.stats?.animeStats
+                                              ?.minutesWatched
                                               ?.toString() ??
                                           '0',
                                     ),
                                     StatsRow(
                                       name: 'Anime Mean Score',
-                                      value: profileData.value?.stats
-                                              ?.animeStats?.meanScore
+                                      value: profileData.value.stats?.animeStats
+                                              ?.meanScore
                                               ?.toString() ??
                                           '0',
                                     ),
                                     StatsRow(
                                       name: 'Chapters Read',
-                                      value: profileData.value?.stats
-                                              ?.mangaStats?.chaptersRead
+                                      value: profileData.value.stats?.mangaStats
+                                              ?.chaptersRead
                                               ?.toString() ??
                                           '0',
                                     ),
                                     StatsRow(
                                       name: 'Volume Read',
-                                      value: profileData.value?.stats
-                                              ?.mangaStats?.volumesRead
+                                      value: profileData.value.stats?.mangaStats
+                                              ?.volumesRead
                                               ?.toString() ??
                                           '0',
                                     ),
                                     StatsRow(
                                       name: 'Manga Mean Score',
-                                      value: profileData.value?.stats
-                                              ?.mangaStats?.meanScore
+                                      value: profileData.value.stats?.mangaStats
+                                              ?.meanScore
                                               ?.toString() ??
                                           '0',
                                     ),
@@ -318,8 +319,10 @@ class StatsRow extends StatelessWidget {
           Text(
             name,
             style: TextStyle(
-              color:
-                  Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.7),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSecondaryContainer
+                  .withOpacity(0.7),
             ),
           ),
           Text(

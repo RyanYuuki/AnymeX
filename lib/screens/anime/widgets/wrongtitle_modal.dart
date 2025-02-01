@@ -1,6 +1,5 @@
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_pages.dart';
-import 'package:anymex/api/Mangayomi/Search/search.dart';
+import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/core/Search/search.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -23,7 +22,7 @@ class WrongTitleModal extends StatefulWidget {
 }
 
 class _WrongTitleModalState extends State<WrongTitleModal> {
-  late Future<MPages?> searchFuture;
+  late Future<List<MManga?>?> searchFuture;
   final sourceController = Get.find<SourceController>();
 
   @override
@@ -32,7 +31,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
     searchFuture = performSearch(widget.initialText);
   }
 
-  Future<MPages?> performSearch(String query) async {
+  Future<List<MManga?>?> performSearch(String query) async {
     final source = widget.isManga
         ? sourceController.activeMangaSource.value
         : sourceController.activeSource.value;
@@ -79,7 +78,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder<MPages?>(
+              child: FutureBuilder<List<MManga?>?>(
                 future: searchFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -89,7 +88,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else if (snapshot.hasData && snapshot.data != null) {
-                    final results = snapshot.data!.list ?? [];
+                    final results = snapshot.data ?? [];
 
                     if (results.isEmpty) {
                       return const Center(
@@ -122,7 +121,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                               children: [
                                 Center(
                                   child: NetworkSizedImage(
-                                    imageUrl: item.imageUrl ?? "",
+                                    imageUrl: item!.imageUrl ?? "",
                                     height: 160,
                                     radius: 12,
                                     width: double.infinity,

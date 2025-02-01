@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "67.0.0"
+  algorithmic:
+    dependency: "direct main"
+    description:
+      name: algorithmic
+      sha256: "306e203894ad5a1b03b45483f2c912bb20d8aaa312907f1381db922eedbc331d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.11"
   analyzer:
     dependency: transitive
     description:
@@ -257,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4+2"
   crypto:
     dependency: transitive
     description:
@@ -393,6 +409,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: c904b4ab56d53385563c7c39d8e9fa9af086f91495dfc48717ad84a42c3cf204
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.1.7"
   fixnum:
     dependency: transitive
     description:
@@ -414,6 +438,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      sha256: b7c7be5cd9f6ef7a78429cabd2774d3c4af50e79cb2b7593e3d5d763ef95c61b
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -518,6 +550,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.0.0"
+  flutter_markdown:
+    dependency: "direct main"
+    description:
+      name: flutter_markdown
+      sha256: "46cdcdcd216f15ac04c80e24e814a89ea7143654442c53ba67fec349b4d44565"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.6"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: "615a505aef59b151b46bbeef55b36ce2b6ed299d160c51d84281946f0aa0ce0e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.24"
   flutter_qjs:
     dependency: "direct main"
     description:
@@ -802,6 +850,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
+  kenburns_nullsafety:
+    dependency: "direct main"
+    description:
+      name: kenburns_nullsafety
+      sha256: "6aa948fbbf4cbd21ad3a5b34d76a8a3e32e93e64622e168686e3263fe25194ff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   lazy_memo:
     dependency: transitive
     description:
@@ -850,6 +906,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  markdown:
+    dependency: transitive
+    description:
+      name: markdown
+      sha256: "935e23e1ff3bc02d390bad4d4be001208ee92cc217cb5b5a6c19bc14aaa318c1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.3.0"
   matcher:
     dependency: transitive
     description:

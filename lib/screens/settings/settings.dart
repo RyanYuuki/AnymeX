@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
@@ -13,6 +12,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +50,13 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
           const SizedBox(height: 30),
+          CustomTile(
+              icon: IconlyLight.profile,
+              title: "Accounts",
+              description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
+              onTap: () {
+                Get.to(() => const SettingsAccounts());
+              }),
           CustomTile(
               icon: HugeIcons.strokeRoundedBulb,
               title: "Common",

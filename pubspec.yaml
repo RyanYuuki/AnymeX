@@ -1,7 +1,7 @@
 name: anymex
 description: "An Anilist Client"
 publish_to: "GitHub"
-version: 2.8.6
+version: 2.9.0
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
@@ -58,6 +58,11 @@ dependencies:
   carousel_slider: ^5.0.0
   smooth_page_indicator: ^1.2.0+3
   blur: ^4.0.0
+  file_picker: ^8.1.7
+  algorithmic: ^0.0.11
+  flutter_dotenv: ^5.2.1
+  kenburns_nullsafety: ^1.0.1
+  flutter_markdown: ^0.7.6
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +92,7 @@ flutter:
 
   assets:
     - assets/images/logo_transparent.png
+    - .env
 
   fonts:
     - family: Poppins
@@ -104,6 +110,6 @@ inno_bundle:
   id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
   publisher: Ryan Yuuki
   name: AnymeX
-  version: 2.8.6
+  version: 2.9.0
   admin: auto
   installer_icon: ./anymex.ico

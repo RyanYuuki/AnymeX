@@ -1,4 +1,5 @@
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -9,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class Header extends StatelessWidget {
   final bool isHomePage;
@@ -17,7 +17,7 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AnilistAuth? profileData = Get.find<AnilistAuth>();
+    final profileData = Get.find<ServiceHandler>();
     final provider = Provider.of<ThemeProvider>(context);
     return Obx(() {
       if (!isHomePage) {
@@ -31,7 +31,7 @@ class Header extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text("Good Night,"),
-                  Text(profileData.profileData.value?.name ?? 'Guest',
+                  Text(profileData.profileData.value.name ?? 'Guest',
                       style: const TextStyle(fontFamily: "Poppins-SemiBold")),
                 ],
               ),
@@ -84,7 +84,7 @@ class Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        "Hey ${profileData.profileData.value?.name ?? "Guest"}, What are we doing today?",
+                        "Hey ${profileData.profileData.value.name ?? "Guest"}, What are we doing today?",
                         style: const TextStyle(
                             fontFamily: "Poppins-Bold", fontSize: 24)),
                     const SizedBox(height: 4),
@@ -109,7 +109,8 @@ class Header extends StatelessWidget {
     });
   }
 
-  GestureDetector _profileIcon(BuildContext context, AnilistAuth profileData) {
+  GestureDetector _profileIcon(
+      BuildContext context, ServiceHandler profileData) {
     return GestureDetector(
       onTap: () {
         return SettingsSheet.show(context);
@@ -119,11 +120,15 @@ class Header extends StatelessWidget {
         backgroundColor:
             Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
         child: profileData.isLoggedIn.value
-            ? NetworkSizedImage(
-                width: 50,
-                height: 50,
-                radius: 50,
-                imageUrl: profileData.profileData.value!.avatar!,
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: CachedNetworkImage(
+                  width: 50,
+                  height: 50,
+                  errorWidget: (context, url, error) =>
+                      const Icon(IconlyBold.profile),
+                  imageUrl: profileData.profileData.value.avatar ?? '',
+                ),
               )
             : Icon(IconlyBold.profile,
                 color: Theme.of(context).colorScheme.onSecondaryContainer),
@@ -138,6 +143,7 @@ class NetworkSizedImage extends StatelessWidget {
   final double? height;
   final double width;
   final Alignment alignment;
+  final String? errorImage;
   const NetworkSizedImage({
     super.key,
     required this.imageUrl,
@@ -145,6 +151,7 @@ class NetworkSizedImage extends StatelessWidget {
     this.height,
     required this.width,
     this.alignment = Alignment.center,
+    this.errorImage,
   });
 
   @override
@@ -158,6 +165,13 @@ class NetworkSizedImage extends StatelessWidget {
           alignment: alignment,
           imageUrl: imageUrl,
           placeholder: (context, url) => placeHolderWidget(context),
+          errorWidget: (context, url, error) => CachedNetworkImage(
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            alignment: alignment,
+            imageUrl: errorImage ?? '',
+          ),
         ));
   }
 }

@@ -1,12 +1,8 @@
-import 'dart:developer';
-
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_chapter.dart';
-import 'package:anymex/api/Mangayomi/Eval/dart/model/m_manga.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
+import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-import 'package:anymex/models/Anilist/anime_media_small.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart' as offline;
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
@@ -28,12 +24,12 @@ extension StringExtensions on String {
   }
 }
 
-String convertAniListStatus(String? status) {
+String convertAniListStatus(String? status, {bool isManga = false}) {
   switch (status?.toUpperCase()) {
     case 'CURRENT':
-      return 'CURRENTLY WATCHING';
+      return isManga ? "CURRENTLY READING" : 'CURRENTLY WATCHING';
     case 'PLANNING':
-      return 'PLANNING TO WATCH';
+      return 'PLANNING TO ${isManga ? 'READ' : 'WATCH'}';
     case 'COMPLETED':
       return 'COMPLETED';
     case 'DROPPED':
@@ -41,7 +37,7 @@ String convertAniListStatus(String? status) {
     case 'PAUSED':
       return 'PAUSED';
     case 'REPEATING':
-      return 'REWATCHING';
+      return isManga ? "REREADING" : 'REWATCHING';
     default:
       return 'ADD TO LIST';
   }
@@ -293,7 +289,14 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
   ];
 }
 
-enum DataVariant { regular, recommendation, relation, anilist, extension }
+enum DataVariant {
+  regular,
+  recommendation,
+  relation,
+  anilist,
+  extension,
+  offline
+}
 
 List<CarouselData> convertData(List<dynamic> data,
     {DataVariant variant = DataVariant.regular}) {
@@ -301,24 +304,24 @@ List<CarouselData> convertData(List<dynamic> data,
     String extra = "";
     switch (variant) {
       case DataVariant.regular:
-        final data = e as AnilistMediaSmall;
-        extra = data.averageScore?.toString() ?? "??";
+        final data = e as Media;
+        extra = data.rating.toString();
         break;
       case DataVariant.recommendation:
-        final data = e as Recommendation;
-        extra = data.averageScore?.toString() ?? "??";
+        final data = e as Media;
+        extra = data.rating.toString();
         break;
       case DataVariant.relation:
         final data = e as Relation;
-        extra = data.type ?? "??";
+        extra = data.type;
         break;
       case DataVariant.anilist:
-        final data = e as AnilistMediaUser;
+        final data = e as TrackedMedia;
         final ext = data.episodeCount;
         extra = ext ?? "??";
         break;
+      case DataVariant.offline:
       case DataVariant.extension:
-      // TODO: Handle this case.
     }
     if (variant == DataVariant.extension) {
       final data = e as MManga;
@@ -326,8 +329,17 @@ List<CarouselData> convertData(List<dynamic> data,
         id: data.link,
         title: data.name,
         poster: data.imageUrl,
-        extraData: data.author?.toUpperCase() ?? 'NOVEL',
+        extraData: '??',
       );
+    } else if (variant == DataVariant.offline) {
+      final data = e as OfflineMedia;
+      final ext =
+          data.currentChapter?.number ?? data.currentEpisode?.number ?? 0;
+      return CarouselData(
+          id: data.id,
+          title: data.name,
+          poster: data.poster,
+          extraData: ext.toString());
     } else {
       return CarouselData(
         id: e.id.toString(),
@@ -358,13 +370,11 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
   }
 }
 
-AnilistMediaData convertOfflineToAnilistMediaData(OfflineMedia offlineMedia) {
-  return AnilistMediaData(
-    id: offlineMedia.id ?? 0,
-    jname: offlineMedia.jname ?? '',
-    name: offlineMedia.name ?? '',
-    english: offlineMedia.english ?? '',
-    japanese: offlineMedia.japanese ?? '',
+Media convertOfflineToMedia(OfflineMedia offlineMedia) {
+  return Media(
+    id: offlineMedia.id ?? '0',
+    romajiTitle: offlineMedia.jname ?? '',
+    title: offlineMedia.english ?? offlineMedia.name ?? '',
     description: offlineMedia.description ?? '',
     poster: offlineMedia.poster ?? '',
     cover: offlineMedia.cover,
@@ -389,8 +399,9 @@ AnilistMediaData convertOfflineToAnilistMediaData(OfflineMedia offlineMedia) {
   );
 }
 
-List<AnilistMediaUser> filterListByStatus(
-    List<AnilistMediaUser> animeList, String status) {
+List<TrackedMedia> filterListByStatus(
+    List<TrackedMedia> animeList, String status,
+    {bool isMAL = false}) {
   switch (status.toUpperCase()) {
     case 'WATCHING':
       return animeList
@@ -403,7 +414,11 @@ List<AnilistMediaUser> filterListByStatus(
     case 'COMPLETED TV':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'TV')
+              ((anime.watchingStatus == 'COMPLETED') && anime.format == 'TV'))
+          .toList();
+    case 'COMPLETED':
+      return animeList
+          .where((anime) => ((anime.watchingStatus == 'COMPLETED')))
           .toList();
     case 'COMPLETED MOVIE':
       return animeList
@@ -452,8 +467,8 @@ List<AnilistMediaUser> filterListByStatus(
   }
 }
 
-List<AnilistMediaUser> filterListByLabel(
-    List<AnilistMediaUser> animeList, String label) {
+List<TrackedMedia> filterListByLabel(
+    List<TrackedMedia> animeList, String label) {
   return animeList.where((anime) {
     if (label == "Continue Watching" && anime.watchingStatus == 'CURRENT') {
       return true;
@@ -497,4 +512,8 @@ List<AnilistMediaUser> filterListByLabel(
 
     return false;
   }).toList();
+}
+
+int getResponsiveCrossAxisVal(double screenWidth, {int itemWidth = 150}) {
+  return (screenWidth / itemWidth).floor().clamp(1, 10);
 }

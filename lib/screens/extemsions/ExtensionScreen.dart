@@ -1,17 +1,23 @@
-import 'package:anymex/api/Mangayomi/Extensions/fetch_anime_sources.dart';
-import 'package:anymex/api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import 'package:anymex/api/Mangayomi/Model/Source.dart';
+
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/core/Extensions/fetch_anime_sources.dart';
+import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
+import 'package:anymex/core/Model/Source.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extemsions/ExtensionList.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:isar/isar.dart';
-import '../../api/Mangayomi/Model/Manga.dart';
 import '../../main.dart';
 
 class ExtensionScreen extends ConsumerStatefulWidget {
@@ -44,6 +50,13 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
   }
 
+  Future<void> _refreshData() async {
+    await ref
+        .refresh(fetchMangaSourcesListProvider(id: null, reFresh: true).future);
+    await ref
+        .refresh(fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
+  }
+
   _checkPermission() async {
     await StorageProvider().requestPermission();
   }
@@ -74,7 +87,65 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
               IconButton(
-                icon: Icon(Icons.language_rounded, color: theme.primary),
+                icon:
+                    Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
+                onPressed: () {
+                  final controller = Get.find<SourceController>();
+                  final animeRepoController = TextEditingController(
+                    text: controller.activeAnimeRepo,
+                  );
+                  final mangaRepoController = TextEditingController(
+                    text: controller.activeMangaRepo,
+                  );
+
+                  AlertDialogBuilder(context)
+                    ..setTitleWidget(const Center(
+                      child: AnymexText(
+                        text: "Add Repo",
+                        size: 20,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ))
+                    ..setCustomView(
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomSearchBar(
+                            prefixIcon: HugeIcons.strokeRoundedGithub,
+                            controller: animeRepoController,
+                            onSubmitted: (value) {},
+                            hintText: "Add Anime Repo...",
+                            disableIcons: true,
+                            padding: const EdgeInsets.all(0),
+                          ),
+                          const SizedBox(height: 10),
+                          CustomSearchBar(
+                            prefixIcon: HugeIcons.strokeRoundedGithub,
+                            controller: mangaRepoController,
+                            onSubmitted: (value) {},
+                            hintText: "Add Manga Repo...",
+                            disableIcons: true,
+                            padding: const EdgeInsets.all(0),
+                          ),
+                        ],
+                      ),
+                    )
+                    ..setPositiveButton("Confirm", () async {
+                      if (animeRepoController.text.isNotEmpty) {
+                        controller.activeAnimeRepo = animeRepoController.text;
+                      }
+                      if (mangaRepoController.text.isNotEmpty) {
+                        controller.activeMangaRepo = mangaRepoController.text;
+                      }
+
+                      await _fetchData();
+                      await _refreshData();
+                    })
+                    ..show();
+                },
+              ),
+              IconButton(
+                icon: Icon(Iconsax.language_square, color: theme.primary),
                 onPressed: () {
                   AlertDialogBuilder(context)
                     ..setTitle(_selectedLanguage)
@@ -91,7 +162,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                     ..show();
                 },
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
             ],
           ),
           body: Column(
@@ -104,13 +175,13 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                 dragStartBehavior: DragStartBehavior.start,
                 tabs: [
                   _buildTab(
-                      context, ItemType.anime, "Anime Installed", false, true),
+                      context, MediaType.anime, "Installed Anime", false, true),
+                  _buildTab(context, MediaType.anime, "Available Anime", false,
+                      false),
                   _buildTab(
-                      context, ItemType.anime, "Anime Available", false, false),
+                      context, MediaType.manga, "Installed Manga", true, true),
                   _buildTab(
-                      context, ItemType.manga, "Manga Installed", true, true),
-                  _buildTab(
-                      context, ItemType.manga, "Manga Available", true, false),
+                      context, MediaType.manga, "Available Manga", true, false),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -127,37 +198,37 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                     Extension(
                       installed: true,
                       query: _textEditingController.text,
-                      itemType: ItemType.anime,
+                      mediaType: MediaType.anime,
                       selectedLanguage: _selectedLanguage,
                     ),
                     Extension(
                       installed: false,
                       query: _textEditingController.text,
-                      itemType: ItemType.anime,
+                      mediaType: MediaType.anime,
                       selectedLanguage: _selectedLanguage,
                     ),
                     Extension(
                       installed: true,
                       query: _textEditingController.text,
-                      itemType: ItemType.manga,
+                      mediaType: MediaType.manga,
                       selectedLanguage: _selectedLanguage,
                     ),
                     Extension(
                       installed: false,
                       query: _textEditingController.text,
-                      itemType: ItemType.manga,
+                      mediaType: MediaType.manga,
                       selectedLanguage: _selectedLanguage,
                     ),
                     // Extension(
                     //   installed: true,
                     //   query: _textEditingController.text,
-                    //   itemType: ItemType.novel,
+                    //   MediaType: MediaType.novel,
                     //   selectedLanguage: _selectedLanguage,
                     // ),
                     // Extension(
                     //   installed: false,
                     //   query: _textEditingController.text,
-                    //   itemType: ItemType.novel,
+                    //   MediaType: MediaType.novel,
                     //   selectedLanguage: _selectedLanguage,
                     // ),
                   ],
@@ -170,7 +241,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     );
   }
 
-  Widget _buildTab(BuildContext context, ItemType itemType, String label,
+  Widget _buildTab(BuildContext context, MediaType MediaType, String label,
       bool isManga, bool installed) {
     return Tab(
       child: Row(
@@ -186,14 +257,14 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
           ),
           const SizedBox(width: 8),
           _extensionUpdateNumbers(
-              context, itemType, installed, _selectedLanguage),
+              context, MediaType, installed, _selectedLanguage),
         ],
       ),
     );
   }
 }
 
-Widget _extensionUpdateNumbers(BuildContext context, ItemType itemType,
+Widget _extensionUpdateNumbers(BuildContext context, MediaType mediaType,
     bool installed, String selectedLanguage) {
   return StreamBuilder(
     stream: isar.sources
@@ -202,7 +273,7 @@ Widget _extensionUpdateNumbers(BuildContext context, ItemType itemType,
         .and()
         .isAddedEqualTo(installed)
         .isActiveEqualTo(true)
-        .isMangaEqualTo(itemType == ItemType.manga)
+        .isMangaEqualTo(mediaType == MediaType.manga)
         .watch(fireImmediately: true),
     builder: (context, snapshot) {
       if (snapshot.hasData && snapshot.data!.isNotEmpty) {

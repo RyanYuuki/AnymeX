@@ -1,26 +1,27 @@
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
 
-import '../../api/Mangayomi/Extensions/GetSourceList.dart';
-import '../../api/Mangayomi/Extensions/extensions_provider.dart';
-import '../../api/Mangayomi/Extensions/fetch_anime_sources.dart';
-import '../../api/Mangayomi/Extensions/fetch_manga_sources.dart';
-import '../../api/Mangayomi/Model/Manga.dart';
-import '../../api/Mangayomi/Model/Source.dart';
+import '../../core/Extensions/GetSourceList.dart';
+import '../../core/Extensions/extensions_provider.dart';
+import '../../core/Extensions/fetch_anime_sources.dart';
+import '../../core/Extensions/fetch_manga_sources.dart';
+import '../../core/Model/Source.dart';
 import 'ExtensionItem.dart';
 
 class Extension extends ConsumerStatefulWidget {
   final bool installed;
-  final ItemType itemType;
+  final MediaType mediaType;
   final String query;
   final String selectedLanguage;
 
   const Extension({
     required this.installed,
     required this.query,
-    required this.itemType,
+    required this.mediaType,
     required this.selectedLanguage,
     super.key,
   });
@@ -33,27 +34,27 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
   final controller = ScrollController();
 
   Future<void> _refreshData() async {
-    if (widget.itemType == ItemType.manga) {
+    if (widget.mediaType == MediaType.manga) {
       return await ref.refresh(
           fetchMangaSourcesListProvider(id: null, reFresh: true).future);
-    } else if (widget.itemType == ItemType.anime) {
+    } else if (widget.mediaType == MediaType.anime) {
       return await ref.refresh(
           fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
     }
   }
 
   Future<void> _fetchData() async {
-    if (widget.itemType == ItemType.manga) {
+    if (widget.mediaType == MediaType.manga) {
       ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
-    } else if (widget.itemType == ItemType.anime) {
+    } else if (widget.mediaType == MediaType.anime) {
       ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final streamExtensions = ref
-        .watch(getExtensionsStreamProvider(widget.itemType == ItemType.manga));
+    final streamExtensions = ref.watch(
+        getExtensionsStreamProvider(widget.mediaType == MediaType.manga));
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -81,8 +82,8 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
             );
           },
           error: (error, _) => Center(
-            child: ElevatedButton(
-              onPressed: () => _fetchData(),
+            child: AnymexButton(
+              onTap: () => _fetchData(),
               child: const Text('Refresh'),
             ),
           ),
@@ -140,10 +141,10 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               'Update Pending',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
-            ElevatedButton(
-              onPressed: () async {
+            AnymexButton(
+              onTap: () async {
                 for (var source in updateEntries) {
-                  widget.itemType == ItemType.manga
+                  widget.mediaType == MediaType.manga
                       ? await ref.watch(fetchMangaSourcesListProvider(
                               id: source.id, reFresh: true)
                           .future)
@@ -162,7 +163,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        itemType: widget.itemType,
+        mediaType: widget.mediaType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -181,7 +182,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        itemType: widget.itemType,
+        mediaType: widget.mediaType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -207,7 +208,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        itemType: widget.itemType,
+        mediaType: widget.mediaType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),

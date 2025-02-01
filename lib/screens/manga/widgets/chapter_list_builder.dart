@@ -1,16 +1,15 @@
-import 'dart:developer';
-
-import 'package:anymex/controllers/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -19,7 +18,7 @@ import 'package:get/get.dart';
 
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter>? chapters;
-  final AnilistMediaData anilistData;
+  final Media anilistData;
   const ChapterListBuilder(
       {super.key, required this.chapters, required this.anilistData});
 
@@ -28,8 +27,8 @@ class ChapterListBuilder extends StatefulWidget {
 }
 
 class _ChapterListBuilderState extends State<ChapterListBuilder> {
-  final selectedChunkIndex = 0.obs;
-  final auth = Get.find<AnilistAuth>();
+  final selectedChunkIndex = 1.obs;
+  final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
   int? userProgress;
   Chapter? readChap;
@@ -47,17 +46,16 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       final selectedChapters = chunkedChapters.isNotEmpty
           ? chunkedChapters[selectedChunkIndex.value].obs
           : [].obs;
-          
+
       if (auth.isLoggedIn.value) {
-        userProgress = auth
-            .returnAvailManga(widget.anilistData.id.toString())
-            .episodeCount
-            ?.toInt();
+        final temp = auth.onlineService.mangaList
+            .firstWhereOrNull((e) => e.id == widget.anilistData.id);
+        userProgress = temp?.episodeCount?.toInt() ?? 0;
         readChap = offlineStorage.getReadChapter(
             widget.anilistData.id, userProgress?.toDouble() ?? 1);
-        continueChapter = widget.chapters?.firstWhere(
-            (e) => e.number?.toInt() == userProgress,
-            orElse: () => widget.chapters![0]);
+        continueChapter = widget.chapters?.firstWhereOrNull(
+          (e) => e.number?.toInt() == userProgress,
+        );
       } else {
         userProgress = offlineStorage
                 .getMangaById(widget.anilistData.id)
@@ -75,22 +73,23 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ContinueChapterButton(
-                onPressed: () {
-                  Get.to(() => ReadingPage(
-                        anilistData: widget.anilistData,
-                        chapterList: widget.chapters!,
-                        currentChapter: continueChapter!,
-                      ));
-                },
-                height:
-                    getResponsiveSize(context, mobileSize: 80, dektopSize: 100),
-                backgroundImage:
-                    widget.anilistData.cover ?? widget.anilistData.poster,
-                chapter: readChap ?? continueChapter!),
-          ),
+          if ((readChap ?? continueChapter) != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ContinueChapterButton(
+                  onPressed: () {
+                    Get.to(() => ReadingPage(
+                          anilistData: widget.anilistData,
+                          chapterList: widget.chapters!,
+                          currentChapter: continueChapter!,
+                        ));
+                  },
+                  height: getResponsiveSize(context,
+                      mobileSize: 80, dektopSize: 100),
+                  backgroundImage:
+                      widget.anilistData.cover ?? widget.anilistData.poster,
+                  chapter: readChap ?? continueChapter!),
+            ),
           ChapterRanges(
               selectedChunkIndex: selectedChunkIndex,
               onChunkSelected: (val) {
@@ -117,9 +116,9 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                 final savedChaps = offlineStorage.getReadChapter(
                     widget.anilistData.id, chapter.number!);
                 final isSelected = chapter.number ==
-                    (readChap?.number ?? continueChapter!.number);
+                    (readChap?.number ?? continueChapter?.number);
                 final alreadyRead = chapter.number! <
-                    (readChap?.number ?? continueChapter!.number)!;
+                    (readChap?.number ?? continueChapter?.number ?? 0);
                 return Opacity(
                   opacity: alreadyRead ? 0.5 : 1,
                   child: Container(
@@ -187,21 +186,18 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                         Container(
                           decoration: BoxDecoration(
                               boxShadow: [glowingShadow(context)]),
-                          child: ElevatedButton(
-                            onPressed: () {
+                          child: AnymexButton(
+                            onTap: () {
                               Get.to(() => ReadingPage(
                                     anilistData: widget.anilistData,
                                     chapterList: widget.chapters!,
                                     currentChapter: chapter,
                                   ));
                             },
-                            style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.multiplyRadius())),
-                                fixedSize: const Size(100, 40),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
+                            radius: 12,
+                            width: 100,
+                            height: 40,
+                            color: Theme.of(context).colorScheme.primary,
                             child: AnymexText(
                               text: "Read",
                               variant: TextVariant.semiBold,
@@ -291,20 +287,13 @@ class ContinueChapterButton extends StatelessWidget {
                 ),
               ),
               Positioned.fill(
-                child: ElevatedButton(
-                  onPressed: onPressed,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    fixedSize: getResponsiveValue(context,
-                        mobileValue: Size(Get.width * 0.8, height),
-                        desktopValue: null),
-                    backgroundColor: Colors.transparent,
-                    elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                    ),
-                  ),
+                child: AnymexButton(
+                  onTap: onPressed,
+                  padding: EdgeInsets.zero,
+                  width: Get.width * 0.8,
+                  height: height,
+                  color: Colors.transparent,
+                  radius: borderRadius,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,

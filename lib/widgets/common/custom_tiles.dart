@@ -69,9 +69,11 @@ class CustomSwitchTile extends StatelessWidget {
 
 class CustomTile extends StatelessWidget {
   final IconData icon;
+  final Widget? prefix;
   final String title;
   final String description;
   final VoidCallback? onTap;
+  final Widget? postFix;
 
   const CustomTile({
     super.key,
@@ -79,6 +81,8 @@ class CustomTile extends StatelessWidget {
     required this.title,
     required this.description,
     this.onTap,
+    this.prefix,
+    this.postFix,
   });
 
   @override
@@ -89,7 +93,10 @@ class CustomTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Row(
           children: [
-            Icon(icon, size: 30, color: Theme.of(context).colorScheme.primary),
+            if (prefix == null)
+              Icon(icon, size: 30, color: Theme.of(context).colorScheme.primary)
+            else
+              prefix!,
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -117,8 +124,11 @@ class CustomTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(IconlyLight.arrow_right_2,
-                color: Theme.of(context).colorScheme.primary),
+            if (postFix == null)
+              Icon(IconlyLight.arrow_right_2,
+                  color: Theme.of(context).colorScheme.primary)
+            else
+              postFix!
           ],
         ),
       ),

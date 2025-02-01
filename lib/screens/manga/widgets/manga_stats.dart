@@ -1,14 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:anymex/models/Anilist/anilist_media_full.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
+import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class MangaStats extends StatelessWidget {
-  final AnilistMediaData data;
+  final Media data;
   const MangaStats({
     super.key,
     required this.data,
@@ -16,6 +17,9 @@ class MangaStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final covers = [...trendingAnimes, ...trendingMangas]
+        .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
+        .toList();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,15 +34,15 @@ class MangaStats extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             children: [
-              StateItem(label: "Japanese", value: data.jname),
-              StateItem(label: "Native", value: data.japanese),
+              StateItem(label: "Japanese", value: data.romajiTitle),
               StateItem(label: "Type", value: data.type),
               StateItem(label: "Rating", value: '${data.rating}/10'),
               StateItem(label: "Popularity", value: data.popularity),
               StateItem(label: "Season", value: data.season),
               StateItem(label: "Format", value: data.format),
               StateItem(label: "Status", value: data.status),
-              StateItem(label: "Total Chapters", value: data.totalChapters),
+              StateItem(
+                  label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
             ],
           ),
@@ -66,6 +70,7 @@ class MangaStats extends StatelessWidget {
           size: 17,
         ),
         GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.only(top: 15),
           shrinkWrap: true,
           itemCount: data.genres.length,
@@ -83,9 +88,7 @@ class MangaStats extends StatelessWidget {
                 height: 80,
                 width: 1000,
                 onPressed: () {},
-                backgroundImage: trendingAnimes[index].cover ??
-                    trendingAnimes[index].poster ??
-                    '');
+                backgroundImage: covers[index].cover!);
           },
         ),
       ],

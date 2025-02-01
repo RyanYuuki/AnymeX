@@ -23,12 +23,23 @@ double getResponsiveSize(context,
 }
 
 dynamic getResponsiveValue(context,
-    {required dynamic mobileValue, required dynamic desktopValue}) {
+    {required dynamic mobileValue,
+    required dynamic desktopValue,
+    bool strictMode = false}) {
   final currentWidth = MediaQuery.of(context).size.width;
-  if (currentWidth > maxMobileWidth) {
-    return desktopValue;
+  final isMobile = Platform.isAndroid || Platform.isIOS;
+  if (strictMode) {
+    if (!isMobile) {
+      return desktopValue;
+    } else {
+      return mobileValue;
+    }
   } else {
-    return mobileValue;
+    if (currentWidth > maxMobileWidth) {
+      return desktopValue;
+    } else {
+      return mobileValue;
+    }
   }
 }
 
@@ -58,7 +69,7 @@ int getResponsiveCrossAxisCount(
   return crossAxisCount.clamp(baseColumns, maxColumns);
 }
 
-class PlatformBuilder extends StatefulWidget {
+class PlatformBuilder extends StatelessWidget {
   final Widget androidBuilder;
   final Widget desktopBuilder;
   final bool strictMode;
@@ -69,26 +80,37 @@ class PlatformBuilder extends StatefulWidget {
       this.strictMode = false});
 
   @override
-  State<PlatformBuilder> createState() => _PlatformBuilderState();
-}
-
-class _PlatformBuilderState extends State<PlatformBuilder> {
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (widget.strictMode) {
+      if (strictMode) {
         if (!Platform.isAndroid && !Platform.isIOS) {
-          return widget.desktopBuilder;
+          return desktopBuilder;
         } else {
-          return widget.androidBuilder;
+          return androidBuilder;
         }
       } else {
         if (constraints.maxWidth > maxMobileWidth) {
-          return widget.desktopBuilder;
+          return desktopBuilder;
         } else {
-          return widget.androidBuilder;
+          return androidBuilder;
         }
       }
     });
+  }
+}
+
+class ConditionalBuilder extends StatelessWidget {
+  final Widget falseBuilder;
+  final Widget trueBuilder;
+  final bool condition;
+  const ConditionalBuilder(
+      {super.key,
+      required this.falseBuilder,
+      required this.trueBuilder,
+      required this.condition});
+
+  @override
+  Widget build(BuildContext context) {
+    return condition ? trueBuilder : falseBuilder;
   }
 }

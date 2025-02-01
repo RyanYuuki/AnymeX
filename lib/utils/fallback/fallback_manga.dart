@@ -1,5 +1,4 @@
-import 'package:anymex/models/Anilist/anime_media_small.dart';
-import 'package:anymex/utils/fallback/fallback_anime.dart';
+import 'package:anymex/models/Media/media.dart';
 
 final dynamic fallbackMangaData = {
   "data": {
@@ -5329,3 +5328,9 @@ final latestMangas = parseMediaList(data['latestMangas']['media']);
 final top10Today = parseMediaList(data['top10Today']['media']);
 final top10Week = parseMediaList(data['top10Week']['media']);
 final top10Month = parseMediaList(data['top10Month']['media']);
+
+List<Media> parseMediaList(List<dynamic> mediaList) {
+  return mediaList.map((media) {
+    return Media.fromSmallJson(media, true);
+  }).toList();
+}
