@@ -192,12 +192,12 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      if (profileData.value?.id == null) {
+      if (profileData.value.id == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = profileData.value?.id;
+      final userId = profileData.value.id;
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
@@ -269,12 +269,12 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      if (profileData.value?.id == null) {
+      if (profileData.value.id == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = profileData.value?.id;
+      final userId = profileData.value.id;
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
@@ -336,12 +336,12 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      if (profileData.value?.id == null) {
+      if (profileData.value.id == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = profileData.value?.id;
+      final userId = profileData.value.id;
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }
@@ -437,12 +437,12 @@ class AnilistAuth extends GetxController {
     ''';
 
     try {
-      if (profileData.value?.id == null) {
+      if (profileData.value.id == null) {
         log('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
-      final userId = profileData.value?.id;
+      final userId = profileData.value.id;
       if (userId == null) {
         throw Exception('Failed to get user ID');
       }

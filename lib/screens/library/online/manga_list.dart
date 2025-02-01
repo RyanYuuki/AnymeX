@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/library/online/widgets/items.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -33,7 +32,7 @@ class _AnilistMangaListState extends State<AnilistMangaList> {
   @override
   Widget build(BuildContext context) {
     final anilistAuth = Get.find<ServiceHandler>();
-    final userName = anilistAuth.profileData.value!.name;
+    final userName = anilistAuth.profileData.value.name;
     final mangaList = anilistAuth.mangaList.value;
     return Glow(
       child: DefaultTabController(

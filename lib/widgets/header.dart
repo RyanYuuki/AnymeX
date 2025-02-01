@@ -1,7 +1,5 @@
-import 'dart:developer';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -33,7 +31,7 @@ class Header extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text("Good Night,"),
-                  Text(profileData.profileData.value?.name ?? 'Guest',
+                  Text(profileData.profileData.value.name ?? 'Guest',
                       style: const TextStyle(fontFamily: "Poppins-SemiBold")),
                 ],
               ),

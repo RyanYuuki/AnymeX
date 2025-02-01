@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';

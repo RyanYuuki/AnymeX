@@ -10,7 +10,6 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/Offline/Hive/episode.dart';

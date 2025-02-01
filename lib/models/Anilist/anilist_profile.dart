@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 class Profile {
   String? id;

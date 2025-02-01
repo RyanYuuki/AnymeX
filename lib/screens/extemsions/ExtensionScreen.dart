@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Extensions/fetch_anime_sources.dart';

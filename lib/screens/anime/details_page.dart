@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:io';
-import 'dart:math';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';

@@ -291,7 +291,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                                       const Icon(
                                                           IconlyBold.profile),
                                               imageUrl: authService.profileData
-                                                      .value?.avatar ??
+                                                      .value.avatar ??
                                                   ''),
                                         )
                                       : const Icon((IconlyBold.profile)))),

@@ -2,7 +2,6 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
