@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -62,7 +64,8 @@ class UpdateChecker {
   }
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
-    if (currentVersion != latestVersion) return true;
+    log("Current Ver: $currentVersion, Latest Ver: ${latestVersion.replaceAll('v', '')}");
+    if (currentVersion != latestVersion.replaceAll('v', '')) return true;
     return false;
   }
 
