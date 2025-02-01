@@ -293,13 +293,13 @@ jobs:
           MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
           CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+          echo "AL_CLIENT_ID=$env:AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$env:AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$env:SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$env:SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$env:MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$env:MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$env:CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
