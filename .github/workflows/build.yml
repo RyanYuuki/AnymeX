@@ -39,15 +39,23 @@ jobs:
           echo "keyAlias=$KEY_ALIAS" >> android/key.properties
           echo "storeFile=anymex.jks" >> android/key.properties
 
-      - name: Create .env File
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
-          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
-          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
-          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
-          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
@@ -86,15 +94,23 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
-      - name: Create .env File
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
-          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
-          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
-          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
-          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
@@ -137,15 +153,23 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
-      - name: Create .env File
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
-          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
-          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
-          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
-          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
@@ -259,15 +283,23 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
-      - name: Create .env File
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
-          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
-          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
-          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
-          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
@@ -301,15 +333,23 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
-      - name: Create .env File
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}" >> .env
-          echo "AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}" >> .env
-          echo "SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}" >> .env
-          echo "SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}" >> .env
-          echo "MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}" >> .env
-          echo "MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}" >> .env
-          echo "CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}" >> .env
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
       - name: Get Dependencies
         run: flutter pub get
