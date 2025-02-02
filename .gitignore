@@ -41,3 +41,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# env vars
+.env
+anymex.jks
+keystore.b64
