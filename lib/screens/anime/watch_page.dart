@@ -157,7 +157,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       await serviceHandler.updateListEntry(
           listId: anilistData.value.id,
-          status: "CURRENT",
           progress: epNum,
           isAnime: true);
       serviceHandler.onlineService

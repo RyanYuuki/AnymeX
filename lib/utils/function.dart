@@ -6,6 +6,7 @@ import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -516,4 +517,12 @@ List<TrackedMedia> filterListByLabel(
 
 int getResponsiveCrossAxisVal(double screenWidth, {int itemWidth = 150}) {
   return (screenWidth / itemWidth).floor().clamp(1, 10);
+}
+
+bool isTv() {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  deviceInfo.androidInfo.then((e) {
+    return e.systemFeatures.contains('android.software.leanback');
+  });
+  return true;
 }

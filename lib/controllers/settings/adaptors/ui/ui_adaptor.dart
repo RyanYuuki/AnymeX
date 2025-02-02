@@ -43,33 +43,36 @@ class UISettings extends HiveObject {
   @HiveField(12)
   Map<String, bool> homePageCards;
 
-  UISettings({
-    this.glowMultiplier = 1.0,
-    this.radiusMultiplier = 1.0,
-    this.saikouLayout = false,
-    this.tabBarHeight = 50.0,
-    this.tabBarWidth = 180.0,
-    this.tabBarRoundness = 10.0,
-    this.compactCards = false,
-    this.cardRoundness = 1.0,
-    this.blurMultipler = 1.0,
-    this.animationDuration = 200,
-    this.glowDensity = 0.3,
-    this.translucentTabBar = true,
-    this.homePageCards = const {
-      "Continue Watching": true,
-      "Continue Reading": true,
-      "Completed TV": false,
-      "Completed Manga": false,
-      "Completed Movie": false,
-      "Paused Animes": false,
-      "Paused Manga": false,
-      "Dropped Animes": false,
-      "Dropped Manga": false,
-      "Planning Animes": false,
-      "Planning Manga": false,
-      "Rewatching Animes": false,
-      "Rewatching Manga": false,
-    },
-  });
+  @HiveField(13)
+  bool enableAnimation;
+
+  UISettings(
+      {this.glowMultiplier = 1.0,
+      this.radiusMultiplier = 1.0,
+      this.saikouLayout = false,
+      this.tabBarHeight = 50.0,
+      this.tabBarWidth = 180.0,
+      this.tabBarRoundness = 10.0,
+      this.compactCards = false,
+      this.cardRoundness = 1.0,
+      this.blurMultipler = 1.0,
+      this.animationDuration = 200,
+      this.glowDensity = 0.3,
+      this.translucentTabBar = true,
+      this.homePageCards = const {
+        "Continue Watching": true,
+        "Continue Reading": true,
+        "Completed TV": false,
+        "Completed Manga": false,
+        "Completed Movie": false,
+        "Paused Animes": false,
+        "Paused Manga": false,
+        "Dropped Animes": false,
+        "Dropped Manga": false,
+        "Planning Animes": false,
+        "Planning Manga": false,
+        "Rewatching Animes": false,
+        "Rewatching Manga": false,
+      },
+      this.enableAnimation = true});
 }

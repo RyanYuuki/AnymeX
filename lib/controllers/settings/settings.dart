@@ -43,6 +43,14 @@ class Settings extends GetxController {
     saveUISettings();
   }
 
+  bool get enableAnimation => uiSettings.value.enableAnimation;
+  set enableAnimation(bool value) {
+    uiSettings.update((settings) {
+      settings?.enableAnimation = value;
+    });
+    saveUISettings();
+  }
+
   Map<String, bool> get homePageCards => uiSettings.value.homePageCards;
 
   void updateHomePageCard(String key, bool value) {

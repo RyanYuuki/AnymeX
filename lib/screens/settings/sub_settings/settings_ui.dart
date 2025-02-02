@@ -77,6 +77,15 @@ class _SettingsUiState extends State<SettingsUi> {
                               )),
                         ),
                         CustomSwitchTile(
+                            icon: HugeIcons.strokeRoundedBounceRight,
+                            title: "Enable Animation",
+                            description:
+                                "Enable Animation on Carousels, Disable it to get smoother experience",
+                            switchValue: settings.enableAnimation,
+                            onChanged: (val) {
+                              settings.enableAnimation = val;
+                            }),
+                        CustomSwitchTile(
                             icon: Icons.colorize,
                             title: "Transculent Nav",
                             description: "Enable transculent tab bar",
