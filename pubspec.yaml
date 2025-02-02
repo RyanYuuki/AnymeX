@@ -63,6 +63,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   kenburns_nullsafety: ^1.0.1
   flutter_markdown: ^0.7.6
+  device_info_plus: ^11.2.2
 
 dev_dependencies:
   flutter_test:
