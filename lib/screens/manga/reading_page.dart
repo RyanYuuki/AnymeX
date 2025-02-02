@@ -56,7 +56,9 @@ class _ReadingPageState extends State<ReadingPage> {
   final canGoBackward = true.obs;
   final isLoading = true.obs;
   Timer? _debounce;
-
+  int _pointersCount = 0;
+  final TransformationController _zoomController = TransformationController();
+  double currentScaleValue = 1.0;
   // Settings
   final activeMode = ReadingMode.webtoon.obs;
   final pageWidthMultiplier = 1.0.obs;
@@ -379,10 +381,32 @@ class _ReadingPageState extends State<ReadingPage> {
 
             return Stack(
               children: [
-                if (activeMode.value != ReadingMode.webtoon)
-                  _buildPageViewMode()
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  if (activeMode.value != ReadingMode.webtoon)
+                    _buildPageViewMode()
+                  else
+                    _buildWebtoonMode()
+                else if (activeMode.value != ReadingMode.webtoon)
+                  InteractiveViewer(
+                      boundaryMargin: const EdgeInsets.all(20.0),
+                      minScale: 0.5,
+                      maxScale: 4,
+                      child: _buildPageViewMode())
                 else
-                  _buildWebtoonMode(),
+                  InteractiveViewer(
+                      boundaryMargin: const EdgeInsets.all(20.0),
+                      minScale: 0.5,
+                      maxScale: 4,
+                      transformationController: _zoomController,
+                      onInteractionEnd: (details) {
+                        currentScaleValue =
+                            _zoomController.value.getMaxScaleOnAxis();
+                      },
+                      child: Listener(
+                          onPointerDown: (_) =>
+                              setState(() => _pointersCount++),
+                          onPointerUp: (_) => setState(() => _pointersCount--),
+                          child: _buildWebtoonMode())),
                 _buildTopControls(context),
                 _bottomControls(context),
               ],
@@ -433,7 +457,9 @@ class _ReadingPageState extends State<ReadingPage> {
   SingleChildScrollView _buildWebtoonMode() {
     return SingleChildScrollView(
       controller: scrollController,
-      physics: const BouncingScrollPhysics(),
+      physics: (_pointersCount < 2) || (currentScaleValue > 1)
+          ? const BouncingScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

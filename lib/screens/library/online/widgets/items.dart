@@ -8,14 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-GestureDetector listItem(
-    BuildContext context,
-    TrackedMedia item,
-    String tag,
-    posterUrl,
-    List<dynamic> filteredAnimeList,
-    int index,
-    bool isManga) {
+GestureDetector listItem(BuildContext context, TrackedMedia item, String tag,
+    posterUrl, List<dynamic> filteredAnimeList, int index, bool isManga) {
   return GestureDetector(
     onTap: () {
       if (isManga) {
