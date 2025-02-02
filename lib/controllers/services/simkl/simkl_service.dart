@@ -315,7 +315,7 @@ class SimklService extends GetxController
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
-      snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
+      // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       log('Exception: $e\n$stack');

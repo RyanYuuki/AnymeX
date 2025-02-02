@@ -480,8 +480,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     );
 
     if (req.statusCode == 200) {
-      snackBar(
-          "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
+      // snackBar(
+      //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
 
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
