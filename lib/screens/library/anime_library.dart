@@ -149,9 +149,9 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                                                 baseColumns: 2,
                                                 maxColumns: 5,
                                                 mobileItemWidth: 300,
-                                                tabletItemWidth: 300,
+                                                tabletItemWidth: 230,
                                                 desktopItemWidth: 300),
-                                        mainAxisExtent: 270,
+                                        childAspectRatio: 2 / 3,
                                         crossAxisSpacing: 16,
                                         mainAxisSpacing: 16,
                                       ),
@@ -177,10 +177,11 @@ class _MyAnimeLibraryState extends State<MyAnimeLibrary>
                       ],
                     ),
                   ),
-                  PlatformBuilder(
-                    strictMode: true,
-                    androidBuilder: const SizedBox.shrink(),
-                    desktopBuilder: Container(
+                  getResponsiveValueWithTablet(
+                    context,
+                    tabletValue: const SizedBox.shrink(),
+                    mobileValue: const SizedBox.shrink(),
+                    desktopValue: Container(
                       width: MediaQuery.of(context).size.width * 0.3,
                       padding: const EdgeInsets.only(top: 0),
                       child: Column(

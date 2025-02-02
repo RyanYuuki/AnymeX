@@ -168,7 +168,8 @@ class _MyMangaLibraryState extends State<MyMangaLibrary>
                   ],
                 ),
               ),
-              getResponsiveValue(
+              getResponsiveValueWithTablet(
+                tabletValue: const SizedBox.shrink(),
                 context,
                 mobileValue: const SizedBox.shrink(),
                 desktopValue: Container(

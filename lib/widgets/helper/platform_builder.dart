@@ -22,6 +22,35 @@ double getResponsiveSize(context,
   }
 }
 
+dynamic getResponsiveValueWithTablet(
+  BuildContext context, {
+  required dynamic mobileValue,
+  required dynamic tabletValue,
+  required dynamic desktopValue,
+  bool strictMode = false,
+}) {
+  final currentWidth = MediaQuery.of(context).size.width;
+  const double maxMobileWidth = 600;
+  const double maxTabletWidth = 1024;
+  final bool isMobilePlatform = Platform.isAndroid || Platform.isIOS;
+
+  if (strictMode) {
+    if (!isMobilePlatform) {
+      return desktopValue;
+    } else {
+      return mobileValue;
+    }
+  } else {
+    if (currentWidth > maxTabletWidth) {
+      return desktopValue;
+    } else if (currentWidth > maxMobileWidth) {
+      return tabletValue;
+    } else {
+      return mobileValue;
+    }
+  }
+}
+
 dynamic getResponsiveValue(context,
     {required dynamic mobileValue,
     required dynamic desktopValue,
@@ -96,6 +125,48 @@ class PlatformBuilder extends StatelessWidget {
         }
       }
     });
+  }
+}
+
+class PlatformBuilderWithTablet extends StatelessWidget {
+  final Widget androidBuilder;
+  final Widget tabletBuilder;
+  final Widget desktopBuilder;
+  final bool strictMode;
+  static const double maxMobileWidth = 500;
+  static const double maxTabletWidth = 1024;
+
+  const PlatformBuilderWithTablet({
+    super.key,
+    required this.androidBuilder,
+    required this.tabletBuilder,
+    required this.desktopBuilder,
+    this.strictMode = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (strictMode) {
+          if (!Platform.isAndroid && !Platform.isIOS) {
+            return desktopBuilder;
+          } else if (constraints.maxWidth > maxMobileWidth) {
+            return tabletBuilder;
+          } else {
+            return androidBuilder;
+          }
+        } else {
+          if (constraints.maxWidth > maxTabletWidth) {
+            return desktopBuilder;
+          } else if (constraints.maxWidth > maxMobileWidth) {
+            return tabletBuilder;
+          } else {
+            return androidBuilder;
+          }
+        }
+      },
+    );
   }
 }
 

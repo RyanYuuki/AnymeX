@@ -250,7 +250,7 @@ class _FilterScreenState extends State<FilterScreen> {
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return PlatformBuilder(
-      strictMode: true,
+      strictMode: false,
       desktopBuilder: Glow(
         child: Scaffold(
           extendBody: true,
@@ -337,31 +337,61 @@ class _FilterScreenState extends State<FilterScreen> {
                       if (showLibrary) ...[
                         const SizedBox(height: 20),
                         SizedBox(
-                          height: 180,
+                          height: getResponsiveValueWithTablet(context,
+                              mobileValue: 0.0,
+                              tabletValue: 200.0,
+                              desktopValue: 180.0),
                           child: ResponsiveNavBar(
-                            fit: true,
-                            isDesktop: true,
-                            currentIndex: _selectedLibraryIndex,
-                            margin: const EdgeInsets.fromLTRB(20, 0, 15, 0),
-                            items: [
-                              NavItem(
-                                unselectedIcon: Iconsax.play,
-                                selectedIcon: Iconsax.play5,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                              NavItem(
-                                unselectedIcon: isSimkl
-                                    ? Iconsax.monitor
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                selectedIcon: isSimkl
-                                    ? Iconsax.monitor5
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                            ],
-                          ),
+                              fit: true,
+                              isDesktop: true,
+                              currentIndex: _selectedLibraryIndex,
+                              margin: const EdgeInsets.fromLTRB(20, 0, 15, 0),
+                              items: getResponsiveValueWithTablet(
+                                context,
+                                mobileValue: [],
+                                tabletValue: [
+                                  NavItem(
+                                    unselectedIcon: Iconsax.play,
+                                    selectedIcon: Iconsax.play5,
+                                    onTap: _onLibraryTappedDesktop,
+                                    label: 'Library',
+                                  ),
+                                  NavItem(
+                                    unselectedIcon: isSimkl
+                                        ? Iconsax.monitor
+                                        : HugeIcons.strokeRoundedBookOpen01,
+                                    selectedIcon: isSimkl
+                                        ? Iconsax.monitor5
+                                        : HugeIcons.strokeRoundedBookOpen01,
+                                    onTap: _onLibraryTappedDesktop,
+                                    label: 'Library',
+                                  ),
+                                  NavItem(
+                                    unselectedIcon: Iconsax.clock,
+                                    selectedIcon: Iconsax.clock5,
+                                    onTap: _onLibraryTappedDesktop,
+                                    label: 'Library',
+                                  ),
+                                ],
+                                desktopValue: [
+                                  NavItem(
+                                    unselectedIcon: Iconsax.play,
+                                    selectedIcon: Iconsax.play5,
+                                    onTap: _onLibraryTappedDesktop,
+                                    label: 'Library',
+                                  ),
+                                  NavItem(
+                                    unselectedIcon: isSimkl
+                                        ? Iconsax.monitor
+                                        : HugeIcons.strokeRoundedBookOpen01,
+                                    selectedIcon: isSimkl
+                                        ? Iconsax.monitor5
+                                        : HugeIcons.strokeRoundedBookOpen01,
+                                    onTap: _onLibraryTappedDesktop,
+                                    label: 'Library',
+                                  ),
+                                ],
+                              )),
                         ),
                       ],
                     ],

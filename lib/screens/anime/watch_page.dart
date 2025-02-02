@@ -110,6 +110,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final isEpisodeDialogOpen = false.obs;
   late bool isLoggedIn;
   final leftOriented = true.obs;
+  final isMobile = Platform.isAndroid || Platform.isIOS;
 
   @override
   void initState() {
@@ -129,7 +130,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _initHiveVariables();
     _initPlayer(true);
     _attachListeners();
-    _handleVolumeAndBrightness();
+    if (isMobile) {
+      _handleVolumeAndBrightness();
+    }
     if (widget.currentEpisode.number.toInt() > 1) {
       final episodeNum = widget.currentEpisode.number.toInt() - 1;
       trackAnilistAndLocal(episodeNum, widget.currentEpisode);
@@ -431,11 +434,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           currentPosition.value, episodeDuration.value, currentEpisode.value);
     });
     player.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    ScreenBrightness().resetScreenBrightness();
-    windowManager.setFullScreen(false);
+    if (isMobile) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      ScreenBrightness().resetScreenBrightness();
+    } else {
+      windowManager.setFullScreen(false);
+    }
     super.dispose();
   }
 
@@ -450,8 +456,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           _buildControls(),
           _buildSubtitle(),
           _buildRippleEffect(),
-          _buildBrightnessSlider(),
-          _buildVolumeSlider(),
+          if (isMobile) ...[
+            _buildBrightnessSlider(),
+            _buildVolumeSlider(),
+          ]
         ],
       ),
     );
@@ -518,17 +526,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             onTap: () => showControls.value = !showControls.value,
             onDoubleTapDown: (e) => _handleDoubleTap(e),
             onVerticalDragUpdate: (e) async {
-              final delta = e.delta.dy;
-              final Offset position = e.localPosition;
+              if (isMobile) {
+                final delta = e.delta.dy;
+                final Offset position = e.localPosition;
 
-              if (position.dx <= MediaQuery.of(context).size.width / 2) {
-                final brightness = _brightnessValue - delta / 500;
-                final result = brightness.value.clamp(0.0, 1.0);
-                setBrightness(result);
-              } else {
-                final volume = _volumeValue - delta / 500;
-                final result = volume.value.clamp(0.0, 1.0);
-                setVolume(result);
+                if (position.dx <= MediaQuery.of(context).size.width / 2) {
+                  final brightness = _brightnessValue - delta / 500;
+                  final result = brightness.value.clamp(0.0, 1.0);
+                  setBrightness(result);
+                } else {
+                  final volume = _volumeValue - delta / 500;
+                  final result = volume.value.clamp(0.0, 1.0);
+                  setVolume(result);
+                }
               }
             },
             child: AnimatedOpacity(
