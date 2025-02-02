@@ -149,9 +149,25 @@ class MainApp extends StatelessWidget {
 
     return KeyboardListener(
       focusNode: FocusNode(),
-      onKeyEvent: (KeyEvent event) {
-        if (event.logicalKey == LogicalKeyboardKey.escape) {
-          Get.back();
+      onKeyEvent: (KeyEvent event) async {
+        if (event is KeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.escape) {
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            }
+          } else if (event.logicalKey == LogicalKeyboardKey.f11) {
+            bool isFullScreen = await windowManager.isFullScreen();
+            windowManager.setFullScreen(!isFullScreen);
+          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+            final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
+                    .contains(LogicalKeyboardKey.altLeft) ||
+                HardwareKeyboard.instance.logicalKeysPressed
+                    .contains(LogicalKeyboardKey.altRight);
+            if (isAltPressed) {
+              bool isFullScreen = await windowManager.isFullScreen();
+              windowManager.setFullScreen(!isFullScreen);
+            }
+          }
         }
       },
       child: GetMaterialApp(
