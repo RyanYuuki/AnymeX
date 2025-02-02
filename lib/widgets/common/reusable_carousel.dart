@@ -1,4 +1,5 @@
 import 'dart:math' show Random;
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -109,6 +110,7 @@ class ReusableCarousel extends StatelessWidget {
 
   Widget _buildCarousel(
       BuildContext context, List<dynamic> newData, bool isDesktop) {
+    final settings = Get.find<Settings>();
     return SizedBox(
       height: isDesktop ? 280 : 220,
       child: ListView.builder(
@@ -119,16 +121,18 @@ class ReusableCarousel extends StatelessWidget {
           final itemData = newData[index];
           final tag = generateTag('${itemData.id}-$index');
 
-          return Obx(() => GestureDetector(
-                onTap: () => _navigateToDetailsPage(itemData, tag),
-                child: SlideAndScaleAnimation(
-                  initialScale: 0.0,
-                  finalScale: 1.0,
-                  initialOffset: const Offset(1.0, 0.0),
-                  duration: Duration(milliseconds: getAnimationDuration()),
-                  child: _buildCarouselItem(context, itemData, tag, isDesktop),
-                ),
-              ));
+          return Obx(() => InkWell(
+              onTap: () => _navigateToDetailsPage(itemData, tag),
+              child: settings.enableAnimation
+                  ? SlideAndScaleAnimation(
+                      initialScale: 0.0,
+                      finalScale: 1.0,
+                      initialOffset: const Offset(1.0, 0.0),
+                      duration: Duration(milliseconds: getAnimationDuration()),
+                      child:
+                          _buildCarouselItem(context, itemData, tag, isDesktop),
+                    )
+                  : _buildCarouselItem(context, itemData, tag, isDesktop)));
         },
       ),
     );
