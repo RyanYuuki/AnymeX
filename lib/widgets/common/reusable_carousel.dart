@@ -10,6 +10,7 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,7 @@ class ReusableCarousel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTitle(context),
-        const SizedBox(height: 15),
+        const SizedBox(height: 15,),
         isLoading
             ? const Center(child: CircularProgressIndicator())
             : _buildCarousel(context, newData, isDesktop),
@@ -112,16 +113,16 @@ class ReusableCarousel extends StatelessWidget {
       BuildContext context, List<dynamic> newData, bool isDesktop) {
     final settings = Get.find<Settings>();
     return SizedBox(
-      height: isDesktop ? 280 : 220,
+      height: isDesktop ? 290 : 220,
       child: ListView.builder(
         itemCount: newData.length,
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 20),
+        padding: const EdgeInsets.only(left: 20, top: 7.5, bottom: 7.5),
         itemBuilder: (BuildContext context, int index) {
           final itemData = newData[index];
           final tag = generateTag('${itemData.id}-$index');
 
-          return Obx(() => InkWell(
+          return Obx(() => TVWrapper(
               onTap: () => _navigateToDetailsPage(itemData, tag),
               child: settings.enableAnimation
                   ? SlideAndScaleAnimation(
@@ -145,7 +146,7 @@ class ReusableCarousel extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.multiplyRoundness()),
       ),
       clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 105),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
