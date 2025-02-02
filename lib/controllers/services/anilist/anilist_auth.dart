@@ -160,7 +160,7 @@ class AnilistAuth extends GetxController {
 
     const query = '''
   query GetUserAnimeList(\$userId: Int) {
-    MediaListCollection(userId: \$userId, type: ANIME) {
+    MediaListCollection(userId: \$userId, type: ANIME, sort: UPDATED_TIME) {
       lists {
         name
         entries {
@@ -374,8 +374,8 @@ class AnilistAuth extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        snackBar(
-            "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
+        // snackBar(
+        //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
         final newMedia = currentMedia.value
           ..episodeCount = progress.toString()
           ..watchingStatus = status
@@ -404,7 +404,7 @@ class AnilistAuth extends GetxController {
 
     const query = '''
     query GetUserMangaList(\$userId: Int) {
-      MediaListCollection(userId: \$userId, type: MANGA) {
+      MediaListCollection(userId: \$userId, type: MANGA, sort: UPDATED_TIME) {
         lists {
           name
           entries {
