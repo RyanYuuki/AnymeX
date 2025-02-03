@@ -21,7 +21,7 @@ class AnimeHomePage extends StatelessWidget {
           const SizedBox(height: 10),
           Obx(() {
             return Column(
-              children: serviceHandler.animeWidgets.value,
+              children: serviceHandler.animeWidgets(context),
             );
           }),
           const SizedBox(height: 50)

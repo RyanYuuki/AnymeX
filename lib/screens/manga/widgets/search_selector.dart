@@ -26,6 +26,29 @@ void searchTypeSheet(BuildContext context, String searchTerm) {
                 size: 20,
                 variant: TextVariant.semiBold,
               ),
+              const SizedBox(
+                height: 15,
+              ),
+              Center(
+                child: ImageButton(
+                  width: isDesktop
+                      ? 300
+                      : MediaQuery.of(context).size.width / 2 - 40,
+                  height: !isDesktop ? 70 : 90,
+                  buttonText: "ANIME",
+                  backgroundImage:
+                      'https://raw.githubusercontent.com/dharmx/walls/main/manga/a_black_and_white_image_of_a_room.jpeg',
+                  borderRadius: 16.multiplyRadius(),
+                  onPressed: () {
+                    Get.back();
+
+                    Get.to(() => SearchPage(
+                          searchTerm: searchTerm,
+                          isManga: true,
+                        ));
+                  },
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class BaseService {
-  RxList<Widget> get homeWidgets;
-  RxList<Widget> get animeWidgets;
-  RxList<Widget> get mangaWidgets;
+  RxList<Widget> homeWidgets(BuildContext context);
+  RxList<Widget> animeWidgets(BuildContext context);
+  RxList<Widget> mangaWidgets(BuildContext context);
   Future<Media> fetchDetails(dynamic id);
   Future<void> fetchHomePage();
   Future<List<Media>> search(String query,

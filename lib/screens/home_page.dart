@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
             ],
             Obx(() {
               return Column(
-                children: serviceHandler.homeWidgets.value,
+                children: serviceHandler.homeWidgets(context),
               );
             }),
             const SizedBox(height: 50)

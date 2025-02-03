@@ -41,6 +41,7 @@ class TVWrapper extends StatelessWidget {
               margin: EdgeInsets.only(left: isFocused ? 5 : 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
+                color: isFocused ? Theme.of(context).colorScheme.secondaryContainer : Colors.transparent,
                 border: Border.all(
                     color: isFocused
                         ? (focusedBorderColor ??

@@ -1,15 +1,13 @@
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
-import 'package:provider/provider.dart';
 
 class Header extends StatelessWidget {
   final bool isHomePage;
@@ -18,14 +16,16 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileData = Get.find<ServiceHandler>();
-    final provider = Provider.of<ThemeProvider>(context);
     return Obx(() {
       if (!isHomePage) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Row(
             children: [
-              _profileIcon(context, profileData),
+              const SizedBox(width: 10),
+              TVWrapper(
+                scale: 1,
+                child: _profileIcon(context, profileData)),
               const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,21 +36,34 @@ class Header extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
-                child: IconButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondaryContainer),
-                    onPressed: () {
-                      provider.toggleTheme();
-                    },
-                    icon: Icon(Get.theme.brightness == Brightness.light
-                        ? HugeIcons.strokeRoundedSun03
-                        : HugeIcons.strokeRoundedMoon01)),
-              )
+              getResponsiveValue(context,
+                  mobileValue: TVWrapper(
+                    child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer
+                            .withOpacity(0.5),
+                        child: const Icon(IconlyLight.search)),
+                  ),
+                  desktopValue: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: TappableSearchBar(onSubmitted: () {})))
+              // CircleAvatar(
+              //   radius: 24,
+              //   backgroundColor:
+              //       Theme.of(context).colorScheme.secondaryContainer,
+              //   child: IconButton(
+              //       style: ElevatedButton.styleFrom(
+              //           backgroundColor:
+              //               Theme.of(context).colorScheme.secondaryContainer),
+              //       onPressed: () {
+              //         provider.toggleTheme();
+              //       },
+              //       icon: Icon(Get.theme.brightness == Brightness.light
+              //           ? HugeIcons.strokeRoundedSun03
+              //           : HugeIcons.strokeRoundedMoon01)),
+              // )
             ],
           ),
         );

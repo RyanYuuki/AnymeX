@@ -160,13 +160,13 @@ class SourceController extends GetxController implements BaseService {
   }
 
   @override
-  RxList<Widget> get animeWidgets => _animeSections;
+  RxList<Widget> animeWidgets(BuildContext context) => _animeSections;
 
   @override
-  RxList<Widget> get homeWidgets => _homeSections;
+  RxList<Widget> homeWidgets(BuildContext context) => _homeSections;
 
   @override
-  RxList<Widget> get mangaWidgets => _mangaSections;
+  RxList<Widget> mangaWidgets(BuildContext context) => _mangaSections;
 
   @override
   Future<void> fetchHomePage() async {

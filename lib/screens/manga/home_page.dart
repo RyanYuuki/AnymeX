@@ -22,7 +22,7 @@ class MangaHomePage extends StatelessWidget {
           const SizedBox(height: 10),
           Obx(() {
             return Column(
-              children: serviceHandler.mangaWidgets.value,
+              children: serviceHandler.mangaWidgets(context),
             );
           }),
           const SizedBox(height: 50)

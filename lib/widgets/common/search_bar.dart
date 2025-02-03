@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -82,23 +83,18 @@ class CustomSearchBar extends StatelessWidget {
 }
 
 class TappableSearchBar extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback onSubmitted;
   final IconData prefixIcon;
-  final IconData suffixIcon;
-  final Widget? suffixWidget;
-  final Widget? suffixIconWidget;
-  final bool disableIcons;
+
+  final String chipLabel;
   final String hintText;
 
   const TappableSearchBar({
     super.key,
-    required this.onTap,
     this.prefixIcon = IconlyLight.search,
-    this.suffixIcon = IconlyLight.filter,
-    this.disableIcons = false,
     this.hintText = 'Search...',
-    this.suffixWidget,
-    this.suffixIconWidget,
+    this.chipLabel = "MOVIES",
+    required this.onSubmitted,
   });
 
   @override
@@ -109,8 +105,9 @@ class TappableSearchBar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
-        onTap: onTap,
+        onTap: onSubmitted,
         child: Container(
+          height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: Theme.of(context)
@@ -137,12 +134,13 @@ class TappableSearchBar extends StatelessWidget {
                   size: 16,
                 ),
               ),
-              if (suffixWidget != null) suffixWidget!,
-              if (!disableIcons)
-                IconButton(
-                  icon: suffixIconWidget ?? Icon(suffixIcon),
-                  onPressed: null,
-                ),
+              // if (suffixWidget != null) suffixWidget!,
+              // if (!disableIcons)
+              //   IconButton(
+              //     icon: suffixIconWidget ?? Icon(suffixIcon),
+              //     onPressed: null,
+              //   ),
+              buildChip(chipLabel)
             ],
           ),
         ),
