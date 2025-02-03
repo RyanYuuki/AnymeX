@@ -11,6 +11,7 @@ import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
+import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -52,7 +53,7 @@ class SimklService extends GetxController
 
   Future<void> fetchMovies() async {
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/movies/trending?extended=overview&client-id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/movies/trending?extended=overview&client-id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
       final list = data.map((e) {
@@ -116,7 +117,7 @@ class SimklService extends GetxController
   }
 
   @override
-  RxList<Widget> get homeWidgets {
+  RxList<Widget> homeWidgets(BuildContext context) {
     final isDesktop = Get.width > 600;
     return [
       if (isLoggedIn.value)
@@ -181,23 +182,23 @@ class SimklService extends GetxController
   }
 
   @override
-  RxList<Widget> get animeWidgets => [
+  RxList<Widget>  animeWidgets(BuildContext context) => [
         if (trendingMovies.isEmpty)
           const Center(
             child: CircularProgressIndicator(),
           )
         else ...[
-          CustomSearchBar(
-            onSubmitted: (val) {
-              Get.to(() => SearchPage(
-                    searchTerm: val,
-                    isManga: false,
-                  ));
-            },
-            suffixIconWidget: buildChip("MOVIES"),
-            disableIcons: true,
-            hintText: "Search Movie...",
-          ),
+          // TappableSearchBar(
+          //   onSubmitted: () {
+          //     // Get.to(() => const SearchPage(
+          //     //       searchTerm: "",
+          //     //       isManga: false,
+          //     //     ));
+          //     searchTypeSheet(context, "");
+          //   },
+          //   chipLabel: ("MOVIES"),
+          //   hintText: "Search Movie...",
+          // ),
           buildBigCarousel(trendingMovies.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           ReusableCarousel(
@@ -213,23 +214,23 @@ class SimklService extends GetxController
       ].obs;
 
   @override
-  RxList<Widget> get mangaWidgets => [
+  RxList<Widget> mangaWidgets(BuildContext context) => [
         if (trendingSeries.isEmpty)
           const Center(
             child: CircularProgressIndicator(),
           )
         else ...[
-          CustomSearchBar(
-            onSubmitted: (val) {
-              Get.to(() => SearchPage(
-                    searchTerm: val,
-                    isManga: false,
-                  ));
-            },
-            suffixIconWidget: buildChip("SERIES"),
-            disableIcons: true,
-            hintText: "Search Series...",
-          ),
+          // CustomSearchBar(
+          //   onSubmitted: (val) {
+          //     Get.to(() => SearchPage(
+          //           searchTerm: val,
+          //           isManga: false,
+          //         ));
+          //   },
+          //   suffixIconWidget: buildChip("SERIES"),
+          //   disableIcons: true,
+          //   hintText: "Search Series...",
+          // ),
           buildBigCarousel(trendingSeries.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           ReusableCarousel(

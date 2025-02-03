@@ -62,7 +62,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> get animeWidgets => [
+  RxList<Widget> animeWidgets(BuildContext context) => [
         Obx(() => trendingAnimes.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : Column(
@@ -87,7 +87,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       ].obs;
 
   @override
-  RxList<Widget> get mangaWidgets => [
+  RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() => trendingManga.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : Column(
@@ -178,7 +178,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> get homeWidgets {
+  RxList<Widget> homeWidgets(BuildContext context) {
     final isDesktop = Get.width > 600;
     return [
       Obx(() => Column(

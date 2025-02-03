@@ -52,7 +52,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   Map<Source, List<MManga>?> novelData = {};
 
   @override
-  RxList<Widget> get homeWidgets {
+  RxList<Widget> homeWidgets(BuildContext context) {
     final settings = Get.find<Settings>();
     final acceptedLists = settings.homePageCards.entries
         .where((entry) => entry.value)
@@ -122,17 +122,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> get animeWidgets {
+  RxList<Widget> animeWidgets(BuildContext context) {
     return [
-      CustomSearchBar(
-        onSubmitted: (val) {
-          Get.to(() => SearchPage(
-                searchTerm: val,
+      TappableSearchBar(
+        onSubmitted: () {
+          Get.to(() => const SearchPage(
+                searchTerm: "",
                 isManga: false,
               ));
         },
-        suffixIconWidget: buildChip("ANIME"),
-        disableIcons: true,
+        chipLabel: "ANIME",
         hintText: "Search Anime...",
       ),
       buildBigCarousel(trendingAnimes, false),
@@ -144,7 +143,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> get mangaWidgets {
+  RxList<Widget> mangaWidgets(BuildContext context) {
     return [
       CustomSearchBar(
         onSubmitted: (val) {

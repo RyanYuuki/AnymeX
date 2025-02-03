@@ -82,9 +82,9 @@ class ServiceHandler extends GetxController {
           progress: progress,
           isAnime: isAnime);
 
-  RxList<Widget> get animeWidgets => service.animeWidgets;
-  RxList<Widget> get mangaWidgets => service.mangaWidgets;
-  RxList<Widget> get homeWidgets => service.homeWidgets;
+  RxList<Widget> animeWidgets(BuildContext context) => service.animeWidgets(context);
+  RxList<Widget> mangaWidgets(BuildContext context) => service.mangaWidgets(context);
+  RxList<Widget> homeWidgets(BuildContext context) => service.homeWidgets(context);
 
   @override
   void onInit() {
