@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
-enum ServicesType { anilist, mal, simkl, extemsions }
+enum ServicesType { anilist, mal, simkl, extensions }
 
 class ServiceHandler extends GetxController {
   final serviceType = ServicesType.anilist.obs;
@@ -29,7 +29,7 @@ class ServiceHandler extends GetxController {
         return malService;
       case ServicesType.simkl:
         return simklService;
-      case ServicesType.extemsions:
+      case ServicesType.extensions:
         return extensionService;
       default:
         return anilistService;

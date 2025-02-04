@@ -107,43 +107,46 @@ class TappableSearchBar extends StatelessWidget {
         onTap: onSubmitted,
         scale: 1,
         margin: 0,
-        child: Container(
-          height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .secondaryContainer
-                .withOpacity(0.5),
-            borderRadius: BorderRadius.circular(16.multiplyRadius()),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              // const SizedBox(width: 12),
-              // Expanded(
-              //   child: AnymexText(
-              //     text: hintText,
-              //     color: Theme.of(context).hintColor,
-              //     size: 16,
-              //   ),
-              // ),
-              // if (suffixWidget != null) suffixWidget!,
-              // if (!disableIcons)
-              //   IconButton(
-              //     icon: suffixIconWidget ?? Icon(suffixIcon),
-              //     onPressed: null,
-              //   ),
-              buildChip(chipLabel),
-              const SizedBox(width: 10),
-              Icon(
-                prefixIcon,
-                color: Theme.of(context).hintColor,
+        child: InkWell(
+          onTap: onSubmitted,
+          child: Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Theme.of(context)
+                  .colorScheme
+                  .secondaryContainer
+                  .withOpacity(0.5),
+              borderRadius: BorderRadius.circular(16.multiplyRadius()),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                width: 1,
               ),
-            ],
+            ),
+            child: Row(
+              children: [
+                // const SizedBox(width: 12),
+                // Expanded(
+                //   child: AnymexText(
+                //     text: hintText,
+                //     color: Theme.of(context).hintColor,
+                //     size: 16,
+                //   ),
+                // ),
+                // if (suffixWidget != null) suffixWidget!,
+                // if (!disableIcons)
+                //   IconButton(
+                //     icon: suffixIconWidget ?? Icon(suffixIcon),
+                //     onPressed: null,
+                //   ),
+                buildChip(chipLabel),
+                const SizedBox(width: 10),
+                Icon(
+                  prefixIcon,
+                  color: Theme.of(context).hintColor,
+                ),
+              ],
+            ),
           ),
         ),
       ),

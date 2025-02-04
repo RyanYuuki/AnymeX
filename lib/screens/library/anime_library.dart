@@ -12,6 +12,7 @@ import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
@@ -233,7 +234,9 @@ class _AnimeCard extends StatelessWidget {
   const _AnimeCard({required this.data});
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TVWrapper(
+      margin: 0,
+      scale: 1,
       onTap: () {
         Get.to(() => AnimeDetailsPage(
             media: Media.fromOfflineMedia(data, MediaType.anime),
@@ -381,39 +384,39 @@ class AnimeHistoryCard extends StatelessWidget {
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return GestureDetector(
-      onTap: () {
-        if (data.currentEpisode == null ||
-            data.currentEpisode!.currentTrack == null ||
-            data.episodes == null ||
-            data.currentEpisode!.videoTracks == null) {
-          snackBar(
-              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
-              duration: 2000,
-              maxLines: 3,
-              maxWidth: Get.width * 0.6);
-        } else {
-          Get.find<SourceController>()
-              .getExtensionByName(data.currentEpisode!.source!);
-          Get.to(() => WatchPage(
-                episodeSrc: data.currentEpisode!.currentTrack!,
-                episodeList: data.episodes!,
-                anilistData: convertOfflineToMedia(data),
-                currentEpisode: data.currentEpisode!,
-                episodeTracks: data.currentEpisode!.videoTracks!,
-              ));
-        }
-      },
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          border: Border(
-              right: BorderSide(
-                  width: 2, color: Theme.of(context).colorScheme.primary)),
-          borderRadius: BorderRadius.circular(12.multiplyRadius()),
-          color: Theme.of(context).colorScheme.surface.withAlpha(144),
-        ),
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        border: Border(
+            right: BorderSide(
+                width: 2, color: Theme.of(context).colorScheme.primary)),
+        borderRadius: BorderRadius.circular(12.multiplyRadius()),
+        color: Theme.of(context).colorScheme.surface.withAlpha(144),
+      ),
+      child: TVWrapper(
+        onTap: () {
+          if (data.currentEpisode == null ||
+              data.currentEpisode!.currentTrack == null ||
+              data.episodes == null ||
+              data.currentEpisode!.videoTracks == null) {
+            snackBar(
+                "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+                duration: 2000,
+                maxLines: 3,
+                maxWidth: Get.width * 0.6);
+          } else {
+            Get.find<SourceController>()
+                .getExtensionByName(data.currentEpisode!.source!);
+            Get.to(() => WatchPage(
+                  episodeSrc: data.currentEpisode!.currentTrack!,
+                  episodeList: data.episodes!,
+                  anilistData: convertOfflineToMedia(data),
+                  currentEpisode: data.currentEpisode!,
+                  episodeTracks: data.currentEpisode!.videoTracks!,
+                ));
+          }
+        },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
           child: Stack(children: [

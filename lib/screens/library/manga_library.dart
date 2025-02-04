@@ -12,6 +12,7 @@ import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
@@ -224,7 +225,7 @@ class _MangaCard extends StatelessWidget {
   const _MangaCard({required this.data});
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TVWrapper(
       onTap: () {
         Get.to(() => MangaDetailsPage(
             media: Media.fromOfflineMedia(data, MediaType.manga),
@@ -351,26 +352,26 @@ class MangaHistoryCard extends StatelessWidget {
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return GestureDetector(
-      onTap: () {
-        Get.find<SourceController>()
-            .getMangaExtensionByName(data.currentChapter!.sourceName!);
-        Get.to(() => ReadingPage(
-              anilistData: convertOfflineToMedia(data),
-              chapterList: data.chapters!,
-              currentChapter: data.currentChapter!,
-            ));
-      },
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          border: Border(
-              right: BorderSide(
-                  width: 2, color: Theme.of(context).colorScheme.primary)),
-          borderRadius: BorderRadius.circular(12.multiplyRadius()),
-          color: Theme.of(context).colorScheme.surface.withAlpha(144),
-        ),
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        border: Border(
+            right: BorderSide(
+                width: 2, color: Theme.of(context).colorScheme.primary)),
+        borderRadius: BorderRadius.circular(12.multiplyRadius()),
+        color: Theme.of(context).colorScheme.surface.withAlpha(144),
+      ),
+      child: TVWrapper(
+        onTap: () {
+          Get.find<SourceController>()
+              .getMangaExtensionByName(data.currentChapter!.sourceName!);
+          Get.to(() => ReadingPage(
+                anilistData: convertOfflineToMedia(data),
+                chapterList: data.chapters!,
+                currentChapter: data.currentChapter!,
+              ));
+        },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
           child: Stack(children: [

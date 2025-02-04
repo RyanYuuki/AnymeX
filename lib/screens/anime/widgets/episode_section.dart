@@ -8,7 +8,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
-import 'package:anymex/screens/extemsions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -47,7 +47,7 @@ class EpisodeSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (serviceHandler.serviceType.value != ServicesType.extemsions) ...[
+          if (serviceHandler.serviceType.value != ServicesType.extensions) ...[
             _TitleSection(
               searchedTitle: searchedTitle,
               anilistData: anilistData,

@@ -42,160 +42,156 @@ class _BigCarouselState extends State<BigCarousel> {
   Widget build(BuildContext context) {
     final newData = widget.data.where((e) => e.cover != null).toList();
     final ColorScheme = Theme.of(context).colorScheme;
-    return TVWrapper(
-      scale: 1,
-      onTap: () => navigateToDetailsPage(
-          newData[activeIndex], '${newData[activeIndex].title}-$activeIndex'),
-      child: Focus(
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-              setState(() {
-                controller.animateToPage(
-                    (activeIndex - 1).clamp(0, newData.length - 1));
-              });
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-              setState(() {
-                controller.animateToPage((activeIndex + 1) % newData.length);
-              });
-            } else {
-              return KeyEventResult.ignored;
-            }
-          }
-          return KeyEventResult.handled;
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
-          child: Column(
-            children: [
-              CarouselSlider.builder(
-                itemCount: newData.length,
-                itemBuilder: (context, index, realIndex) {
-                  final anime = newData[index];
-                  final String posterUrl = anime.cover!;
-                  final title = anime.title;
-                  final randNum = Random().nextInt(100000);
-                  final tag = '$randNum$index${anime.title}';
-                  String extraData = anime.rating.toString();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
+      child: Column(
+        children: [
+          TvWrapperAdv(
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                  setState(() {
+                    controller.animateToPage(
+                        (activeIndex - 1).clamp(0, newData.length - 1));
+                  });
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                  setState(() {
+                    controller
+                        .animateToPage((activeIndex + 1) % newData.length);
+                  });
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+                    event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  return KeyEventResult.ignored;
+                }
+              }
+              return KeyEventResult.handled;
+            },
+            scale: 1,
+            onTap: () => navigateToDetailsPage(newData[activeIndex],
+                '${newData[activeIndex].title}-$activeIndex'),
+            child: CarouselSlider.builder(
+              itemCount: newData.length,
+              itemBuilder: (context, index, realIndex) {
+                final anime = newData[index];
+                final String posterUrl = anime.cover!;
+                final title = anime.title;
+                final randNum = Random().nextInt(100000);
+                final tag = '$randNum$index${anime.title}';
+                String extraData = anime.rating.toString();
 
-                  return Stack(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () => navigateToDetailsPage(anime, tag),
-                            child: _buildItem(context, tag, posterUrl),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    title ?? '??',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                return Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => navigateToDetailsPage(anime, tag),
+                          child: _buildItem(context, tag, posterUrl),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title ?? '??',
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 20),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      (8.multiplyRadius()),
-                                    ),
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondaryContainer,
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Iconsax.star5,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                      const SizedBox(width: 3),
-                                      Text(
-                                        extraData,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: "Poppins-Bold",
-                                        ),
-                                      ),
-                                      const SizedBox(width: 3),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              anime.description ?? 'Description Not Available',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color:
-                                    ColorScheme.inverseSurface.withOpacity(0.7),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
+                              const SizedBox(width: 20),
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    (8.multiplyRadius()),
+                                  ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Iconsax.star5,
+                                      size: 16,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      extraData,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontFamily: "Poppins-Bold",
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                  );
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            anime.description ?? 'Description Not Available',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  ColorScheme.inverseSurface.withOpacity(0.7),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+              options: CarouselOptions(
+                height: getResponsiveSize(context,
+                    mobileSize: 270, dektopSize: 450),
+                viewportFraction: 1,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                reverse: false,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 5),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: false,
+                scrollDirection: Axis.horizontal,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    activeIndex = index;
+                  });
                 },
-                options: CarouselOptions(
-                  height: getResponsiveSize(context,
-                      mobileSize: 270, dektopSize: 450),
-                  viewportFraction: 1,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 5),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: false,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      activeIndex = index;
-                    });
-                  },
-                ),
-                carouselController: controller,
               ),
-              const SizedBox(height: 16),
-              AnimatedSmoothIndicator(
-                activeIndex: activeIndex,
-                count: widget.data.length,
-                effect: WormEffect(
-                  dotHeight: 8,
-                  dotWidth: 8,
-                  activeDotColor: Theme.of(context).colorScheme.primary,
-                  dotColor:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
-              ),
-            ],
+              carouselController: controller,
+            ),
           ),
-        ),
+          const SizedBox(height: 16),
+          AnimatedSmoothIndicator(
+            activeIndex: activeIndex,
+            count: widget.data.length,
+            effect: WormEffect(
+              dotHeight: 8,
+              dotWidth: 8,
+              activeDotColor: Theme.of(context).colorScheme.primary,
+              dotColor:
+                  Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -285,9 +286,10 @@ class _NavBarItemState extends State<NavBarItem>
                     );
                   },
                 ),
-                InkWell(
+                TVWrapper(
+                  margin: 0,
+                  scale: 1,
                   onTap: widget.onTap,
-                  borderRadius: BorderRadius.circular(12),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
                     padding: const EdgeInsets.all(12),

@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -19,7 +20,7 @@ class Header extends StatelessWidget {
     return Obx(() {
       if (!isHomePage) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
             children: [
               const SizedBox(width: 10),
@@ -42,11 +43,16 @@ class Header extends StatelessWidget {
                             .colorScheme
                             .secondaryContainer
                             .withOpacity(0.5),
-                        child: const Icon(IconlyLight.search)),
-                  ),
-                  desktopValue: TappableSearchBar(
-                    onSubmitted: () {},
-                  ))
+                        child: IconButton(
+                            onPressed: () {
+                              searchTypeSheet(context, "");
+                            },
+                            icon: const Icon(IconlyLight.search))),
+                  ), desktopValue: TappableSearchBar(
+                onSubmitted: () {
+                  searchTypeSheet(context, "");
+                },
+              ))
               // CircleAvatar(
               //   radius: 24,
               //   backgroundColor:
@@ -120,8 +126,7 @@ class Header extends StatelessWidget {
     });
   }
 
-  TVWrapper _profileIcon(
-      BuildContext context, ServiceHandler profileData) {
+  TVWrapper _profileIcon(BuildContext context, ServiceHandler profileData) {
     return TVWrapper(
       onTap: () {
         return SettingsSheet.show(context);

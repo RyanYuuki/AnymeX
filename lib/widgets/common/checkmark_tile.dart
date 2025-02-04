@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:checkmark/checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -47,9 +48,8 @@ class ListTileWithCheckMark extends StatelessWidget {
           titleWidget ??
               Text(
                 title!,
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
           if (subtitle != '')
             Text(
@@ -59,52 +59,55 @@ class ListTileWithCheckMark extends StatelessWidget {
         ],
       ),
     );
-    return InkWell(
-      borderRadius: br,
+    return TVWrapper(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: tileAlpha,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-        child: Row(
-          mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
-          children: [
-            if (leading != null)
-              Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withOpacity(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 0.3
-                                : 0.6),
-                        blurRadius: 58.0,
-                        spreadRadius: 2.0,
-                        offset: const Offset(-2.0, 0),
-                      ),
-                    ],
-                  ),
-                  child: leading!)
-            else if (icon != null)
-              Icon(
-                icon,
-                size: iconSize,
-              ),
-            expanded
-                ? Expanded(
-                    child: titleWidgetFinal,
-                  )
-                : Flexible(
-                    child: titleWidgetFinal,
-                  ),
-            Checkmark(
-              size: 18.0,
-              active: active,
-              activeColor: Theme.of(context).colorScheme.primary,
-            )
-          ],
+      child: InkWell(
+        borderRadius: br,
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: tileAlpha,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+          child: Row(
+            mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+            children: [
+              if (leading != null)
+                Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withOpacity(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? 0.3
+                                  : 0.6),
+                          blurRadius: 58.0,
+                          spreadRadius: 2.0,
+                          offset: const Offset(-2.0, 0),
+                        ),
+                      ],
+                    ),
+                    child: leading!)
+              else if (icon != null)
+                Icon(
+                  icon,
+                  size: iconSize,
+                ),
+              expanded
+                  ? Expanded(
+                      child: titleWidgetFinal,
+                    )
+                  : Flexible(
+                      child: titleWidgetFinal,
+                    ),
+              Checkmark(
+                size: 18.0,
+                active: active,
+                activeColor: Theme.of(context).colorScheme.primary,
+              )
+            ],
+          ),
         ),
       ),
     );

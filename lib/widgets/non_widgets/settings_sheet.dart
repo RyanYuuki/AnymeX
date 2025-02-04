@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
+import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -47,7 +47,7 @@ class SettingsSheet extends StatelessWidget {
       },
       if (serviceHandler.extensionService.isExtensionsServiceAllowed.value)
         {
-          'type': ServicesType.extemsions,
+          'type': ServicesType.extensions,
           'name': "Extensions",
           'icon': null,
         },

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +105,7 @@ class ProfileTile extends StatelessWidget {
                       size: 16,
                     ),
                   ],
-                  InkWell(
+                  TVWrapper(
                     onTap: () async {
                       await (isLoggedIn ? service.logout() : service.login());
                     },

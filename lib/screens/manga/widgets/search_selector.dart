@@ -14,7 +14,7 @@ void searchTypeSheet(BuildContext context, String searchTerm) {
         return Container(
           padding: const EdgeInsets.all(10),
           width: double.infinity,
-          height: 200,
+          height: MediaQuery.of(context).size.height * 0.4,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.multiplyRadius()),
           ),

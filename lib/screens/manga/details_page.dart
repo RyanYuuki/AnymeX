@@ -116,7 +116,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Future<void> _fetchAnilistData() async {
     try {
       final tempData = await fetcher.fetchDetails(widget.media.id.toString());
-      final isExtensions = fetcher.serviceType.value == ServicesType.extemsions;
+      final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
 
       setState(() {
         anilistData = tempData
@@ -221,7 +221,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   Row(
                     children: [
                       if (fetcher.serviceType.value !=
-                          ServicesType.extemsions) ...[
+                          ServicesType.extensions) ...[
                         Expanded(
                           child: AnymeXButton(
                             onTap: () {
