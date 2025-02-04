@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
 class GradientPoster extends StatelessWidget {
@@ -100,6 +104,22 @@ class GradientPoster extends StatelessWidget {
             ],
           ),
         ),
+        if (Platform.isAndroid || Platform.isIOS)
+          Positioned(
+              top: 20,
+              right: 20,
+              child: TVWrapper(
+                margin: 0,
+                child: IconButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainer,
+                    ),
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: const Icon(Icons.close)),
+              )),
       ],
     );
   }
