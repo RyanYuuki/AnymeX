@@ -124,16 +124,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
-      TappableSearchBar(
-        onSubmitted: () {
-          Get.to(() => const SearchPage(
-                searchTerm: "",
-                isManga: false,
-              ));
-        },
-        chipLabel: "ANIME",
-        hintText: "Search Anime...",
-      ),
+      // TappableSearchBar(
+      //   onSubmitted: () {
+      //     Get.to(() => const SearchPage(
+      //           searchTerm: "",
+      //           isManga: false,
+      //         ));
+      //   },
+      //   chipLabel: "ANIME",
+      //   hintText: "Search Anime...",
+      // ),
       buildBigCarousel(trendingAnimes, false),
       buildSection('Trending Animes', trendingAnimes),
       buildSection('Popular Animes', popularAnimes),
@@ -145,17 +145,17 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
-      CustomSearchBar(
-        onSubmitted: (val) {
-          Get.to(() => SearchPage(
-                searchTerm: val,
-                isManga: true,
-              ));
-        },
-        suffixIconWidget: buildChip("MANGA"),
-        disableIcons: true,
-        hintText: "Search Manga...",
-      ),
+      // CustomSearchBar(
+      //   onSubmitted: (val) {
+      //     Get.to(() => SearchPage(
+      //           searchTerm: val,
+      //           isManga: true,
+      //         ));
+      //   },
+      //   suffixIconWidget: buildChip("MANGA"),
+      //   disableIcons: true,
+      //   hintText: "Search Manga...",
+      // ),
       buildBigCarousel(trendingMangas, true),
       buildMangaSection('Trending Mangas', trendingMangas),
       buildMangaSection('Latest Mangas', latestMangas),

@@ -67,17 +67,17 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
-                  CustomSearchBar(
-                    onSubmitted: (val) {
-                      Get.to(() => SearchPage(
-                            searchTerm: val,
-                            isManga: false,
-                          ));
-                    },
-                    suffixIconWidget: buildChip("ANIME"),
-                    disableIcons: true,
-                    hintText: "Search Anime...",
-                  ),
+                  // CustomSearchBar(
+                  //   onSubmitted: (val) {
+                  //     Get.to(() => SearchPage(
+                  //           searchTerm: val,
+                  //           isManga: false,
+                  //         ));
+                  //   },
+                  //   suffixIconWidget: buildChip("ANIME"),
+                  //   disableIcons: true,
+                  //   hintText: "Search Anime...",
+                  // ),
                   buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
                   buildSectionIfNotEmpty("Popular Animes", popularAnimes),
                   buildSectionIfNotEmpty("Top Animes", topAnimes),
@@ -92,17 +92,17 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
-                  CustomSearchBar(
-                    onSubmitted: (val) {
-                      Get.to(() => SearchPage(
-                            searchTerm: val,
-                            isManga: true,
-                          ));
-                    },
-                    suffixIconWidget: buildChip("MANGA"),
-                    disableIcons: true,
-                    hintText: "Search Manga...",
-                  ),
+                  // CustomSearchBar(
+                  //   onSubmitted: (val) {
+                  //     Get.to(() => SearchPage(
+                  //           searchTerm: val,
+                  //           isManga: true,
+                  //         ));
+                  //   },
+                  //   suffixIconWidget: buildChip("MANGA"),
+                  //   disableIcons: true,
+                  //   hintText: "Search Manga...",
+                  // ),
                   buildSectionIfNotEmpty("Trending Manga", trendingManga,
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
