@@ -497,7 +497,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
     } else {
       log('Error: ${req.body}');
       log('$isAnime: $body');
-      snackBar('Nuh uh it failed, couldn\'t track.');
     }
   }
 
