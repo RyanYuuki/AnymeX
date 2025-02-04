@@ -23,9 +23,7 @@ class Header extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              TVWrapper(
-                scale: 1,
-                child: _profileIcon(context, profileData)),
+              _profileIcon(context, profileData),
               const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,9 +44,9 @@ class Header extends StatelessWidget {
                             .withOpacity(0.5),
                         child: const Icon(IconlyLight.search)),
                   ),
-                  desktopValue: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      child: TappableSearchBar(onSubmitted: () {})))
+                  desktopValue: TappableSearchBar(
+                    onSubmitted: () {},
+                  ))
               // CircleAvatar(
               //   radius: 24,
               //   backgroundColor:
@@ -122,9 +120,9 @@ class Header extends StatelessWidget {
     });
   }
 
-  GestureDetector _profileIcon(
+  TVWrapper _profileIcon(
       BuildContext context, ServiceHandler profileData) {
-    return GestureDetector(
+    return TVWrapper(
       onTap: () {
         return SettingsSheet.show(context);
       },

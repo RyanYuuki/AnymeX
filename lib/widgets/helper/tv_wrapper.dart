@@ -8,6 +8,7 @@ class TVWrapper extends StatelessWidget {
   final Duration animationDuration;
   final Color? focusedBorderColor;
   final double borderWidth;
+  final double? margin;
 
   const TVWrapper({
     super.key,
@@ -17,6 +18,7 @@ class TVWrapper extends StatelessWidget {
     this.animationDuration = const Duration(milliseconds: 200),
     this.focusedBorderColor,
     this.borderWidth = 2.0,
+    this.margin,
   });
 
   @override
@@ -37,11 +39,14 @@ class TVWrapper extends StatelessWidget {
             child: AnimatedContainer(
               duration: animationDuration,
               transform: Matrix4.identity()..scale(isFocused ? scale : 1.0),
-              padding: EdgeInsets.symmetric(vertical: isFocused ? 5 : 0),
-              margin: EdgeInsets.only(left: isFocused ? 5 : 0),
+              padding:
+                  EdgeInsets.symmetric(vertical: isFocused ? (margin ?? 5) : 0),
+              margin: EdgeInsets.only(left: isFocused ? (margin ?? 5) : 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: isFocused ? Theme.of(context).colorScheme.secondaryContainer : Colors.transparent,
+                color: isFocused
+                    ? Theme.of(context).colorScheme.secondaryContainer
+                    : Colors.transparent,
                 border: Border.all(
                     color: isFocused
                         ? (focusedBorderColor ??

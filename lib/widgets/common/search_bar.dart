@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -93,7 +93,7 @@ class TappableSearchBar extends StatelessWidget {
     super.key,
     this.prefixIcon = IconlyLight.search,
     this.hintText = 'Search...',
-    this.chipLabel = "MOVIES",
+    this.chipLabel = "SEARCH",
     required this.onSubmitted,
   });
 
@@ -103,9 +103,10 @@ class TappableSearchBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16.multiplyRadius()),
+      child: TVWrapper(
         onTap: onSubmitted,
+        scale: 1,
+        margin: 0,
         child: Container(
           height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -122,25 +123,26 @@ class TappableSearchBar extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                prefixIcon,
-                color: Theme.of(context).hintColor,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: AnymexText(
-                  text: hintText,
-                  color: Theme.of(context).hintColor,
-                  size: 16,
-                ),
-              ),
+              // const SizedBox(width: 12),
+              // Expanded(
+              //   child: AnymexText(
+              //     text: hintText,
+              //     color: Theme.of(context).hintColor,
+              //     size: 16,
+              //   ),
+              // ),
               // if (suffixWidget != null) suffixWidget!,
               // if (!disableIcons)
               //   IconButton(
               //     icon: suffixIconWidget ?? Icon(suffixIcon),
               //     onPressed: null,
               //   ),
-              buildChip(chipLabel)
+              buildChip(chipLabel),
+              const SizedBox(width: 10),
+              Icon(
+                prefixIcon,
+                color: Theme.of(context).hintColor,
+              ),
             ],
           ),
         ),
