@@ -388,13 +388,11 @@ class _ReadingPageState extends State<ReadingPage> {
                     _buildWebtoonMode()
                 else if (activeMode.value != ReadingMode.webtoon)
                   InteractiveViewer(
-                      boundaryMargin: const EdgeInsets.all(20.0),
                       minScale: 0.5,
                       maxScale: 4,
                       child: _buildPageViewMode())
                 else
                   InteractiveViewer(
-                      boundaryMargin: const EdgeInsets.all(20.0),
                       minScale: 0.5,
                       maxScale: 4,
                       transformationController: _zoomController,
