@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/core/Search/getVideo.dart';
@@ -156,9 +157,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         .firstWhereOrNull((e) => e.id == anilistData.value.id);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       await serviceHandler.updateListEntry(
-          listId: anilistData.value.id,
-          progress: epNum,
-          isAnime: true);
+          listId: anilistData.value.id, progress: epNum, isAnime: true);
       serviceHandler.onlineService
           .setCurrentMedia(anilistData.value.id.toString());
       offlineStorage.addOrUpdateAnime(
@@ -195,7 +194,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       formattedTime.value = formatDuration(e);
       if (e.inMilliseconds == episodeDuration.value.inMilliseconds) {
-        fetchEpisode(false);
+        if (episodeDuration.value.inMinutes >= 20) {
+          fetchEpisode(false);
+        }
       }
     });
     player.stream.duration.listen((e) {
@@ -271,26 +272,20 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Episode? navEpisode(bool prev) {
     if (prev) {
-      final validity = (currentEpisode.value.number.toInt() - 1) < 1;
-      if (validity) {
-        return episodeList.firstWhere((e) =>
-            e.number == (currentEpisode.value.number.toInt() - 1).toString());
-      } else {
-        return null;
-      }
+      final episode = episodeList.firstWhereOrNull((e) =>
+          e.number == (currentEpisode.value.number.toInt() - 1).toString());
+      print("Found Episode: ${episode?.title ?? ''}");
+      return episode;
     } else {
-      final validity = (currentEpisode.value.number.toInt() + 1) <=
-          episodeList.value.last.number.toInt();
-      if (validity) {
-        return episodeList.firstWhere((e) =>
-            e.number == (currentEpisode.value.number.toInt() + 1).toString());
-      } else {
-        return null;
-      }
+      final episode = episodeList.firstWhereOrNull((e) =>
+          e.number == (currentEpisode.value.number.toInt() + 1).toString());
+      print("Found Episode: ${episode?.title ?? ''}");
+      return episode;
     }
   }
 
   Future<void> fetchEpisode(bool prev) async {
+    log("Envoked FetchEpisode");
     trackEpisode(
         currentPosition.value, episodeDuration.value, currentEpisode.value);
     // Put it into Loading State
@@ -475,7 +470,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                           mobileSize: 0.6, dektopSize: 0.7, isStrict: true)
                   : Get.width,
               child: Video(
-                filterQuality: FilterQuality.none,
                 controller: playerController,
                 alignment: Alignment.center,
                 controls: null,
