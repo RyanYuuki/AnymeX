@@ -214,9 +214,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       playbackSpeed.value = e;
     });
     player.stream.subtitle.listen((e) {
-      Future.delayed(Duration(milliseconds: subtitleDelay.value + 1000), () {
-        subtitleText.value = e;
-      });
+      subtitleText.value = e;
     });
   }
 
