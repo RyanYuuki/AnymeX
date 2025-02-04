@@ -13,6 +13,7 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   ),
                   const SizedBox(height: 10),
                   ...streamList.value.map((e) {
-                    return GestureDetector(
+                    return TVWrapper(
                       onTap: () {
                         widget.onEpisodeSelected(
                             e, streamList, chosenEpisode.value);
@@ -195,7 +196,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   final isSelected =
                       widget.currentEpisode.number == episode.number;
                   final watchedEpisode = episode.number.toInt() <= userProgress;
-                  return InkWell(
+                  return TVWrapper(
                     onTap: () {
                       if (isSelected) {
                         fetchServers(episode.link!);

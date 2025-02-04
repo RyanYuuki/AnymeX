@@ -22,6 +22,7 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
@@ -116,9 +117,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    if (!settings.isTV.value) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    }
     _leftAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -426,7 +429,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           currentPosition.value, episodeDuration.value, currentEpisode.value);
     });
     player.dispose();
-    if (isMobile) {
+    if (isMobile && !settings.isTV.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -484,16 +487,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       getResponsiveSize(context,
                           mobileSize: 0.4, dektopSize: 0.3, isStrict: true)
                   : 0,
-              child: EpisodeWatchScreen(
-                episodeList: episodeList.value,
-                anilistData: anilistData.value,
-                currentEpisode: currentEpisode.value,
-                onEpisodeSelected: (src, streamList, selectedEpisode) {
-                  episode.value = src;
-                  episodeTracks.value = streamList;
-                  currentEpisode.value = selectedEpisode;
-                  _initPlayer(false);
-                },
+              child: Focus(
+                focusNode: FocusNode(
+                    canRequestFocus: isEpisodeDialogOpen.value,
+                    skipTraversal: !isEpisodeDialogOpen.value,
+                    descendantsAreFocusable: isEpisodeDialogOpen.value,
+                    descendantsAreTraversable: isEpisodeDialogOpen.value),
+                child: EpisodeWatchScreen(
+                  episodeList: episodeList.value,
+                  anilistData: anilistData.value,
+                  currentEpisode: currentEpisode.value,
+                  onEpisodeSelected: (src, streamList, selectedEpisode) {
+                    episode.value = src;
+                    episodeTracks.value = streamList;
+                    currentEpisode.value = selectedEpisode;
+                    _initPlayer(false);
+                  },
+                ),
               ),
             )
           ],
@@ -1197,6 +1207,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               height: 27,
                               child: VideoSliderTheme(
                                 child: Slider(
+                                    focusNode: FocusNode(
+                                        canRequestFocus: false,
+                                        skipTraversal: true),
                                     min: 0,
                                     value: currentPosition.value.inMilliseconds
                                         .toDouble(),
@@ -1562,18 +1575,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           EdgeInsets.symmetric(horizontal: isPlay ? (isMobile ? 20 : 50) : 0),
       child: BlurWrapper(
         borderRadius: BorderRadius.circular(radius),
-        child: IconButton(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radius),
+        child: TVWrapper(
+          onTap: onTap,
+          bgColor: Colors.transparent,
+          focusedBorderColor: Colors.transparent,
+          child: IconButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radius),
+              ),
+              padding: EdgeInsets.all(padding),
             ),
-            padding: EdgeInsets.all(padding),
+            onPressed: onTap,
+            icon: Icon(icon,
+                color: isPlay ? Theme.of(context).colorScheme.onPrimary : color,
+                size: getResponsiveSize(context,
+                    mobileSize: 40, dektopSize: 80, isStrict: true)),
           ),
-          onPressed: onTap,
-          icon: Icon(icon,
-              color: isPlay ? Theme.of(context).colorScheme.onPrimary : color,
-              size: getResponsiveSize(context,
-                  mobileSize: 40, dektopSize: 80, isStrict: true)),
         ),
       ),
     );
@@ -1593,12 +1611,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Widget _buildIcon({VoidCallback? onTap, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
-      child: IconButton(
-          onPressed: onTap,
-          icon: Icon(
-            icon,
-            color: Colors.white,
-          )),
+      child: TVWrapper(
+        onTap: onTap,
+        child: IconButton(
+            onPressed: onTap,
+            icon: Icon(
+              icon,
+              color: Colors.white,
+            )),
+      ),
     );
   }
 }

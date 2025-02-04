@@ -1,15 +1,15 @@
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Extensions/fetch_anime_sources.dart';
 import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/extemsions/ExtensionList.dart';
+import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -86,81 +86,85 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             ),
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
-              IconButton(
-                icon:
-                    Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
-                onPressed: () {
-                  final controller = Get.find<SourceController>();
-                  final animeRepoController = TextEditingController(
-                    text: controller.activeAnimeRepo,
-                  );
-                  final mangaRepoController = TextEditingController(
-                    text: controller.activeMangaRepo,
-                  );
+              TVWrapper(
+                child: IconButton(
+                  icon:
+                      Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
+                  onPressed: () {
+                    final controller = Get.find<SourceController>();
+                    final animeRepoController = TextEditingController(
+                      text: controller.activeAnimeRepo,
+                    );
+                    final mangaRepoController = TextEditingController(
+                      text: controller.activeMangaRepo,
+                    );
 
-                  AlertDialogBuilder(context)
-                    ..setTitleWidget(const Center(
-                      child: AnymexText(
-                        text: "Add Repo",
-                        size: 20,
-                        variant: TextVariant.semiBold,
-                      ),
-                    ))
-                    ..setCustomView(
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CustomSearchBar(
-                            prefixIcon: HugeIcons.strokeRoundedGithub,
-                            controller: animeRepoController,
-                            onSubmitted: (value) {},
-                            hintText: "Add Anime Repo...",
-                            disableIcons: true,
-                            padding: const EdgeInsets.all(0),
-                          ),
-                          const SizedBox(height: 10),
-                          CustomSearchBar(
-                            prefixIcon: HugeIcons.strokeRoundedGithub,
-                            controller: mangaRepoController,
-                            onSubmitted: (value) {},
-                            hintText: "Add Manga Repo...",
-                            disableIcons: true,
-                            padding: const EdgeInsets.all(0),
-                          ),
-                        ],
-                      ),
-                    )
-                    ..setPositiveButton("Confirm", () async {
-                      if (animeRepoController.text.isNotEmpty) {
-                        controller.activeAnimeRepo = animeRepoController.text;
-                      }
-                      if (mangaRepoController.text.isNotEmpty) {
-                        controller.activeMangaRepo = mangaRepoController.text;
-                      }
+                    AlertDialogBuilder(context)
+                      ..setTitleWidget(const Center(
+                        child: AnymexText(
+                          text: "Add Repo",
+                          size: 20,
+                          variant: TextVariant.semiBold,
+                        ),
+                      ))
+                      ..setCustomView(
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomSearchBar(
+                              prefixIcon: HugeIcons.strokeRoundedGithub,
+                              controller: animeRepoController,
+                              onSubmitted: (value) {},
+                              hintText: "Add Anime Repo...",
+                              disableIcons: true,
+                              padding: const EdgeInsets.all(0),
+                            ),
+                            const SizedBox(height: 10),
+                            CustomSearchBar(
+                              prefixIcon: HugeIcons.strokeRoundedGithub,
+                              controller: mangaRepoController,
+                              onSubmitted: (value) {},
+                              hintText: "Add Manga Repo...",
+                              disableIcons: true,
+                              padding: const EdgeInsets.all(0),
+                            ),
+                          ],
+                        ),
+                      )
+                      ..setPositiveButton("Confirm", () async {
+                        if (animeRepoController.text.isNotEmpty) {
+                          controller.activeAnimeRepo = animeRepoController.text;
+                        }
+                        if (mangaRepoController.text.isNotEmpty) {
+                          controller.activeMangaRepo = mangaRepoController.text;
+                        }
 
-                      await _fetchData();
-                      await _refreshData();
-                    })
-                    ..show();
-                },
+                        await _fetchData();
+                        await _refreshData();
+                      })
+                      ..show();
+                  },
+                ),
               ),
-              IconButton(
-                icon: Icon(Iconsax.language_square, color: theme.primary),
-                onPressed: () {
-                  AlertDialogBuilder(context)
-                    ..setTitle(_selectedLanguage)
-                    ..singleChoiceItems(
-                      sortedLanguagesMap.keys.toList(),
-                      sortedLanguagesMap.keys
-                          .toList()
-                          .indexOf(_selectedLanguage),
-                      (index) {
-                        setState(() => _selectedLanguage =
-                            sortedLanguagesMap.keys.elementAt(index));
-                      },
-                    )
-                    ..show();
-                },
+              TVWrapper(
+                child: IconButton(
+                  icon: Icon(Iconsax.language_square, color: theme.primary),
+                  onPressed: () {
+                    AlertDialogBuilder(context)
+                      ..setTitle(_selectedLanguage)
+                      ..singleChoiceItems(
+                        sortedLanguagesMap.keys.toList(),
+                        sortedLanguagesMap.keys
+                            .toList()
+                            .indexOf(_selectedLanguage),
+                        (index) {
+                          setState(() => _selectedLanguage =
+                              sortedLanguagesMap.keys.elementAt(index));
+                        },
+                      )
+                      ..show();
+                  },
+                ),
               ),
               const SizedBox(width: 8.0),
             ],

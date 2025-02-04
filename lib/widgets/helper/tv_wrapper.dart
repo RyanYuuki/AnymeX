@@ -7,9 +7,9 @@ class TVWrapper extends StatelessWidget {
   final double scale;
   final Duration animationDuration;
   final Color? focusedBorderColor;
+  final Color? bgColor;
   final double borderWidth;
   final double? margin;
-  final KeyEventResult Function(FocusNode, KeyEvent)? onKeyEvent;
 
   const TVWrapper({
     super.key,
@@ -20,7 +20,7 @@ class TVWrapper extends StatelessWidget {
     this.focusedBorderColor,
     this.borderWidth = 2.0,
     this.margin,
-    this.onKeyEvent,
+    this.bgColor,
   });
 
   @override
@@ -45,7 +45,8 @@ class TVWrapper extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: isFocused
-                    ? Theme.of(context).colorScheme.secondaryContainer
+                    ? (bgColor ??
+                        Theme.of(context).colorScheme.secondaryContainer)
                     : Colors.transparent,
                 border: Border.all(
                   color: isFocused

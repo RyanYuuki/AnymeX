@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -519,10 +521,10 @@ int getResponsiveCrossAxisVal(double screenWidth, {int itemWidth = 150}) {
   return (screenWidth / itemWidth).floor().clamp(1, 10);
 }
 
-bool isTv() {
+Future<bool> isTv() async {
+  if (!Platform.isAndroid) return false;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  deviceInfo.androidInfo.then((e) {
-    return e.systemFeatures.contains('android.software.leanback');
-  });
-  return true;
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  bool isTV = androidInfo.systemFeatures.contains('android.software.leanback');
+  return isTV;
 }

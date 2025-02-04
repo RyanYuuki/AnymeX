@@ -16,6 +16,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -183,13 +184,15 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       : currentEpisode
                           ? 0.8
                           : 1,
-                  child: InkWell(
-                    onTap: () => isSelected
-                        ? fetchServers(episode.link!)
-                        : _handleEpisodeSelection(episode),
-                    child: isAnify.value
-                        ? _anifyEpisode(isSelected, context, episode)
-                        : _normalEpisode(isSelected, context, episode),
+                  child: TVWrapper(
+                    child: InkWell(
+                      onTap: () => isSelected
+                          ? fetchServers(episode.link!)
+                          : _handleEpisodeSelection(episode),
+                      child: isAnify.value
+                          ? _anifyEpisode(isSelected, context, episode)
+                          : _normalEpisode(isSelected, context, episode),
+                    ),
                   ),
                 );
               });

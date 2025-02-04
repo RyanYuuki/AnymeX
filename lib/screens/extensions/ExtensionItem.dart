@@ -3,6 +3,7 @@ import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -145,87 +146,93 @@ class _ExtensionListTileWidgetState
   }
 
   Widget _BuildButtons(bool sourceNotEmpty, bool updateAvailable) {
+    void onTap() async {
+      if (updateAvailable) {
+        setState(() => _isLoading = true);
+        widget.mediaType == MediaType.manga
+            ? await ref.watch(fetchMangaSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
+                .future)
+            : await ref.watch(fetchAnimeSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
+                .future);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      } else {
+        AlertDialogBuilder(context)
+          ..setTitle("Delete Extension")
+          ..setMessage("Are you sure you want to delete this extension?")
+          ..setPositiveButton("Yes", () async {
+            final sourcePrefsIds = isar.sourcePreferences
+                .filter()
+                .sourceIdEqualTo(widget.source.id!)
+                .findAllSync()
+                .map((e) => e.id!)
+                .toList();
+            final sourcePrefsStringIds = isar.sourcePreferenceStringValues
+                .filter()
+                .sourceIdEqualTo(widget.source.id!)
+                .findAllSync()
+                .map((e) => e.id)
+                .toList();
+            isar.writeTxnSync(() {
+              if (widget.source.isObsolete ?? false) {
+                isar.sources.deleteSync(widget.source.id!);
+              } else {
+                isar.sources.putSync(widget.source
+                  ..sourceCode = ""
+                  ..isAdded = false
+                  ..isPinned = false);
+              }
+              isar.sourcePreferences.deleteAllSync(sourcePrefsIds);
+              isar.sourcePreferenceStringValues
+                  .deleteAllSync(sourcePrefsStringIds);
+            });
+          })
+          ..setNegativeButton("No", null)
+          ..show();
+      }
+    }
+
     return !sourceNotEmpty
-        ? IconButton(
-            onPressed: () => _handleSourceAction(),
-            icon: const Icon(Icons.download))
+        ? TVWrapper(
+            child: IconButton(
+                onPressed: () => _handleSourceAction(),
+                icon: const Icon(Icons.download)),
+          )
         : SizedBox(
             width: 84,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  onPressed: () async {
-                    if (updateAvailable) {
-                      setState(() => _isLoading = true);
-                      widget.mediaType == MediaType.manga
-                          ? await ref.watch(fetchMangaSourcesListProvider(
-                                  id: widget.source.id, reFresh: true)
-                              .future)
-                          : await ref.watch(fetchAnimeSourcesListProvider(
-                                  id: widget.source.id, reFresh: true)
-                              .future);
-                      if (mounted) {
-                        setState(() => _isLoading = false);
-                      }
-                    } else {
-                      AlertDialogBuilder(context)
-                        ..setTitle("Delete Extension")
-                        ..setMessage(
-                            "Are you sure you want to delete this extension?")
-                        ..setPositiveButton("Yes", () async {
-                          final sourcePrefsIds = isar.sourcePreferences
-                              .filter()
-                              .sourceIdEqualTo(widget.source.id!)
-                              .findAllSync()
-                              .map((e) => e.id!)
-                              .toList();
-                          final sourcePrefsStringIds = isar
-                              .sourcePreferenceStringValues
-                              .filter()
-                              .sourceIdEqualTo(widget.source.id!)
-                              .findAllSync()
-                              .map((e) => e.id)
-                              .toList();
-                          isar.writeTxnSync(() {
-                            if (widget.source.isObsolete ?? false) {
-                              isar.sources.deleteSync(widget.source.id!);
-                            } else {
-                              isar.sources.putSync(widget.source
-                                ..sourceCode = ""
-                                ..isAdded = false
-                                ..isPinned = false);
-                            }
-                            isar.sourcePreferences
-                                .deleteAllSync(sourcePrefsIds);
-                            isar.sourcePreferenceStringValues
-                                .deleteAllSync(sourcePrefsStringIds);
-                          });
-                        })
-                        ..setNegativeButton("No", null)
-                        ..show();
-                    }
-                  },
-                  icon: Icon(
-                    size: 18,
-                    updateAvailable ? Icons.update : Iconsax.trash,
+                TVWrapper(
+                  onTap: onTap,
+                  child: IconButton(
+                    onPressed: onTap,
+                    icon: Icon(
+                      size: 18,
+                      updateAvailable ? Icons.update : Iconsax.trash,
+                    ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () async {
-                    var sourcePreference = getSourcePreference(
-                            source: widget.source)
-                        .map((e) =>
-                            getSourcePreferenceEntry(e.key!, widget.source.id!))
-                        .toList();
-                    Get.to(
-                      SourcePreferenceWidget(
-                        source: widget.source,
-                        sourcePreference: sourcePreference,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Iconsax.setting),
+                TVWrapper(
+                  child: IconButton(
+                    onPressed: () async {
+                      var sourcePreference =
+                          getSourcePreference(source: widget.source)
+                              .map((e) => getSourcePreferenceEntry(
+                                  e.key!, widget.source.id!))
+                              .toList();
+                      Get.to(
+                        SourcePreferenceWidget(
+                          source: widget.source,
+                          sourcePreference: sourcePreference,
+                        ),
+                      );
+                    },
+                    icon: const Icon(Iconsax.setting),
+                  ),
                 )
               ],
             ),

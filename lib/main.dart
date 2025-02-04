@@ -17,7 +17,7 @@ import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/anime/home_page.dart';
-import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
+import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/library/anime_library.dart';
 import 'package:anymex/screens/library/history.dart';
 import 'package:anymex/screens/library/manga_library.dart';

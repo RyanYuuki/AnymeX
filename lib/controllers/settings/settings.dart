@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,16 +10,19 @@ class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
   final canShowUpdate = true.obs;
+  RxBool isTV = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     var uiBox = Hive.box<UISettings>("UiSettings");
     var playerBox = Hive.box<PlayerSettings>("PlayerSettings");
-
     uiSettings = Rx<UISettings>(uiBox.get('settings') ?? UISettings());
     playerSettings =
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
+    isTv().then((e) {
+      isTV.value = e;
+    });
   }
 
   void checkForUpdates(BuildContext context) {

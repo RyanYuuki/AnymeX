@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
+import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:flutter/material.dart';
 
 class NoSourceSelectedWidget extends StatelessWidget {
