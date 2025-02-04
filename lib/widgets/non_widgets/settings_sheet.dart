@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/extemsions/ExtensionScreen.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +134,7 @@ class SettingsSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(serviceHandler.profileData.value.name ?? 'Guest'),
-                GestureDetector(
+                TVWrapper(
                   onTap: () {
                     if (serviceHandler.isLoggedIn.value) {
                       serviceHandler.logout();
@@ -154,24 +155,29 @@ class SettingsSheet extends StatelessWidget {
             const Expanded(
               child: SizedBox.shrink(),
             ),
-            IconButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
-                icon: const Icon(Iconsax.notification))
+            TVWrapper(
+              child: IconButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  icon: const Icon(Iconsax.notification)),
+            )
           ]),
           const SizedBox(height: 10),
-          if (serviceHandler.isLoggedIn.value && serviceHandler.serviceType.value == ServicesType.anilist)
-            ListTile(
-              leading: const Icon(Iconsax.user),
-              title: const Text('View Profile'),
-              onTap: () {
-                Get.back();
-                Get.to(() => const ProfilePage());
-              },
+          if (serviceHandler.isLoggedIn.value &&
+              serviceHandler.serviceType.value == ServicesType.anilist)
+            TVWrapper(
+              child: ListTile(
+                leading: const Icon(Iconsax.user),
+                title: const Text('View Profile'),
+                onTap: () {
+                  Get.back();
+                  Get.to(() => const ProfilePage());
+                },
+              ),
             ),
           if (isMobile)
             ListTile(
@@ -182,29 +188,35 @@ class SettingsSheet extends StatelessWidget {
                 Get.to(() => const ExtensionScreen());
               },
             ),
-          ListTile(
-            leading: const Icon(HugeIcons.strokeRoundedAiSetting),
-            title: const Text('Change Service'),
-            onTap: () {
-              Get.back();
-              showServiceSelector(context);
-            },
+          TVWrapper(
+            child: ListTile(
+              leading: const Icon(HugeIcons.strokeRoundedAiSetting),
+              title: const Text('Change Service'),
+              onTap: () {
+                Get.back();
+                showServiceSelector(context);
+              },
+            ),
           ),
-          ListTile(
-            leading: const Icon(Iconsax.document_download),
-            title: const Text('Downloads (WIP)'),
-            onTap: () {
-              serviceHandler.simklService.fetchUserMovieList();
-              Get.back();
-            },
+          TVWrapper(
+            child: ListTile(
+              leading: const Icon(Iconsax.document_download),
+              title: const Text('Downloads (WIP)'),
+              onTap: () {
+                serviceHandler.simklService.fetchUserMovieList();
+                Get.back();
+              },
+            ),
           ),
-          ListTile(
-            leading: const Icon(Iconsax.setting),
-            title: const Text('Settings'),
-            onTap: () {
-              Get.back();
-              Get.to(() => const SettingsPage());
-            },
+          TVWrapper(
+            child: ListTile(
+              leading: const Icon(Iconsax.setting),
+              title: const Text('Settings'),
+              onTap: () {
+                Get.back();
+                Get.to(() => const SettingsPage());
+              },
+            ),
           ),
         ],
       ),
