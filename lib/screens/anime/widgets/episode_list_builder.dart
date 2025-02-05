@@ -185,14 +185,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           ? 0.8
                           : 1,
                   child: TVWrapper(
-                    child: InkWell(
-                      onTap: () => isSelected
-                          ? fetchServers(episode.link!)
-                          : _handleEpisodeSelection(episode),
-                      child: isAnify.value
-                          ? _anifyEpisode(isSelected, context, episode)
-                          : _normalEpisode(isSelected, context, episode),
-                    ),
+                    onTap: () => isSelected
+                        ? fetchServers(episode.link!)
+                        : _handleEpisodeSelection(episode),
+                    child: isAnify.value
+                        ? _anifyEpisode(isSelected, context, episode)
+                        : _normalEpisode(isSelected, context, episode),
                   ),
                 );
               });
@@ -242,7 +240,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       Get.back();
                       Get.to(() => WatchPage(
                             episodeSrc: e,
-                            episodeList: widget.episodeList ?? [],
+                            episodeList: widget.episodeList,
                             anilistData: widget.anilistData!,
                             currentEpisode: selectedEpisode.value,
                             episodeTracks: streamList,

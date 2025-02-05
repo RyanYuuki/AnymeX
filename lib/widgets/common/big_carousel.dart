@@ -62,13 +62,15 @@ class _BigCarouselState extends State<BigCarousel> {
                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
                     event.logicalKey == LogicalKeyboardKey.arrowDown) {
                   return KeyEventResult.ignored;
+                } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                    event.logicalKey == LogicalKeyboardKey.space) {
+                  navigateToDetailsPage(newData[activeIndex],
+                      '${newData[activeIndex].title}-$activeIndex');
                 }
               }
               return KeyEventResult.handled;
             },
             scale: 1,
-            onTap: () => navigateToDetailsPage(newData[activeIndex],
-                '${newData[activeIndex].title}-$activeIndex'),
             child: CarouselSlider.builder(
               itemCount: newData.length,
               itemBuilder: (context, index, realIndex) {

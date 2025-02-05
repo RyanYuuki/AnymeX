@@ -12,6 +12,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -119,93 +120,98 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     (readChap?.number ?? continueChapter?.number);
                 final alreadyRead = chapter.number! <
                     (readChap?.number ?? continueChapter?.number ?? 0);
-                return Opacity(
-                  opacity: alreadyRead ? 0.5 : 1,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Theme.of(context)
-                              .colorScheme
-                              .secondary
-                              .withAlpha(100)
-                          : Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius:
-                                  BorderRadius.circular(16.multiplyRadius()),
-                              boxShadow: [glowingShadow(context)]),
-                          child: AnymexText(
-                            text: chapter.number?.toStringAsFixed(0) ?? '',
-                            variant: TextVariant.bold,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: getResponsiveSize(context,
-                                  mobileSize: Get.width * 0.4, dektopSize: 200),
-                              child: AnymexText(
-                                text:
-                                    '${chapter.title} ${savedChaps?.pageNumber != null ? '(${savedChaps?.pageNumber}/${savedChaps?.totalPages})' : ''}',
-                                variant: TextVariant.semiBold,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            SizedBox(
-                              width: getResponsiveSize(context,
-                                  mobileSize: Get.width * 0.4, dektopSize: 200),
-                              child: AnymexText(
-                                text:
-                                    '${chapter.releaseDate} • ${Get.find<SourceController>().activeMangaSource.value!.name}',
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inverseSurface
-                                    .withOpacity(0.9),
-                                fontStyle: FontStyle.italic,
-                                maxLines: 2,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Container(
-                          decoration: BoxDecoration(
-                              boxShadow: [glowingShadow(context)]),
-                          child: AnymexButton(
-                            onTap: () {
-                              Get.to(() => ReadingPage(
-                                    anilistData: widget.anilistData,
-                                    chapterList: widget.chapters!,
-                                    currentChapter: chapter,
-                                  ));
-                            },
-                            radius: 12,
-                            width: 100,
+                return TVWrapper(
+                  onTap: () {
+                    Get.to(() => ReadingPage(
+                          anilistData: widget.anilistData,
+                          chapterList: widget.chapters!,
+                          currentChapter: chapter,
+                        ));
+                  },
+                  child: Opacity(
+                    opacity: alreadyRead ? 0.5 : 1,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withAlpha(100)
+                            : Theme.of(context).colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
                             height: 40,
-                            color: Theme.of(context).colorScheme.primary,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius:
+                                    BorderRadius.circular(16.multiplyRadius()),
+                                boxShadow: [glowingShadow(context)]),
                             child: AnymexText(
-                              text: "Read",
-                              variant: TextVariant.semiBold,
+                              text: chapter.number?.toStringAsFixed(0) ?? '',
+                              variant: TextVariant.bold,
                               color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
-                        )
-                      ],
+                          const SizedBox(width: 15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: getResponsiveSize(context,
+                                    mobileSize: Get.width * 0.4,
+                                    dektopSize: 200),
+                                child: AnymexText(
+                                  text:
+                                      '${chapter.title} ${savedChaps?.pageNumber != null ? '(${savedChaps?.pageNumber}/${savedChaps?.totalPages})' : ''}',
+                                  variant: TextVariant.semiBold,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              SizedBox(
+                                width: getResponsiveSize(context,
+                                    mobileSize: Get.width * 0.4,
+                                    dektopSize: 200),
+                                child: AnymexText(
+                                  text:
+                                      '${chapter.releaseDate} • ${Get.find<SourceController>().activeMangaSource.value!.name}',
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inverseSurface
+                                      .withOpacity(0.9),
+                                  fontStyle: FontStyle.italic,
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Container(
+                            decoration: BoxDecoration(
+                                boxShadow: [glowingShadow(context)]),
+                            child: AnymexButton(
+                              onTap: () {},
+                              radius: 12,
+                              width: 100,
+                              height: 40,
+                              color: Theme.of(context).colorScheme.primary,
+                              child: AnymexText(
+                                text: "Read",
+                                variant: TextVariant.semiBold,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 );

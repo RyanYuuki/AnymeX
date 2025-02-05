@@ -116,7 +116,7 @@ class _TitleSection extends StatelessWidget {
           onTap: () {
             showWrongTitleModal(
               context,
-              anilistData.title,
+              anilistData.romajiTitle,
               (manga) async {
                 episodeList?.clear();
                 await getDetailsFromSource(
@@ -322,7 +322,7 @@ class _EpisodeList extends StatelessWidget {
         );
       }
 
-      if (episodeList!.value.isEmpty || episodeList == null) {
+      if (episodeList!.isEmpty || episodeList == null) {
         return const SizedBox(
           height: 500,
           child: Center(child: CircularProgressIndicator()),

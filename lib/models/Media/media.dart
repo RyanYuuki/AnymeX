@@ -443,7 +443,6 @@ class Recommendation {
 
   factory Recommendation.fromSmallSimkl(
       Map<String?, dynamic> json, bool isMovie) {
-    MediaType type = MediaType.anime;
     return Recommendation(
         id:
             '${json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',

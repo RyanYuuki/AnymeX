@@ -146,8 +146,8 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     }
 
     return Obx(() {
-      final chunkedEpisodes = chunkEpisodes(widget.episodeList ?? [],
-          calculateChunkSize(widget.episodeList ?? []));
+      final chunkedEpisodes = chunkEpisodes(
+          widget.episodeList, calculateChunkSize(widget.episodeList));
       final selectedEpisodes = chunkedEpisodes.isNotEmpty
           ? chunkedEpisodes[selectedChunkIndex.value]
           : [];

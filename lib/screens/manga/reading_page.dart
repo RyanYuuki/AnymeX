@@ -388,9 +388,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     _buildWebtoonMode()
                 else if (activeMode.value != ReadingMode.webtoon)
                   InteractiveViewer(
-                      minScale: 0.5,
-                      maxScale: 4,
-                      child: _buildPageViewMode())
+                      minScale: 0.5, maxScale: 4, child: _buildPageViewMode())
                 else
                   InteractiveViewer(
                       minScale: 0.5,
@@ -571,10 +569,15 @@ class _ReadingPageState extends State<ReadingPage> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       bottom: isMenuToggled.value ? 0 : -150,
-      left: 0,
-      right: 0,
+      left: getResponsiveSize(context,
+          mobileSize: 0, dektopSize: Get.width * 0.3),
+      right: getResponsiveSize(context,
+          mobileSize: 0, dektopSize: Get.width * 0.3),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        padding: getResponsiveValue(context,
+            mobileValue:
+                const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            desktopValue: const EdgeInsets.all(0)),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
@@ -587,7 +590,20 @@ class _ReadingPageState extends State<ReadingPage> {
           ),
         ),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 30),
+          decoration: BoxDecoration(
+              color: getResponsiveValue(context,
+                  mobileValue: Colors.transparent,
+                  desktopValue: Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .withOpacity(0.6)),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+          padding: EdgeInsets.all(
+              getResponsiveSize(context, mobileSize: 0, dektopSize: 10)),
+          margin: EdgeInsets.only(
+              bottom:
+                  getResponsiveSize(context, mobileSize: 30, dektopSize: 0)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -666,6 +682,8 @@ class _ReadingPageState extends State<ReadingPage> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
+          height: getResponsiveSize(context,
+              mobileSize: 300, dektopSize: Get.height * 0.5),
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,

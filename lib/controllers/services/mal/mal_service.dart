@@ -11,11 +11,9 @@ import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
-import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -218,9 +216,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     )
                   : const SizedBox.shrink(),
               if (isLoggedIn.value) const SizedBox(height: 30),
-              buildSection("Continue Watching", continueWatching.value,
+              buildSection("Continue Watching", continueWatching,
                   variant: DataVariant.anilist),
-              buildSection("Continue Reading", continueReading.value,
+              buildSection("Continue Reading", continueReading,
                   isManga: true, variant: DataVariant.anilist),
               buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
               buildSectionIfNotEmpty("Popular Animes", popularAnimes),
@@ -542,10 +540,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   void setCurrentMedia(String id, {bool isManga = false}) {
     if (isManga) {
-      currentMedia.value = mangaList.value
+      currentMedia.value = mangaList
           .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
     } else {
-      currentMedia.value = animeList.value
+      currentMedia.value = animeList
           .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
     }
   }

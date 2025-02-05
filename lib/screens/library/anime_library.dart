@@ -397,24 +397,31 @@ class AnimeHistoryCard extends StatelessWidget {
       child: TVWrapper(
         onTap: () {
           if (data.currentEpisode == null ||
-              data.currentEpisode!.currentTrack == null ||
+              data.currentEpisode?.currentTrack == null ||
               data.episodes == null ||
-              data.currentEpisode!.videoTracks == null) {
+              data.currentEpisode?.videoTracks == null) {
             snackBar(
                 "Error: Missing required data. It seems you closed the app directly after watching the episode!",
                 duration: 2000,
                 maxLines: 3,
                 maxWidth: Get.width * 0.6);
           } else {
-            Get.find<SourceController>()
+            if (data.currentEpisode?.source == null) {
+              snackBar("Cant Play since user closed the app abruptly");
+            }
+            final source = Get.find<SourceController>()
                 .getExtensionByName(data.currentEpisode!.source!);
-            Get.to(() => WatchPage(
-                  episodeSrc: data.currentEpisode!.currentTrack!,
-                  episodeList: data.episodes!,
-                  anilistData: convertOfflineToMedia(data),
-                  currentEpisode: data.currentEpisode!,
-                  episodeTracks: data.currentEpisode!.videoTracks!,
-                ));
+            if (source == null) {
+              snackBar("You Dont have the exact needed extension to run this");
+            } else {
+              Get.to(() => WatchPage(
+                    episodeSrc: data.currentEpisode!.currentTrack!,
+                    episodeList: data.episodes!,
+                    anilistData: convertOfflineToMedia(data),
+                    currentEpisode: data.currentEpisode!,
+                    episodeTracks: data.currentEpisode!.videoTracks!,
+                  ));
+            }
           }
         },
         child: ClipRRect(

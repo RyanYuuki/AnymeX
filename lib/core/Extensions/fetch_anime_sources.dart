@@ -8,12 +8,10 @@ part 'fetch_anime_sources.g.dart';
 @riverpod
 Future fetchAnimeSourcesList(FetchAnimeSourcesListRef ref,
     {int? id, required bool reFresh}) async {
-  if ((true) || reFresh) {
-    await fetchSourcesList(
-        sourcesIndexUrl: Get.find<SourceController>().activeAnimeRepo,
-        refresh: reFresh,
-        id: id,
-        ref: ref,
-        isManga: false);
-  }
+  await fetchSourcesList(
+      sourcesIndexUrl: Get.find<SourceController>().activeAnimeRepo,
+      refresh: reFresh,
+      id: id,
+      ref: ref,
+      isManga: false);
 }
