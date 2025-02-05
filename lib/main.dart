@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -72,24 +73,45 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-void initDeepLinkListener() {
-  uriLinkStream.listen((Uri? uri) {
-    if (uri != null && uri.scheme == "anymex" && uri.host == "add-repo") {
-      String? repoUrl = uri.queryParameters["url"];
-      String? mangaUrl = uri.queryParameters["manga_url"];
+void initDeepLinkListener() async {
+  try {
+    final initialUri = await getInitialUri();
+    if (initialUri != null) {
+      handleDeepLink(initialUri);
+    }
+  } catch (err) {
+    snackBar('Error getting initial deep link: $err');
+  }
 
-      if (repoUrl != null && mangaUrl != null) {
-        final settings = Get.find<SourceController>();
-        settings.activeAnimeRepo = repoUrl;
-        settings.activeMangaRepo = mangaUrl;
-        print("Received Repo URL: $repoUrl");
-        print("Received Manga URL: $mangaUrl");
-        snackBar("Added Repo Links Successfully!");
-      }
+  uriLinkStream.listen((Uri? uri) {
+    if (uri != null) {
+      handleDeepLink(uri);
     }
   }, onError: (err) {
     snackBar('Error Opening link: $err');
   });
+}
+
+void handleDeepLink(Uri uri) {
+  if (uri.host == "add-repo") {
+    String? repoUrl = uri.queryParameters["url"];
+    String? mangaUrl = uri.queryParameters["manga_url"];
+
+    final settings = Get.find<SourceController>();
+
+    if (repoUrl != null) {
+      settings.activeAnimeRepo = repoUrl;
+    }
+    if (mangaUrl != null) {
+      settings.activeMangaRepo = mangaUrl;
+    }
+
+    if (repoUrl != null || mangaUrl != null) {
+      snackBar("Added Repo Links Successfully!");
+    } else {
+      snackBar("Missing required parameters in the link.");
+    }
+  }
 }
 
 void main() async {
@@ -122,6 +144,7 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
         statusBarColor: Colors.transparent));
+    initDeepLinkListener();
   }
   runApp(
     ChangeNotifierProvider(

@@ -5,6 +5,7 @@ import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:window_manager/window_manager.dart';
 
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
@@ -22,6 +23,9 @@ class Settings extends GetxController {
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
     isTv().then((e) {
       isTV.value = e;
+      if(e) {
+        // windowManager.
+      }
     });
   }
 
