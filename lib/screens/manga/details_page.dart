@@ -130,8 +130,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         await _mapToService();
       }
     } catch (e) {
-      snackBar("Ooops! Looks like we ran into an error, try again please",
-          duration: 2000);
+      if (e.toString().contains("dynamic")) {
+        _fetchAnilistData();
+      }
+      snackBar("Retrying!, $e", duration: 2000);
     }
   }
 
@@ -166,8 +168,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
       setState(() {});
     } catch (e) {
-      snackBar("Ooops! Looks like we ran into an error, try again please",
-          duration: 2000);
+      if (e.toString().contains("dynamic")) {
+        _fetchSourceDetails(media);
+      }
+      snackBar("Retrying!, $e", duration: 2000);
     }
   }
 
