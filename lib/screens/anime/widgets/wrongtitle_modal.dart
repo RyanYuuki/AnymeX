@@ -24,20 +24,22 @@ class WrongTitleModal extends StatefulWidget {
 class _WrongTitleModalState extends State<WrongTitleModal> {
   late Future<List<MManga?>?> searchFuture;
   final sourceController = Get.find<SourceController>();
+  late TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
-    searchFuture = performSearch(widget.initialText);
+    controller = TextEditingController(text: widget.initialText);
+    searchFuture = performSearch();
   }
 
-  Future<List<MManga?>?> performSearch(String query) async {
+  Future<List<MManga?>?> performSearch() async {
     final source = widget.isManga
         ? sourceController.activeMangaSource.value
         : sourceController.activeSource.value;
     return await search(
       source: source!,
-      query: query,
+      query: controller.text,
       page: 1,
       filterList: [],
     );
@@ -57,14 +59,15 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: TextField(
+                controller: controller,
                 onSubmitted: (value) {
                   setState(() {
-                    searchFuture = performSearch(value);
+                    searchFuture = performSearch();
                   });
                 },
                 decoration: InputDecoration(
                   labelText:
-                      widget.isManga ? 'Search Manga...' : 'Search Animes...',
+                      widget.isManga ? 'Search Manga' : 'Search Animes',
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   suffixIcon: const Padding(
                     padding: EdgeInsets.only(right: 15.0),
@@ -103,7 +106,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                               maxColumns: 5, baseColumns: 3),
                           crossAxisSpacing: 20,
                           mainAxisSpacing: 20,
-                          mainAxisExtent: 230),
+                          mainAxisExtent: 210),
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
@@ -122,7 +125,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                                 Center(
                                   child: NetworkSizedImage(
                                     imageUrl: item!.imageUrl ?? "",
-                                    height: 160,
+                                    height: 140,
                                     radius: 12,
                                     width: double.infinity,
                                   ),
