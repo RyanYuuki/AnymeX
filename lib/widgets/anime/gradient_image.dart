@@ -109,6 +109,9 @@ class GradientPoster extends StatelessWidget {
               top: 20,
               right: 20,
               child: TVWrapper(
+                onTap: () {
+                  Get.back();
+                },
                 margin: 0,
                 child: IconButton(
                     style: ElevatedButton.styleFrom(

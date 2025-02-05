@@ -1361,7 +1361,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   ],
                 ),
                 if (!isLocked.value) ...[_buildPlaybackButtons()],
-                // if (settings.isTV.value)
+                if (settings.isTV.value)
                 Positioned(
                     right: 10,
                     top: MediaQuery.of(context).size.height * 0.48,

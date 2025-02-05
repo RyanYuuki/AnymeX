@@ -2,6 +2,7 @@ import 'package:anymex/screens/anime/widgets/search_widgets.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,11 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     if (_searchResults == null || _searchResults!.isEmpty) {
-      return const Center(child: Text('No results found'));
+      if (_searchController.text.isEmpty) {
+        return const Center(child: Text('Search Something!'));
+      } else {
+        return const Center(child: Text('No results found'));
+      }
     }
 
     return GridView.builder(
@@ -126,7 +131,8 @@ class _SearchPageState extends State<SearchPage> {
         Expanded(
           child: Stack(
             children: [
-              GestureDetector(
+              TVWrapper(
+                margin: 0,
                 onTap: () => _navigateToDetails(media),
                 child: Hero(
                   tag: media.title,
@@ -166,7 +172,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildListItem(Media media) {
-    return GestureDetector(
+    return TVWrapper(
       onTap: () => _navigateToDetails(media),
       child: Container(
         margin: const EdgeInsets.only(top: 10),

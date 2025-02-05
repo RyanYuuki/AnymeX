@@ -9,6 +9,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'dart:math';
+
+String getGreeting() {
+  final hour = DateTime.now().hour;
+  final random = Random();
+
+  if (hour >= 5 && hour < 12) {
+    return random.nextBool() ? "Good yawning!" : "Good morning!";
+  } else if (hour >= 12 && hour < 17) {
+    return random.nextBool() ? "Good snacking!" : "Good afternoon!";
+  } else if (hour >= 17 && hour < 21) {
+    return random.nextBool() ? "Good chilling!" : "Good evening!";
+  } else {
+    return random.nextBool() ? "Good midnight!" : "Good night!";
+  }
+}
 
 class Header extends StatelessWidget {
   final bool isHomePage;
@@ -29,7 +45,7 @@ class Header extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Good Night,"),
+                  Text("${getGreeting()},"),
                   Text(profileData.profileData.value.name ?? 'Guest',
                       style: const TextStyle(fontFamily: "Poppins-SemiBold")),
                 ],
@@ -53,21 +69,6 @@ class Header extends StatelessWidget {
                   searchTypeSheet(context, "");
                 },
               ))
-              // CircleAvatar(
-              //   radius: 24,
-              //   backgroundColor:
-              //       Theme.of(context).colorScheme.secondaryContainer,
-              //   child: IconButton(
-              //       style: ElevatedButton.styleFrom(
-              //           backgroundColor:
-              //               Theme.of(context).colorScheme.secondaryContainer),
-              //       onPressed: () {
-              //         provider.toggleTheme();
-              //       },
-              //       icon: Icon(Get.theme.brightness == Brightness.light
-              //           ? HugeIcons.strokeRoundedSun03
-              //           : HugeIcons.strokeRoundedMoon01)),
-              // )
             ],
           ),
         );

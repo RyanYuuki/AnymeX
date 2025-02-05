@@ -217,7 +217,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return PlatformBuilder(
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
-      strictMode: true,
     );
   }
 

@@ -10,6 +10,7 @@ import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,141 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   final _textEditingController = TextEditingController();
   late var _selectedLanguage = 'all';
 
+  void repoSheet() {
+    final controller = Get.find<SourceController>();
+    final animeRepoController = TextEditingController(
+      text: controller.activeAnimeRepo,
+    );
+    final mangaRepoController = TextEditingController(
+      text: controller.activeMangaRepo,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: AnymexText(
+                    text: "Add Repository",
+                    size: 20,
+                    variant: TextVariant.semiBold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHigh),
+                  padding: const EdgeInsets.all(7),
+                  child: Text(
+                    "WARNING: Adding third-party repositories is not encouraged by the developer. Also make sure to add links for both anime and manga, it won’t work if you add only one.",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Anime Repository Input
+                const Padding(
+                  padding: EdgeInsets.only(left: 5, bottom: 5),
+                  child: Text(
+                    "Anime Repository",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                CustomSearchBar(
+                  prefixIcon: Icons.movie_filter_outlined,
+                  controller: animeRepoController,
+                  onSubmitted: (value) {},
+                  hintText: "Add Anime Repo...",
+                  disableIcons: true,
+                  padding: const EdgeInsets.all(0),
+                ),
+
+                const SizedBox(height: 15),
+
+                // Manga Repository Input
+                const Padding(
+                  padding: EdgeInsets.only(left: 5, bottom: 5),
+                  child: Text(
+                    "Manga Repository",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                CustomSearchBar(
+                  prefixIcon: Iconsax.book,
+                  controller: mangaRepoController,
+                  onSubmitted: (value) {},
+                  hintText: "Add Manga Repo...",
+                  disableIcons: true,
+                  padding: const EdgeInsets.all(0),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnymeXButton(
+                      height: 50,
+                      width: 200,
+                      borderRadius: BorderRadius.circular(30),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      variant: ButtonVariant.outline,
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 10),
+                    AnymeXButton(
+                      height: 50,
+                      width: 200,
+                      borderRadius: BorderRadius.circular(30),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      variant: ButtonVariant.outline,
+                      onTap: () async {
+                        if (animeRepoController.text.isNotEmpty) {
+                          controller.activeAnimeRepo = animeRepoController.text;
+                        }
+                        if (mangaRepoController.text.isNotEmpty) {
+                          controller.activeMangaRepo = mangaRepoController.text;
+                        }
+
+                        await _fetchData();
+                        await _refreshData();
+                        Get.back();
+                      },
+                      child: const Text("Confirm"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _fetchData();
@@ -87,62 +223,14 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
               TVWrapper(
+                onTap: () {
+                  repoSheet();
+                },
                 child: IconButton(
                   icon:
                       Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
                   onPressed: () {
-                    final controller = Get.find<SourceController>();
-                    final animeRepoController = TextEditingController(
-                      text: controller.activeAnimeRepo,
-                    );
-                    final mangaRepoController = TextEditingController(
-                      text: controller.activeMangaRepo,
-                    );
-
-                    AlertDialogBuilder(context)
-                      ..setTitleWidget(const Center(
-                        child: AnymexText(
-                          text: "Add Repo",
-                          size: 20,
-                          variant: TextVariant.semiBold,
-                        ),
-                      ))
-                      ..setCustomView(
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomSearchBar(
-                              prefixIcon: HugeIcons.strokeRoundedGithub,
-                              controller: animeRepoController,
-                              onSubmitted: (value) {},
-                              hintText: "Add Anime Repo...",
-                              disableIcons: true,
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            const SizedBox(height: 10),
-                            CustomSearchBar(
-                              prefixIcon: HugeIcons.strokeRoundedGithub,
-                              controller: mangaRepoController,
-                              onSubmitted: (value) {},
-                              hintText: "Add Manga Repo...",
-                              disableIcons: true,
-                              padding: const EdgeInsets.all(0),
-                            ),
-                          ],
-                        ),
-                      )
-                      ..setPositiveButton("Confirm", () async {
-                        if (animeRepoController.text.isNotEmpty) {
-                          controller.activeAnimeRepo = animeRepoController.text;
-                        }
-                        if (mangaRepoController.text.isNotEmpty) {
-                          controller.activeMangaRepo = mangaRepoController.text;
-                        }
-
-                        await _fetchData();
-                        await _refreshData();
-                      })
-                      ..show();
+                    repoSheet();
                   },
                 ),
               ),

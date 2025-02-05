@@ -1,11 +1,14 @@
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
   final Function(String) onSubmitted;
   final Function(String)? onChanged;
@@ -36,31 +39,77 @@ class CustomSearchBar extends StatelessWidget {
   });
 
   @override
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
+}
+
+class _CustomSearchBarState extends State<CustomSearchBar> {
+  late FocusNode _focusNode;
+  final settings = Get.find<Settings>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (settings.isTV.value) {
+      _focusNode = FocusNode(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+              _focusNode.focusInDirection(TraversalDirection.left);
+              return KeyEventResult.skipRemainingHandlers;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+              _focusNode.focusInDirection(TraversalDirection.right);
+              return KeyEventResult.skipRemainingHandlers;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _focusNode.focusInDirection(TraversalDirection.up);
+              return KeyEventResult.skipRemainingHandlers;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              _focusNode.focusInDirection(TraversalDirection.down);
+              return KeyEventResult.skipRemainingHandlers;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+      );
+    } else {
+      _focusNode = FocusNode();
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding:
-          padding ?? const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+      padding: widget.padding ??
+          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
       child: TextField(
-        controller: controller,
-        onSubmitted: onSubmitted,
-        onChanged: onChanged,
+        focusNode: _focusNode,
+        controller: widget.controller,
+        onSubmitted: (value) {
+          widget.onSubmitted(value);
+        },
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: widget.hintText,
           filled: true,
           fillColor:
               Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
           prefixIcon: IconButton(
-            icon: Icon(prefixIcon),
-            onPressed: onPrefixIconPressed,
+            icon: Icon(widget.prefixIcon),
+            onPressed: widget.onPrefixIconPressed,
           ),
-          suffix: suffixWidget,
-          suffixIcon: disableIcons
-              ? suffixIconWidget
+          suffix: widget.suffixWidget,
+          suffixIcon: widget.disableIcons
+              ? widget.suffixIconWidget
               : IconButton(
-                  icon: Icon(suffixIcon),
-                  onPressed: onSuffixIconPressed,
+                  icon: Icon(widget.suffixIcon),
+                  onPressed: widget.onSuffixIconPressed,
                 ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.multiplyRadius()),

@@ -57,7 +57,8 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
         ? (itemsCount * 71.0)
             .clamp(100, MediaQuery.of(context).size.height - 100)
         : widget.height ?? 75;
-    final RxBool translucent = Get.find<Settings>().transculentBar.obs;
+    final settings = Get.find<Settings>();
+    final RxBool translucent = settings.transculentBar.obs;
 
     return SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -128,13 +129,19 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                             widget.isDesktop,
                             const Key('normalItems'),
                           ),
-                          desktopValue: SingleChildScrollView(
-                            child: _buildFlex(
-                              widget.items,
-                              widget.isDesktop,
-                              const Key('normalItems'),
-                            ),
-                          )),
+                          desktopValue: settings.isTV.value
+                              ? _buildFlex(
+                                  widget.items,
+                                  widget.isDesktop,
+                                  const Key('normalItems'),
+                                )
+                              : SingleChildScrollView(
+                                  child: _buildFlex(
+                                    widget.items,
+                                    widget.isDesktop,
+                                    const Key('normalItems'),
+                                  ),
+                                )),
                       desktopValue: _buildFlex(
                         widget.items,
                         widget.isDesktop,
