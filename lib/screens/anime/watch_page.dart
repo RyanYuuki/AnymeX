@@ -196,8 +196,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       currentPosition.value = e;
       currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       formattedTime.value = formatDuration(e);
-      if (e.inMilliseconds == episodeDuration.value.inMilliseconds) {
-        if (episodeDuration.value.inMinutes >= 20) {
+      if (e.inSeconds == episodeDuration.value.inSeconds) {
+        if (episodeDuration.value.inMinutes >= 1) {
           fetchEpisode(false);
         }
       }
@@ -294,6 +294,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       player.open(Media(''));
     });
     final episodeToNav = navEpisode(prev);
+    if (episodeToNav != null) {
+      currentEpisode.value = episodeToNav;
+    }
     final video = await getVideo(
         source: sourceController.activeSource.value!, url: episodeToNav!.link!);
     final preferredStream = video.firstWhere(
@@ -306,7 +309,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     episode.value = preferredStream;
     episodeTracks.value = video;
-    currentEpisode.value = episodeToNav;
     currentEpisode.value.currentTrack = preferredStream;
     currentEpisode.value.videoTracks = video;
     _initPlayer(false);
@@ -745,7 +747,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 10),
-              episode.value.audios != null && episode.value.audios!.isEmpty
+              episode.value.audios != null
                   ? const SizedBox.shrink()
                   : ListView.builder(
                       shrinkWrap: true,
@@ -1213,10 +1215,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     min: 0,
                                     value: currentPosition.value.inMilliseconds
                                         .toDouble(),
-                                    max: episodeDuration.value.inMilliseconds
-                                                .toDouble() ==
-                                            0.0
-                                        ? const Duration(minutes: 20)
+                                    max: episodeDuration.value.inMilliseconds <=
+                                            currentPosition.value.inMilliseconds
+                                        ? const Duration(minutes: 200)
                                             .inMilliseconds
                                             .toDouble()
                                         : episodeDuration.value.inMilliseconds
@@ -1280,12 +1281,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                           },
                                           icon:
                                               HugeIcons.strokeRoundedSubtitle),
-                                      _buildIcon(
-                                          onTap: () {
-                                            showAudioSelector();
-                                          },
-                                          icon: HugeIcons
-                                              .strokeRoundedMusicNote01),
+                                      if (episode.value.audios != null &&
+                                          episode.value.audios!.isNotEmpty)
+                                        _buildIcon(
+                                            onTap: () {
+                                              showAudioSelector();
+                                            },
+                                            icon: HugeIcons
+                                                .strokeRoundedMusicNote01),
                                     ],
                                   ),
                                 ),
@@ -1358,6 +1361,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   ],
                 ),
                 if (!isLocked.value) ...[_buildPlaybackButtons()],
+                // if (settings.isTV.value)
+                Positioned(
+                    right: 10,
+                    top: MediaQuery.of(context).size.height * 0.48,
+                    child: _buildIcon(icon: Icons.arrow_back_ios))
               ],
             ),
           ),
