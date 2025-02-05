@@ -46,6 +46,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -69,6 +70,26 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.trackpad,
         PointerDeviceKind.stylus
       };
+}
+
+void initDeepLinkListener() {
+  uriLinkStream.listen((Uri? uri) {
+    if (uri != null && uri.scheme == "anymex" && uri.host == "add-repo") {
+      String? repoUrl = uri.queryParameters["url"];
+      String? mangaUrl = uri.queryParameters["manga_url"];
+
+      if (repoUrl != null && mangaUrl != null) {
+        final settings = Get.find<SourceController>();
+        settings.activeAnimeRepo = repoUrl;
+        settings.activeMangaRepo = mangaUrl;
+        print("Received Repo URL: $repoUrl");
+        print("Received Manga URL: $mangaUrl");
+        snackBar("Added Repo Links Successfully!");
+      }
+    }
+  }, onError: (err) {
+    snackBar('Error Opening link: $err');
+  });
 }
 
 void main() async {

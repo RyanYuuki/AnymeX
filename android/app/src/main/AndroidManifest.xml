@@ -36,11 +36,19 @@
                 <!-- Add LEANBACK_LAUNCHER for TV -->
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
             </intent-filter>
+
+        <intent-filter android:label="Add Repo">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="anymex" android:host="add-repo" />
+        </intent-filter>  
+        
         </activity>
 
         <activity android:name="com.linusu.flutter_web_auth_2.CallbackActivity" 
             android:exported="true">
-            <intent-filter android:label="AnymeX">
+            <intent-filter android:label="Login">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>

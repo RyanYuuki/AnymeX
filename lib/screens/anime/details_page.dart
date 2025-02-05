@@ -348,9 +348,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       }),
                       const Spacer(),
                       IconButton(
-                          onPressed: () {}, icon: const Icon(Iconsax.heart)),
+                          onPressed: () {
+                            snackBar("dont know what to do with it WIP");
+                          },
+                          icon: const Icon(Iconsax.heart)),
                       IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.share)),
+                          onPressed: () {
+                            snackBar("dont know what to do with it WIP");
+                          },
+                          icon: const Icon(Icons.share)),
                     ],
                   ),
                 ],
