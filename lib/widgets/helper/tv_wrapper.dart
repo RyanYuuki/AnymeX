@@ -1,5 +1,7 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class TVWrapper extends StatelessWidget {
   final VoidCallback? onTap;
@@ -7,6 +9,7 @@ class TVWrapper extends StatelessWidget {
   final double scale;
   final Duration animationDuration;
   final Color? focusedBorderColor;
+  final bool? inkWell;
   final Color? bgColor;
   final double borderWidth;
   final double? margin;
@@ -21,48 +24,64 @@ class TVWrapper extends StatelessWidget {
     this.borderWidth = 2.0,
     this.margin,
     this.bgColor,
+    this.inkWell,
   });
 
   @override
   Widget build(BuildContext context) {
-    return FocusableActionDetector(
-      actions: <Type, Action<Intent>>{
-        ActivateIntent: CallbackAction<ActivateIntent>(
-          onInvoke: (ActivateIntent intent) => onTap?.call(),
-        ),
-      },
-      child: Builder(
-        builder: (BuildContext context) {
-          final bool isFocused = Focus.of(context).hasFocus;
-          return GestureDetector(
-            onTap: onTap,
-            child: AnimatedContainer(
-              duration: animationDuration,
-              transform: Matrix4.identity()..scale(isFocused ? scale : 1.0),
-              padding:
-                  EdgeInsets.symmetric(vertical: isFocused ? (margin ?? 5) : 0),
-              margin: EdgeInsets.only(left: isFocused ? (margin ?? 5) : 0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: isFocused
-                    ? (bgColor ??
-                        Theme.of(context).colorScheme.secondaryContainer)
-                    : Colors.transparent,
-                border: Border.all(
-                  color: isFocused
-                      ? (focusedBorderColor ??
-                          Theme.of(context).colorScheme.primary)
-                      : Colors.transparent,
-                  width: borderWidth,
-                  strokeAlign: BorderSide.strokeAlignOutside,
-                ),
-              ),
-              child: child,
-            ),
-          );
+    final isTV = Get.find<Settings>().isTV.value;
+    if (isTV) {
+      return FocusableActionDetector(
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (ActivateIntent intent) => onTap?.call(),
+          ),
         },
-      ),
-    );
+        child: Builder(
+          builder: (BuildContext context) {
+            final bool isFocused = Focus.of(context).hasFocus;
+            return GestureDetector(
+              onTap: onTap,
+              child: AnimatedContainer(
+                duration: animationDuration,
+                transform: Matrix4.identity()..scale(isFocused ? scale : 1.0),
+                padding: EdgeInsets.symmetric(
+                    vertical: isFocused ? (margin ?? 5) : 0),
+                margin: EdgeInsets.only(left: isFocused ? (margin ?? 5) : 0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: isFocused
+                      ? (bgColor ??
+                          Theme.of(context).colorScheme.secondaryContainer)
+                      : Colors.transparent,
+                  border: Border.all(
+                    color: isFocused
+                        ? (focusedBorderColor ??
+                            Theme.of(context).colorScheme.primary)
+                        : Colors.transparent,
+                    width: borderWidth,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                  ),
+                ),
+                child: child,
+              ),
+            );
+          },
+        ),
+      );
+    } else {
+      if (inkWell ?? false) {
+        return InkWell(
+          onTap: onTap,
+          child: child,
+        );
+      } else {
+        return GestureDetector(
+          onTap: onTap,
+          child: child,
+        );
+      }
+    }
   }
 }
 

@@ -39,7 +39,6 @@ class Header extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
             children: [
-              const SizedBox(width: 10),
               _profileIcon(context, profileData),
               const SizedBox(width: 15),
               Column(
@@ -68,7 +67,7 @@ class Header extends StatelessWidget {
                 onSubmitted: () {
                   searchTypeSheet(context, "");
                 },
-              ))
+              )),
             ],
           ),
         );
