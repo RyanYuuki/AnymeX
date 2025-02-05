@@ -63,7 +63,8 @@ class _BigCarouselState extends State<BigCarousel> {
                     event.logicalKey == LogicalKeyboardKey.arrowDown) {
                   return KeyEventResult.ignored;
                 } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.space) {
+                    event.logicalKey == LogicalKeyboardKey.space ||
+                    event.logicalKey == LogicalKeyboardKey.select) {
                   navigateToDetailsPage(newData[activeIndex],
                       '${newData[activeIndex].title}-$activeIndex');
                 }

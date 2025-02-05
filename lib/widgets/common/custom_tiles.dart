@@ -98,47 +98,51 @@ class CustomTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return TVWrapper(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Row(
-          children: [
-            if (prefix == null)
-              Icon(icon, size: 30, color: Theme.of(context).colorScheme.primary)
-            else
-              prefix!,
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: Row(
+            children: [
+              if (prefix == null)
+                Icon(icon,
+                    size: 30, color: Theme.of(context).colorScheme.primary)
+              else
+                prefix!,
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                    const SizedBox(height: 5),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (postFix == null)
-              Icon(IconlyLight.arrow_right_2,
-                  color: Theme.of(context).colorScheme.primary)
-            else
-              postFix!
-          ],
+              if (postFix == null)
+                Icon(IconlyLight.arrow_right_2,
+                    color: Theme.of(context).colorScheme.primary)
+              else
+                postFix!
+            ],
+          ),
         ),
       ),
     );

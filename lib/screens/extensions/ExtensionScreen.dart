@@ -156,39 +156,49 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymeXButton(
-                      height: 50,
-                      width: 200,
-                      borderRadius: BorderRadius.circular(30),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      variant: ButtonVariant.outline,
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: const Text("Cancel"),
+                    Expanded(
+                      child: AnymeXButton(
+                        height: 50,
+                        width: double.infinity,
+                        borderRadius: BorderRadius.circular(30),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondaryContainer,
+                        variant: ButtonVariant.outline,
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: const Text("Cancel"),
+                      ),
                     ),
                     const SizedBox(width: 10),
-                    AnymeXButton(
-                      height: 50,
-                      width: 200,
-                      borderRadius: BorderRadius.circular(30),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      variant: ButtonVariant.outline,
-                      onTap: () async {
-                        if (animeRepoController.text.isNotEmpty) {
+                    Expanded(
+                      child: TVWrapper(
+                        onTap: () async {
                           controller.activeAnimeRepo = animeRepoController.text;
-                        }
-                        if (mangaRepoController.text.isNotEmpty) {
                           controller.activeMangaRepo = mangaRepoController.text;
-                        }
-
-                        await _fetchData();
-                        await _refreshData();
-                        Get.back();
-                      },
-                      child: const Text("Confirm"),
+                          _fetchData();
+                          _refreshData();
+                          Get.back();
+                        },
+                        child: AnymeXButton(
+                          height: 50,
+                          width: double.infinity,
+                          borderRadius: BorderRadius.circular(30),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          variant: ButtonVariant.outline,
+                          onTap: () async {
+                            controller.activeAnimeRepo =
+                                animeRepoController.text;
+                            controller.activeMangaRepo =
+                                mangaRepoController.text;
+                            _fetchData();
+                            _refreshData();
+                            Get.back();
+                          },
+                          child: const Text("Confirm"),
+                        ),
+                      ),
                     ),
                   ],
                 ),

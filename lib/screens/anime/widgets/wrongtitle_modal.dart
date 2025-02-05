@@ -1,8 +1,10 @@
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/search.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -58,25 +60,15 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
           children: [
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: TextField(
+              child: CustomSearchBar(
+                disableIcons: true,
+                padding: const EdgeInsets.all(0),
                 controller: controller,
                 onSubmitted: (value) {
                   setState(() {
                     searchFuture = performSearch();
                   });
                 },
-                decoration: InputDecoration(
-                  labelText:
-                      widget.isManga ? 'Search Manga' : 'Search Animes',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  suffixIcon: const Padding(
-                    padding: EdgeInsets.only(right: 15.0),
-                    child: Icon(IconlyLight.search),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -110,7 +102,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
-                        return GestureDetector(
+                        return TVWrapper(
                           onTap: () {
                             widget.onTap(item);
                             Get.back();

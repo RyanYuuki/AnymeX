@@ -76,7 +76,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final episodeDuration = const Duration(minutes: 24).obs;
   final formattedTime = "00:00".obs;
   final formattedDuration = "24:00".obs;
-  final showControls = true.obs;
+  final showControls = false.obs;
   final isBuffering = true.obs;
   final bufferred = const Duration(milliseconds: 0).obs;
   final playbackSpeed = 1.0.obs;
@@ -105,6 +105,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final doubleTapLabel = 0.obs;
   Timer? doubleTapTimeout;
   final isLeftSide = false.obs;
+  Timer? _hideControlsTimer;
+  final pressed2x = false.obs;
 
   //
   final sourceController = Get.find<SourceController>();
@@ -184,6 +186,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
+    toggleControls();
     player.open(Media(episode.value.url,
         start: Duration(milliseconds: startTimeMilliseconds)));
   }
@@ -424,6 +427,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
+  void toggleControls({bool? val}) {
+    showControls.value = val ?? !showControls.value;
+
+    if (showControls.value && isPlaying.value) {
+      _hideControlsTimer?.cancel();
+
+      _hideControlsTimer = Timer(const Duration(seconds: 5), () {
+        showControls.value = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     Future.delayed(Duration.zero, () async {
@@ -453,6 +468,34 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           _buildControls(),
           _buildSubtitle(),
           _buildRippleEffect(),
+          Obx(() {
+            if (pressed2x.value) {
+              return Positioned(
+                  top: 30,
+                  child: Container(
+                    width: 80,
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AnymexText(
+                          text: "2x",
+                          variant: TextVariant.semiBold,
+                        ),
+                        SizedBox(width: 5),
+                        Icon(Icons.fast_forward)
+                      ],
+                    ),
+                  ));
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           if (isMobile) ...[
             _buildBrightnessSlider(),
             _buildVolumeSlider(),
@@ -526,7 +569,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               : 0,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => showControls.value = !showControls.value,
+            onLongPressStart: (e) {
+              pressed2x.value = true;
+              player.setRate(2.0);
+            },
+            onLongPressEnd: (e) {
+              pressed2x.value = false;
+              player.setRate(1.0);
+            },
+            onTap: toggleControls,
             onDoubleTapDown: (e) => _handleDoubleTap(e),
             onVerticalDragUpdate: (e) async {
               if (isMobile) {
@@ -1362,10 +1413,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 ),
                 if (!isLocked.value) ...[_buildPlaybackButtons()],
                 if (settings.isTV.value)
-                Positioned(
-                    right: 10,
-                    top: MediaQuery.of(context).size.height * 0.48,
-                    child: _buildIcon(icon: Icons.arrow_back_ios))
+                  Positioned(
+                      right: 10,
+                      top: MediaQuery.of(context).size.height * 0.48,
+                      child: _buildIcon(icon: Icons.arrow_back_ios))
               ],
             ),
           ),
@@ -1584,7 +1635,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       child: BlurWrapper(
         borderRadius: BorderRadius.circular(radius),
         child: TVWrapper(
-          onTap: onTap,
+          onTap: () {
+            onTap.call();
+            player.pause();
+          },
           bgColor: Colors.transparent,
           focusedBorderColor: Colors.transparent,
           child: IconButton(
@@ -1620,7 +1674,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
       child: TVWrapper(
-        onTap: onTap,
+        onTap: () {
+          onTap?.call();
+          player.pause();
+        },
         child: IconButton(
             onPressed: onTap,
             icon: Icon(

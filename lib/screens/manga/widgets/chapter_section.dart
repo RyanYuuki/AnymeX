@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/widgets/common/no_source.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class ChapterSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  GestureDetector(
+                  TVWrapper(
                     onTap: () {
                       showWrongTitleModal(
                         context,

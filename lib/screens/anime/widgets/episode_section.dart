@@ -11,6 +11,7 @@ import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +113,7 @@ class _TitleSection extends StatelessWidget {
                     )
                   ],
                 ))),
-        GestureDetector(
+        TVWrapper(
           onTap: () {
             showWrongTitleModal(
               context,
