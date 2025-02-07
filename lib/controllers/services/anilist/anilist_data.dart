@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' show min;
+import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -495,35 +497,65 @@ averageScore
 
   static Future<List<Episode>> fetchEpisodesFromAnify(
       String animeId, List<Episode> episodeList) async {
+    log("Fetching Anify metadata for animeId: $animeId");
     final resp = await get(
         Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
-
     if (resp.statusCode == 200) {
       try {
         final data = jsonDecode(resp.body);
-        final episodesData = data[0]['data'];
-
-        if (episodesData == null || episodesData.isEmpty) {
+        if (data.isEmpty) {
+          log("No valid data found.");
           return episodeList;
         }
 
-        for (int i = 0; i < episodeList.length; i++) {
-          if (i < episodesData.length) {
-            final episodeData = episodesData[i];
-            episodeList[i].title = episodeData['title'] ?? episodeList[i].title;
-            episodeList[i].thumbnail =
-                episodeData['img'] ?? episodeList[i].thumbnail;
-            episodeList[i].desc =
-                episodeData['description'] ?? episodeList[i].desc;
+        int selectedIndex = -1;
+        for (int i = 0; i < data.length; i++) {
+          if (data[i]['providerId'] != 'tvdb') {
+            selectedIndex = i;
+            break;
           }
         }
 
+        if (selectedIndex == -1) {
+          selectedIndex = 0;
+          log("No data with providerId != 'tvdb' found. Defaulting to the first entry.");
+        }
+
+        final episodesData = data[selectedIndex]['data'];
+        if (episodesData == null || episodesData.isEmpty) {
+          log("No episodes found for animeId: $animeId");
+          return episodeList;
+        }
+
+        for (int i = 0; i < min(episodeList.length, episodesData.length); i++) {
+          final episodeData = episodesData[i];
+          episodeList[i].title =
+              episodeData?['title']?.toString() ?? episodeList[i].title;
+          episodeList[i].thumbnail =
+              episodeData?['img']?.toString() ?? episodeList[i].thumbnail;
+          episodeList[i].desc =
+              episodeData?['description']?.toString() ?? episodeList[i].desc;
+          episodeList[i].filler =
+              episodeData?['isFiller'] ?? episodeList[i].filler;
+        }
+
         return episodeList;
+      } catch (e, stack) {
+        log("Error parsing episode data: $e");
+        log(stack.toString());
+        try {
+          return await Kitsu.fetchKitsuEpisodes(animeId, episodeList);
+        } catch (e) {
+          return episodeList;
+        }
+      }
+    } else {
+      log("Failed to fetch data, status: ${resp.statusCode}");
+      try {
+        return await Kitsu.fetchKitsuEpisodes(animeId, episodeList);
       } catch (e) {
         return episodeList;
       }
-    } else {
-      return episodeList;
     }
   }
 
