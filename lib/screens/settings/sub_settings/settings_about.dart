@@ -1,4 +1,5 @@
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/easter_avatar.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -96,32 +97,23 @@ class AboutPage extends StatelessWidget {
                   right: 0,
                   child: Center(
                     child: Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: theme.colorScheme.primary,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Container(
+                        width: 90,
+                        height: 90,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: theme.colorScheme.surfaceContainer),
-                        child: Image.asset(
-                          'assets/images/logo_transparent.png',
-                          fit: BoxFit.cover,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: theme.colorScheme.primary,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
+                        child: const TripleTapWidget()),
                   ),
                 ),
               ],

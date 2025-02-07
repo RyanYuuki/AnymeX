@@ -31,6 +31,7 @@ import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MangaDetailsPage extends StatefulWidget {
@@ -298,24 +299,27 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   ),
                 ],
               ),
-            ),
-            ExpandablePageView(
-              physics: const BouncingScrollPhysics(),
-              controller: controller,
-              onPageChanged: (index) {
-                selectedPage.value = index;
-              },
-              children: [
-                _buildCommonInfo(context),
-                _buildChapterSection(context),
-              ],
-            ),
+            )
           ] else ...[
             const SizedBox(
               height: 400,
               child: Center(child: CircularProgressIndicator()),
             )
-          ]
+          ],
+          ExpandablePageView(
+            physics: const BouncingScrollPhysics(),
+            controller: controller,
+            onPageChanged: (index) {
+              selectedPage.value = index;
+            },
+            children: [
+              if (anilistData != null)
+                _buildCommonInfo(context)
+              else
+                const SizedBox.shrink(),
+              _buildChapterSection(context),
+            ],
+          ),
         ],
       ),
     );
@@ -324,7 +328,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Widget _buildChapterSection(BuildContext context) {
     return ChapterSection(
       searchedTitle: searchedTitle,
-      anilistData: anilistData!,
+      anilistData: anilistData ?? widget.media,
       chapterList: chapterList!,
       sourceController: sourceController,
       mapToAnilist: _mapToService,
@@ -378,29 +382,60 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Obx(() => Container(
           margin: const EdgeInsets.all(20),
           width: 85,
-          height: 250,
-          child: ResponsiveNavBar(
-              isDesktop: true,
-              currentIndex: selectedPage.value + 1,
-              items: [
-                NavItem(
-                    onTap: (index) {
+          height: 300,
+          child: Column(
+            children: [
+              Container(
+                width: 70,
+                height: 65,
+                padding: const EdgeInsets.all(0),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 0,
+                ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.2),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      20.multiplyRadius(),
+                    )),
+                child: NavBarItem(
+                    isSelected: false,
+                    isVertical: true,
+                    onTap: () {
                       Get.back();
                     },
                     selectedIcon: Iconsax.back_square,
-                    unselectedIcon: Iconsax.back_square,
+                    unselectedIcon: IconlyBold.arrow_left,
                     label: "Back"),
-                NavItem(
-                    onTap: (index) => _onPageSelected(index - 1),
-                    selectedIcon: Iconsax.info_circle5,
-                    unselectedIcon: Iconsax.info_circle,
-                    label: "Info"),
-                NavItem(
-                    onTap: (index) => _onPageSelected(index - 1),
-                    selectedIcon: Iconsax.book,
-                    unselectedIcon: Iconsax.book,
-                    label: "Read"),
-              ]),
+              ),
+              const SizedBox(height: 10),
+              ResponsiveNavBar(
+                  isDesktop: true,
+                  currentIndex: selectedPage.value,
+                  fit: true,
+                  borderRadius: BorderRadius.circular(20),
+                  items: [
+                    NavItem(
+                        onTap: (index) => _onPageSelected(index),
+                        selectedIcon: Iconsax.info_circle5,
+                        unselectedIcon: Iconsax.info_circle,
+                        label: "Info"),
+                    NavItem(
+                        onTap: (index) => _onPageSelected(index),
+                        selectedIcon: Iconsax.book,
+                        unselectedIcon: Iconsax.book,
+                        label: "Watch"),
+                  ]),
+            ],
+          ),
         ));
   }
   // Desktop Navigation bar: END

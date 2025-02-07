@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
+import 'dart:developer';
 import 'dart:io';
+import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -33,6 +35,7 @@ import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AnimeDetailsPage extends StatefulWidget {
@@ -67,7 +70,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   // Page View Tracker
   RxInt selectedPage = 0.obs;
-  RxInt desktopSelectedPage = 1.obs;
 
   // Error tracker
   RxBool episodeError = false.obs;
@@ -84,12 +86,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
-  void _onDesktopPageSelected(int index) {
-    desktopSelectedPage.value = index;
-    controller.animateToPage(index - 1,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -98,6 +94,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       _checkAnimePresence();
     });
     _fetchAnilistData();
+    ever(selectedPage, (v) {
+      if (mounted) {
+        _onPageSelected(v);
+      }
+    });
   }
 
   void _initListVars() {
@@ -138,6 +139,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         await _mapToService();
       }
     } catch (e) {
+      if (e.toString().contains('author')) {
+        await _mapToService();
+      }
       snackBar(e.toString());
     }
   }
@@ -179,7 +183,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
       episodeList!.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
-
       final updatedEpisodes = await AnilistData.fetchEpisodesFromAnify(
         widget.media.id.toString(),
         episodeList!.value,
@@ -246,7 +249,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   SingleChildScrollView _commonSaikouLayout(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 100),
       child: Column(
@@ -362,27 +364,26 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ],
               ),
             ),
-            ExpandablePageView(
-              physics: const BouncingScrollPhysics(),
-              controller: controller,
-              onPageChanged: (index) {
-                if (isMobile) {
-                  selectedPage.value = index;
-                } else {
-                  desktopSelectedPage.value = index + 1;
-                }
-              },
-              children: [
-                _buildCommonInfo(context),
-                _buildEpisodeSection(context),
-              ],
-            )
           ] else ...[
             const SizedBox(
               height: 400,
               child: Center(child: CircularProgressIndicator()),
             )
-          ]
+          ],
+          ExpandablePageView(
+            physics: const BouncingScrollPhysics(),
+            controller: controller,
+            onPageChanged: (index) {
+              selectedPage.value = index;
+            },
+            children: [
+              if (anilistData != null)
+                _buildCommonInfo(context)
+              else
+                const SizedBox.shrink(),
+              _buildEpisodeSection(context),
+            ],
+          )
         ],
       ),
     );
@@ -391,7 +392,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Widget _buildEpisodeSection(BuildContext context) {
     return EpisodeSection(
       searchedTitle: searchedTitle,
-      anilistData: anilistData,
+      anilistData: anilistData ?? widget.media,
       episodeList: episodeList,
       episodeError: episodeError,
       mapToAnilist: _mapToService,
@@ -435,29 +436,60 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return Obx(() => Container(
           margin: const EdgeInsets.all(20),
           width: 85,
-          height: 250,
-          child: ResponsiveNavBar(
-              isDesktop: true,
-              currentIndex: desktopSelectedPage.value,
-              items: [
-                NavItem(
-                    onTap: (index) {
+          height: 300,
+          child: Column(
+            children: [
+              Container(
+                width: 70,
+                height: 65,
+                padding: const EdgeInsets.all(0),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 0,
+                ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.2),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      20.multiplyRadius(),
+                    )),
+                child: NavBarItem(
+                    isSelected: false,
+                    isVertical: true,
+                    onTap: () {
                       Get.back();
                     },
                     selectedIcon: Iconsax.back_square,
-                    unselectedIcon: Iconsax.back_square,
+                    unselectedIcon: IconlyBold.arrow_left,
                     label: "Back"),
-                NavItem(
-                    onTap: (index) => _onDesktopPageSelected(index),
-                    selectedIcon: Iconsax.info_circle5,
-                    unselectedIcon: Iconsax.info_circle,
-                    label: "Info"),
-                NavItem(
-                    onTap: (index) => _onDesktopPageSelected(index),
-                    selectedIcon: Iconsax.play5,
-                    unselectedIcon: Iconsax.play,
-                    label: "Watch"),
-              ]),
+              ),
+              const SizedBox(height: 10),
+              ResponsiveNavBar(
+                  isDesktop: true,
+                  currentIndex: selectedPage.value,
+                  fit: true,
+                  borderRadius: BorderRadius.circular(20),
+                  items: [
+                    NavItem(
+                        onTap: _onPageSelected,
+                        selectedIcon: Iconsax.info_circle5,
+                        unselectedIcon: Iconsax.info_circle,
+                        label: "Info"),
+                    NavItem(
+                        onTap: _onPageSelected,
+                        selectedIcon: Iconsax.play5,
+                        unselectedIcon: Iconsax.play,
+                        label: "Watch"),
+                  ]),
+            ],
+          ),
         ));
   }
   // Desktop Navigation bar: END
