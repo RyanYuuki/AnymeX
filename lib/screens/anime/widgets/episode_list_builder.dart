@@ -298,6 +298,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             savedEP?.durationInMilliseconds != null
         ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
         : null;
+    final isFiller = episode.filler ?? false;
 
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -305,7 +306,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       decoration: BoxDecoration(
         color: isSelected
             ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
-            : Theme.of(context).colorScheme.secondaryContainer,
+            : isFiller
+                ? Colors.orange
+                : Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -395,6 +398,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             savedEP!.durationInMilliseconds! > 0
         ? (savedEP.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
         : 0.0;
+    final isFiller = episode.filler ?? false;
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -402,7 +406,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       decoration: BoxDecoration(
         color: isSelected
             ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
-            : Theme.of(context).colorScheme.secondaryContainer,
+            : isFiller
+                ? Colors.orangeAccent.withAlpha(120)
+                : Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
