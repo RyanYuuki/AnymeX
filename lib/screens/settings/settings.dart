@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
@@ -98,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: "About",
             description: "About the App",
             onTap: () async {
-              snackBar("Not yet Added, Got a lil lazy...", duration: 1000);
+              Get.to(() => const AboutPage());
             },
           ),
         ],
