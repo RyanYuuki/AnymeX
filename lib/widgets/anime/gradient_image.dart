@@ -106,7 +106,7 @@ class GradientPoster extends StatelessWidget {
         ),
         if (Platform.isAndroid || Platform.isIOS)
           Positioned(
-              top: 20,
+              top: 30,
               right: 20,
               child: TVWrapper(
                 onTap: () {
