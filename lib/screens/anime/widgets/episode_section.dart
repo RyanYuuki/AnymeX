@@ -139,7 +139,7 @@ class _TitleSection extends StatelessWidget {
 
 class _SourceSelector extends StatelessWidget {
   final dynamic sourceController;
-  final RxList<dynamic>? episodeList;
+  final RxList<Episode>? episodeList;
   final List<SourcePreference> Function({required Source source})
       getSourcePreference;
   final Function() mapToAnilist;
@@ -232,7 +232,7 @@ class _SourceSelector extends StatelessWidget {
   }
 
   void _handleSourceChange(String? value) async {
-    episodeList?.clear();
+    episodeList?.value = [];
     try {
       sourceController.getExtensionByName(value!);
       await mapToAnilist();
