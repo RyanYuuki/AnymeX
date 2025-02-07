@@ -13,6 +13,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   permission_handler_windows
   screen_brightness_windows
   screen_retriever_windows
+  uni_links_desktop
   url_launcher_windows
   window_manager
   window_to_front

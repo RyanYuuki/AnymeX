@@ -1,6 +1,7 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/minor_widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
@@ -141,7 +142,8 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               'Update Pending',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
-            AnymexButton(
+            AnymeXButton(
+              variant: ButtonVariant.outline,
               onTap: () async {
                 for (var source in updateEntries) {
                   widget.mediaType == MediaType.manga

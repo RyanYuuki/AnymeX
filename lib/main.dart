@@ -48,6 +48,7 @@ import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:uni_links_desktop/uni_links_desktop.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -94,8 +95,10 @@ void initDeepLinkListener() async {
 
 void handleDeepLink(Uri uri) {
   if (uri.host == "add-repo") {
-    String? repoUrl = uri.queryParameters["url"];
+    String? repoUrl =
+        uri.queryParameters["url"] ?? uri.queryParameters['anime_url'];
     String? mangaUrl = uri.queryParameters["manga_url"];
+    String? novelUrl = uri.queryParameters["novel_url"];
 
     final settings = Get.find<SourceController>();
 
@@ -104,6 +107,9 @@ void handleDeepLink(Uri uri) {
     }
     if (mangaUrl != null) {
       settings.activeMangaRepo = mangaUrl;
+    }
+    if (novelUrl != null) {
+      settings.activeNovelRepo = novelUrl;
     }
 
     if (repoUrl != null || mangaUrl != null) {
@@ -116,6 +122,9 @@ void handleDeepLink(Uri uri) {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isMacOS) {
+    registerProtocol('anymex');
+  }
   HttpOverrides.global = MyHttpoverrides();
   await dotenv.load(fileName: ".env");
   await initializeHive();
@@ -144,8 +153,8 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
         statusBarColor: Colors.transparent));
-    initDeepLinkListener();
   }
+  initDeepLinkListener();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),

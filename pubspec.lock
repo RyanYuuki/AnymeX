@@ -1599,6 +1599,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.1"
+  uni_links_desktop:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "910b8d156b3acf3107e7cef8387b2d7af4c8bebe"
+      url: "https://github.com/leanflutter/uni_links_desktop.git"
+    source: git
+    version: "0.1.7"
   uni_links_platform_interface:
     dependency: transitive
     description:
