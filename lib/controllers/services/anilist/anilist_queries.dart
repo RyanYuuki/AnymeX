@@ -98,6 +98,7 @@ averageScore
         nextAiringEpisode {
           airingAt
           timeUntilAiring
+          episode
         }
         rankings {
           rank

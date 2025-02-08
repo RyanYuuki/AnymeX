@@ -701,19 +701,6 @@ averageScore
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final media = data['data']['Media'];
-
-      // final startDate = media['startDate'];
-      // final endDate = media['endDate'];
-      // String aired = '';
-
-      // if (startDate != null) {
-      //   aired =
-      //       '${startDate['year']}-${startDate['month']?.toString().padLeft(2, '0')}-${startDate['day']?.toString().padLeft(2, '0')}';
-      //   if (endDate != null && endDate['year'] != null) {
-      //     aired +=
-      //         ' to ${endDate['year']}-${endDate['month']?.toString().padLeft(2, '0')}-${endDate['day']?.toString().padLeft(2, '0')}';
-      //   }
-      // }
       return Media.fromJson(media);
     } else {
       throw Exception('Failed to fetch anime info, Network Error');

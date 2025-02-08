@@ -32,6 +32,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -120,8 +121,12 @@ void handleDeepLink(Uri uri) {
   }
 }
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  if(Platform.isLinux) {
+    runWebViewTitleBarWidget(args);
+    return;
+  }
   if (Platform.isWindows || Platform.isMacOS) {
     registerProtocol('anymex');
     registerProtocol('dar');

@@ -457,14 +457,19 @@ class Recommendation {
 class NextAiringEpisode {
   final int airingAt;
   final int timeUntilAiring;
+  final int episode;
 
-  NextAiringEpisode({required this.airingAt, required this.timeUntilAiring});
+  NextAiringEpisode({
+    required this.airingAt,
+    required this.timeUntilAiring,
+    required this.episode,
+  });
 
   factory NextAiringEpisode.fromJson(Map<String, dynamic> json) {
     return NextAiringEpisode(
-      airingAt: json['airingAt'],
-      timeUntilAiring: json['timeUntilAiring'],
-    );
+        airingAt: json['airingAt'],
+        timeUntilAiring: json['timeUntilAiring'],
+        episode: json['episode']);
   }
 }
 

@@ -228,9 +228,7 @@ class AnilistAuth extends GetxController {
               lists.expand((list) => list['entries'] as List<dynamic>).toList();
 
           currentlyWatching.value = animeListt
-              .where((animeEntry) =>
-                  animeEntry['status'] == 'CURRENT' ||
-                  animeEntry['status'] == 'REPEATING')
+              .where((animeEntry) => animeEntry['status'] == 'CURRENT')
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed

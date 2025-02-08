@@ -1,4 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
@@ -77,8 +78,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // Tracker's Controller
   PageController controller = PageController();
 
-  // Mangayomi Extensions
+  // Extensions Controller
   final sourceController = Get.find<SourceController>();
+
+  // Episode Countdown
+  final RxInt timeLeft = 0.obs;
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
@@ -94,11 +98,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       _checkAnimePresence();
     });
     _fetchAnilistData();
-    ever(selectedPage, (v) {
-      if (mounted) {
-        _onPageSelected(v);
-      }
-    });
   }
 
   void _initListVars() {
@@ -132,6 +131,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           ..title = widget.media.title
           ..poster = widget.media.poster;
       });
+      timeLeft.value = tempData.nextAiringEpisode?.timeUntilAiring ?? 0;
+      if (timeLeft.value != 0) {
+        startCountdown();
+      }
 
       if (isExtensions) {
         _processExtensionData(tempData);
@@ -142,6 +145,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (e.toString().contains('author')) {
         await _mapToService();
       }
+      log(e.toString());
       snackBar(e.toString());
     }
   }
@@ -213,6 +217,37 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       entry.value.number = (entry.key + 1).toString();
       return entry.value;
     }).toList();
+  }
+
+  void startCountdown() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (timeLeft.value > 0) {
+        timeLeft.value--;
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  String formatTime(int seconds) {
+    if (seconds == 0) {
+      return '0';
+    } else {
+      int days = seconds ~/ (24 * 3600);
+      seconds %= 24 * 3600;
+      int hours = seconds ~/ 3600;
+      seconds %= 3600;
+      int minutes = seconds ~/ 60;
+      seconds %= 60;
+
+      List<String> parts = [];
+      if (days > 0) parts.add("$days days");
+      if (hours > 0) parts.add("$hours hours");
+      if (minutes > 0) parts.add("$minutes minutes");
+      if (seconds > 0 || parts.isEmpty) parts.add("$seconds seconds");
+
+      return parts.join(" ");
+    }
   }
 
   @override
@@ -410,7 +445,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              AnimeStats(data: anilistData!),
+              Obx(
+                () => AnimeStats(
+                  data: anilistData!,
+                  countdown: formatTime(timeLeft.value),
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),
