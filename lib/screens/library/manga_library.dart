@@ -14,6 +14,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -364,13 +365,29 @@ class MangaHistoryCard extends StatelessWidget {
       ),
       child: TVWrapper(
         onTap: () {
-          Get.find<SourceController>()
-              .getMangaExtensionByName(data.currentChapter!.sourceName!);
-          Get.to(() => ReadingPage(
-                anilistData: convertOfflineToMedia(data),
-                chapterList: data.chapters!,
-                currentChapter: data.currentChapter!,
-              ));
+          if (data.currentChapter == null) {
+            snackBar(
+                "Error: Missing required data. It seems you closed the app directly after reading the chapter!",
+                duration: 2000,
+                maxLines: 3,
+                maxWidth: Get.width * 0.6);
+          } else {
+            if (data.currentChapter?.sourceName == null) {
+              snackBar("Cant Play since user closed the app abruptly");
+            }
+            final source = Get.find<SourceController>()
+                .getMangaExtensionByName(data.currentChapter!.sourceName!);
+            if (source == null) {
+              snackBar(
+                  "Install ${data.currentChapter?.sourceName} First, Then Click");
+            } else {
+              Get.to(() => ReadingPage(
+                    anilistData: convertOfflineToMedia(data),
+                    chapterList: data.chapters!,
+                    currentChapter: data.currentChapter!,
+                  ));
+            }
+          }
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.multiplyRadius()),

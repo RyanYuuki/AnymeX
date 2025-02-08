@@ -412,7 +412,8 @@ class AnimeHistoryCard extends StatelessWidget {
             final source = Get.find<SourceController>()
                 .getExtensionByName(data.currentEpisode!.source!);
             if (source == null) {
-              snackBar("You Dont have the exact needed extension to run this");
+              snackBar(
+                  "Install ${data.currentEpisode?.source} First, Then Click");
             } else {
               Get.to(() => WatchPage(
                     episodeSrc: data.currentEpisode!.currentTrack!,

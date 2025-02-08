@@ -16,7 +16,7 @@ extension StringExtensions on String {
   }
 
   int toInt() {
-    return int.parse(this);
+    return int.tryParse(this) ?? double.tryParse(this)?.toInt() ?? 0;
   }
 
   bool isEqualTo(String? other) {

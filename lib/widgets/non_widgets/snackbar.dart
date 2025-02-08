@@ -11,7 +11,7 @@ void snackBar(
   Color? backgroundColor,
   SnackPosition? snackPosition,
   double? maxWidth,
-  int? maxLines,
+  int? maxLines = 3,
 }) {
   final isMobile = Platform.isAndroid || Platform.isIOS;
   Get.snackbar(

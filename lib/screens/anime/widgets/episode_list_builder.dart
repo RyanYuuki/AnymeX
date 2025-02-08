@@ -74,8 +74,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   void _initUserProgress() {
-    isLogged.value = auth.isLoggedIn.value;
-
+    final isExtensions = auth.serviceType.value == ServicesType.extensions;
+    isLogged.value = isExtensions ? false : auth.isLoggedIn.value;
     final progress = isLogged.value
         ? auth.currentMedia.value.episodeCount?.toInt()
         : offlineStorage

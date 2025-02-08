@@ -198,7 +198,13 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                             decoration: BoxDecoration(
                                 boxShadow: [glowingShadow(context)]),
                             child: AnymexButton(
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(() => ReadingPage(
+                                      anilistData: widget.anilistData,
+                                      chapterList: widget.chapters!,
+                                      currentChapter: chapter,
+                                    ));
+                              },
                               radius: 12,
                               width: 100,
                               height: 40,

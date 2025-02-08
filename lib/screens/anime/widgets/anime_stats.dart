@@ -12,9 +12,11 @@ import 'package:get/get.dart';
 
 class AnimeStats extends StatelessWidget {
   final Media data;
+  final String countdown;
   const AnimeStats({
     super.key,
     required this.data,
+    required this.countdown,
   });
 
   @override
@@ -38,6 +40,29 @@ class AnimeStats extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (countdown != '0')
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AnymexText(
+                  text:
+                      "EPISODE ${data.nextAiringEpisode?.episode} WILL BE RELEASED IN",
+                  size: 14,
+                  variant: TextVariant.bold,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 5),
+                AnymexText(
+                  text: countdown,
+                  size: 20,
+                  variant: TextVariant.bold,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
         const AnymexText(
           text: "Statistics",
           variant: TextVariant.bold,

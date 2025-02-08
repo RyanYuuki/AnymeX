@@ -1,4 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member, unused_element
+import 'dart:developer';
+
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -109,6 +111,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   void _initListVars() {
+    log(currentManga.value?.episodeCount.toString() ?? 'null');
     mangaProgress.value = currentManga.value?.episodeCount?.toInt() ?? 0;
     mangaScore.value = currentManga.value?.score?.toDouble() ?? 0.0;
     mangaStatus.value = currentManga.value?.watchingStatus ?? "CURRENT";
@@ -134,6 +137,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       if (e.toString().contains("dynamic")) {
         _fetchAnilistData();
       }
+      log(e.toString());
       snackBar("Retrying!, $e", duration: 2000);
     }
   }

@@ -45,7 +45,7 @@ class SettingsSheet extends StatelessWidget {
         'icon':
             'https://icon-icons.com/icons2/3915/PNG/512/simkl_logo_icon_249621.png',
       },
-      if (serviceHandler.extensionService.isExtensionsServiceAllowed.value)
+      // if (serviceHandler.extensionService.isExtensionsServiceAllowed.value)
         {
           'type': ServicesType.extensions,
           'name': "Extensions",
