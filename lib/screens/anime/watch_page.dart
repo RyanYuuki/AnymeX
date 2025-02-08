@@ -143,10 +143,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       final episodeNum = widget.currentEpisode.number.toInt() - 1;
       trackAnilistAndLocal(episodeNum, widget.currentEpisode);
     }
+    ever(isPlaying, (playing) {
+      if (!playing) {
+        _hideControlsTimer?.cancel();
+      } else if (showControls.value) {
+        _startHideControlsTimer();
+      }
+    });
   }
 
   Future<void> trackEpisode(
-      Duration position, Duration duration, Episode currentEpisode) async {
+      Duration position, Duration duration, Episode currentEpisode,
+      {bool updateAL = true}) async {
     final percentageCompletion =
         (position.inMilliseconds / episodeDuration.value.inMilliseconds) * 100;
 
@@ -154,17 +162,20 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final epNum = crossed
         ? currentEpisode.number.toInt()
         : currentEpisode.number.toInt() - 1;
-    await trackAnilistAndLocal(epNum, currentEpisode);
+    await trackAnilistAndLocal(epNum, currentEpisode, updateAL: updateAL);
   }
 
-  Future<void> trackAnilistAndLocal(int epNum, Episode currentEpisode) async {
+  Future<void> trackAnilistAndLocal(int epNum, Episode currentEpisode,
+      {bool updateAL = true}) async {
     final temp = serviceHandler.onlineService.animeList
         .firstWhereOrNull((e) => e.id == anilistData.value.id);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
-      await serviceHandler.updateListEntry(
-          listId: anilistData.value.id, progress: epNum, isAnime: true);
-      serviceHandler.onlineService
-          .setCurrentMedia(anilistData.value.id.toString());
+      if (updateAL) {
+        await serviceHandler.updateListEntry(
+            listId: anilistData.value.id, progress: epNum, isAnime: true);
+        serviceHandler.onlineService
+            .setCurrentMedia(anilistData.value.id.toString());
+      }
       offlineStorage.addOrUpdateAnime(
           widget.anilistData, widget.episodeList, currentEpisode);
     }
@@ -189,7 +200,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     toggleControls();
     player.open(Media(episode.value.url,
         start: Duration(milliseconds: startTimeMilliseconds)));
+    _initSubs();
   }
+
+  // Continuous Tracking
+  int lastProcessedMinute = 0;
 
   void _attachListeners() {
     player.stream.playing.listen((e) {
@@ -199,6 +214,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       currentPosition.value = e;
       currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       formattedTime.value = formatDuration(e);
+
+      if (lastProcessedMinute != e.inMinutes) {
+        lastProcessedMinute = e.inMinutes;
+        trackEpisode(e, episodeDuration.value, currentEpisode.value);
+      }
+      lastProcessedMinute = e.inMinutes;
+
       if (e.inSeconds == episodeDuration.value.inSeconds) {
         if (episodeDuration.value.inMinutes >= 1) {
           fetchEpisode(false);
@@ -233,10 +255,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     episodeTracks = RxList<model.Video>(widget.episodeTracks);
     currentEpisode.value.currentTrack = episode.value;
     currentEpisode.value.videoTracks = episodeTracks;
-    _initSubs();
   }
 
-  void _initSubs() {
+  void _initSubs() async {
+    selectedSubIndex.value = 0;
+    player.setSubtitleTrack(SubtitleTrack.no());
     final List<String> labels = [];
 
     for (var e in episodeTracks) {
@@ -248,6 +271,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             labels.add(s.label ?? '');
           }
         }
+      }
+    }
+    int counter = 0;
+    for (var i in subtitles.value) {
+      if ((i?.label?.toLowerCase().contains('english') ?? false) &&
+          i?.file != null &&
+          counter == 0) {
+        await player.setSubtitleTrack(SubtitleTrack.uri(i!.file!));
+        counter++;
       }
     }
   }
@@ -431,12 +463,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     showControls.value = val ?? !showControls.value;
 
     if (showControls.value && isPlaying.value) {
-      _hideControlsTimer?.cancel();
-
-      _hideControlsTimer = Timer(const Duration(seconds: 5), () {
-        showControls.value = false;
-      });
+      _startHideControlsTimer();
     }
+  }
+
+  void _startHideControlsTimer() {
+    _hideControlsTimer?.cancel();
+
+    _hideControlsTimer = Timer(const Duration(seconds: 5), () {
+      if (isPlaying.value) {
+        showControls.value = false;
+      }
+    });
   }
 
   @override
@@ -567,40 +605,71 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   getResponsiveSize(context,
                       mobileSize: 0.4, dektopSize: 0.3, isStrict: true)
               : 0,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onLongPressStart: (e) {
-              pressed2x.value = true;
-              player.setRate(2.0);
-            },
-            onLongPressEnd: (e) {
-              pressed2x.value = false;
-              player.setRate(1.0);
-            },
-            onTap: toggleControls,
-            onDoubleTapDown: (e) => _handleDoubleTap(e),
-            onVerticalDragUpdate: (e) async {
-              if (isMobile) {
-                final delta = e.delta.dy;
-                final Offset position = e.localPosition;
-
-                if (position.dx <= MediaQuery.of(context).size.width / 2) {
-                  final brightness = _brightnessValue - delta / 500;
-                  final result = brightness.value.clamp(0.0, 1.0);
-                  setBrightness(result);
-                } else {
-                  final volume = _volumeValue - delta / 500;
-                  final result = volume.value.clamp(0.0, 1.0);
-                  setVolume(result);
+          child: KeyboardListener(
+            focusNode: FocusNode(
+                skipTraversal: showControls.value,
+                canRequestFocus: !showControls.value,
+                descendantsAreFocusable: false,
+                descendantsAreTraversable: false),
+            autofocus: !showControls.value,
+            onKeyEvent: (e) {
+              if (settings.isTV.value) {
+                if (!showControls.value) {
+                  if (e.logicalKey == LogicalKeyboardKey.select ||
+                      e.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                      e.logicalKey == LogicalKeyboardKey.arrowRight ||
+                      e.logicalKey == LogicalKeyboardKey.arrowUp ||
+                      e.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    toggleControls(val: true);
+                  }
+                }
+              } else {
+                if (e is KeyDownEvent) {
+                  if (e.logicalKey == LogicalKeyboardKey.space) {
+                    player.playOrPause();
+                  } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    _skipSegments(true);
+                  } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    _skipSegments(false);
+                  }
                 }
               }
             },
-            child: AnimatedOpacity(
-              curve: Curves.easeInOut,
-              duration: const Duration(milliseconds: 300),
-              opacity: showControls.value ? 1 : 0,
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onLongPressStart: (e) {
+                pressed2x.value = true;
+                player.setRate(2.0);
+              },
+              onLongPressEnd: (e) {
+                pressed2x.value = false;
+                player.setRate(1.0);
+              },
+              onTap: toggleControls,
+              onDoubleTapDown: (e) => _handleDoubleTap(e),
+              onVerticalDragUpdate: (e) async {
+                if (isMobile) {
+                  final delta = e.delta.dy;
+                  final Offset position = e.localPosition;
+
+                  if (position.dx <= MediaQuery.of(context).size.width / 2) {
+                    final brightness = _brightnessValue - delta / 500;
+                    final result = brightness.value.clamp(0.0, 1.0);
+                    setBrightness(result);
+                  } else {
+                    final volume = _volumeValue - delta / 500;
+                    final result = volume.value.clamp(0.0, 1.0);
+                    setVolume(result);
+                  }
+                }
+              },
+              child: AnimatedOpacity(
+                curve: Curves.easeInOut,
+                duration: const Duration(milliseconds: 300),
+                opacity: showControls.value ? 1 : 0,
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
               ),
             ),
           )),
@@ -876,7 +945,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 itemBuilder: (context, index) {
                   final e = episodeTracks[index];
                   final isSelected = episode.value.quality == e.quality;
-                  return GestureDetector(
+                  return TVWrapper(
                     onTap: () {
                       episode.value = e;
                       player.open(Media(e.url,
@@ -946,11 +1015,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     final isSelected = selectedSubIndex.value == index;
                     if (index == 0) {
                       // "None" option
-                      return GestureDetector(
+                      return TVWrapper(
                         onTap: () {
                           selectedSubIndex.value = index;
-                          player.setSubtitleTrack(SubtitleTrack.no());
                           Get.back();
+                          player.setSubtitleTrack(SubtitleTrack.no());
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -984,7 +1053,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       );
                     } else if (index == subtitles.length + 1) {
                       // "Add Subtitle" option
-                      return GestureDetector(
+                      return TVWrapper(
                         onTap: () async {
                           final result = await FilePicker.platform.pickFiles(
                             type: FileType.custom,
@@ -997,11 +1066,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             selectedSubIndex.value = index;
                             subtitles.add(
                                 model.Track(file: filePath, label: file.name));
+                            Get.back();
                             player.setSubtitleTrack(
                               SubtitleTrack(filePath, file.name, file.name,
                                   uri: false, data: false),
                             );
-                            Get.back();
                           } else {
                             snackBar('No subtitle file selected.',
                                 duration: 2000);
@@ -1040,11 +1109,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     } else {
                       // Existing subtitles
                       final e = subtitles[index - 1];
-                      return GestureDetector(
+                      return TVWrapper(
                         onTap: () {
                           selectedSubIndex.value = index;
-                          player.setSubtitleTrack(SubtitleTrack.uri(e!.file!));
                           Get.back();
+                          player.setSubtitleTrack(SubtitleTrack.uri(e!.file!));
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -1637,7 +1706,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         child: TVWrapper(
           onTap: () {
             onTap.call();
-            player.pause();
           },
           bgColor: Colors.transparent,
           focusedBorderColor: Colors.transparent,
@@ -1676,7 +1744,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       child: TVWrapper(
         onTap: () {
           onTap?.call();
-          player.pause();
         },
         child: IconButton(
             onPressed: onTap,
