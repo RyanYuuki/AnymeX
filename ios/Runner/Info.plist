@@ -55,6 +55,14 @@
     <array>
         <dict>
             <key>CFBundleURLName</key>
+            <string>dar</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>dar</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleURLName</key>
             <string>anymex</string>
             <key>CFBundleURLSchemes</key>
             <array>
@@ -63,10 +71,10 @@
         </dict>
         <dict>
             <key>CFBundleURLName</key>
-            <string>mangayomi</string>
+            <string>sugoireads</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>mangayomi</string>
+                <string>sugoireads</string>
             </array>
         </dict>
     </array>

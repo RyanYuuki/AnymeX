@@ -124,6 +124,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isMacOS) {
     registerProtocol('anymex');
+    registerProtocol('dar');
+    registerProtocol('sugoireads');
   }
   HttpOverrides.global = MyHttpoverrides();
   await dotenv.load(fileName: ".env");
