@@ -38,10 +38,14 @@ Future<Media> mapMedia(List<String> animeId, RxString searchedTitle) async {
       final resultTitle = (result?.name ?? '').trim();
       final cleanedQuery = query.trim();
       searchedTitle.value = "Searching: $resultTitle";
-      print("matching $query with $resultTitle");
 
-      final similarity =
-          jaroWinklerSimilarityOf(cleanedQuery, resultTitle, threshold: 0.5);
+      double similarity2 =
+          jaroWinklerSimilarityOf(cleanedQuery, romajiTitle, threshold: 0.5);
+      double similarity =
+          jaroWinklerSimilarityOf(cleanedQuery, englishTitle, threshold: 0.5);
+      if (similarity2 > similarity) {
+        similarity = similarity2;
+      }
 
       if (similarity > highestSimilarity) {
         highestSimilarity = similarity;
