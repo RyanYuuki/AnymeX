@@ -63,7 +63,7 @@ class GradientPoster extends StatelessWidget {
           height: isDesktop ? 460 : 400,
           child: Blur(
             colorOpacity: 0.0,
-            blur: 10,
+            blur: 5,
             blurColor: Colors.transparent,
             child: Container(),
           ),
