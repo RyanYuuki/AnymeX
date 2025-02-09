@@ -497,21 +497,38 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          _buildPlayer(context),
-          _buildOverlay(context),
-          _buildControls(),
-          _buildSubtitle(),
-          _buildRippleEffect(),
-          _build2xThingy(),
-          if (isMobile) ...[
-            _buildBrightnessSlider(),
-            _buildVolumeSlider(),
-          ]
-        ],
+    return KeyboardListener(
+      focusNode: FocusNode(
+        canRequestFocus: !settings.isTV.value,
+        skipTraversal: settings.isTV.value,
+      ),
+      onKeyEvent: (e) {
+        if (e is KeyDownEvent && !settings.isTV.value) {
+          if (e.logicalKey == LogicalKeyboardKey.space) {
+            player.playOrPause();
+          } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            _skipSegments(true);
+          } else if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
+            _skipSegments(false);
+          }
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            _buildPlayer(context),
+            _buildOverlay(context),
+            _buildControls(),
+            _buildSubtitle(),
+            _buildRippleEffect(),
+            _build2xThingy(),
+            if (isMobile) ...[
+              _buildBrightnessSlider(),
+              _buildVolumeSlider(),
+            ]
+          ],
+        ),
       ),
     );
   }
@@ -625,16 +642,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       e.logicalKey == LogicalKeyboardKey.arrowUp ||
                       e.logicalKey == LogicalKeyboardKey.arrowDown) {
                     toggleControls(val: true);
-                  }
-                }
-              } else {
-                if (e is KeyDownEvent) {
-                  if (e.logicalKey == LogicalKeyboardKey.space) {
-                    player.playOrPause();
-                  } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                    _skipSegments(true);
-                  } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                    _skipSegments(false);
                   }
                 }
               }

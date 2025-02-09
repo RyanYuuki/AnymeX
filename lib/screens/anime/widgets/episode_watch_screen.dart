@@ -245,6 +245,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                         '',
                     fit: BoxFit.cover,
                     height: double.infinity,
+                    width: double.infinity,
                   ),
                 ),
                 Positioned(
