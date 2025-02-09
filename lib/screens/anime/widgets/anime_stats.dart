@@ -41,26 +41,30 @@ class AnimeStats extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (countdown != '0')
-          SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                AnymexText(
-                  text:
-                      "EPISODE ${data.nextAiringEpisode?.episode} WILL BE RELEASED IN",
-                  size: 14,
-                  variant: TextVariant.bold,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 5),
-                AnymexText(
-                  text: countdown,
-                  size: 20,
-                  variant: TextVariant.bold,
-                  color: Colors.white,
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AnymexText(
+                    text:
+                        "EPISODE ${data.nextAiringEpisode?.episode} WILL BE RELEASED IN",
+                    size: 14,
+                    variant: TextVariant.bold,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 5),
+                  AnymexText(
+                    text: countdown,
+                    size: 20,
+                    variant: TextVariant.bold,
+                    color: Colors.white,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
         const AnymexText(

@@ -124,6 +124,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
       setState(() {
         anilistData = tempData
+          ..id = widget.media.id
           ..title = widget.media.title
           ..poster = widget.media.poster;
       });
@@ -144,7 +145,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Future<void> _mapToService() async {
     final mappedData =
-        await mapMedia(formatTitles(anilistData!) ?? [], searchedTitle);
+        await mapMedia(formatTitles(anilistData!), searchedTitle);
     await _fetchSourceDetails(mappedData);
   }
 

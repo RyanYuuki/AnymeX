@@ -105,17 +105,21 @@ class _ReadingPageState extends State<ReadingPage> {
   }
 
   void _initTracker() {
+    final isExtensions = anilist.serviceType.value == ServicesType.extensions;
     currentChapter.value.sourceName =
         sourceController.activeMangaSource.value?.name;
     offlineStorage.addOrUpdateManga(
         widget.anilistData, widget.chapterList, currentChapter.value);
     final savedChapter = offlineStorage.getReadChapter(
-        widget.anilistData.id, currentChapter.value.number ?? -10);
+        widget.anilistData.id, currentChapter.value.number ?? -1);
     if (savedChapter != null && savedChapter.currentOffset != null) {
       currentChapter.value.maxOffset = savedChapter.maxOffset;
       scrollToProgress(savedChapter);
     }
-    updateAnilist(false);
+    if (isExtensions) {
+    } else {
+      updateAnilist(false);
+    }
   }
 
   Future<void> updateAnilist(bool next) async {
@@ -321,11 +325,9 @@ class _ReadingPageState extends State<ReadingPage> {
       currentChapter.value.maxOffset = maxScrollExtent;
 
       if (scrollController.position.pixels.floor() ==
-          (scrollController.position.maxScrollExtent + 150).floor()) {
+          (scrollController.position.maxScrollExtent + 120).floor()) {
         _loadNextChapter();
       }
-
-      log("Current: ${scrollController.position.pixels} Max: ${scrollController.position.maxScrollExtent}");
 
       _debounce = Timer(const Duration(milliseconds: 300), () {
         if (currentPage != currentPageIndex.value) {

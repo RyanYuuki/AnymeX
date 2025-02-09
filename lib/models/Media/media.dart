@@ -212,7 +212,7 @@ class Media {
       totalEpisodes: manga.chapters?.length.toString() ?? '??',
       status: manga.status?.name.toUpperCase() ?? 'Ongoing',
       mediaType: type,
-      aired: "Unknown",
+      aired: manga.status?.name.toUpperCase() ?? 'Unknown',
       totalChapters: manga.chapters?.length.toString(),
       genres: manga.genre ?? [],
       studios: null,

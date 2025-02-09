@@ -1,8 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
-import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -62,7 +60,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   // Extension Data
   RxString searchedTitle = ''.obs;
-  RxList<Episode>? episodeList = <Episode>[].obs;
+  RxList<Episode> episodeList = <Episode>[].obs;
+  RxList<Episode> rawEpisodes = <Episode>[].obs;
+  RxBool isAnify = true.obs;
 
   // Current Anime
   RxDouble animeScore = 0.0.obs;
@@ -129,7 +129,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       setState(() {
         anilistData = tempData
           ..title = widget.media.title
-          ..poster = widget.media.poster;
+          ..poster = widget.media.poster
+          ..id = widget.media.id;
       });
       timeLeft.value = tempData.nextAiringEpisode?.timeUntilAiring ?? 0;
       if (timeLeft.value != 0) {
@@ -143,6 +144,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       }
     } catch (e) {
       if (e.toString().contains('author')) {
+        log("Hianime Error Handling");
         await _mapToService();
       }
       log(e.toString());
@@ -159,16 +161,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   void _processExtensionData(Media tempData) async {
     final episodes = tempData.mediaContent!.reversed.toList();
     final convertedEpisodes = _convertEpisodes(episodes, tempData.title);
-
-    episodeList!.value = _renewEpisodeData(convertedEpisodes);
-    searchedTitle.value = tempData.title;
-
-    final updatedEpisodes = await AnilistData.fetchEpisodesFromAnify(
-      widget.media.id.toString(),
-      episodeList!.value,
-    );
-    episodeList?.value = updatedEpisodes;
-
+    rawEpisodes.value = _createRawEpisodes(convertedEpisodes);
+    episodeList.value = _renewEpisodeData(convertedEpisodes);
     setState(() {});
   }
 
@@ -185,19 +179,29 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeFuture.name ?? '',
       );
 
-      episodeList!.value = _renewEpisodeData(episodes);
+      rawEpisodes.value = _createRawEpisodes(episodes);
+      episodeList.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
-      final updatedEpisodes = await AnilistData.fetchEpisodesFromAnify(
-        widget.media.id.toString(),
-        episodeList!.value,
-      );
-      episodeList?.value = updatedEpisodes;
 
-      setState(() {});
+      episodeList.value = await AnilistData.fetchEpisodesFromAnify(
+        widget.media.id.toString(),
+        episodeList.value,
+      );
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {
       episodeError.value = true;
+      log(e.toString());
       snackBar(e.toString());
     }
+  }
+
+  List<Episode> _createRawEpisodes(List<Episode> eps) {
+    final newEps = eps
+        .map((e) => Episode(title: e.title, number: e.number, link: e.link))
+        .toList();
+    return newEps;
   }
 
   List<String>? formatTitles(Media media) {
@@ -211,11 +215,23 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
-    if (episodes.first.number.toInt() <= 3) return episodes;
+    if (episodes.length >= 3 &&
+        (int.tryParse(episodes[0].number) ?? 0) > 3 &&
+        (int.tryParse(episodes[1].number) ?? 0) > 3 &&
+        (int.tryParse(episodes[2].number) ?? 0) > 3) {
+      for (int i = 0; i < episodes.length; i++) {
+        episodes[i].number = (i + 1).toString();
+      }
+      return episodes;
+    }
 
-    return episodes.asMap().entries.map((entry) {
-      entry.value.number = (entry.key + 1).toString();
-      return entry.value;
+    Set<String> seenNumbers = {};
+    return episodes.map((episode) {
+      if (seenNumbers.contains(episode.number)) {
+        episode.number = (seenNumbers.length + 1).toString();
+      }
+      seenNumbers.add(episode.number);
+      return episode;
     }).toList();
   }
 
@@ -376,6 +392,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 variant: TextVariant.bold,
                                 color: Theme.of(context).colorScheme.primary),
                             const AnymexTextSpan(text: ' Out of '),
+                            if (anilistData?.nextAiringEpisode?.episode != null)
+                              AnymexTextSpan(
+                                  text:
+                                      '${anilistData!.nextAiringEpisode!.episode - 1} | ',
+                                  variant: TextVariant.bold,
+                                  color: Theme.of(context).colorScheme.primary),
                             AnymexTextSpan(
                                 text: anilistData?.totalEpisodes ?? '?',
                                 variant: TextVariant.bold,
@@ -425,15 +447,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildEpisodeSection(BuildContext context) {
-    return EpisodeSection(
-      searchedTitle: searchedTitle,
-      anilistData: anilistData ?? widget.media,
-      episodeList: episodeList,
-      episodeError: episodeError,
-      mapToAnilist: _mapToService,
-      getDetailsFromSource: _fetchSourceDetails,
-      getSourcePreference: getSourcePreference,
-    );
+    return Obx(() {
+      return EpisodeSection(
+        searchedTitle: searchedTitle,
+        anilistData: anilistData ?? widget.media,
+        episodeList: isAnify.value ? episodeList : rawEpisodes,
+        episodeError: episodeError,
+        mapToAnilist: _mapToService,
+        getDetailsFromSource: _fetchSourceDetails,
+        getSourcePreference: getSourcePreference,
+        isAnify: isAnify,
+      );
+    });
   }
 
   // Common Info Section

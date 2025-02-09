@@ -96,10 +96,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
     final fallbackEP = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value));
-    final saved = savedData?.currentEpisode
-      ?..link = widget.episodeList
-          .firstWhere((e) => e.number == savedData?.currentEpisode?.number)
-          .link;
+    final saved = savedData?.currentEpisode;
     savedEpisode.value = saved ?? widget.episodeList[0];
     offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
     selectedEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;

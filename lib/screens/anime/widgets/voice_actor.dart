@@ -1,7 +1,9 @@
 import 'dart:math' show Random;
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -207,7 +209,12 @@ class CharactersCarousel extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 3),
                                       Text(
-                                        characterName ?? '??',
+                                        getResponsiveValue(context,
+                                                mobileValue: characterName
+                                                    ?.substringEllipsis(7),
+                                                desktopValue: characterName
+                                                    ?.substringEllipsis(10)) ??
+                                            '??',
                                         style: TextStyle(
                                             fontSize: 12,
                                             fontFamily: "Poppins-Bold",
@@ -216,7 +223,7 @@ class CharactersCarousel extends StatelessWidget {
                                                 .colorScheme
                                                 .inverseSurface
                                                 .withOpacity(0.9)),
-                                        maxLines: 2,
+                                        maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.right,
                                       ),

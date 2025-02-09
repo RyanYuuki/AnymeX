@@ -11,6 +11,13 @@ extension StringExtensions on String {
     return split(pattern).last;
   }
 
+  String substringEllipsis(int length) {
+    if (this.length > length) {
+      return ('${substring(0, length)}..');
+    }
+    return this;
+  }
+
   double toDouble() {
     return double.parse(this);
   }

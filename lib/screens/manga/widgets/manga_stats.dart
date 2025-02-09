@@ -38,7 +38,6 @@ class MangaStats extends StatelessWidget {
               StateItem(label: "Type", value: data.type),
               StateItem(label: "Rating", value: '${data.rating}/10'),
               StateItem(label: "Popularity", value: data.popularity),
-              StateItem(label: "Season", value: data.season),
               StateItem(label: "Format", value: data.format),
               StateItem(label: "Status", value: data.status),
               StateItem(

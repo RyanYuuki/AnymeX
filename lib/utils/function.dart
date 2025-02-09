@@ -302,7 +302,7 @@ enum DataVariant {
 }
 
 List<CarouselData> convertData(List<dynamic> data,
-    {DataVariant variant = DataVariant.regular}) {
+    {DataVariant variant = DataVariant.regular, bool isManga = false}) {
   return data.map((e) {
     String extra = "";
     switch (variant) {
@@ -329,6 +329,7 @@ List<CarouselData> convertData(List<dynamic> data,
     if (variant == DataVariant.extension) {
       final data = e as MManga;
       return CarouselData(
+        source: null,
         id: data.link,
         title: data.name,
         poster: data.imageUrl,
@@ -336,15 +337,19 @@ List<CarouselData> convertData(List<dynamic> data,
       );
     } else if (variant == DataVariant.offline) {
       final data = e as OfflineMedia;
+      final source =
+          data.currentChapter?.sourceName ?? data.currentEpisode?.source;
       final ext =
           data.currentChapter?.number ?? data.currentEpisode?.number ?? 0;
       return CarouselData(
+          source: source,
           id: data.id,
           title: data.name,
           poster: data.poster,
           extraData: ext.toString());
     } else {
       return CarouselData(
+        source: null,
         id: e.id.toString(),
         title: e.title,
         poster: e.poster,
