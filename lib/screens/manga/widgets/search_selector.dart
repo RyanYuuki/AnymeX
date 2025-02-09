@@ -2,8 +2,6 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_anilist.dart';
-import 'package:anymex/utils/fallback/fallback_anime.dart';
-import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

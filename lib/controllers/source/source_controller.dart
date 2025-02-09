@@ -72,8 +72,7 @@ class SourceController extends GetxController implements BaseService {
   @override
   void onInit() {
     super.onInit();
-    initExtensions();
-    fetchHomePage();
+    initExtensions().then((e) => fetchHomePage());
   }
 
   Future<void> initExtensions({bool refresh = true}) async {

@@ -1,7 +1,6 @@
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/easter_avatar.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';

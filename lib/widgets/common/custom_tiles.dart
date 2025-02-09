@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';

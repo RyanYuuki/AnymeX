@@ -8,7 +8,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -127,14 +126,7 @@ class ReusableCarousel extends StatelessWidget {
           return Obx(() => TVWrapper(
               onTap: () => _navigateToDetailsPage(itemData, tag, isManga),
               child: settings.enableAnimation
-                  ? SlideAndScaleAnimation(
-                      initialScale: 0.0,
-                      finalScale: 1.0,
-                      initialOffset: const Offset(1.0, 0.0),
-                      duration: Duration(milliseconds: getAnimationDuration()),
-                      child:
-                          _buildCarouselItem(context, itemData, tag, isDesktop),
-                    )
+                  ? _buildCarouselItem(context, itemData, tag, isDesktop)
                   : _buildCarouselItem(context, itemData, tag, isDesktop)));
         },
       ),

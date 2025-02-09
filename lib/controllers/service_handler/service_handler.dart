@@ -50,7 +50,7 @@ class ServiceHandler extends GetxController {
   }
 
   Rx<Profile> get profileData => serviceType.value == ServicesType.extensions
-      ? Profile().obs
+      ? Profile(name: onlineService.profileData.value.name ?? 'Guest').obs
       : onlineService.profileData;
   RxList<TrackedMedia> get animeList => onlineService.animeList;
   RxList<TrackedMedia> get mangaList => onlineService.mangaList;
