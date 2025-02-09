@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
+import 'package:anymex/api/animeo.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -8,12 +9,14 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -76,6 +79,32 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   //   disableIcons: true,
                   //   hintText: "Search Anime...",
                   // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ImageButton(
+                          width: getResponsiveSize(context,
+                              mobileSize: Get.width / 2 - 40, dektopSize: 300),
+                          height: getResponsiveSize(context,
+                              mobileSize: 70, dektopSize: 90),
+                          buttonText: "Calendar",
+                          onPressed: () {},
+                          backgroundImage: trendingAnimes[3].cover ??
+                              trendingAnimes[3].poster),
+                      const SizedBox(width: 30),
+                      ImageButton(
+                          buttonText: "AI Recommendations",
+                          width: getResponsiveSize(context,
+                              mobileSize: Get.width / 2 - 40, dektopSize: 300),
+                          height: getResponsiveSize(context,
+                              mobileSize: 70, dektopSize: 90),
+                          onPressed: () async {
+                            Get.to(() => const AIRecommendation());
+                          },
+                          backgroundImage: trendingAnimes[3].cover ??
+                              trendingAnimes[3].poster),
+                    ],
+                  ),
                   buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
                   buildSectionIfNotEmpty("Popular Animes", popularAnimes),
                   buildSectionIfNotEmpty("Top Animes", topAnimes),
@@ -540,11 +569,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   void setCurrentMedia(String id, {bool isManga = false}) {
     if (isManga) {
-      currentMedia.value = mangaList
-          .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
+      currentMedia.value = mangaList.firstWhere((el) => el.id == id,
+          orElse: () => TrackedMedia());
     } else {
-      currentMedia.value = animeList
-          .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
+      currentMedia.value = animeList.firstWhere((el) => el.id == id,
+          orElse: () => TrackedMedia());
     }
   }
 

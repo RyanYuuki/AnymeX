@@ -62,7 +62,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   RxString searchedTitle = ''.obs;
   RxList<Episode> episodeList = <Episode>[].obs;
   RxList<Episode> rawEpisodes = <Episode>[].obs;
-  RxBool isAnify = true.obs;
+  Rx<bool> isAnify = true.obs;
+  Rx<bool> showAnify = true.obs;
 
   // Current Anime
   RxDouble animeScore = 0.0.obs;
@@ -127,15 +128,23 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
 
       setState(() {
-        anilistData = tempData
-          ..title = widget.media.title
-          ..poster = widget.media.poster
-          ..id = widget.media.id;
+        if (isExtensions) {
+          anilistData = tempData
+            ..title = widget.media.title
+            ..poster = widget.media.poster
+            ..id = widget.media.id;
+        } else {
+          anilistData = tempData;
+        }
       });
       timeLeft.value = tempData.nextAiringEpisode?.timeUntilAiring ?? 0;
       if (timeLeft.value != 0) {
         startCountdown();
       }
+      if (isExtensions) {
+        showAnify.value = false;
+      }
+      log(tempData.romajiTitle);
 
       if (isExtensions) {
         _processExtensionData(tempData);
@@ -182,11 +191,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       rawEpisodes.value = _createRawEpisodes(episodes);
       episodeList.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
-
-      episodeList.value = await AnilistData.fetchEpisodesFromAnify(
+      final newEps = await AnilistData.fetchEpisodesFromAnify(
         widget.media.id.toString(),
         episodeList.value,
       );
+      if (newEps.first.thumbnail == null && newEps.first.thumbnail!.isEmpty) {
+        showAnify.value = false;
+      }
+      episodeList.value = newEps;
       if (mounted) {
         setState(() {});
       }
@@ -268,9 +280,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformBuilder(
+    return PlatformBuilderWithTablet(
+      strictMode: true,
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
+      tabletBuilder: _buildDesktopLayout(context),
     );
   }
 
@@ -451,12 +465,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       return EpisodeSection(
         searchedTitle: searchedTitle,
         anilistData: anilistData ?? widget.media,
-        episodeList: isAnify.value ? episodeList : rawEpisodes,
+        episodeList: (isAnify.value) ? episodeList : rawEpisodes,
         episodeError: episodeError,
         mapToAnilist: _mapToService,
         getDetailsFromSource: _fetchSourceDetails,
         getSourcePreference: getSourcePreference,
         isAnify: isAnify,
+        showAnify: showAnify,
       );
     });
   }

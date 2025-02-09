@@ -136,29 +136,32 @@ class SourceController extends GetxController implements BaseService {
   }
 
   Source? getExtensionByName(String name) {
-    final selectedSource = installedExtensions.firstWhere((source) =>
+    final selectedSource = installedExtensions.firstWhereOrNull((source) =>
         '${source.name} (${source.lang?.toUpperCase()})' == name ||
         source.name == name);
 
     if (selectedSource != null) {
       activeSource.value = selectedSource;
       Hive.box('themeData').put('activeSourceId', selectedSource.id);
+      return activeSource.value;
     }
     lastUpdatedSource.value = 'ANIME';
-    return activeSource.value!;
+    return null;
   }
 
   Source? getMangaExtensionByName(String name) {
-    final selectedMangaSource = installedMangaExtensions.firstWhere((source) =>
-        '${source.name} (${source.lang?.toUpperCase()})' == name ||
-        source.name == name);
+    final selectedMangaSource = installedMangaExtensions.firstWhereOrNull(
+        (source) =>
+            '${source.name} (${source.lang?.toUpperCase()})' == name ||
+            source.name == name);
 
     if (selectedMangaSource != null) {
       activeMangaSource.value = selectedMangaSource;
       Hive.box('themeData').put('activeMangaSourceId', selectedMangaSource.id);
+      return activeMangaSource.value;
     }
     lastUpdatedSource.value = 'MANGA';
-    return activeMangaSource.value!;
+    return null;
   }
 
   void _initializeEmptySections() {

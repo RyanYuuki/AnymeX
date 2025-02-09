@@ -1,15 +1,16 @@
-
 class Profile {
   String? id;
   String? name;
+  String? userName;
   String? avatar;
   ProfileStatistics? stats;
-  int? followers; // Count of followers
-  int? following; // Count of following
+  int? followers;
+  int? following;
 
   Profile({
     this.id,
     this.name,
+    this.userName,
     this.avatar,
     this.stats,
     this.followers,

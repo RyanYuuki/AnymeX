@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show min;
+import 'package:anymex/api/animeo.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Model/Source.dart';
@@ -22,6 +23,7 @@ import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -136,6 +138,32 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       //   hintText: "Search Anime...",
       // ),
       buildBigCarousel(trendingAnimes, false),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ImageButton(
+              width: getResponsiveSize(context,
+                  mobileSize: Get.width / 2 - 40, dektopSize: 300),
+              height:
+                  getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+              buttonText: "Calendar",
+              onPressed: () {},
+              backgroundImage:
+                  trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+          const SizedBox(width: 30),
+          ImageButton(
+              buttonText: "AI Recommendations",
+              width: getResponsiveSize(context,
+                  mobileSize: Get.width / 2 - 40, dektopSize: 300),
+              height:
+                  getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+              onPressed: () async {
+                await getAiRecommendation();
+              },
+              backgroundImage:
+                  trendingAnimes[3].cover ?? trendingAnimes[3].poster)
+        ],
+      ),
       buildSection('Trending Animes', trendingAnimes),
       buildSection('Popular Animes', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
@@ -500,65 +528,57 @@ averageScore
   static Future<List<Episode>> fetchEpisodesFromAnify(
       String animeId, List<Episode> episodeList) async {
     log("Fetching Anify metadata for animeId: $animeId");
-    final resp = await get(
-        Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
-    if (resp.statusCode == 200) {
-      try {
-        final data = jsonDecode(resp.body);
-        if (data.isEmpty) {
-          log("No valid data found.");
-          return episodeList;
-        }
 
-        int selectedIndex = -1;
-        for (int i = 0; i < data.length; i++) {
-          if (data[i]['providerId'] != 'tvdb') {
-            selectedIndex = i;
-            break;
-          }
-        }
+    try {
+      final resp = await get(
+          Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
 
-        if (selectedIndex == -1) {
-          selectedIndex = 0;
-          log("No data with providerId != 'tvdb' found. Defaulting to the first entry.");
-        }
-
-        final episodesData = data[selectedIndex]['data'];
-        if (episodesData == null || episodesData.isEmpty) {
-          log("No episodes found for animeId: $animeId");
-          return episodeList;
-        }
-
-        for (int i = 0; i < min(episodeList.length, episodesData.length); i++) {
-          final episodeData = episodesData[i];
-          episodeList[i].title =
-              episodeData?['title']?.toString() ?? episodeList[i].title;
-          episodeList[i].thumbnail =
-              episodeData?['img']?.toString() ?? episodeList[i].thumbnail;
-          episodeList[i].desc =
-              episodeData?['description']?.toString() ?? episodeList[i].desc;
-          episodeList[i].filler =
-              episodeData?['isFiller'] ?? episodeList[i].filler;
-        }
-
-        return episodeList;
-      } catch (e, stack) {
-        log("Error parsing episode data: $e");
-        log(stack.toString());
-        snackBar("Data not found for Anify, Trying Kitsu Now.");
-        try {
-          return await Kitsu.fetchKitsuEpisodes(animeId, episodeList);
-        } catch (e) {
-          return episodeList;
-        }
+      if (resp.statusCode != 200 || resp.body.isEmpty) {
+        log("Failed to fetch Anify data, trying Kitsu...");
+        return await Kitsu.fetchKitsuEpisodes(animeId, episodeList)
+            .catchError((_) => episodeList);
       }
-    } else {
-      log("Failed to fetch data, status: ${resp.statusCode}");
-      try {
-        return await Kitsu.fetchKitsuEpisodes(animeId, episodeList);
-      } catch (e) {
+
+      final List<dynamic> data = jsonDecode(resp.body);
+
+      if (data.isEmpty) {
+        log("No valid data found.");
         return episodeList;
       }
+
+      int selectedIndex =
+          data.indexWhere((entry) => entry['providerId'] != 'tvdb');
+
+      if (selectedIndex == -1) {
+        log("No data with providerId != 'tvdb' found. Defaulting to first entry.");
+        selectedIndex = 0;
+      }
+
+      final episodesData = data[selectedIndex]['data'];
+
+      if (episodesData == null || episodesData.isEmpty) {
+        log("No episodes found for animeId: $animeId");
+        return episodeList;
+      }
+
+      for (int i = 0; i < min(episodeList.length, episodesData.length); i++) {
+        final episodeData = episodesData[i];
+        episodeList[i]
+          ..title = episodeData?['title']?.toString() ?? episodeList[i].title
+          ..thumbnail =
+              episodeData?['img']?.toString() ?? episodeList[i].thumbnail
+          ..desc =
+              episodeData?['description']?.toString() ?? episodeList[i].desc
+          ..filler = episodeData?['isFiller'] ?? episodeList[i].filler;
+      }
+
+      return episodeList;
+    } catch (e, stack) {
+      log("Error fetching Anify data: $e\n$stack");
+      snackBar("Data not found for Anify, Trying Kitsu Now.");
+
+      return await Kitsu.fetchKitsuEpisodes(animeId, episodeList)
+          .catchError((_) => episodeList);
     }
   }
 
@@ -706,7 +726,7 @@ averageScore
       final media = data['data']['Media'];
       return Media.fromJson(media);
     } else {
-      throw Exception('Failed to fetch anime info, Network Error');
+      throw Exception(response.body);
     }
   }
 
@@ -749,22 +769,17 @@ averageScore
   Rx<TrackedMedia> get currentMedia => anilistAuth.currentMedia;
 
   @override
-  void setCurrentMedia(String id, {bool isManga = false}) {
-    anilistAuth.setCurrentMedia(id, isManga: isManga);
-  }
+  void setCurrentMedia(String id, {bool isManga = false}) =>
+      anilistAuth.setCurrentMedia(id, isManga: isManga);
 
   @override
   RxList<TrackedMedia> get mangaList => anilistAuth.mangaList;
 
   @override
-  Future<void> login() async {
-    anilistAuth.login();
-  }
+  Future<void> login() async => anilistAuth.login();
 
   @override
-  Future<void> logout() async {
-    anilistAuth.logout();
-  }
+  Future<void> logout() async => anilistAuth.logout();
 
   @override
   Future<void> autoLogin() => anilistAuth.tryAutoLogin();
