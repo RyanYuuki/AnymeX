@@ -310,12 +310,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     if (prev) {
       final episode = episodeList.firstWhereOrNull((e) =>
           e.number == (currentEpisode.value.number.toInt() - 1).toString());
-      print("Found Episode: ${episode?.title ?? ''}");
       return episode;
     } else {
       final episode = episodeList.firstWhereOrNull((e) =>
           e.number == (currentEpisode.value.number.toInt() + 1).toString());
-      print("Found Episode: ${episode?.title ?? ''}");
       return episode;
     }
   }
