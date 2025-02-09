@@ -21,7 +21,8 @@ class EpisodeSection extends StatelessWidget {
   final dynamic anilistData;
   final RxList<Episode>? episodeList;
   final RxBool episodeError;
-  final RxBool isAnify;
+  final Rx<bool> isAnify;
+  final Rx<bool> showAnify;
   final Function() mapToAnilist;
   final Function(Media) getDetailsFromSource;
   final List<SourcePreference> Function({required Source source})
@@ -37,6 +38,7 @@ class EpisodeSection extends StatelessWidget {
     required this.getDetailsFromSource,
     required this.getSourcePreference,
     required this.isAnify,
+    required this.showAnify,
   });
 
   @override
@@ -205,7 +207,7 @@ class EpisodeSection extends StatelessWidget {
                   onTap: () {
                     showWrongTitleModal(
                       context,
-                      anilistData.romajiTitle,
+                      anilistData.title,
                       (manga) async {
                         episodeList?.clear();
                         await getDetailsFromSource(
@@ -254,20 +256,26 @@ class EpisodeSection extends StatelessWidget {
                     variant: TextVariant.bold,
                     size: 18,
                   ),
-                  Row(
-                    children: [
-                      const AnymexText(
-                        text: "Anify / Kitsu",
-                        variant: TextVariant.semiBold,
-                        size: 16,
-                      ),
-                      Switch(
-                          value: isAnify.value,
-                          onChanged: (v) {
-                            isAnify.value = v;
-                          })
-                    ],
-                  ),
+                  Obx(() {
+                    if (showAnify.value) {
+                      return Row(
+                        children: [
+                          const AnymexText(
+                            text: "Anify / Kitsu",
+                            variant: TextVariant.semiBold,
+                            size: 16,
+                          ),
+                          Switch(
+                              value: isAnify.value,
+                              onChanged: (v) {
+                                isAnify.value = v;
+                              }),
+                        ],
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
                 ],
               ),
               buildEpisodeContent(),
