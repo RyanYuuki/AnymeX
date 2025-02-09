@@ -123,7 +123,7 @@ void handleDeepLink(Uri uri) {
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isLinux) {
+  if (Platform.isLinux) {
     runWebViewTitleBarWidget(args);
     return;
   }
@@ -195,7 +195,7 @@ void _initializeGetxController() {
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
-  Get.put(SourceController()..initExtensions(refresh: false));
+  Get.put(SourceController());
   Get.put(Settings());
   Get.put(ServiceHandler());
 }

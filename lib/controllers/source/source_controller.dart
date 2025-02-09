@@ -72,6 +72,7 @@ class SourceController extends GetxController implements BaseService {
   @override
   void onInit() {
     super.onInit();
+    initExtensions();
     fetchHomePage();
   }
 
@@ -182,7 +183,11 @@ class SourceController extends GetxController implements BaseService {
   }
 
   @override
-  RxList<Widget> animeWidgets(BuildContext context) => _animeSections;
+  RxList<Widget> animeWidgets(BuildContext context) => [
+        Column(
+          children: _animeSections,
+        )
+      ].obs;
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) => _homeSections;

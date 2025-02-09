@@ -43,7 +43,6 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     _searchController.text = widget.searchTerm;
-    _performSearch();
   }
 
   Future<void> _performSearch({
@@ -277,6 +276,7 @@ class _SearchPageState extends State<SearchPage> {
                       child: CustomSearchBar(
                         controller: _searchController,
                         onSubmitted: (query) => _performSearch(query: query),
+                        disableIcons: _serviceHandler.serviceType.value != ServicesType.extensions,
                         onSuffixIconPressed: _showFilterBottomSheet,
                       ),
                     ),

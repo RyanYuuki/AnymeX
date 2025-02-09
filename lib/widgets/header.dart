@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -8,8 +9,11 @@ import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'dart:math';
+
+import 'package:provider/provider.dart';
 
 String getGreeting() {
   final hour = DateTime.now().hour;
@@ -50,24 +54,43 @@ class Header extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              getResponsiveValue(context,
-                  mobileValue: TVWrapper(
+              if (profileData.serviceType.value == ServicesType.extensions) ...[
+                TVWrapper(
                     child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .secondaryContainer
-                            .withOpacity(0.5),
-                        child: IconButton(
-                            onPressed: () {
-                              searchTypeSheet(context, "");
-                            },
-                            icon: const Icon(IconlyLight.search))),
-                  ), desktopValue: TappableSearchBar(
-                onSubmitted: () {
-                  searchTypeSheet(context, "");
-                },
-              )),
+                  radius: 24,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
+                  child: IconButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer),
+                      onPressed: () {
+                        Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                      },
+                      icon: Icon(Get.theme.brightness == Brightness.light
+                          ? HugeIcons.strokeRoundedSun03
+                          : HugeIcons.strokeRoundedMoon01)),
+                )),
+              ] else ...[
+                getResponsiveValue(context,
+                    mobileValue: TVWrapper(
+                      child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .withOpacity(0.5),
+                          child: IconButton(
+                              onPressed: () {
+                                searchTypeSheet(context, "");
+                              },
+                              icon: const Icon(IconlyLight.search))),
+                    ), desktopValue: TappableSearchBar(
+                  onSubmitted: () {
+                    searchTypeSheet(context, "");
+                  },
+                )),
+              ]
             ],
           ),
         );
