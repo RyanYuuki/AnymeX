@@ -173,26 +173,27 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   void onInit() {
     super.onInit();
     _initFallback();
-    fetchHomePage();
   }
 
   void _initFallback() {
-    upcomingAnimes.value = fb.upcomingAnimes;
-    popularAnimes.value = fb.popularAnimes;
-    trendingAnimes.value = fb.trendingAnimes;
-    latestAnimes.value = fb.latestAnimes;
-    top10Today.value = fb.top10Today;
-    top10Week.value = fb.top10Week;
-    top10Month.value = fb.top10Month;
+    if (trendingAnimes.value.isEmpty) {
+      upcomingAnimes.value = fb.upcomingAnimes;
+      popularAnimes.value = fb.popularAnimes;
+      trendingAnimes.value = fb.trendingAnimes;
+      latestAnimes.value = fb.latestAnimes;
+      top10Today.value = fb.top10Today;
+      top10Week.value = fb.top10Week;
+      top10Month.value = fb.top10Month;
 
-    popularMangas.value = fbm.popularMangas;
-    // morePopularMangas.value = fbm.top10Week;
-    latestMangas.value = fbm.latestMangas;
-    // mostFavoriteMangas.value = fbm.top10Today;
-    // topRatedMangas.value = fbm.top10Week;
-    // topUpdatedMangas.value = fbm.upcomingMangas;
-    topOngoingMangas.value = fbm.trendingMangas;
-    trendingMangas.value = fbm.trendingMangas;
+      popularMangas.value = fbm.popularMangas;
+      // morePopularMangas.value = fbm.top10Week;
+      latestMangas.value = fbm.latestMangas;
+      // mostFavoriteMangas.value = fbm.top10Today;
+      // topRatedMangas.value = fbm.top10Week;
+      // topUpdatedMangas.value = fbm.upcomingMangas;
+      topOngoingMangas.value = fbm.trendingMangas;
+      trendingMangas.value = fbm.trendingMangas;
+    }
   }
 
   Future<void> fetchAnilistHomepage() async {
