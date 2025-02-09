@@ -51,7 +51,9 @@ class ReusableCarousel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTitle(context),
-        const SizedBox(height: 15,),
+        const SizedBox(
+          height: 15,
+        ),
         isLoading
             ? const Center(child: CircularProgressIndicator())
             : _buildCarousel(context, newData, isDesktop),
@@ -123,7 +125,7 @@ class ReusableCarousel extends StatelessWidget {
           final tag = generateTag('${itemData.id}-$index');
 
           return Obx(() => TVWrapper(
-              onTap: () => _navigateToDetailsPage(itemData, tag),
+              onTap: () => _navigateToDetailsPage(itemData, tag, isManga),
               child: settings.enableAnimation
                   ? SlideAndScaleAnimation(
                       initialScale: 0.0,
@@ -187,7 +189,9 @@ class ReusableCarousel extends StatelessWidget {
     );
   }
 
-  void _navigateToDetailsPage(CarouselData itemData, String tag) {
+  void _navigateToDetailsPage(CarouselData itemData, String tag, bool isManga) {
+    final controller = Get.find<SourceController>();
+
     final isMangaPage =
         (variant == DataVariant.relation && itemData.extraData == "MANGA") ||
             (source?.isManga ?? false) ||
@@ -205,8 +209,13 @@ class ReusableCarousel extends StatelessWidget {
           );
 
     if (source != null) {
-      final controller = Get.find<SourceController>();
       controller.setActiveSource(source!);
+    } else if (itemData.source != null) {
+      if (isManga) {
+        controller.getMangaExtensionByName(itemData.source!);
+      } else {
+        controller.getExtensionByName(itemData.source!);
+      }
     }
 
     Get.to(() => page, preventDuplicates: false);
