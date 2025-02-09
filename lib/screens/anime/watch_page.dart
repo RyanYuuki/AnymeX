@@ -176,9 +176,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         serviceHandler.onlineService
             .setCurrentMedia(anilistData.value.id.toString());
       }
-      offlineStorage.addOrUpdateAnime(
-          widget.anilistData, widget.episodeList, currentEpisode);
     }
+    offlineStorage.addOrUpdateAnime(
+        widget.anilistData, widget.episodeList, currentEpisode);
     offlineStorage.addOrUpdateWatchedEpisode(
         widget.anilistData.id, currentEpisode);
   }
@@ -506,34 +506,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           _buildControls(),
           _buildSubtitle(),
           _buildRippleEffect(),
-          Obx(() {
-            if (pressed2x.value) {
-              return Positioned(
-                  top: 30,
-                  child: Container(
-                    width: 80,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        AnymexText(
-                          text: "2x",
-                          variant: TextVariant.semiBold,
-                        ),
-                        SizedBox(width: 5),
-                        Icon(Icons.fast_forward)
-                      ],
-                    ),
-                  ));
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
+          _build2xThingy(),
           if (isMobile) ...[
             _buildBrightnessSlider(),
             _buildVolumeSlider(),
@@ -541,6 +514,37 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  Obx _build2xThingy() {
+    return Obx(() {
+      if (pressed2x.value) {
+        return Positioned(
+            top: 30,
+            child: Container(
+              width: 80,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AnymexText(
+                    text: "2x",
+                    variant: TextVariant.semiBold,
+                  ),
+                  SizedBox(width: 5),
+                  Icon(Icons.fast_forward)
+                ],
+              ),
+            ));
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Obx _buildPlayer(BuildContext context) {

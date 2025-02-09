@@ -1,4 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
+import 'dart:developer';
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
@@ -27,10 +28,8 @@ class EpisodeListBuilder extends StatefulWidget {
     super.key,
     required this.episodeList,
     required this.anilistData,
-    required this.isDesktop,
   });
 
-  final bool isDesktop;
   final List<Episode> episodeList;
   final Media? anilistData;
 
@@ -56,7 +55,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   void initState() {
     super.initState();
     _initEpisodes();
-    _initUserProgress();
+    Future.delayed(Duration(milliseconds: 300), () {
+      _initUserProgress();
+    });
     _initEpisodes();
 
     ever(auth.isLoggedIn, (_) => _initUserProgress());
@@ -95,7 +96,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
     final fallbackEP = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value));
-    final saved = savedData?.currentEpisode;
+    final saved = savedData?.currentEpisode
+      ?..link = widget.episodeList
+          .firstWhere((e) => e.number == savedData?.currentEpisode?.number)
+          .link;
     savedEpisode.value = saved ?? widget.episodeList[0];
     offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
     selectedEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;
@@ -159,13 +163,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 tabletItemWidth: 400,
                 desktopItemWidth: 200,
               ),
-              mainAxisSpacing: widget.isDesktop ? 15 : 10,
+              mainAxisSpacing:
+                  getResponsiveSize(context, mobileSize: 15, dektopSize: 10),
               crossAxisSpacing: 15,
               mainAxisExtent: isAnify.value
                   ? 200
-                  : widget.isDesktop
-                      ? 130
-                      : 100,
+                  : getResponsiveSize(context,
+                      mobileSize: 100, dektopSize: 130),
             ),
             itemCount: selectedEpisodes.length,
             itemBuilder: (context, index) {
@@ -297,6 +301,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final progress = savedEP?.timeStampInMilliseconds != null &&
             savedEP?.durationInMilliseconds != null
         ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+            .clamp(0, 0.99)
         : null;
     final isFiller = episode.filler ?? false;
 
@@ -332,20 +337,21 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         width: double.infinity,
                       ),
                     ),
-                    if (progress != null) ...[
+                    if (progress != null)
                       Positioned(
                         bottom: 0,
                         left: 0,
                         child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 7),
                           decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius:
-                                  BorderRadius.circular(12.multiplyRadius())),
-                          height: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius:
+                                BorderRadius.circular(12.multiplyRadius()),
+                          ),
+                          height: 4,
                           width: imageConstraints.maxWidth * progress,
                         ),
                       ),
-                    ],
                     Positioned(
                       bottom: 8,
                       left: 8,
@@ -417,65 +423,72 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LayoutBuilder(builder: (context, constraints) {
-                return Stack(children: [
-                  NetworkSizedImage(
-                    imageUrl: episode.thumbnail ??
-                        widget.anilistData?.cover ??
-                        widget.anilistData?.poster ??
-                        '',
-                    radius: 12,
-                    width: 170,
-                    height: 100,
-                    errorImage:
-                        widget.anilistData?.cover ?? widget.anilistData?.poster,
-                  ),
-                  if (progress > 0.0 && progress <= 1.0) ...[
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius:
-                                BorderRadius.circular(12.multiplyRadius())),
-                        height: 2,
-                        width: (constraints.maxWidth > 0
-                                ? constraints.maxWidth
-                                : 100) *
-                            progress,
+              SizedBox(
+                width: 170,
+                height: 100,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: NetworkSizedImage(
+                        imageUrl: episode.thumbnail ??
+                            widget.anilistData?.cover ??
+                            widget.anilistData?.poster ??
+                            '',
+                        radius: 12,
+                        width: 170,
+                        height: 100,
+                        errorImage: widget.anilistData?.cover ??
+                            widget.anilistData?.poster,
                       ),
                     ),
-                  ],
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    if (progress > 0.0 && progress <= 1.0)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black.withOpacity(0.2),
-                            border: Border.all(
-                                width: 2,
-                                color: Theme.of(context).colorScheme.primary),
-                            boxShadow: [glowingShadow(context)],
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius:
+                                BorderRadius.circular(12.multiplyRadius()),
                           ),
-                          child: AnymexText(
-                            text: "EP ${episode.number}",
-                            variant: TextVariant.bold,
+                          height: 2,
+                          width: 170 * progress,
+                        ),
+                      ),
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.black.withOpacity(0.2),
+                              border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              boxShadow: [glowingShadow(context)],
+                            ),
+                            child: AnymexText(
+                              text: "EP ${episode.number}",
+                              variant: TextVariant.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ]);
-              }),
+                  ],
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: AnymexText(
@@ -534,7 +547,8 @@ class ContinueEpisodeButton extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double progressPercentage;
-        if (progressEpisode.timeStampInMilliseconds == null ||
+        if (progressEpisode.number != episode.number ||
+            progressEpisode.timeStampInMilliseconds == null ||
             progressEpisode.durationInMilliseconds == null ||
             progressEpisode.durationInMilliseconds! <= 0 ||
             progressEpisode.timeStampInMilliseconds! <= 0) {
