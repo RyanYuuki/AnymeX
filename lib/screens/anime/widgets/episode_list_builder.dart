@@ -295,10 +295,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final savedEP =
         offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
     final progress = savedEP?.timeStampInMilliseconds != null &&
-            savedEP?.durationInMilliseconds != null
-        ? (savedEP!.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
-            .clamp(0, 0.99)
-        : null;
+            savedEP?.durationInMilliseconds != null &&
+            savedEP!.durationInMilliseconds! > 0
+        ? (savedEP.timeStampInMilliseconds! / savedEP.durationInMilliseconds!)
+        : 0.0;
     final isFiller = episode.filler ?? false;
 
     return Container(
@@ -315,69 +315,67 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       child: Row(
         children: [
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, imageConstraints) {
-                return Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12.multiplyRadius()),
-                      child: NetworkSizedImage(
-                        imageUrl: episode.thumbnail ??
-                            widget.anilistData?.cover ??
-                            widget.anilistData?.poster ??
-                            '',
-                        radius: 0,
-                        errorImage: widget.anilistData?.cover ??
-                            widget.anilistData?.poster,
-                        height: double.infinity,
-                        width: double.infinity,
-                      ),
+            child: LayoutBuilder(builder: (context, constrainst) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                    child: NetworkSizedImage(
+                      height: double.infinity,
+                      width: constrainst.maxWidth,
+                      imageUrl: episode.thumbnail ??
+                          widget.anilistData?.cover ??
+                          widget.anilistData?.poster ??
+                          '',
+                      radius: 0,
+                      errorImage: widget.anilistData?.cover ??
+                          widget.anilistData?.poster,
                     ),
-                    if (progress != null)
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 7),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius:
-                                BorderRadius.circular(12.multiplyRadius()),
-                          ),
-                          height: 4,
-                          width: imageConstraints.maxWidth * progress,
-                        ),
-                      ),
+                  ),
+                  if (progress > 0.0 && progress <= 1.0)
                     Positioned(
-                      bottom: 8,
-                      left: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.black.withOpacity(0.2),
-                              border: Border.all(
-                                  width: 2,
-                                  color: Theme.of(context).colorScheme.primary),
-                              boxShadow: [glowingShadow(context)],
-                            ),
-                            child: AnymexText(
-                              text: "EP ${episode.number}",
-                              variant: TextVariant.bold,
-                            ),
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius:
+                              BorderRadius.circular(12.multiplyRadius()),
+                        ),
+                        height: 4,
+                        width: constrainst.maxWidth * progress,
+                      ),
+                    ),
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withOpacity(0.2),
+                            border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary),
+                            boxShadow: [glowingShadow(context)],
+                          ),
+                          child: AnymexText(
+                            text: "EP ${episode.number}",
+                            variant: TextVariant.bold,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                ],
+              );
+            }),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -431,8 +429,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             widget.anilistData?.poster ??
                             '',
                         radius: 12,
-                        width: 170,
-                        height: 100,
+                        width: double.infinity,
+                        height: double.infinity,
                         errorImage: widget.anilistData?.cover ??
                             widget.anilistData?.poster,
                       ),
@@ -441,7 +439,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       Positioned(
                         bottom: 0,
                         left: 0,
-                        right: 0,
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
