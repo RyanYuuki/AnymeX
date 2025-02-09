@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
@@ -35,6 +36,7 @@ class Kitsu {
 
     final result = (await fetchFromKitsu(query));
     if (result == null) {
+      snackBar("Yeah so it didnt really go well, not found on kitsu as well");
       return episodes;
     }
     final kitsuEpisodes = result['data']['episodes']['nodes'];

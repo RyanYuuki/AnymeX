@@ -22,6 +22,7 @@ import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -543,6 +544,7 @@ averageScore
       } catch (e, stack) {
         log("Error parsing episode data: $e");
         log(stack.toString());
+        snackBar("Data not found for Anify, Trying Kitsu Now.");
         try {
           return await Kitsu.fetchKitsuEpisodes(animeId, episodeList);
         } catch (e) {

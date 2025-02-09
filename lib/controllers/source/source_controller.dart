@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:async';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
 import 'package:anymex/core/Search/get_popular.dart';
@@ -68,6 +69,12 @@ class SourceController extends GetxController implements BaseService {
     log("Anime Repo: $activeAnimeRepo, Manga Repo: $activeMangaRepo, Novel Repo: $activeNovelRepo");
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchHomePage();
+  }
+
   Future<void> initExtensions({bool refresh = true}) async {
     try {
       final container = ProviderContainer();
@@ -132,6 +139,7 @@ class SourceController extends GetxController implements BaseService {
       activeSource.value = selectedSource;
       Hive.box('themeData').put('activeSourceId', selectedSource.id);
     }
+    lastUpdatedSource.value = 'ANIME';
     return activeSource.value!;
   }
 
@@ -144,6 +152,7 @@ class SourceController extends GetxController implements BaseService {
       activeMangaSource.value = selectedMangaSource;
       Hive.box('themeData').put('activeMangaSourceId', selectedMangaSource.id);
     }
+    lastUpdatedSource.value = 'MANGA';
     return activeMangaSource.value!;
   }
 
@@ -152,10 +161,23 @@ class SourceController extends GetxController implements BaseService {
     _animeSections.value = [const Center(child: CircularProgressIndicator())];
     _mangaSections.value = [const Center(child: CircularProgressIndicator())];
     _homeSections.value = [
-      buildSection("Continue Watching", offlineStorage.animeLibrary,
-          variant: DataVariant.offline),
-      buildSection("Continue Reading", offlineStorage.mangaLibrary,
-          variant: DataVariant.offline, isManga: true),
+      Obx(
+        () => buildSection(
+            "Continue Watching",
+            offlineStorage.animeLibrary
+                .where((e) => e.serviceIndex == ServicesType.extensions.index)
+                .toList(),
+            variant: DataVariant.offline),
+      ),
+      Obx(() {
+        return buildSection(
+            "Continue Reading",
+            offlineStorage.mangaLibrary
+                .where((e) => e.serviceIndex == ServicesType.extensions.index)
+                .toList(),
+            variant: DataVariant.offline,
+            isManga: true);
+      }),
     ];
   }
 

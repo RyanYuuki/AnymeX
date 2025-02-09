@@ -176,6 +176,9 @@ class OfflineStorageController extends GetxController {
   void addOrUpdateManga(
       Media original, List<Chapter>? chapters, Chapter? currentChapter) {
     OfflineMedia? existingManga = getMangaById(original.id);
+    for (var i in mangaLibrary) {
+      log(i.id ?? 'N/A');
+    }
 
     if (existingManga != null) {
       existingManga.chapters = chapters;
