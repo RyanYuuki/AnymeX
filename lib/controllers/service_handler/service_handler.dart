@@ -49,7 +49,9 @@ class ServiceHandler extends GetxController {
     }
   }
 
-  Rx<Profile> get profileData => onlineService.profileData;
+  Rx<Profile> get profileData => serviceType.value == ServicesType.extensions
+      ? Profile().obs
+      : onlineService.profileData;
   RxList<TrackedMedia> get animeList => onlineService.animeList;
   RxList<TrackedMedia> get mangaList => onlineService.mangaList;
 
@@ -82,9 +84,12 @@ class ServiceHandler extends GetxController {
           progress: progress,
           isAnime: isAnime);
 
-  RxList<Widget> animeWidgets(BuildContext context) => service.animeWidgets(context);
-  RxList<Widget> mangaWidgets(BuildContext context) => service.mangaWidgets(context);
-  RxList<Widget> homeWidgets(BuildContext context) => service.homeWidgets(context);
+  RxList<Widget> animeWidgets(BuildContext context) =>
+      service.animeWidgets(context);
+  RxList<Widget> mangaWidgets(BuildContext context) =>
+      service.mangaWidgets(context);
+  RxList<Widget> homeWidgets(BuildContext context) =>
+      service.homeWidgets(context);
 
   @override
   void onInit() {

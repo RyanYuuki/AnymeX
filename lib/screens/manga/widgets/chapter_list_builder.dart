@@ -48,7 +48,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           ? chunkedChapters[selectedChunkIndex.value].obs
           : [].obs;
 
-      if (auth.isLoggedIn.value) {
+      if (auth.isLoggedIn.value &&
+          auth.serviceType.value != ServicesType.extensions) {
         final temp = auth.onlineService.mangaList
             .firstWhereOrNull((e) => e.id == widget.anilistData.id);
         userProgress = temp?.episodeCount?.toInt() ?? 0;
@@ -68,7 +69,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
             widget.anilistData.id, userProgress!.toDouble());
         continueChapter = widget.chapters?.firstWhere(
             (e) => e.number?.toInt() == userProgress,
-            orElse: () => widget.chapters![0]);
+            orElse: () => readChap ?? widget.chapters![0]);
       }
 
       return Column(

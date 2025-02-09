@@ -184,16 +184,30 @@ class SourceController extends GetxController implements BaseService {
 
   @override
   RxList<Widget> animeWidgets(BuildContext context) => [
-        Column(
-          children: _animeSections,
-        )
+        Obx(() {
+          return Column(
+            children: _animeSections.value,
+          );
+        })
       ].obs;
 
   @override
-  RxList<Widget> homeWidgets(BuildContext context) => _homeSections;
+  RxList<Widget> homeWidgets(BuildContext context) => [
+        Obx(() {
+          return Column(
+            children: _homeSections.value,
+          );
+        })
+      ].obs;
 
   @override
-  RxList<Widget> mangaWidgets(BuildContext context) => _mangaSections;
+  RxList<Widget> mangaWidgets(BuildContext context) => [
+        Obx(() {
+          return Column(
+            children: _mangaSections.value,
+          );
+        })
+      ].obs;
 
   @override
   Future<void> fetchHomePage() async {
@@ -238,8 +252,9 @@ class SourceController extends GetxController implements BaseService {
       );
 
       if (targetSections.first is Center) {
-        targetSections.clear();
+        targetSections.value = [];
         targetSections.add(CustomSearchBar(
+          disableIcons: true,
           onSubmitted: (v) {
             extensionSheet(
                 v, isManga ? installedMangaExtensions : installedExtensions);

@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/screens/search/search_anilist.dart';
+import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,9 +27,9 @@ extensionSheet(String query, List<Source> sources) {
               InkWell(
                 onTap: () {
                   Get.back();
-                  Get.to(() => SearchPage(
+                  Get.to(() => SourceSearchPage(
                         source: sources,
-                        searchTerm: query,
+                        initialTerm: query,
                         isManga: sources[0].isManga ?? false,
                       ));
                 },
@@ -65,9 +66,9 @@ InkWell _buildExtensionTitle(BuildContext context, Source e, String q) {
       } else {
         Get.find<SourceController>().getExtensionByName(e.name ?? '');
       }
-      Get.to(() => SearchPage(
+      Get.to(() => SourceSearchPage(
             source: e,
-            searchTerm: q,
+            initialTerm: q,
             isManga: e.isManga ?? false,
           ));
     },

@@ -45,7 +45,8 @@ class SettingsSheet extends StatelessWidget {
         'icon':
             'https://icon-icons.com/icons2/3915/PNG/512/simkl_logo_icon_249621.png',
       },
-      // if (serviceHandler.extensionService.isExtensionsServiceAllowed.value)
+      if (serviceHandler.extensionService.installedExtensions.length > 2 &&
+          serviceHandler.extensionService.installedMangaExtensions.length > 2)
         {
           'type': ServicesType.extensions,
           'name': "Extensions",
@@ -134,22 +135,23 @@ class SettingsSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(serviceHandler.profileData.value.name ?? 'Guest'),
-                TVWrapper(
-                  onTap: () {
-                    if (serviceHandler.isLoggedIn.value) {
-                      serviceHandler.logout();
-                    } else {
-                      serviceHandler.login();
-                    }
-                    Get.back();
-                  },
-                  child: Text(
-                    serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold),
+                if (serviceHandler.serviceType.value != ServicesType.extensions)
+                  TVWrapper(
+                    onTap: () {
+                      if (serviceHandler.isLoggedIn.value) {
+                        serviceHandler.logout();
+                      } else {
+                        serviceHandler.login();
+                      }
+                      Get.back();
+                    },
+                    child: Text(
+                      serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
               ],
             ),
             const Expanded(
