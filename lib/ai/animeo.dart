@@ -35,7 +35,7 @@ Future<List<Media>> getAiRecommendation() async {
       .toList();
   final recItems = recJson['initialRecommendations']['animeData'];
 
-  (recItems as Map<String, dynamic>).entries.forEach((e) {
+  for (var e in (recItems as Map<String, dynamic>).entries) {
     recs.add(Media(
       id: e.key,
       title: e.value['title'],
@@ -45,7 +45,7 @@ Future<List<Media>> getAiRecommendation() async {
           .map((genre) => genre['name'].toString().trim())
           .toList(),
     ));
-  });
+  }
 
   final resp = await http.post(
     Uri.parse('https://anime.ameo.dev/recommendation/recommendation'),
