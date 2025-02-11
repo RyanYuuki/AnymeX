@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/calendar_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -29,16 +30,22 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar>
     with SingleTickerProviderStateMixin {
   RxList<Media> calendarData = <Media>[].obs;
+  RxList<Media> rawData = <Media>[].obs;
   late TabController _tabController;
   List<DateTime> dateTabs = [];
   bool isGrid = true;
   bool isLoading = true;
+  bool includeList = true;
 
   @override
   void initState() {
     super.initState();
+    final ids = serviceHandler.animeList.map((e) => e.id).toSet();
     fetchCalendarData(calendarData).then((_) {
       setState(() {
+        rawData.value = calendarData.map((e) => e).toList();
+        calendarData.value =
+            calendarData.where((e) => ids.contains(e.id)).toList();
         isLoading = false;
       });
     });
@@ -55,6 +62,12 @@ class _CalendarState extends State<Calendar>
     });
   }
 
+  void changeListType() {
+    setState(() {
+      includeList = !includeList;
+    });
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -67,6 +80,18 @@ class _CalendarState extends State<Calendar>
       child: Scaffold(
         appBar: AppBar(
           actions: [
+            IconButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainer,
+                ),
+                onPressed: () {
+                  changeListType();
+                },
+                icon: Icon(!includeList
+                    ? Icons.book_rounded
+                    : Icons.text_snippet_sharp)),
+            const SizedBox(width: 10),
             IconButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -91,13 +116,14 @@ class _CalendarState extends State<Calendar>
             tabAlignment: TabAlignment.start,
             tabs: dateTabs.map((date) {
               return Obx(() {
-                List<Media> filteredList = calendarData
-                    .where((media) =>
-                        DateTime.fromMillisecondsSinceEpoch(
-                                media.nextAiringEpisode!.airingAt * 1000)
-                            .day ==
-                        date.day)
-                    .toList();
+                List<Media> filteredList =
+                    (includeList ? calendarData : rawData)
+                        .where((media) =>
+                            DateTime.fromMillisecondsSinceEpoch(
+                                    media.nextAiringEpisode!.airingAt * 1000)
+                                .day ==
+                            date.day)
+                        .toList();
 
                 return Tab(
                   child: AnymexText(
@@ -114,7 +140,7 @@ class _CalendarState extends State<Calendar>
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
-              List<Media> filteredList = calendarData
+              List<Media> filteredList = (includeList ? calendarData : rawData)
                   .where((media) =>
                       DateTime.fromMillisecondsSinceEpoch(
                               media.nextAiringEpisode!.airingAt * 1000)
