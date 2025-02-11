@@ -69,16 +69,23 @@ void showWelcomeDialogg(BuildContext context) {
                             onChanged: (val) {
                               settings.enableAnimation = !val;
                             }),
-                        TVWrapper(
-                          child: ListTile(
-                            leading:
-                                const Icon(HugeIcons.strokeRoundedAiSetting),
-                            title: const Text('Change Service'),
-                            onTap: () {
-                              Get.back();
-                              SettingsSheet().showServiceSelector(context);
-                            },
-                          ),
+                        CustomSwitchTile(
+                            icon: HugeIcons.strokeRoundedBounceRight,
+                            title: "Disable Gradient",
+                            description:
+                                "Disable Gradient, might give you smoother experience",
+                            switchValue: settings.disableGradient,
+                            onChanged: (val) {
+                              settings.disableGradient = val;
+                            }),
+                        CustomTile(
+                          description:
+                              'Change Service to whichever you prefer! like AL, MAL, Simkl',
+                          icon: HugeIcons.strokeRoundedAiSetting,
+                          title: ('Change Service'),
+                          onTap: () {
+                            SettingsSheet().showServiceSelector(context);
+                          },
                         ),
                         Container(
                           height: 50,
@@ -140,7 +147,7 @@ void showWelcomeDialogg(BuildContext context) {
                                 onPressed: () {
                                   Hive.box('themeData')
                                       .put('isFirstTime', false);
-                                  Navigator.of(context).pop();
+                                  Get.back();
                                 },
                                 label: Text(
                                   'Skip',

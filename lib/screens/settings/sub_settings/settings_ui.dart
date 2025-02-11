@@ -78,6 +78,15 @@ class _SettingsUiState extends State<SettingsUi> {
                         ),
                         CustomSwitchTile(
                             icon: HugeIcons.strokeRoundedBounceRight,
+                            title: "Disable Gradient",
+                            description:
+                                "Disable Gradient, might give you smoother experience",
+                            switchValue: settings.disableGradient,
+                            onChanged: (val) {
+                              settings.disableGradient = val;
+                            }),
+                        CustomSwitchTile(
+                            icon: HugeIcons.strokeRoundedBounceRight,
                             title: "Enable Animation",
                             description:
                                 "Enable Animation on Carousels, Disable it to get smoother experience",

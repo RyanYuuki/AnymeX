@@ -523,7 +523,7 @@ List<TrackedMedia> filterListByLabel(
 }
 
 int getResponsiveCrossAxisVal(double screenWidth, {int itemWidth = 150}) {
-  return (screenWidth / itemWidth).floor().clamp(1, 10);
+  return (screenWidth / itemWidth).floor().clamp(1, 15);
 }
 
 Future<bool> isTv() async {

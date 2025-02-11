@@ -121,8 +121,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     super.initState();
     if (!settings.isTV.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+      if (settings.defaultPortraitMode) {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      } else {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ]);
+      }
     }
     _leftAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
@@ -658,17 +664,24 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               onDoubleTapDown: (e) => _handleDoubleTap(e),
               onVerticalDragUpdate: (e) async {
                 if (isMobile) {
-                  final delta = e.delta.dy;
-                  final Offset position = e.localPosition;
+                  final screenHeight = MediaQuery.of(context).size.height;
+                  final topBoundary = screenHeight * 0.2;
+                  final bottomBoundary = screenHeight * 0.8;
 
-                  if (position.dx <= MediaQuery.of(context).size.width / 2) {
-                    final brightness = _brightnessValue - delta / 500;
-                    final result = brightness.value.clamp(0.0, 1.0);
-                    setBrightness(result);
-                  } else {
-                    final volume = _volumeValue - delta / 500;
-                    final result = volume.value.clamp(0.0, 1.0);
-                    setVolume(result);
+                  final position = e.localPosition;
+                  if (position.dy >= topBoundary &&
+                      position.dy <= bottomBoundary) {
+                    final delta = e.delta.dy;
+
+                    if (position.dx <= MediaQuery.of(context).size.width / 2) {
+                      final brightness = _brightnessValue - delta / 500;
+                      final result = brightness.clamp(0.0, 1.0);
+                      setBrightness(result.toDouble());
+                    } else {
+                      final volume = _volumeValue - delta / 500;
+                      final result = volume.clamp(0.0, 1.0);
+                      setVolume(result.toDouble());
+                    }
                   }
                 }
               },

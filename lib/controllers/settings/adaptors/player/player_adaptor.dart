@@ -28,6 +28,8 @@ class PlayerSettings {
   double bottomMargin;
   @HiveField(11)
   bool transculentControls;
+  @HiveField(12)
+  bool defaultPortraitMode;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -41,5 +43,6 @@ class PlayerSettings {
       this.skipDuration = 85,
       this.seekDuration = 10,
       this.bottomMargin = 5,
-      this.transculentControls = false});
+      this.transculentControls = false,
+      this.defaultPortraitMode = false});
 }

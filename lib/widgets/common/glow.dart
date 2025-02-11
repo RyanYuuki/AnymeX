@@ -19,22 +19,32 @@ class Glow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-    return Container(
-      color: theme.surface,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              theme.surface.withOpacity(0.3),
-              theme.primary.withOpacity(0.4)
-            ],
-            begin: begin,
-            end: end,
+    final settings = Get.find<Settings>();
+
+    return Obx(() {
+      if (settings.disableGradient) {
+        return Container(
+          color: theme.surface,
+          child: child,
+        );
+      }
+      return Container(
+        color: theme.surface,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.surface.withOpacity(0.3),
+                theme.primary.withOpacity(0.4)
+              ],
+              begin: begin,
+              end: end,
+            ),
           ),
+          child: child,
         ),
-        child: child,
-      ),
-    );
+      );
+    });
   }
 }
 

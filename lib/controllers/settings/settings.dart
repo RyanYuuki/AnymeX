@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,12 @@ class Settings extends GetxController {
         : null;
   }
 
+  void showWelcomeDialog(BuildContext context) {
+    if (Hive.box('themeData').get('isFirstTime', defaultValue: true)) {
+      showWelcomeDialogg(context);
+    }
+  }
+
   bool get transculentBar => uiSettings.value.translucentTabBar;
   set transculentBar(bool value) {
     uiSettings.update((settings) {
@@ -51,6 +58,22 @@ class Settings extends GetxController {
   set enableAnimation(bool value) {
     uiSettings.update((settings) {
       settings?.enableAnimation = value;
+    });
+    saveUISettings();
+  }
+
+  bool get defaultPortraitMode => playerSettings.value.defaultPortraitMode;
+  set defaultPortraitMode(bool value) {
+    playerSettings.update((settings) {
+      settings?.defaultPortraitMode = value;
+    });
+    savePlayerSettings();
+  }
+
+  bool get disableGradient => uiSettings.value.disableGradient;
+  set disableGradient(bool value) {
+    uiSettings.update((settings) {
+      settings?.disableGradient = value;
     });
     saveUISettings();
   }

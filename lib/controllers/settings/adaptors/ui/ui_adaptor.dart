@@ -46,6 +46,9 @@ class UISettings extends HiveObject {
   @HiveField(13)
   bool enableAnimation;
 
+  @HiveField(14)
+  bool disableGradient;
+
   UISettings(
       {this.glowMultiplier = 1.0,
       this.radiusMultiplier = 1.0,
@@ -74,5 +77,7 @@ class UISettings extends HiveObject {
         "Rewatching Animes": false,
         "Rewatching Manga": false,
       },
-      this.enableAnimation = true});
+      this.enableAnimation = true, 
+      this.disableGradient = false,
+      });
 }

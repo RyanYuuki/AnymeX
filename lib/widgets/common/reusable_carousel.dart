@@ -141,7 +141,7 @@ class ReusableCarousel extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 105),
+      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

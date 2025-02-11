@@ -34,18 +34,11 @@ class _SettingsPageState extends State<SettingsPage> {
             mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 15.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
         children: [
-          Row(
+          const Row(
             children: [
-              IconButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-              const SizedBox(width: 10),
-              const Text("Settings",
+              CustomBackButton(),
+              SizedBox(width: 10),
+              Text("Settings",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
@@ -104,6 +97,23 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       )),
     );
+  }
+}
+
+class CustomBackButton extends StatelessWidget {
+  const CustomBackButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: const Icon(Icons.arrow_back_ios_new_rounded));
   }
 }
 

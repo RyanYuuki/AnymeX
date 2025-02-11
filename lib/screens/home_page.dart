@@ -10,14 +10,27 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
   });
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.find<Settings>().checkForUpdates(context);
+      Get.find<Settings>().showWelcomeDialog(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Get.find<Settings>().checkForUpdates(context);
     final serviceHandler = Get.find<ServiceHandler>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
 
@@ -156,6 +169,7 @@ class ImageButton extends StatelessWidget {
                           color: textColor,
                           fontFamily: 'Poppins-SemiBold',
                         ),
+                        textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 3),
                   Container(

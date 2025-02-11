@@ -34,13 +34,14 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
               "Currently Watching": true,
               "Currently Reading": true,
             },
-        enableAnimation: fields[13] as bool? ?? true);
+        enableAnimation: fields[13] as bool? ?? true,
+        disableGradient: fields[14] as bool? ?? false);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(12)
       ..write(obj.homePageCards)
       ..writeByte(13)
-      ..write(obj.enableAnimation);
+      ..write(obj.enableAnimation)
+      ..writeByte(14)
+      ..write(obj.disableGradient);
   }
 
   @override
