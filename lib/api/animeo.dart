@@ -13,32 +13,46 @@ Future<List<Media>> getAiRecommendation() async {
   final isAL = service.serviceType.value == ServicesType.anilist;
   final userName = service.onlineService.profileData.value.name;
 
+  if (userName == null || userName.isEmpty) {
+    log("Username is null or empty.");
+    return [];
+  }
+
+  List<Media> recs = [];
+
+  final idResp = await http.get(Uri.parse(isAL
+      ? 'https://anime.ameo.dev/user/$userName/recommendations/__data.json?source=anilist'
+      : 'https://anime.ameo.dev/user/${userName.toLowerCase()}/recommendations/__data.json'));
+
+  if (idResp.statusCode != 200) {
+    log("Failed to fetch initial recommendations: ${idResp.statusCode}");
+    return [];
+  }
+
+  final recJson = jsonDecode(idResp.body);
+  final id = recJson['initialRecommendations']['recommendations']
+      .map((e) => e['id'])
+      .toList();
+  final recItems = recJson['initialRecommendations']['animeData'];
+
+  (recItems as Map<String, dynamic>).entries.forEach((e) {
+    recs.add(Media(
+      id: e.key,
+      title: e.value['title'],
+      poster: e.value['main_picture']['large'],
+      description: e.value['synopsis'],
+      genres: (e.value['genres'] as List)
+          .map((genre) => genre['name'].toString().trim())
+          .toList(),
+    ));
+  });
+
   final resp = await http.post(
     Uri.parse('https://anime.ameo.dev/recommendation/recommendation'),
+    headers: {"Content-Type": "application/json"},
     body: json.encode({
-      "dataSource": {"type": "username", "username": "ryan_yuuki"},
-      "availableAnimeMetadataIDs": [
-        6547,
-        8074,
-        10620,
-        11061,
-        15583,
-        20785,
-        23273,
-        23755,
-        30276,
-        30749,
-        30831,
-        31338,
-        34134,
-        34572,
-        35507,
-        35790,
-        37450,
-        38572,
-        40221,
-        40748
-      ],
+      "dataSource": {"type": "username", "username": userName.toLowerCase()},
+      "availableAnimeMetadataIDs": id,
       "includeContributors": true,
       "modelName": "model_6-5k_new2",
       "excludedRankingAnimeIDs": [],
@@ -48,83 +62,67 @@ Future<List<Media>> getAiRecommendation() async {
       "includeMovies": false,
       "includeMusic": false,
       "popularityAttenuationFactor": 0.0008,
-      "profileSource": "mal"
+      "profileSource": isAL ? 'anilist' : "mal"
     }),
   );
-  final data = await jsonDecode(resp.body);
-  log(data['animeData'].toString());
-  return [];
-  // final resp = await http.get(Uri.parse(isAL
-  //     ? 'https://anime.ameo.dev/user/$userName/recommendations/__data.json?source=anilist'
-  //     : 'https://anime.ameo.dev/user/${userName?.toLowerCase()}/recommendations/__data.json'));
 
-  // if (resp.statusCode == 200) {
-  //   final document = jsonDecode(resp.body);
-  //   final recItems = document['initialRecommendations']['animeData'];
+  if (resp.statusCode != 200) {
+    log("Failed to fetch AI recommendations: ${resp.statusCode}");
+    return recs;
+  }
 
-  //   List<Media> recommendations =
-  //       (recItems as Map<String, dynamic>).entries.map((e) {
-  //     return Media(
-  //       id: e.key,
-  //       title: e.value['title'],
-  //       poster: e.value['main_picture']['large'],
-  //       description: e.value['synopsis'],
-  //       genres: (e.value['genres'] as List)
-  //           .map((genre) => genre['name'].toString().trim())
-  //           .toList(),
-  //     );
-  //   }).toList();
+  final data = jsonDecode(resp.body);
+  data['animeData'].entries.forEach((e) {
+    recs.add(Media(
+      id: e.key,
+      title: e.value['title'],
+      poster: e.value['main_picture']['large'],
+      description: e.value['synopsis'],
+      genres: (e.value['genres'] as List)
+          .map((genre) => genre['name'].toString().trim())
+          .toList(),
+    ));
+  });
 
-  //   return recommendations;
-  // } else {
-  //   snackBar('Yep, We Failed');
-  //   log(resp.body);
-  // }
-  // return [];
+  log("Total recommendations: ${recs.length}");
+  return recs;
 }
 
-Future<List<Media>> getAiMangaRecommendation() async {
+Future<List<Media>> getAiRecommendations(bool isManga, int page) async {
   final service = Get.find<ServiceHandler>();
   final isAL = service.serviceType.value == ServicesType.anilist;
   final userName = service.onlineService.profileData.value.name;
 
-  final resp = await http.get(Uri.parse(
-      'https://anibrain.ai/integrations/${isAL ? 'anilist' : 'myanimelist'}/manga?ext_profile_provider_id=${isAL ? 'anilist' : 'myanimelist'}&ext_profile_name=$userName'));
+  final resp = await http.get(Uri.parse(isManga
+      ? 'https://anibrain.ai/api/-/recommender/recs/external-list/super-media-similar?filterCountry=[]&filterFormat=["MANGA"]&filterGenre={}&filterTag={"max":{},"min":{}}&filterRelease=[1930,2025]&filterScore=0&algorithmWeights={"genre":0.3,"setting":0.15,"synopsis":0.4,"theme":0.2}&externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$userName&mediaType=MANGA&adult=false&page=$page'
+      : 'https://anibrain.ai/api/-/recommender/recs/external-list/super-media-similar?filterCountry=[]&filterFormat=[]&filterGenre={}&filterTag={"max":{},"min":{}}&filterRelease=[1917,2025]&filterScore=0&algorithmWeights={"genre":0.3,"setting":0.15,"synopsis":0.4,"theme":0.2}&externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$userName&mediaType=ANIME&adult=false&page=1'));
 
   if (resp.statusCode == 200) {
-    final document = parse(resp.body);
-    final recItems = document.querySelectorAll('.styles_main__1IB__ ');
+    final document = jsonDecode(resp.body);
+    final recItems = document['data'];
 
     List<Media> recommendations = [];
 
     for (var item in recItems) {
-      final title = item.querySelector('.title-text')?.text.trim() ?? "Unknown";
-      final imageUrl = item.querySelector('img')?.attributes['src'] ?? "";
-      final synopsis = item.querySelector('.synopsis')?.text.trim() ?? "";
+      final title = item['titleEnglish'] ?? item['titleRomaji'];
+      final imageUrl = item['imgURLs'][0];
+      final synopsis = item['description'];
 
-      final genreElements = item.querySelectorAll('.genres .bx--tag');
-      final genres = genreElements.map((e) => e.text.trim()).toList();
-
-      final id = item
-              .querySelector('img')
-              ?.attributes['src']
-              ?.split('anime/')
-              .last
-              .split('/')
-              .first ??
-          '';
+      final id = isAL ? item['anilistId'] : item['myanimelistId'];
 
       recommendations.add(Media(
-        id: id,
-        title: title,
-        poster: imageUrl,
-        description: synopsis,
-        genres: genres,
-      ));
+          id: id.toString(),
+          title: title,
+          poster: imageUrl,
+          description: synopsis,
+          genres: (item['genres'] as List)
+              .map((genre) => genre.toString().trim().toUpperCase())
+              .toList()));
     }
 
     return recommendations;
   }
+  log(resp.body);
   snackBar('Yep, We Failed');
   return [];
 }

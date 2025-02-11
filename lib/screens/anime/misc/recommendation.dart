@@ -1,18 +1,20 @@
 import 'package:anymex/api/animeo.dart';
-import 'package:anymex/controllers/services/anilist/anilist_data.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AIRecommendation extends StatefulWidget {
-  const AIRecommendation({super.key});
+  const AIRecommendation({super.key, required this.isManga});
+  final bool isManga;
 
   @override
   State<AIRecommendation> createState() => _AIRecommendationState();
@@ -20,51 +22,89 @@ class AIRecommendation extends StatefulWidget {
 
 class _AIRecommendationState extends State<AIRecommendation> {
   RxList<Media> recItems = <Media>[].obs;
+  final ScrollController _scrollController = ScrollController();
+  int currentPage = 1;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchAiRecommendations();
+    _scrollController.addListener(_scrollListener);
+    fetchAiRecommendations(currentPage);
   }
 
-  Future<void> fetchAiRecommendations() async =>
-      recItems.value = await getAiRecommendation();
+  void _scrollListener() {
+    if (_scrollController.hasClients) {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 100 &&
+          !isLoading) {
+        fetchAiRecommendations(++currentPage);
+      }
+    }
+  }
+
+  Future<void> fetchAiRecommendations(int page) async {
+    isLoading = true;
+    final listData = Get.find<ServiceHandler>().animeList;
+    final ids = listData.map((e) => e.id).toList();
+    final data = await getAiRecommendations(widget.isManga, page);
+    recItems.addAll(data.where((e) => !ids.contains(e.id)).toList());
+    isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Glow(
-        child: Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_back_ios_new),
+          ),
+          title: Obx(() {
+            return AnymexText(
+              text:
+                  "AI Recommendations ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
+              color: Theme.of(context).colorScheme.primary,
+            );
+          }),
         ),
-        title: AnymexText(
-          text:
-              "AI Recommendations ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        body: Obx(() => recItems.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(
+                    child: GridView.builder(
+                      controller: _scrollController,
+                      itemCount: recItems.length,
+                      itemBuilder: (context, index) {
+                        final data = recItems[index];
+                        return _buildRecItem(data);
+                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: getResponsiveCrossAxisVal(
+                          MediaQuery.of(context).size.width,
+                          itemWidth: 400,
+                        ),
+                        mainAxisExtent: 200,
+                      ),
+                    ),
+                  ),
+                ],
+              )),
       ),
-      body: Obx(() {
-        return GridView.builder(
-          itemCount: recItems.length,
-          itemBuilder: (context, index) {
-            final data = recItems[index];
-            return _buildRecItem(data);
-          },
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, mainAxisExtent: 200),
-        );
-      }),
-    ));
+    );
   }
 
   Widget _buildRecItem(Media data) {
     return InkWell(
       onTap: () {
-        print(data.id);
-        // Get.to(() => AnimeDetailsPage(media: data, tag: data.description));
+        if (widget.isManga) {
+          Get.to(() => MangaDetailsPage(media: data, tag: data.description));
+        } else {
+          Get.to(() => AnimeDetailsPage(media: data, tag: data.description));
+        }
       },
       child: SlideAndScaleAnimation(
           child: Container(
