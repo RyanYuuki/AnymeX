@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
+import 'package:anymex/models/Media/character.dart';
+import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 
 enum MediaType { anime, manga, novel, unknown }
@@ -271,6 +273,7 @@ class Media {
       mediaType: type,
     );
   }
+
   factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga) {
     return Media(
       id: json['id'].toString(),
@@ -347,110 +350,6 @@ class Media {
   static String _formatDate(Map<String, dynamic>? date) {
     if (date == null) return '?';
     return '${date['year'] ?? '?'}-${date['month']?.toString().padLeft(2, '0') ?? '?'}-${date['day']?.toString().padLeft(2, '0') ?? '?'}';
-  }
-}
-
-class Character {
-  final String? name;
-  final int? favourites;
-  final String? image;
-  final List<VoiceActor> voiceActors;
-
-  Character({
-    required this.name,
-    required this.favourites,
-    required this.image,
-    required this.voiceActors,
-  });
-
-  factory Character.fromJson(Map<String, dynamic> json) {
-    return Character(
-      name: json['node']['name']['full'],
-      favourites: json['node']['favourites'] ?? 0,
-      image: json['node']['image']['large'],
-      voiceActors: (json['voiceActors'] as List)
-          .map((actor) => VoiceActor.fromJson(actor))
-          .toList(),
-    );
-  }
-}
-
-class VoiceActor {
-  final String? name;
-  final String? image;
-
-  VoiceActor({required this.name, required this.image});
-
-  factory VoiceActor.fromJson(Map<String, dynamic> json) {
-    return VoiceActor(
-      name: json['name']['full'],
-      image: json['image']['large'],
-    );
-  }
-}
-
-class Relation {
-  final int id;
-  final String title;
-  final String poster;
-  final String type;
-  final String averageScore;
-
-  Relation({
-    required this.id,
-    required this.title,
-    required this.poster,
-    required this.type,
-    required this.averageScore,
-  });
-
-  factory Relation.fromJson(Map<String, dynamic> json) {
-    return Relation(
-      id: json['node']['id'],
-      title:
-          json['node']['title']['romaji'] ?? json['node']['title']['english'],
-      poster: json['node']['coverImage']['large'],
-      type: json['node']['type'],
-      averageScore: (json['node']['averageScore'] ?? 0).toString(),
-    );
-  }
-}
-
-class Recommendation {
-  final String? id;
-  final String? title;
-  final String? poster;
-  final String? averageScore;
-
-  Recommendation({
-    required this.id,
-    required this.title,
-    required this.poster,
-    required this.averageScore,
-  });
-
-  factory Recommendation.fromJson(Map<String, dynamic> json) {
-    return Recommendation(
-      id: json['node']['mediaRecommendation']['id'],
-      title: json['node']['mediaRecommendation']['title']['romaji'] ??
-          json['node']['mediaRecommendation']['title']['english'],
-      poster: json['node']['mediaRecommendation']['coverImage']['large'],
-      averageScore:
-          ((json['node']['mediaRecommendation']['averageScore'] ?? 0) / 10 ?? 0)
-              .toString(),
-    );
-  }
-
-  factory Recommendation.fromSmallSimkl(
-      Map<String?, dynamic> json, bool isMovie) {
-    return Recommendation(
-        id:
-            '${json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
-        title: json['title'] ?? 'Unknown Title',
-        poster: json['poster'] != null
-            ? 'https://simkl.in/posters/${json['poster']}_m.jpg'
-            : '',
-        averageScore: json['year'] ?? 'Unknown air date');
   }
 }
 

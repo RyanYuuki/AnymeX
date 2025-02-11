@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -209,6 +210,7 @@ void _initializeGetxController() {
   Get.put(SourceController());
   Get.put(Settings());
   Get.put(ServiceHandler());
+  Get.lazyPut(() => CacheController());
 }
 
 class MainApp extends StatelessWidget {

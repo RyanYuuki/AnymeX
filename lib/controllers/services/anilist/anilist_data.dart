@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show min;
-import 'package:anymex/api/animeo.dart';
+import 'package:anymex/ai/animeo.dart';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Model/Source.dart';
@@ -752,6 +753,7 @@ averageScore
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final media = data['data']['Media'];
+      cacheController.addCache(media);
       return Media.fromJson(media);
     } else {
       throw Exception(response.body);

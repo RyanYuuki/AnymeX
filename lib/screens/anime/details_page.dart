@@ -137,14 +137,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           anilistData = tempData;
         }
       });
-      timeLeft.value = tempData.nextAiringEpisode?.timeUntilAiring ?? 0;
+      timeLeft.value = tempData.nextAiringEpisode?.airingAt ?? 0;
       if (timeLeft.value != 0) {
-        startCountdown();
+        startCountdown(tempData.nextAiringEpisode!.airingAt);
       }
       if (isExtensions) {
         showAnify.value = false;
       }
-      log(tempData.romajiTitle);
 
       if (isExtensions) {
         _processExtensionData(tempData);
@@ -155,9 +154,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (e.toString().contains('author')) {
         log("Hianime Error Handling");
         await _mapToService();
+      } else {
+        snackBar(e.toString());
       }
       log(e.toString());
-      snackBar(e.toString());
     }
   }
 
@@ -195,7 +195,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         widget.media.id.toString(),
         episodeList.value,
       );
-      if (newEps.first.thumbnail == null && (newEps.first.thumbnail?.isEmpty ?? true)) {
+      if (newEps.first.thumbnail == null &&
+          (newEps.first.thumbnail?.isEmpty ?? true)) {
         showAnify.value = false;
       }
       episodeList.value = newEps;
@@ -247,7 +248,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }).toList();
   }
 
-  void startCountdown() {
+  void startCountdown(int arrivingAt) {
+    int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    int difference = arrivingAt - currentTime;
+    timeLeft.value = difference;
+
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (timeLeft.value > 0) {
         timeLeft.value--;
@@ -269,10 +274,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       seconds %= 60;
 
       List<String> parts = [];
-      if (days > 0) parts.add("$days days");
-      if (hours > 0) parts.add("$hours hours");
-      if (minutes > 0) parts.add("$minutes minutes");
-      if (seconds > 0 || parts.isEmpty) parts.add("$seconds seconds");
+      if (days > 0) parts.add("$days DAYS");
+      if (hours > 0) parts.add("$hours HRS");
+      if (minutes > 0) parts.add("$minutes MINS");
+      if (seconds > 0 || parts.isEmpty) parts.add("$seconds SECS");
 
       return parts.join(" ");
     }
@@ -280,11 +285,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformBuilderWithTablet(
+    return PlatformBuilder(
       strictMode: true,
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
-      tabletBuilder: _buildDesktopLayout(context),
     );
   }
 

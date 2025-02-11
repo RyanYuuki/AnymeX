@@ -17,7 +17,7 @@ class CustomListDialog extends StatefulWidget {
   });
 
   @override
-  _CustomListDialogState createState() => _CustomListDialogState();
+  State<CustomListDialog> createState() => _CustomListDialogState();
 }
 
 class _CustomListDialogState extends State<CustomListDialog> {

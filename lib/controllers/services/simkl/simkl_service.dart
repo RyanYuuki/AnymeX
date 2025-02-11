@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -41,6 +42,7 @@ class SimklService extends GetxController
         "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client-id=${dotenv.env['SIMKL_CLIENT_ID']}"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
+      cacheController.addCache(data);
       detailsData.value = Media.fromSimkl(data, !isSeries);
       return detailsData.value;
     } else {
@@ -179,7 +181,7 @@ class SimklService extends GetxController
   }
 
   @override
-  RxList<Widget>  animeWidgets(BuildContext context) => [
+  RxList<Widget> animeWidgets(BuildContext context) => [
         if (trendingMovies.isEmpty)
           const Center(
             child: CircularProgressIndicator(),

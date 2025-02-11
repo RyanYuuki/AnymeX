@@ -17,25 +17,22 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UISettings(
-        glowMultiplier: fields[0] as double? ?? 1.0,
-        radiusMultiplier: fields[1] as double? ?? 1.0,
-        saikouLayout: fields[2] as bool? ?? false,
-        tabBarHeight: fields[3] as double? ?? 50.0,
-        tabBarWidth: fields[4] as double? ?? 180.0,
-        tabBarRoundness: fields[5] as double? ?? 10.0,
-        compactCards: fields[6] as bool? ?? false,
-        cardRoundness: fields[7] as double? ?? 1.0,
-        blurMultipler: fields[8] as double? ?? 1.0,
-        animationDuration: fields[9] as int? ?? 200,
-        translucentTabBar: fields[10] as bool? ?? true,
-        glowDensity: fields[11] as double? ?? 0.3,
-        homePageCards: (fields[12] as Map?)?.cast<String, bool>() ??
-            {
-              "Currently Watching": true,
-              "Currently Reading": true,
-            },
-        enableAnimation: fields[13] as bool? ?? true,
-        disableGradient: fields[14] as bool? ?? false);
+      glowMultiplier: fields[0] as double,
+      radiusMultiplier: fields[1] as double,
+      saikouLayout: fields[2] as bool,
+      tabBarHeight: fields[3] as double,
+      tabBarWidth: fields[4] as double,
+      tabBarRoundness: fields[5] as double,
+      compactCards: fields[6] as bool,
+      cardRoundness: fields[7] as double,
+      blurMultipler: fields[8] as double,
+      animationDuration: fields[9] as int,
+      glowDensity: fields[11] as double,
+      translucentTabBar: fields[10] as bool,
+      homePageCards: (fields[12] as Map).cast<String, bool>(),
+      enableAnimation: fields[13] as bool,
+      disableGradient: fields[14] as bool,
+    );
   }
 
   @override

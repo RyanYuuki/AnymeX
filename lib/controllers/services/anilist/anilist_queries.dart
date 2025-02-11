@@ -62,6 +62,8 @@ averageScore
         }
         relations {
           edges {
+        relationType
+
             node {
               id
               title {
@@ -72,8 +74,8 @@ averageScore
                 large
               }
               type
-              type
-averageScore
+              averageScore
+
             }
           }
         }

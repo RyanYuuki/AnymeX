@@ -35,7 +35,7 @@ class _CalendarState extends State<Calendar>
   List<DateTime> dateTabs = [];
   bool isGrid = true;
   bool isLoading = true;
-  bool includeList = true;
+  bool includeList = false;
 
   @override
   void initState() {
