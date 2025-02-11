@@ -192,6 +192,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuilder(
+      strictMode: true,
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
     );

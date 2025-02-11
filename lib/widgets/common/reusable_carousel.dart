@@ -139,7 +139,6 @@ class ReusableCarousel extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.multiplyRoundness()),
       ),
-      clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
       child: Column(

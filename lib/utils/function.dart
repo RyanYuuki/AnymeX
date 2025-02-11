@@ -5,6 +5,7 @@ import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
+import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
