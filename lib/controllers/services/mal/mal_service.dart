@@ -79,31 +79,42 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   //   disableIcons: true,
                   //   hintText: "Search Anime...",
                   // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ImageButton(
-                          width: getResponsiveSize(context,
-                              mobileSize: Get.width / 2 - 40, dektopSize: 300),
-                          height: getResponsiveSize(context,
-                              mobileSize: 70, dektopSize: 90),
-                          buttonText: "Calendar",
-                          onPressed: () {},
-                          backgroundImage: trendingAnimes[3].cover ??
-                              trendingAnimes[3].poster),
-                      const SizedBox(width: 30),
-                      ImageButton(
-                          buttonText: "AI Recommendations",
-                          width: getResponsiveSize(context,
-                              mobileSize: Get.width / 2 - 40, dektopSize: 300),
-                          height: getResponsiveSize(context,
-                              mobileSize: 70, dektopSize: 90),
-                          onPressed: () async {
-                            Get.to(() => const AIRecommendation());
-                          },
-                          backgroundImage: trendingAnimes[3].cover ??
-                              trendingAnimes[3].poster),
-                    ],
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: getResponsiveSize(context,
+                            mobileSize: 10, dektopSize: 0),
+                        bottom: getResponsiveSize(context,
+                            mobileSize: 20, dektopSize: 0)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ImageButton(
+                            width: getResponsiveSize(context,
+                                mobileSize: Get.width / 2 - 20,
+                                dektopSize: 300),
+                            height: getResponsiveSize(context,
+                                mobileSize: 70, dektopSize: 90),
+                            buttonText: "Calendar",
+                            onPressed: () {},
+                            backgroundImage: trendingAnimes[3].cover ??
+                                trendingAnimes[3].poster),
+                        const SizedBox(width: 10),
+                        ImageButton(
+                            buttonText: "AI Recommendations",
+                            width: getResponsiveSize(context,
+                                mobileSize: Get.width / 2 - 20,
+                                dektopSize: 300),
+                            height: getResponsiveSize(context,
+                                mobileSize: 70, dektopSize: 90),
+                            onPressed: () async {
+                              Get.to(() => const AIRecommendation(
+                                    isManga: false,
+                                  ));
+                            },
+                            backgroundImage: trendingAnimes[2].cover ??
+                                trendingAnimes[2].poster),
+                      ],
+                    ),
                   ),
                   buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
                   buildSectionIfNotEmpty("Popular Animes", popularAnimes),
@@ -130,6 +141,26 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   //   disableIcons: true,
                   //   hintText: "Search Manga...",
                   // ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: getResponsiveSize(context,
+                            mobileSize: 10, dektopSize: 0),
+                        bottom: getResponsiveSize(context,
+                            mobileSize: 20, dektopSize: 0)),
+                    child: ImageButton(
+                        buttonText: "AI Recommendations",
+                        width: getResponsiveSize(context,
+                            mobileSize: Get.width - 40, dektopSize: 300),
+                        height: getResponsiveSize(context,
+                            mobileSize: 70, dektopSize: 90),
+                        onPressed: () async {
+                          Get.to(() => const AIRecommendation(
+                                isManga: true,
+                              ));
+                        },
+                        backgroundImage: trendingAnimes[1].cover ??
+                            trendingAnimes[3].poster),
+                  ),
                   buildSectionIfNotEmpty("Trending Manga", trendingManga,
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),

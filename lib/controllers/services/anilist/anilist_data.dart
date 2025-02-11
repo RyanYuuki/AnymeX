@@ -16,6 +16,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/misc/calendar.dart';
+import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
@@ -138,31 +140,40 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       //   hintText: "Search Anime...",
       // ),
       buildBigCarousel(trendingAnimes, false),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ImageButton(
-              width: getResponsiveSize(context,
-                  mobileSize: Get.width / 2 - 40, dektopSize: 300),
-              height:
-                  getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
-              buttonText: "Calendar",
-              onPressed: () {},
-              backgroundImage:
-                  trendingAnimes[3].cover ?? trendingAnimes[3].poster),
-          const SizedBox(width: 30),
-          ImageButton(
-              buttonText: "AI Recommendations",
-              width: getResponsiveSize(context,
-                  mobileSize: Get.width / 2 - 40, dektopSize: 300),
-              height:
-                  getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
-              onPressed: () async {
-                await getAiRecommendation();
-              },
-              backgroundImage:
-                  trendingAnimes[3].cover ?? trendingAnimes[3].poster)
-        ],
+      Padding(
+        padding: EdgeInsets.only(
+            top: getResponsiveSize(context, mobileSize: 10, dektopSize: 0),
+            bottom: getResponsiveSize(context, mobileSize: 20, dektopSize: 0)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ImageButton(
+                width: getResponsiveSize(context,
+                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                height:
+                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+                buttonText: "Calendar",
+                onPressed: () {
+                  Get.to(() => const Calendar());
+                },
+                backgroundImage:
+                    trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+            const SizedBox(width: 10),
+            ImageButton(
+                buttonText: "AI Recommendations",
+                width: getResponsiveSize(context,
+                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                height:
+                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+                onPressed: () async {
+                  Get.to(() => const AIRecommendation(
+                        isManga: false,
+                      ));
+                },
+                backgroundImage:
+                    trendingAnimes[5].cover ?? trendingAnimes[3].poster)
+          ],
+        ),
       ),
       buildSection('Trending Animes', trendingAnimes),
       buildSection('Popular Animes', popularAnimes),
@@ -186,6 +197,23 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       //   hintText: "Search Manga...",
       // ),
       buildBigCarousel(trendingMangas, true),
+      Padding(
+        padding: EdgeInsets.only(
+            top: getResponsiveSize(context, mobileSize: 10, dektopSize: 0),
+            bottom: getResponsiveSize(context, mobileSize: 20, dektopSize: 0)),
+        child: ImageButton(
+            buttonText: "AI Recommendations",
+            width: getResponsiveSize(context,
+                mobileSize: Get.width - 40, dektopSize: 300),
+            height: getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+            onPressed: () async {
+              Get.to(() => const AIRecommendation(
+                    isManga: true,
+                  ));
+            },
+            backgroundImage:
+                trendingAnimes[4].cover ?? trendingAnimes[3].poster),
+      ),
       buildMangaSection('Trending Mangas', trendingMangas),
       buildMangaSection('Latest Mangas', latestMangas),
       buildMangaSection('Popular Mangas', popularMangas),
