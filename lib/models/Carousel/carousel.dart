@@ -5,11 +5,5 @@ class CarouselData {
   String? extraData;
   String? source;
 
-  CarouselData({
-    this.id,
-    this.title,
-    this.poster,
-    this.extraData,
-    required this.source
-  });
+  CarouselData({this.id, this.title, this.poster, this.extraData, this.source});
 }

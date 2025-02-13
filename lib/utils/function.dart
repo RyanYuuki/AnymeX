@@ -305,57 +305,39 @@ enum DataVariant {
 List<CarouselData> convertData(List<dynamic> data,
     {DataVariant variant = DataVariant.regular, bool isManga = false}) {
   return data.map((e) {
-    String extra = "";
     switch (variant) {
-      case DataVariant.regular:
-        final data = e as Media;
-        extra = data.rating.toString();
-        break;
-      case DataVariant.recommendation:
-        final data = e as Media;
-        extra = data.rating.toString();
-        break;
-      case DataVariant.relation:
-        final data = e as Relation;
-        extra = data.type;
-        break;
-      case DataVariant.anilist:
-        final data = e as TrackedMedia;
-        final ext = data.episodeCount;
-        extra = ext ?? "??";
-        break;
-      case DataVariant.offline:
       case DataVariant.extension:
-    }
-    if (variant == DataVariant.extension) {
-      final data = e as MManga;
-      return CarouselData(
-        source: null,
-        id: data.link,
-        title: data.name,
-        poster: data.imageUrl,
-        extraData: '??',
-      );
-    } else if (variant == DataVariant.offline) {
-      final data = e as OfflineMedia;
-      final source =
-          data.currentChapter?.sourceName ?? data.currentEpisode?.source;
-      final ext =
-          data.currentChapter?.number ?? data.currentEpisode?.number ?? 0;
-      return CarouselData(
-          source: source,
-          id: data.id,
-          title: data.name,
-          poster: data.poster,
-          extraData: ext.toString());
-    } else {
-      return CarouselData(
-        source: null,
-        id: e.id.toString(),
-        title: e.title,
-        poster: e.poster,
-        extraData: extra,
-      );
+        final d = e as MManga;
+        return CarouselData(
+            id: d.link, title: d.name, poster: d.imageUrl, extraData: '??');
+      case DataVariant.offline:
+        final d = e as OfflineMedia;
+        return CarouselData(
+          source: d.currentChapter?.sourceName ?? d.currentEpisode?.source,
+          id: d.id,
+          title: d.name,
+          poster: d.poster,
+          extraData: (d.currentChapter?.number ?? d.currentEpisode?.number ?? 0)
+              .toString(),
+        );
+      case DataVariant.relation:
+        return CarouselData(
+            id: e.id.toString(),
+            title: e.title,
+            poster: e.poster,
+            extraData: (e as Relation).relationType);
+      case DataVariant.anilist:
+        return CarouselData(
+            id: e.id.toString(),
+            title: e.title,
+            poster: e.poster,
+            extraData: (e as TrackedMedia).episodeCount ?? "??");
+      default:
+        return CarouselData(
+            id: e.id.toString(),
+            title: e.title,
+            poster: e.poster,
+            extraData: (e as Media).rating.toString());
     }
   }).toList();
 }
@@ -533,4 +515,8 @@ Future<bool> isTv() async {
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   bool isTV = androidInfo.systemFeatures.contains('android.software.leanback');
   return isTV;
+}
+
+void navigator(Widget page) {
+  Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page));
 }

@@ -26,6 +26,7 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -123,10 +124,10 @@ void handleDeepLink(Uri uri) {
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isLinux) {
-    runWebViewTitleBarWidget(args);
-    return;
-  }
+  // if (Platform.isLinux) {
+  //   runWebViewTitleBarWidget(args);
+  //   return;
+  // }
   if (Platform.isWindows || Platform.isMacOS) {
     registerProtocol('anymex');
     registerProtocol('dar');
@@ -245,6 +246,9 @@ class MainApp extends StatelessWidget {
       },
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
+        customTransition: FadeForwardsCustomTransition(
+            backgroundColor: theme.darkTheme.colorScheme.surface),
+        transitionDuration: const Duration(milliseconds: 800),
         debugShowCheckedModeBanner: false,
         title: "AnymeX",
         theme: theme.lightTheme,
