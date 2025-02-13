@@ -15,7 +15,7 @@
 
 # AnymeX
 
-**AnymeX ** is a ,ultiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) & [**Simkl**](https://simkl.com/) support!  
+**AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) & [**Simkl**](https://simkl.com/) support!  
 
 ## Downloads
 <div align="center">
