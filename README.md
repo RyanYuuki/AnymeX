@@ -3,7 +3,7 @@
    
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android_ios_windows_linux_macos-06599d?color=white&labelColor=black&style=for-the-badge"/>
-  <a href="https://github.com/RyanYuuki/AnymeX/releases"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&label=Downloads&style=for-the-badge" alt="GitHub Downloads"></a>
+  <a href="https://github.com/RyanYuuki/AnymeX/releases"><img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?color=white&labelColor=black&label=Downloads&style=for-the-badge" alt="GitHub Downloads"></a>
 </p>
 <p align="center">
 <a href="https://www.codefactor.io/repository/github/RyanYuuki/AnymeX"><img src="https://img.shields.io/codefactor/grade/github/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge&label=Codefactor" alt="CodeFactor"/></a>
