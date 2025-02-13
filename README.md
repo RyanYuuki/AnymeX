@@ -22,8 +22,8 @@
 ## 📥 Downloads
 <div align="center">
 <p>
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?display_name=tag&style=flat-square&logoColor=06599d&label=Stable&labelColor=06599d&color=043b69" alt="Latest Stable Release"/></a>
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?include_prereleases&logoColor=2c2c47&label=Beta&color=818cf8&style=flat-square" alt="Latest Beta"/></a>
+   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?display_name=tag&style=for-the-badge&logoColor=06599d&label=Stable&labelColor=06599d&color=043b69" alt="Latest Stable Release"/></a>
+   <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?include_prereleases&logoColor=2c2c47&label=Beta&color=818cf8&style=for-the-badge" alt="Latest Beta"/></a>
    <!--<a href="https://github.com/itsmechinmoy/echo-updater/releases/latest"><img src="https://img.shields.io/github/v/release/itsmechinmoy/echo-updater?display_name=tag&style=flat-square&label=Nightly&color=e23629" alt="Latest Alpha release"/></a>-->
 </p>
 </div>
