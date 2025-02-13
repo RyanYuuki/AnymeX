@@ -3,11 +3,11 @@ name: Notify Release
 on:
   workflow_run:
     workflows:
-      - "changelog" # Name of the triggering workflow
+      - "changelog"
     types:
       - completed
-  workflow_dispatch: # Allow manual triggering of this workflow
-  
+  workflow_dispatch:
+
 jobs:
   notify:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -32,53 +32,30 @@ jobs:
       - name: Fetch Repository Tags by Date and Time
         id: fetch_tags
         run: |
-          # Fetch tags from the GitHub repository
           curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
           TAGS=$(jq -r '.[].name' tags.json)
-
           declare -a TAGS_WITH_DATES=()
-
           for TAG in $TAGS; do
-          # Fetch tag reference details
-          TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
-          OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
-
-          if [ -n "$OBJECT_URL" ]; then
-          # Fetch object details for date
-          OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
-          DATE=$(echo "$OBJECT_DETAILS" | jq -r '.tagger.date // .committer.date // empty')
-
-          if [ -n "$DATE" ]; then
-          # Append date and tag pair
-          TAGS_WITH_DATES+=("$DATE $TAG")
-          else
-          echo "No date found for tag $TAG"
-          fi
-          else
-          echo "No object URL found for tag $TAG"
-          fi
+            TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
+            OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
+            if [ -n "$OBJECT_URL" ]; then
+              OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
+              DATE=$(echo "$OBJECT_DETAILS" | jq -r '.tagger.date // .committer.date // empty')
+              if [ -n "$DATE" ]; then
+                TAGS_WITH_DATES+=("$DATE $TAG")
+              fi
+            fi
           done
-
-          # Debugging: Print unsorted tags
-          echo "Unsorted tags with dates:"
-          printf "%s\n" "${TAGS_WITH_DATES[@]}"
-
-          # Find the tag with the latest date (no sorting)
           LATEST_TAG=""
           LATEST_DATE=""
-
           for TAG_DATE in "${TAGS_WITH_DATES[@]}"; do
-          TAG_DATE_TIME=$(echo "$TAG_DATE" | awk '{print $1}')
-          TAG_NAME=$(echo "$TAG_DATE" | awk '{print $2}')
-
-          if [[ -z "$LATEST_DATE" || "$TAG_DATE_TIME" > "$LATEST_DATE" ]]; then
-          LATEST_DATE="$TAG_DATE_TIME"
-          LATEST_TAG="$TAG_NAME"
-          fi
+            TAG_DATE_TIME=$(echo "$TAG_DATE" | awk '{print $1}')
+            TAG_NAME=$(echo "$TAG_DATE" | awk '{print $2}')
+            if [[ -z "$LATEST_DATE" || "$TAG_DATE_TIME" > "$LATEST_DATE" ]]; then
+              LATEST_DATE="$TAG_DATE_TIME"
+              LATEST_TAG="$TAG_NAME"
+            fi
           done
-
-          # Output the latest tag found
-          echo "The selected latest tag is: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           
       - name: Use the Latest Tag
@@ -92,9 +69,50 @@ jobs:
           RELEASE_NAME=$(jq -r '.name // "No release name"' release.json)
           RELEASE_NOTES=$(jq -r '.body // "No release notes"' release.json)
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-        
-           # Write release notes as-is with newlines
-            echo -e "RELEASE_NOTES<<EOF\n$RELEASE_NOTES\nEOF" >> $GITHUB_ENV
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Format Release Notes
+        id: format_notes
+        run: |
+          formatted_notes=""
+          commit_counter=0
+          more_commits=false
+          
+          while IFS= read -r line; do
+            if [[ "$line" == "### "* ]]; then
+              if [[ "$commit_counter" -gt 5 ]]; then
+                formatted_notes+="> And $((commit_counter - 5)) more\n\n"
+              fi
+              formatted_notes+="\n$line\n"
+              commit_counter=0
+              more_commits=false
+            elif [[ "$line" == "*"* ]]; then
+              commit_counter=$((commit_counter + 1))
+              if [[ "$commit_counter" -le 5 ]]; then
+                formatted_notes+="$line\n"
+              else
+                more_commits=true
+              fi
+            fi
+          done <<< "$RELEASE_NOTES"
+          
+          if [[ "$commit_counter" -gt 5 && "$more_commits" == "true" ]]; then
+            formatted_notes+="> And $((commit_counter - 5)) more\n\n"
+          fi
+          
+          echo "FORMATTED_NOTES<<EOF" >> $GITHUB_ENV
+          echo -e "$formatted_notes" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Debug Release Notes
+        run: |
+          echo "Raw release JSON:"
+          cat release.json
+          echo "Extracted release notes:"
+          jq -r '.body' release.json
+
       - name: Get and Categorize Assets with Sizes
         id: categorize_assets
         run: |
@@ -142,63 +160,37 @@ jobs:
       - name: Determine Webhook
         id: determine_webhook
         run: |
-          if [[ "${RELEASE_NAME}" == *alpha ]]; then
+          if [[ "${{ env.RELEASE_NAME }}" == *"alpha"* ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_ALPHA }}" >> $GITHUB_ENV
           else
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
           fi
-    
       - name: Send Release Notes to Telegram
         run: |
-          # Replace ### with **
-          commit=$(echo "$RELEASE_NOTES" | sed 's/^### /**/g')
-          # Replace * with 🔹 (excluding headings)
+        
+          # Replace ### with **Heading**
+          commit=$(echo "${{ env.FORMATTED_NOTES }}" | sed -E 's/^###[[:space:]]*(.*)$/\*\*\1\*\*/g')
+
+          # Remove extra blank lines (or lines with only spaces), keeping only one
+          commit=$(echo "$commit" | awk 'BEGIN {prev=""} {if (NF == 0) {if (prev != "") print ""; prev=""} else {print; prev=$0}}')
+
           commit=$(echo "$commit" | sed 's/^* /🔹 /g')
+          commit=$(echo "$commit" | sed 's/^> /🔹 /g')
+
           # Replace "):" with ") :"
           tel_commit=$(echo "$commit" | sed -E 's/\): [^:]+:/) :/g')
-
-          # Count total commits
-          commit_count=$(echo "$tel_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)
-
-          # Set Telegram message character limit
-          max_length=3500
-          
-          # Check if the message exceeds the limit
-          if [ ${#tel_commit} -gt $max_length ]; then
-          
-            # Trim the message to the limit and count remaining commits
-            trimmed_commit=$(echo "$tel_commit" | head -c $max_length)
-            trimmed_commit=$(echo "$trimmed_commit" | tr -d '`')
-            trimmed_commit=$(echo "$trimmed_commit" | sed 's/^## /**/g')
-            remaining_commits=$((commit_count - $(echo "$trimmed_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)))
         
-            # Construct the message with a note about remaining commits
-            MESSAGE="**🚀 New Release: ${RELEASE_NAME}**
-            Release Notes:
-            $trimmed_commit
+          MESSAGE="**🚀 New Release: ${{ env.RELEASE_NAME }}**
+          ${tel_commit}
 
-            📌 Note: There are $remaining_commits more commits.
-            [View Full changelog here](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
-          else
-          # Use the complete commit message
-          MESSAGE="**🚀 New Release: ${RELEASE_NAME}**
-          Release Notes:
-          $tel_commit"
-          fi
-
-          # Log the MESSAGE for debugging
+          [❓Don't know which version to download? Click here!](https://github.com/RyanYuuki/AnymeX/blob/main/INSTALLATION.md)**  
+          
+          [📌 Full changelog](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
           echo "Telegram Message: $MESSAGE"
-
-          # Send the message to Telegram
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d '{
-              "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-              "text": "'"$MESSAGE"'",
-              "parse_mode": "Markdown",
-              "disable_web_page_preview": true
-            }'
-
+            -d @<(jq -n --arg text "$MESSAGE" --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+            '{ "chat_id": $chat_id, "text": $text, "parse_mode": "Markdown", "disable_web_page_preview": true }')
 
       - name: Send Assets to Telegram
         run: |
@@ -221,59 +213,32 @@ jobs:
               "text": "'"$MESSAGE"'",
               "parse_mode": "Markdown"
             }'
-     
+
       - name: Send Release Notes to Discord
         run: |
-      
+          formatted_notes=$(echo "${{ env.FORMATTED_NOTES }}" | sed -E 's/^### (.*)$/\*\*\1\*\*/g')
+          # Remove extra blank lines (or lines with only spaces), keeping only one
+          formatted_notes=$(echo "$formatted_notes" | awk 'BEGIN {prev=""} {if (NF == 0) {if (prev != "") print ""; prev=""} else {print; prev=$0}}')
           # Replace "): <text>" with ") : <text>" and format list items
-          discord_commit=$(echo "$RELEASE_NOTES" | sed -E 's/\): [^:]+:/) :/g' | sed 's/^* /> /g')
-        
-          # Count the number of commit IDs
-          commit_count=$(echo "$discord_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)
-        
-          # Define maximum length for Discord messages
-          max_length=3000
-        
-          # Check if the message exceeds the limit
-          if [ ${#discord_commit} -gt $max_length ]; then
-            # Trim the message to the limit and count remaining commits
-            trimmed_commit=$(echo "$discord_commit" | head -c $max_length)
-            remaining_commits=$((commit_count - $(echo "$trimmed_commit" | grep -oE '\b[0-9a-f]{7,}\b' | wc -l)))
-        
-            # Construct the message with a note about remaining commits
-            discord_message="Release Notes: 
-            $trimmed_commit
+          
+          formatted_notes=$(echo "$formatted_notes" | \
+          sed -E 's/\): [^:]+:/)/g' | \
+          sed -E 's/^\* /> /g')
 
-            📌 Note: There are $remaining_commits more commits.* 
-            [View Full changelog here](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
-          else
-            # Use the full message if within the limit
-            discord_message="Release Notes:
-            $discord_commit"
-          fi
+          
+          PAYLOAD=$(jq -n \
+            --arg title "🚀 New Release: ${{ env.RELEASE_NAME }}" \
+            --arg description "${formatted_notes}
 
-          # Mention the role based on the release name
-          if [[ "${RELEASE_NAME}" == *alpha* ]]; then
-            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
-          elif [[ "${RELEASE_NAME}" == *beta* ]]; then
-            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
-          else
-            role_mention="<@&1313346791479054456>"  # Default role ID
-          fi
-
-          # Construct the payload for the Discord webhook
-          payload=$(jq -n \
-            --arg content "${role_mention}" \
-            --arg title "🚀 New Release: $RELEASE_NAME" \
-            --arg description "$discord_message" \
+            [❓Don't know which version to download? Click here!](https://github.com/RyanYuuki/AnymeX/blob/main/INSTALLATION.md)  
+            
+            [📌 Full changelog](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})" \
             --argjson color 5814783 \
-            '{ content: $content, embeds: [{ title: $title, description: $description, color: $color }] }')
-
-          # Send the payload to the Discord webhook
+            '{ "embeds": [{ "title": $title, "description": $description, "color": $color }] }')
           curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
-            -d "$payload"
-            
+            -d "$PAYLOAD"
+
       - name: Send Assets to Discord
         run: |
           MESSAGE="${{ env.LATEST_TAG }} Released
