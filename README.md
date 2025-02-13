@@ -1,55 +1,37 @@
 <div align="center">
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
-<h1 style="font-size: 2em; font-weight: bold;">AnymeX</h1>
-<div align="center">
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest">
-       <img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total.svg?color=white&labelColor=black&style=for-the-badge" alt="Total Downloads" /></a>
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest">
-      <img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="GitHub release" /></a>
-   <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
+   
+<p>
+  <a href="https://github.com/RyanYuuki/AnymeX/releases"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&label=Downloads&style=flat-square" alt="GitHub Downloads"></a>
+<a href="https://www.codefactor.io/repository/github/RyanYuuki/AnymeX"><img src="https://img.shields.io/codefactor/grade/github/RyanYuuki/AnymeX?color=white&labelColor=black&style=flat-square&label=Codefactor" alt="CodeFactor"/></a>
+  <!--<a href="https://hosted.weblate.org/engage/echo"><img alt="Weblate project translated" src="https://img.shields.io/weblate/progress/echo?color=white&labelColor=black&label=Translated&style=flat-square"></a>-->
+<a href="https://github.com/RyanYuuki/AnymeX/commits/main">
+    <img src="https://img.shields.io/github/last-commit/RyanYuuki/AnymeX?color=white&labelColor=black&label=Latest Commit&style=flat-square" alt="GitHub Last Commit">
+</a>
+<a href="https://github.com/RyanYuuki/AnymeX/stargazers">
       <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
-   <a href="https://www.codefactor.io/repository/github/RyanYuuki/AnymeX">
-     <img src="https://img.shields.io/codefactor/grade/github/RyanYuuki/AnymeX?style=for-the-badge&label=Codefactor&labelColor=black&color=white" alt="CodeFactor Grade" />
-   </a>
-</div>
-<br/>
-<div align="center">
-   <a href="https://discord.gg/azAMuBWd8C">
-      <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&color=white&labelColor=black&logoColor=white" alt="Discord"/></a>
-   <a href="https://t.me/AnymeX_Discussion">
-      <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&color=white&labelColor=black&logoColor=white" alt="Telegram"/>
-   </a>
-</div>
-</div>
-<br/>
-<p style="text-align: center;">
-Welcome to <b>AnymeX</b>—a multi-service client built with Flutter and Dart! 🌟 It's designed to provide a seamless and user-friendly experience with a modern interface and excellent performance.
 </p>
-
----
-
-## 🚀 Features
-
-| Category       | Highlights                                                                                                                                          |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Experience** | 🎨 **Personalized Themes**: Explore unique themes<br>⚡ **Blazing Fast Performance**: Lightweight and lightning-fast<br>✨ **Elegant Material UI**: Modern and sleek |
-| **Connectivity** | 📌 **Multiple Integrations**: Easily connect with various services<br>📊 **Sync Support**: Keep your data in sync effortlessly |
-
-## Screenshots
-
-### 📱 Mobile
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview1.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview2.jpg" width="49%" style="margin: 0;" />
 </div>
 
-### 💻 Desktop
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_2.png" width="100%" style="margin: 0;" />
+# AnymeX
+**AnymeX ** is a hybrid [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) tracking client, along with [**Simkl**](https://simkl.com/) support!  
+
+## Downloads
+<div align="center">
+<p>
+   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?display_name=tag&style=flat-square&logoColor=06599d&label=Stable&labelColor=06599d&color=043b69" alt="Latest Stable Release"/></a>
+   <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?include_prereleases&logoColor=2c2c47&label=Beta&color=818cf8&style=flat-square" alt="Latest Beta"/></a>
+   <!--<a href="https://github.com/itsmechinmoy/echo-updater/releases/latest"><img src="https://img.shields.io/github/v/release/itsmechinmoy/echo-updater?display_name=tag&style=flat-square&label=Nightly&color=e23629" alt="Latest Alpha release"/></a>-->
+</p>
 </div>
+
+## ⚠️ Disclaimer  
+- **Purpose**: AnymeX is a hybrid tracking and management tool for anime, manga, manhwa, and other media supported by AniList, MyAnimeList & Simkl. This application is designed for tracking use only.  
+- **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.  
+- **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
 
 ## Support Us
+<a href='https://ko-fi.com/' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 > ⭐ **Star This Repository To Support The Developer And Encourage The Development Of The Application!**
 <details>
   <summary>Star History</summary>
@@ -58,27 +40,21 @@ Welcome to <b>AnymeX</b>—a multi-service client built with Flutter and Dart! �
   </a>
 </details>
 
+## Official Communities
+Join our communities to stay updated and contribute to the discussion:
+
+<a href="https://discord.gg/5gAHhMvTcx" style="margin-right: 10px; display: inline-block;"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/discord-round-color-icon.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
+<a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" height="40" style="vertical-align: middle;"></a>
+
 ## Contribute
-We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/azAMuBWd8C) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
-
-### 🚀 Getting Started with Development
-```bash
-# 1️⃣ Clone the repository
-git clone https://github.com/RyanYuuki/AnymeX.git
-
-# 2️⃣ Navigate to the project directory
-cd AnymeX
-
-# 3️⃣ Install dependencies
-flutter pub get
-
-# 4️⃣ Run the app
-flutter run
-```
-> 💡 **Pro Tip**: Ensure you install Flutter and Dart SDK before starting!
+We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
+<!--<details>
+<summary>Weblate Translation Graph</summary>
+<a href="https://hosted.weblate.org/projects/echo/#languages"><img src="https://hosted.weblate.org/widget/echo/app/multi-auto.svg" alt="Translation status" /></a>
+</details>-->
 
 ## Acknowledgments
-A heartfelt thank you to everyone who has contributed to the development of AnymeX.
+A heartfelt thank you to everyone who has contributed to the development of Echo.
 Your efforts are invaluable.
 
 <a href="https://github.com/RyanYuuki/AnymeX/graphs/contributors">
