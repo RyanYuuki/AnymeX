@@ -34,7 +34,7 @@
 - **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
 
 ## ❤️ Support Us
-<a href='https://ko-fi.com/' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href='https://ko-fi.com/ryanyuuki7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 > ⭐ **Star This Repository To Support The Developer And Encourage The Development Of The Application!**
 <details>
   <summary>Star History</summary>
