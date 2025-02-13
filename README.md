@@ -15,7 +15,7 @@
 
 # AnymeX
 
-**AnymeX ** is a hybrid [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) tracking client, along with [**Simkl**](https://simkl.com/) support!  
+**AnymeX ** is a ,ultiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) & [**Simkl**](https://simkl.com/) support!  
 
 ## Downloads
 <div align="center">
