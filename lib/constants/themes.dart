@@ -13,6 +13,12 @@ ThemeData lightMode = ThemeData(
     seedColor: seedColor,
     brightness: Brightness.light,
   ),
+  pageTransitionsTheme: PageTransitionsTheme(
+    builders: {
+      for (var platform in TargetPlatform.values)
+        platform: const FadeForwardsPageTransitionsBuilder(),
+    },
+  ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
     bodyMedium: TextStyle(color: Colors.black),
@@ -71,6 +77,12 @@ ThemeData darkMode = ThemeData(
     titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
     bodySmall: TextStyle(
         color: Colors.grey, fontSize: 12), // Updated to a lighter color
+  ),
+  pageTransitionsTheme: PageTransitionsTheme(
+    builders: {
+      for (var platform in TargetPlatform.values)
+        platform: const FadeForwardsPageTransitionsBuilder(),
+    },
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,

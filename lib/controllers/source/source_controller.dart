@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:async';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -282,6 +283,7 @@ class SourceController extends GetxController implements BaseService {
     final data = await getDetail(
         url: id,
         source: (isAnime ? activeSource.value : activeMangaSource.value)!);
+    cacheController.addCache(data.toJson());
     return Media.fromManga(data, isAnime ? MediaType.anime : MediaType.manga);
   }
 

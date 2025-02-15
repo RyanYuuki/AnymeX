@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
-import 'package:anymex/api/animeo.dart';
+import 'package:anymex/ai/animeo.dart';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -222,6 +223,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         "fields=mean,status,media_type,synopsis,genres,type,num_episodes,num_chapters,studio,start_date,end_date,source,rating,rank,popularity,favorites,studios,statistics,recommendations";
 
     final data = await fetchMAL('$url?$newField') as Map<String, dynamic>;
+    cacheController.addCache(data);
     return Media.fromFullMAL(data);
   }
 

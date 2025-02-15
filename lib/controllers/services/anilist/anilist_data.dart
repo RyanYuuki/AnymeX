@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show min;
-import 'package:anymex/api/animeo.dart';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Model/Source.dart';
@@ -27,6 +27,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -64,6 +65,12 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .map<String>((entry) => entry.key)
         .toList();
     final isDesktop = Get.width > 600;
+    final recAnimes = popularAnimes + trendingAnimes + latestAnimes;
+    final recMangas = popularMangas + topOngoingMangas + topRatedMangas;
+    final ids = [
+      animeList.map((e) => e.id).toSet(),
+      mangaList.map((e) => e.id).toSet()
+    ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
         Row(
@@ -77,7 +84,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   trendingAnimes.firstWhere((e) => e.cover != null).cover ?? '',
               borderRadius: 16.multiplyRadius(),
               onPressed: () {
-                Get.to(() => const AnimeList());
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (c) => const AnimeList()));
+                // Get.to(() => const AnimeList());
               },
             ),
             const SizedBox(width: 15),
@@ -114,11 +123,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         children: [
           ReusableCarousel(
             title: "Recommended Animes",
-            data: popularAnimes + trendingAnimes,
+            data: isLoggedIn.value
+                ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
+                : recAnimes,
           ),
           ReusableCarousel(
             title: "Recommended Mangas",
-            data: popularMangas + trendingMangas,
+            data: isLoggedIn.value
+                ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
+                : recMangas,
             isManga: true,
           )
         ],
@@ -752,6 +765,7 @@ averageScore
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final media = data['data']['Media'];
+      cacheController.addCache(media);
       return Media.fromJson(media);
     } else {
       throw Exception(response.body);

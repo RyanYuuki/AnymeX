@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
@@ -13,9 +14,10 @@ import 'package:hive/hive.dart';
 
 enum ServicesType { anilist, mal, simkl, extensions }
 
+final serviceHandler = Get.find<ServiceHandler>();
+
 class ServiceHandler extends GetxController {
   final serviceType = ServicesType.anilist.obs;
-  Rx<Media> detailsData = Media().obs;
   final anilistService = Get.find<AnilistData>();
   final malService = Get.find<MalService>();
   final simklService = Get.find<SimklService>();
@@ -107,7 +109,10 @@ class ServiceHandler extends GetxController {
 
   Future<void> fetchHomePage() => service.fetchHomePage();
 
-  Future<Media> fetchDetails(dynamic id) async => service.fetchDetails(id);
+  Future<Media> fetchDetails(dynamic id) async {
+    Media? data = cacheController.getCacheByAnimeId(id);
+    return data ?? service.fetchDetails(id);
+  }
 
   Future<List<Media>?> search(String query,
           {bool isManga = false, Map<String, dynamic>? filters}) async =>

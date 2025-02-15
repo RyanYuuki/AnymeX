@@ -239,6 +239,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                             switchValue: settings.transculentControls,
                             onChanged: (val) =>
                                 settings.transculentControls = val),
+                        CustomSwitchTile(
+                            padding: const EdgeInsets.all(10),
+                            icon: Icons.stay_current_portrait,
+                            title: "Default Portraint",
+                            description: "For psychopath who watch in portrait",
+                            switchValue: settings.defaultPortraitMode,
+                            onChanged: (val) =>
+                                settings.defaultPortraitMode = val),
                         ListTile(
                           leading: Icon(Icons.speed,
                               color: Theme.of(context).colorScheme.primary),

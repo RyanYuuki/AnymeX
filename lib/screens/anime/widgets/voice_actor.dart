@@ -1,6 +1,6 @@
 import 'dart:math' show Random;
+import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/utils/string_extensions.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';

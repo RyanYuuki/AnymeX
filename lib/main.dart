@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -25,6 +26,7 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -122,10 +124,10 @@ void handleDeepLink(Uri uri) {
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isLinux) {
-    runWebViewTitleBarWidget(args);
-    return;
-  }
+  // if (Platform.isLinux) {
+  //   runWebViewTitleBarWidget(args);
+  //   return;
+  // }
   if (Platform.isWindows || Platform.isMacOS) {
     registerProtocol('anymex');
     registerProtocol('dar');
@@ -209,6 +211,7 @@ void _initializeGetxController() {
   Get.put(SourceController());
   Get.put(Settings());
   Get.put(ServiceHandler());
+  Get.lazyPut(() => CacheController());
 }
 
 class MainApp extends StatelessWidget {
@@ -243,6 +246,9 @@ class MainApp extends StatelessWidget {
       },
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
+        customTransition: FadeForwardsCustomTransition(
+            backgroundColor: theme.darkTheme.colorScheme.surface),
+        transitionDuration: const Duration(milliseconds: 800),
         debugShowCheckedModeBanner: false,
         title: "AnymeX",
         theme: theme.lightTheme,

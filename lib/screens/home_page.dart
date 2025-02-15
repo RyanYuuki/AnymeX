@@ -96,6 +96,7 @@ class ImageButton extends StatelessWidget {
   final double borderRadius;
   final Color textColor;
   final TextStyle? textStyle;
+  final double margin;
 
   const ImageButton({
     super.key,
@@ -107,6 +108,7 @@ class ImageButton extends StatelessWidget {
     this.borderRadius = 18,
     this.textColor = Colors.white,
     this.textStyle,
+    this.margin = 0,
   });
 
   @override
@@ -114,6 +116,7 @@ class ImageButton extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+      margin: EdgeInsets.symmetric(vertical: margin),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius.multiplyRadius()),
@@ -169,7 +172,7 @@ class ImageButton extends StatelessWidget {
                           color: textColor,
                           fontFamily: 'Poppins-SemiBold',
                         ),
-                        textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 3),
                   Container(

@@ -51,7 +51,7 @@ class ReusableCarousel extends StatelessWidget {
       children: [
         _buildTitle(context),
         const SizedBox(
-          height: 15,
+          height: 10,
         ),
         isLoading
             ? const Center(child: CircularProgressIndicator())
@@ -64,12 +64,12 @@ class ReusableCarousel extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
+      padding: const EdgeInsets.only(left: 30.0),
       child: Text(
         title,
         style: TextStyle(
           fontFamily: "Poppins-SemiBold",
-          fontSize: 18,
+          fontSize: 17,
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
@@ -114,11 +114,11 @@ class ReusableCarousel extends StatelessWidget {
       BuildContext context, List<dynamic> newData, bool isDesktop) {
     final settings = Get.find<Settings>();
     return SizedBox(
-      height: isDesktop ? 290 : 220,
+      height: isDesktop ? 290 : 230,
       child: ListView.builder(
         itemCount: newData.length,
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 20, top: 7.5, bottom: 7.5),
+        padding: const EdgeInsets.only(left: 20, top: 5, bottom: 10),
         itemBuilder: (BuildContext context, int index) {
           final itemData = newData[index];
           final tag = generateTag('${itemData.id}-$index');
@@ -139,7 +139,6 @@ class ReusableCarousel extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.multiplyRoundness()),
       ),
-      clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
       child: Column(
