@@ -32,15 +32,13 @@
 - **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.
 - **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
 
-<!-- Once I make the screenshots I'll add this back
 ## Screenshots
 
-### 📱 Mobile
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview1.jpg" width="49%" style="margin: 0;" />
-    <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/android/preview2.jpg" width="49%" style="margin: 0;" />
-</div>
+| Home | Search | Details | Library |
+| ------- | ------- | ------ | ------- |
+|![The home page containing multiple sections of stuff, you've read or watched.](.github/Assets/Screenshots/1.jpg) | ![The search page showing multiple search results for JoJo’s Bizarre Adventure.](.github/Assets/Screenshots/2.jpg) | ![The details page of Re:Zero Kara Hajimeru Isekai Seikatsu.](.github/Assets/Screenshots/4.jpg) | ![The library page showing the user’s watching list.](.github/Assets/Screenshots/5.jpg) |
 
+<!-- Once I make the screenshots I'll add this back
 ### 💻 Desktop
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
