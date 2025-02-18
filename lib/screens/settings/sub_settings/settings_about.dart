@@ -169,6 +169,15 @@ class AboutPage extends StatelessWidget {
                   CustomListTile(
                     onTap: () async {
                       await launchUrlHelper(
+                          'https://ko-fi.com/ryanyuuki7');
+                    },
+                    leading: const Icon(Icons.kofi),
+                    title: "Ko-fi",
+                    subtitle: "Consider donating to support AnymeX's maintainer",
+                  ),
+                  CustomListTile(
+                    onTap: () async {
+                      await launchUrlHelper(
                           'https://github.com/RyanYuuki/AnymeX/issues');
                     },
                     leading: const Icon(Icons.bug_report),
