@@ -6,6 +6,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -137,7 +138,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   CustomListTile(
                     onTap: () async {
-                      await launchUrlHelper('https://discord.gg/azAMuBWd8C');
+                      await launchUrlHelper('https://discord.gg/5gAHhMvTcx');
                     },
                     leading: const Icon(HugeIcons.strokeRoundedDiscord),
                     title: "Discord",
@@ -171,9 +172,9 @@ class AboutPage extends StatelessWidget {
                       await launchUrlHelper(
                           'https://ko-fi.com/ryanyuuki7');
                     },
-                    leading: const Icon(Icons.kofi),
+                    leading: const Icon(FontAwesomeIcons.mugHot),
                     title: "Ko-fi",
-                    subtitle: "Consider donating to support AnymeX's maintainer",
+                    subtitle: "Consider donating to support the maintainer of AnymeX",
                   ),
                   CustomListTile(
                     onTap: () async {
