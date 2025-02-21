@@ -1,10 +1,10 @@
-import 'dart:math';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-import 'package:anymex/screens/library/online/widgets/items.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -88,20 +88,27 @@ class _AnimeListState extends State<AnimeList> {
               physics: const BouncingScrollPhysics(),
               tabAlignment: TabAlignment.start,
               isScrollable: true,
+              unselectedLabelColor: Colors.grey,
               tabs: isReversed
-                  ? tabs.reversed
-                      .toList()
-                      .map((tab) => Tab(
-                          child: Text(tab,
-                              style: const TextStyle(
-                                  fontFamily: 'Poppins-SemiBold'))))
-                      .toList()
-                  : tabs
-                      .map((tab) => Tab(
-                          child: Text(tab,
-                              style: const TextStyle(
-                                  fontFamily: 'Poppins-SemiBold'))))
-                      .toList(),
+                  ? tabs.reversed.toList().map((tab) {
+                      final filteredAnimeList =
+                          filterListByStatus(animeList, tab);
+
+                      return Tab(
+                          child: AnymexText(
+                        text: '$tab (${filteredAnimeList.length})',
+                        variant: TextVariant.bold,
+                      ));
+                    }).toList()
+                  : tabs.map((tab) {
+                      final filteredAnimeList =
+                          filterListByStatus(animeList, tab);
+                      return Tab(
+                          child: AnymexText(
+                        text: '$tab (${filteredAnimeList.length})',
+                        variant: TextVariant.bold,
+                      ));
+                    }).toList(),
             ),
           ),
           body: TabBarView(
@@ -156,41 +163,20 @@ class AnimeListContent extends StatelessWidget {
       return Center(child: Text('No anime found for $tabType'));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: PlatformBuilder(
-        androidBuilder: GridView.builder(
-          physics: const BouncingScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, mainAxisExtent: 260, crossAxisSpacing: 10),
-          itemCount: filteredAnimeList.length,
-          itemBuilder: (context, index) {
-            final item = filteredAnimeList[index];
-            final tag = '${Random().nextInt(100000)}$index';
-            final posterUrl = item.poster ??
-                'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
-            return listItem(
-                context, item, tag, posterUrl, filteredAnimeList, index, false);
-          },
-        ),
-        desktopBuilder: GridView.builder(
-          physics: const BouncingScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: getResponsiveCrossAxisCount(
-                  MediaQuery.of(context).size.width),
-              mainAxisExtent: 270,
-              crossAxisSpacing: 10),
-          itemCount: filteredAnimeList.length,
-          itemBuilder: (context, index) {
-            final item = filteredAnimeList[index];
-            final tag = '${Random().nextInt(100000)}$index';
-            final posterUrl = item.poster ??
-                'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-73IhOXpJZiMF.jpg';
-            return listItemDesktop(
-                context, item, tag, posterUrl, filteredAnimeList, index, false);
-          },
-        ),
-      ),
+    return GridView.builder(
+      padding: const EdgeInsets.all(20),
+      physics: const BouncingScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: getResponsiveCrossAxisVal(
+              MediaQuery.of(context).size.width,
+              itemWidth: 108),
+          mainAxisExtent: 250,
+          crossAxisSpacing: 15),
+      itemCount: filteredAnimeList.length,
+      itemBuilder: (context, index) {
+        final item = filteredAnimeList[index];
+        return GridAnimeCard(data: item, isManga: false);
+      },
     );
   }
 }

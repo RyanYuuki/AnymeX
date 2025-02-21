@@ -63,7 +63,7 @@ class WatchingTab extends StatelessWidget {
                 e.currentChapter?.pageNumber != null &&
                 e.serviceIndex == currentService)
             : offlineStorage.animeLibrary.where((e) =>
-                e.currentEpisode?.timeStampInMilliseconds != null &&
+                e.currentEpisode?.currentTrack != null &&
                 e.serviceIndex == currentService))
         .toList();
     return animeData.isEmpty

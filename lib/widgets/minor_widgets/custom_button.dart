@@ -102,7 +102,7 @@ class BlurWrapper extends StatelessWidget {
 
     return Obx(() => Stack(
           children: [
-            if (controller.transculentControls)
+            if (controller.playerStyle == 2)
               Positioned.fill(
                 child: Blur(
                   blur: blurAmount,
@@ -122,7 +122,9 @@ class BlurWrapper extends StatelessWidget {
                     borderRadius: borderRadius ??
                         BorderRadius.circular(12.multiplyRadius()),
                     border: Border.all(
-                        color: theme.colorScheme.primary.withOpacity(0.1))),
+                        color: controller.playerStyle == 0
+                            ? Colors.transparent
+                            : theme.colorScheme.primary.withOpacity(0.1))),
                 child: child),
           ],
         ));

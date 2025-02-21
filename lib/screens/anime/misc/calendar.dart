@@ -5,16 +5,13 @@ import 'package:anymex/controllers/services/anilist/calendar_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -29,6 +26,7 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar>
     with SingleTickerProviderStateMixin {
+  final serviceHandler = Get.find<ServiceHandler>();
   RxList<Media> calendarData = <Media>[].obs;
   RxList<Media> rawData = <Media>[].obs;
   late TabController _tabController;
@@ -80,18 +78,20 @@ class _CalendarState extends State<Calendar>
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            IconButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainer,
-                ),
-                onPressed: () {
-                  changeListType();
-                },
-                icon: Icon(!includeList
-                    ? Icons.book_rounded
-                    : Icons.text_snippet_sharp)),
-            const SizedBox(width: 10),
+            if (serviceHandler.isLoggedIn.value) ...[
+              IconButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                  onPressed: () {
+                    changeListType();
+                  },
+                  icon: Icon(!includeList
+                      ? Icons.book_rounded
+                      : Icons.text_snippet_sharp)),
+              const SizedBox(width: 10),
+            ],
             IconButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -158,11 +158,9 @@ class _CalendarState extends State<Calendar>
                           itemCount: filteredList.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: getResponsiveValue(context,
-                                      mobileValue: isGrid ? 3 : 1,
-                                      desktopValue: getResponsiveCrossAxisVal(
-                                          MediaQuery.of(context).size.width,
-                                          itemWidth: isGrid ? 120 : 400)),
+                                  crossAxisCount: getResponsiveCrossAxisVal(
+                                      MediaQuery.of(context).size.width,
+                                      itemWidth: isGrid ? 120 : 400),
                                   mainAxisExtent: getResponsiveSize(context,
                                       mobileSize: isGrid ? 250 : 150,
                                       dektopSize: isGrid ? 250 : 180),
@@ -204,14 +202,14 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
       width: cardWidth,
       height: cardHeight,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Stack(
             children: [
               TVWrapper(
                 margin: 0,
                 onTap: () {
-                  Get.to(() => AnimeDetailsPage(
+                  navigate(() => AnimeDetailsPage(
                       media: widget.data, tag: widget.data.title));
                 },
                 child: Hero(
@@ -238,20 +236,21 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
           ),
           const SizedBox(height: 5),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(width: 6),
               const Icon(Icons.movie_filter_rounded,
                   color: Colors.grey, size: 16),
-              const SizedBox(width: 5),
-              AnymexText(
-                text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
-                maxLines: 1,
-                variant: TextVariant.regular,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey,
-                size: 12,
-              ),
+              if (widget.data.nextAiringEpisode?.episode != null) ...[
+                const SizedBox(width: 5),
+                AnymexText(
+                  text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
+                  maxLines: 1,
+                  variant: TextVariant.regular,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey,
+                  size: 12,
+                ),
+              ]
             ],
           ),
           const SizedBox(height: 5),
@@ -263,15 +262,16 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               size: 14,
             ),
           ),
-          SizedBox(
-            width: cardWidth,
-            child: AnymexText(
-              text: '~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
-              maxLines: 1,
-              size: 12,
-              color: Colors.grey,
+          if (widget.data.nextAiringEpisode?.episode != null)
+            SizedBox(
+              width: cardWidth,
+              child: AnymexText(
+                text: '~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
+                maxLines: 1,
+                size: 12,
+                color: Colors.grey,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -368,7 +368,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
 
     return TVWrapper(
       onTap: () {
-        Get.to(
+        navigate(
             () => AnimeDetailsPage(media: widget.data, tag: widget.data.title));
       },
       child: Container(

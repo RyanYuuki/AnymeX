@@ -8,6 +8,7 @@ import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -64,7 +65,7 @@ class EpisodeSection extends StatelessWidget {
                   e.key!, sourceController.activeSource.value!.id!))
               .toList();
 
-      Get.to(
+      navigate(
         () => SourcePreferenceWidget(
           source: sourceController.activeSource.value!,
           sourcePreference: sourcePreference,

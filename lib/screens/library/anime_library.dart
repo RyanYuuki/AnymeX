@@ -238,7 +238,7 @@ class _AnimeCard extends StatelessWidget {
       margin: 0,
       scale: 1,
       onTap: () {
-        Get.to(() => AnimeDetailsPage(
+        navigate(() => AnimeDetailsPage(
             media: Media.fromOfflineMedia(data, MediaType.anime),
             tag: '${data.id!}${UniqueKey().toString()}'));
       },
@@ -401,10 +401,10 @@ class AnimeHistoryCard extends StatelessWidget {
               data.episodes == null ||
               data.currentEpisode?.videoTracks == null) {
             snackBar(
-                "Error: Missing required data. It seems you closed the app directly after watching the episode!",
-                duration: 2000,
-                maxLines: 3,
-                maxWidth: Get.width * 0.6);
+              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+              duration: 2000,
+              maxLines: 3,
+            );
           } else {
             if (data.currentEpisode?.source == null) {
               snackBar("Cant Play since user closed the app abruptly");
@@ -415,7 +415,7 @@ class AnimeHistoryCard extends StatelessWidget {
               snackBar(
                   "Install ${data.currentEpisode?.source} First, Then Click");
             } else {
-              Get.to(() => WatchPage(
+              navigate(() => WatchPage(
                     episodeSrc: data.currentEpisode!.currentTrack!,
                     episodeList: data.episodes!,
                     anilistData: convertOfflineToMedia(data),

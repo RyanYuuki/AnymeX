@@ -178,10 +178,12 @@ class ChapterSection extends StatelessWidget {
               if (sourceController.activeMangaSource.value == null)
                 const NoSourceSelectedWidget()
               else
-                ChapterListBuilder(
-                  chapters: chapterList,
-                  anilistData: anilistData,
-                ),
+                searchedTitle.value != "No match found"
+                    ? ChapterListBuilder(
+                        chapters: chapterList,
+                        anilistData: anilistData,
+                      )
+                    : Center(child: AnymexText(text: "No Match Found"))
             ],
           ),
         ));

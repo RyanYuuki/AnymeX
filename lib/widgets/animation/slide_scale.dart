@@ -11,10 +11,10 @@ class SlideAndScaleAnimation extends StatefulWidget {
   const SlideAndScaleAnimation({
     super.key,
     required this.child,
-    this.duration = const Duration(milliseconds: 150),
+    this.duration = const Duration(milliseconds: 200),
     this.initialScale = 0.0,
     this.finalScale = 1.0,
-    this.initialOffset = const Offset(0.0, 0.0),
+    this.initialOffset = const Offset(1.0, 0.0),
     this.finalOffset = const Offset(0.0, 0.0),
   });
 

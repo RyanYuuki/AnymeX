@@ -1,6 +1,6 @@
 name: anymex
 description: "An Anilist Client"
-publish_to: "https://github.com/RyanYuuki/AnymeX"
+publish_to: "GitHub"
 version: 2.9.1
 
 environment:
@@ -69,8 +69,6 @@ dependencies:
     git:
       url: https://github.com/leanflutter/uni_links_desktop.git
       ref: main
-  desktop_webview_window: ^0.2.3
-  analyzer: ^6.11.0
 
 dev_dependencies:
   flutter_test:
@@ -82,7 +80,6 @@ dev_dependencies:
   change_app_package_name: ^1.4.0
   inno_bundle: ^0.7.4
   flutter_launcher_icons: ^0.14.2
-  json_serializable: ^6.0.1
 
 flutter_launcher_icons:
   android: false

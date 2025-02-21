@@ -114,6 +114,14 @@ class FadeForwardsPageTransitionsBuilder extends PageTransitionsBuilder {
   }
 }
 
+typedef DelegatedTransitionBuilder = Widget? Function(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  bool allowSnapshotting,
+  Widget? child,
+);
+
 class FadeForwardsPageTransition extends StatelessWidget {
   const FadeForwardsPageTransition({
     super.key,

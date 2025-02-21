@@ -1,6 +1,8 @@
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -116,55 +118,85 @@ class ListEditorModal extends StatelessWidget {
   }
 
   Widget _buildProgressField(BuildContext context) {
+    final TextEditingController _controller = TextEditingController();
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: SizedBox(
-              height: 55,
-              child: TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.add),
-                  suffixText: '${animeProgress.value}/${media.totalEpisodes}',
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Theme.of(context).colorScheme.secondaryContainer,
+        Obx(() {
+          _controller.text = animeProgress.value.toString();
+          return Expanded(
+            child: SizedBox(
+                height: 55,
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.add),
+                    suffixText: '${animeProgress.value}/${media.totalEpisodes}',
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Theme.of(context).colorScheme.primary,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    borderRadius: BorderRadius.circular(18),
+                    labelText: 'Progress',
+                    labelStyle: const TextStyle(
+                      fontFamily: 'Poppins-Bold',
+                    ),
                   ),
-                  labelText: 'Progress',
-                  labelStyle: const TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                  ),
-                ),
-                initialValue: animeProgress.value.toString(),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                onChanged: (String value) {
-                  int? newProgress = int.tryParse(value);
-                  if (newProgress != null && newProgress >= 0) {
-                    if (media.totalEpisodes == '?') {
-                      animeProgress.value = newProgress;
-                    } else {
-                      int totalEp = int.tryParse(media.totalEpisodes) ?? 9999;
-                      animeProgress.value =
-                          newProgress <= totalEp ? newProgress : totalEp;
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  onChanged: (String value) {
+                    int? newProgress = int.tryParse(value);
+                    if (newProgress != null && newProgress >= 0) {
+                      if (media.totalEpisodes == '?') {
+                        animeProgress.value = newProgress;
+                      } else {
+                        int totalEp = int.tryParse(media.totalEpisodes) ?? 9999;
+                        animeProgress.value =
+                            newProgress <= totalEp ? newProgress : totalEp;
+                      }
                     }
-                  }
-                },
-              )),
-        ),
+                  },
+                )),
+          );
+        }),
+        const SizedBox(width: 10),
+        InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: () {
+            if (animeProgress.value <
+                (int.tryParse(media.totalEpisodes ?? '9999') ?? 9999)) {
+              animeProgress.value++;
+            }
+          },
+          child: Container(
+            width: 55,
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            alignment: Alignment.center,
+            child: const AnymexText(
+              text: "+1",
+              variant: TextVariant.semiBold,
+            ),
+          ),
+        )
       ],
     );
   }

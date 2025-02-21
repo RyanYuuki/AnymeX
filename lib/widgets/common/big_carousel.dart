@@ -6,9 +6,11 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -144,15 +146,15 @@ class _BigCarouselState extends State<BigCarousel> {
                         const SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            anime.description ?? 'Description Not Available',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color:
-                                  ColorScheme.inverseSurface.withOpacity(0.7),
-                            ),
+                          child: AnymexText(
+                            text: anime.description.isNotEmpty
+                                ? anime.description
+                                : 'Description Not Available',
+                            size: 12,
+                            color: ColorScheme.inverseSurface.withOpacity(0.7),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 3,
+                            stripHtml: true,
                           ),
                         ),
                       ],
@@ -200,17 +202,16 @@ class _BigCarouselState extends State<BigCarousel> {
   }
 
   void navigateToDetailsPage(Media anime, String tag) {
-    print("Navigated");
     if (widget.carouselType == CarouselType.manga) {
-      Get.to(() => MangaDetailsPage(
+      navigate(() => MangaDetailsPage(
             media: anime,
             tag: tag,
           ));
     } else {
-      Get.to(AnimeDetailsPage(
-        media: anime,
-        tag: tag,
-      ));
+      navigate(() => AnimeDetailsPage(
+            media: anime,
+            tag: tag,
+          ));
     }
   }
 

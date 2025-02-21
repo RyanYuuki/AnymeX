@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
@@ -11,6 +12,7 @@ enum MediaType { anime, manga, novel, unknown }
 
 class Media {
   String id;
+  String idMal;
   String title;
   String romajiTitle;
   String description;
@@ -39,6 +41,7 @@ class Media {
 
   Media(
       {this.id = '0',
+      this.idMal = '0',
       this.mediaType = MediaType.anime,
       this.title = '?',
       this.romajiTitle = '?',
@@ -276,7 +279,7 @@ class Media {
 
   factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga) {
     return Media(
-      id: json['id'].toString(),
+      id: json['idMal']?.toString() ?? json['id'].toString(),
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -177,7 +178,7 @@ class SettingsSheet extends StatelessWidget {
                 title: const Text('View Profile'),
                 onTap: () {
                   Get.back();
-                  Get.to(() => const ProfilePage());
+                  navigate(() => const ProfilePage());
                 },
               ),
             ),
@@ -187,7 +188,7 @@ class SettingsSheet extends StatelessWidget {
               title: const Text('Extensions'),
               onTap: () {
                 Get.back();
-                Get.to(() => const ExtensionScreen());
+                navigate(() => const ExtensionScreen());
               },
             ),
           TVWrapper(
@@ -216,7 +217,7 @@ class SettingsSheet extends StatelessWidget {
               title: const Text('Settings'),
               onTap: () {
                 Get.back();
-                Get.to(() => const SettingsPage());
+                navigate(() => const SettingsPage());
               },
             ),
           ),

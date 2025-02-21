@@ -4,6 +4,7 @@ import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -24,11 +25,22 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Rx<Color> subtitleColor = Colors.white.obs;
   Rx<Color> backgroundColor = Colors.black.obs;
   Rx<Color> outlineColor = Colors.black.obs;
+  final styles = ['Regular', 'Accent', 'Blurred Accent'];
+  final selectedStyleIndex = 0.obs;
 
   @override
   void initState() {
     super.initState();
     speed.value = settings.speed;
+    selectedStyleIndex.value = settings.playerStyle;
+  }
+
+  String numToPlayerStyle(int i) {
+    return (i >= 0 && i < styles.length) ? styles[i] : 'Unknown';
+  }
+
+  int styleToNum(String i) {
+    return styles.indexOf(i);
   }
 
   void _showPlaybackSpeedDialog() {
@@ -84,56 +96,29 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  void _showResizeModeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Container(
-              width: getResponsiveValue(context,
-                  mobileValue: null, desktopValue: 500.0),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'PlayBack Speeds',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: resizeModeList.length,
-                      itemBuilder: (context, index) {
-                        String resize = resizeModeList[index];
+  void showPlayerStyleDialog() {
+    showSelectionDialog<int>(
+        title: "Player Theme",
+        items: [0, 1, 2],
+        selectedItem: selectedStyleIndex,
+        getTitle: (i) => numToPlayerStyle(i),
+        onItemSelected: (i) {
+          selectedStyleIndex.value = i;
+          settings.playerStyle = i;
+        });
+  }
 
-                        return Obx(() => Container(
-                              margin: const EdgeInsets.only(bottom: 7),
-                              child: ListTileWithCheckMark(
-                                leading: const Icon(Icons.speed),
-                                color: Theme.of(context).colorScheme.primary,
-                                active: resize == resizeMode.value,
-                                title: resize,
-                                onTap: () {
-                                  resizeMode.value = resize;
-                                  settings.resizeMode = resize;
-                                },
-                              ),
-                            ));
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ));
+  void _showResizeModeDialog() {
+    showSelectionDialog<String>(
+      title: 'Playback Speeds',
+      items: resizeModeList,
+      selectedItem: resizeMode,
+      getTitle: (item) => item,
+      onItemSelected: (selected) {
+        resizeMode.value = selected;
+        settings.resizeMode = selected;
       },
+      leadingIcon: Icons.speed,
     );
   }
 
@@ -230,37 +215,33 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 fontWeight: FontWeight.bold,
                               )),
                         ),
-                        CustomSwitchTile(
-                            padding: const EdgeInsets.all(10),
-                            icon: HugeIcons.strokeRoundedBlur,
-                            title: "Tranculent Controls",
-                            description:
-                                "Toggle for enabling/disabling Blurred Video Player Controls",
-                            switchValue: settings.transculentControls,
-                            onChanged: (val) =>
-                                settings.transculentControls = val),
+                        CustomTile(
+                          padding: 10,
+                          descColor: Theme.of(context).colorScheme.primary,
+                          isDescBold: true,
+                          icon: HugeIcons.strokeRoundedPlaySquare,
+                          onTap: () {
+                            showPlayerStyleDialog();
+                          },
+                          title: "Player Theme",
+                          description: numToPlayerStyle(settings.playerStyle),
+                        ),
                         CustomSwitchTile(
                             padding: const EdgeInsets.all(10),
                             icon: Icons.stay_current_portrait,
-                            title: "Default Portraint",
+                            title: "Default Portrait",
                             description: "For psychopath who watch in portrait",
                             switchValue: settings.defaultPortraitMode,
                             onChanged: (val) =>
                                 settings.defaultPortraitMode = val),
-                        ListTile(
-                          leading: Icon(Icons.speed,
-                              color: Theme.of(context).colorScheme.primary),
-                          title: const Text(
-                            'Playback Speed',
-                            style: TextStyle(fontFamily: "Poppins-SemiBold"),
-                          ),
-                          subtitle: Text(
-                              '${settings.speed.toStringAsFixed(1)}x',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins-SemiBold',
-                                  color:
-                                      Theme.of(context).colorScheme.primary)),
+                        CustomTile(
+                          padding: 10,
+                          isDescBold: true,
+                          icon: Icons.speed,
+                          descColor: Theme.of(context).colorScheme.primary,
                           onTap: _showPlaybackSpeedDialog,
+                          title: "Playback Speed",
+                          description: '${settings.speed.toStringAsFixed(1)}x',
                         ),
                         // Resize Mode
                         ListTile(

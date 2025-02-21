@@ -8,6 +8,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
@@ -64,7 +65,7 @@ class ReusableCarousel extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30.0),
+      padding: const EdgeInsets.only(left: 20.0),
       child: Text(
         title,
         style: TextStyle(
@@ -118,7 +119,7 @@ class ReusableCarousel extends StatelessWidget {
       child: ListView.builder(
         itemCount: newData.length,
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 20, top: 5, bottom: 10),
+        padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
         itemBuilder: (BuildContext context, int index) {
           final itemData = newData[index];
           final tag = generateTag('${itemData.id}-$index');
@@ -126,7 +127,9 @@ class ReusableCarousel extends StatelessWidget {
           return Obx(() => TVWrapper(
               onTap: () => _navigateToDetailsPage(itemData, tag, isManga),
               child: settings.enableAnimation
-                  ? _buildCarouselItem(context, itemData, tag, isDesktop)
+                  ? SlideAndScaleAnimation(
+                      child:
+                          _buildCarouselItem(context, itemData, tag, isDesktop))
                   : _buildCarouselItem(context, itemData, tag, isDesktop)));
         },
       ),
@@ -136,16 +139,13 @@ class ReusableCarousel extends StatelessWidget {
   Widget _buildCarouselItem(
       BuildContext context, CarouselData itemData, String tag, bool isDesktop) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.multiplyRoundness()),
-      ),
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 104),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12.multiplyRoundness()),
+            borderRadius: BorderRadius.circular(15.multiplyRoundness()),
             child: Stack(
               children: [
                 Hero(
@@ -165,13 +165,11 @@ class ReusableCarousel extends StatelessWidget {
               itemData.title!.isNotEmpty &&
               itemData.title != '?') ...[
             const SizedBox(height: 10),
-            Text(
-              itemData.title ?? '?',
+            AnymexText(
+              text: itemData.title ?? '?',
               maxLines: 2,
-              style: TextStyle(
-                fontSize: isDesktop ? 14 : 12,
-                fontFamily: "Poppins-SemiBold",
-              ),
+              size: isDesktop ? 14 : 12,
+              variant: TextVariant.semiBold,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -209,7 +207,7 @@ class ReusableCarousel extends StatelessWidget {
       }
     }
 
-    Get.to(() => page, preventDuplicates: false);
+    navigate(() => page);
   }
 
   Positioned _buildExtraData(BuildContext context, CarouselData itemData) {

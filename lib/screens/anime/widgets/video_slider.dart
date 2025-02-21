@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 class VideoSliderTheme extends StatefulWidget {
   final Slider child;
+  final Color? color;
+  final Color? inactiveTrackColor;
   const VideoSliderTheme({
     super.key,
     required this.child,
+    this.color,
+    this.inactiveTrackColor,
   });
 
   @override
@@ -18,8 +22,9 @@ class VideoSliderThemeState extends State<VideoSliderTheme> {
     return SliderTheme(
         data: SliderThemeData(
           thumbColor: colorScheme.primary,
-          activeTrackColor: colorScheme.primary,
-          inactiveTrackColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          activeTrackColor: widget.color ?? colorScheme.primary,
+          inactiveTrackColor: widget.inactiveTrackColor ??
+              Theme.of(context).colorScheme.surface.withOpacity(0.8),
           secondaryActiveTrackColor: colorScheme.primary.withAlpha(144),
           trackHeight: 6,
           thumbShape: RoundedRectangularThumbShape(

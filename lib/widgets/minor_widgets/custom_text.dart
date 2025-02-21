@@ -11,6 +11,8 @@ class AnymexText extends StatelessWidget {
   final TextOverflow? overflow;
   final int? maxLines;
   final FontStyle fontStyle;
+  final bool stripHtml;
+
   const AnymexText({
     super.key,
     required this.text,
@@ -21,6 +23,7 @@ class AnymexText extends StatelessWidget {
     this.overflow = TextOverflow.ellipsis,
     this.maxLines = 2,
     this.fontStyle = FontStyle.normal,
+    this.stripHtml = false,
   });
 
   @override
@@ -39,16 +42,23 @@ class AnymexText extends StatelessWidget {
         fontFamily = "Poppins";
     }
 
+    String processedText = stripHtml ? _removeHtmlTags(text) : text;
+
     return Text(
-      text,
+      processedText,
       textAlign: textAlign,
       overflow: overflow,
       maxLines: maxLines,
       style: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: size ?? 14.0,
-          color: color,
-          fontStyle: fontStyle),
+        fontFamily: fontFamily,
+        fontSize: size ?? 14.0,
+        color: color,
+        fontStyle: fontStyle,
+      ),
     );
+  }
+
+  String _removeHtmlTags(String input) {
+    return input.replaceAll(RegExp(r"<[^>]*>"), "").trim();
   }
 }

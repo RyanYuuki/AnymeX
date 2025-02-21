@@ -10,6 +10,7 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
@@ -71,7 +72,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 children: [
                   // CustomSearchBar(
                   //   onSubmitted: (val) {
-                  //     Get.to(() => SearchPage(
+                  //     navigate(() => SearchPage(
                   //           searchTerm: val,
                   //           isManga: false,
                   //         ));
@@ -96,7 +97,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                             height: getResponsiveSize(context,
                                 mobileSize: 70, dektopSize: 90),
                             buttonText: "Calendar",
-                            onPressed: () {},
+                            onPressed: () {
+                              navigate(() => const Calendar());
+                            },
                             backgroundImage: trendingAnimes[3].cover ??
                                 trendingAnimes[3].poster),
                         const SizedBox(width: 10),
@@ -108,7 +111,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                             height: getResponsiveSize(context,
                                 mobileSize: 70, dektopSize: 90),
                             onPressed: () async {
-                              Get.to(() => const AIRecommendation(
+                              navigate(() => const AIRecommendation(
                                     isManga: false,
                                   ));
                             },
@@ -133,7 +136,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 children: [
                   // CustomSearchBar(
                   //   onSubmitted: (val) {
-                  //     Get.to(() => SearchPage(
+                  //     navigate(() => SearchPage(
                   //           searchTerm: val,
                   //           isManga: true,
                   //         ));
@@ -155,7 +158,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                         height: getResponsiveSize(context,
                             mobileSize: 70, dektopSize: 90),
                         onPressed: () async {
-                          Get.to(() => const AIRecommendation(
+                          navigate(() => const AIRecommendation(
                                 isManga: true,
                               ));
                         },
@@ -257,7 +260,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                               '',
                           borderRadius: 16.multiplyRadius(),
                           onPressed: () {
-                            Get.to(() => const AnimeList());
+                            navigate(() => const AnimeList());
                           },
                         ),
                         const SizedBox(width: 15),
@@ -271,7 +274,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                                   .cover ??
                               '',
                           onPressed: () {
-                            Get.to(() => const AnilistMangaList());
+                            navigate(() => const AnilistMangaList());
                           },
                         ),
                       ],

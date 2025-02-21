@@ -3,6 +3,7 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -98,6 +99,7 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     return GridView.builder(
+      padding: const EdgeInsets.all(20),
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
@@ -108,65 +110,22 @@ class _SearchPageState extends State<SearchPage> {
               crossAxisCount: getResponsiveValue(context,
                   mobileValue: 3,
                   desktopValue: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width)),
+                      MediaQuery.of(context).size.width,
+                      itemWidth: 108)),
               crossAxisSpacing: 10.0,
               mainAxisSpacing: 10.0,
-              mainAxisExtent:
-                  getResponsiveSize(context, mobileSize: 180, dektopSize: 230),
+              mainAxisExtent: 230,
             ),
       itemCount: _searchResults!.length,
       itemBuilder: (context, index) {
         final media = _searchResults![index];
         return _currentViewMode == ViewMode.list
             ? _buildListItem(media)
-            : _buildBoxItem(media);
+            : GridAnimeCard(
+                data: media,
+                isManga: widget.isManga,
+                variant: CardVariant.search);
       },
-    );
-  }
-
-  Widget _buildBoxItem(Media media) {
-    return Column(
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              TVWrapper(
-                margin: 0,
-                onTap: () => _navigateToDetails(media),
-                child: Hero(
-                  tag: media.title,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: media.poster,
-                      height: double.infinity,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => CachedNetworkImage(
-                        imageUrl:
-                            'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
-                        height: double.infinity,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: _buildEpisodeChip(media),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 5),
-        AnymexText(
-          text: media.title,
-          maxLines: 1,
-        )
-      ],
     );
   }
 
@@ -245,12 +204,12 @@ class _SearchPageState extends State<SearchPage> {
 
   void _navigateToDetails(Media media) {
     if (widget.isManga) {
-      Get.to(() => MangaDetailsPage(
+      navigate(() => MangaDetailsPage(
             media: media,
             tag: media.title,
           ));
     } else {
-      Get.to(() => AnimeDetailsPage(
+      navigate(() => AnimeDetailsPage(
             media: media,
             tag: media.title,
           ));
@@ -262,11 +221,11 @@ class _SearchPageState extends State<SearchPage> {
     return Glow(
       child: SafeArea(
         child: Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
@@ -276,14 +235,18 @@ class _SearchPageState extends State<SearchPage> {
                       child: CustomSearchBar(
                         controller: _searchController,
                         onSubmitted: (query) => _performSearch(query: query),
-                        disableIcons: _serviceHandler.serviceType.value != ServicesType.extensions,
+                        disableIcons: _serviceHandler.serviceType.value !=
+                            ServicesType.extensions,
                         onSuffixIconPressed: _showFilterBottomSheet,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Row(
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
@@ -303,9 +266,9 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                 ),
-                Expanded(child: _buildSearchResults()),
-              ],
-            ),
+              ),
+              Expanded(child: _buildSearchResults()),
+            ],
           ),
         ),
       ),

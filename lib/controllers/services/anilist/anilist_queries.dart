@@ -62,8 +62,7 @@ averageScore
         }
         relations {
           edges {
-        relationType
-
+            relationType
             node {
               id
               title {
@@ -73,6 +72,7 @@ averageScore
               coverImage {
                 large
               }
+              bannerImage
               type
               averageScore
 

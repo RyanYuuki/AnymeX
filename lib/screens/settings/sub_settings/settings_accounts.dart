@@ -75,7 +75,7 @@ class ProfileTile extends StatelessWidget {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20.0),

@@ -80,7 +80,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ContinueChapterButton(
                   onPressed: () {
-                    Get.to(() => ReadingPage(
+                    navigate(() => ReadingPage(
                           anilistData: widget.anilistData,
                           chapterList: widget.chapters!,
                           currentChapter: continueChapter!,
@@ -123,7 +123,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     (readChap?.number ?? continueChapter?.number ?? 0);
                 return TVWrapper(
                   onTap: () {
-                    Get.to(() => ReadingPage(
+                    navigate(() => ReadingPage(
                           anilistData: widget.anilistData,
                           chapterList: widget.chapters!,
                           currentChapter: chapter,
@@ -200,7 +200,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                                 boxShadow: [glowingShadow(context)]),
                             child: AnymexButton(
                               onTap: () {
-                                Get.to(() => ReadingPage(
+                                navigate(() => ReadingPage(
                                       anilistData: widget.anilistData,
                                       chapterList: widget.chapters!,
                                       currentChapter: chapter,

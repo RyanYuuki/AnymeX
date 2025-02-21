@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -111,7 +112,7 @@ void showWelcomeDialogg(BuildContext context) {
                                     Hive.box('themeData')
                                         .put('isFirstTime', false);
                                     Navigator.of(context).pop();
-                                    Get.to(() => const SettingsAccounts());
+                                    navigate(() => const SettingsAccounts());
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

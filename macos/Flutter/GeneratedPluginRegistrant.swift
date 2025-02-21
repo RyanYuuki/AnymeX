@@ -8,6 +8,7 @@ import Foundation
 import desktop_webview_window
 import device_info_plus
 import dynamic_color
+import file_picker
 import flutter_inappwebview_macos
 import flutter_local_notifications
 import flutter_qjs
@@ -19,7 +20,7 @@ import package_info_plus
 import path_provider_foundation
 import screen_brightness_macos
 import screen_retriever_macos
-import sqflite
+import sqflite_darwin
 import uni_links_desktop
 import url_launcher_macos
 import wakelock_plus
@@ -30,6 +31,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   DesktopWebviewWindowPlugin.register(with: registry.registrar(forPlugin: "DesktopWebviewWindowPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   DynamicColorPlugin.register(with: registry.registrar(forPlugin: "DynamicColorPlugin"))
+  FilePickerPlugin.register(with: registry.registrar(forPlugin: "FilePickerPlugin"))
   InAppWebViewFlutterPlugin.register(with: registry.registrar(forPlugin: "InAppWebViewFlutterPlugin"))
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   FlutterQjsPlugin.register(with: registry.registrar(forPlugin: "FlutterQjsPlugin"))

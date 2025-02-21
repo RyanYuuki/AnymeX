@@ -506,7 +506,7 @@ List<TrackedMedia> filterListByLabel(
 }
 
 int getResponsiveCrossAxisVal(double screenWidth, {int itemWidth = 150}) {
-  return (screenWidth / itemWidth).floor().clamp(1, 15);
+  return (screenWidth / itemWidth).floor().clamp(1, 12);
 }
 
 Future<bool> isTv() async {
@@ -517,6 +517,6 @@ Future<bool> isTv() async {
   return isTV;
 }
 
-void navigator(Widget page) {
-  Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page));
+void navigate(dynamic page) {
+  Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
 }

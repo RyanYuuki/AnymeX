@@ -211,25 +211,31 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   // Continuous Tracking
   int lastProcessedMinute = 0;
+  Timer? _positionTimer;
 
   void _attachListeners() {
     player.stream.playing.listen((e) {
       isPlaying.value = e;
     });
     player.stream.position.listen((e) {
-      currentPosition.value = e;
-      currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
-      formattedTime.value = formatDuration(e);
+      if (_positionTimer == null || !_positionTimer!.isActive) {
+        _positionTimer = Timer(const Duration(seconds: 1), () {
+          currentPosition.value = e;
+          formattedTime.value = formatDuration(e);
+          currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
+        });
+      }
 
       if (lastProcessedMinute != e.inMinutes) {
         lastProcessedMinute = e.inMinutes;
         trackEpisode(e, episodeDuration.value, currentEpisode.value);
       }
-      lastProcessedMinute = e.inMinutes;
 
       if (e.inSeconds == episodeDuration.value.inSeconds) {
         if (episodeDuration.value.inMinutes >= 1) {
-          fetchEpisode(false);
+          Future.delayed(const Duration(milliseconds: 500), () {
+            fetchEpisode(false);
+          });
         }
       }
     });
@@ -279,13 +285,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         }
       }
     }
-    int counter = 0;
     for (var i in subtitles.value) {
-      if ((i?.label?.toLowerCase().contains('english') ?? false) &&
-          i?.file != null &&
-          counter == 0) {
+      if ((i?.label?.toLowerCase().contains('english') ??
+              i?.label?.toLowerCase().contains('eng') ??
+              false) &&
+          i?.file != null) {
+        final index = subtitles.indexOf(i);
+        selectedSubIndex.value = index;
         await player.setSubtitleTrack(SubtitleTrack.uri(i!.file!));
-        counter++;
+        break;
       }
     }
   }
@@ -333,11 +341,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       player.open(Media(''));
     });
     final episodeToNav = navEpisode(prev);
-    if (episodeToNav != null) {
-      currentEpisode.value = episodeToNav;
+    if (episodeToNav == null) {
+      snackBar("No Stremas Found");
+      return;
     }
+    currentEpisode.value = episodeToNav;
     final video = await getVideo(
-        source: sourceController.activeSource.value!, url: episodeToNav!.link!);
+        source: sourceController.activeSource.value!, url: episodeToNav.link!);
     final preferredStream = video.firstWhere(
       (e) => e.quality == episode.value.quality,
       orElse: () {
@@ -724,34 +734,40 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Obx _buildSubtitle() {
     return Obx(() => AnimatedPositioned(
-        right: 0,
-        left: 0,
-        top: 0,
-        duration: const Duration(milliseconds: 100),
-        bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
-        child: AnimatedContainer(
-          alignment: Alignment.bottomCenter,
-          duration: const Duration(milliseconds: 300),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
+          right: 0,
+          left: 0,
+          top: 0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: AnimatedOpacity(
+              opacity: subtitleText[0].isEmpty ? 0.0 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                    color: subtitleText[0].isEmpty
-                        ? Colors.transparent
-                        : colorOptions[settings.subtitleBackgroundColor],
-                    borderRadius: BorderRadius.circular(12.multiplyRadius())),
-                child: Text(
-                  [
-                    for (final line in subtitleText)
-                      if (line.trim().isNotEmpty) line.trim(),
-                  ].join('\n'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
+                  color: subtitleText[0].isEmpty
+                      ? Colors.transparent
+                      : colorOptions[settings.subtitleBackgroundColor],
+                  borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.easeIn,
+                  switchOutCurve: Curves.easeOut,
+                  child: Text(
+                    [
+                      for (final line in subtitleText)
+                        if (line.trim().isNotEmpty) line.trim(),
+                    ].join('\n'),
+                    key: ValueKey(
+                        subtitleText.join()), // Unique key for AnimatedSwitcher
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
                       color: fontColorOptions[settings.subtitleColor],
                       fontSize: settings.subtitleSize.toDouble(),
                       fontFamily: "Poppins-Bold",
@@ -762,12 +778,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                           color:
                               fontColorOptions[settings.subtitleOutlineColor]!,
                         ),
-                      ]),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ],
+            ),
           ),
-        )));
+        ));
   }
 
   Widget _buildRippleEffect() {
@@ -945,80 +963,86 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   showTrackSelector() {
     showModalBottomSheet(
-        context: context,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        builder: (context) {
-          return ListView(
-            padding: const EdgeInsets.all(20.0),
-            children: [
-              const Center(
-                child: AnymexText(
-                  text: "Choose Track",
-                  size: 18,
-                  variant: TextVariant.bold,
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Center(
+                  child: AnymexText(
+                    text: "Choose Track",
+                    size: 18,
+                    variant: TextVariant.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: episodeTracks.length,
-                itemBuilder: (context, index) {
-                  final e = episodeTracks[index];
-                  final isSelected = episode.value.quality == e.quality;
-                  return TVWrapper(
-                    onTap: () {
-                      episode.value = e;
-                      player.open(Media(e.url,
-                          start: currentPosition.value,
-                          end: episodeDuration.value));
-                      Get.back();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 2.5, horizontal: 10),
-                        title: AnymexText(
-                          text: e.quality,
-                          variant: TextVariant.bold,
-                          size: 16,
-                          color: isSelected
-                              ? Colors.black
-                              : Theme.of(context).colorScheme.primary,
-                        ),
-                        tileColor: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.surfaceContainer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        trailing: Icon(
-                          Iconsax.play5,
-                          color: isSelected
-                              ? Colors.black
-                              : Theme.of(context).colorScheme.primary,
+                const SizedBox(height: 10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: episodeTracks.map((e) {
+                    final isSelected = episode.value.quality == e.quality;
+                    return TVWrapper(
+                      onTap: () {
+                        episode.value = e;
+                        player.open(Media(e.url,
+                            start: currentPosition.value,
+                            end: episodeDuration.value));
+                        Get.back();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 2.5, horizontal: 10),
+                          title: AnymexText(
+                            text: e.quality,
+                            variant: TextVariant.bold,
+                            size: 16,
+                            color: isSelected
+                                ? Colors.black
+                                : Theme.of(context).colorScheme.primary,
+                          ),
+                          tileColor: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.surfaceContainer,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          trailing: Icon(
+                            Iconsax.play5,
+                            color: isSelected
+                                ? Colors.black
+                                : Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        });
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void showSubtitleSelector() {
     showModalBottomSheet(
         context: context,
         backgroundColor: Theme.of(context).colorScheme.surface,
+        isScrollControlled: true,
         builder: (context) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: ListView(
-              padding: const EdgeInsets.all(20.0),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
               children: [
                 const Center(
                   child: AnymexText(
@@ -1028,147 +1052,61 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  itemCount: subtitles.length + 2,
-                  itemBuilder: (context, index) {
-                    final isSelected = selectedSubIndex.value == index;
-                    if (index == 0) {
-                      // "None" option
-                      return TVWrapper(
-                        onTap: () {
-                          selectedSubIndex.value = index;
-                          Get.back();
-                          player.setSubtitleTrack(SubtitleTrack.no());
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 2.5, horizontal: 10),
-                            title: AnymexText(
-                              text: "None",
-                              variant: TextVariant.bold,
-                              size: 16,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                            tileColor: isSelected
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            trailing: Icon(
-                              Iconsax.subtitle5,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                      );
-                    } else if (index == subtitles.length + 1) {
-                      // "Add Subtitle" option
-                      return TVWrapper(
-                        onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: extensions,
-                          );
-
-                          if (result?.files.single.path != null) {
-                            final file = result!.files.single;
-                            final filePath = file.path!;
-                            selectedSubIndex.value = index;
-                            subtitles.add(
-                                model.Track(file: filePath, label: file.name));
-                            Get.back();
-                            player.setSubtitleTrack(
-                              SubtitleTrack(filePath, file.name, file.name,
-                                  uri: false, data: false),
-                            );
-                          } else {
-                            snackBar('No subtitle file selected.',
-                                duration: 2000);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 2.5, horizontal: 10),
-                            title: AnymexText(
-                              text: "Add Subtitle",
-                              variant: TextVariant.bold,
-                              size: 16,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                            tileColor: isSelected
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            trailing: Icon(
-                              Iconsax.add,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      // Existing subtitles
-                      final e = subtitles[index - 1];
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // "None" option
+                    TVWrapper(
+                      onTap: () {
+                        selectedSubIndex.value = 0;
+                        Get.back();
+                        player.setSubtitleTrack(SubtitleTrack.no());
+                      },
+                      child: subtitleTile("None", Iconsax.subtitle5,
+                          selectedSubIndex.value == 0),
+                    ),
+                    // Existing subtitles
+                    ...subtitles.asMap().entries.map((entry) {
+                      final index = entry.key + 1;
+                      final e = entry.value;
                       return TVWrapper(
                         onTap: () {
                           selectedSubIndex.value = index;
                           Get.back();
                           player.setSubtitleTrack(SubtitleTrack.uri(e!.file!));
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 2.5, horizontal: 10),
-                            title: AnymexText(
-                              text: e?.label ?? 'None',
-                              variant: TextVariant.bold,
-                              size: 16,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                            tileColor: isSelected
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            trailing: Icon(
-                              Iconsax.subtitle5,
-                              color: isSelected
-                                  ? Colors.black
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ),
+                        child: subtitleTile(e?.label ?? 'None',
+                            Iconsax.subtitle5, selectedSubIndex.value == index),
                       );
-                    }
-                  },
+                    }),
+                    // "Add Subtitle" option
+                    TVWrapper(
+                      onTap: () async {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: extensions,
+                        );
+
+                        if (result?.files.single.path != null) {
+                          final file = result!.files.single;
+                          final filePath = file.path!;
+                          selectedSubIndex.value = subtitles.length + 1;
+                          subtitles.add(
+                              model.Track(file: filePath, label: file.name));
+                          Get.back();
+                          player.setSubtitleTrack(
+                            SubtitleTrack(filePath, file.name, file.name,
+                                uri: false, data: false),
+                          );
+                        } else {
+                          snackBar('No subtitle file selected.',
+                              duration: 2000);
+                        }
+                      },
+                      child: subtitleTile("Add Subtitle", Iconsax.add,
+                          selectedSubIndex.value == subtitles.length + 1),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1176,8 +1114,42 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         });
   }
 
+  Widget subtitleTile(String text, IconData icon, bool isSelected) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: ListTile(
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
+        title: AnymexText(
+          text: text,
+          variant: TextVariant.bold,
+          size: 16,
+          color:
+              isSelected ? Colors.black : Theme.of(context).colorScheme.primary,
+        ),
+        tileColor: isSelected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.surfaceContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        trailing: Icon(icon,
+            color: isSelected
+                ? Colors.black
+                : Theme.of(context).colorScheme.primary),
+      ),
+    );
+  }
+
+  // Helper Methods
+  Color _getFgColor() {
+    return settings.playerStyle == 0
+        ? Colors.white
+        : Theme.of(context).colorScheme.primary;
+  }
+
   Widget _buildControls() {
     return Obx(() {
+      final themeFgColor = _getFgColor().obs;
+
       return AnimatedPositioned(
         duration: const Duration(milliseconds: 300),
         left: 0,
@@ -1236,8 +1208,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                         'Episode ${currentEpisode.value.number}: ${currentEpisode.value.title}',
                                     variant: TextVariant.semiBold,
                                     maxLines: 3,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: themeFgColor.value,
                                   ),
                                   AnymexText(
                                     text: anilistData.value.title.toUpperCase(),
@@ -1333,9 +1304,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                   AnymexTextSpan(
                                       text: '${formattedTime.value} ',
                                       variant: TextVariant.semiBold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
+                                      color:
+                                          themeFgColor.value.withOpacity(0.8)),
                                   AnymexTextSpan(
                                     variant: TextVariant.semiBold,
                                     text: ' /  ${formattedDuration.value}',
@@ -1350,6 +1320,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             child: SizedBox(
                               height: 27,
                               child: VideoSliderTheme(
+                                color: themeFgColor.value,
+                                inactiveTrackColor:
+                                    themeFgColor.value.withOpacity(0.8),
                                 child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
@@ -1516,65 +1489,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
-  Widget _buildPlaybackButtons() {
-    return Positioned.fill(
-      child: AnimatedContainer(
-        transform: Matrix4.identity()
-          ..translate(0.0, showControls.value ? 0.0 : 50.0),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        alignment: Alignment.center,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _buildPlaybackButton(
-              icon: Icons.skip_previous_rounded,
-              color: currentEpisode.value.number.toInt() <= 1
-                  ? Colors.grey[800]
-                  : Colors.white,
-              onTap: () async {
-                if (currentEpisode.value.number.toInt() <= 1) {
-                  snackBar(
-                      "Seriously? You're trying to rewind? You haven't even made it past the intro.");
-                } else {
-                  await fetchEpisode(true);
-                }
-              },
-            ),
-            isBuffering.value
-                ? _buildBufferingIndicator()
-                : _buildPlaybackButton(
-                    icon: isPlaying.value
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
-                    onTap: () {
-                      player.playOrPause();
-                    },
-                  ),
-            _buildPlaybackButton(
-              icon: Icons.skip_next_rounded,
-              color: currentEpisode.value.number.toInt() >=
-                      episodeList.value.last.number.toInt()
-                  ? Colors.grey[800]
-                  : Colors.white,
-              onTap: () async {
-                if (currentEpisode.value.number.toInt() >=
-                    episodeList.value.last.number.toInt()) {
-                  snackBar(
-                      "That's it, genius. You ran out of episodes. Try a book next time.");
-                } else {
-                  await fetchEpisode(false);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   _buildSkipButton(bool invert) {
     return BlurWrapper(
       borderRadius: BorderRadius.circular(20.multiplyRoundness()),
@@ -1699,10 +1613,158 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildPlaybackButton(
-      {required Function() onTap, IconData? icon, Color? color}) {
+  // Helper Methods
+  Color _getPlayFgColor() {
+    return settings.playerStyle == 0
+        ? Colors.white
+        : Theme.of(context).colorScheme.onPrimary;
+  }
+
+  Color _getBgColor() {
+    return settings.playerStyle == 0
+        ? Colors.transparent
+        : Theme.of(context).colorScheme.primary;
+  }
+
+  Widget _buildPlaybackButtons() {
+    final themeFgColor = _getPlayFgColor().obs;
+    final themeBgColor = _getBgColor().obs;
+
+    return Positioned.fill(
+      child: AnimatedContainer(
+        transform: Matrix4.identity()
+          ..translate(0.0, showControls.value ? 0.0 : 50.0),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: Alignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            _buildPlaybackButton(
+              icon: Icons.skip_previous_rounded,
+              color: currentEpisode.value.number.toInt() <= 1
+                  ? Colors.grey[800]
+                  : Colors.white,
+              onTap: () async {
+                if (currentEpisode.value.number.toInt() <= 1) {
+                  snackBar(
+                      "You're trying to rewind? You haven't even made it past the intro.");
+                } else {
+                  await fetchEpisode(true);
+                }
+              },
+            ),
+            isBuffering.value
+                ? _buildBufferingIndicator()
+                : buildPlayButton(
+                    isPlaying: isPlaying,
+                    color: themeBgColor.value,
+                    iconColor: themeFgColor.value,
+                  ),
+            _buildPlaybackButton(
+              icon: Icons.skip_next_rounded,
+              color: currentEpisode.value.number.toInt() >=
+                      episodeList.value.last.number.toInt()
+                  ? Colors.grey[800]
+                  : Colors.white,
+              onTap: () async {
+                if (currentEpisode.value.number.toInt() >=
+                    episodeList.value.last.number.toInt()) {
+                  snackBar(
+                      "That's it, genius. You ran out of episodes. Try a book next time.");
+                } else {
+                  await fetchEpisode(false);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildPlayButton({
+    required RxBool isPlaying,
+    Color? color,
+    Color? iconColor,
+  }) {
+    final isMobile = Platform.isAndroid || Platform.isIOS;
+    final padding = getResponsiveSize(
+      context,
+      mobileSize: 10,
+      dektopSize: 20,
+      isStrict: true,
+    );
+    final radius = getResponsiveSize(
+      context,
+      mobileSize: 20.multiplyRadius(),
+      dektopSize: 40.multiplyRadius(),
+      isStrict: true,
+    );
+
+    return Obx(() {
+      return Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 50),
+        child: BlurWrapper(
+          borderRadius: BorderRadius.circular(radius),
+          child: TVWrapper(
+            onTap: () {
+              player.playOrPause();
+            },
+            bgColor: Colors.transparent,
+            focusedBorderColor: Colors.transparent,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(scale: animation, child: child),
+              ),
+              child: IconButton(
+                key: ValueKey(isPlaying.value),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(radius),
+                  ),
+                  padding: EdgeInsets.all(padding),
+                ),
+                onPressed: () {
+                  player.playOrPause();
+                },
+                icon: Icon(
+                  isPlaying.value
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
+                  color: iconColor ?? color,
+                  size: getResponsiveSize(
+                    context,
+                    mobileSize: 40,
+                    dektopSize: 80,
+                    isStrict: true,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildPlaybackButton({
+    required Function() onTap,
+    IconData? icon,
+    Color? color,
+    Color? iconColor,
+  }) {
     final isPlay =
-        icon == (Icons.play_arrow_rounded) || icon == Icons.pause_rounded;
+        icon == Icons.play_arrow_rounded || icon == Icons.pause_rounded;
     final isMobile = Platform.isAndroid || Platform.isIOS;
     final padding = getResponsiveSize(context,
         mobileSize: isPlay ? 10 : 5,
@@ -1712,11 +1774,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         mobileSize: 20.multiplyRadius(),
         dektopSize: 40.multiplyRadius(),
         isStrict: true);
+
     return Container(
       decoration: BoxDecoration(
         color: isPlay
-            ? Theme.of(context).colorScheme.primary
-            : Colors.black.withOpacity(0.5),
+            ? color
+            : settings.playerStyle == 0
+                ? Colors.transparent
+                : Colors.black.withOpacity(0.5),
         borderRadius: BorderRadius.circular(radius),
         boxShadow: isPlay ? [glowingShadow(context)] : [],
       ),
@@ -1726,9 +1791,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       child: BlurWrapper(
         borderRadius: BorderRadius.circular(radius),
         child: TVWrapper(
-          onTap: () {
-            onTap.call();
-          },
+          onTap: onTap,
           bgColor: Colors.transparent,
           focusedBorderColor: Colors.transparent,
           child: IconButton(
@@ -1739,10 +1802,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               padding: EdgeInsets.all(padding),
             ),
             onPressed: onTap,
-            icon: Icon(icon,
-                color: isPlay ? Theme.of(context).colorScheme.onPrimary : color,
-                size: getResponsiveSize(context,
-                    mobileSize: 40, dektopSize: 80, isStrict: true)),
+            icon: Icon(
+              icon,
+              color: iconColor ?? color,
+              size: getResponsiveSize(context,
+                  mobileSize: 40, dektopSize: 80, isStrict: true),
+            ),
           ),
         ),
       ),

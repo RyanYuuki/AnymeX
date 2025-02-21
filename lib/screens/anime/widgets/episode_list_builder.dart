@@ -238,7 +238,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   return InkWell(
                     onTap: () {
                       Get.back();
-                      Get.to(() => WatchPage(
+                      navigate(() => WatchPage(
                             episodeSrc: e,
                             episodeList: widget.episodeList,
                             anilistData: widget.anilistData!,

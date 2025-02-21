@@ -1,4 +1,3 @@
-
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -82,6 +81,9 @@ class CustomTile extends StatelessWidget {
   final String description;
   final VoidCallback? onTap;
   final Widget? postFix;
+  final double? padding;
+  final bool? isDescBold;
+  final Color? descColor;
 
   const CustomTile({
     super.key,
@@ -91,6 +93,9 @@ class CustomTile extends StatelessWidget {
     this.onTap,
     this.prefix,
     this.postFix,
+    this.padding,
+    this.isDescBold,
+    this.descColor,
   });
 
   @override
@@ -100,7 +105,8 @@ class CustomTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          padding:
+              EdgeInsets.symmetric(horizontal: padding ?? 20.0, vertical: 10.0),
           child: Row(
             children: [
               if (prefix == null)
@@ -126,10 +132,13 @@ class CustomTile extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
+                        fontFamily:
+                            (isDescBold ?? false) ? "Poppins-Bold" : "Poppins",
+                        color: descColor ??
+                            Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
                       ),
                     ),
                   ],

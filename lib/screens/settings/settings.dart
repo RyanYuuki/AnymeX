@@ -6,6 +6,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -48,35 +49,35 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Accounts",
               description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
               onTap: () {
-                Get.to(() => const SettingsAccounts());
+                navigate(() => const SettingsAccounts());
               }),
           CustomTile(
               icon: HugeIcons.strokeRoundedBulb,
               title: "Common",
               description: "Tweak Settings",
               onTap: () {
-                Get.to(() => const SettingsCommon());
+                navigate(() => const SettingsCommon());
               }),
           CustomTile(
               icon: HugeIcons.strokeRoundedPaintBoard,
               title: "UI",
               description: "Play around with App UI",
               onTap: () {
-                Get.to(() => const SettingsUi());
+                navigate(() => const SettingsUi());
               }),
           CustomTile(
               icon: HugeIcons.strokeRoundedPlay,
               title: "Player",
               description: "Play around with Player",
               onTap: () {
-                Get.to(() => const SettingsPlayer());
+                navigate(() => const SettingsPlayer());
               }),
           CustomTile(
               icon: HugeIcons.strokeRoundedPaintBrush01,
               title: "Theme",
               description: "Play around with App theme",
               onTap: () {
-                Get.to(() => const SettingsTheme());
+                navigate(() => const SettingsTheme());
               }),
           CustomTile(
               icon: Iconsax.trash,
@@ -91,7 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: "About",
             description: "About the App",
             onTap: () async {
-              Get.to(() => const AboutPage());
+              navigate(() => const AboutPage());
             },
           ),
         ],

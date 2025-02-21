@@ -2,6 +2,7 @@ class Relation {
   final int id;
   final String title;
   final String poster;
+  final String cover;
   final String type;
   final String averageScore;
   final String relationType;
@@ -10,6 +11,7 @@ class Relation {
     required this.id,
     required this.title,
     required this.poster,
+    required this.cover,
     required this.type,
     required this.averageScore,
     required this.relationType,
@@ -19,6 +21,7 @@ class Relation {
     return Relation(
       relationType: json['relationType'],
       id: json['node']['id'],
+      cover: json['node']['bannerImage'] ?? '',
       title:
           json['node']['title']['romaji'] ?? json['node']['title']['english'],
       poster: json['node']['coverImage']['large'],

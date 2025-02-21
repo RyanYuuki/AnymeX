@@ -136,7 +136,7 @@ class SimklService extends GetxController
                   '',
               borderRadius: 16.multiplyRadius(),
               onPressed: () {
-                Get.to(() => AnimeList(
+                navigate(() => AnimeList(
                       title: "Movies",
                       data: animeList.value,
                     ));
@@ -156,7 +156,7 @@ class SimklService extends GetxController
                       .cover ??
                   '',
               onPressed: () {
-                Get.to(() => AnimeList(
+                navigate(() => AnimeList(
                       title: "Shows",
                       data: mangaList.value,
                     ));
@@ -189,7 +189,7 @@ class SimklService extends GetxController
         else ...[
           // TappableSearchBar(
           //   onSubmitted: () {
-          //     // Get.to(() => const SearchPage(
+          //     // navigate(() => const SearchPage(
           //     //       searchTerm: "",
           //     //       isManga: false,
           //     //     ));
@@ -221,7 +221,7 @@ class SimklService extends GetxController
         else ...[
           // CustomSearchBar(
           //   onSubmitted: (val) {
-          //     Get.to(() => SearchPage(
+          //     navigate(() => SearchPage(
           //           searchTerm: val,
           //           isManga: false,
           //         ));

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -33,7 +34,7 @@ extensionSheet(String query, List<Source> sources) {
               InkWell(
                 onTap: () {
                   Get.back();
-                  Get.to(() => SourceSearchPage(
+                  navigate(() => SourceSearchPage(
                         source: sources,
                         initialTerm: query,
                         isManga: sources[0].isManga ?? false,
@@ -75,7 +76,7 @@ InkWell _buildExtensionTitle(BuildContext context, Source e, String q) {
       } else {
         Get.find<SourceController>().getExtensionByName(e.name ?? '');
       }
-      Get.to(() => SourceSearchPage(
+      navigate(() => SourceSearchPage(
             source: e,
             initialTerm: q,
             isManga: e.isManga ?? false,

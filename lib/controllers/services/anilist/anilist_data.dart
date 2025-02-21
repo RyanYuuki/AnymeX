@@ -84,9 +84,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   trendingAnimes.firstWhere((e) => e.cover != null).cover ?? '',
               borderRadius: 16.multiplyRadius(),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (c) => const AnimeList()));
-                // Get.to(() => const AnimeList());
+                navigate(() => const AnimeList());
               },
             ),
             const SizedBox(width: 15),
@@ -98,7 +96,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
               backgroundImage:
                   trendingMangas.firstWhere((e) => e.cover != null).cover ?? '',
               onPressed: () {
-                Get.to(() => const AnilistMangaList());
+                navigate(() => const AnilistMangaList());
               },
             ),
           ],
@@ -144,7 +142,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     return [
       // TappableSearchBar(
       //   onSubmitted: () {
-      //     Get.to(() => const SearchPage(
+      //     navigate(() => const SearchPage(
       //           searchTerm: "",
       //           isManga: false,
       //         ));
@@ -167,7 +165,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
                 buttonText: "Calendar",
                 onPressed: () {
-                  Get.to(() => const Calendar());
+                  navigate(() => const Calendar());
                 },
                 backgroundImage:
                     trendingAnimes[3].cover ?? trendingAnimes[3].poster),
@@ -179,7 +177,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 height:
                     getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
                 onPressed: () async {
-                  Get.to(() => const AIRecommendation(
+                  navigate(() => const AIRecommendation(
                         isManga: false,
                       ));
                 },
@@ -200,7 +198,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     return [
       // CustomSearchBar(
       //   onSubmitted: (val) {
-      //     Get.to(() => SearchPage(
+      //     navigate(() => SearchPage(
       //           searchTerm: val,
       //           isManga: true,
       //         ));
@@ -220,7 +218,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 mobileSize: Get.width - 40, dektopSize: 300),
             height: getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
             onPressed: () async {
-              Get.to(() => const AIRecommendation(
+              navigate(() => const AIRecommendation(
                     isManga: true,
                   ));
             },

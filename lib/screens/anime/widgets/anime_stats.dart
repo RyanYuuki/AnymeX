@@ -87,6 +87,7 @@ class AnimeStats extends StatelessWidget {
               StateItem(label: "Duration", value: data.duration),
               StateItem(label: "Total Episodes", value: data.totalEpisodes),
               StateItem(label: "Premiered", value: data.premiered),
+              if(data.studios?.isNotEmpty ?? false)
               StateItem(label: "Studios", value: data.studios?.first ?? ''),
             ],
           ),
@@ -101,10 +102,10 @@ class AnimeStats extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: AnymexText(
             text: data.description,
-            variant: TextVariant.semiBold,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
             maxLines: 100,
+            stripHtml: true,
           ),
         ),
         const SizedBox(height: 10),
@@ -119,7 +120,6 @@ class AnimeStats extends StatelessWidget {
           shrinkWrap: true,
           itemCount: data.genres.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 1,
               crossAxisCount: getResponsiveCrossAxisCount(context,
                   baseColumns: 2, maxColumns: 4),
               mainAxisSpacing: 10,
@@ -130,7 +130,6 @@ class AnimeStats extends StatelessWidget {
             return ImageButton(
                 buttonText: e,
                 height: 80,
-                width: 1000,
                 onPressed: () {},
                 backgroundImage: covers[index].cover!);
           },
@@ -154,18 +153,20 @@ class StateItem extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymexText(
           text: label,
           variant: TextVariant.semiBold,
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
         ),
+        const SizedBox(width: 10),
         Expanded(
           child: AnymexText(
             text: value,
             variant: TextVariant.semiBold,
             color: Theme.of(context).colorScheme.primary,
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
           ),

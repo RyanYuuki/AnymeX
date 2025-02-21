@@ -28,6 +28,7 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
           timeUntilAiring
           media {
             id
+            idMal
             status
             averageScore
             coverImage { 

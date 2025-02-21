@@ -11,6 +11,7 @@ import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,6 +30,8 @@ class _AIRecommendationState extends State<AIRecommendation> {
   int currentPage = 1;
   RxBool isAdult = false.obs;
   TextEditingController textEditingController = TextEditingController();
+  RxBool isLoading = false.obs;
+  RxBool isGrid = false.obs;
 
   @override
   void initState() {
@@ -40,34 +43,34 @@ class _AIRecommendationState extends State<AIRecommendation> {
   }
 
   void _scrollListener() {
-    if (_scrollController.hasClients) {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 100) {
-        if (textEditingController.text.isEmpty) {
-          fetchAiRecommendations(++currentPage);
-        } else {
-          fetchAiRecommendations(++currentPage,
-              username: textEditingController.text);
-        }
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 100 &&
+        !isLoading.value) {
+      if (textEditingController.text.isEmpty) {
+        fetchAiRecommendations(++currentPage);
+      } else {
+        fetchAiRecommendations(++currentPage,
+            username: textEditingController.text);
       }
     }
   }
 
   Future<void> fetchAiRecommendations(int page, {String? username}) async {
-    if (widget.isManga) {
-      final listData = Get.find<ServiceHandler>().mangaList;
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    try {
+      final listData = widget.isManga
+          ? Get.find<ServiceHandler>().mangaList
+          : Get.find<ServiceHandler>().animeList;
       final existingIds = listData.map((e) => e.id).toSet();
       final data = await getAiRecommendations(widget.isManga, page,
           username: username, isAdult: isAdult.value);
 
       recItems.addAll(data.where((e) => !existingIds.contains(e.id)));
-    } else {
-      final listData = Get.find<ServiceHandler>().animeList;
-      final existingIds = listData.map((e) => e.id).toSet();
-      final data = await getAiRecommendations(widget.isManga, page,
-          username: username, isAdult: isAdult.value);
-
-      recItems.addAll(data.where((e) => !existingIds.contains(e.id)));
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -89,22 +92,11 @@ class _AIRecommendationState extends State<AIRecommendation> {
             );
           }),
           actions: [
-            Obx(() {
-              return Row(
-                children: [
-                  AnymexText(
-                    text: "18+",
-                    variant: TextVariant.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  Switch(
-                      value: isAdult.value,
-                      onChanged: (v) {
-                        isAdult.value = v;
-                      })
-                ],
-              );
-            })
+            IconButton(
+                onPressed: () {
+                  showSettings();
+                },
+                icon: const Icon(Icons.settings))
           ],
         ),
         body: Obx(() => recItems.isEmpty
@@ -159,17 +151,35 @@ class _AIRecommendationState extends State<AIRecommendation> {
         Expanded(
           child: GridView.builder(
             controller: _scrollController,
-            itemCount: recItems.length,
+            itemCount: recItems.length + 3,
             itemBuilder: (context, index) {
+              final isLastRow = index >= recItems.length;
+              final lastRowIndex = index - recItems.length;
+
+              if (isLastRow) {
+                if (lastRowIndex == 0 || lastRowIndex == 2) {
+                  return const SizedBox.shrink();
+                } else if (lastRowIndex == 1) {
+                  return Obx(() => isLoading.value
+                      ? const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : const SizedBox.shrink());
+                }
+              }
+
               final data = recItems[index];
-              return _buildRecItem(data);
+              return isGrid.value
+                  ? GridAnimeCard(data: data, isManga: widget.isManga)
+                  : _buildRecItem(data);
             },
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisVal(
                 MediaQuery.of(context).size.width,
-                itemWidth: 400,
+                itemWidth: isGrid.value ? 120 : 400,
               ),
-              mainAxisExtent: 200,
+              mainAxisExtent: isGrid.value ? 250 : 200,
             ),
           ),
         ),
@@ -177,13 +187,72 @@ class _AIRecommendationState extends State<AIRecommendation> {
     );
   }
 
+  void showSettings() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20))),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AnymexText(
+                  text: "Settings",
+                  variant: TextVariant.bold,
+                  size: 20,
+                ),
+                const SizedBox(height: 20),
+                Obx(() {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymexText(
+                        text: "Grid",
+                        variant: TextVariant.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      Switch(
+                          value: isGrid.value,
+                          onChanged: (v) {
+                            isGrid.value = v;
+                          })
+                    ],
+                  );
+                }),
+                Obx(() {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymexText(
+                        text: "18+",
+                        variant: TextVariant.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      Switch(
+                          value: isAdult.value,
+                          onChanged: (v) {
+                            isAdult.value = v;
+                          })
+                    ],
+                  );
+                })
+              ],
+            ),
+          );
+        });
+  }
+
   Widget _buildRecItem(Media data) {
     return InkWell(
       onTap: () {
         if (widget.isManga) {
-          Get.to(() => MangaDetailsPage(media: data, tag: data.description));
+          navigate(() => MangaDetailsPage(media: data, tag: data.description));
         } else {
-          Get.to(() => AnimeDetailsPage(media: data, tag: data.description));
+          navigate(() => AnimeDetailsPage(media: data, tag: data.description));
         }
       },
       child: SlideAndScaleAnimation(

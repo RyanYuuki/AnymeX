@@ -18,6 +18,7 @@ import 'package:anymex/screens/anime/widgets/anime_stats.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
+import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -95,6 +96,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   void initState() {
     super.initState();
     sourceController.initExtensions();
+    if (sourceController.installedExtensions.isEmpty) {
+      showAnify.value = false;
+    }
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
@@ -155,7 +159,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         log("Hianime Error Handling");
         await _mapToService();
       } else {
-        snackBar(e.toString());
+        log(e.toString());
       }
       log(e.toString());
     }
@@ -206,7 +210,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     } catch (e) {
       episodeError.value = true;
       log(e.toString());
-      snackBar(e.toString());
     }
   }
 
@@ -499,7 +502,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             ],
           ),
         ),
-        CharactersCarousel(characters: anilistData!.characters ?? []),
+        SeasonsGrid(relations: anilistData!.relations ?? []),
         ReusableCarousel(
           data: anilistData!.relations ?? [],
           title: "Relations",
@@ -510,6 +513,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           title: "Recommended Animes",
           variant: DataVariant.recommendation,
         ),
+        CharactersCarousel(characters: anilistData!.characters ?? []),
       ],
     );
   }

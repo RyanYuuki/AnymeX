@@ -41,7 +41,7 @@ class ReadingPage extends StatefulWidget {
 
 class _ReadingPageState extends State<ReadingPage> {
   final sourceController = Get.find<SourceController>();
-  final ScrollController scrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   final PageController pageController = PageController();
   final isMenuToggled = true.obs;
 
@@ -71,13 +71,13 @@ class _ReadingPageState extends State<ReadingPage> {
   final anilist = Get.find<ServiceHandler>();
 
   // Timers
-
   Timer? _scrollDelayTimer;
   Timer? _scrollTimer;
   Timer? _keyPressTimer;
 
   // Flag to prevent multiple chapter loads
   final _isLoadingNextChapter = false.obs;
+  final scrolledToNext = false.obs;
 
   @override
   void initState() {
@@ -87,6 +87,11 @@ class _ReadingPageState extends State<ReadingPage> {
     chapterList = RxList(widget.chapterList);
     scrollController.addListener(_updateScrollProgress);
     ever(currentChapter, (_) => fetchImages());
+    ever(isMenuToggled, (_) {
+      SystemChrome.setEnabledSystemUIMode(isMenuToggled.value
+          ? SystemUiMode.edgeToEdge
+          : SystemUiMode.immersiveSticky);
+    });
     fetchImages();
     _focusNode.requestFocus();
     updateAnilist(false);
@@ -98,7 +103,6 @@ class _ReadingPageState extends State<ReadingPage> {
       _isLoadingNextChapter.value = true;
       navigateToChapter(false).then((_) {
         _isLoadingNextChapter.value = false;
-        navigateToPage(1);
       });
     }
   }
@@ -213,8 +217,6 @@ class _ReadingPageState extends State<ReadingPage> {
       debugPrint('Error fetching images: $e');
       mangaPages.clear();
     } finally {
-      navigateToPage(1);
-
       isLoading.value = false;
     }
   }
@@ -618,8 +620,9 @@ class _ReadingPageState extends State<ReadingPage> {
                   icon: Icon(Icons.skip_previous_rounded,
                       color: canGoBackward.value ? Colors.white : Colors.grey,
                       size: 35),
-                  onPressed: () {
-                    navigateToChapter(true);
+                  onPressed: () async {
+                    await navigateToChapter(true);
+                    navigateToPage(1);
                   },
                 ),
               ),
@@ -637,7 +640,10 @@ class _ReadingPageState extends State<ReadingPage> {
                     enableComfortPadding: true,
                     disableMinMax: false,
                     min: 0.0,
-                    max: mangaPages.length.toDouble() - 1,
+                    max: currentPageIndex.value.toDouble() <
+                            (mangaPages.length.toDouble() - 1)
+                        ? (mangaPages.length.toDouble() - 1)
+                        : currentPageIndex.value.toDouble(),
                     focusNode: FocusNode(canRequestFocus: false),
                     divisions: mangaPages.length - 1,
                     value: currentPageIndex.value.toDouble(),
@@ -664,8 +670,9 @@ class _ReadingPageState extends State<ReadingPage> {
                 child: IconButton(
                   icon: const Icon(Icons.skip_next_rounded,
                       size: 35, color: Colors.white),
-                  onPressed: () {
-                    navigateToChapter(false);
+                  onPressed: () async {
+                    await navigateToChapter(false);
+                    navigateToPage(1);
                   },
                 ),
               ),
@@ -683,94 +690,95 @@ class _ReadingPageState extends State<ReadingPage> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: getResponsiveSize(context,
-              mobileSize: 300, dektopSize: Get.height * 0.5),
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
-          child: ListView(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 10),
-                child: Center(
-                  child: Text(
-                    'Reader Settings',
-                    style:
-                        TextStyle(fontSize: 18, fontFamily: 'Poppins-SemiBold'),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 10),
+                  child: Center(
+                    child: Text(
+                      'Reader Settings',
+                      style: TextStyle(
+                          fontSize: 18, fontFamily: 'Poppins-SemiBold'),
+                    ),
                   ),
                 ),
-              ),
-              Obx(() {
-                return ListTile(
-                  title: const Text('Layout'),
-                  subtitle: Text(
-                    'Currently: ${activeMode.value.name.toUpperCase()}',
-                  ),
-                );
-              }),
-              Obx(() {
-                final selections = List<bool>.generate(
-                  ReadingMode.values.length,
-                  (index) =>
-                      index == ReadingMode.values.indexOf(activeMode.value),
-                );
-                return Center(
-                  child: ToggleButtons(
-                    isSelected: selections,
-                    onPressed: (int index) {
-                      activeMode.value = ReadingMode.values[index];
-                    },
-                    children: const [
-                      Tooltip(
-                        message: 'Webtoon',
-                        child: Icon(Icons.view_day),
-                      ),
-                      Tooltip(
-                        message: 'LTR',
-                        child: Icon(Icons.format_textdirection_l_to_r),
-                      ),
-                      Tooltip(
-                        message: 'RTL',
-                        child: Icon(Icons.format_textdirection_r_to_l),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-              if (!Platform.isAndroid && !Platform.isIOS)
                 Obx(() {
-                  return CustomSliderTile(
-                    title: 'Image Width',
-                    sliderValue: pageWidthMultiplier.value,
-                    onChanged: (double value) {
-                      pageWidthMultiplier.value = value;
-                    },
-                    description: 'Only Works with webtoon mode',
-                    icon: Icons.image_aspect_ratio_rounded,
-                    min: 0.1,
-                    max: 4.0,
-                    divisions: 39,
+                  return ListTile(
+                    title: const Text('Layout'),
+                    subtitle: Text(
+                      'Currently: ${activeMode.value.name.toUpperCase()}',
+                    ),
                   );
                 }),
-              if (!Platform.isAndroid && !Platform.isIOS)
                 Obx(() {
-                  return CustomSliderTile(
-                    title: 'Scroll Multiplier',
-                    sliderValue: scrollSpeedMultiplier.value,
-                    onChanged: (double value) {
-                      scrollSpeedMultiplier.value = value;
-                    },
-                    description:
-                        'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
-                    icon: Icons.speed,
-                    min: 1.0,
-                    max: 5.0,
-                    divisions: 9,
+                  final selections = List<bool>.generate(
+                    ReadingMode.values.length,
+                    (index) =>
+                        index == ReadingMode.values.indexOf(activeMode.value),
+                  );
+                  return Center(
+                    child: ToggleButtons(
+                      isSelected: selections,
+                      onPressed: (int index) {
+                        activeMode.value = ReadingMode.values[index];
+                      },
+                      children: const [
+                        Tooltip(
+                          message: 'Webtoon',
+                          child: Icon(Icons.view_day),
+                        ),
+                        Tooltip(
+                          message: 'LTR',
+                          child: Icon(Icons.format_textdirection_l_to_r),
+                        ),
+                        Tooltip(
+                          message: 'RTL',
+                          child: Icon(Icons.format_textdirection_r_to_l),
+                        ),
+                      ],
+                    ),
                   );
                 }),
-            ],
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  Obx(() {
+                    return CustomSliderTile(
+                      title: 'Image Width',
+                      sliderValue: pageWidthMultiplier.value,
+                      onChanged: (double value) {
+                        pageWidthMultiplier.value = value;
+                      },
+                      description: 'Only Works with webtoon mode',
+                      icon: Icons.image_aspect_ratio_rounded,
+                      min: 0.1,
+                      max: 4.0,
+                      divisions: 39,
+                    );
+                  }),
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  Obx(() {
+                    return CustomSliderTile(
+                      title: 'Scroll Multiplier',
+                      sliderValue: scrollSpeedMultiplier.value,
+                      onChanged: (double value) {
+                        scrollSpeedMultiplier.value = value;
+                      },
+                      description:
+                          'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                      icon: Icons.speed,
+                      min: 1.0,
+                      max: 5.0,
+                      divisions: 9,
+                    );
+                  }),
+              ],
+            ),
           ),
         );
       },

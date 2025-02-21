@@ -258,10 +258,10 @@ class Settings extends GetxController {
     savePlayerSettings();
   }
 
-  bool get transculentControls => playerSettings.value.transculentControls;
-  set transculentControls(bool value) {
+  int get playerStyle => playerSettings.value.playerStyle;
+  set playerStyle(int value) {
     playerSettings.update((settings) {
-      settings?.transculentControls = value;
+      settings?.playerStyle = value;
     });
     savePlayerSettings();
   }

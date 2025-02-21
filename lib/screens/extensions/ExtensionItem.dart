@@ -1,6 +1,7 @@
 import 'package:anymex/core/Eval/dart/model/source_preference.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -224,8 +225,8 @@ class _ExtensionListTileWidgetState
                               .map((e) => getSourcePreferenceEntry(
                                   e.key!, widget.source.id!))
                               .toList();
-                      Get.to(
-                        SourcePreferenceWidget(
+                      navigate(
+                        () => SourcePreferenceWidget(
                           source: widget.source,
                           sourcePreference: sourcePreference,
                         ),

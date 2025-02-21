@@ -228,7 +228,7 @@ class _MangaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return TVWrapper(
       onTap: () {
-        Get.to(() => MangaDetailsPage(
+        navigate(() => MangaDetailsPage(
             media: Media.fromOfflineMedia(data, MediaType.manga),
             tag: '${data.id!}${UniqueKey().toString()}'));
       },
@@ -381,7 +381,7 @@ class MangaHistoryCard extends StatelessWidget {
               snackBar(
                   "Install ${data.currentChapter?.sourceName} First, Then Click");
             } else {
-              Get.to(() => ReadingPage(
+              navigate(() => ReadingPage(
                     anilistData: convertOfflineToMedia(data),
                     chapterList: data.chapters!,
                     currentChapter: data.currentChapter!,

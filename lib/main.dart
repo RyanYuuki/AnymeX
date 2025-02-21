@@ -26,6 +26,7 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
@@ -98,17 +99,20 @@ void initDeepLinkListener() async {
 void handleDeepLink(Uri uri) {
   if (uri.host == "add-repo") {
     String? repoUrl =
-        uri.queryParameters["url"] ?? uri.queryParameters['anime_url'];
-    String? mangaUrl = uri.queryParameters["manga_url"];
-    String? novelUrl = uri.queryParameters["novel_url"];
+        (uri.queryParameters["url"] ?? uri.queryParameters['anime_url'])
+            ?.trim();
+    String? mangaUrl = uri.queryParameters["manga_url"]?.trim();
+    String? novelUrl = uri.queryParameters["novel_url"]?.trim();
 
     final settings = Get.find<SourceController>();
 
     if (repoUrl != null) {
       settings.activeAnimeRepo = repoUrl;
+      Extensions().addRepo(false, repoUrl);
     }
     if (mangaUrl != null) {
       settings.activeMangaRepo = mangaUrl;
+      Extensions().addRepo(true, mangaUrl);
     }
     if (novelUrl != null) {
       settings.activeNovelRepo = novelUrl;
@@ -132,6 +136,7 @@ void main(List<String> args) async {
     registerProtocol('anymex');
     registerProtocol('dar');
     registerProtocol('sugoireads');
+    registerProtocol('mangayomi');
   }
   HttpOverrides.global = MyHttpoverrides();
   await dotenv.load(fileName: ".env");
@@ -226,9 +231,7 @@ class MainApp extends StatelessWidget {
       onKeyEvent: (KeyEvent event) async {
         if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.escape) {
-            if (Get.previousRoute.isNotEmpty) {
-              Get.back();
-            }
+            Navigator.pop(Get.context!);
           } else if (event.logicalKey == LogicalKeyboardKey.f11) {
             bool isFullScreen = await windowManager.isFullScreen();
             windowManager.setFullScreen(!isFullScreen);
@@ -246,9 +249,6 @@ class MainApp extends StatelessWidget {
       },
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
-        customTransition: FadeForwardsCustomTransition(
-            backgroundColor: theme.darkTheme.colorScheme.surface),
-        transitionDuration: const Duration(milliseconds: 800),
         debugShowCheckedModeBanner: false,
         title: "AnymeX",
         theme: theme.lightTheme,
