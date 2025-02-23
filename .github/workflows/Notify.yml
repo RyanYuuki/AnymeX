@@ -10,33 +10,20 @@ on:
 
 jobs:
   notify:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Cloing repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.x'
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests jq
-          
+          fetch-depth: 0
       - name: Fetch Repository Tags by Date and Time
         id: fetch_tags
         run: |
-          curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/tags" -o tags.json
+          curl -s "https://api.github.com/repos/${{github.repository}}/tags" -o tags.json
           TAGS=$(jq -r '.[].name' tags.json)
           declare -a TAGS_WITH_DATES=()
           for TAG in $TAGS; do
-            TAG_DETAILS=$(curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/git/refs/tags/$TAG")
+            TAG_DETAILS=$(curl -s "https://api.github.com/repos/${{github.repository}}/git/refs/tags/$TAG")
             OBJECT_URL=$(echo "$TAG_DETAILS" | jq -r '.object.url // empty')
             if [ -n "$OBJECT_URL" ]; then
               OBJECT_DETAILS=$(curl -s "$OBJECT_URL")
@@ -56,19 +43,18 @@ jobs:
               LATEST_TAG="$TAG_NAME"
             fi
           done
+          echo "$LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
           
-      - name: Use the Latest Tag
+      - name: Get Latest Release Notes
+        id: get_release_notes
         run: |
-         echo "The latest tag is: ${{ env.LATEST_TAG }}"
-         
-      - name: Get Release Info
-        id: release_info
-        run: |
-          curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/releases/tags/${{ env.LATEST_TAG }}" -o release.json
-          RELEASE_NAME=$(jq -r '.name // "No release name"' release.json)
-          RELEASE_NOTES=$(jq -r '.body // "No release notes"' release.json)
-          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+          RELEASE_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.LATEST_TAG }}")
+
+          RELEASE_NOTES=$(echo "$RELEASE_DATA" | jq -r '.body')
+          echo "Release Notes: $RELEASE_NOTES"
+
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "$RELEASE_NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -76,48 +62,61 @@ jobs:
       - name: Format Release Notes
         id: format_notes
         run: |
-          formatted_notes=""
-          commit_counter=0
-          more_commits=false
-          
-          while IFS= read -r line; do
-            if [[ "$line" == "### "* ]]; then
-              if [[ "$commit_counter" -gt 5 ]]; then
-                formatted_notes+="> And $((commit_counter - 5)) more\n\n"
-              fi
-              formatted_notes+="\n$line\n"
-              commit_counter=0
-              more_commits=false
-            elif [[ "$line" == "*"* ]]; then
-              commit_counter=$((commit_counter + 1))
-              if [[ "$commit_counter" -le 5 ]]; then
-                formatted_notes+="$line\n"
-              else
-                more_commits=true
-              fi
-            fi
-          done <<< "$RELEASE_NOTES"
-          
-          if [[ "$commit_counter" -gt 5 && "$more_commits" == "true" ]]; then
-            formatted_notes+="> And $((commit_counter - 5)) more\n\n"
+          features=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)
+          if [[ -n "$features" ]]; then
+            echo "**🚀 Features**" > formatted_notes.txt
+            echo "$features" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
           fi
-          
+      
+          fixes=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)
+          if [[ -n "$fixes" ]]; then
+            echo "**🐛 Fixes**" >> formatted_notes.txt
+            echo "$fixes" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+      
+          refactors=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)
+          if [[ -n "$refactors" ]]; then
+            echo "**🔧 Refactors**" >> formatted_notes.txt
+            echo "$refactors" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+      
+          style=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)
+          if [[ -n "$style" ]]; then
+            echo "**💅 Style**" >> formatted_notes.txt
+            echo "$style" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+      
+          perf=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)
+          if [[ -n "$perf" ]]; then
+            echo "**⚡ Performance**" >> formatted_notes.txt
+            echo "$perf" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+      
+          chores=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)
+          if [[ -n "$chores" ]]; then
+            echo "**🛠 Chores**" >> formatted_notes.txt
+            echo "$chores" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+
+          cat formatted_notes.txt
+          FORMATTED_NOTES=$(cat formatted_notes.txt) 
           echo "FORMATTED_NOTES<<EOF" >> $GITHUB_ENV
-          echo -e "$formatted_notes" >> $GITHUB_ENV
+          echo "$FORMATTED_NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
-      - name: Debug Release Notes
-        run: |
-          echo "Raw release JSON:"
-          cat release.json
-          echo "Extracted release notes:"
-          jq -r '.body' release.json
 
       - name: Get and Categorize Assets with Sizes
         id: categorize_assets
         run: |
           # Fetch release assets based on the latest tag
-          curl -s "https://api.github.com/repos/RyanYuuki/AnymeX/releases/tags/${{ env.LATEST_TAG }}" -o release.json
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+           -H "Accept: application/vnd.github.v3+json" \
+           "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.LATEST_TAG }}" -o release.json
           
           # Initialize environment variables
           for VAR in apk_arm64 apk_armeabi apk_universal apk_x86_64 windows linux ios setup macos; do
@@ -146,6 +145,8 @@ jobs:
               echo "ios_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Linux.AppImage" ]]; then
               echo "linuximg_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
+            elif [[ "$FILE_NAME" == *"Linux.rpm" ]]; then
+              echo "linuxrmp_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV              
             elif [[ "$FILE_NAME" == *"Linux.zip" ]]; then
               echo "linux_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"Installer.exe" ]]; then
@@ -165,32 +166,101 @@ jobs:
           else
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
           fi
-      - name: Send Release Notes to Telegram
+
+      - name: Send message to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC: ${{ secrets.TELEGRAM_THREAD_ID }}
         run: |
-        
-          # Replace ### with **Heading**
-          commit=$(echo "${{ env.FORMATTED_NOTES }}" | sed -E 's/^###[[:space:]]*(.*)$/\*\*\1\*\*/g')
 
-          # Remove extra blank lines (or lines with only spaces), keeping only one
-          commit=$(echo "$commit" | awk 'BEGIN {prev=""} {if (NF == 0) {if (prev != "") print ""; prev=""} else {print; prev=$0}}')
-
-          commit=$(echo "$commit" | sed 's/^* /🔹 /g')
-          commit=$(echo "$commit" | sed 's/^> /🔹 /g')
-
-          # Replace "):" with ") :"
-          tel_commit=$(echo "$commit" | sed -E 's/\): [^:]+:/) :/g')
-        
-          MESSAGE="**🚀 New Release: ${{ env.RELEASE_NAME }}**
-          ${tel_commit}
-
-          [❓Don't know which version to download? Click here!](https://github.com/RyanYuuki/AnymeX/blob/main/INSTALLATION.md)**  
+          # Start with release header
+          echo "<b>🚀 New Release: ${{ env.LATEST_TAG }}</b>" > header.txt
           
-          [📌 Full changelog](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})"
-          echo "Telegram Message: $MESSAGE"
-          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -H "Content-Type: application/json" \
-            -d @<(jq -n --arg text "$MESSAGE" --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
-            '{ "chat_id": $chat_id, "text": $text, "parse_mode": "Markdown", "disable_web_page_preview": true }')
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > TFeatures.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+
+          echo "**🐛 Fixes**" > TFixes.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+
+          echo "**🔧 Refactors**" > TRefactors.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+
+          echo "**💅 Style**" > TStyle.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+
+          echo "**⚡ Performance**" > TPerformance.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+
+          echo "**🛠 Chores**" > TChores.txt
+          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+
+          # Process each file through the parser
+          chmod +x scripts/tel_commit_parser.sed
+          
+          ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt
+          ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt
+          ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt
+          ./scripts/tel_commit_parser.sed style.txt > style_clean.txt
+          ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt
+          ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt
+          
+          ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt
+          ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt
+          ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt
+          ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt
+          ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt
+          ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt
+
+          # Check and remove empty categories
+          if [ ! -s feat_clean.txt ] || [ "$(tr -d '[:space:]' < feat_clean.txt)" = "" ]; then
+              rm -f feat_clean.txt TFeaturesT.txt
+          fi
+          if [ ! -s fixes_clean.txt ] || [ "$(tr -d '[:space:]' < fixes_clean.txt)" = "" ]; then
+              rm -f fixes_clean.txt TFixesT.txt
+          fi
+          if [ ! -s refactors_clean.txt ] || [ "$(tr -d '[:space:]' < refactors_clean.txt)" = "" ]; then
+              rm -f refactors_clean.txt TRefactorsT.txt
+          fi
+          if [ ! -s style_clean.txt ] || [ "$(tr -d '[:space:]' < style_clean.txt)" = "" ]; then
+              rm -f style_clean.txt TStyleT.txt
+          fi
+          if [ ! -s perf_clean.txt ] || [ "$(tr -d '[:space:]' < perf_clean.txt)" = "" ]; then
+              rm -f perf_clean.txt TPerformanceT.txt
+          fi
+          if [ ! -s chores_clean.txt ] || [ "$(tr -d '[:space:]' < chores_clean.txt)" = "" ]; then
+              rm -f chores_clean.txt TChoresT.txt
+          fi
+
+          # Combine categories into final output
+          {
+              cat header.txt
+              echo ""
+              [ -f TFeaturesT.txt ] && [ -f feat_clean.txt ] && echo -n "$(cat TFeaturesT.txt) <blockquote>$(cat feat_clean.txt)</blockquote> "
+              [ -f TFixesT.txt ] && [ -f fixes_clean.txt ] && echo -n "$(cat TFixesT.txt) <blockquote>$(cat fixes_clean.txt)</blockquote> "
+              [ -f TRefactorsT.txt ] && [ -f refactors_clean.txt ] && echo -n "$(cat TRefactorsT.txt) <blockquote>$(cat refactors_clean.txt)</blockquote> "
+              [ -f TStyleT.txt ] && [ -f style_clean.txt ] && echo -n "$(cat TStyleT.txt) <blockquote>$(cat style_clean.txt)</blockquote> "
+              [ -f TPerformanceT.txt ] && [ -f perf_clean.txt ] && echo -n "$(cat TPerformanceT.txt) <blockquote>$(cat perf_clean.txt)</blockquote> "
+              [ -f TChoresT.txt ] && [ -f chores_clean.txt ] && echo -n "$(cat TChoresT.txt) <blockquote>$(cat chores_clean.txt)</blockquote> "
+              echo ""
+              echo "❓<a href='https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md'>Don't know which version to download? Click here!</a>"
+              echo ""
+              echo "📌 <a href='https://github.com/${{github.repository}}/releases/tag/${{ env.LATEST_TAG }}'>Full changelog</a>"
+          } > output.txt
+
+          if [ ! -s output.txt ]; then
+              echo "No commits found. Skipping Telegram message."
+              exit 0
+          fi
+          markdown_info_tel=$(< output.txt)
+          echo "Final Telegram Message:"
+          echo "$markdown_info_tel"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+              -d "chat_id=$TELEGRAM_CHAT_ID" \
+              -d "text=$markdown_info_tel" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true"
 
       - name: Send Assets to Telegram
         run: |
@@ -203,6 +273,7 @@ jobs:
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
             🔹 ${{ env.linuximg_message }} | **Linux appimage**
+            🔹 ${{ env.linuxrmp_message }} | **Linux rmp**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
@@ -214,30 +285,59 @@ jobs:
               "parse_mode": "Markdown"
             }'
 
-      - name: Send Release Notes to Discord
+      - name: Send message to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
         run: |
-          formatted_notes=$(echo "${{ env.FORMATTED_NOTES }}" | sed -E 's/^### (.*)$/\*\*\1\*\*/g')
-          # Remove extra blank lines (or lines with only spaces), keeping only one
-          formatted_notes=$(echo "$formatted_notes" | awk 'BEGIN {prev=""} {if (NF == 0) {if (prev != "") print ""; prev=""} else {print; prev=$0}}')
-          # Replace "): <text>" with ") : <text>" and format list items
-          
-          formatted_notes=$(echo "$formatted_notes" | \
-          sed -E 's/\): [^:]+:/)/g' | \
-          sed -E 's/^\* /> /g')
+          FORMATTED_NOTES=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
+          # Mention the role based on the release name
+          if [[ "${RELEASE_NAME}" == *alpha* ]]; then
+            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
+          elif [[ "${RELEASE_NAME}" == *beta* ]]; then
+            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
+          else
+            role_mention="<@&1313346791479054456>"  # Default role ID
+          fi
+        
+          default_color="#1ac4c5"
+          hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
+          embed_color=$(hex_to_decimal "$default_color")
 
-          
-          PAYLOAD=$(jq -n \
-            --arg title "🚀 New Release: ${{ env.RELEASE_NAME }}" \
-            --arg description "${formatted_notes}
+          # Ensure VERSION is not empty
+          VERSION=${VERSION:-"${{env.LATEST_TAG}}"}
+      
+          discord_data=$(jq -nc \
+                        --arg role_mention "$role_mention" \
+                        --arg field_value "$FORMATTED_NOTES
 
-            [❓Don't know which version to download? Click here!](https://github.com/RyanYuuki/AnymeX/blob/main/INSTALLATION.md)  
+            [❓Don't know which version to download? Click here!](https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md)  
             
-            [📌 Full changelog](https://github.com/RyanYuuki/AnymeX/releases/tag/${{ env.LATEST_TAG }})" \
-            --argjson color 5814783 \
-            '{ "embeds": [{ "title": $title, "description": $description, "color": $color }] }')
-          curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
+            [📌 Full changelog](https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_TAG }})" \
+                        --arg footer_text "Version $VERSION" \
+                        --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                        --argjson embed_color "$embed_color" \
+                        '{
+                          "content": $role_mention,
+                          "embeds": [
+                            {
+                              "title": "🚀 New Release: ${{env.LATEST_TAG}}",
+                              "color": $embed_color,
+                              "description": $field_value,
+                              "footer": {
+                                "text": $footer_text
+                              },
+                              "timestamp": $timestamp
+                            }
+                          ]
+                        }')
+
+          echo "Debug: Final Discord payload is: $discord_data"
+
+          # Send the message to Discord using the webhook
+          curl -H "Content-Type: application/json" \
+              -X POST \
+              -d "$discord_data" \
+              "$DISCORD_WEBHOOK_URL"
 
       - name: Send Assets to Discord
         run: |
@@ -249,6 +349,7 @@ jobs:
             🔹 ${{ env.windows_message }} | **Windows Zip**
             🔹 ${{ env.setup_message }} | **Windows EXE**
             🔹 ${{ env.linuximg_message }} | **Linux appimage**
+            🔹 ${{ env.linuxrmp_message }} | **Linux rmp**
             🔹 ${{ env.linux_message }} | **Linux**
             🔹 ${{ env.ios_message }} | **iOS**
             🔹 ${{ env.macos_message }} | **macOS**"
