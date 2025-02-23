@@ -236,7 +236,7 @@ class _SearchPageState extends State<SearchPage> {
                         controller: _searchController,
                         onSubmitted: (query) => _performSearch(query: query),
                         disableIcons: _serviceHandler.serviceType.value !=
-                            ServicesType.extensions,
+                            ServicesType.anilist,
                         onSuffixIconPressed: _showFilterBottomSheet,
                       ),
                     ),

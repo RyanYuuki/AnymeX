@@ -153,8 +153,8 @@ class _CalendarState extends State<Calendar>
                   : filteredList.isEmpty
                       ? const Center(child: Text("No Anime Airing on this day"))
                       : GridView.builder(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: isGrid ? 20 : 10, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
                           itemCount: filteredList.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -164,7 +164,7 @@ class _CalendarState extends State<Calendar>
                                   mainAxisExtent: getResponsiveSize(context,
                                       mobileSize: isGrid ? 250 : 150,
                                       dektopSize: isGrid ? 250 : 180),
-                                  crossAxisSpacing: isGrid ? 0 : 10,
+                                  crossAxisSpacing: 10,
                                   mainAxisSpacing: 25),
                           itemBuilder: (context, index) {
                             final data = filteredList[index];

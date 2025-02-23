@@ -115,6 +115,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   late bool isLoggedIn;
   final leftOriented = true.obs;
   final isMobile = Platform.isAndroid || Platform.isIOS;
+  final changingEp = false.obs;
 
   @override
   void initState() {
@@ -192,7 +193,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void _initPlayer(bool firstTime) {
     Episode? savedEpisode = offlineStorage.getWatchedEpisode(
         widget.anilistData.id, currentEpisode.value.number);
-    int startTimeMilliseconds = savedEpisode?.timeStampInMilliseconds ?? 0;
+    int startTimeMilliseconds =
+        (savedEpisode?.number ?? 0) == currentEpisode.value.number
+            ? savedEpisode?.timeStampInMilliseconds ?? 0
+            : 0;
     if (firstTime) {
       player = Player(
           configuration:
@@ -203,10 +207,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
-    toggleControls();
     player.open(Media(episode.value.url,
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
+    changingEp.value = false;
   }
 
   // Continuous Tracking
@@ -226,9 +230,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         });
       }
 
-      if (lastProcessedMinute != e.inMinutes) {
+      if (lastProcessedMinute != e.inMinutes && !changingEp.value) {
         lastProcessedMinute = e.inMinutes;
         trackEpisode(e, episodeDuration.value, currentEpisode.value);
+      }
+
+      if (e.inSeconds == 0) {
+        currentEpisode.value.timeStampInMilliseconds = 0;
       }
 
       if (e.inSeconds == episodeDuration.value.inSeconds) {
@@ -333,16 +341,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Future<void> fetchEpisode(bool prev) async {
+    changingEp.value = true;
     log("Envoked FetchEpisode");
     trackEpisode(
         currentPosition.value, episodeDuration.value, currentEpisode.value);
+
     // Put it into Loading State
     setState(() {
       player.open(Media(''));
     });
     final episodeToNav = navEpisode(prev);
     if (episodeToNav == null) {
-      snackBar("No Stremas Found");
+      snackBar("No Streams Found");
       return;
     }
     currentEpisode.value = episodeToNav;
@@ -361,7 +371,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     currentEpisode.value.currentTrack = preferredStream;
     currentEpisode.value.videoTracks = video;
     _initPlayer(false);
-    _initSubs();
   }
 
   Future<void> setVolume(double value) async {
@@ -1322,7 +1331,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               child: VideoSliderTheme(
                                 color: themeFgColor.value,
                                 inactiveTrackColor:
-                                    themeFgColor.value.withOpacity(0.8),
+                                    _getBgColor().withOpacity(0.8),
                                 child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
@@ -1652,6 +1661,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   snackBar(
                       "You're trying to rewind? You haven't even made it past the intro.");
                 } else {
+                  await player.pause();
                   await fetchEpisode(true);
                 }
               },
@@ -1675,6 +1685,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   snackBar(
                       "That's it, genius. You ran out of episodes. Try a book next time.");
                 } else {
+                  await player.pause();
                   await fetchEpisode(false);
                 }
               },

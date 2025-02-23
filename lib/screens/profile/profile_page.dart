@@ -8,6 +8,7 @@ import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -31,13 +32,23 @@ class ProfilePage extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Stack(
                         children: [
-                          ClipRect(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                              child: SizedBox.expand(
-                                child: Image.network(
-                                  profileData.value.avatar ?? '',
-                                  fit: BoxFit.cover,
+                          KenBurns(
+                            maxScale: 2.5,
+                            minAnimationDuration:
+                                const Duration(milliseconds: 6000),
+                            maxAnimationDuration:
+                                const Duration(milliseconds: 20000),
+                            child: ClipRect(
+                              child: BackdropFilter(
+                                filter:
+                                    ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: SizedBox.expand(
+                                  child: Image.network(
+                                    profileData.value.cover ??
+                                        profileData.value.avatar ??
+                                        '',
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
@@ -47,11 +58,11 @@ class ProfilePage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
+                                    Colors.transparent,
                                     Theme.of(context)
                                         .colorScheme
-                                        .surface
+                                        .secondaryContainer
                                         .withOpacity(0.8),
-                                    Colors.transparent,
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
@@ -123,28 +134,29 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Row(
+                        Flex(
+                          direction: Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            // _buildStatContainer(
+                            //   context,
+                            //   isFirst: true,
+                            //   isLast: false,
+                            //   label: 'Followers',
+                            //   value: profileData.value.followers?.toString() ??
+                            //       '0',
+                            // ),
+                            // _buildStatContainer(
+                            //   context,
+                            //   isFirst: false,
+                            //   isLast: false,
+                            //   label: 'Following',
+                            //   value: profileData.value.following?.toString() ??
+                            //       '0',
+                            // ),
                             _buildStatContainer(
                               context,
                               isFirst: true,
-                              isLast: false,
-                              label: 'Followers',
-                              value: profileData.value.followers?.toString() ??
-                                  '0',
-                            ),
-                            _buildStatContainer(
-                              context,
-                              isFirst: false,
-                              isLast: false,
-                              label: 'Following',
-                              value: profileData.value.following?.toString() ??
-                                  '0',
-                            ),
-                            _buildStatContainer(
-                              context,
-                              isFirst: false,
                               isLast: false,
                               label: 'Anime',
                               value: profileData
@@ -264,10 +276,8 @@ class ProfilePage extends StatelessWidget {
     required bool isFirst,
     required bool isLast,
   }) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Container(
-      width: screenWidth * 0.23,
+      width: Get.width * 0.4,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondaryContainer,

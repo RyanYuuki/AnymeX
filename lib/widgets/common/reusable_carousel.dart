@@ -140,12 +140,12 @@ class ReusableCarousel extends StatelessWidget {
       BuildContext context, CarouselData itemData, String tag, bool isDesktop) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 104),
+      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(15.multiplyRoundness()),
+            borderRadius: BorderRadius.circular(12.multiplyRoundness()),
             child: Stack(
               children: [
                 Hero(
@@ -212,37 +212,35 @@ class ReusableCarousel extends StatelessWidget {
 
   Positioned _buildExtraData(BuildContext context, CarouselData itemData) {
     return Positioned(
-      bottom: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.multiplyRoundness()),
+        right: 0,
+        bottom: 0,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
           ),
-          color: Theme.of(context).colorScheme.secondaryContainer,
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              getIcon(variant, itemData.extraData ?? ''),
-              size: 16,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 3),
-            Text(
-              itemData.extraData.toString(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontFamily: "Poppins-Bold",
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                getIcon(variant, itemData.extraData ?? ''),
+                size: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+              const SizedBox(width: 4),
+              AnymexText(
+                text: itemData.extraData ?? '',
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 12,
+                variant: TextVariant.bold,
+              ),
+            ],
+          ),
+        ));
   }
 
   IconData getIcon(DataVariant variant, String extraData) {

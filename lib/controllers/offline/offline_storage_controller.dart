@@ -288,7 +288,6 @@ class OfflineStorageController extends GetxController {
     } catch (e) {
       log('Error saving libraries: $e');
     }
-    refresh();
   }
 
   OfflineMedia? getAnimeById(String id) {
@@ -306,6 +305,7 @@ class OfflineStorageController extends GetxController {
           ?.firstWhereOrNull((e) => e.number == episodeOrChapterNumber);
       if (episode != null) {
         log("Found Episode! Episode Title is ${episode.title}");
+        log(episode.timeStampInMilliseconds.toString());
         return episode;
       } else {
         log('No watched episode with number $episodeOrChapterNumber found for anime with ID: $anilistId');

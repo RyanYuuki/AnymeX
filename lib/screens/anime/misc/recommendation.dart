@@ -150,6 +150,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
       children: [
         Expanded(
           child: GridView.builder(
+            padding: const EdgeInsets.all(10),
             controller: _scrollController,
             itemCount: recItems.length + 3,
             itemBuilder: (context, index) {
@@ -179,6 +180,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                 MediaQuery.of(context).size.width,
                 itemWidth: isGrid.value ? 120 : 400,
               ),
+              crossAxisSpacing: 10,
               mainAxisExtent: isGrid.value ? 250 : 200,
             ),
           ),

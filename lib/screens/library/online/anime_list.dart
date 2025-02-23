@@ -164,14 +164,14 @@ class AnimeListContent extends StatelessWidget {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
       physics: const BouncingScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: getResponsiveCrossAxisVal(
               MediaQuery.of(context).size.width,
               itemWidth: 108),
           mainAxisExtent: 250,
-          crossAxisSpacing: 15),
+          crossAxisSpacing: 10),
       itemCount: filteredAnimeList.length,
       itemBuilder: (context, index) {
         final item = filteredAnimeList[index];

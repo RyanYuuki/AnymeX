@@ -421,9 +421,9 @@ class MangaHistoryCard extends StatelessWidget {
               children: [
                 NetworkSizedImage(
                   width: getResponsiveSize(context,
-                      mobileSize: 120, dektopSize: 130),
+                      mobileSize: 100, dektopSize: 130),
                   height: getResponsiveSize(context,
-                      mobileSize: 150, dektopSize: 180),
+                      mobileSize: 130, dektopSize: 180),
                   radius: 0,
                   imageUrl: data.poster!,
                 ),

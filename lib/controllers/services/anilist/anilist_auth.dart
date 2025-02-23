@@ -105,6 +105,7 @@ class AnilistAuth extends GetxController {
       avatar {
         large
       }
+      bannerImage
       statistics {
         anime {
           count
@@ -136,19 +137,75 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
         final viewerData = data['data']['Viewer'];
-        final userProfile = Profile.fromJson(viewerData);
 
-        log('User profile mapped successfully: ${userProfile.name}');
+        final userProfile = Profile.fromJson(viewerData);
         profileData.value = userProfile;
         isLoggedIn.value = true;
+
+        log('User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
+
+        fetchFollowersAndFollowing(userProfile.id ?? '');
       } else {
         log('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');
       }
     } catch (e) {
       log('Error fetching user profile: $e');
+    }
+  }
+
+  Future<void> fetchFollowersAndFollowing(String userId) async {
+    final token = await storage.get('auth_token');
+
+    if (token == null) {
+      log('No token found');
+      return;
+    }
+
+    const query = '''
+  query(\$userId: Int!) {
+    Follower(userId: \$userId) {
+      id
+    }
+    Following(userId: \$userId) {
+      id
+    }
+  }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': query,
+          'variables': {'userId': userId.toInt()}
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        log(data.toString());
+
+        final followersList = data['data']['followers'] as List<dynamic>;
+        final followingList = data['data']['following'] as List<dynamic>;
+
+        final updatedProfile = profileData.value
+          ..followers = followersList.length
+          ..following = followingList.length;
+
+        profileData.value = updatedProfile;
+      } else {
+        log('Failed to load followers/following: ${response.statusCode}');
+        throw Exception('Failed to load followers/following ${response.body}');
+      }
+    } catch (e) {
+      log('Error fetching followers/following: $e');
     }
   }
 

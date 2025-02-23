@@ -3,6 +3,7 @@ class Profile {
   String? name;
   String? userName;
   String? avatar;
+  String? cover;
   ProfileStatistics? stats;
   int? followers;
   int? following;
@@ -12,6 +13,7 @@ class Profile {
     this.name,
     this.userName,
     this.avatar,
+    this.cover,
     this.stats,
     this.followers,
     this.following,
@@ -22,6 +24,7 @@ class Profile {
       id: json['id']?.toString(),
       name: json['name'],
       avatar: json['avatar']?['large'],
+      cover: json['bannerImage'],
       stats: json['statistics'] != null
           ? ProfileStatistics.fromJson(json['statistics'])
           : null,
