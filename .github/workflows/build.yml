@@ -574,8 +574,9 @@ jobs:
           Commits:
           ${telegram_commit_messages}
           Version: $VERSION" \
-              -d "parse_mode=HTML")
-
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true")
+    
       - name: Upload Current SHA as Artifact
         uses: actions/upload-artifact@v4
         with:
