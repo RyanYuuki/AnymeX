@@ -28,10 +28,10 @@ class PlayerSettings {
   double bottomMargin;
   @HiveField(11)
   bool transculentControls;
-  @HiveField(13)
-  int playerStyle;
   @HiveField(12)
   bool defaultPortraitMode;
+  @HiveField(13)
+  int playerStyle;
 
   PlayerSettings(
       {this.speed = 1.0,
