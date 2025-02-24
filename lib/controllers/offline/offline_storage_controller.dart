@@ -304,7 +304,7 @@ class OfflineStorageController extends GetxController {
       Episode? episode = anime.watchedEpisodes
           ?.firstWhereOrNull((e) => e.number == episodeOrChapterNumber);
       if (episode != null) {
-        log("Found Episode! Episode Title is ${episode.title}");
+        log("Found Episode! Episode Number is ${episode.number}");
         log(episode.timeStampInMilliseconds.toString());
         return episode;
       } else {

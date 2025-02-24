@@ -115,7 +115,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   late bool isLoggedIn;
   final leftOriented = true.obs;
   final isMobile = Platform.isAndroid || Platform.isIOS;
-  final changingEp = false.obs;
 
   @override
   void initState() {
@@ -176,6 +175,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       {bool updateAL = true}) async {
     final temp = serviceHandler.onlineService.animeList
         .firstWhereOrNull((e) => e.id == anilistData.value.id);
+    offlineStorage.addOrUpdateAnime(
+        widget.anilistData, widget.episodeList, currentEpisode);
+    offlineStorage.addOrUpdateWatchedEpisode(
+        widget.anilistData.id, currentEpisode);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       if (updateAL) {
         await serviceHandler.updateListEntry(
@@ -184,10 +187,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             .setCurrentMedia(anilistData.value.id.toString());
       }
     }
-    offlineStorage.addOrUpdateAnime(
-        widget.anilistData, widget.episodeList, currentEpisode);
-    offlineStorage.addOrUpdateWatchedEpisode(
-        widget.anilistData.id, currentEpisode);
   }
 
   void _initPlayer(bool firstTime) {
@@ -210,32 +209,39 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.open(Media(episode.value.url,
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
-    changingEp.value = false;
   }
 
   // Continuous Tracking
   int lastProcessedMinute = 0;
-  Timer? _positionTimer;
+  bool isSwitchingEpisode = false;
 
   void _attachListeners() {
     player.stream.playing.listen((e) {
       isPlaying.value = e;
-    });
-    player.stream.position.listen((e) {
-      if (_positionTimer == null || !_positionTimer!.isActive) {
-        _positionTimer = Timer(const Duration(seconds: 1), () {
-          currentPosition.value = e;
-          formattedTime.value = formatDuration(e);
-          currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
+
+      if (e) {
+        Future.delayed(const Duration(seconds: 2), () {
+          isSwitchingEpisode = false;
         });
       }
+    });
 
-      if (lastProcessedMinute != e.inMinutes && !changingEp.value) {
+    player.stream.position.listen((e) {
+      currentPosition.value = e;
+      formattedTime.value = formatDuration(e);
+
+      if (!isSwitchingEpisode) {
+        currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
+      }
+
+      if (lastProcessedMinute != e.inMinutes &&
+          !isSwitchingEpisode &&
+          isPlaying.value) {
         lastProcessedMinute = e.inMinutes;
         trackEpisode(e, episodeDuration.value, currentEpisode.value);
       }
 
-      if (e.inSeconds == 0) {
+      if (e.inSeconds == 0 && !isSwitchingEpisode) {
         currentEpisode.value.timeStampInMilliseconds = 0;
       }
 
@@ -247,20 +253,25 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         }
       }
     });
+
     player.stream.duration.listen((e) {
       episodeDuration.value = e;
       currentEpisode.value.durationInMilliseconds = e.inMilliseconds;
       formattedDuration.value = formatDuration(e);
     });
+
     player.stream.buffering.listen((e) {
       isBuffering.value = e;
     });
+
     player.stream.buffer.listen((e) {
       bufferred.value = e;
     });
+
     player.stream.rate.listen((e) {
       playbackSpeed.value = e;
     });
+
     player.stream.subtitle.listen((e) {
       subtitleText.value = e;
     });
@@ -278,6 +289,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _initSubs() async {
+    subtitles.clear();
     selectedSubIndex.value = 0;
     player.setSubtitleTrack(SubtitleTrack.no());
     final List<String> labels = [];
@@ -341,12 +353,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Future<void> fetchEpisode(bool prev) async {
-    changingEp.value = true;
-    log("Envoked FetchEpisode");
     trackEpisode(
         currentPosition.value, episodeDuration.value, currentEpisode.value);
-
-    // Put it into Loading State
     setState(() {
       player.open(Media(''));
     });
@@ -368,6 +376,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     episode.value = preferredStream;
     episodeTracks.value = video;
+    currentEpisode.value.source = sourceController.activeSource.value!.name;
     currentEpisode.value.currentTrack = preferredStream;
     currentEpisode.value.videoTracks = video;
     _initPlayer(false);
@@ -1661,8 +1670,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   snackBar(
                       "You're trying to rewind? You haven't even made it past the intro.");
                 } else {
-                  await player.pause();
-                  await fetchEpisode(true);
+                  isSwitchingEpisode = true;
+                  player.pause().then((_) {
+                    fetchEpisode(true);
+                  });
                 }
               },
             ),
@@ -1685,8 +1696,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   snackBar(
                       "That's it, genius. You ran out of episodes. Try a book next time.");
                 } else {
-                  await player.pause();
-                  await fetchEpisode(false);
+                  isSwitchingEpisode = true;
+                  player.pause().then((_) {
+                    fetchEpisode(false);
+                  });
                 }
               },
             ),

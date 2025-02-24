@@ -368,9 +368,7 @@ class MangaHistoryCard extends StatelessWidget {
           if (data.currentChapter == null) {
             snackBar(
                 "Error: Missing required data. It seems you closed the app directly after reading the chapter!",
-                duration: 2000,
-                maxLines: 3,
-                maxWidth: Get.width * 0.6);
+                maxLines: 3);
           } else {
             if (data.currentChapter?.sourceName == null) {
               snackBar("Cant Play since user closed the app abruptly");

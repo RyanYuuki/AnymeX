@@ -62,7 +62,10 @@ class _AnilistMangaListState extends State<AnilistMangaList> {
             ],
             leading: IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_ios_new)),
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Theme.of(context).colorScheme.primary,
+                )),
             title: Text("$userName's Manga List",
                 style: TextStyle(
                     fontSize: 16,
