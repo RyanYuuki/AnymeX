@@ -119,6 +119,12 @@ jobs:
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           echo "$telegram_commit_messages"
 
+          echo "Debug: TELEGRAM_BOT_TOKEN='${{ secrets.TELEGRAM_BOT_TOKEN }}'"
+          echo "Debug: TELEGRAM_CHAT_ID='${{ secrets.TELEGRAM_CHAT_ID }}'"
+          echo "Debug: TELEGRAM_THREAD_ID='${{ secrets.TELEGRAM_THREAD_ID }}'"
+          echo "Debug: VERSION='${VERSION}'"
+          echo "Debug: Telegram Caption: $telegram_commit_messages"
+
           # Upload APK to Telegram
           response=$(curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
