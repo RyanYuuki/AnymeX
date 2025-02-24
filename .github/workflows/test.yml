@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           # Truncate field values
-          max_length=1000
+          max_length=1024
           commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
           if [ ${#commit_messages} -gt $max_length ]; then
             commit_messages="${commit_messages:0:$max_length}"
@@ -119,17 +119,6 @@ jobs:
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           echo "$telegram_commit_messages"
 
-          # Configuring dev info
-          echo "$developers" > dev_info.txt
-          # making the file executable
-          chmod +x scripts/tel_parser.sed
-          ./scripts/tel_parser.sed dev_info.txt >> output.txt
-          dev_info_tel=$(< output.txt)
-
-          telegram_dev_info="<blockquote>${dev_info_tel}</blockquote>"
-          echo "$telegram_dev_info"
-
-
           # Upload APK to Telegram
           response=$(curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
@@ -140,7 +129,7 @@ jobs:
           Commits:
           ${telegram_commit_messages}
 
-          version: ${VERSION}" \
+          version: $VERSION" \
               -F "parse_mode=HTML")
 
       - name: Upload Current SHA as Artifact
