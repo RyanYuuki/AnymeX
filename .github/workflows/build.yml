@@ -541,30 +541,17 @@ jobs:
 
           # Count recent commits and create an associative array
           declare -A recent_commit_counts
-          
-          # Debugging COMMIT_LOG
           echo "Debug: Processing COMMIT_LOG:"
-          echo "$COMMIT_LOG" | sed 's/%0A/\n/g'
-          
-          # Process COMMIT_LOG safely
+          echo "$COMMIT_LOG"
           while read -r count name; do
-              # Trim spaces and handle empty lines
-              name=$(echo "$name" | xargs)
-              
-              # Ensure name is not empty before adding to array
-              if [[ -n "$name" ]]; then
-                  recent_commit_counts["$name"]=$count
-                  echo "Debug: Commit count for '$name': $count"
-              else
-                  echo "Warning: Skipping empty name entry."
-              fi
-          done < <(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | grep -oP '(?<=~)[^[]*' | sed 's/^\s*//g' | sort | uniq -c | sort -rn)
-          
-          # Debug: Print array contents
-          echo "Debug: recent_commit_counts contents:"
-          for key in "${!recent_commit_counts[@]}"; do
-            echo "'$key': ${recent_commit_counts[$key]}"
-          done
+              recent_commit_counts["$name"]=$count
+              echo "Debug: Commit count for $name: $count"
+          done < <(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | grep -oP '(?<=~)[^[]*' | sort | uniq -c | sort -rn)
+        
+          echo "Debug: Fetching contributors from GitHub"
+          contributors=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors" | jq 'map(select(.login | test("\\[bot\\]") | not))')
+          echo "Debug: Contributors response:"
+          echo "$contributors"
 
           echo "Debug: Fetching contributors from GitHub"
           # Fetch contributors from GitHub
