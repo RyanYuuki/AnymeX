@@ -1,13 +1,11 @@
 name: Build and Release AnymeX
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
 
 jobs:
   build-android:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -116,6 +114,7 @@ jobs:
           overrwrite: true
 
   build-ios:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
     steps:
       - name: Checkout Code
@@ -169,6 +168,7 @@ jobs:
           overrwrite: true
 
   build-linux:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -327,6 +327,7 @@ jobs:
 
 
   build-windows:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: windows-latest
     steps:
       - name: Checkout Code
@@ -388,6 +389,7 @@ jobs:
 
 
   build-macos:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
     steps:
       - name: Checkout Code
