@@ -1,4 +1,4 @@
-name: Build and Release AnymeX
+name: Build and Release AnymeX beta
 
 on:
   workflow_dispatch:
