@@ -11,7 +11,10 @@ jobs:
     if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     outputs:
-      android_link: ${{ steps.gdriveUpload.outputs.web-content-link }}
+      arm64_link: ${{ steps.gdriveUpload_arm64.outputs.web-content-link }}
+      armeabi_link: ${{ steps.gdriveUpload_armeabi.outputs.web-content-link }}
+      x86_link: ${{ steps.gdriveUpload_x86.outputs.web-content-link }}
+      universal_link: ${{ steps.gdriveUpload_universal.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -122,7 +125,7 @@ jobs:
     if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
     outputs:
-      ios_link: ${{ steps.gdriveUpload.outputs.web-content-link }}
+      ios_link: ${{ steps.gdriveUpload_ios.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -178,7 +181,9 @@ jobs:
     if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     outputs:
-      linux_link: ${{ steps.gdriveUpload.outputs.web-content-link }}
+      linux_zip_link: ${{ steps.gdriveUpload_linux_zip.outputs.web-content-link }}
+      linux_appimage_link: ${{ steps.gdriveUpload_linux_appimage.outputs.web-content-link }}
+      linux_rpm_link: ${{ steps.gdriveUpload_linux_rpm.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -339,7 +344,8 @@ jobs:
     if: contains(github.event.head_commit.message, '[build]')
     runs-on: windows-latest
     outputs:
-      windows_link: ${{ steps.gdriveUpload.outputs.web-content-link }}
+      windows_zip_link: ${{ steps.gdriveUpload_windows_zip.outputs.web-content-link }}
+      windows_exe_link: ${{ steps.gdriveUpload_windows_exe.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -403,7 +409,7 @@ jobs:
     if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
     outputs:
-      macos_link: ${{ steps.gdriveUpload.outputs.web-content-link }}
+      macos_link: ${{ steps.gdriveUpload_macos.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -585,39 +591,197 @@ jobs:
           
       - name: Send Discord Notification with Download Links
         env:
-          ANDROID_LINK: ${{ needs.build-android.outputs.android_link }}
-          WINDOWS_LINK: ${{ needs.build-windows.outputs.windows_link }}
-          LINUX_LINK: ${{ needs.build-linux.outputs.linux_link }}
+          ANDROID_ARM64_LINK: ${{ needs.build-android.outputs.arm64_link }}
+          ANDROID_ARMEABI_LINK: ${{ needs.build-android.outputs.armeabi_link }}
+          ANDROID_X86_LINK: ${{ needs.build-android.outputs.x86_link }}
+          ANDROID_UNIVERSAL_LINK: ${{ needs.build-android.outputs.universal_link }}
           IOS_LINK: ${{ needs.build-ios.outputs.ios_link }}
+          LINUX_ZIP_LINK: ${{ needs.build-linux.outputs.linux_zip_link }}
+          LINUX_APPIMAGE_LINK: ${{ needs.build-linux.outputs.linux_appimage_link }}
+          LINUX_RPM_LINK: ${{ needs.build-linux.outputs.linux_rpm_link }}
+          WINDOWS_ZIP_LINK: ${{ needs.build-windows.outputs.windows_zip_link }}
+          WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
           MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
         run: |
-          ANDROID_MESSAGE="[Download Android]($ANDROID_LINK)"
-          WINDOWS_MESSAGE="[Download Windows]($WINDOWS_LINK)"
-          LINUX_MESSAGE="[Download Linux]($LINUX_LINK)"
-          IOS_MESSAGE="[Download iOS]($IOS_LINK)"
-          MACOS_MESSAGE="[Download macOS]($MACOS_LINK)"
+          # Check if ANDROID_ARM64_LINK is not empty
+          if [[ -n "$ANDROID_ARM64_LINK" ]]; then
+            ANDROID_ARM64_MESSAGE="[Download Android ARM64]($ANDROID_ARM64_LINK)"
+          else
+            ANDROID_ARM64_MESSAGE=""
+          fi
+          
+          # Check if ANDROID_ARMEABI_LINK is not empty
+          if [[ -n "$ANDROID_ARMEABI_LINK" ]]; then
+            ANDROID_ARMEABI_MESSAGE="[Download Android ARMEABI]($ANDROID_ARMEABI_LINK)"
+          else
+            ANDROID_ARMEABI_MESSAGE=""
+          fi
+          
+          # Check if ANDROID_X86_LINK is not empty
+          if [[ -n "$ANDROID_X86_LINK" ]]; then
+            ANDROID_X86_MESSAGE="[Download Android x86]($ANDROID_X86_LINK)"
+          else
+            ANDROID_X86_MESSAGE=""
+          fi
+          
+          # Check if ANDROID_UNIVERSAL_LINK is not empty
+          if [[ -n "$ANDROID_UNIVERSAL_LINK" ]]; then
+            ANDROID_UNIVERSAL_MESSAGE="[Download Android Universal]($ANDROID_UNIVERSAL_LINK)"
+          else
+            ANDROID_UNIVERSAL_MESSAGE=""
+          fi
+          
+          # Check if IOS_LINK is not empty
+          if [[ -n "$IOS_LINK" ]]; then
+            IOS_MESSAGE="[Download iOS]($IOS_LINK)"
+          else
+            IOS_MESSAGE=""
+          fi
+          
+          # Check if LINUX_ZIP_LINK is not empty
+          if [[ -n "$LINUX_ZIP_LINK" ]]; then
+            LINUX_ZIP_MESSAGE="[Download Linux ZIP]($LINUX_ZIP_LINK)"
+          else
+            LINUX_ZIP_MESSAGE=""
+          fi
+          
+          # Check if LINUX_APPIMAGE_LINK is not empty
+          if [[ -n "$LINUX_APPIMAGE_LINK" ]]; then
+            LINUX_APPIMAGE_MESSAGE="[Download Linux AppImage]($LINUX_APPIMAGE_LINK)"
+          else
+            LINUX_APPIMAGE_MESSAGE=""
+          fi
+          
+          # Check if LINUX_RPM_LINK is not empty
+          if [[ -n "$LINUX_RPM_LINK" ]]; then
+            LINUX_RPM_MESSAGE="[Download Linux RPM]($LINUX_RPM_LINK)"
+          else
+            LINUX_RPM_MESSAGE=""
+          fi
+          
+          # Check if WINDOWS_ZIP_LINK is not empty
+          if [[ -n "$WINDOWS_ZIP_LINK" ]]; then
+            WINDOWS_ZIP_MESSAGE="[Download Windows ZIP]($WINDOWS_ZIP_LINK)"
+          else
+            WINDOWS_ZIP_MESSAGE=""
+          fi
+          
+          # Check if WINDOWS_EXE_LINK is not empty
+          if [[ -n "$WINDOWS_EXE_LINK" ]]; then
+            WINDOWS_EXE_MESSAGE="[Download Windows Installer]($WINDOWS_EXE_LINK)"
+          else
+            WINDOWS_EXE_MESSAGE=""
+          fi
+          
+          # Check if MACOS_LINK is not empty
+          if [[ -n "$MACOS_LINK" ]]; then
+            MACOS_MESSAGE="[Download macOS]($MACOS_LINK)"
+          else
+            MACOS_MESSAGE=""
+          fi
 
-          echo "android_message=$ANDROID_MESSAGE" >> $GITHUB_ENV
-          echo "windows_message=$WINDOWS_MESSAGE" >> $GITHUB_ENV
-          echo "linux_message=$LINUX_MESSAGE" >> $GITHUB_ENV
+          # Export messages to GitHub environment
+          echo "android_arm64_message=$ANDROID_ARM64_MESSAGE" >> $GITHUB_ENV
+          echo "android_armeabi_message=$ANDROID_ARMEABI_MESSAGE" >> $GITHUB_ENV
+          echo "android_x86_message=$ANDROID_X86_MESSAGE" >> $GITHUB_ENV
+          echo "android_universal_message=$ANDROID_UNIVERSAL_MESSAGE" >> $GITHUB_ENV
           echo "ios_message=$IOS_MESSAGE" >> $GITHUB_ENV
+          echo "linux_zip_message=$LINUX_ZIP_MESSAGE" >> $GITHUB_ENV
+          echo "linux_appimage_message=$LINUX_APPIMAGE_MESSAGE" >> $GITHUB_ENV
+          echo "linux_rpm_message=$LINUX_RPM_MESSAGE" >> $GITHUB_ENV
+          echo "windows_zip_message=$WINDOWS_ZIP_MESSAGE" >> $GITHUB_ENV
+          echo "windows_exe_message=$WINDOWS_EXE_MESSAGE" >> $GITHUB_ENV
           echo "macos_message=$MACOS_MESSAGE" >> $GITHUB_ENV
+          # Construct the message content
+          
+          DISCORD_MESSAGE=""
+          
+          if [[ -n "$ANDROID_ARM64_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$ANDROID_ARM64_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_ARMEABI_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$ANDROID_ARMEABI_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_X86_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$ANDROID_X86_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_UNIVERSAL_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$ANDROID_UNIVERSAL_MESSAGE\n"
+          fi
+          if [[ -n "$IOS_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$IOS_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_ZIP_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$LINUX_ZIP_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_APPIMAGE_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$LINUX_APPIMAGE_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_RPM_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$LINUX_RPM_MESSAGE\n"
+          fi
+          if [[ -n "$WINDOWS_ZIP_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$WINDOWS_ZIP_MESSAGE\n"
+          fi
+          if [[ -n "$WINDOWS_EXE_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$WINDOWS_EXE_MESSAGE\n"
+          fi
+          if [[ -n "$MACOS_MESSAGE" ]]; then
+            DISCORD_MESSAGE+="$MACOS_MESSAGE"
+          fi
 
-          curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"${ANDROID_MESSAGE}\n${WINDOWS_MESSAGE}\n${LINUX_MESSAGE}\n${IOS_MESSAGE}\n${MACOS_MESSAGE}\"}" \
-               "${{ secrets.DISCORD_WEBHOOK }}"
+          
+          # Send to Discord if the message is not empty
+          if [[ -n "$DISCORD_MESSAGE" ]]; then
+            curl -H "Content-Type: application/json" \
+                 -d "{\"content\": \"$DISCORD_MESSAGE\"}" \
+                 "${{ secrets.DISCORD_WEBHOOK }}"
+          fi
 
       - name: Send Telegram Notification
         run: |
+      - name: Send Telegram Notification
+        run: |
+          TELEGRAM_MESSAGE="🎉 *Build Notification* 🎉"
+
+          if [[ -n "$ANDROID_ARM64_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$ANDROID_ARM64_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_ARMEABI_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$ANDROID_ARMEABI_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_X86_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="\n$ANDROID_X86_MESSAGE\n"
+          fi
+          if [[ -n "$ANDROID_UNIVERSAL_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$ANDROID_UNIVERSAL_MESSAGE\n"
+          fi
+          if [[ -n "$IOS_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$IOS_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_ZIP_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$LINUX_ZIP_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_APPIMAGE_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$LINUX_APPIMAGE_MESSAGE\n"
+          fi
+          if [[ -n "$LINUX_RPM_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$LINUX_RPM_MESSAGE\n"
+          fi
+          if [[ -n "$WINDOWS_ZIP_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="\n$WINDOWS_ZIP_MESSAGE\n"
+          fi
+          if [[ -n "$WINDOWS_EXE_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$WINDOWS_EXE_MESSAGE\n"
+          fi
+          if [[ -n "$MACOS_MESSAGE" ]]; then
+            TELEGRAM_MESSAGE+="$MACOS_MESSAGE"
+          fi
+
           curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
               -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
               -F parse_mode="Markdown" \
               -F disable_notification=true \
-              -F "text=🎉 *Build Notification* 🎉
-            ${{ env.android_message }}
-            ${{ env.windows_message }}
-            ${{ env.linux_message }}
-            ${{ env.ios_message }}
-            ${{ env.macos_message }}"
+              -F "text=$TELEGRAM_MESSAGE"
