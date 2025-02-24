@@ -504,14 +504,6 @@ jobs:
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
 
-      - name: Check for Ping
-        id: check_noping
-        run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"[Ping]"* ]]; then 
-            echo "ping_variable=<@&1324799528255225997>" >> $GITHUB_ENV 
-          else 
-            echo "ping_variable=noPing" >> $GITHUB_ENV 
-          fi
       - name: Upload APK to Discord and Telegram
         shell: bash
         run: |
@@ -521,6 +513,13 @@ jobs:
           if [ ${#commit_messages} -gt $max_length ]; then
             commit_messages="${commit_messages:0:$max_length}"
           fi
+          
+          # Set default values if variables are empty
+          : "${ping_variable:=<@&1313089691523878942>}"
+          : "${commit_messages:=No commits available.}"
+          : "${VERSION:=beta}"
+          : "${embed_color:=16711680}"  # Default red color
+
           # Construct Discord payload
           discord_data=$(jq -nc \
                             --arg content "$ping_variable" \
