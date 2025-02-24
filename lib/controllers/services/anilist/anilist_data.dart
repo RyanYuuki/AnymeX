@@ -155,35 +155,66 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         padding: EdgeInsets.only(
             top: getResponsiveSize(context, mobileSize: 10, dektopSize: 0),
             bottom: getResponsiveSize(context, mobileSize: 20, dektopSize: 0)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ImageButton(
-                width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
-                height:
-                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
-                buttonText: "Calendar",
-                onPressed: () {
-                  navigate(() => const Calendar());
-                },
-                backgroundImage:
-                    trendingAnimes[3].cover ?? trendingAnimes[3].poster),
-            const SizedBox(width: 10),
-            ImageButton(
-                buttonText: "AI Recommendations",
-                width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
-                height:
-                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
-                onPressed: () async {
-                  navigate(() => const AIRecommendation(
-                        isManga: false,
-                      ));
-                },
-                backgroundImage:
-                    trendingAnimes[5].cover ?? trendingAnimes[3].poster)
-          ],
+        child: PlatformBuilder(
+          desktopBuilder: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ImageButton(
+                  width: getResponsiveSize(context,
+                      mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                  height: getResponsiveSize(context,
+                      mobileSize: 70, dektopSize: 90),
+                  buttonText: "Calendar",
+                  onPressed: () {
+                    navigate(() => const Calendar());
+                  },
+                  backgroundImage:
+                      trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+              const SizedBox(width: 10),
+              ImageButton(
+                  buttonText: "AI Recommendations",
+                  width: getResponsiveSize(context,
+                      mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                  height: getResponsiveSize(context,
+                      mobileSize: 70, dektopSize: 90),
+                  onPressed: () async {
+                    navigate(() => const AIRecommendation(
+                          isManga: false,
+                        ));
+                  },
+                  backgroundImage:
+                      trendingAnimes[5].cover ?? trendingAnimes[3].poster)
+            ],
+          ),
+          androidBuilder: Column(
+            children: [
+              ImageButton(
+                  width: getResponsiveSize(context,
+                      mobileSize: Get.width - 20, dektopSize: 300),
+                  height: getResponsiveSize(context,
+                      mobileSize: 70, dektopSize: 90),
+                  buttonText: "Calendar",
+                  onPressed: () {
+                    navigate(() => const Calendar());
+                  },
+                  backgroundImage:
+                      trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+              const SizedBox(height: 10),
+              ImageButton(
+                  buttonText: "AI Recommendations",
+                  width: getResponsiveSize(context,
+                      mobileSize: Get.width - 20, dektopSize: 300),
+                  height: getResponsiveSize(context,
+                      mobileSize: 70, dektopSize: 90),
+                  onPressed: () async {
+                    navigate(() => const AIRecommendation(
+                          isManga: false,
+                        ));
+                  },
+                  backgroundImage:
+                      trendingAnimes[5].cover ?? trendingAnimes[3].poster)
+            ],
+          ),
         ),
       ),
       buildSection('Trending Animes', trendingAnimes),
