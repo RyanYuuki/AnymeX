@@ -310,7 +310,7 @@ jobs:
         with:
           file-path: build/linux/x64/release/AnymeX-Linux.zip
           upload-name: AnymeX-Linux-${{ github.ref_name }}.zip
-          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT`
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
           service-account-json: "${{secrets.GOOGLE_KEY}}"
           overrwrite: true
       
@@ -320,7 +320,7 @@ jobs:
         with:
           file-path: build/linux/x64/release/AnymeX-Linux.AppImage
           upload-name: AnymeX-Linux-${{ github.ref_name }}.AppImage
-          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT`
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
           service-account-json: "${{secrets.GOOGLE_KEY}}"
           overrwrite: true
       
@@ -330,7 +330,7 @@ jobs:
         with:
           file-path: build/linux/x64/release/AnymeX-Linux.rpm
           upload-name: AnymeX-Linux-${{ github.ref_name }}.rpm
-          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT`
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
           service-account-json: "${{secrets.GOOGLE_KEY}}"
           overrwrite: true
 
