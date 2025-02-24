@@ -692,7 +692,7 @@ jobs:
           # Send Discord message
           curl -H "Content-Type: application/json" \
               -d "$discord_data" \
-              ${{ secrets.DISCORD_WEBHOOK_URL }}
+              ${{ secrets.DISCORD_WEBHOOK }}
 
           # Format commit messages for Telegram
           telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
@@ -756,7 +756,7 @@ jobs:
 
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"${ANDROID_MESSAGE}\n${WINDOWS_MESSAGE}\n${LINUX_MESSAGE}\n${IOS_MESSAGE}\n${MACOS_MESSAGE}\"}" \
-               "${{ secrets.DISCORD_WEBHOOK_URL }}"
+               "${{ secrets.DISCORD_WEBHOOK }}"
 
       - name: Send Telegram Notification
         run: |
