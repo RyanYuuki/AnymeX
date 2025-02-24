@@ -97,7 +97,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/logo_transparent.png
+    - assets/images/
     - .env
 
   fonts:

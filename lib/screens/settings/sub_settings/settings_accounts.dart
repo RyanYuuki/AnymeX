@@ -41,18 +41,9 @@ class SettingsAccounts extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            ProfileTile(
-                serviceIcon:
-                    'https://icons.iconarchive.com/icons/simpleicons-team/simple/256/anilist-icon.png',
-                service: al),
-            ProfileTile(
-                serviceIcon:
-                    'https://cdn.icon-icons.com/icons2/3913/PNG/512/myanimelist_logo_icon_248409.png',
-                service: mal),
-            ProfileTile(
-                serviceIcon:
-                    'https://icon-icons.com/icons2/3915/PNG/512/simkl_logo_icon_249621.png',
-                service: simkl),
+            ProfileTile(serviceIcon: 'anilist-icon.png', service: al),
+            ProfileTile(serviceIcon: 'mal-icon.png', service: mal),
+            ProfileTile(serviceIcon: 'simkl-icon.png', service: simkl),
           ],
         ),
       ),
@@ -75,7 +66,8 @@ class ProfileTile extends StatelessWidget {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
+        color:
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -86,10 +78,9 @@ class ProfileTile extends StatelessWidget {
           children: [
             CircleAvatar(
               backgroundColor: Colors.transparent,
-              child: CachedNetworkImage(
-                imageUrl: serviceIcon,
+              child: Image.asset(
+                'assets/images/$serviceIcon',
                 color: Theme.of(context).colorScheme.primary,
-                httpHeaders: const {'Referer': 'https://icon-icons.com/'},
               ),
             ),
             const SizedBox(width: 20),

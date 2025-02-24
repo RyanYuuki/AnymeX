@@ -126,12 +126,9 @@ void showWelcomeDialogg(BuildContext context) {
                                                 .inverseSurface),
                                       ),
                                       const Spacer(),
-                                      _buildIcon(context,
-                                          'https://icons.iconarchive.com/icons/simpleicons-team/simple/256/anilist-icon.png'),
-                                      _buildIcon(context,
-                                          'https://cdn.icon-icons.com/icons2/3913/PNG/512/myanimelist_logo_icon_248409.png'),
-                                      _buildIcon(context,
-                                          'https://icon-icons.com/icons2/3915/PNG/512/simkl_logo_icon_249621.png'),
+                                      _buildIcon(context, 'anilist-icon.png'),
+                                      _buildIcon(context, 'mal-icon.png'),
+                                      _buildIcon(context, 'simkl-icon.png'),
                                     ],
                                   ),
                                 ),
@@ -186,10 +183,9 @@ Widget _buildIcon(BuildContext context, String url) {
     child: CircleAvatar(
       radius: 11,
       backgroundColor: Colors.transparent,
-      child: CachedNetworkImage(
-        imageUrl: url,
+      child: Image.asset(
+        url,
         color: Theme.of(context).colorScheme.primary,
-        httpHeaders: const {'Referer': 'https://icon-icons.com/'},
       ),
     ),
   );
