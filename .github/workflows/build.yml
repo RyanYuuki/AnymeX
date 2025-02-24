@@ -740,8 +740,6 @@ jobs:
 
       - name: Send Telegram Notification
         run: |
-      - name: Send Telegram Notification
-        run: |
           TELEGRAM_MESSAGE="🎉 *Build Notification* 🎉"
 
           if [[ -n "$ANDROID_ARM64_MESSAGE" ]]; then
