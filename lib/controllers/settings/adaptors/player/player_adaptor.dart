@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'player_adaptor.g.dart';
 
-@HiveType(typeId: 03)
+@HiveType(typeId: 3)
 class PlayerSettings {
   @HiveField(0)
   double speed;
