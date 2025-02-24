@@ -75,13 +75,45 @@ jobs:
       - name: Rename Universal APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
 
-      - name: Release Android APKs
-        uses: ncipollo/release-action@v1
+      - name: Upload arm64 File To Google Drive
+        id: gdriveUpload_arm64
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
+          upload-name: AnymeX-Android-arm64_${{github.ref_name}}.apk
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload armeabi File To Google Drive
+        id: gdriveUpload_armeabi
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
+          upload-name: AnymeX-Android-armeabi-v7a_${{github.ref_name}}.apk
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload x86 File To Google Drive
+        id: gdriveUpload_x86
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
+          upload-name: AnymeX-Android-x86_64_${{github.ref_name}}.apk
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Universal APK To Google Drive
+        id: gdriveUpload_universal
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+          upload-name: AnymeX-Android-universal_${{github.ref_name}}.apk
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
 
   build-ios:
     runs-on: macos-latest
@@ -126,13 +158,15 @@ jobs:
           zip -r AnymeX-iOS-${{ github.ref_name }}.ipa Payload
           mv AnymeX-iOS-${{ github.ref_name }}.ipa ../../../
 
-      - name: Release iOS IPA
-        uses: ncipollo/release-action@v1
+      - name: Upload iOS IPA To Google Drive
+        id: gdriveUpload_ios
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "AnymeX-iOS-${{ github.ref_name }}.ipa"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: AnymeX-iOS-${{ github.ref_name }}.ipa
+          upload-name: AnymeX-iOS-${{ github.ref_name }}.ipa
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
 
   build-linux:
     runs-on: ubuntu-latest
@@ -261,16 +295,36 @@ jobs:
           cd build/linux/x64/release/bundle
           zip -r ../AnymeX-Linux.zip ./*
 
-      - name: Release Linux Bundle, AppImage & RPM
-        uses: ncipollo/release-action@v1
+      - name: Upload Linux ZIP to Google Drive
+        id: gdriveUpload_linux_zip
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: |
-            build/linux/x64/release/AnymeX-Linux.zip
-            build/linux/x64/release/AnymeX-Linux.AppImage
-            build/linux/x64/release/AnymeX-Linux.rpm
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/linux/x64/release/AnymeX-Linux.zip
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.zip
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Linux AppImage to Google Drive
+        id: gdriveUpload_linux_appimage
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/linux/x64/release/AnymeX-Linux.AppImage
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.AppImage
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Linux RPM to Google Drive
+        id: gdriveUpload_linux_rpm
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/linux/x64/release/AnymeX-Linux.rpm
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.rpm
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
 
   build-windows:
     runs-on: windows-latest
@@ -312,15 +366,26 @@ jobs:
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
-      - name: Release Windows Builds
-        uses: ncipollo/release-action@v1
+      - name: Upload Windows ZIP to Google Drive
+        id: gdriveUpload_windows_zip
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: |
-            build/windows/x64/runner/Release/AnymeX-Windows.zip,
-            build/windows/x64/installer/Release/AnymeX-x86_64-2.9.2-Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/windows/x64/runner/Release/AnymeX-Windows.zip
+          upload-name: AnymeX-Windows-${{ github.ref_name }}.zip
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Windows Installer EXE to Google Drive
+        id: gdriveUpload_windows_exe
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/windows/x64/installer/Release/AnymeX-x86_64-2.9.2-Installer.exe
+          upload-name: AnymeX-x86_64-${{ github.ref_name }}-Installer.exe
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
 
   build-macos:
     runs-on: macos-latest
@@ -361,10 +426,14 @@ jobs:
         run: |
           mkdir -p build/macos/Release
           hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release/AnymeX.app -ov -format UDZO build/macos/Release/AnymeX.dmg
-      - name: Release macOS Builds
-        uses: ncipollo/release-action@v1
+      
+      - name: Upload macOS DMG to Google Drive
+        id: gdriveUpload_macos
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "build/macos/Release/AnymeX.dmg"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/macos/Release/AnymeX.dmg
+          upload-name: AnymeX-macOS-${{ github.ref_name }}.dmg
+          upload-to-folder-id: 14uGpjl0pKbM_qony3E8jpZ-q3gzFuP9a
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
