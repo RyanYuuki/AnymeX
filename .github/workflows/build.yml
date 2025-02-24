@@ -1,6 +1,9 @@
-name: Build and Release AnymeX beta
+name: Build and Release AnymeX (Beta)
 
 on:
+  push:
+    branches:
+      - beta
   workflow_dispatch:
 
 jobs:
