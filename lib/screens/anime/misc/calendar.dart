@@ -77,6 +77,12 @@ class _CalendarState extends State<Calendar>
     return Glow(
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: Theme.of(context).colorScheme.primary,
+              )),
           actions: [
             if (serviceHandler.isLoggedIn.value) ...[
               IconButton(
