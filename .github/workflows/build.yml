@@ -581,9 +581,9 @@ jobs:
 
           # Upload APK to Telegram
           response=$(curl -sS -f -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN}}/sendDocument" \
-              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID}}" \
-              -F "message_thread_id=${{secrets.TELEGRAM_THREAD_ID}}" \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -F "message_thread_id=${{secrets.TELEGRAM_THREAD_ID }}" \
               -F "caption=New Alpha-Build dropped 🔥
 
           Commits:
