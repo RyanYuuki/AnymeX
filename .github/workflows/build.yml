@@ -751,7 +751,7 @@ jobs:
             TELEGRAM_MESSAGE+="$ANDROID_ARMEABI_MESSAGE\n"
           fi
           if [[ -n "$ANDROID_X86_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="\n$ANDROID_X86_MESSAGE\n"
+            TELEGRAM_MESSAGE+="$ANDROID_X86_MESSAGE\n"
           fi
           if [[ -n "$ANDROID_UNIVERSAL_MESSAGE" ]]; then
             TELEGRAM_MESSAGE+="$ANDROID_UNIVERSAL_MESSAGE\n"
@@ -769,7 +769,7 @@ jobs:
             TELEGRAM_MESSAGE+="$LINUX_RPM_MESSAGE\n"
           fi
           if [[ -n "$WINDOWS_ZIP_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="\n$WINDOWS_ZIP_MESSAGE\n"
+            TELEGRAM_MESSAGE+="$WINDOWS_ZIP_MESSAGE\n"
           fi
           if [[ -n "$WINDOWS_EXE_MESSAGE" ]]; then
             TELEGRAM_MESSAGE+="$WINDOWS_EXE_MESSAGE\n"
