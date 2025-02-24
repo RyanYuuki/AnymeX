@@ -190,7 +190,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
             children: [
               ImageButton(
                   width: getResponsiveSize(context,
-                      mobileSize: Get.width - 20, dektopSize: 300),
+                      mobileSize: Get.width - 40, dektopSize: 300),
                   height: getResponsiveSize(context,
                       mobileSize: 70, dektopSize: 90),
                   buttonText: "Calendar",
@@ -203,7 +203,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
               ImageButton(
                   buttonText: "AI Recommendations",
                   width: getResponsiveSize(context,
-                      mobileSize: Get.width - 20, dektopSize: 300),
+                      mobileSize: Get.width - 40, dektopSize: 300),
                   height: getResponsiveSize(context,
                       mobileSize: 70, dektopSize: 90),
                   onPressed: () async {
