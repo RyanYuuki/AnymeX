@@ -120,8 +120,9 @@ jobs:
             fi
             
             # Add installation field
-            installation_field='{"name": "Installation", "value": "[❓Don't know which version to download? Click here!](https://github.com/'"$GITHUB_REPOSITORY"'/blob/main/INSTALLATION.md)"}'
-            fields_json=$(jq '. += ['"$installation_field"']' <<< "$fields_json")
+            fields_json=$(jq --arg name "Installation" \
+                 --arg value "[❓Don't know which version to download? Click here!](https://github.com/$GITHUB_REPOSITORY/blob/main/INSTALLATION.md)" \
+                 '. += [{"name": $name, "value": $value}]' <<< "$fields_json")
             
             # Create the Discord payload with fields instead of description
             discord_data=$(jq -n \
