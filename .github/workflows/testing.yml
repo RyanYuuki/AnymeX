@@ -32,7 +32,7 @@ jobs:
           fi
           echo "Commits since $LAST_SHA:"
           # Accumulate commit logs in a shell variable
-          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s)"
+          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s")
           # URL-encode the newline characters for GitHub Actions
           COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
           COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
