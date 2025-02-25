@@ -25,25 +25,30 @@ jobs:
 
       - name: Get Commits Since Last Run
         run: |
+          # Determine last commit SHA
           if [ -f last_sha.txt ]; then
-            LAST_SHA=$(cat last_sha.txt)
+              LAST_SHA=$(cat last_sha.txt)
           else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+              LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
+          
           echo "Commits since $LAST_SHA:"
           
-          # Store commit logs in a file directly
+          # Store commit logs in a file
           git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/$GITHUB_REPOSITORY/commit/%H) : %s" > commit_log.txt
-      
-          # Encode and save the file content to GITHUB_ENV
-          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
-          cat commit_log.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-          # Extract branch name from github.ref
-          BRANCH=${{ github.ref }}
-          BRANCH=${BRANCH#refs/heads/}
+          
+          # Store commit logs in GitHub environment
+          {
+              echo "COMMIT_LOG<<EOF"
+              cat commit_log.txt
+              echo "EOF"
+          } >> "$GITHUB_ENV"
+          
+          # Extract branch name
+          BRANCH=${GITHUB_REF#refs/heads/}
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          
+
         shell: bash
         env:
           CI: true
