@@ -64,29 +64,57 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
         run: |         
           # Extract all categories into a file
-          echo "**🚀 Features**" > discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          # Initialize formatted commit log file
+          > formatted_notes.txt
           
-          echo "**🐛 Fixes**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          # Process commit categories
+          features=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)
+          if [[ -n "$features" ]]; then
+            echo "**🚀 Features**" >> formatted_notes.txt
+            echo "$features" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
           
-          echo "**🔧 Refactors**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          fixes=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)
+          if [[ -n "$fixes" ]]; then
+            echo "**🐛 Fixes**" >> formatted_notes.txt
+            echo "$fixes" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
           
-          echo "**💅 Style**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          refactors=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)
+          if [[ -n "$refactors" ]]; then
+            echo "**🔧 Refactors**" >> formatted_notes.txt
+            echo "$refactors" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
           
-          echo "**⚡ Performance**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          styles=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)
+          if [[ -n "$styles" ]]; then
+            echo "**💅 Style**" >> formatted_notes.txt
+            echo "$styles" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
           
-          echo "**🛠 Chores**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt            
+          performance=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)
+          if [[ -n "$performance" ]]; then
+            echo "**⚡ Performance**" >> formatted_notes.txt
+            echo "$performance" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
           
-          # Read commit logs from discord_commit.txt
-          commit_messages=$(cat discord_commit.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          chores=$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)
+          if [[ -n "$chores" ]]; then
+            echo "**🛠 Chores**" >> formatted_notes.txt
+            echo "$chores" >> formatted_notes.txt
+            echo "" >> formatted_notes.txt
+          fi
+          
+          # Read commit logs from formatted_notes.txt
+          commit_messages=$(cat formatted_notes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           
           # Handle empty commit logs
-          if [ -z "$commit_messages" ]; then
+          if [[ -z "$commit_messages" ]]; then
             commit_messages="No recent commits"
           fi
           
@@ -125,7 +153,7 @@ jobs:
                -X POST \
                -d "$discord_data" \
                "$DISCORD_WEBHOOK_URL"
-
+               
       - name: Send message to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
