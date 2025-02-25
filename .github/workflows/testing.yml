@@ -51,7 +51,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
         run: |
-          COMMIT_LOGS=$(cat commit_log.txt)
+        
           echo "**🚀 New Release: Beta**" > header.txt
           
           echo "**🚀 Features**" > TFeatures.txt
@@ -102,7 +102,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_TOPIC: ${{ secrets.TELEGRAM_THREAD_ID }}
         run: |
-          COMMIT_LOGS=$(cat commit_log.txt)
+         
           echo "<b>🚀 New Release: Beta</b>" > header.txt
           
           echo "**🚀 Features**" > TFeatures.txt
