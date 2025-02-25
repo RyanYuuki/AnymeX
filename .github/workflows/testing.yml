@@ -61,7 +61,16 @@ jobs:
           
           # Assign commit_logs.txt content to COMMIT_LOGS
           COMMIT_LOGS=$(cat commit_logs.txt)
+
+          # **Preview the commit_logs in console**
+          echo "===== COMMIT LOGS PREVIEW ====="
+          cat commit_logs.txt
+          echo "==============================="
           
+          # **Preview the formatted commit logs**
+          echo "===== FORMATTED COMMIT LOGS (COMMIT_LOGS) ====="
+          echo "$COMMIT_LOGS"
+          echo "==============================================="
           # Encode and save the file content to GITHUB_ENV
           {
             echo "COMMIT_LOGS<<EOF"
