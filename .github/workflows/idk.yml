@@ -34,13 +34,19 @@ jobs:
           
           echo "Commits since $LAST_SHA:"
           
-          # Store commit logs in a file
-          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s")
-          # Append the encoded commit logs to the COMMIT_LOG environment variable
-          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
-          # Debugging: Print the variable to check its content
-          echo "$COMMIT_LOG"
+          # Store commit logs with short hashes
+          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%h](https://github.com/${{ github.repository }}/commit/%H) : %s")
+          
+          # Save commit logs to a file
           echo "$COMMIT_LOG" > commit_log.txt
+          
+          # Append commit logs to GITHUB_ENV using safe EOF syntax
+          {
+            echo "COMMIT_LOG<<EOF"
+            echo "$COMMIT_LOG"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+          
           # Extract branch name from github.ref
           BRANCH=${{ github.ref }}
           BRANCH=${BRANCH#refs/heads/}
