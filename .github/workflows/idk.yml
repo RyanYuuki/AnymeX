@@ -167,22 +167,22 @@ jobs:
           
           # Extract all categories into separate files
           echo "**🚀 Features**" > TFeatures.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
 
           echo "**🐛 Fixes**" > TFixes.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
 
           echo "**🔧 Refactors**" > TRefactors.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
 
           echo "**💅 Style**" > TStyle.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
 
           echo "**⚡ Performance**" > TPerformance.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
 
           echo "**🛠 Chores**" > TChores.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
 
           # Process each file through the parser
           chmod +x scripts/tel_commit_parser.sed
