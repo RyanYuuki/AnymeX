@@ -25,27 +25,28 @@ jobs:
 
       - name: Get Commits Since Last Run
         run: |
-             # Fix the filename typo
-             if [ -f last_sha.txt ]; then
-              LAST_SHA=$(cat last_sha.txt)
-              else
-              LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-              fi
-              echo "Commits since $LAST_SHA:"
-            
-              # Store commit logs in a file
-              git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s" > commit_log.txt
-            
-              # Use a different approach to set the environment variable
-              echo "COMMIT_LOG=$(cat commit_log.txt | base64 -w0)" >> $GITHUB_ENV
-            
-              # Extract branch name from github.ref
-              BRANCH="refs/heads/beta"
-              BRANCH=${BRANCH#refs/heads/}
-              echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-              env:
-              CI: true
-              continue-on-error: true
+          # Fix the filename typo
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          
+          # Store commit logs in a file
+          git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s" > commit_log.txt
+          
+          # Use a different approach to set the environment variable
+          echo "COMMIT_LOG=$(cat commit_log.txt | base64 -w0)" >> $GITHUB_ENV
+          
+          # Extract branch name from github.ref
+          BRANCH="refs/heads/beta"
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+        env:
+          CI: true
+        continue-on-error: true
+        shell: /usr/bin/bash -e {0}
 
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_shaa.txt
