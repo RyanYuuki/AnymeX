@@ -40,7 +40,7 @@ jobs:
           # Save commit logs to a file
           echo "$COMMIT_LOG" > commit_log.txt
           
-          cat formatted_notes.txt
+          cat commit_log.txt
           COMMIT_LOG=$(cat commit_log.txt) 
           echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
           echo "$COMMIT_LOG" >> $GITHUB_ENV
