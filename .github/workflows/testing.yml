@@ -30,12 +30,18 @@ jobs:
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-                
           echo "Commits since $LAST_SHA:"
-          git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s" > commit_log.txt
-          
-          # Assign commit log content
-          COMMIT_LOG=$(cat commit_log.txt)
+          # Accumulate commit logs in a shell variable
+          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s)"
+          # URL-encode the newline characters for GitHub Actions
+          COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
+          COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
+          COMMIT_LOG="${COMMIT_LOG//$'\r'/'%0D'}"
+          # Append the encoded commit logs to the COMMIT_LOG environment variable
+          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
+          # Debugging: Print the variable to check its content
+          echo "$COMMIT_LOG"
+          echo "$COMMIT_LOG" > commit_log.txt
           
           # Create commit_logs.txt and categorize commits
           echo "**🚀 Features**" > commit_logs.txt
