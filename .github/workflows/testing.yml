@@ -34,39 +34,50 @@ jobs:
           echo "Commits since $LAST_SHA:"
           git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s" > commit_log.txt
       
-          COMMIT_LOG=$(cat commit_log.txt)
-          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
-          echo "$COMMIT_LOG" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-      
-          # Extract all categories into separate files
-          echo "**🚀 Features**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-      
-          echo "**🐛 Fixes**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-      
-          echo "**🔧 Refactors**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-      
-          echo "**💅 Style**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-      
-          echo "**⚡ Performance**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-      
-          echo "**🛠 Chores**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
-
-          COMMIT_LOGS=$(cat commit_logs.txt)
-          echo "COMMIT_LOGS<<EOF" >> $GITHUB_ENV
-          echo "$COMMIT_LOGS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV 
+          # Create a new commit_logs.txt file
+          echo "" > commit_logs.txt  # Clears the file before appending
+                          
+          # 🚀 Features
+          echo "**🚀 Features**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
           
+          # 🐛 Fixes
+          echo "**🐛 Fixes**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          # 🔧 Refactors
+          echo "**🔧 Refactors**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          # 💅 Style
+          echo "**💅 Style**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          # ⚡ Performance
+          echo "**⚡ Performance**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          # 🛠 Chores
+          echo "**🛠 Chores**" >> commit_logs.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' commit_log.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 >> commit_logs.txt
+          echo "" >> commit_logs.txt
+
+          # Encode and save the file content to GITHUB_ENV
+          {
+            echo "COMMIT_LOGS<<EOF"
+            cat commit_logs.txt
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+          
+          # Save branch name
           BRANCH="refs/heads/beta"
           BRANCH=${BRANCH#refs/heads/}
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-
 
       - name: Send message to Discord
         env:
@@ -74,7 +85,6 @@ jobs:
         run: |
         
           echo "**🚀 New Release: Beta**" > header.txt
-          
           echo "**🚀 Features**" > TFeatures.txt
           echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
 
