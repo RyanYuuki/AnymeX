@@ -693,7 +693,7 @@ jobs:
           WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
           MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
         run: |
-          MESSAGE="${{ env.LATEST_TAG }} Released
+          MESSAGE="Beta Released
       
           🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
           🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
@@ -711,7 +711,7 @@ jobs:
           if [[ -n "$MESSAGE" ]]; then
             curl -H "Content-Type: application/json" \
                  -d "{\"content\": \"$MESSAGE\"}" \
-                 "${{ DISCORD_WEBHOOK_ALPHA }}"
+                 "${{ secrets.DISCORD_WEBHOOK_ALPHA }}"
           fi
           
       - name: Send Telegram Notification
