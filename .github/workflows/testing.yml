@@ -32,7 +32,10 @@ jobs:
           fi
                 
           echo "Commits since $LAST_SHA:"
-          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s")
+          git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s" > commit_log.txt
+          
+          # Assign commit log content
+          COMMIT_LOG=$(cat commit_log.txt)
           
           # Create commit_logs.txt and categorize commits
           echo "**🚀 Features**" > commit_logs.txt
