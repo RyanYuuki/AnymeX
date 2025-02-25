@@ -30,43 +30,36 @@ jobs:
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-      
+                
           echo "Commits since $LAST_SHA:"
-           COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s")
-          # Debugging: Print the variable to check its content
-          echo "$COMMIT_LOG"
-          echo "$COMMIT_LOG" > commit_log.txt
+          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s")
           
-          # Encode and save the file content to GITHUB_ENV
-          {
-            echo "COMMIT_LOG<<EOF"
-            cat commit_log.txt
-            echo "EOF"
-          } >> "$GITHUB_ENV"
-          
-          # Create a new commit_logs.txt file
-          echo "" > commit_logs.txt  # Clears the file before appending
-                          
-          # Extract all categories into separate files
+          # Create commit_logs.txt and categorize commits
           echo "**🚀 Features**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)" > commit_logs.txt
-      
-          echo "**🐛 Fixes**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)" > commit_logs.txt
-      
-          echo "**🔧 Refactors**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)" > commit_logs.txt
-      
-          echo "**💅 Style**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)" > commit_logs.txt
-      
-          echo "**⚡ Performance**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)" > commit_logs.txt
-      
-          echo "**🛠 Chores**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
           
-          # Assign the contents of commit_logs.txt to COMMIT_LOGS
+          echo "**🐛 Fixes**" >> commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          echo "**🔧 Refactors**" >> commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          echo "**💅 Style**" >> commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          echo "**⚡ Performance**" >> commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          echo "**🛠 Chores**" >> commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)" >> commit_logs.txt
+          echo "" >> commit_logs.txt
+          
+          # Assign commit_logs.txt content to COMMIT_LOGS
           COMMIT_LOGS=$(cat commit_logs.txt)
           
           # Encode and save the file content to GITHUB_ENV
