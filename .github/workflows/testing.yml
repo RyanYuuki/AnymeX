@@ -1,0 +1,227 @@
+name: Build (Beta)  testing
+
+on:
+  push:
+    branches:
+      - beta
+  workflow_dispatch:
+
+jobs:
+  sendMessage:
+    runs-on: ubuntu-latest
+    #needs: [build-android, build-ios, build-linux, build-windows, build-macos]
+    steps:
+      - name: Cloing repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download last SHA artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: testing.yml
+          name: last-shaa
+        continue-on-error: true
+
+      - name: Get Commits Since Last Run
+        run: |
+          if [ -f last_shaa.txt ]; then
+            LAST_SHA=$(cat last_shaa.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          
+          # Store commit logs in a file directly
+          git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/$GITHUB_REPOSITORY/commit/%H) : %s" > commit_log.txt
+      
+          # Append the encoded commit logs to the GITHUB_ENV file correctly
+          {
+            echo "COMMIT_LOG<<EOF"
+            cat commit_log.txt
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+      
+          # Extract branch name from github.ref
+          BRANCH="refs/heads/beta"
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=${BRANCH}" >> "$GITHUB_ENV"
+        shell: bash
+
+
+        env:
+          CI: true
+        continue-on-error: true
+
+      - name: Save Current SHA for Next Run
+        run: echo ${{ github.sha }} > last_shaa.txt
+
+      - name: Send message to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
+        run: |
+          # Start with release header
+          echo "**🚀 New Release: Beta**" > header.txt
+          
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > TFeatures.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+
+          echo "**🐛 Fixes**" > TFixes.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+
+          echo "**🔧 Refactors**" > TRefactors.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+
+          echo "**💅 Style**" > TStyle.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+
+          echo "**⚡ Performance**" > TPerformance.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+
+          echo "**🛠 Chores**" > TChores.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+        
+          default_color="#1ac4c5"
+          hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
+          embed_color=$(hex_to_decimal "$default_color")
+
+          # Ensure VERSION is not empty
+          VERSION=${VERSION:-"Beta"}
+      
+          discord_data=$(jq -nc \
+                        --arg role_mention "<@&1313089691523878942>" \
+                        --arg field_value "$COMMIT_LOGS
+
+            [❓Don't know which version to download? Click here!](https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md)" \
+            
+                        --arg footer_text "Version $VERSION" \
+                        --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                        --argjson embed_color "$embed_color" \
+                        '{
+                          "content": $role_mention,
+                          "embeds": [
+                            {
+                              "title": "🚀 New Release: ${{env.LATEST_TAG}}",
+                              "color": $embed_color,
+                              "description": $field_value,
+                              "footer": {
+                                "text": $footer_text
+                              },
+                              "timestamp": $timestamp
+                            }
+                          ]
+                        }')
+
+          echo "Debug: Final Discord payload is: $discord_data"
+
+          # Send the message to Discord using the webhook
+          curl -H "Content-Type: application/json" \
+              -X POST \
+              -d "$discord_data" \
+              "$DISCORD_WEBHOOK_URL"
+
+      - name: Send message to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC: ${{ secrets.TELEGRAM_THREAD_ID }}
+        run: |
+
+          # Start with release header
+          echo "<b>🚀 New Release: Beta</b>" > header.txt
+          
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > TFeatures.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+
+          echo "**🐛 Fixes**" > TFixes.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+
+          echo "**🔧 Refactors**" > TRefactors.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+
+          echo "**💅 Style**" > TStyle.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+
+          echo "**⚡ Performance**" > TPerformance.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+
+          echo "**🛠 Chores**" > TChores.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+
+          # Process each file through the parser
+          chmod +x scripts/tel_commit_parser.sed
+          
+          ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt
+          ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt
+          ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt
+          ./scripts/tel_commit_parser.sed style.txt > style_clean.txt
+          ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt
+          ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt
+          
+          ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt
+          ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt
+          ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt
+          ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt
+          ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt
+          ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt
+
+          # Check and remove empty categories
+          if [ ! -s feat_clean.txt ] || [ "$(tr -d '[:space:]' < feat_clean.txt)" = "" ]; then
+              rm -f feat_clean.txt TFeaturesT.txt
+          fi
+          if [ ! -s fixes_clean.txt ] || [ "$(tr -d '[:space:]' < fixes_clean.txt)" = "" ]; then
+              rm -f fixes_clean.txt TFixesT.txt
+          fi
+          if [ ! -s refactors_clean.txt ] || [ "$(tr -d '[:space:]' < refactors_clean.txt)" = "" ]; then
+              rm -f refactors_clean.txt TRefactorsT.txt
+          fi
+          if [ ! -s style_clean.txt ] || [ "$(tr -d '[:space:]' < style_clean.txt)" = "" ]; then
+              rm -f style_clean.txt TStyleT.txt
+          fi
+          if [ ! -s perf_clean.txt ] || [ "$(tr -d '[:space:]' < perf_clean.txt)" = "" ]; then
+              rm -f perf_clean.txt TPerformanceT.txt
+          fi
+          if [ ! -s chores_clean.txt ] || [ "$(tr -d '[:space:]' < chores_clean.txt)" = "" ]; then
+              rm -f chores_clean.txt TChoresT.txt
+          fi
+
+          # Combine categories into final output
+          {
+              cat header.txt
+              echo ""
+              [ -f TFeaturesT.txt ] && [ -f feat_clean.txt ] && echo -n "$(cat TFeaturesT.txt) <blockquote>$(cat feat_clean.txt)</blockquote> "
+              [ -f TFixesT.txt ] && [ -f fixes_clean.txt ] && echo -n "$(cat TFixesT.txt) <blockquote>$(cat fixes_clean.txt)</blockquote> "
+              [ -f TRefactorsT.txt ] && [ -f refactors_clean.txt ] && echo -n "$(cat TRefactorsT.txt) <blockquote>$(cat refactors_clean.txt)</blockquote> "
+              [ -f TStyleT.txt ] && [ -f style_clean.txt ] && echo -n "$(cat TStyleT.txt) <blockquote>$(cat style_clean.txt)</blockquote> "
+              [ -f TPerformanceT.txt ] && [ -f perf_clean.txt ] && echo -n "$(cat TPerformanceT.txt) <blockquote>$(cat perf_clean.txt)</blockquote> "
+              [ -f TChoresT.txt ] && [ -f chores_clean.txt ] && echo -n "$(cat TChoresT.txt) <blockquote>$(cat chores_clean.txt)</blockquote> "
+              echo ""
+              echo "❓<a href='https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md'>Don't know which version to download? Click here!</a>"
+              } > output.txt
+
+          if [ ! -s output.txt ]; then
+              echo "No commits found. Skipping Telegram message."
+              exit 0
+          fi
+          markdown_info_tel=$(< output.txt)
+          echo "Final Telegram Message:"
+          echo "$markdown_info_tel"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+              -d "chat_id=$TELEGRAM_CHAT_ID" \
+              -d "text=$markdown_info_tel" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true"
+              
+          Commits:
+          ${telegram_commit_messages}
+          Version: $VERSION" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true")
+    
+      - name: Upload Current SHA as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-shaa
+          path: last_shaa.txt
