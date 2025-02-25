@@ -55,14 +55,6 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
         run: |
-        
-          echo "**🚀 New Release: Beta**" > header.txt
-          echo "**🚀 Features**" > TFeatures.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
-
-          echo "**🐛 Fixes**" > TFixes.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
-
           default_color="#1ac4c5"
           hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
           embed_color=$(hex_to_decimal "$default_color")
@@ -81,7 +73,7 @@ jobs:
                           "content": $role_mention,
                           "embeds": [
                             {
-                              "title": "🚀 New Release: ${{env.LATEST_TAG}}",
+                              "title": "🚀 New Release: Beta",
                               "color": $embed_color,
                               "description": $field_value,
                               "footer": {
