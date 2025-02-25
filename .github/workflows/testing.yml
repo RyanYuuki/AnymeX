@@ -33,7 +33,10 @@ jobs:
       
           echo "Commits since $LAST_SHA:"
            COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s")
-
+          # Debugging: Print the variable to check its content
+          echo "$COMMIT_LOGS"
+          echo "$COMMIT_LOGS" > commit_log.txt
+          
           # Encode and save the file content to GITHUB_ENV
           {
             echo "COMMIT_LOG<<EOF"
