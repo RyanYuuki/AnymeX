@@ -35,7 +35,7 @@ jobs:
           echo "Commits since $LAST_SHA:"
           
           # Store commit logs in a file
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s")
+          COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s")
           # Append the encoded commit logs to the COMMIT_LOG environment variable
           echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
           # Debugging: Print the variable to check its content
@@ -59,59 +59,61 @@ jobs:
         run: |         
           # Extract all categories into a file
           echo "**🚀 Features**" > discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
           
           echo "**🐛 Fixes**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
           
           echo "**🔧 Refactors**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
           
           echo "**💅 Style**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
           
           echo "**⚡ Performance**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt
           
           echo "**🛠 Chores**" >> discord_commit.txt
-          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt            
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt            
 
-          # Convert discord_commit.txt to JSON array
-          fields_json=$(jq -R -s '[split("\n") | .[] | select(. != "") | {name: ., value: "\u200B", inline: false}]' < discord_commit.txt)
-
-          # Define embed color (example: blue)
-          embed_color=3447003
-
-          # Create the Discord payload
-          discord_data=$(jq -n \
-            --arg role_mention "<@&1313089691523878942>" \
-            --arg title "🚀 New Release: Beta" \
-            --arg footer_text "Version beta" \
-            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
-            --argjson embed_color "$embed_color" \
-            --argjson fields "$fields_json" \
-            '{
-              "content": $role_mention,
-              "embeds": [
-                {
-                  "title": $title,
-                  "color": $embed_color,
-                  "fields": $fields,
-                  "footer": {
-                    "text": $footer_text
-                  },
-                  "timestamp": $timestamp
-                }
-              ]
-            }')
+          # Read commit logs from discord_commit.txt
+          commit_messages=$(cat discord_commit.txt)
           
-          echo "Debug: Final Discord payload is: $discord_data"
-
-          # Send the message to Discord using the webhook
+          # Construct Discord payload
+          discord_data=$(jq -nc \
+                            --arg field_value "$commit_messages" \
+                            --arg footer_text "Version beta" \
+                            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                            --arg embed_color "$embed_color" \
+                            '{
+                              "content": "<@&1313089691523878942>",
+                              "embeds": [
+                                {
+                                  "title": "🚀 New Beta Release",
+                                  "color": ($embed_color | tonumber),
+                                  "fields": [
+                                    {
+                                      "name": "Commits:",
+                                      "value": $field_value,
+                                      "inline": false
+                                    }
+                                  ],
+                                  "footer": {
+                                    "text": $footer_text
+                                  },
+                                  "timestamp": $timestamp
+                                }
+                              ]
+                            }')
+          
+          # Debugging: Print the payload
+          echo "Debug: Discord Payload -> $discord_data"
+          
+          # Send the message to Discord
           curl -H "Content-Type: application/json" \
-              -X POST \
-              -d "$discord_data" \
-              "$DISCORD_WEBHOOK_URL"
+               -X POST \
+               -d "$discord_data" \
+               "$DISCORD_WEBHOOK_URL"
 
       - name: Send message to Telegram
         env:
