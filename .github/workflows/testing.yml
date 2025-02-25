@@ -48,9 +48,6 @@ jobs:
         continue-on-error: true
         shell: /usr/bin/bash -e {0}
 
-      - name: Save Current SHA for Next Run
-        run: echo ${{ github.sha }} > last_shaa.txt
-
       - name: Send message to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
