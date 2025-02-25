@@ -484,16 +484,19 @@ jobs:
           fi
           echo "Commits since $LAST_SHA:"
           # Accumulate commit logs in a shell variable
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/$GITHUB_REPOSITORY/commit/%H) : %s")
           # URL-encode the newline characters for GitHub Actions
           COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
+          
           # Append the encoded commit logs to the COMMIT_LOG environment variable
           echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
+          
           # Debugging: Print the variable to check its content
           echo "$COMMIT_LOGS"
           echo "$COMMIT_LOGS" > commit_log.txt
+          
           # Extract branch name from github.ref
           BRANCH=${{ github.ref }}
           BRANCH=${BRANCH#refs/heads/}
@@ -506,76 +509,163 @@ jobs:
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
 
-      - name: Upload APK to Discord and Telegram
-        shell: bash
+      - name: Send message to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
         run: |
-          # Truncate field values
-          max_length=1024
-          commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
-          if [ ${#commit_messages} -gt $max_length ]; then
-            commit_messages="${commit_messages:0:$max_length}"
-          fi
+          # Start with release header
+          echo "**🚀 New Release: Beta**" > header.txt
           
-          # Set default values if variables are empty
-          : "${ping_variable:=<@&1313089691523878942>}"
-          : "${commit_messages:=No commits available.}"
-          : "${VERSION:=beta}"
-          : "${embed_color:=16711680}"  # Default red color
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > TFeatures.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
 
-          # Construct Discord payload
+          echo "**🐛 Fixes**" > TFixes.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+
+          echo "**🔧 Refactors**" > TRefactors.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+
+          echo "**💅 Style**" > TStyle.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+
+          echo "**⚡ Performance**" > TPerformance.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+
+          echo "**🛠 Chores**" > TChores.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+        
+          default_color="#1ac4c5"
+          hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
+          embed_color=$(hex_to_decimal "$default_color")
+
+          # Ensure VERSION is not empty
+          VERSION=${VERSION:-"Beta"}
+      
           discord_data=$(jq -nc \
-                            --arg content "$ping_variable" \
-                            --arg field_value "$commit_messages" \
-                            --arg footer_text "Version $VERSION" \
-                            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
-                            --arg thumbnail_url "${thumbnail_url:-https://cdn.discordapp.com/icons/1303000390505336893/d5c4b7afadec08e4c03e89cf997b5f6a.png}" \
-                            --arg embed_color "$embed_color" \
-                            '{
-                              "content": $content,
-                              "embeds": [
-                                {
-                                  "title": "New Alpha-Build dropped 🔥",
-                                  "color": ($embed_color | tonumber),
-                                  "fields": [
-                                    {
-                                      "name": "Commits:",
-                                      "value": $field_value,
-                                      "inline": true
-                                    }
-                                  ],
-                                  "footer": {
-                                    "text": $footer_text
-                                  },
-                                  "timestamp": $timestamp,
-                                  "thumbnail": {
-                                    "url": $thumbnail_url
-                                  }
-                                }
-                              ],
-                              "attachments": []
-                            }')
-          echo "Debug: Final Discord payload is:"
-          echo "$discord_data"
-          # Send Discord message
+                        --arg role_mention "<@&1313089691523878942>" \
+                        --arg field_value "$COMMIT_LOGS
+
+            [❓Don't know which version to download? Click here!](https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md)" \
+            
+                        --arg footer_text "Version $VERSION" \
+                        --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                        --argjson embed_color "$embed_color" \
+                        '{
+                          "content": $role_mention,
+                          "embeds": [
+                            {
+                              "title": "🚀 New Release: ${{env.LATEST_TAG}}",
+                              "color": $embed_color,
+                              "description": $field_value,
+                              "footer": {
+                                "text": $footer_text
+                              },
+                              "timestamp": $timestamp
+                            }
+                          ]
+                        }')
+
+          echo "Debug: Final Discord payload is: $discord_data"
+
+          # Send the message to Discord using the webhook
           curl -H "Content-Type: application/json" \
+              -X POST \
               -d "$discord_data" \
-              ${{ secrets.DISCORD_WEBHOOK }}
+              "$DISCORD_WEBHOOK_URL"
 
-          # Format commit messages for Telegram
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-              message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
-              message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
-              echo "$message"
-          done)
-          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
-          echo "$telegram_commit_messages"
+      - name: Send message to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC: ${{ secrets.TELEGRAM_THREAD_ID }}
+        run: |
 
-          # Upload APK to Telegram
-          response=$(curl -sS -f -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-              -d "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
-              -d "text=New Alpha-Build dropped 🔥
+          # Start with release header
+          echo "<b>🚀 New Release: Beta</b>" > header.txt
+          
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > TFeatures.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+
+          echo "**🐛 Fixes**" > TFixes.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+
+          echo "**🔧 Refactors**" > TRefactors.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+
+          echo "**💅 Style**" > TStyle.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+
+          echo "**⚡ Performance**" > TPerformance.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+
+          echo "**🛠 Chores**" > TChores.txt
+          echo "$(echo "$COMMIT_LOGS" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+
+          # Process each file through the parser
+          chmod +x scripts/tel_commit_parser.sed
+          
+          ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt
+          ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt
+          ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt
+          ./scripts/tel_commit_parser.sed style.txt > style_clean.txt
+          ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt
+          ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt
+          
+          ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt
+          ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt
+          ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt
+          ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt
+          ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt
+          ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt
+
+          # Check and remove empty categories
+          if [ ! -s feat_clean.txt ] || [ "$(tr -d '[:space:]' < feat_clean.txt)" = "" ]; then
+              rm -f feat_clean.txt TFeaturesT.txt
+          fi
+          if [ ! -s fixes_clean.txt ] || [ "$(tr -d '[:space:]' < fixes_clean.txt)" = "" ]; then
+              rm -f fixes_clean.txt TFixesT.txt
+          fi
+          if [ ! -s refactors_clean.txt ] || [ "$(tr -d '[:space:]' < refactors_clean.txt)" = "" ]; then
+              rm -f refactors_clean.txt TRefactorsT.txt
+          fi
+          if [ ! -s style_clean.txt ] || [ "$(tr -d '[:space:]' < style_clean.txt)" = "" ]; then
+              rm -f style_clean.txt TStyleT.txt
+          fi
+          if [ ! -s perf_clean.txt ] || [ "$(tr -d '[:space:]' < perf_clean.txt)" = "" ]; then
+              rm -f perf_clean.txt TPerformanceT.txt
+          fi
+          if [ ! -s chores_clean.txt ] || [ "$(tr -d '[:space:]' < chores_clean.txt)" = "" ]; then
+              rm -f chores_clean.txt TChoresT.txt
+          fi
+
+          # Combine categories into final output
+          {
+              cat header.txt
+              echo ""
+              [ -f TFeaturesT.txt ] && [ -f feat_clean.txt ] && echo -n "$(cat TFeaturesT.txt) <blockquote>$(cat feat_clean.txt)</blockquote> "
+              [ -f TFixesT.txt ] && [ -f fixes_clean.txt ] && echo -n "$(cat TFixesT.txt) <blockquote>$(cat fixes_clean.txt)</blockquote> "
+              [ -f TRefactorsT.txt ] && [ -f refactors_clean.txt ] && echo -n "$(cat TRefactorsT.txt) <blockquote>$(cat refactors_clean.txt)</blockquote> "
+              [ -f TStyleT.txt ] && [ -f style_clean.txt ] && echo -n "$(cat TStyleT.txt) <blockquote>$(cat style_clean.txt)</blockquote> "
+              [ -f TPerformanceT.txt ] && [ -f perf_clean.txt ] && echo -n "$(cat TPerformanceT.txt) <blockquote>$(cat perf_clean.txt)</blockquote> "
+              [ -f TChoresT.txt ] && [ -f chores_clean.txt ] && echo -n "$(cat TChoresT.txt) <blockquote>$(cat chores_clean.txt)</blockquote> "
+              echo ""
+              echo "❓<a href='https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md'>Don't know which version to download? Click here!</a>"
+              } > output.txt
+
+          if [ ! -s output.txt ]; then
+              echo "No commits found. Skipping Telegram message."
+              exit 0
+          fi
+          markdown_info_tel=$(< output.txt)
+          echo "Final Telegram Message:"
+          echo "$markdown_info_tel"
+          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+              -d "chat_id=$TELEGRAM_CHAT_ID" \
+              -d "text=$markdown_info_tel" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true"
               
           Commits:
           ${telegram_commit_messages}
@@ -603,179 +693,55 @@ jobs:
           WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
           MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
         run: |
-          # Check if ANDROID_ARM64_LINK is not empty
-          if [[ -n "$ANDROID_ARM64_LINK" ]]; then
-            ANDROID_ARM64_MESSAGE="[Download Android ARM64]($ANDROID_ARM64_LINK)"
-          else
-            ANDROID_ARM64_MESSAGE=""
-          fi
-          
-          # Check if ANDROID_ARMEABI_LINK is not empty
-          if [[ -n "$ANDROID_ARMEABI_LINK" ]]; then
-            ANDROID_ARMEABI_MESSAGE="[Download Android ARMEABI]($ANDROID_ARMEABI_LINK)"
-          else
-            ANDROID_ARMEABI_MESSAGE=""
-          fi
-          
-          # Check if ANDROID_X86_LINK is not empty
-          if [[ -n "$ANDROID_X86_LINK" ]]; then
-            ANDROID_X86_MESSAGE="[Download Android x86]($ANDROID_X86_LINK)"
-          else
-            ANDROID_X86_MESSAGE=""
-          fi
-          
-          # Check if ANDROID_UNIVERSAL_LINK is not empty
-          if [[ -n "$ANDROID_UNIVERSAL_LINK" ]]; then
-            ANDROID_UNIVERSAL_MESSAGE="[Download Android Universal]($ANDROID_UNIVERSAL_LINK)"
-          else
-            ANDROID_UNIVERSAL_MESSAGE=""
-          fi
-          
-          # Check if IOS_LINK is not empty
-          if [[ -n "$IOS_LINK" ]]; then
-            IOS_MESSAGE="[Download iOS]($IOS_LINK)"
-          else
-            IOS_MESSAGE=""
-          fi
-          
-          # Check if LINUX_ZIP_LINK is not empty
-          if [[ -n "$LINUX_ZIP_LINK" ]]; then
-            LINUX_ZIP_MESSAGE="[Download Linux ZIP]($LINUX_ZIP_LINK)"
-          else
-            LINUX_ZIP_MESSAGE=""
-          fi
-          
-          # Check if LINUX_APPIMAGE_LINK is not empty
-          if [[ -n "$LINUX_APPIMAGE_LINK" ]]; then
-            LINUX_APPIMAGE_MESSAGE="[Download Linux AppImage]($LINUX_APPIMAGE_LINK)"
-          else
-            LINUX_APPIMAGE_MESSAGE=""
-          fi
-          
-          # Check if LINUX_RPM_LINK is not empty
-          if [[ -n "$LINUX_RPM_LINK" ]]; then
-            LINUX_RPM_MESSAGE="[Download Linux RPM]($LINUX_RPM_LINK)"
-          else
-            LINUX_RPM_MESSAGE=""
-          fi
-          
-          # Check if WINDOWS_ZIP_LINK is not empty
-          if [[ -n "$WINDOWS_ZIP_LINK" ]]; then
-            WINDOWS_ZIP_MESSAGE="[Download Windows ZIP]($WINDOWS_ZIP_LINK)"
-          else
-            WINDOWS_ZIP_MESSAGE=""
-          fi
-          
-          # Check if WINDOWS_EXE_LINK is not empty
-          if [[ -n "$WINDOWS_EXE_LINK" ]]; then
-            WINDOWS_EXE_MESSAGE="[Download Windows Installer]($WINDOWS_EXE_LINK)"
-          else
-            WINDOWS_EXE_MESSAGE=""
-          fi
-          
-          # Check if MACOS_LINK is not empty
-          if [[ -n "$MACOS_LINK" ]]; then
-            MACOS_MESSAGE="[Download macOS]($MACOS_LINK)"
-          else
-            MACOS_MESSAGE=""
-          fi
-
-          # Export messages to GitHub environment
-          echo "android_arm64_message=$ANDROID_ARM64_MESSAGE" >> $GITHUB_ENV
-          echo "android_armeabi_message=$ANDROID_ARMEABI_MESSAGE" >> $GITHUB_ENV
-          echo "android_x86_message=$ANDROID_X86_MESSAGE" >> $GITHUB_ENV
-          echo "android_universal_message=$ANDROID_UNIVERSAL_MESSAGE" >> $GITHUB_ENV
-          echo "ios_message=$IOS_MESSAGE" >> $GITHUB_ENV
-          echo "linux_zip_message=$LINUX_ZIP_MESSAGE" >> $GITHUB_ENV
-          echo "linux_appimage_message=$LINUX_APPIMAGE_MESSAGE" >> $GITHUB_ENV
-          echo "linux_rpm_message=$LINUX_RPM_MESSAGE" >> $GITHUB_ENV
-          echo "windows_zip_message=$WINDOWS_ZIP_MESSAGE" >> $GITHUB_ENV
-          echo "windows_exe_message=$WINDOWS_EXE_MESSAGE" >> $GITHUB_ENV
-          echo "macos_message=$MACOS_MESSAGE" >> $GITHUB_ENV
-          # Construct the message content
-          
-          DISCORD_MESSAGE=""
-          
-          if [[ -n "$ANDROID_ARM64_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$ANDROID_ARM64_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_ARMEABI_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$ANDROID_ARMEABI_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_X86_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$ANDROID_X86_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_UNIVERSAL_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$ANDROID_UNIVERSAL_MESSAGE\n"
-          fi
-          if [[ -n "$IOS_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$IOS_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_ZIP_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$LINUX_ZIP_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_APPIMAGE_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$LINUX_APPIMAGE_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_RPM_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$LINUX_RPM_MESSAGE\n"
-          fi
-          if [[ -n "$WINDOWS_ZIP_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$WINDOWS_ZIP_MESSAGE\n"
-          fi
-          if [[ -n "$WINDOWS_EXE_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$WINDOWS_EXE_MESSAGE\n"
-          fi
-          if [[ -n "$MACOS_MESSAGE" ]]; then
-            DISCORD_MESSAGE+="$MACOS_MESSAGE"
-          fi
-
-          
+          MESSAGE="${{ env.LATEST_TAG }} Released
+      
+          🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
+          🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
+          🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**
+          🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**
+          🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
+          🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**
+          🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
+          🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**
+          🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**
+          🔹 [Download]($IOS_LINK) | **iOS**
+          🔹 [Download]($MACOS_LINK) | **macOS**"
+      
           # Send to Discord if the message is not empty
-          if [[ -n "$DISCORD_MESSAGE" ]]; then
+          if [[ -n "$MESSAGE" ]]; then
             curl -H "Content-Type: application/json" \
-                 -d "{\"content\": \"$DISCORD_MESSAGE\"}" \
+                 -d "{\"content\": \"$MESSAGE\"}" \
                  "${{ secrets.DISCORD_WEBHOOK }}"
           fi
-
+          
       - name: Send Telegram Notification
+        env:
+          ANDROID_ARM64_LINK: ${{ needs.build-android.outputs.arm64_link }}
+          ANDROID_ARMEABI_LINK: ${{ needs.build-android.outputs.armeabi_link }}
+          ANDROID_X86_LINK: ${{ needs.build-android.outputs.x86_link }}
+          ANDROID_UNIVERSAL_LINK: ${{ needs.build-android.outputs.universal_link }}
+          IOS_LINK: ${{ needs.build-ios.outputs.ios_link }}
+          LINUX_ZIP_LINK: ${{ needs.build-linux.outputs.linux_zip_link }}
+          LINUX_APPIMAGE_LINK: ${{ needs.build-linux.outputs.linux_appimage_link }}
+          LINUX_RPM_LINK: ${{ needs.build-linux.outputs.linux_rpm_link }}
+          WINDOWS_ZIP_LINK: ${{ needs.build-windows.outputs.windows_zip_link }}
+          WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
+          MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
         run: |
-          TELEGRAM_MESSAGE="🎉 *Build Notification* 🎉"
-
-          if [[ -n "$ANDROID_ARM64_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$ANDROID_ARM64_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_ARMEABI_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$ANDROID_ARMEABI_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_X86_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$ANDROID_X86_MESSAGE\n"
-          fi
-          if [[ -n "$ANDROID_UNIVERSAL_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$ANDROID_UNIVERSAL_MESSAGE\n"
-          fi
-          if [[ -n "$IOS_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$IOS_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_ZIP_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$LINUX_ZIP_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_APPIMAGE_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$LINUX_APPIMAGE_MESSAGE\n"
-          fi
-          if [[ -n "$LINUX_RPM_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$LINUX_RPM_MESSAGE\n"
-          fi
-          if [[ -n "$WINDOWS_ZIP_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$WINDOWS_ZIP_MESSAGE\n"
-          fi
-          if [[ -n "$WINDOWS_EXE_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$WINDOWS_EXE_MESSAGE\n"
-          fi
-          if [[ -n "$MACOS_MESSAGE" ]]; then
-            TELEGRAM_MESSAGE+="$MACOS_MESSAGE"
-          fi
-
+          TELEGRAM_MESSAGE="🎉 *${{ env.LATEST_TAG }} Released* 🎉
+      
+          🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
+          🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
+          🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**
+          🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**
+          🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
+          🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**
+          🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
+          🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**
+          🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**
+          🔹 [Download]($IOS_LINK) | **iOS**
+          🔹 [Download]($MACOS_LINK) | **macOS**"
+      
           curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
