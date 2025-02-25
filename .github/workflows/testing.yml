@@ -34,63 +34,22 @@ jobs:
           # Accumulate commit logs in a shell variable
           COMMIT_LOG=$(git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/${{ github.repository }}/commit/%H) : %s")
           # URL-encode the newline characters for GitHub Actions
-          COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\r'/'%0D'}"
+          COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
           # Append the encoded commit logs to the COMMIT_LOG environment variable
-          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
+          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
           # Debugging: Print the variable to check its content
-          echo "$COMMIT_LOG"
-          echo "$COMMIT_LOG" > commit_log.txt
-          
-          # Create commit_logs.txt and categorize commits
-          echo "**🚀 Features**" > commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          echo "**🐛 Fixes**" >> commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          echo "**🔧 Refactors**" >> commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          echo "**💅 Style**" >> commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          echo "**⚡ Performance**" >> commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          echo "**🛠 Chores**" >> commit_logs.txt
-          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)" >> commit_logs.txt
-          echo "" >> commit_logs.txt
-          
-          # Assign commit_logs.txt content to COMMIT_LOGS
-          COMMIT_LOGS=$(cat commit_logs.txt)
-
-          # **Preview the commit_logs in console**
-          echo "===== COMMIT LOGS PREVIEW ====="
-          cat commit_logs.txt
-          echo "==============================="
-          
-          # **Preview the formatted commit logs**
-          echo "===== FORMATTED COMMIT LOGS (COMMIT_LOGS) ====="
           echo "$COMMIT_LOGS"
-          echo "==============================================="
-          # Encode and save the file content to GITHUB_ENV
-          {
-            echo "COMMIT_LOGS<<EOF"
-            cat commit_logs.txt
-            echo "EOF"
-          } >> "$GITHUB_ENV"
-          
-          # Save branch name
-          BRANCH="refs/heads/beta"
+          echo "$COMMIT_LOGS" > commit_log.txt
+          # Extract branch name from github.ref
+          BRANCH=${{ github.ref }}
           BRANCH=${BRANCH#refs/heads/}
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+        shell: /usr/bin/bash -e {0}
+        env:
+          CI: true
+        continue-on-error: true
 
       - name: Send message to Discord
         env:
