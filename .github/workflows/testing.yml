@@ -20,7 +20,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v6
         with:
           workflow: testing.yml
-          name: last-shaa
+          name: last-sha
         continue-on-error: true
 
       - name: Get Commits Since Last Run
@@ -30,22 +30,43 @@ jobs:
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-          
+      
           echo "Commits since $LAST_SHA:"
           git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/Shebyyy/AnymeX/commit/%H) : %s" > commit_log.txt
-          
-          COMMIT_LOGS=$(cat commit_log.txt)
+      
+          COMMIT_LOG=$(cat commit_log.txt)
+          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
+          echo "$COMMIT_LOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      
+          # Extract all categories into separate files
+          echo "**🚀 Features**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+      
+          echo "**🐛 Fixes**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+      
+          echo "**🔧 Refactors**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+      
+          echo "**💅 Style**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+      
+          echo "**⚡ Performance**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+      
+          echo "**🛠 Chores**" > commit_logs.txt
+          echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > commit_logs.txt
+
+          COMMIT_LOGS=$(cat commit_logs.txt)
           echo "COMMIT_LOGS<<EOF" >> $GITHUB_ENV
           echo "$COMMIT_LOGS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV 
           
           BRANCH="refs/heads/beta"
           BRANCH=${BRANCH#refs/heads/}
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-        env:
-          CI: true
-        continue-on-error: true
-        shell: /usr/bin/bash -e {0}
+
 
       - name: Send message to Discord
         env:
@@ -133,9 +154,12 @@ jobs:
               -d "text=$markdown_info_tel" \
               -d "parse_mode=HTML" \
               -d "disable_web_page_preview=true"
+      
+      - name: Save Current SHA for Next Run
+        run: echo ${{ github.sha }} > last_sha.txt
 
       - name: Upload Current SHA as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: last-shaa
+          name: last-sha
           path: last_sha.txt
