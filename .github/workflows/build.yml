@@ -511,7 +511,7 @@ jobs:
 
       - name: Send message to Discord
         env:
-          DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
         run: |
           # Start with release header
           echo "**🚀 New Release: Beta**" > header.txt
@@ -711,7 +711,7 @@ jobs:
           if [[ -n "$MESSAGE" ]]; then
             curl -H "Content-Type: application/json" \
                  -d "{\"content\": \"$MESSAGE\"}" \
-                 "${{ secrets.DISCORD_WEBHOOK }}"
+                 "${{ DISCORD_WEBHOOK_ALPHA }}"
           fi
           
       - name: Send Telegram Notification
