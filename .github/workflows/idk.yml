@@ -81,9 +81,14 @@ jobs:
           
           echo "**🛠 Chores**" >> discord_commit.txt
           echo "$(echo "$COMMIT_LOG" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" >> discord_commit.txt            
-
-          # Read commit logs from discord_commit.txt and format for JSON
-          commit_messages=$(jq -R -s '.' < discord_commit.txt)
+          
+          # Read commit logs from discord_commit.txt
+          commit_messages=$(cat discord_commit.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          
+          # Handle empty commit logs
+          if [ -z "$commit_messages" ]; then
+            commit_messages="No recent commits"
+          fi
           
           # Construct Discord payload
           discord_data=$(jq -nc \
