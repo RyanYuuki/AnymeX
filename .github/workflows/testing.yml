@@ -32,20 +32,18 @@ jobs:
           fi
           echo "Commits since $LAST_SHA:"
           
-          # Store commit logs in a file directly
+          # Store commit logs in a file
           git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/$GITHUB_REPOSITORY/commit/%H) : %s" > commit_log.txt
       
-          # Append the encoded commit logs to the GITHUB_ENV file correctly
-          {
-            echo "COMMIT_LOG<<EOF"
-            cat commit_log.txt
-            echo "EOF"
-          } >> "$GITHUB_ENV"
+          # Correctly append commit logs to the GITHUB_ENV file
+          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
+          cat commit_log.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       
           # Extract branch name from github.ref
           BRANCH="refs/heads/beta"
           BRANCH=${BRANCH#refs/heads/}
-          echo "BRANCH=${BRANCH}" >> "$GITHUB_ENV"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
         shell: bash
 
 
