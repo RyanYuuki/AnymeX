@@ -36,9 +36,11 @@ jobs:
           git log $LAST_SHA..HEAD --pretty=format:"* [%H](https://github.com/$GITHUB_REPOSITORY/commit/%H) : %s" > commit_log.txt
       
           # Correctly append commit logs to the GITHUB_ENV file
-          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
-          cat commit_log.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          {
+            echo "COMMIT_LOG<<EOF"
+            cat commit_log.txt
+            echo "EOF"
+          } >> $GITHUB_ENV
       
           # Extract branch name from github.ref
           BRANCH="refs/heads/beta"
