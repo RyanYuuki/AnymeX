@@ -9,18 +9,30 @@ jobs:
     
     steps:
       - name: Set random test links
+        env:
+          ANDROID_ARM64_LINK: https://example.com/android-arm64-v1.0.0.apk
+          ANDROID_ARMEABI_LINK: https://example.com/android-armeabi-v7a-v1.0.0.apk
+          ANDROID_X86_LINK: https://example.com/android-x86-v1.0.0.apk
+          ANDROID_UNIVERSAL_LINK: https://example.com/android-universal-v1.0.0.apk
+          IOS_LINK: IOS_LINK=https://example.com/ios-v1.0.0.ipa
+          LINUX_ZIP_LINK: https://example.com/linux-v1.0.0.zip
+          LINUX_APPIMAGE_LINK: https://example.com/linux-v1.0.0.AppImage
+          LINUX_RPM_LINK: https://example.com/linux-v1.0.0.rpm
+          WINDOWS_ZIP_LINK: https://example.com/windows-v1.0.0.zip
+          WINDOWS_EXE_LINK: https://example.com/windows-v1.0.0.exe
+          MACOS_LINK: https://example.com/macos-v1.0.0.dmg
         run: |
-          echo "ANDROID_ARM64_LINK=https://example.com/android-arm64-v1.0.0.apk" >> $GITHUB_ENV
-          echo "ANDROID_ARMEABI_LINK=https://example.com/android-armeabi-v7a-v1.0.0.apk" >> $GITHUB_ENV
-          echo "ANDROID_UNIVERSAL_LINK=https://example.com/android-universal-v1.0.0.apk" >> $GITHUB_ENV
-          echo "ANDROID_X86_LINK=https://example.com/android-x86-v1.0.0.apk" >> $GITHUB_ENV
-          echo "WINDOWS_ZIP_LINK=https://example.com/windows-v1.0.0.zip" >> $GITHUB_ENV
-          echo "WINDOWS_EXE_LINK=https://example.com/windows-v1.0.0.exe" >> $GITHUB_ENV
-          echo "LINUX_ZIP_LINK=https://example.com/linux-v1.0.0.zip" >> $GITHUB_ENV
-          echo "LINUX_APPIMAGE_LINK=https://example.com/linux-v1.0.0.AppImage" >> $GITHUB_ENV
-          echo "LINUX_RPM_LINK=https://example.com/linux-v1.0.0.rpm" >> $GITHUB_ENV
-          echo "IOS_LINK=https://example.com/ios-v1.0.0.ipa" >> $GITHUB_ENV
-          echo "MACOS_LINK=https://example.com/macos-v1.0.0.dmg" >> $GITHUB_ENV
+          echo "ANDROID_ARM64_LINK=" >> $GITHUB_ENV
+          echo "ANDROID_ARMEABI_LINK=" >> $GITHUB_ENV
+          echo "ANDROID_UNIVERSAL_LINK=" >> $GITHUB_ENV
+          echo "ANDROID_X86_LINK=" >> $GITHUB_ENV
+          echo "WINDOWS_ZIP_LINK=" >> $GITHUB_ENV
+          echo "WINDOWS_EXE_LINK=" >> $GITHUB_ENV
+          echo "LINUX_ZIP_LINK=" >> $GITHUB_ENV
+          echo "LINUX_APPIMAGE_LINK=" >> $GITHUB_ENV
+          echo "LINUX_RPM_LINK=" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "MACOS_LINK=" >> $GITHUB_ENV
 
           # Check and send individual Discord messages
           if [[ -n "$ANDROID_ARM64_LINK" ]]; then 
