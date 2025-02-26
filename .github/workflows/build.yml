@@ -467,6 +467,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download last SHA artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          name: last-sha
+        continue-on-error: true
+        
       - name: Get Commits Since Last Run
         run: |
           if [ -f last_sha.txt ]; then
