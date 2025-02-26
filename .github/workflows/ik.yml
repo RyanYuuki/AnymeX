@@ -24,72 +24,72 @@ jobs:
 
           # Check and send individual Discord messages
           if [[ -n "$ANDROID_ARM64_LINK" ]]; then 
-            ANDROID_ARM64="🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**"
+            ANDROID_ARM64="[Download]($ANDROID_ARM64_LINK) | **Android (arm64)**"
           else
             ANDROID_ARM64=""
           fi
 
           if [[ -n "$ANDROID_ARMEABI_LINK" ]]; then 
-            ANDROID_ARMEABI="🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**"
+            ANDROID_ARMEABI="[Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**"
           else
             ANDROID_ARMEABI=""
           fi
 
           if [[ -n "$ANDROID_X86_LINK" ]]; then 
-            ANDROID_X86="🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**"
+            ANDROID_X86="[Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**"
           else
             ANDROID_X86=""
           fi
 
           if [[ -n "$ANDROID_UNIVERSAL_LINK" ]]; then 
-            ANDROID_UNIVERSAL="🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**"
+            ANDROID_UNIVERSAL="[Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**"
           else
             ANDROID_UNIVERSAL=""
           fi
 
           if [[ -n "$IOS_LINK" ]]; then 
-            IOS_MESSAGE="🔹 [Download]($IOS_LINK) | **iOS**"
+            IOS_MESSAGE="[Download]($IOS_LINK) | **iOS**"
           else
             IOS_MESSAGE=""
           fi
 
           if [[ -n "$LINUX_ZIP_LINK" ]]; then 
-            LINUX_MESSAGE="🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**"
+            LINUX_MESSAGE="[Download]($LINUX_ZIP_LINK) | **Linux ZIP**"
           else
             LINUX_MESSAGE=""
           fi
 
           if [[ -n "$LINUX_APPIMAGE_LINK" ]]; then 
-            LINUX_APPIMAGE="🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**"
+            LINUX_APPIMAGE="[Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**"
           else
             LINUX_APPIMAGE=""
           fi
 
           if [[ -n "$LINUX_RPM_LINK" ]]; then 
-            LINUX_RPM="🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**"
+            LINUX_RPM="[Download]($LINUX_RPM_LINK) | **Linux RPM**"
           else
             LINUX_RPM=""
           fi
 
           if [[ -n "$WINDOWS_ZIP_LINK" ]]; then 
-            WINDOWS_MESSAGE="🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**"
+            WINDOWS_MESSAGE="[Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**"
           else
             WINDOWS_MESSAGE=""
           fi
 
           if [[ -n "$WINDOWS_EXE_LINK" ]]; then 
-            WINDOWS_EXE="🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**"
+            WINDOWS_EXE="[Download]($WINDOWS_EXE_LINK) | **Windows EXE**"
           else
             WINDOWS_EXE=""
           fi
 
           if [[ -n "$MACOS_LINK" ]]; then 
-            MACOS_MESSAGE="🔹 [Download]($MACOS_LINK) | **macOS**"
+            MACOS_MESSAGE="[Download]($MACOS_LINK) | **macOS**"
           else
             MACOS_MESSAGE=""
           fi
 
           # Prepare and send the Discord message
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"${ANDROID_ARM64}\n${ANDROID_ARMEABI}\n${ANDROID_X86}\n${ANDROID_UNIVERSAL}\n${IOS_MESSAGE}\n${LINUX_MESSAGE}\n${LINUX_APPIMAGE}\n${LINUX_RPM}\n${WINDOWS_MESSAGE}\n${WINDOWS_EXE}\n${MACOS_MESSAGE}\"}" \
+               -d "{\"content\": \"🔹 ${ANDROID_ARM64}\n🔹 ${ANDROID_ARMEABI}\n🔹 ${ANDROID_X86}\n🔹 ${ANDROID_UNIVERSAL}\n🔹 ${IOS_MESSAGE}\n🔹 ${LINUX_MESSAGE}\n🔹 ${LINUX_APPIMAGE}\n🔹 ${LINUX_RPM}\n🔹 ${WINDOWS_MESSAGE}\n🔹 ${WINDOWS_EXE}\n🔹 ${MACOS_MESSAGE}\"}" \
                "${{ secrets.DISCORD_WEBHOOK_ALPHA }}"
