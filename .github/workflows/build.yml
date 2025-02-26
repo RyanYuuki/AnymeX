@@ -467,13 +467,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download last SHA artifact
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: build.yml
-          name: last-sha
-        continue-on-error: true
-
       - name: Get Commits Since Last Run
         run: |
           if [ -f last_sha.txt ]; then
@@ -484,20 +477,21 @@ jobs:
           fi
           echo "Commits since $LAST_SHA:"
           # Accumulate commit logs in a shell variable
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=50)
+          COMMIT_LOGSS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=20)
           # URL-encode the newline characters for GitHub Actions
-          COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
-          COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
-          COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
-          # Append the encoded commit logs to the COMMIT_LOG environment variable
-          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
+          COMMIT_LOGSS="${COMMIT_LOGSS//'%'/'%25'}"
+          COMMIT_LOGSS="${COMMIT_LOGSS//$'\n'/'%0A'}"
+          COMMIT_LOGSS="${COMMIT_LOGSS//$'\r'/'%0D'}"
+          # Append the encoded commit logs to the COMMIT_LOGS environment variable
+          echo "COMMIT_LOGS=${COMMIT_LOGSS}" >> $GITHUB_ENV
           # Debugging: Print the variable to check its content
-          echo "$COMMIT_LOGS"
-          echo "$COMMIT_LOGS" > commit_log.txt
+          echo "$COMMIT_LOGSS"
+          echo "$COMMIT_LOGSS" > COMMIT_LOGS.txt
           # Extract branch name from github.ref
           BRANCH=${{ github.ref }}
           BRANCH=${BRANCH#refs/heads/}
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          
         shell: /usr/bin/bash -e {0}
         env:
           CI: true
@@ -505,13 +499,12 @@ jobs:
 
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
-
       - name: Upload APK to Discord and Telegram
         shell: bash
         run: |
           # Truncate field values
           max_length=1024
-          commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
+          commit_messages=$(echo "$COMMIT_LOGS" | sed 's/%0A/\n/g; s/^/\n/')
           if [ ${#commit_messages} -gt $max_length ]; then
             commit_messages="${commit_messages:0:$max_length}"
           fi
@@ -560,7 +553,7 @@ jobs:
               -d "$discord_data" \
               ${{ secrets.DISCORD_WEBHOOK }}
           # Format commit messages for Telegram
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+          telegram_commit_messages=$(echo "$COMMIT_LOGS" | sed 's/%0A/\n/g' | while read -r line; do
               message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
               message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
               echo "$message"
