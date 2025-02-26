@@ -1,14 +1,20 @@
-name: Build and Release AnymeX
+name: Build (Beta)
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - beta
   workflow_dispatch:
 
 jobs:
   build-android:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
+    outputs:
+      arm64_link: ${{ steps.gdriveUpload_arm64.outputs.web-content-link }}
+      armeabi_link: ${{ steps.gdriveUpload_armeabi.outputs.web-content-link }}
+      x86_link: ${{ steps.gdriveUpload_x86.outputs.web-content-link }}
+      universal_link: ${{ steps.gdriveUpload_universal.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -75,16 +81,51 @@ jobs:
       - name: Rename Universal APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
 
-      - name: Release Android APKs
-        uses: ncipollo/release-action@v1
+      - name: Upload arm64 File To Google Drive
+        id: gdriveUpload_arm64
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
+          upload-name: AnymeX-Android-arm64_${{github.ref_name}}.apk
+          upload-to-folder-id: 1mCTGzZ-BR9C-4REzCmLlh7fO95vdYGT5 #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload armeabi File To Google Drive
+        id: gdriveUpload_armeabi
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
+          upload-name: AnymeX-Android-armeabi-v7a_${{github.ref_name}}.apk
+          upload-to-folder-id: 1mCTGzZ-BR9C-4REzCmLlh7fO95vdYGT5 #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload x86 File To Google Drive
+        id: gdriveUpload_x86
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
+          upload-name: AnymeX-Android-x86_64_${{github.ref_name}}.apk
+          upload-to-folder-id: 1mCTGzZ-BR9C-4REzCmLlh7fO95vdYGT5 #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Universal APK To Google Drive
+        id: gdriveUpload_universal
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+          upload-name: AnymeX-Android-universal_${{github.ref_name}}.apk
+          upload-to-folder-id: 1mCTGzZ-BR9C-4REzCmLlh7fO95vdYGT5 #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
 
   build-ios:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
+    outputs:
+      ios_link: ${{ steps.gdriveUpload_ios.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -126,16 +167,23 @@ jobs:
           zip -r AnymeX-iOS-${{ github.ref_name }}.ipa Payload
           mv AnymeX-iOS-${{ github.ref_name }}.ipa ../../../
 
-      - name: Release iOS IPA
-        uses: ncipollo/release-action@v1
+      - name: Upload iOS IPA To Google Drive
+        id: gdriveUpload_ios
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "AnymeX-iOS-${{ github.ref_name }}.ipa"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: AnymeX-iOS-${{ github.ref_name }}.ipa
+          upload-name: AnymeX-iOS-${{ github.ref_name }}.ipa
+          upload-to-folder-id: 1mHFP5EdZD-abGDJU5l0752dZLnXED3Z0 #need to change it
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
 
   build-linux:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
+    outputs:
+      linux_zip_link: ${{ steps.gdriveUpload_linux_zip.outputs.web-content-link }}
+      linux_appimage_link: ${{ steps.gdriveUpload_linux_appimage.outputs.web-content-link }}
+      linux_rpm_link: ${{ steps.gdriveUpload_linux_rpm.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -261,19 +309,43 @@ jobs:
           cd build/linux/x64/release/bundle
           zip -r ../AnymeX-Linux.zip ./*
 
-      - name: Release Linux Bundle, AppImage & RPM
-        uses: ncipollo/release-action@v1
+      - name: Upload Linux ZIP to Google Drive
+        id: gdriveUpload_linux_zip
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: |
-            build/linux/x64/release/AnymeX-Linux.zip
-            build/linux/x64/release/AnymeX-Linux.AppImage
-            build/linux/x64/release/AnymeX-Linux.rpm
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/linux/x64/release/AnymeX-Linux.zip
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.zip
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Linux AppImage to Google Drive
+        id: gdriveUpload_linux_appimage
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/linux/x64/release/AnymeX-Linux.AppImage
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.AppImage
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Linux RPM to Google Drive
+        id: gdriveUpload_linux_rpm
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/linux/x64/release/AnymeX-Linux.rpm
+          upload-name: AnymeX-Linux-${{ github.ref_name }}.rpm
+          upload-to-folder-id: 1v1WYL_-jEpzJ0M6ba7fkRIwqsbscliXT
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
 
   build-windows:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: windows-latest
+    outputs:
+      windows_zip_link: ${{ steps.gdriveUpload_windows_zip.outputs.web-content-link }}
+      windows_exe_link: ${{ steps.gdriveUpload_windows_exe.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -312,18 +384,32 @@ jobs:
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
-      - name: Release Windows Builds
-        uses: ncipollo/release-action@v1
+      - name: Upload Windows ZIP to Google Drive
+        id: gdriveUpload_windows_zip
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: |
-            build/windows/x64/runner/Release/AnymeX-Windows.zip,
-            build/windows/x64/installer/Release/AnymeX-x86_64-2.9.2-Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/windows/x64/runner/Release/AnymeX-Windows.zip
+          upload-name: AnymeX-Windows-${{ github.ref_name }}.zip
+          upload-to-folder-id: 1wQbVubcT2JvviSOyaoI7cDbHigkMcj2z
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+      
+      - name: Upload Windows Installer EXE to Google Drive
+        id: gdriveUpload_windows_exe
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
+        with:
+          file-path: build/windows/x64/installer/Release/AnymeX-x86_64-2.9.2-Installer.exe
+          upload-name: AnymeX-x86_64-${{ github.ref_name }}-Installer.exe
+          upload-to-folder-id: 1wQbVubcT2JvviSOyaoI7cDbHigkMcj2z
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
 
   build-macos:
+    if: contains(github.event.head_commit.message, '[build]')
     runs-on: macos-latest
+    outputs:
+      macos_link: ${{ steps.gdriveUpload_macos.outputs.web-content-link }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -361,10 +447,264 @@ jobs:
         run: |
           mkdir -p build/macos/Release
           hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release/AnymeX.app -ov -format UDZO build/macos/Release/AnymeX.dmg
-      - name: Release macOS Builds
-        uses: ncipollo/release-action@v1
+      
+      - name: Upload macOS DMG to Google Drive
+        id: gdriveUpload_macos
+        uses: hoatruongdev09/google-drive-file-upload-github-action@v1.1
         with:
-          artifacts: "build/macos/Release/AnymeX.dmg"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
+          file-path: build/macos/Release/AnymeX.dmg
+          upload-name: AnymeX-macOS-${{ github.ref_name }}.dmg
+          upload-to-folder-id: 1mVoJgft40o6SW6otWVBelkMlJdyimHp5
+          service-account-json: "${{secrets.GOOGLE_KEY}}"
+          overrwrite: true
+
+  sendMessage:
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios, build-linux, build-windows, build-macos]
+    steps:
+      - name: Cloing repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download last SHA artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: build.yml
+          name: last-sha
+        continue-on-error: true
+        
+      - name: Get Commits Since Last Run
+        run: |
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            # Fallback to first commit if no previous SHA available
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          # Accumulate commit logs in a shell variable
+          COMMIT_LOGSS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=20)
+          # URL-encode the newline characters for GitHub Actions
+          COMMIT_LOGSS="${COMMIT_LOGSS//'%'/'%25'}"
+          COMMIT_LOGSS="${COMMIT_LOGSS//$'\n'/'%0A'}"
+          COMMIT_LOGSS="${COMMIT_LOGSS//$'\r'/'%0D'}"
+          # Append the encoded commit logs to the COMMIT_LOGS environment variable
+          echo "COMMIT_LOGS=${COMMIT_LOGSS}" >> $GITHUB_ENV
+          # Debugging: Print the variable to check its content
+          echo "$COMMIT_LOGSS"
+          echo "$COMMIT_LOGSS" > COMMIT_LOGS.txt
+          # Extract branch name from github.ref
+          BRANCH=${{ github.ref }}
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          
+        shell: /usr/bin/bash -e {0}
+        env:
+          CI: true
+        continue-on-error: true
+
+      - name: Save Current SHA for Next Run
+        run: echo ${{ github.sha }} > last_sha.txt
+        
+      - name: Upload APK to Discord and Telegram
+        shell: bash
+        run: |
+          # Truncate field values
+          max_length=1024
+          commit_messages=$(echo "$COMMIT_LOGS" | sed 's/%0A/\n/g; s/^/\n/')
+          if [ ${#commit_messages} -gt $max_length ]; then
+            commit_messages="${commit_messages:0:$max_length}"
+          fi
+          
+          # Set default values if variables are empty
+          : "${ping_variable:=<@&1313089691523878942>}"
+          : "${commit_messages:=No commits available.}"
+          : "${VERSION:=beta}"
+          : "${embed_color:=16711680}"  # Default red color
+          # Construct Discord payload
+          discord_data=$(jq -nc \
+                            --arg content "$ping_variable" \
+                            --arg field_value "$commit_messages" \
+                            --arg footer_text "Version $VERSION" \
+                            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                            --arg thumbnail_url "${thumbnail_url:-https://cdn.discordapp.com/icons/1303000390505336893/d5c4b7afadec08e4c03e89cf997b5f6a.png}" \
+                            --arg embed_color "$embed_color" \
+                            '{
+                              "content": $content,
+                              "embeds": [
+                                {
+                                  "title": "New Alpha-Build dropped 🔥",
+                                  "color": ($embed_color | tonumber),
+                                  "fields": [
+                                    {
+                                      "name": "Commits:",
+                                      "value": $field_value,
+                                      "inline": true
+                                    }
+                                  ],
+                                  "footer": {
+                                    "text": $footer_text
+                                  },
+                                  "timestamp": $timestamp,
+                                  "thumbnail": {
+                                    "url": $thumbnail_url
+                                  }
+                                }
+                              ],
+                              "attachments": []
+                            }')
+          echo "Debug: Final Discord payload is:"
+          echo "$discord_data"
+          # Send Discord message
+          curl -H "Content-Type: application/json" \
+              -d "$discord_data" \
+              ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
+          # Format commit messages for Telegram
+          telegram_commit_messages=$(echo "$COMMIT_LOGS" | sed 's/%0A/\n/g' | while read -r line; do
+              message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+              message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+              echo "$message"
+          done)
+          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
+          echo "$telegram_commit_messages"
+          # Upload APK to Telegram
+          response=$(curl -sS -f -X POST \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID_BETA }}" \
+              -d "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
+              -d "text=New Alpha-Build dropped 🔥
+              
+          Commits:
+          ${telegram_commit_messages}
+          Version: $VERSION" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true")
+    
+      - name: Upload Current SHA as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-sha
+          path: last_sha.txt
+
+      - name: Send Discord Notification with Download Links
+        env:
+          ANDROID_ARM64_LINK: ${{ needs.build-android.outputs.arm64_link }}
+          ANDROID_ARMEABI_LINK: ${{ needs.build-android.outputs.armeabi_link }}
+          ANDROID_X86_LINK: ${{ needs.build-android.outputs.x86_link }}
+          ANDROID_UNIVERSAL_LINK: ${{ needs.build-android.outputs.universal_link }}
+          IOS_LINK: ${{ needs.build-ios.outputs.ios_link }}
+          LINUX_ZIP_LINK: ${{ needs.build-linux.outputs.linux_zip_link }}
+          LINUX_APPIMAGE_LINK: ${{ needs.build-linux.outputs.linux_appimage_link }}
+          LINUX_RPM_LINK: ${{ needs.build-linux.outputs.linux_rpm_link }}
+          WINDOWS_ZIP_LINK: ${{ needs.build-windows.outputs.windows_zip_link }}
+          WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
+          MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
+        run: |
+          # Check and send individual Discord messages
+          if [[ -n "$ANDROID_ARM64_LINK" ]]; then 
+            ANDROID_ARM64="[Download]($ANDROID_ARM64_LINK) | **Android (arm64)**"
+          else
+            ANDROID_ARM64=""
+          fi
+
+          if [[ -n "$ANDROID_ARMEABI_LINK" ]]; then 
+            ANDROID_ARMEABI="[Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**"
+          else
+            ANDROID_ARMEABI=""
+          fi
+
+          if [[ -n "$ANDROID_X86_LINK" ]]; then 
+            ANDROID_X86="[Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**"
+          else
+            ANDROID_X86=""
+          fi
+
+          if [[ -n "$ANDROID_UNIVERSAL_LINK" ]]; then 
+            ANDROID_UNIVERSAL="[Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**"
+          else
+            ANDROID_UNIVERSAL=""
+          fi
+
+          if [[ -n "$IOS_LINK" ]]; then 
+            IOS_MESSAGE="[Download]($IOS_LINK) | **iOS**"
+          else
+            IOS_MESSAGE=""
+          fi
+
+          if [[ -n "$LINUX_ZIP_LINK" ]]; then 
+            LINUX_MESSAGE="[Download]($LINUX_ZIP_LINK) | **Linux ZIP**"
+          else
+            LINUX_MESSAGE=""
+          fi
+
+          if [[ -n "$LINUX_APPIMAGE_LINK" ]]; then 
+            LINUX_APPIMAGE="[Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**"
+          else
+            LINUX_APPIMAGE=""
+          fi
+
+          if [[ -n "$LINUX_RPM_LINK" ]]; then 
+            LINUX_RPM="[Download]($LINUX_RPM_LINK) | **Linux RPM**"
+          else
+            LINUX_RPM=""
+          fi
+
+          if [[ -n "$WINDOWS_ZIP_LINK" ]]; then 
+            WINDOWS_MESSAGE="[Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**"
+          else
+            WINDOWS_MESSAGE=""
+          fi
+
+          if [[ -n "$WINDOWS_EXE_LINK" ]]; then 
+            WINDOWS_EXE="[Download]($WINDOWS_EXE_LINK) | **Windows EXE**"
+          else
+            WINDOWS_EXE=""
+          fi
+
+          if [[ -n "$MACOS_LINK" ]]; then 
+            MACOS_MESSAGE="[Download]($MACOS_LINK) | **macOS**"
+          else
+            MACOS_MESSAGE=""
+          fi
+
+          # Prepare and send the Discord message
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"🔹 ${ANDROID_ARM64}\n🔹 ${ANDROID_ARMEABI}\n🔹 ${ANDROID_X86}\n🔹 ${ANDROID_UNIVERSAL}\n🔹 ${IOS_MESSAGE}\n🔹 ${LINUX_MESSAGE}\n🔹 ${LINUX_APPIMAGE}\n🔹 ${LINUX_RPM}\n🔹 ${WINDOWS_MESSAGE}\n🔹 ${WINDOWS_EXE}\n🔹 ${MACOS_MESSAGE}\"}" \
+               "${{ secrets.DISCORD_WEBHOOK_ALPHA }}"
+
+      - name: Send Telegram Notification
+        env:
+          ANDROID_ARM64_LINK: ${{ needs.build-android.outputs.arm64_link }}
+          ANDROID_ARMEABI_LINK: ${{ needs.build-android.outputs.armeabi_link }}
+          ANDROID_X86_LINK: ${{ needs.build-android.outputs.x86_link }}
+          ANDROID_UNIVERSAL_LINK: ${{ needs.build-android.outputs.universal_link }}
+          IOS_LINK: ${{ needs.build-ios.outputs.ios_link }}
+          LINUX_ZIP_LINK: ${{ needs.build-linux.outputs.linux_zip_link }}
+          LINUX_APPIMAGE_LINK: ${{ needs.build-linux.outputs.linux_appimage_link }}
+          LINUX_RPM_LINK: ${{ needs.build-linux.outputs.linux_rpm_link }}
+          WINDOWS_ZIP_LINK: ${{ needs.build-windows.outputs.windows_zip_link }}
+          WINDOWS_EXE_LINK: ${{ needs.build-windows.outputs.windows_exe_link }}
+          MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
+        run: |
+          TELEGRAM_MESSAGE="🎉 *${{ env.LATEST_TAG }} Released* 🎉
+      
+          🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
+          🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
+          🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**
+          🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**
+          🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
+          🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**
+          🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
+          🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**
+          🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**
+          🔹 [Download]($IOS_LINK) | **iOS**
+          🔹 [Download]($MACOS_LINK) | **macOS**"
+      
+          curl -sS -f -X POST \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID_BETA }}" \
+              -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
+              -F parse_mode="Markdown" \
+              -F disable_notification=true \
+              -F "text=$TELEGRAM_MESSAGE"
