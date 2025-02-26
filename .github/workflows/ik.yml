@@ -21,66 +21,75 @@ jobs:
           echo "LINUX_RPM_LINK=https://example.com/linux-v1.0.0.rpm" >> $GITHUB_ENV
           echo "IOS_LINK=https://example.com/ios-v1.0.0.ipa" >> $GITHUB_ENV
           echo "MACOS_LINK=https://example.com/macos-v1.0.0.dmg" >> $GITHUB_ENV
-      
-      - name: Create platform messages
-        run: |
-          # Set GitHub environment variables for different platform messages
-          cat <<'EOF' >> $GITHUB_ENV
-          apk_message=🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
-          🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
-          🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**
-          🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**
-          EOF
 
-          cat <<'EOF' >> $GITHUB_ENV
-          windows_message=🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
-          🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**
-          EOF
-
-          cat <<'EOF' >> $GITHUB_ENV
-          linux_message=🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
-          🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**
-          🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**
-          EOF
-
-          cat <<'EOF' >> $GITHUB_ENV
-          ios_message=🔹 [Download]($IOS_LINK) | **iOS**
-          EOF
-
-          cat <<'EOF' >> $GITHUB_ENV
-          macos_message=🔹 [Download]($MACOS_LINK) | **macOS**
-          EOF
-      
-      - name: Print composed message (testing only)
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
-        run: |
-          # Source environment variables to make them available in this step
-          source $GITHUB_ENV
-          
-          # Create the complete message 
-          FULL_MESSAGE="${apk_message}
-          ${windows_message}
-          ${linux_message}
-          ${ios_message}
-          ${macos_message}"
-          
-          # Print for testing
-          echo "===== TEST MESSAGE ====="
-          echo "$FULL_MESSAGE"
-          echo "======================="
-          
-          # Only proceed with Discord if webhook is configured
-          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
-            # Escape newlines for JSON
-            DISCORD_MESSAGE=$(jq -Rs '.' <<<"$FULL_MESSAGE")
-            
-            # Send the Discord message
-            curl -H "Content-Type: application/json" \
-              -d "{\"content\": $DISCORD_MESSAGE}" \
-              "$DISCORD_WEBHOOK_URL"
-            
-            echo "Message sent to Discord"
+          # Check and send individual Discord messages
+          if [[ -n "$ANDROID_ARM64_LINK" ]]; then 
+            ANDROID_ARM64="🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**"
           else
-            echo "Discord webhook not configured - skipping sending"
+            ANDROID_ARM64=""
           fi
+
+          if [[ -n "$ANDROID_ARMEABI_LINK" ]]; then 
+            ANDROID_ARMEABI="🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**"
+          else
+            ANDROID_ARMEABI=""
+          fi
+
+          if [[ -n "$ANDROID_X86_LINK" ]]; then 
+            ANDROID_X86="🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**"
+          else
+            ANDROID_X86=""
+          fi
+
+          if [[ -n "$ANDROID_UNIVERSAL_LINK" ]]; then 
+            ANDROID_UNIVERSAL="🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**"
+          else
+            ANDROID_UNIVERSAL=""
+          fi
+
+          if [[ -n "$IOS_LINK" ]]; then 
+            IOS_MESSAGE="🔹 [Download]($IOS_LINK) | **iOS**"
+          else
+            IOS_MESSAGE=""
+          fi
+
+          if [[ -n "$LINUX_ZIP_LINK" ]]; then 
+            LINUX_MESSAGE="🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**"
+          else
+            LINUX_MESSAGE=""
+          fi
+
+          if [[ -n "$LINUX_APPIMAGE_LINK" ]]; then 
+            LINUX_APPIMAGE="🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**"
+          else
+            LINUX_APPIMAGE=""
+          fi
+
+          if [[ -n "$LINUX_RPM_LINK" ]]; then 
+            LINUX_RPM="🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**"
+          else
+            LINUX_RPM=""
+          fi
+
+          if [[ -n "$WINDOWS_ZIP_LINK" ]]; then 
+            WINDOWS_MESSAGE="🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**"
+          else
+            WINDOWS_MESSAGE=""
+          fi
+
+          if [[ -n "$WINDOWS_EXE_LINK" ]]; then 
+            WINDOWS_EXE="🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**"
+          else
+            WINDOWS_EXE=""
+          fi
+
+          if [[ -n "$MACOS_LINK" ]]; then 
+            MACOS_MESSAGE="🔹 [Download]($MACOS_LINK) | **macOS**"
+          else
+            MACOS_MESSAGE=""
+          fi
+
+          # Prepare and send the Discord message
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"${ANDROID_ARM64}\n${ANDROID_ARMEABI}\n${ANDROID_X86}\n${ANDROID_UNIVERSAL}\n${IOS_MESSAGE}\n${LINUX_MESSAGE}\n${LINUX_APPIMAGE}\n${LINUX_RPM}\n${WINDOWS_MESSAGE}\n${WINDOWS_EXE}\n${MACOS_MESSAGE}\"}" \
+               "${{ secrets.DISCORD_WEBHOOK_ALPHA }}"
