@@ -571,7 +571,7 @@ jobs:
           # Upload APK to Telegram
           response=$(curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID_BETA }}" \
               -d "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
               -d "text=New Alpha-Build dropped 🔥
               
@@ -703,7 +703,7 @@ jobs:
       
           curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID_BETA }}" \
               -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
               -F parse_mode="Markdown" \
               -F disable_notification=true \
