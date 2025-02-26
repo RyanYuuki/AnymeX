@@ -460,7 +460,7 @@ jobs:
 
   sendMessage:
     runs-on: ubuntu-latest
-    #needs: [build-android, build-ios, build-linux, build-windows, build-macos]
+    needs: [build-android, build-ios, build-linux, build-windows, build-macos]
     steps:
       - name: Cloing repository
         uses: actions/checkout@v4
