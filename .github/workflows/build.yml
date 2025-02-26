@@ -594,21 +594,31 @@ jobs:
           MACOS_LINK: ${{ needs.build-macos.outputs.macos_link }}
         run: |
             # Set GitHub environment variables for different platform messages
-            echo "apk_message=🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
+            cat <<EOF >> $GITHUB_ENV
+            apk_message=🔹 [Download]($ANDROID_ARM64_LINK) | **Android (arm64)**
             🔹 [Download]($ANDROID_ARMEABI_LINK) | **Android (armeabi-v7a)**
             🔹 [Download]($ANDROID_UNIVERSAL_LINK) | **Android (universal)**
-            🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**" >> $GITHUB_ENV
+            🔹 [Download]($ANDROID_X86_LINK) | **Android (x86 & x64)**
+            EOF
             
-            echo "windows_message=🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
-            🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**" >> $GITHUB_ENV
+            cat <<EOF >> $GITHUB_ENV
+            windows_message=🔹 [Download]($WINDOWS_ZIP_LINK) | **Windows ZIP**
+            🔹 [Download]($WINDOWS_EXE_LINK) | **Windows EXE**
+            EOF
             
-            echo "linux_message=🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
+            cat <<EOF >> $GITHUB_ENV
+            linux_message=🔹 [Download]($LINUX_ZIP_LINK) | **Linux ZIP**
             🔹 [Download]($LINUX_APPIMAGE_LINK) | **Linux AppImage**
-            🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**" >> $GITHUB_ENV
+            🔹 [Download]($LINUX_RPM_LINK) | **Linux RPM**
+            EOF
             
-            echo "ios_message=🔹 [Download]($IOS_LINK) | **iOS**" >> $GITHUB_ENV
+            cat <<EOF >> $GITHUB_ENV
+            ios_message=🔹 [Download]($IOS_LINK) | **iOS**
+            EOF
             
-            echo "macos_message=🔹 [Download]($MACOS_LINK) | **macOS**" >> $GITHUB_ENV
+            cat <<EOF >> $GITHUB_ENV
+            macos_message=🔹 [Download]($MACOS_LINK) | **macOS**
+            EOF
             
             # Load environment variables
             source $GITHUB_ENV
@@ -621,7 +631,6 @@ jobs:
                  -d "{\"content\": $DISCORD_MESSAGE}" \
                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
-          
       - name: Send Telegram Notification
         env:
           ANDROID_ARM64_LINK: ${{ needs.build-android.outputs.arm64_link }}
