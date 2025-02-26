@@ -499,6 +499,7 @@ jobs:
 
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
+        
       - name: Upload APK to Discord and Telegram
         shell: bash
         run: |
@@ -551,7 +552,7 @@ jobs:
           # Send Discord message
           curl -H "Content-Type: application/json" \
               -d "$discord_data" \
-              ${{ secrets.DISCORD_WEBHOOK }}
+              ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
           # Format commit messages for Telegram
           telegram_commit_messages=$(echo "$COMMIT_LOGS" | sed 's/%0A/\n/g' | while read -r line; do
               message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
@@ -629,7 +630,7 @@ jobs:
             # Send the Discord message
             curl -H "Content-Type: application/json" \
                  -d "{\"content\": $DISCORD_MESSAGE}" \
-                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+                 "${{ secrets.DISCORD_WEBHOOK_ALPHA }}"
 
       - name: Send Telegram Notification
         env:
