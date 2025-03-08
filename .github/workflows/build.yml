@@ -368,3 +368,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+
+  update-source:
+    needs: build-ios
+    uses: ./.github/workflows/update_sideloading_source.yml
