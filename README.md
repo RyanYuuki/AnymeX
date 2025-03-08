@@ -30,13 +30,13 @@
 ### iOS Sideloading Sources
 <div align="center">
 
-![AltStore Source](https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=altstore&labelColor=black&color=white&link=https%3A%2F%2Fintradeus.github.io%2Fhttp-protocol-redirector%3Fr%3Daltstore%3A%2F%2Fsource%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FRyanYuuki%2FAnymeX%2Frefs%2Fheads%2Fmain%2Frepo%2Fsource.json)
+<a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Altstore&labelColor=black&color=white"></a>
 &nbsp;
-![Feather Source](https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=feather&labelColor=black&color=white&link=https%3A%2F%2Fintradeus.github.io%2Fhttp-protocol-redirector%3Fr%3Dfeather%3A%2F%2Fsource%2Fhttps%3A%2F%2Fraw.githubusercontent.com%2FRyanYuuki%2FAnymeX%2Frefs%2Fheads%2Fmain%2Frepo%2Fsource.json)
+<a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Feather Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=feather&labelColor=black&color=white"></a>
 &nbsp;
-![SideStore Badge](https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=sidestore&labelColor=black&color=white&link=https%3A%2F%2Fintradeus.github.io%2Fhttp-protocol-redirector%3Fr%3Dsidestore%3A%2F%2Fsource%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FRyanYuuki%2FAnymeX%2Frefs%2Fheads%2Fmain%2Frepo%2Fsource.json)
+<a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Sidestore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=sidestore&labelColor=black&color=white"></a>
 
-![Direct URL](https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white&link=https%3A%2F%2Fraw.githubusercontent.com%2FRyanYuuki%2FAnymeX%2Frefs%2Fheads%2Fmain%2Frepo%2Fsource.json)
+<a href="https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Direct URL" src="https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white"></a>
 
 </div>
 
