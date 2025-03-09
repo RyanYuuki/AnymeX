@@ -332,7 +332,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           widget.anilistData?.poster,
                     ),
                   ),
-                  if (progress > 0.0 && progress <= 1.0)
+                  if (progress > 0.0 && progress <= 1.0) ...[
                     Positioned(
                       bottom: 0,
                       left: 0,
@@ -347,6 +347,19 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         width: constrainst.maxWidth * progress,
                       ),
                     ),
+                    Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Theme.of(context).colorScheme.primary),
+                            child: Icon(
+                              Icons.remove_red_eye,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            )))
+                  ],
                   Positioned(
                     bottom: 8,
                     left: 8,
@@ -368,6 +381,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           child: AnymexText(
                             text: "EP ${episode.number}",
                             variant: TextVariant.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -435,7 +449,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             widget.anilistData?.poster,
                       ),
                     ),
-                    if (progress > 0.0 && progress <= 1.0)
+                    if (progress > 0.0 && progress <= 1.0) ...[
                       Positioned(
                         bottom: 0,
                         left: 0,
@@ -450,6 +464,19 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           width: 170 * progress,
                         ),
                       ),
+                      Positioned(
+                          top: 5,
+                          right: 5,
+                          child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Theme.of(context).colorScheme.primary),
+                              child: Icon(
+                                Icons.remove_red_eye,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              )))
+                    ],
                     Positioned(
                       bottom: 8,
                       left: 8,
@@ -474,6 +501,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             child: AnymexText(
                               text: "EP ${episode.number}",
                               variant: TextVariant.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ),
