@@ -1,5 +1,5 @@
-import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/models/player/player_adaptor.dart';
+import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/updater.dart';

@@ -8,7 +8,7 @@ import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
+import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
