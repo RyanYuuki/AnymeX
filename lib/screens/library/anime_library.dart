@@ -473,7 +473,7 @@ class AnimeHistoryCard extends StatelessWidget {
                       children: [
                         SizedBox(
                             height: getResponsiveSize(context,
-                                mobileSize: 20, dektopSize: 30)),
+                                mobileSize: 5, dektopSize: 30)),
                         AnymexText(
                           text: _formatEpisodeNumber().toUpperCase(),
                           size: getResponsiveSize(context,

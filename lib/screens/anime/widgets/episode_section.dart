@@ -160,7 +160,7 @@ class EpisodeSection extends StatelessWidget {
           );
         }
 
-        if (episodeList!.isEmpty || episodeList == null) {
+        if (episodeList!.value.isEmpty || episodeList?.value == null) {
           return const SizedBox(
             height: 500,
             child: Center(child: CircularProgressIndicator()),
@@ -168,7 +168,7 @@ class EpisodeSection extends StatelessWidget {
         }
 
         return EpisodeListBuilder(
-          episodeList: (episodeList) ?? [],
+          episodeList: (episodeList?.value) ?? [],
           anilistData: anilistData,
         );
       });

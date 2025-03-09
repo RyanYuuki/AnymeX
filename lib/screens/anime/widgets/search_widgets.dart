@@ -2,7 +2,9 @@ import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
 
 void showFilterBottomSheet(
-    BuildContext context, Function(dynamic args) onApplyFilter) {
+    BuildContext context, Function(dynamic args) onApplyFilter,
+    {Map<String, dynamic>? currentFilters}) {
+  // Add currentFilters parameter
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).colorScheme.surface,
@@ -15,6 +17,7 @@ void showFilterBottomSheet(
         onApplyFilter: (args) {
           onApplyFilter(args);
         },
+        currentFilters: currentFilters, // Pass current filters to the content
       );
     },
   );
@@ -24,11 +27,13 @@ class FilterOptionsContent extends StatefulWidget {
   const FilterOptionsContent({
     super.key,
     required this.onApplyFilter,
+    this.currentFilters,
   });
   final Function(dynamic args) onApplyFilter;
+  final Map<String, dynamic>? currentFilters;
 
   @override
-  _FilterOptionsContentState createState() => _FilterOptionsContentState();
+  State<FilterOptionsContent> createState() => _FilterOptionsContentState();
 }
 
 class _FilterOptionsContentState extends State<FilterOptionsContent> {
@@ -77,13 +82,23 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
   String? selectedStatus = 'FINISHED';
   String? selectedFormat = 'TV';
   List<String> selectedGenres = [];
-  dynamic args = {
-    'genres': [],
-    'season': '',
-    'format': '',
-    'status': '',
-    'sort': '',
-  };
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.currentFilters != null) {
+      selectedSortBy = widget.currentFilters!['sort'] ?? selectedSortBy;
+      selectedSeason = widget.currentFilters!['season'] ?? selectedSeason;
+      selectedStatus = widget.currentFilters!['status'] ?? selectedStatus;
+      selectedFormat = widget.currentFilters!['format'] ?? selectedFormat;
+
+      if (widget.currentFilters!['genres'] != null &&
+          widget.currentFilters!['genres'] is List) {
+        selectedGenres = List<String>.from(widget.currentFilters!['genres']);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -295,7 +310,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins-SemiBold',
-                        color: Theme.of(context).colorScheme.primary),
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               ),
@@ -322,7 +337,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins-SemiBold',
-                        color: Theme.of(context).colorScheme.primary),
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               ),
