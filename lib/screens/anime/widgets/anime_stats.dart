@@ -3,8 +3,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -53,14 +55,18 @@ class AnimeStats extends StatelessWidget {
                         "EPISODE ${data.nextAiringEpisode?.episode} WILL BE RELEASED IN",
                     size: 14,
                     variant: TextVariant.bold,
-                    color: Colors.grey,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.8),
                   ),
                   const SizedBox(height: 5),
                   AnymexText(
                     text: countdown,
-                    size: 20,
+                    size: getResponsiveSize(context,
+                        mobileSize: 16, dektopSize: 20),
                     variant: TextVariant.bold,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -87,8 +93,8 @@ class AnimeStats extends StatelessWidget {
               StateItem(label: "Duration", value: data.duration),
               StateItem(label: "Total Episodes", value: data.totalEpisodes),
               StateItem(label: "Premiered", value: data.premiered),
-              if(data.studios?.isNotEmpty ?? false)
-              StateItem(label: "Studios", value: data.studios?.first ?? ''),
+              if (data.studios?.isNotEmpty ?? false)
+                StateItem(label: "Studios", value: data.studios?.first ?? ''),
             ],
           ),
         ),
@@ -130,7 +136,18 @@ class AnimeStats extends StatelessWidget {
             return ImageButton(
                 buttonText: e,
                 height: 80,
-                onPressed: () {},
+                onPressed: () {
+                  if (serviceHandler.serviceType.value ==
+                      ServicesType.anilist) {
+                    navigate(() => SearchPage(
+                          searchTerm: '',
+                          isManga: false,
+                          initialFilters: {
+                            'genres': [e]
+                          },
+                        ));
+                  }
+                },
                 backgroundImage: covers[index].cover!);
           },
         ),
