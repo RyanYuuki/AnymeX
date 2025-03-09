@@ -1,0 +1,41 @@
+{
+  "name": "AnymeX",
+  "identifier": "com.ryan.anymex",
+  "headerURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/headers/source_header.webp",
+  "website": "https://github.com/RyanYuuki/AnymeX",
+  "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
+  "subtitle": "Your new favourite tracking and management tool",
+  "description": "This is the official source for AnymeX.\n\nFor full details, check the GitHub repository:\nhttps://github.com/RyanYuuki/AnymeX",
+  "tintColor": "71717A",
+  "apps": [
+    {
+      "beta": false,
+      "name": "AnymeX",
+      "bundleIdentifier": "com.ryan.anymex",
+      "developerName": "RyanYuuki",
+      "subtitle": "Multiservice tracking client",
+      "version": "2.9.2",
+      "versionDate": "2025-02-24T14:10:58Z",
+      "versionDescription": "\n\n### \ud83d\udee0\ufe0f Bug Fixes & Improvements\n* [4d609bb](https://github.com/RyanYuuki/AnymeX/commit/4d609bb): fix: fixed updater\n* [77202ab](https://github.com/RyanYuuki/AnymeX/commit/77202ab): fix: potential fix\n* [f340883](https://github.com/RyanYuuki/AnymeX/commit/f340883): fix: typeid mismatch\n* [cecd676](https://github.com/RyanYuuki/AnymeX/commit/cecd676): fix: again typeid mismatch\n* [cf35fe1](https://github.com/RyanYuuki/AnymeX/commit/cf35fe1): fix: type mismatch (2/2)\n* [fb00c81](https://github.com/RyanYuuki/AnymeX/commit/fb00c81): fix: type mismatch (1/2)\n* [a209865](https://github.com/RyanYuuki/AnymeX/commit/a209865): fix: hopefully black screen fix\n* [61278da](https://github.com/RyanYuuki/AnymeX/commit/61278da): fix: fix linux build error\n* [39a9a6c](https://github.com/RyanYuuki/AnymeX/commit/39a9a6c): fix: fixed icon not visible on accounts section\n* [4bc50f0](https://github.com/RyanYuuki/AnymeX/commit/4bc50f0): fix: fixed subtitle issues, continues from last episode progress\n* [7a12ac5](https://github.com/RyanYuuki/AnymeX/commit/7a12ac5): fix: back button on calendar page for ios users\n* [09bc784](https://github.com/RyanYuuki/AnymeX/commit/09bc784): fix: fixed app crash / grey screen on startup\n\n### \ud83c\udfa8 Style Changes\n* [ae6ba65](https://github.com/RyanYuuki/AnymeX/commit/ae6ba65): style: button size adjustments\n* [8023e07](https://github.com/RyanYuuki/AnymeX/commit/8023e07): style: button adjustments\n\n### \ud83e\uddf9 Chores & Documentation\n* [881878e](https://github.com/RyanYuuki/AnymeX/commit/881878e): build: version increment\n\n",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.2-hotfix/AnymeX-iOS-v2.9.2-hotfix.ipa",
+      "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
+      "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
+      "tintColor": "71717A",
+      "category": "entertainment",
+      "size": 37657164,
+      "screenshotURLs": [
+        "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
+        "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
+        "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_2.webp"
+      ],
+      "versions": [
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": []
+      }
+    }
+  ],
+  "news": [
+  ]
+}
