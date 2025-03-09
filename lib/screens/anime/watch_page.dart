@@ -245,8 +245,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         currentEpisode.value.timeStampInMilliseconds = 0;
       }
 
-      if (e.inSeconds == episodeDuration.value.inSeconds) {
-        if (episodeDuration.value.inMinutes >= 1) {
+      if (e.inSeconds >= episodeDuration.value.inSeconds - 1) {
+        if (!isSwitchingEpisode && episodeDuration.value.inMinutes >= 1) {
+          isSwitchingEpisode = true;
           Future.delayed(const Duration(milliseconds: 500), () {
             fetchEpisode(false);
           });
@@ -453,17 +454,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     isLeftSide.value = isLeft;
     doubleTapLabel.value += 10;
     skipDuration.value += 10;
+
+    final totalDuration = episodeDuration.value;
+
     if (isLeft) {
-      final duration = Duration(
-        seconds: max(0, currentPosition.value.inSeconds - skipDuration.value),
-      );
-      formattedTime.value = formatDuration(duration);
+      final newPosition =
+          max(0, currentPosition.value.inSeconds - skipDuration.value);
+      formattedTime.value = formatDuration(Duration(seconds: newPosition));
     } else {
-      final dur = Duration(
-        seconds: currentPosition.value.inSeconds + skipDuration.value,
-      );
-      formattedTime.value = formatDuration(dur);
+      final newPosition = (currentPosition.value.inSeconds + skipDuration.value)
+          .clamp(0, totalDuration.inSeconds);
+      formattedTime.value = formatDuration(Duration(seconds: newPosition));
     }
+
     isLeft
         ? _leftAnimationController.forward(from: 0)
         : _rightAnimationController.forward(from: 0);
@@ -472,17 +475,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
       if (currentPosition.value == const Duration(seconds: 0)) return;
+
       if (isLeft) {
-        final duration = Duration(
-          seconds: max(0, currentPosition.value.inSeconds - skipDuration.value),
-        );
-        player.seek(duration);
+        final newPosition =
+            max(0, currentPosition.value.inSeconds - skipDuration.value);
+        player.seek(Duration(seconds: newPosition));
       } else {
-        final dur = Duration(
-          seconds: currentPosition.value.inSeconds + skipDuration.value,
-        );
-        player.seek(dur);
+        final newPosition =
+            (currentPosition.value.inSeconds + skipDuration.value)
+                .clamp(0, totalDuration.inSeconds);
+        player.seek(Duration(seconds: newPosition));
       }
+
       _leftAnimationController.stop();
       _rightAnimationController.stop();
       doubleTapLabel.value = 0;
@@ -1348,13 +1352,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     min: 0,
                                     value: currentPosition.value.inMilliseconds
                                         .toDouble(),
-                                    max: episodeDuration.value.inMilliseconds <=
-                                            currentPosition.value.inMilliseconds
-                                        ? const Duration(minutes: 200)
-                                            .inMilliseconds
-                                            .toDouble()
-                                        : episodeDuration.value.inMilliseconds
-                                            .toDouble(),
+                                    max: (currentPosition.value.inMilliseconds >
+                                                episodeDuration
+                                                    .value.inMilliseconds
+                                            ? currentPosition
+                                                .value.inMilliseconds
+                                            : episodeDuration
+                                                .value.inMilliseconds)
+                                        .toDouble(),
                                     secondaryTrackValue: bufferred
                                         .value.inMilliseconds
                                         .toDouble(),
