@@ -369,6 +369,6 @@ jobs:
           allowUpdates: true
           tag: ${{ github.ref_name }}
 
-  update-source:
+  ios-source-build:
     needs: build-ios
     uses: ./.github/workflows/update_sideloading_source.yml

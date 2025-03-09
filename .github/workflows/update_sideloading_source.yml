@@ -9,9 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
   
+      - name: Get Latest Release Tag
+        run: echo "RELEASE_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -34,6 +40,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes detected, skipping commit."
           else
-            git commit -m "updated source to: $release_tag"
+            git commit -m "source update: $RELEASE_TAG"
             git push
           fi
