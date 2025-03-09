@@ -132,9 +132,8 @@ def format_description(description: str) -> str:
         str: Cleaned description text
     """
     # Remove HTML tags
-    formatted = re.sub(r"<[^<]+?>", "", description)
-
-    # Additional formatting
+    formatted = re.sub(r"<[^<]+?>", "", description)  # HTML tags
+    formatted = re.sub(r"#{1,6}\s?", "", formatted)  # Markdown header tags
     formatted = formatted.replace(r"\*{2}", "").replace("-", "•").replace("`", '"')
 
     return formatted
@@ -192,7 +191,6 @@ def update_json_file(
         if not version_match:
             continue
 
-        version = version_match.group(1)
         version_date = release["published_at"]
         fetched_versions.append(full_version)
 
@@ -228,10 +226,12 @@ def update_json_file(
     tag = fetched_data_latest["tag_name"]
     version_match = re.search(r"(\d+\.\d+\.\d+)(?:-([a-zA-Z0-9]+))?", latest_version)
 
+    print(full_version)
+
     if not version_match:
         raise ValueError("Invalid version format")
 
-    app["version"] = version
+    app["version"] = full_version
     app["versionDate"] = fetched_data_latest["published_at"]
     app["versionDescription"] = format_description(fetched_data_latest["body"])
 
