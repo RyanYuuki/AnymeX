@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
@@ -716,7 +717,8 @@ extension FutureResponseExtension<T> on Future<T> {
       if (kDebugMode) {
         print("Http error: $error");
       }
-      debugPrint(error.toString());
+      debugPrint("[TEST]: $error");
+      snackBar("No Streams Found");
       throw error.toString();
     });
     return this;

@@ -27,6 +27,20 @@
 </p>
 </div>
 
+## iOS Sideloading Sources
+<div align="center">
+
+<a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Altstore&labelColor=black&color=white"></a>
+&nbsp;
+<a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Feather Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=feather&labelColor=black&color=white"></a>
+&nbsp;
+<a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Sidestore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=sidestore&labelColor=black&color=white"></a>
+
+<a href="https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Direct URL" src="https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white"></a>
+
+</div>
+
+
 ## Disclaimer
 - **Purpose**: AnymeX is a hybrid tracking and management tool for anime, manga and other media supported by AniList, MyAnimeList & Simkl. This application is designed for tracking use only.
 - **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.

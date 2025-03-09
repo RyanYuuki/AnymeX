@@ -159,6 +159,7 @@ class GridAnimeCard extends StatelessWidget {
               text: media.title,
               maxLines: 2,
               size: 14,
+              variant: TextVariant.semiBold,
             ),
           ),
           const SizedBox(height: 3),
@@ -168,22 +169,22 @@ class GridAnimeCard extends StatelessWidget {
               child: AnymexTextSpans(
                 text: '  |  ~',
                 maxLines: 1,
-                fontSize: 12,
+                fontSize: 14,
                 spans: [
                   AnymexTextSpan(
-                    text: "${media.episodeCount} ",
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                      text: "${media.episodeCount} ",
+                      color: Theme.of(context).colorScheme.primary,
+                      variant: TextVariant.semiBold),
                   if (media.nextEpisode != null)
                     AnymexTextSpan(
-                      text: "| ${media.nextEpisode} ",
-                      color: Colors.grey,
-                    ),
+                        text: "| ${media.nextEpisode} ",
+                        color: Colors.grey,
+                        variant: TextVariant.semiBold),
                   AnymexTextSpan(
-                    text:
-                        "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
-                    color: Colors.grey,
-                  ),
+                      text:
+                          "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
+                      color: Colors.grey,
+                      variant: TextVariant.semiBold),
                 ],
               ),
             ),

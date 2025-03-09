@@ -23,6 +23,8 @@ import 'package:anymex/core/Model/Source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:anymex/core/Search/search.dart' as m;
 
+final sourceController = Get.put(SourceController());
+
 class SourceController extends GetxController implements BaseService {
   var installedExtensions = <Source>[].obs;
   var activeSource = Rxn<Source>();
@@ -283,7 +285,7 @@ class SourceController extends GetxController implements BaseService {
     final data = await getDetail(
         url: id,
         source: (isAnime ? activeSource.value : activeMangaSource.value)!);
-    cacheController.addCache(data.toJson());
+    cacheController.addCache(data!.toJson());
     return Media.fromManga(data, isAnime ? MediaType.anime : MediaType.manga);
   }
 

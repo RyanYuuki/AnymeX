@@ -14,4 +14,5 @@ Future fetchMangaSourcesList(FetchMangaSourcesListRef ref,
       id: id,
       ref: ref,
       isManga: true);
+  await sourceController.initExtensions();
 }

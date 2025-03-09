@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -94,7 +94,6 @@ class ImageButton extends StatelessWidget {
   final double width;
   final double height;
   final double borderRadius;
-  final Color textColor;
   final TextStyle? textStyle;
   final double margin;
 
@@ -106,13 +105,18 @@ class ImageButton extends StatelessWidget {
     this.width = 160,
     this.height = 60,
     this.borderRadius = 18,
-    this.textColor = Colors.white,
     this.textStyle,
     this.margin = 0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final gradient = Theme.of(context).brightness == Brightness.dark
+        ? [
+            Colors.black.withOpacity(0.5),
+            Colors.black.withOpacity(0.5),
+          ]
+        : [Colors.transparent, Colors.transparent];
     return Container(
       width: width,
       height: height,
@@ -144,10 +148,7 @@ class ImageButton extends StatelessWidget {
             child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Colors.black.withOpacity(0.5),
-                  Colors.black.withOpacity(0.5),
-                ]),
+                gradient: LinearGradient(colors: gradient),
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
             ),
@@ -168,8 +169,8 @@ class ImageButton extends StatelessWidget {
                   Text(
                     buttonText.toUpperCase(),
                     style: textStyle ??
-                        TextStyle(
-                          color: textColor,
+                        const TextStyle(
+                          color: Colors.white,
                           fontFamily: 'Poppins-SemiBold',
                         ),
                     textAlign: TextAlign.center,

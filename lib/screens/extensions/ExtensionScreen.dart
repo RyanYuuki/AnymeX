@@ -46,6 +46,18 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     });
   }
 
+  @override
+  void dispose() {
+    sourceController.initExtensions();
+    super.dispose();
+  }
+
+  Future<void> removeOldData() async {
+    await isar.writeTxn(() async {
+      await isar.sources.filter().isAddedEqualTo(false).deleteAll();
+    });
+  }
+
   Future<void> _fetchData() async {
     ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
     ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
@@ -157,17 +169,22 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: AnymeXButton(
-                        height: 50,
-                        width: double.infinity,
-                        borderRadius: BorderRadius.circular(30),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondaryContainer,
-                        variant: ButtonVariant.outline,
+                      child: TVWrapper(
                         onTap: () {
                           Get.back();
                         },
-                        child: const Text("Cancel"),
+                        child: AnymeXButton(
+                          height: 50,
+                          width: double.infinity,
+                          borderRadius: BorderRadius.circular(30),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          variant: ButtonVariant.outline,
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: const Text("Cancel"),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -176,9 +193,11 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                         onTap: () async {
                           controller.activeAnimeRepo = animeRepoController.text;
                           controller.activeMangaRepo = mangaRepoController.text;
+                          removeOldData();
                           _fetchData();
                           _refreshData();
                           Get.back();
+                          await removeOldData();
                         },
                         child: AnymeXButton(
                           height: 50,
@@ -192,6 +211,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                                 animeRepoController.text;
                             controller.activeMangaRepo =
                                 mangaRepoController.text;
+                            await removeOldData();
                             _fetchData();
                             _refreshData();
                             Get.back();

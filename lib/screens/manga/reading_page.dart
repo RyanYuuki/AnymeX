@@ -756,7 +756,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       },
                       description: 'Only Works with webtoon mode',
                       icon: Icons.image_aspect_ratio_rounded,
-                      min: 0.1,
+                      min: 1.0,
                       max: 4.0,
                       divisions: 39,
                     );

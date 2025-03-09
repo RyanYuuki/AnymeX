@@ -95,7 +95,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void initState() {
     super.initState();
-    sourceController.initExtensions();
     if (sourceController.installedExtensions.isEmpty) {
       showAnify.value = false;
     }
@@ -186,6 +185,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         url: media.id,
         source: sourceController.activeSource.value!,
       );
+
+      if (episodeFuture == null) {
+        episodeError.value = true;
+        return;
+      }
 
       final episodes = _convertEpisodes(
         episodeFuture.chapters!.reversed.toList(),

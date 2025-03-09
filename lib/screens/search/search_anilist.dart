@@ -22,11 +22,15 @@ class SearchPage extends StatefulWidget {
   final String searchTerm;
   final dynamic source;
   final bool isManga;
-  const SearchPage(
-      {super.key,
-      required this.searchTerm,
-      required this.isManga,
-      this.source});
+  final Map<String, dynamic>? initialFilters;
+
+  const SearchPage({
+    super.key,
+    required this.searchTerm,
+    required this.isManga,
+    this.source,
+    this.initialFilters,
+  });
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -39,11 +43,23 @@ class _SearchPageState extends State<SearchPage> {
   List<Media>? _searchResults;
   ViewMode _currentViewMode = ViewMode.box;
   bool _isLoading = false;
+  Map<String, dynamic> _activeFilters = {};
 
   @override
   void initState() {
     super.initState();
     _searchController.text = widget.searchTerm;
+
+    if (widget.initialFilters != null) {
+      _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _performSearch(filters: _activeFilters);
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _performSearch();
+      });
+    }
   }
 
   Future<void> _performSearch({
@@ -57,8 +73,13 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final searchQuery = query ?? _searchController.text;
+      if (filters != null) {
+        _activeFilters = Map<String, dynamic>.from(filters);
+      }
+
       final results = await _serviceHandler.search(searchQuery,
-          isManga: widget.isManga, filters: filters);
+          isManga: widget.isManga,
+          filters: _activeFilters.isNotEmpty ? _activeFilters : null);
 
       setState(() {
         _searchResults = results;
@@ -75,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
-    });
+    }, currentFilters: _activeFilters);
   }
 
   void _toggleViewMode() {
@@ -83,6 +104,147 @@ class _SearchPageState extends State<SearchPage> {
       _currentViewMode =
           _currentViewMode == ViewMode.box ? ViewMode.list : ViewMode.box;
     });
+  }
+
+  void _removeFilter(String key, dynamic value) {
+    if (_activeFilters.containsKey(key)) {
+      setState(() {
+        if (key == 'genres' && _activeFilters[key] is List) {
+          List<String> genres = List<String>.from(_activeFilters[key]);
+          genres.remove(value);
+          if (genres.isEmpty) {
+            _activeFilters.remove(key);
+          } else {
+            _activeFilters[key] = genres;
+          }
+        } else {
+          _activeFilters.remove(key);
+        }
+      });
+      _performSearch(filters: _activeFilters);
+    }
+  }
+
+  Widget _buildFilterChips() {
+    if (_activeFilters.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    List<Widget> chips = [];
+
+    _activeFilters.forEach((key, value) {
+      if (key == 'genres' && value is List && value.isNotEmpty) {
+        for (var genre in value) {
+          chips.add(
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Chip(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                backgroundColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
+                label: AnymexText(
+                  text: genre,
+                  variant: TextVariant.semiBold,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
+                deleteIcon: Icon(
+                  Icons.close,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
+                onDeleted: () => _removeFilter(key, genre),
+              ),
+            ),
+          );
+        }
+      } else if (value != null && value.toString().isNotEmpty) {
+        String displayText = "$key: $value";
+        if (key == 'sort') {
+          displayText = "Sort: ${_formatSortBy(value.toString())}";
+        } else if (key == 'season') {
+          displayText = "Season: ${value.toString().toLowerCase().capitalize}";
+        } else if (key == 'status' && value.toString() != 'All') {
+          displayText = "Status: ${_formatStatus(value.toString())}";
+        } else if (key == 'format') {
+          displayText = "Format: $value";
+        }
+
+        chips.add(
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Chip(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              label: AnymexText(
+                text: displayText,
+                variant: TextVariant.semiBold,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+              deleteIcon: Icon(
+                Icons.close,
+                size: 16,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+              onDeleted: () => _removeFilter(key, value),
+            ),
+          ),
+        );
+      }
+    });
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(children: chips),
+      ),
+    );
+  }
+
+  String _formatSortBy(String sortBy) {
+    switch (sortBy) {
+      case 'SCORE_DESC':
+        return 'Score ↓';
+      case 'SCORE':
+        return 'Score ↑';
+      case 'POPULARITY_DESC':
+        return 'Popularity ↓';
+      case 'POPULARITY':
+        return 'Popularity ↑';
+      case 'TRENDING_DESC':
+        return 'Trending ↓';
+      case 'TRENDING':
+        return 'Trending ↑';
+      case 'START_DATE_DESC':
+        return 'Newest';
+      case 'START_DATE':
+        return 'Oldest';
+      case 'TITLE_ROMAJI':
+        return 'Title A-Z';
+      case 'TITLE_ROMAJI_DESC':
+        return 'Title Z-A';
+      default:
+        return sortBy;
+    }
+  }
+
+  String _formatStatus(String status) {
+    switch (status) {
+      case 'FINISHED':
+        return 'Finished';
+      case 'NOT_YET_RELEASED':
+        return 'Not Released';
+      case 'RELEASING':
+        return 'Airing';
+      case 'CANCELLED':
+        return 'Cancelled';
+      case 'HIATUS':
+        return 'On Hiatus';
+      default:
+        return status;
+    }
   }
 
   Widget _buildSearchResults() {
@@ -224,7 +386,7 @@ class _SearchPageState extends State<SearchPage> {
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -267,6 +429,11 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 ),
               ),
+              if (_activeFilters.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                  child: _buildFilterChips(),
+                ),
               Expanded(child: _buildSearchResults()),
             ],
           ),
