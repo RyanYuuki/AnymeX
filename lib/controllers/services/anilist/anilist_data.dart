@@ -243,7 +243,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   void _initFallback() {
-    if (trendingAnimes.value.isEmpty) {
+    if (trendingAnimes.isEmpty) {
       upcomingAnimes.value = fb.upcomingAnimes;
       popularAnimes.value = fb.popularAnimes;
       trendingAnimes.value = fb.trendingAnimes;

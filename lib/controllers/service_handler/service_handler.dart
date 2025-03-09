@@ -33,8 +33,6 @@ class ServiceHandler extends GetxController {
         return simklService;
       case ServicesType.extensions:
         return extensionService;
-      default:
-        return anilistService;
     }
   }
 

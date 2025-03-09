@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
-import 'package:anymex/ai/animeo.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
