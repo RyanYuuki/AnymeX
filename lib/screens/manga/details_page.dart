@@ -88,7 +88,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   void initState() {
     super.initState();
-    sourceController.initExtensions();
     Future.delayed(const Duration(milliseconds: 300), () {
       _checkMangaPresence();
     });
@@ -164,6 +163,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         url: media.id,
         source: sourceController.activeMangaSource.value!,
       );
+
+      if(episodeFuture == null) {
+        return;
+      }
 
       final episodes = _convertChapters(
         episodeFuture.chapters!.reversed.toList(),

@@ -2,8 +2,10 @@
 
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/minor_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +88,13 @@ class MangaStats extends StatelessWidget {
                 buttonText: e,
                 height: 80,
                 width: 1000,
-                onPressed: () {},
+                onPressed: () {
+                  navigate(() => SearchPage(
+                        searchTerm: '',
+                        isManga: true,
+                        initialFilters: {'genres': e},
+                      ));
+                },
                 backgroundImage: covers[index].cover!);
           },
         ),
