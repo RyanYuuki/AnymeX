@@ -3,7 +3,7 @@ import '../Eval/dart/service.dart';
 import '../Eval/javascript/service.dart';
 import '../Model/Source.dart';
 
-Future<MManga> getDetail({
+Future<MManga?> getDetail({
   required String url,
   required Source source,
 }) async {

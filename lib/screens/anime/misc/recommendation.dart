@@ -87,7 +87,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
           title: Obx(() {
             return AnymexText(
               text:
-                  "AI Recommendations ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
+                  "AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
               color: Theme.of(context).colorScheme.primary,
             );
           }),
