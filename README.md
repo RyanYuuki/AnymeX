@@ -27,7 +27,7 @@
 </p>
 </div>
 
-### iOS Sideloading Sources
+## iOS Sideloading Sources
 <div align="center">
 
 <a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Altstore&labelColor=black&color=white"></a>
