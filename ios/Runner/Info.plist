@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>AnymeX</string>
+    <string>AnymeX β</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -50,34 +50,32 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
-
     <key>CFBundleURLTypes</key>
     <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>dar</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>dar</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>anymex</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>anymex</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>sugoireads</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>sugoireads</string>
-            </array>
-        </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>dar</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>dar</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>anymex</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>anymex</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>sugoireads</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>sugoireads</string>
+        </array>
+      </dict>
     </array>
-
   </dict>
 </plist>
