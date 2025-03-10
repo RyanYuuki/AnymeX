@@ -7,7 +7,7 @@ import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class MangaStats extends StatelessWidget {
@@ -92,7 +92,9 @@ class MangaStats extends StatelessWidget {
                   navigate(() => SearchPage(
                         searchTerm: '',
                         isManga: true,
-                        initialFilters: {'genres': e},
+                        initialFilters: {
+                          'genres': [e]
+                        },
                       ));
                 },
                 backgroundImage: covers[index].cover!);
