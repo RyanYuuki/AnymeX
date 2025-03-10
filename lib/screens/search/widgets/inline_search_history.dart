@@ -1,3 +1,6 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:get/get.dart';
@@ -32,7 +35,10 @@ class InlineSearchHistory extends StatelessWidget {
 
   void _saveToDatabase(List<String> terms) {
     Hive.box('preferences').put(
-        isManga ? 'manga_searched_queries' : 'anime_searched_queries', terms);
+        isManga
+            ? 'manga_searched_queries_${serviceHandler.serviceType.value.name}'
+            : 'anime_searched_queries__${serviceHandler.serviceType.value.name}',
+        terms);
   }
 
   @override
@@ -42,7 +48,7 @@ class InlineSearchHistory extends StatelessWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,10 +92,9 @@ class InlineSearchHistory extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.6),
           ),
           child: ListView.builder(
             shrinkWrap: true,
@@ -98,29 +103,24 @@ class InlineSearchHistory extends StatelessWidget {
             itemCount: searchTerms.length,
             itemBuilder: (context, index) {
               final term = searchTerms[index];
-              // final hue = (term.hashCode % 360).abs().toDouble();
-              // final color = HSLColor.fromAHSL(0.08, hue, 0.6, 0.85).toColor();
-              final color = Theme.of(context).colorScheme.primary;
+              final hue = (term.hashCode % 360).abs().toDouble();
+              final color = Get.isDarkMode
+                  ? HSLColor.fromAHSL(0.08, hue, 0.6, 0.85).toColor()
+                  : Theme.of(context).colorScheme.primary;
 
               return Container(
-                margin: const EdgeInsets.only(bottom: 8),
+                margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  // color: Theme.of(context)
-                  //     .colorScheme
-                  //     .secondaryContainer
-                  //     .withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
-                  // border: Border.all(
-                  //   color: color,
-                  //   width: 1.5,
-                  // ),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: color.withOpacity(0.3),
-                  //     blurRadius: 4,
-                  //     offset: const Offset(0, 2),
-                  //   ),
-                  // ],
+                  border: Border.all(
+                    color: color,
+                    width: 1,
+                  ),
+                  boxShadow: [glowingShadow(context)],
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -129,7 +129,7 @@ class InlineSearchHistory extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                          horizontal: 12, vertical: 6),
                       child: Row(
                         children: [
                           Container(
@@ -140,7 +140,7 @@ class InlineSearchHistory extends StatelessWidget {
                             ),
                             child: Icon(
                               Iconsax.search_normal,
-                              size: 16,
+                              size: 22,
                               color: color.withOpacity(0.8),
                             ),
                           ),
@@ -155,13 +155,12 @@ class InlineSearchHistory extends StatelessWidget {
                             icon: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Icon(
+                              child: AnymexIcon(
                                 Iconsax.close_circle,
                                 size: 16,
-                                color: Theme.of(context).colorScheme.error,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                             padding: EdgeInsets.zero,
@@ -179,6 +178,78 @@ class InlineSearchHistory extends StatelessWidget {
         ),
         const SizedBox(height: 8),
       ],
+    );
+  }
+
+  Container _buildTIleV1(BuildContext context, Color color, String term) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color:
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onTermSelected(term),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Iconsax.search_normal,
+                    size: 16,
+                    color: color.withOpacity(0.8),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AnymexText(
+                    text: term,
+                    variant: TextVariant.semiBold,
+                  ),
+                ),
+                IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      Iconsax.close_circle,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => _deleteTerm(term),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
