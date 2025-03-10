@@ -1,5 +1,9 @@
-import 'package:anymex/screens/anime/widgets/search_widgets.dart';
+import 'dart:developer';
+
+import 'package:anymex/screens/search/widgets/inline_search_history.dart';
+import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -8,13 +12,14 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 enum ViewMode { box, list }
 
@@ -39,26 +44,39 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
-
+  RxList<String> _searchedTerms = <String>[].obs;
   List<Media>? _searchResults;
   ViewMode _currentViewMode = ViewMode.box;
   bool _isLoading = false;
   Map<String, dynamic> _activeFilters = {};
+  RxBool isAdult = false.obs;
+  final Map<String, dynamic> _defaultFilters = {
+    'season': 'WINTER',
+    'sort': 'SCORE',
+    'format': 'TV',
+    'genres': [],
+    'status': 'FINISHED',
+    'isAdult': false
+  };
 
   @override
   void initState() {
     super.initState();
     _searchController.text = widget.searchTerm;
-
+    _searchedTerms.value = Hive.box('preferences').get(
+        '${widget.isManga ? 'manga' : 'anime'}_searched_queries',
+        defaultValue: [].cast<String>());
     if (widget.initialFilters != null) {
       _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _performSearch(filters: _activeFilters);
       });
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _performSearch();
-      });
+      if (widget.searchTerm != '') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _performSearch();
+        });
+      }
     }
   }
 
@@ -80,6 +98,13 @@ class _SearchPageState extends State<SearchPage> {
       final results = await _serviceHandler.search(searchQuery,
           isManga: widget.isManga,
           filters: _activeFilters.isNotEmpty ? _activeFilters : null);
+
+      if (query != null) {
+        _searchedTerms.add(query);
+        Hive.box('preferences').put(
+            '${widget.isManga ? 'manga' : 'anime'}_searched_queries',
+            _searchedTerms);
+      }
 
       setState(() {
         _searchResults = results;
@@ -389,52 +414,108 @@ class _SearchPageState extends State<SearchPage> {
                 padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    ),
+                    const CustomBackButton(),
                     Expanded(
                       child: CustomSearchBar(
                         controller: _searchController,
                         onSubmitted: (query) => _performSearch(query: query),
-                        disableIcons: _serviceHandler.serviceType.value !=
-                            ServicesType.anilist,
+                        disableIcons: true,
                         onSuffixIconPressed: _showFilterBottomSheet,
+                        suffixIconWidget: _searchController.text.isEmpty
+                            ? const SizedBox.shrink()
+                            : IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _searchController.text = '';
+                                    _searchResults = [];
+                                  });
+                                },
+                                icon: const Icon(Iconsax.close_circle)),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Search Results',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: 'Poppins-SemiBold',
-                      ),
+              Row(
+                children: [
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      _showFilterBottomSheet();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 5),
+                      child: Row(children: [
+                        AnymexText(
+                          text: 'Filter',
+                          color: Theme.of(context).colorScheme.primary,
+                          variant: TextVariant.semiBold,
+                          size: 16,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Icon(Icons.filter_alt,
+                            color: Theme.of(context).colorScheme.primary)
+                      ]),
                     ),
-                    IconButton(
-                      onPressed: _toggleViewMode,
-                      icon: Icon(
-                        _currentViewMode == ViewMode.box
-                            ? Icons.grid_view
-                            : Icons.menu,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              if (_activeFilters.isNotEmpty)
+              const SizedBox(height: 10),
+              if ((_searchResults?.isNotEmpty ?? false) && !_isLoading) ...[
                 Padding(
-                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                  child: _buildFilterChips(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Search Results',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Poppins-SemiBold',
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _toggleViewMode,
+                        icon: Icon(
+                          _currentViewMode == ViewMode.box
+                              ? Icons.grid_view
+                              : Icons.menu,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              Expanded(child: _buildSearchResults()),
+                if (_activeFilters.isNotEmpty &&
+                    _activeFilters.toString() != _defaultFilters.toString())
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: _buildFilterChips(),
+                  ),
+                Expanded(child: _buildSearchResults()),
+              ] else if (_isLoading) ...[
+                const Center(
+                  child: CircularProgressIndicator(),
+                )
+              ] else ...[
+                Expanded(
+                  child: InlineSearchHistory(
+                    searchTerms: _searchedTerms,
+                    onTermSelected: (term) {
+                      _searchController.text = term;
+                      _performSearch(query: term);
+                    },
+                    onHistoryUpdated: (updatedTerms) {
+                      setState(() {
+                        _searchedTerms.value = updatedTerms;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ],
           ),
         ),
