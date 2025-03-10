@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -67,92 +68,101 @@ class _SettingsUiState extends State<SettingsUi> {
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10),
-                          child: Text("Common",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                        CustomSwitchTile(
-                            icon: HugeIcons.strokeRoundedBounceRight,
-                            title: "Disable Gradient",
-                            description:
-                                "Disable Gradient, might give you smoother experience",
-                            switchValue: settings.disableGradient,
-                            onChanged: (val) {
-                              settings.disableGradient = val;
-                            }),
-                        CustomSwitchTile(
-                            icon: HugeIcons.strokeRoundedBounceRight,
-                            title: "Enable Animation",
-                            description:
-                                "Enable Animation on Carousels, Disable it to get smoother experience",
-                            switchValue: settings.enableAnimation,
-                            onChanged: (val) {
-                              settings.enableAnimation = val;
-                            }),
-                        CustomSwitchTile(
-                            icon: Icons.colorize,
-                            title: "Transculent Nav",
-                            description: "Enable transculent tab bar",
-                            switchValue: settings.transculentBar,
-                            onChanged: (val) {
-                              settings.transculentBar = val;
-                            }),
-                        CustomSliderTile(
-                          icon: HugeIcons.strokeRoundedLighthouse,
-                          title: "Glow Multiplier",
-                          description: "Adjust the glow of all the elements",
-                          sliderValue: settings.glowMultiplier,
-                          onChanged: (value) =>
-                              handleSliderChange('glowMultiplier', value),
-                          max: 5.0,
-                        ),
-                        const SizedBox(height: 20),
-                        CustomSliderTile(
-                          icon: HugeIcons.strokeRoundedRadius,
-                          title: "Radius Multiplier",
-                          description: "Adjust the radius of all the elements",
-                          sliderValue: settings.radiusMultiplier,
-                          onChanged: (value) =>
-                              handleSliderChange('radiusMultiplier', value),
-                          max: 3.0,
-                        ),
-                        const SizedBox(height: 20),
-                        CustomSliderTile(
-                          icon: HugeIcons.strokeRoundedRadius,
-                          title: "Blur Multiplier",
-                          description:
-                              "Adjust the Glow Blur of all the elements",
-                          sliderValue: settings.blurMultiplier,
-                          onChanged: (value) =>
-                              handleSliderChange('blurMultiplier', value),
-                          max: 5.0,
-                        ),
-                        const SizedBox(height: 20),
-                        CustomSliderTile(
-                          icon: HugeIcons.strokeRoundedRadius,
-                          title: "Card Roundness",
-                          description: "Adjust the Roundness of All Cards",
-                          sliderValue: settings.cardRoundness,
-                          onChanged: (value) =>
-                              handleSliderChange('cardRoundness', value),
-                          max: 5.0,
-                        ),
-                        const SizedBox(height: 20),
-                        CustomSliderTile(
-                          icon: HugeIcons.strokeRoundedRadius,
-                          title: "Card Animation Duration",
-                          description: "Adjust the Animation of All Cards",
-                          sliderValue: settings.animationDuration.toDouble(),
-                          onChanged: (value) =>
-                              handleSliderChange('animation', value),
-                          max: 1000,
-                          divisions: 10,
-                        ),
+                        AnymexExpansionTile(
+                            title: 'Common',
+                            initialExpanded: true,
+                            content: Column(
+                              children: [
+                                CustomSwitchTile(
+                                    icon: HugeIcons.strokeRoundedBounceRight,
+                                    title: "Disable Gradient",
+                                    description:
+                                        "Disable Gradient, might give you smoother experience",
+                                    switchValue: settings.disableGradient,
+                                    onChanged: (val) {
+                                      settings.disableGradient = val;
+                                    }),
+                                CustomSwitchTile(
+                                    icon: HugeIcons.strokeRoundedBounceRight,
+                                    title: "Enable Animation",
+                                    description:
+                                        "Enable Animation on Carousels, Disable it to get smoother experience",
+                                    switchValue: settings.enableAnimation,
+                                    onChanged: (val) {
+                                      settings.enableAnimation = val;
+                                    }),
+                                CustomSwitchTile(
+                                    icon: Icons.colorize,
+                                    title: "Transculent Nav",
+                                    description: "Enable transculent tab bar",
+                                    switchValue: settings.transculentBar,
+                                    onChanged: (val) {
+                                      settings.transculentBar = val;
+                                    }),
+                              ],
+                            )),
+                        AnymexExpansionTile(
+                            title: 'Extras',
+                            content: Column(
+                              children: [
+                                CustomSliderTile(
+                                  icon: HugeIcons.strokeRoundedLighthouse,
+                                  title: "Glow Multiplier",
+                                  description:
+                                      "Adjust the glow of all the elements",
+                                  sliderValue: settings.glowMultiplier,
+                                  onChanged: (value) => handleSliderChange(
+                                      'glowMultiplier', value),
+                                  max: 5.0,
+                                ),
+                                const SizedBox(height: 20),
+                                CustomSliderTile(
+                                  icon: HugeIcons.strokeRoundedRadius,
+                                  title: "Radius Multiplier",
+                                  description:
+                                      "Adjust the radius of all the elements",
+                                  sliderValue: settings.radiusMultiplier,
+                                  onChanged: (value) => handleSliderChange(
+                                      'radiusMultiplier', value),
+                                  max: 3.0,
+                                ),
+                                const SizedBox(height: 20),
+                                CustomSliderTile(
+                                  icon: HugeIcons.strokeRoundedRadius,
+                                  title: "Blur Multiplier",
+                                  description:
+                                      "Adjust the Glow Blur of all the elements",
+                                  sliderValue: settings.blurMultiplier,
+                                  onChanged: (value) => handleSliderChange(
+                                      'blurMultiplier', value),
+                                  max: 5.0,
+                                ),
+                                const SizedBox(height: 20),
+                                CustomSliderTile(
+                                  icon: HugeIcons.strokeRoundedRadius,
+                                  title: "Card Roundness",
+                                  description:
+                                      "Adjust the Roundness of All Cards",
+                                  sliderValue: settings.cardRoundness,
+                                  onChanged: (value) => handleSliderChange(
+                                      'cardRoundness', value),
+                                  max: 5.0,
+                                ),
+                                const SizedBox(height: 20),
+                                CustomSliderTile(
+                                  icon: HugeIcons.strokeRoundedRadius,
+                                  title: "Card Animation Duration",
+                                  description:
+                                      "Adjust the Animation of All Cards",
+                                  sliderValue:
+                                      settings.animationDuration.toDouble(),
+                                  onChanged: (value) =>
+                                      handleSliderChange('animation', value),
+                                  max: 1000,
+                                  divisions: 10,
+                                ),
+                              ],
+                            )),
                       ],
                     ),
                   )

@@ -81,7 +81,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 leading: const Icon(Icons.speed),
                                 color: Theme.of(context).colorScheme.primary,
                                 active: speedd == speed.value,
-                                title: '${speedd.toStringAsFixed(1)}x',
+                                title: '${speedd.toStringAsFixed(2)}x',
                                 onTap: () {
                                   speed.value = speedd;
                                   settings.speed = speedd;
@@ -172,7 +172,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         body: SingleChildScrollView(
           child: Padding(
             padding: getResponsiveValue(context,
-                mobileValue: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
+                mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
                 desktopValue:
                     const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0)),
             child: Column(
@@ -209,6 +209,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymexExpansionTile(
+                            initialExpanded: true,
                             title: 'Common',
                             content: Column(
                               children: [
@@ -290,16 +291,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                             title: 'Subtitles',
                             content: Column(
                               children: [
-                                ListTile(
-                                  leading: Icon(Icons.palette,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  title: const Text(
-                                    'Subtitle Color',
-                                    style: TextStyle(
-                                        fontFamily: "Poppins-SemiBold"),
-                                  ),
+                                CustomTile(
+                                  padding: 10,
+                                  description: 'Change subtitle colors',
+                                  icon: Icons.palette,
+                                  title: 'Subtitle Color',
                                   onTap: () {
                                     _showColorSelectionDialog(
                                         'Select Subtitle Color',
@@ -310,16 +306,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   },
                                 ),
                                 // Subtitle Outline Color
-                                ListTile(
-                                  leading: Icon(Icons.palette,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  title: const Text(
-                                    'Subtitle Outline Color',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.palette,
+                                  title: 'Subtitle Outline Color',
+                                  description: 'Change subtitle outline color',
                                   onTap: () {
                                     _showColorSelectionDialog(
                                         'Select Subtitle Outline Color',
@@ -330,17 +321,12 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   },
                                 ),
 
-                                // Subtitle Background Color
-                                ListTile(
-                                  leading: Icon(Icons.palette,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  title: const Text(
-                                    'Subtitle Background Color',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                                CustomTile(
+                                  padding: 10,
+                                  description:
+                                      'Change subtitle background color',
+                                  icon: Icons.palette,
+                                  title: 'Subtitle Background Color',
                                   onTap: () {
                                     _showColorSelectionDialog(
                                         'Select Subtitle Background Color',

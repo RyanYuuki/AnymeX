@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,11 @@ class AnymexCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final settings = Get.find<Settings>();
     return Card(
+      color: settings.disableGradient
+          ? colorScheme.surfaceContainerLow
+          : colorScheme.surfaceContainerLow.withOpacity(0.3),
       elevation: 2,
       shadowColor: colorScheme.shadow.withOpacity(0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -1,10 +1,10 @@
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 void showFilterBottomSheet(
     BuildContext context, Function(dynamic args) onApplyFilter,
     {Map<String, dynamic>? currentFilters}) {
-  // Add currentFilters parameter
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).colorScheme.surface,
@@ -17,7 +17,7 @@ void showFilterBottomSheet(
         onApplyFilter: (args) {
           onApplyFilter(args);
         },
-        currentFilters: currentFilters, // Pass current filters to the content
+        currentFilters: currentFilters,
       );
     },
   );
@@ -328,7 +328,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                       'sort': selectedSortBy,
                       'format': selectedFormat,
                       'genres': selectedGenres,
-                      'status': selectedStatus
+                      'status': selectedStatus,
                     });
                     Navigator.pop(context);
                   },

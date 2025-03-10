@@ -42,7 +42,6 @@ class SettingsAccounts extends StatelessWidget {
 
     return Glow(
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
         body: ScrollWrapper(
           comfortPadding: false,
           customPadding: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),

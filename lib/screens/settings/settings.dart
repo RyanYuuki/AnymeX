@@ -32,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
           body: ListView(
         padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 15.0, 20.0),
+            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
         children: [
           const Row(
