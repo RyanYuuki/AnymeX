@@ -4,6 +4,8 @@ import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -206,193 +208,208 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                 Obx(() => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10),
-                          child: Text("Common",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                        CustomTile(
-                          padding: 10,
-                          descColor: Theme.of(context).colorScheme.primary,
-                          isDescBold: true,
-                          icon: HugeIcons.strokeRoundedPlaySquare,
-                          onTap: () {
-                            showPlayerStyleDialog();
-                          },
-                          title: "Player Theme",
-                          description: numToPlayerStyle(settings.playerStyle),
-                        ),
-                        CustomSwitchTile(
-                            padding: const EdgeInsets.all(10),
-                            icon: Icons.stay_current_portrait,
-                            title: "Default Portrait",
-                            description: "For psychopath who watch in portrait",
-                            switchValue: settings.defaultPortraitMode,
-                            onChanged: (val) =>
-                                settings.defaultPortraitMode = val),
-                        CustomTile(
-                          padding: 10,
-                          isDescBold: true,
-                          icon: Icons.speed,
-                          descColor: Theme.of(context).colorScheme.primary,
-                          onTap: _showPlaybackSpeedDialog,
-                          title: "Playback Speed",
-                          description: '${settings.speed.toStringAsFixed(1)}x',
-                        ),
-                        // Resize Mode
-                        ListTile(
-                          leading: Icon(Icons.aspect_ratio,
-                              color: Theme.of(context).colorScheme.primary),
-                          title: const Text(
-                            'Resize Mode',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(settings.resizeMode,
-                              style: TextStyle(
-                                  fontFamily: 'Poppins-SemiBold',
-                                  color:
-                                      Theme.of(context).colorScheme.primary)),
-                          onTap: () {
-                            _showResizeModeDialog();
-                          },
-                        ),
-                        CustomSliderTile(
-                          sliderValue: settings.seekDuration.toDouble(),
-                          max: 50,
-                          divisions: 9,
-                          onChanged: (double value) {
-                            setState(() {
-                              settings.seekDuration = value.toInt();
-                            });
-                          },
-                          title: 'DoubleTap to Seek',
-                          description: 'Adjust Double Tap To Seek Duration',
-                          icon: Iconsax.forward5,
-                        ),
-                        CustomSliderTile(
-                          sliderValue: settings.skipDuration.toDouble(),
-                          max: 120,
-                          divisions: 24,
-                          onChanged: (double value) {
-                            settings.skipDuration = value.toInt();
-                          },
-                          title: 'MegaSkip Duration',
-                          description: 'Adjust MegaSkip Duration',
-                          icon: Iconsax.forward5,
-                        ),
+                        AnymexExpansionTile(
+                            title: 'Common',
+                            content: Column(
+                              children: [
+                                CustomTile(
+                                  padding: 10,
+                                  descColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  isDescBold: true,
+                                  icon: HugeIcons.strokeRoundedPlaySquare,
+                                  onTap: () {
+                                    showPlayerStyleDialog();
+                                  },
+                                  title: "Player Theme",
+                                  description:
+                                      numToPlayerStyle(settings.playerStyle),
+                                ),
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.stay_current_portrait,
+                                    title: "Default Portrait",
+                                    description:
+                                        "For psychopath who watch in portrait",
+                                    switchValue: settings.defaultPortraitMode,
+                                    onChanged: (val) =>
+                                        settings.defaultPortraitMode = val),
+                                CustomTile(
+                                  padding: 10,
+                                  isDescBold: true,
+                                  icon: Icons.speed,
+                                  descColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  onTap: _showPlaybackSpeedDialog,
+                                  title: "Playback Speed",
+                                  description:
+                                      '${settings.speed.toStringAsFixed(1)}x',
+                                ),
+                                // Resize Mode
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.aspect_ratio,
+                                  title: 'Resize Mode',
+                                  isDescBold: true,
+                                  description: settings.resizeMode,
+                                  descColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  onTap: () {
+                                    _showResizeModeDialog();
+                                  },
+                                ),
+                                CustomSliderTile(
+                                  sliderValue: settings.seekDuration.toDouble(),
+                                  max: 50,
+                                  divisions: 9,
+                                  onChanged: (double value) {
+                                    setState(() {
+                                      settings.seekDuration = value.toInt();
+                                    });
+                                  },
+                                  title: 'DoubleTap to Seek',
+                                  description:
+                                      'Adjust Double Tap To Seek Duration',
+                                  icon: Iconsax.forward5,
+                                ),
+                                CustomSliderTile(
+                                  sliderValue: settings.skipDuration.toDouble(),
+                                  max: 120,
+                                  divisions: 24,
+                                  onChanged: (double value) {
+                                    settings.skipDuration = value.toInt();
+                                  },
+                                  title: 'MegaSkip Duration',
+                                  description: 'Adjust MegaSkip Duration',
+                                  icon: Iconsax.forward5,
+                                ),
+                              ],
+                            )),
                         // Subtitle Color
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10),
-                          child: Text("Subtitles",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.palette,
-                              color: Theme.of(context).colorScheme.primary),
-                          title: const Text(
-                            'Subtitle Color',
-                            style: TextStyle(fontFamily: "Poppins-SemiBold"),
-                          ),
-                          onTap: () {
-                            _showColorSelectionDialog('Select Subtitle Color',
-                                fontColorOptions[settings.subtitleColor]!,
-                                (color) {
-                              settings.subtitleColor = color;
-                            });
-                          },
-                        ),
-                        // Subtitle Outline Color
-                        ListTile(
-                          leading: Icon(Icons.palette,
-                              color: Theme.of(context).colorScheme.primary),
-                          title: const Text(
-                            'Subtitle Outline Color',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onTap: () {
-                            _showColorSelectionDialog(
-                                'Select Subtitle Outline Color',
-                                colorOptions[settings.subtitleOutlineColor]!,
-                                (color) {
-                              settings.subtitleOutlineColor = color;
-                            });
-                          },
-                        ),
+                        AnymexExpansionTile(
+                            title: 'Subtitles',
+                            content: Column(
+                              children: [
+                                ListTile(
+                                  leading: Icon(Icons.palette,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  title: const Text(
+                                    'Subtitle Color',
+                                    style: TextStyle(
+                                        fontFamily: "Poppins-SemiBold"),
+                                  ),
+                                  onTap: () {
+                                    _showColorSelectionDialog(
+                                        'Select Subtitle Color',
+                                        fontColorOptions[
+                                            settings.subtitleColor]!, (color) {
+                                      settings.subtitleColor = color;
+                                    });
+                                  },
+                                ),
+                                // Subtitle Outline Color
+                                ListTile(
+                                  leading: Icon(Icons.palette,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  title: const Text(
+                                    'Subtitle Outline Color',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () {
+                                    _showColorSelectionDialog(
+                                        'Select Subtitle Outline Color',
+                                        colorOptions[settings
+                                            .subtitleOutlineColor]!, (color) {
+                                      settings.subtitleOutlineColor = color;
+                                    });
+                                  },
+                                ),
 
-                        // Subtitle Background Color
-                        ListTile(
-                          leading: Icon(Icons.palette,
-                              color: Theme.of(context).colorScheme.primary),
-                          title: const Text(
-                            'Subtitle Background Color',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onTap: () {
-                            _showColorSelectionDialog(
-                                'Select Subtitle Background Color',
-                                colorOptions[settings.subtitleBackgroundColor]!,
-                                (color) {
-                              settings.subtitleBackgroundColor = color;
-                            });
-                          },
-                        ),
-                        // Subtitle Preview
-                        CustomSliderTile(
-                          sliderValue: settings.subtitleSize.toDouble(),
-                          min: 12.0,
-                          max: 30.0,
-                          divisions: 18,
-                          onChanged: (double value) {
-                            settings.subtitleSize = value.toInt();
-                          },
-                          title: 'Subtitle Size',
-                          description: 'Adjust Sub Size',
-                          icon: Iconsax.subtitle5,
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 17.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Subtitle Preview',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                alignment: Alignment.center,
-                                color: colorOptions[
-                                    settings.subtitleBackgroundColor],
-                                padding: const EdgeInsets.all(10),
-                                child: Text(
-                                  'Subtitle Preview Text',
-                                  style: TextStyle(
-                                    color: colorOptions[settings.subtitleColor],
-                                    fontSize: settings.subtitleSize.toDouble(),
-                                    shadows: [
-                                      Shadow(
-                                        offset: const Offset(1.0, 1.0),
-                                        blurRadius: 10.0,
-                                        color: fontColorOptions[
-                                            settings.subtitleOutlineColor]!,
+                                // Subtitle Background Color
+                                ListTile(
+                                  leading: Icon(Icons.palette,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  title: const Text(
+                                    'Subtitle Background Color',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () {
+                                    _showColorSelectionDialog(
+                                        'Select Subtitle Background Color',
+                                        colorOptions[
+                                            settings.subtitleBackgroundColor]!,
+                                        (color) {
+                                      settings.subtitleBackgroundColor = color;
+                                    });
+                                  },
+                                ),
+                                // Subtitle Preview
+                                CustomSliderTile(
+                                  sliderValue: settings.subtitleSize.toDouble(),
+                                  min: 12.0,
+                                  max: 30.0,
+                                  divisions: 18,
+                                  onChanged: (double value) {
+                                    settings.subtitleSize = value.toInt();
+                                  },
+                                  title: 'Subtitle Size',
+                                  description: 'Adjust Sub Size',
+                                  icon: Iconsax.subtitle5,
+                                ),
+                                const SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 17.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Subtitle Preview',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: colorOptions[settings
+                                                .subtitleBackgroundColor],
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        padding: const EdgeInsets.all(10),
+                                        child: Text(
+                                          'Subtitle Preview Text',
+                                          style: TextStyle(
+                                            color: colorOptions[
+                                                settings.subtitleColor],
+                                            fontSize: settings.subtitleSize
+                                                .toDouble(),
+                                            shadows: [
+                                              Shadow(
+                                                offset: const Offset(1.0, 1.0),
+                                                blurRadius: 10.0,
+                                                color: fontColorOptions[settings
+                                                    .subtitleOutlineColor]!,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              ],
+                            )),
                       ],
                     ))
               ],
