@@ -44,7 +44,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
-  RxList<String> _searchedTerms = <String>[].obs;
+  final RxList<String> _searchedTerms = <String>[].obs;
   List<Media>? _searchResults;
   ViewMode _currentViewMode = ViewMode.box;
   bool _isLoading = false;
@@ -56,7 +56,6 @@ class _SearchPageState extends State<SearchPage> {
     'format': 'TV',
     'genres': [],
     'status': 'FINISHED',
-    'isAdult': false
   };
 
   @override
@@ -64,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     _searchController.text = widget.searchTerm;
     _searchedTerms.value = Hive.box('preferences').get(
-        '${widget.isManga ? 'manga' : 'anime'}_searched_queries',
+        '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
         defaultValue: [].cast<String>());
     if (widget.initialFilters != null) {
       _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
@@ -97,12 +96,13 @@ class _SearchPageState extends State<SearchPage> {
 
       final results = await _serviceHandler.search(searchQuery,
           isManga: widget.isManga,
-          filters: _activeFilters.isNotEmpty ? _activeFilters : null);
+          filters: _activeFilters.isNotEmpty ? _activeFilters : null,
+          args: isAdult.value);
 
-      if (query != null) {
+      if (query != null && query.isNotEmpty) {
         _searchedTerms.add(query);
         Hive.box('preferences').put(
-            '${widget.isManga ? 'manga' : 'anime'}_searched_queries',
+            '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
             _searchedTerms);
       }
 
@@ -114,6 +114,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _isLoading = false;
       });
+      log('Search failed: $e');
       snackBar('Search failed: $e', duration: 2000);
     }
   }
@@ -437,32 +438,50 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Spacer(),
-                  InkWell(
-                    onTap: () {
-                      _showFilterBottomSheet();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5),
-                      child: Row(children: [
-                        AnymexText(
-                          text: 'Filter',
-                          color: Theme.of(context).colorScheme.primary,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const AnymexText(
+                          text: 'Adult',
                           variant: TextVariant.semiBold,
-                          size: 16,
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Icon(Icons.filter_alt,
-                            color: Theme.of(context).colorScheme.primary)
-                      ]),
+                        const SizedBox(width: 10),
+                        Obx(() {
+                          return Switch(
+                              value: isAdult.value,
+                              onChanged: (v) => isAdult.value = v);
+                        }),
+                      ],
                     ),
-                  ),
-                ],
+                    InkWell(
+                      onTap: () {
+                        _showFilterBottomSheet();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 5),
+                        child: Row(children: [
+                          AnymexText(
+                            text: 'Filter',
+                            color: Theme.of(context).colorScheme.primary,
+                            variant: TextVariant.semiBold,
+                            size: 16,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Icon(Icons.filter_alt,
+                              color: Theme.of(context).colorScheme.primary)
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               if ((_searchResults?.isNotEmpty ?? false) && !_isLoading) ...[
