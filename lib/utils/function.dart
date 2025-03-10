@@ -520,3 +520,13 @@ Future<bool> isTv() async {
 void navigate(dynamic page) {
   Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
 }
+
+extension SizedBoxExt on num {
+  SizedBox width() {
+    return SizedBox(width: toDouble());
+  }
+
+  SizedBox height() {
+    return SizedBox(height: toDouble());
+  }
+}

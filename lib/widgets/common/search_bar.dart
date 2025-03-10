@@ -10,6 +10,7 @@ import 'package:iconly/iconly.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final Function(String) onSubmitted;
   final Function(String)? onChanged;
   final VoidCallback? onPrefixIconPressed;
@@ -36,6 +37,7 @@ class CustomSearchBar extends StatefulWidget {
     this.suffixWidget,
     this.suffixIconWidget,
     this.padding,
+    this.focusNode,
   });
 
   @override
@@ -89,7 +91,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
       child: TextField(
-        focusNode: _focusNode,
+        focusNode: widget.focusNode ?? _focusNode,
         controller: widget.controller,
         onSubmitted: (value) {
           widget.onSubmitted(value);

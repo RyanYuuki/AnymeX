@@ -39,32 +39,28 @@ void showSelectionDialog<T>({
                 ),
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Obx(
-                      () => Container(
-                        margin: const EdgeInsets.only(bottom: 7),
-                        child: ListTileWithCheckMark(
-                          leading:
-                              leadingIcon != null ? Icon(leadingIcon) : null,
-                          color: Theme.of(context).colorScheme.primary,
-                          active: item == selectedItem.value,
-                          title: getTitle(item),
-                          onTap: () {
-                            onItemSelected(item);
-                            Navigator.pop(context);
-                          },
+              SingleChildScrollView(
+                child: Column(
+                  children: items
+                      .map(
+                        (item) => Container(
+                          margin: const EdgeInsets.only(bottom: 7),
+                          child: ListTileWithCheckMark(
+                            leading:
+                                leadingIcon != null ? Icon(leadingIcon) : null,
+                            color: Theme.of(context).colorScheme.primary,
+                            active: item == selectedItem.value,
+                            title: getTitle(item),
+                            onTap: () {
+                              onItemSelected(item);
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      )
+                      .toList(),
                 ),
-              ),
+              )
             ],
           ),
         ),

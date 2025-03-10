@@ -4,7 +4,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
