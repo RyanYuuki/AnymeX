@@ -201,6 +201,7 @@ Future<void> initializeHive() async {
   await Hive.openBox('themeData');
   await Hive.openBox('loginData');
   await Hive.openBox('auth');
+  await Hive.openBox('preferences');
   await Hive.openBox<UISettings>("UiSettings");
   await Hive.openBox<PlayerSettings>("PlayerSettings");
 }

@@ -6,7 +6,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -38,31 +38,32 @@ class SeasonsGrid extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 10,
+                  mainAxisAlignment: getResponsiveValue(context,
+                      mobileValue: MainAxisAlignment.spaceBetween,
+                      desktopValue: MainAxisAlignment.center),
                   children: filteredRelations
-                      .map((relation) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: BlurredButton(
-                              width: getResponsiveSize(context,
-                                  mobileSize: Get.width / 2 - 20,
-                                  dektopSize: 300),
-                              height: getResponsiveSize(context,
-                                  mobileSize: 60, dektopSize: 80),
-                              buttonText: relation.relationType,
-                              onPressed: () {
-                                navigate(
-                                  () => AnimeDetailsPage(
-                                      media: Media(
-                                          id: relation.id.toString(),
-                                          title: relation.title,
-                                          poster: relation.poster),
-                                      tag: relation.id.toString()),
-                                );
-                              },
-                              backgroundImage: relation.cover.isNotEmpty
-                                  ? relation.cover
-                                  : relation.poster,
-                            ),
+                      .map((relation) => BlurredButton(
+                            width: getResponsiveSize(context,
+                                mobileSize:
+                                    Get.width / filteredRelations.length - 20,
+                                dektopSize: 300),
+                            height: getResponsiveSize(context,
+                                mobileSize: 60, dektopSize: 80),
+                            buttonText: relation.relationType,
+                            onPressed: () {
+                              navigate(
+                                () => AnimeDetailsPage(
+                                    media: Media(
+                                        id: relation.id.toString(),
+                                        title: relation.title,
+                                        poster: relation.poster),
+                                    tag: relation.id.toString()),
+                              );
+                            },
+                            backgroundImage: relation.cover.isNotEmpty
+                                ? relation.cover
+                                : relation.poster,
                           ))
                       .toList(),
                 ),
@@ -116,9 +117,8 @@ class BlurredButton extends StatelessWidget {
                     ),
                   ),
                   Positioned.fill(
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          'https://static.vecteezy.com/system/resources/previews/020/050/497/large_2x/circle-dotted-background-pop-art-comic-style-illustration-png.png',
+                    child: Image.asset(
+                      'assets/images/dot_pattern.png',
                       color: Colors.white.withOpacity(0.1),
                       fit: BoxFit.fitWidth,
                       colorBlendMode: BlendMode.overlay,

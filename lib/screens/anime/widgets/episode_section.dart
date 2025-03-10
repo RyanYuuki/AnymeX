@@ -11,8 +11,8 @@ import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.da
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
