@@ -291,7 +291,7 @@ class SourceController extends GetxController implements BaseService {
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, dynamic args}) async {
     final data = await m.search(
         source: (isManga ? activeMangaSource.value : activeSource.value)!,
         query: query,

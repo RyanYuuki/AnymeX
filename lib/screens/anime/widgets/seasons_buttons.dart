@@ -38,7 +38,7 @@ class SeasonsGrid extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  spacing: 10,
+                  spacing: 0,
                   mainAxisAlignment: getResponsiveValue(context,
                       mobileValue: MainAxisAlignment.spaceBetween,
                       desktopValue: MainAxisAlignment.center),
@@ -46,7 +46,7 @@ class SeasonsGrid extends StatelessWidget {
                       .map((relation) => BlurredButton(
                             width: getResponsiveSize(context,
                                 mobileSize:
-                                    Get.width / filteredRelations.length - 20,
+                                    Get.width / filteredRelations.length - 30,
                                 dektopSize: 300),
                             height: getResponsiveSize(context,
                                 mobileSize: 60, dektopSize: 80),

@@ -4,6 +4,7 @@ import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -17,6 +18,7 @@ import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -231,7 +233,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
     final mediaType = isManga ? 'manga' : 'anime';
     final data = await fetchDataFromApi(
       'https://api.myanimelist.net/v2/$mediaType?q=$query&limit=30',
@@ -242,6 +244,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
     final isDesktop = Get.width > 600;
+    final settings = Get.find<Settings>();
+    final acceptedLists = settings.homePageCardsMal.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
     return [
       Obx(() => Column(
             children: [
@@ -280,10 +287,20 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     )
                   : const SizedBox.shrink(),
               if (isLoggedIn.value) const SizedBox(height: 30),
-              buildSection("Continue Watching", continueWatching,
-                  variant: DataVariant.anilist),
-              buildSection("Continue Reading", continueReading,
-                  isManga: true, variant: DataVariant.anilist),
+              Obx(() => Column(
+                    children: acceptedLists.map((e) {
+                      return ReusableCarousel(
+                        data: filterListByLabel(
+                            e.contains("Manga") || e.contains("Reading")
+                                ? mangaList
+                                : animeList,
+                            e),
+                        title: e,
+                        variant: DataVariant.anilist,
+                        isManga: e.contains("Manga") || e.contains("Reading"),
+                      );
+                    }).toList(),
+                  )),
               buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
               buildSectionIfNotEmpty("Popular Animes", popularAnimes),
               buildSectionIfNotEmpty("Trending Manga", trendingManga,

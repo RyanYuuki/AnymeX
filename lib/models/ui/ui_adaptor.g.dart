@@ -32,13 +32,27 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       homePageCards: (fields[12] as Map).cast<String, bool>(),
       enableAnimation: fields[13] as bool,
       disableGradient: fields[14] as bool,
+      homePageCardsMal: fields[15] != null
+          ? (fields[15] as Map).cast<String, bool>()
+          : {
+              "Continue Watching": true,
+              "Continue Reading": true,
+              "Completed TV": false,
+              "Completed Manga": false,
+              "Paused Animes": false,
+              "Paused Manga": false,
+              "Dropped Animes": false,
+              "Dropped Manga": false,
+              "Planning Animes": false,
+              "Planning Manga": false,
+            },
     );
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -68,7 +82,9 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(13)
       ..write(obj.enableAnimation)
       ..writeByte(14)
-      ..write(obj.disableGradient);
+      ..write(obj.disableGradient)
+      ..writeByte(15)
+      ..write(obj.homePageCardsMal);
   }
 
   @override

@@ -79,12 +79,23 @@ class Settings extends GetxController {
   }
 
   Map<String, bool> get homePageCards => uiSettings.value.homePageCards;
+  Map<String, bool> get homePageCardsMal => uiSettings.value.homePageCardsMal;
 
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;
     uiSettings.update((settings) {
       settings?.homePageCards = currentCards;
+    });
+    saveUISettings();
+  }
+
+  void updateHomePageCardMal(String key, bool value) {
+    final currentCards =
+        Map<String, bool>.from(uiSettings.value.homePageCardsMal);
+    currentCards[key] = value;
+    uiSettings.update((settings) {
+      settings?.homePageCardsMal = currentCards;
     });
     saveUISettings();
   }

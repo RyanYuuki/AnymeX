@@ -69,9 +69,17 @@ final Map<String, Color> fontColorOptions = {
 };
 
 final cursedSpeed = [
-  ...List.generate(19, (i) => (i + 1) * 0.1),
-  ...List.generate(8, (i) => (i + 3) * 0.5),
-  ...List.generate(15, (i) => (i + 7) * 1.0),
+  0.25,
+  0.50,
+  0.75,
+  1.00,
+  1.25,
+  1.50,
+  1.75,
+  2.00,
+  3.00,
+  5.00,
+  10.00,
   ...[25.0, 50.0, 75.0, 100.0],
 ];
 

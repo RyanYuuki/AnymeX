@@ -623,7 +623,7 @@ averageScore
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
     final data = await anilistSearch(
         isManga: isManga,
         query: query,
@@ -631,19 +631,20 @@ averageScore
         season: filters?['season'],
         status: filters?['status'],
         format: filters?['format'],
-        genres: filters?['genres']);
+        genres: filters?['genres'],
+        isAdult: args);
     return data;
   }
 
-  static Future<List<Media>> anilistSearch({
-    required bool isManga,
-    String? query,
-    String? sort,
-    String? season,
-    String? status,
-    String? format,
-    List<String>? genres,
-  }) async {
+  static Future<List<Media>> anilistSearch(
+      {required bool isManga,
+      String? query,
+      String? sort,
+      String? season,
+      String? status,
+      String? format,
+      List<String>? genres,
+      required bool isAdult}) async {
     const url = 'https://graphql.anilist.co/';
     final headers = {'Content-Type': 'application/json'};
 
@@ -654,7 +655,7 @@ averageScore
       if (status != null) 'status': status.toUpperCase(),
       if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
       if (genres != null && genres.isNotEmpty) 'genre_in': genres,
-      'isAdult': false,
+      'isAdult': isAdult,
     };
 
     final String commonFields = '''
