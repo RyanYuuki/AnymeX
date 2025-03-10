@@ -118,18 +118,18 @@ class ListEditorModal extends StatelessWidget {
   }
 
   Widget _buildProgressField(BuildContext context) {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() {
-          _controller.text = animeProgress.value.toString();
+          controller.text = animeProgress.value.toString();
           return Expanded(
             child: SizedBox(
                 height: 55,
                 child: TextFormField(
                   keyboardType: TextInputType.number,
-                  controller: _controller,
+                  controller: controller,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.add),
                     suffixText: '${animeProgress.value}/${media.totalEpisodes}',
