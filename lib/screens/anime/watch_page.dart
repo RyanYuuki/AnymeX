@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -23,9 +22,9 @@ import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_button.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +75,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final episodeDuration = const Duration(minutes: 24).obs;
   final formattedTime = "00:00".obs;
   final formattedDuration = "24:00".obs;
-  final showControls = false.obs;
+  final showControls = true.obs;
   final isBuffering = true.obs;
   final bufferred = const Duration(milliseconds: 0).obs;
   final playbackSpeed = 1.0.obs;
@@ -214,23 +213,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   // Continuous Tracking
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
+  StreamSubscription<Duration>? _positionSubscription;
+  bool _isSeeking = false;
+  int lastProcessedSecond = -1;
 
   void _attachListeners() {
-    player.stream.playing.listen((e) {
-      isPlaying.value = e;
+    _positionSubscription = player.stream.position.listen((e) {
+      if (_isSeeking) return;
 
-      if (e) {
-        Future.delayed(const Duration(seconds: 2), () {
-          isSwitchingEpisode = false;
-        });
-      }
-    });
-
-    player.stream.position.listen((e) {
       currentPosition.value = e;
       formattedTime.value = formatDuration(e);
 
-      if (!isSwitchingEpisode) {
+      if (!isSwitchingEpisode && e.inSeconds != lastProcessedSecond) {
+        lastProcessedSecond = e.inSeconds;
         currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       }
 
@@ -255,13 +250,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       }
     });
 
+    player.stream.playing.listen((e) {
+      isPlaying.value = e;
+
+      if (e) {
+        Future.delayed(const Duration(seconds: 2), () {
+          isSwitchingEpisode = false;
+        });
+      }
+    });
+
     player.stream.duration.listen((e) {
       episodeDuration.value = e;
       currentEpisode.value.durationInMilliseconds = e.inMilliseconds;
       formattedDuration.value = formatDuration(e);
     });
 
-    player.stream.buffering.listen((e) {
+    playerController.player.stream.buffering.listen((e) {
       isBuffering.value = e;
     });
 
@@ -276,6 +281,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.stream.subtitle.listen((e) {
       subtitleText.value = e;
     });
+  }
+
+  void startSeeking() {
+    _isSeeking = true;
+  }
+
+  void endSeeking(Duration position) {
+    currentPosition.value = position;
+    formattedTime.value = formatDuration(position);
+    currentEpisode.value.timeStampInMilliseconds = position.inSeconds * 1000;
+
+    _isSeeking = false;
   }
 
   void _initRxVariables() {
@@ -612,7 +629,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   : Get.width,
               child: Video(
                 controller: playerController,
-                alignment: Alignment.center,
+                filterQuality: FilterQuality.medium,
                 controls: null,
                 fit: resizeModes[resizeMode.value]!,
                 subtitleViewConfiguration: const SubtitleViewConfiguration(
@@ -1342,10 +1359,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             child: SizedBox(
                               height: 27,
                               child: VideoSliderTheme(
-                                color: themeFgColor.value,
-                                inactiveTrackColor:
-                                    _getBgColor().withOpacity(0.8),
-                                child: Slider(
+                                  color: themeFgColor.value,
+                                  inactiveTrackColor:
+                                      _getBgColor().withOpacity(0.8),
+                                  child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
                                         skipTraversal: true),
@@ -1363,20 +1380,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     secondaryTrackValue: bufferred
                                         .value.inMilliseconds
                                         .toDouble(),
-                                    onChangeStart: (val) {
-                                      if (episodeDuration.value.inMilliseconds
-                                              .toDouble() !=
-                                          0.0) {
-                                        player.pause();
-                                      }
+                                    onChangeStart: (_) {
+                                      startSeeking();
                                     },
-                                    onChangeEnd: (val) {
+                                    onChangeEnd: (val) async {
                                       if (episodeDuration.value.inMilliseconds
                                               .toDouble() !=
                                           0.0) {
-                                        player.seek(Duration(
-                                            milliseconds: val.toInt()));
-                                        player.play();
+                                        final newPosition =
+                                            Duration(milliseconds: val.toInt());
+                                        await player.seek(newPosition);
+                                        endSeeking(newPosition);
                                       }
                                     },
                                     onChanged: (val) {
@@ -1388,8 +1402,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                         formattedTime.value = formatDuration(
                                             currentPosition.value);
                                       }
-                                    }),
-                              ),
+                                    },
+                                  )),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -1682,13 +1696,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 }
               },
             ),
-            isBuffering.value
-                ? _buildBufferingIndicator()
-                : buildPlayButton(
-                    isPlaying: isPlaying,
-                    color: themeBgColor.value,
-                    iconColor: themeFgColor.value,
-                  ),
+            Obx(
+              () => isBuffering.value
+                  ? _buildBufferingIndicator()
+                  : buildPlayButton(
+                      isPlaying: isPlaying,
+                      color: themeBgColor.value,
+                      iconColor: themeFgColor.value,
+                    ),
+            ),
             _buildPlaybackButton(
               icon: Icons.skip_next_rounded,
               color: currentEpisode.value.number.toInt() >=
