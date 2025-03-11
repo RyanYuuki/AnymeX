@@ -530,3 +530,7 @@ extension SizedBoxExt on num {
     return SizedBox(height: toDouble());
   }
 }
+
+String getRandomTag() {
+  return DateTime.now().millisecond.toString();
+}

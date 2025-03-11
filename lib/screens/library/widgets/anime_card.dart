@@ -1,5 +1,3 @@
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -7,231 +5,21 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/exceptions/empty_library.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-class MyAnimeLibrary extends StatefulWidget {
-  const MyAnimeLibrary({super.key});
-
-  @override
-  State<MyAnimeLibrary> createState() => _MyAnimeLibraryState();
-}
-
-class _MyAnimeLibraryState extends State<MyAnimeLibrary>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final TextEditingController controller = TextEditingController();
-  final offlineStorage = Get.find<OfflineStorageController>();
-
-  RxList<CustomListData> customListData = <CustomListData>[].obs;
-  RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
-  RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
-
-  RxString searchQuery = ''.obs;
-
-  @override
-  void initState() {
-    super.initState();
-    final handler = Get.find<ServiceHandler>();
-    customListData.value = offlineStorage.animeCustomListData
-        .map((e) => CustomListData(
-              listName: e.listName,
-              listData: e.listData
-                  .where((item) =>
-                      item.serviceIndex == handler.serviceType.value.index)
-                  .toList(),
-            ))
-        .toList();
-
-    historyData.value = offlineStorage.animeLibrary
-        .where((e) =>
-            e.currentEpisode?.currentTrack != null &&
-            e.serviceIndex == handler.serviceType.value.index)
-        .toList();
-    _tabController = TabController(
-        length: offlineStorage.animeCustomListData.length, vsync: this);
-  }
-
-  void _search(String val) {
-    searchQuery.value = val;
-    final currentTabIndex = _tabController.index;
-    final initialData = customListData[currentTabIndex].listData;
-    filteredData.value = initialData
-        .where(
-            (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-        .toList();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isSimkl =
-        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
-    return Obx(() => Glow(
-          child: Scaffold(
-            body: Padding(
-              padding: const EdgeInsets.only(top: 30.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      children: [
-                        // Search Bar
-                        CustomSearchBar(
-                          onSubmitted: (val) {},
-                          onChanged: _search,
-                          controller: controller,
-                          disableIcons: true,
-                          suffixWidget: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: AnymexText(
-                                text: isSimkl ? "SERIES" : "MANGA",
-                                variant: TextVariant.bold,
-                                color: Theme.of(context).colorScheme.onPrimary),
-                          ),
-                        ),
-
-                        // Tab Bar
-                        Obx(() => TabBar(
-                              controller: _tabController,
-                              isScrollable: true,
-                              tabAlignment: TabAlignment.start,
-                              indicatorColor:
-                                  Theme.of(context).colorScheme.primary,
-                              unselectedLabelColor: Colors.grey[400],
-                              labelStyle:
-                                  const TextStyle(fontFamily: "Poppins-Bold"),
-                              tabs: List.generate(
-                                  offlineStorage.animeCustomLists.length,
-                                  (index) {
-                                final tabName = offlineStorage
-                                    .animeCustomLists[index].listName;
-                                return Tab(text: tabName);
-                              }),
-                            )),
-
-                        // Tab Content
-                        Expanded(
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: List.generate(
-                              customListData.length,
-                              (index) => (customListData[index].listData)
-                                      .isEmpty
-                                  ? const EmptyLibrary()
-                                  : GridView.builder(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          16, 16, 16, 130),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount:
-                                            getResponsiveCrossAxisCount(context,
-                                                baseColumns: 2,
-                                                maxColumns: 5,
-                                                mobileItemWidth: 300,
-                                                tabletItemWidth: 230,
-                                                desktopItemWidth: 300),
-                                        childAspectRatio: 2 / 3,
-                                        crossAxisSpacing: 16,
-                                        mainAxisSpacing: 16,
-                                      ),
-                                      itemBuilder: (context, i) {
-                                        final data = searchQuery.isNotEmpty &&
-                                                index == _tabController.index
-                                            ? filteredData[i]
-                                            : customListData[index].listData[i];
-                                        return _AnimeCard(
-                                          data: data,
-                                        );
-                                      },
-                                      itemCount: searchQuery.isNotEmpty &&
-                                              index == _tabController.index
-                                          ? filteredData.length
-                                          : customListData[index]
-                                              .listData
-                                              .length,
-                                    ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  getResponsiveValueWithTablet(
-                    context,
-                    tabletValue: const SizedBox.shrink(),
-                    mobileValue: const SizedBox.shrink(),
-                    desktopValue: Container(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      padding: const EdgeInsets.only(top: 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Text(
-                              'History',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          Expanded(
-                            child: historyData.isEmpty
-                                ? const EmptyLibrary(
-                                    isHistory: true,
-                                  )
-                                : ListView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    itemCount: historyData.length,
-                                    itemBuilder: (context, index) =>
-                                        AnimeHistoryCard(
-                                      data: historyData[index],
-                                    ),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ));
-  }
-}
-
-class _AnimeCard extends StatelessWidget {
+class AnimeCard extends StatelessWidget {
   final OfflineMedia data;
+  final RxInt cardtype;
 
-  const _AnimeCard({required this.data});
+  const AnimeCard({super.key, required this.data, required this.cardtype});
   @override
   Widget build(BuildContext context) {
     return TVWrapper(

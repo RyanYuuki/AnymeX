@@ -152,7 +152,7 @@ class ReusableCarousel extends StatelessWidget {
                   tag: tag,
                   child: NetworkSizedImage(
                     imageUrl: itemData.poster!,
-                    radius: 0,
+                    radius: 12,
                     height: isDesktop ? 210 : 160,
                     width: double.infinity,
                   ),
