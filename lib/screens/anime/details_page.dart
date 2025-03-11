@@ -167,7 +167,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _mapToService() async {
     final mappedData =
         await mapMedia(formatTitles(anilistData!) ?? [], searchedTitle);
-    await _fetchSourceDetails(mappedData);
+    if (mappedData != null) {
+      await _fetchSourceDetails(mappedData);
+    }
   }
 
   void _processExtensionData(Media tempData) async {

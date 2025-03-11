@@ -1,4 +1,5 @@
 import 'package:anymex/constants/contants.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -8,6 +9,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -28,6 +30,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late bool isOled;
   late bool isGrid = true;
   late int selectedVariantIndex;
+  final settings = Get.find<Settings>();
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -200,9 +203,21 @@ class _SettingsThemeState extends State<SettingsTheme> {
                 ),
                 const SizedBox(height: 10),
                 AnymexExpansionTile(
+                    initialExpanded: true,
                     title: 'Extras',
                     content: Column(
                       children: [
+                        Obx(() {
+                          return CustomSwitchTile(
+                              icon: HugeIcons.strokeRoundedFlower,
+                              title: "Bloom",
+                              description:
+                                  "Enables a soft, glowing gradient effect.",
+                              switchValue: !settings.disableGradient,
+                              onChanged: (val) {
+                                settings.disableGradient = !val;
+                              });
+                        }),
                         CustomTile(
                           icon: HugeIcons.strokeRoundedPaintBoard,
                           title: "Palette",

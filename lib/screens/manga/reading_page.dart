@@ -7,6 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -16,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 
 enum ReadingMode {
   webtoon,
@@ -408,6 +411,57 @@ class _ReadingPageState extends State<ReadingPage> {
                           child: _buildWebtoonMode())),
                 _buildTopControls(context),
                 _bottomControls(context),
+                if (!isMenuToggled.value)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.5),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.5, 1.0],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          AnymexText(
+                            text:
+                                "Page $currentPageIndex / ${mangaPages.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          10.width(),
+                          AnymexText(
+                            text: "Ch. ${currentChapter.value.number}/",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          AnymexText(
+                            text: "Ch. ${chapterList.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          const Spacer(),
+                          AnymexText(
+                            text: DateFormat("hh:mm a").format(DateTime.now()),
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           }),
@@ -710,11 +764,12 @@ class _ReadingPageState extends State<ReadingPage> {
                   ),
                 ),
                 Obx(() {
-                  return ListTile(
-                    title: const Text('Layout'),
-                    subtitle: Text(
-                      'Currently: ${activeMode.value.name.toUpperCase()}',
-                    ),
+                  return CustomTile(
+                    title: 'Layout',
+                    description:
+                        'Currently: ${activeMode.value.name.toUpperCase()}',
+                    icon: Iconsax.card,
+                    postFix: 0.height(),
                   );
                 }),
                 Obx(() {
@@ -777,6 +832,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       divisions: 9,
                     );
                   }),
+                20.height()
               ],
             ),
           ),

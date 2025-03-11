@@ -145,7 +145,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Future<void> _mapToService() async {
     final mappedData =
         await mapMedia(formatTitles(anilistData!), searchedTitle);
-    await _fetchSourceDetails(mappedData);
+    if (mappedData != null) {
+      await _fetchSourceDetails(mappedData);
+    }
   }
 
   void _processExtensionData(Media tempData) async {
@@ -164,7 +166,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         source: sourceController.activeMangaSource.value!,
       );
 
-      if(episodeFuture == null) {
+      if (episodeFuture == null) {
         return;
       }
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:algorithmic/algorithmic.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
@@ -5,7 +7,7 @@ import 'package:anymex/core/Search/search.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
 
-Future<Media> mapMedia(List<String> animeId, RxString searchedTitle) async {
+Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
   final sourceController = Get.find<SourceController>();
   final isManga = animeId[0].split("*").last == "MANGA";
   final type = isManga ? MediaType.manga : MediaType.anime;
@@ -32,7 +34,8 @@ Future<Media> mapMedia(List<String> animeId, RxString searchedTitle) async {
       : sourceController.activeSource.value;
 
   if (activeSource == null) {
-    throw Exception("No active source found!");
+    log("No active source found!");
+    return null;
   }
 
   double highestSimilarity = 0;
