@@ -38,7 +38,6 @@ class SeasonsGrid extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Row(
-                  spacing: 0,
                   mainAxisAlignment: getResponsiveValue(context,
                       mobileValue: MainAxisAlignment.spaceBetween,
                       desktopValue: MainAxisAlignment.center),
