@@ -447,6 +447,7 @@ class _ReadingPageState extends State<ReadingPage> {
                             size: 12,
                             variant: TextVariant.semiBold,
                           ),
+                          
                           AnymexText(
                             text: "Ch. ${chapterList.length}",
                             size: 12,
