@@ -2,7 +2,7 @@ import json
 import re
 import requests
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Any, TypedDict
+from typing import Dict, List, Optional, Set, Any, TypedDict, Tuple
 
 
 class ReleaseAsset(TypedDict):
@@ -159,6 +159,25 @@ def find_download_url_and_size(
     return None, None
 
 
+def normalize_version(version: str) -> str:
+    """
+    Strip the version tag (e.g., -hotfix) from a version string.
+    
+    Args:
+        version: Version string (e.g., v0.5.2-hotfix, 0.5.2-beta)
+        
+    Returns:
+        Normalized version string without the tag (e.g., 0.5.2)
+    """
+    version = version.lstrip('v')
+    
+    # Extract the base version without tags
+    match = re.search(r'(\d+\.\d+\.\d+)', version)
+    if match:
+        return match.group(1)
+    return version
+
+
 def update_json_file(
     json_file: str,
     fetched_data_all: List[GitHubRelease],
@@ -182,6 +201,9 @@ def update_json_file(
         app["versions"] = []
 
     fetched_versions: List[str] = []
+    
+    # Dictionary to track the latest release for each base version
+    latest_versions: Dict[str, Tuple[str, str, VersionEntry]] = {}
 
     # Process all releases
     for release in fetched_data_all:
@@ -193,6 +215,9 @@ def update_json_file(
 
         version_date = release["published_at"]
         fetched_versions.append(full_version)
+        
+        # Get base version without tags
+        base_version = normalize_version(full_version)
 
         # Clean up description
         description = release["body"]
@@ -207,18 +232,32 @@ def update_json_file(
 
         # Create version entry
         version_entry: VersionEntry = {
-            "version": full_version,
+            "version": base_version,
             "date": version_date,
             "localizedDescription": description,
             "downloadURL": download_url,
             "size": size,
         }
+        
+        # Check if we need to update the latest version for this base version
+        if base_version in latest_versions:
+            _, existing_date, _ = latest_versions[base_version]
+            if version_date > existing_date:
+                latest_versions[base_version] = (full_version, version_date, version_entry)
+        else:
+            latest_versions[base_version] = (full_version, version_date, version_entry)
 
-        # Remove existing entry with the same version
-        app["versions"] = [v for v in app["versions"] if v["version"] != full_version]
-
-        # Add new entry if download URL exists
-        if download_url:
+    # Remove all versions that will be replaced
+    for base_version, (full_version, _, _) in latest_versions.items():
+        # Keep versions that don't share a base version with our updates
+        app["versions"] = [
+            v for v in app["versions"] 
+            if normalize_version(v["version"]) != base_version or v["version"] == full_version
+        ]
+    
+    # Add all the latest versions
+    for _, (_, _, version_entry) in latest_versions.items():
+        if version_entry["downloadURL"]:  # Only add if download URL exists
             app["versions"].insert(0, version_entry)
 
     # Update app info with latest release
@@ -226,12 +265,10 @@ def update_json_file(
     tag = fetched_data_latest["tag_name"]
     version_match = re.search(r"(\d+\.\d+\.\d+)(?:-([a-zA-Z0-9]+))?", latest_version)
 
-    print(full_version)
-
     if not version_match:
         raise ValueError("Invalid version format")
 
-    app["version"] = full_version
+    app["version"] = normalize_version(full_version)
     app["versionDate"] = fetched_data_latest["published_at"]
     app["versionDescription"] = format_description(fetched_data_latest["body"])
 
@@ -266,7 +303,6 @@ def update_json_file(
         }
         data["news"].append(news_entry)
 
-    # Write updated data back to file
     with open(json_file, "w") as file:
         json.dump(data, file, indent=2)
 
