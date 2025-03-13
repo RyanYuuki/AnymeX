@@ -1,14 +1,10 @@
-import 'dart:ui';
-
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -109,7 +105,7 @@ class BlurredButton extends StatelessWidget {
                   ),
                   Positioned.fill(
                     child: Blur(
-                      blur: 5,
+                      blur: 3,
                       blurColor: Colors.black,
                       colorOpacity: 0.1,
                       child: Container(),

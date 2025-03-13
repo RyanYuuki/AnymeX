@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -80,7 +82,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final bufferred = const Duration(milliseconds: 0).obs;
   final playbackSpeed = 1.0.obs;
   final isFullscreen = false.obs;
-  final selectedSubIndex = 0.obs;
+  final selectedSubIndex = (-1).obs;
   final selectedAudioIndex = 0.obs;
   final settings = Get.find<Settings>();
   final RxString resizeMode = "Cover".obs;
@@ -205,7 +207,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
-    player.open(Media(episode.value.url,
+    player.open(Media(episode.value.url.replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
+        httpHeaders: {'Referer': sourceController.activeSource.value!.baseUrl!},
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
   }
@@ -1097,16 +1100,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     // "None" option
                     TVWrapper(
                       onTap: () {
-                        selectedSubIndex.value = 0;
+                        selectedSubIndex.value = -1;
                         Get.back();
                         player.setSubtitleTrack(SubtitleTrack.no());
                       },
                       child: subtitleTile("None", Iconsax.subtitle5,
-                          selectedSubIndex.value == 0),
+                          selectedSubIndex.value == -1),
                     ),
                     // Existing subtitles
                     ...subtitles.asMap().entries.map((entry) {
-                      final index = entry.key + 1;
+                      final index = entry.key;
                       final e = entry.value;
                       return TVWrapper(
                         onTap: () {
