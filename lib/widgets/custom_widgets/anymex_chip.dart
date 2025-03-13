@@ -34,3 +34,37 @@ class AnymexChip extends ConsumerWidget {
     );
   }
 }
+
+class AnymexIconChip extends ConsumerWidget {
+  final IconData icon;
+  final bool isSelected;
+  final Function(bool e) onSelected;
+
+  const AnymexIconChip({
+    super.key,
+    required this.icon,
+    required this.isSelected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FilterChip(
+      selected: isSelected,
+      onSelected: onSelected,
+      label: Icon(icon),
+      labelStyle: TextStyle(
+        color: isSelected
+            ? Theme.of(context).colorScheme.onPrimaryContainer
+            : Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+  }
+}

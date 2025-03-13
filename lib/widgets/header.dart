@@ -65,7 +65,8 @@ class Header extends StatelessWidget {
                           backgroundColor:
                               Theme.of(context).colorScheme.secondaryContainer),
                       onPressed: () {
-                        Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                        Provider.of<ThemeProvider>(context, listen: false)
+                            .toggleTheme();
                       },
                       icon: Icon(Get.theme.brightness == Brightness.light
                           ? HugeIcons.strokeRoundedSun03
@@ -82,12 +83,12 @@ class Header extends StatelessWidget {
                               .withOpacity(0.5),
                           child: IconButton(
                               onPressed: () {
-                                searchTypeSheet(context, "");
+                                searchTypeSheet(context);
                               },
                               icon: const Icon(IconlyLight.search))),
                     ), desktopValue: TappableSearchBar(
                   onSubmitted: () {
-                    searchTypeSheet(context, "");
+                    searchTypeSheet(context);
                   },
                 )),
               ]

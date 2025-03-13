@@ -13,12 +13,9 @@ class AnymexSheet extends StatelessWidget {
     this.contentWidget,
   });
 
-  static void show({
-    required BuildContext context,
-    required String title,
-    String? message,
-    Widget? contentWidget,
-  }) {
+  void show(
+    BuildContext context,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) => AnymexSheet(
