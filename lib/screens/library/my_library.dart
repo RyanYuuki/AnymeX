@@ -9,15 +9,21 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_segmented_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconsax/iconsax.dart';
+
+enum SortType {
+  title,
+  lastAdded,
+  lastRead,
+  rating,
+}
 
 class MyLibrary extends StatefulWidget {
   const MyLibrary({super.key});
@@ -32,11 +38,13 @@ class _MyLibraryState extends State<MyLibrary> {
 
   // Anime data
   RxList<CustomListData> customListData = <CustomListData>[].obs;
+  RxList<CustomListData> initialCustomListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
 
   // Manga data
   RxList<CustomListData> customListDataManga = <CustomListData>[].obs;
+  RxList<CustomListData> initialCustomListMangaData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredDataManga = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyDataManga = <OfflineMedia>[].obs;
 
@@ -83,6 +91,9 @@ class _MyLibraryState extends State<MyLibrary> {
             e.currentChapter?.currentOffset != null &&
             e.serviceIndex == handler.serviceType.value.index)
         .toList();
+
+    initialCustomListData.value = customListData;
+    initialCustomListMangaData.value = customListDataManga;
   }
 
   void _search(String val) {
@@ -164,72 +175,78 @@ class _MyLibraryState extends State<MyLibrary> {
                   getResponsiveValueWithTablet(context,
                       tabletValue: const SizedBox.shrink(),
                       mobileValue: const SizedBox.shrink(),
-                      desktopValue: Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        padding: const EdgeInsets.only(top: 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
+                      desktopValue: Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primary,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.menu_book_outlined,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
                                     color:
-                                        Theme.of(context).colorScheme.onPrimary,
+                                        Theme.of(context).colorScheme.primary,
+                                    width: 1,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'History',
-                                    style: TextStyle(
-                                      fontFamily: "Poppins-Bold",
-                                      fontSize: 16,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.menu_book_outlined,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onPrimary,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'History',
+                                      style: TextStyle(
+                                        fontFamily: "Poppins-Bold",
+                                        fontSize: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 40),
-                            Expanded(
-                              child: Obx(() {
-                                final historyItems = isAnimeSelected.value
-                                    ? historyData
-                                    : historyDataManga;
+                              const SizedBox(height: 30),
+                              Expanded(
+                                child: Obx(() {
+                                  final historyItems = isAnimeSelected.value
+                                      ? historyData
+                                      : historyDataManga;
 
-                                return historyItems.isEmpty
-                                    ? const EmptyLibrary(
-                                        isHistory: true,
-                                      )
-                                    : ListView.builder(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16),
-                                        itemCount: historyItems.length,
-                                        itemBuilder: (context, index) =>
-                                            isAnimeSelected.value
-                                                ? AnimeHistoryCard(
-                                                    data: historyItems[index],
-                                                  )
-                                                : MangaHistoryCard(
-                                                    data: historyItems[index]));
-                              }),
-                            ),
-                          ],
+                                  return historyItems.isEmpty
+                                      ? const EmptyLibrary(
+                                          isHistory: true,
+                                        )
+                                      : ListView.builder(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          itemCount: historyItems.length,
+                                          itemBuilder: (context, index) =>
+                                              isAnimeSelected.value
+                                                  ? AnimeHistoryCard(
+                                                      data: historyItems[index],
+                                                    )
+                                                  : MangaHistoryCard(
+                                                      data:
+                                                          historyItems[index]));
+                                }),
+                              ),
+                            ],
+                          ),
                         ),
                       ))
                 ],
@@ -264,41 +281,57 @@ class _MyLibraryState extends State<MyLibrary> {
   Expanded _buildTabsBody() {
     return Expanded(
       child: Obx(() {
-        final currentIndex = selectedListIndex.value;
-        final lists =
-            isAnimeSelected.value ? customListData : customListDataManga;
+        if (selectedListIndex.value != -1) {
+          final currentIndex = selectedListIndex.value;
+          final lists =
+              isAnimeSelected.value ? customListData : customListDataManga;
 
-        final isEmpty = lists.isEmpty || lists[currentIndex].listData.isEmpty;
+          final isEmpty = lists.isEmpty || lists[currentIndex].listData.isEmpty;
 
-        final items = searchQuery.isNotEmpty
-            ? (isAnimeSelected.value ? filteredData : filteredDataManga)
-            : (lists.isEmpty ? [] : lists[currentIndex].listData);
-        final cardHeight = getResponsiveSize(context,
-            mobileSize: getCardHeight(), dektopSize: 290);
-        final gridCount = getResponsiveValue(context,
-            mobileValue: getGridCount(),
-            desktopValue: getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
-                itemWidth: 220));
+          final items = searchQuery.isNotEmpty
+              ? (isAnimeSelected.value ? filteredData : filteredDataManga)
+              : (lists.isEmpty ? [] : lists[currentIndex].listData);
+          final cardHeight = getResponsiveSize(context,
+              mobileSize: getCardHeight(), dektopSize: 290);
+          final gridCount = getResponsiveValueWithTablet(context,
+              mobileValue: getGridCount(),
+              tabletValue: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width,
+                  itemWidth: 210),
+              desktopValue: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width,
+                  itemWidth: 270));
 
-        return isEmpty
-            ? const EmptyLibrary()
-            : GridView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 130),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: gridCount,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    mainAxisExtent: cardHeight),
-                itemBuilder: (context, i) {
-                  return MediaCard(
-                    cardType: cardType,
-                    isManga: !isAnimeSelected.value,
-                    data: items[i],
-                  );
-                },
-                itemCount: items.length,
-              );
+          return isEmpty
+              ? const EmptyLibrary()
+              : GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 130),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: gridCount,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      mainAxisExtent: cardHeight),
+                  itemBuilder: (context, i) {
+                    return MediaCard(
+                      cardType: cardType,
+                      isManga: !isAnimeSelected.value,
+                      data: items[i],
+                    );
+                  },
+                  itemCount: items.length,
+                );
+        } else {
+          final data = isAnimeSelected.value ? historyData : historyDataManga;
+          return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              itemCount: data.length,
+              itemBuilder: (context, i) {
+                final animeData = data[i];
+                return isAnimeSelected.value
+                    ? AnimeHistoryCard(data: animeData)
+                    : MangaHistoryCard(data: animeData);
+              });
+        }
       }),
     );
   }
@@ -312,13 +345,30 @@ class _MyLibraryState extends State<MyLibrary> {
           final lists =
               isAnimeSelected.value ? customListData : customListDataManga;
 
-          return Row(
-            children: List.generate(
+          return Row(children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: AnymexIconChip(
+                icon: Icons.history,
+                isSelected: selectedListIndex.value == -1,
+                onSelected: (selected) {
+                  if (selected) {
+                    selectedListIndex.value = -1;
+                    if (searchQuery.isNotEmpty) {
+                      controller.clear();
+                      searchQuery.value = '';
+                    }
+                  }
+                },
+              ),
+            ),
+            ...List.generate(
               lists.length,
               (index) => Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: AnymexChip(
-                  label: lists[index].listName,
+                  label:
+                      '${lists[index].listName} (${lists[index].listData.length})',
                   isSelected: selectedListIndex.value == index,
                   onSelected: (selected) {
                     if (selected) {
@@ -332,7 +382,7 @@ class _MyLibraryState extends State<MyLibrary> {
                 ),
               ),
             ),
-          );
+          ]);
         }),
       ),
     );
@@ -372,7 +422,9 @@ class _MyLibraryState extends State<MyLibrary> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showSortingSettings(isManga: !isAnimeSelected.value);
+                    },
                     icon: const Icon(
                       Icons.sort,
                     ),
@@ -485,8 +537,174 @@ class _MyLibraryState extends State<MyLibrary> {
     );
   }
 
-  void showSettings() => AnymexSheet.show(
-      context: context,
+  void showSortingSettings({required bool isManga}) => AnymexSheet(
+        title: 'Sort By',
+        contentWidget: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildSortTile(
+                  title: 'Title',
+                  currentSort: currentSort,
+                  sortType: SortType.title,
+                  isAscending: isAscending,
+                  onTap: () => _handleSortChange(SortType.title, setState),
+                ),
+                _buildSortTile(
+                  title: 'Last Added',
+                  currentSort: currentSort,
+                  sortType: SortType.lastAdded,
+                  isAscending: isAscending,
+                  onTap: () => _handleSortChange(SortType.lastAdded, setState),
+                ),
+                _buildSortTile(
+                  title: isManga ? 'Last Read' : 'Last Watched',
+                  currentSort: currentSort,
+                  sortType: SortType.lastRead,
+                  isAscending: isAscending,
+                  onTap: () => _handleSortChange(SortType.lastRead, setState),
+                ),
+                _buildSortTile(
+                  title: 'Rating',
+                  currentSort: currentSort,
+                  sortType: SortType.rating,
+                  isAscending: isAscending,
+                  onTap: () => _handleSortChange(SortType.rating, setState),
+                ),
+              ],
+            );
+          },
+        ),
+      ).show(context);
+
+  SortType currentSort = SortType.lastAdded;
+  bool isAscending = false;
+
+  Widget _buildSortTile({
+    required String title,
+    required SortType currentSort,
+    required SortType sortType,
+    required bool isAscending,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentSort == sortType;
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+      child: Material(
+        elevation: 0,
+        color: theme.colorScheme.secondaryContainer
+            .withOpacity(isSelected ? 1.0 : 0.7),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          splashColor: theme.colorScheme.primary.withOpacity(0.1),
+          highlightColor: theme.colorScheme.primary.withOpacity(0.05),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: isSelected
+                  ? Border.all(color: theme.colorScheme.primary, width: 1.5)
+                  : null,
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              title: AnymexText(
+                text: title,
+                variant: isSelected ? TextVariant.bold : TextVariant.regular,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSecondaryContainer,
+              ),
+              trailing: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: isSelected ? null : 0,
+                child: isSelected
+                    ? AnymexIcon(
+                        isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                      )
+                    : null,
+              ),
+              selected: isSelected,
+              selectedTileColor: Colors.transparent,
+              onTap: null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleSortChange(SortType sortType, StateSetter setState) {
+    if (currentSort == sortType) {
+      setState(() {
+        isAscending = !isAscending;
+      });
+    } else {
+      setState(() {
+        currentSort = sortType;
+        isAscending = false;
+      });
+    }
+
+    _applySorting();
+  }
+
+  void _applySorting() {
+    final lists = isAnimeSelected.value ? customListData : customListDataManga;
+    final currentList = lists[selectedListIndex.value];
+    final initialList = isAnimeSelected.value
+        ? initialCustomListData[selectedListIndex.value]
+        : initialCustomListMangaData[selectedListIndex.value];
+
+    currentList.listData.sort((a, b) {
+      int comparison = 0;
+
+      switch (currentSort) {
+        case SortType.title:
+          comparison = a.name!.compareTo(b.name!);
+          break;
+        case SortType.lastRead:
+          final content = isAnimeSelected.value
+              ? (a.currentEpisode?.lastWatchedTime ?? 0)
+              : (a.currentChapter?.lastReadTime ?? 0);
+          final tbc = isAnimeSelected.value
+              ? (b.currentEpisode?.lastWatchedTime ?? 0)
+              : (b.currentChapter?.lastReadTime ?? 0);
+          comparison = content.compareTo(tbc);
+          break;
+        case SortType.rating:
+          final rating = double.tryParse(a.rating ?? '0.0') ?? 0.0;
+          final tbcRating = double.tryParse(b.rating ?? '0.0') ?? 0.0;
+          comparison = rating.compareTo(tbcRating);
+          break;
+        case SortType.lastAdded:
+          break;
+      }
+
+      return isAscending ? comparison : -comparison;
+    });
+
+    if (currentSort == SortType.lastAdded) {
+      if (isAscending) {
+        currentList.listData = initialList.listData.reversed.toList();
+      } else {
+        currentList.listData = initialList.listData;
+      }
+    }
+
+    if (isAnimeSelected.value) {
+      customListData.refresh();
+    } else {
+      customListDataManga.refresh();
+    }
+  }
+
+  void showSettings() => AnymexSheet(
       title: 'Settings',
       contentWidget: Column(
         children: [
@@ -521,5 +739,5 @@ class _MyLibraryState extends State<MyLibrary> {
           }),
           20.height()
         ],
-      ));
+      )).show(context);
 }
