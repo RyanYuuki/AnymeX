@@ -99,7 +99,9 @@ class _SearchPageState extends State<SearchPage> {
           filters: _activeFilters.isNotEmpty ? _activeFilters : null,
           args: isAdult.value);
 
-      if (query != null && query.isNotEmpty) {
+      if (query != null &&
+          query.isNotEmpty &&
+          !_searchedTerms.contains(query)) {
         _searchedTerms.add(query);
         Hive.box('preferences').put(
             '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
@@ -438,51 +440,52 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const AnymexText(
-                          text: 'Adult',
-                          variant: TextVariant.semiBold,
-                        ),
-                        const SizedBox(width: 10),
-                        Obx(() {
-                          return Switch(
-                              value: isAdult.value,
-                              onChanged: (v) => isAdult.value = v);
-                        }),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: () {
-                        _showFilterBottomSheet();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5),
-                        child: Row(children: [
-                          AnymexText(
-                            text: 'Filter',
-                            color: Theme.of(context).colorScheme.primary,
+              if (serviceHandler.serviceType.value == ServicesType.anilist)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const AnymexText(
+                            text: 'Adult',
                             variant: TextVariant.semiBold,
-                            size: 16,
                           ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Icon(Icons.filter_alt,
-                              color: Theme.of(context).colorScheme.primary)
-                        ]),
+                          const SizedBox(width: 10),
+                          Obx(() {
+                            return Switch(
+                                value: isAdult.value,
+                                onChanged: (v) => isAdult.value = v);
+                          }),
+                        ],
                       ),
-                    ),
-                  ],
+                      InkWell(
+                        onTap: () {
+                          _showFilterBottomSheet();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 5),
+                          child: Row(children: [
+                            AnymexText(
+                              text: 'Filter',
+                              color: Theme.of(context).colorScheme.primary,
+                              variant: TextVariant.semiBold,
+                              size: 16,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Icon(Icons.filter_alt,
+                                color: Theme.of(context).colorScheme.primary)
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: 10),
               if ((_searchResults?.isNotEmpty ?? false) && !_isLoading) ...[
                 Padding(

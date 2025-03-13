@@ -25,7 +25,7 @@ class MediaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final tag = getRandomTag();
     return TVWrapper(
-      onTap: () {},
+      onTap: () => navGate(tag),
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
