@@ -284,13 +284,6 @@ class _FilterScreenState extends State<FilterScreen> {
     });
   }
 
-  void _onLibraryTapped(int index) {
-    if (mounted) {
-      setState(() {
-        _mobileSelectedIndex = index;
-      });
-    }
-  }
 
   final routes = [
     const SizedBox.shrink(),
@@ -314,9 +307,10 @@ class _FilterScreenState extends State<FilterScreen> {
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Glow(
-      child: PlatformBuilder(
+      child: PlatformBuilderWithTablet(
         strictMode: false,
         desktopBuilder: _buildDesktopLayout(context, authService, isSimkl),
+        tabletBuilder: _buildDesktopLayout(context, authService, isSimkl),
         androidBuilder: _buildAndroidLayout(isSimkl),
       ),
     );
@@ -413,7 +407,6 @@ class _FilterScreenState extends State<FilterScreen> {
           isDesktop: false,
           fit: true,
           currentIndex: _mobileSelectedIndex,
-          isShowingLibrary: false,
           margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
           items: [
             NavItem(
