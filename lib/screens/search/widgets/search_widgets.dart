@@ -77,11 +77,11 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     'Supernatural',
   ];
 
-  String? selectedSortBy = 'SCORE';
-  String? selectedSeason = 'WINTER';
-  String? selectedStatus = 'FINISHED';
-  String? selectedFormat = 'TV';
-  List<String> selectedGenres = [];
+  String? selectedSortBy;
+  String? selectedSeason;
+  String? selectedStatus;
+  String? selectedFormat;
+  List<String>? selectedGenres;
 
   @override
   void initState() {
@@ -130,9 +130,10 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String?>(
                       value: selectedSortBy,
                       isExpanded: true,
+                      hint: const Text('Select Sort Option'), // Added hint
                       items: sortBy
                           .map((value) => DropdownMenuItem(
                                 value: value,
@@ -146,7 +147,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedSortBy = value!;
+                          selectedSortBy = value;
                         });
                       },
                     ),
@@ -165,9 +166,10 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String?>(
                       value: selectedSeason,
                       isExpanded: true,
+                      hint: const Text('Select Season'), // Added hint
                       items: season
                           .map((value) => DropdownMenuItem(
                                 value: value,
@@ -181,7 +183,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedSeason = value!;
+                          selectedSeason = value;
                         });
                       },
                     ),
@@ -204,9 +206,10 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String?>(
                       value: selectedStatus,
                       isExpanded: true,
+                      hint: const Text('Select Status'), // Added hint
                       items: status
                           .map((value) => DropdownMenuItem(
                                 value: value,
@@ -220,7 +223,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedStatus = value!;
+                          selectedStatus = value;
                         });
                       },
                     ),
@@ -239,9 +242,10 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String?>(
                       value: selectedFormat,
                       isExpanded: true,
+                      hint: const Text('Select Format'), // Added hint
                       items: format
                           .map((value) => DropdownMenuItem(
                                 value: value,
@@ -255,7 +259,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedFormat = value!;
+                          selectedFormat = value;
                         });
                       },
                     ),
@@ -278,12 +282,13 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                         padding: const EdgeInsets.symmetric(horizontal: 5.0),
                         child: ChoiceChip(
                           label: Text(genre),
-                          selected: selectedGenres.contains(genre),
+                          selected: selectedGenres?.contains(genre) ?? false,
                           onSelected: (selected) {
+                            selectedGenres ??= [];
                             setState(() {
                               selected
-                                  ? selectedGenres.add(genre)
-                                  : selectedGenres.remove(genre);
+                                  ? selectedGenres?.add(genre)
+                                  : selectedGenres?.remove(genre);
                             });
                           },
                         ),
