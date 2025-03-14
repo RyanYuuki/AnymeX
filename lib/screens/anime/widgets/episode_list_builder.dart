@@ -185,9 +185,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           ? 0.8
                           : 1,
                   child: TVWrapper(
-                    onTap: () => isSelected
-                        ? fetchServers(episode.link!)
-                        : _handleEpisodeSelection(episode),
+                    onTap: () => fetchServers(episode.link!),
                     child: isAnify.value
                         ? _anifyEpisode(isSelected, context, episode)
                         : _normalEpisode(isSelected, context, episode),
@@ -201,8 +199,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     );
   }
 
-  serverDialog() {
-    return showModalBottomSheet(
+  Future<void> fetchServers(String url) async {
+    showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -210,84 +208,146 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         ),
       ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(10),
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.6,
+        return SizedBox(
+          width: double.infinity,
+          child: FutureBuilder<List<Video>>(
+            future: getVideo(
+                source: sourceController.activeSource.value!, url: url),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingState();
+              } else if (snapshot.hasError) {
+                return _buildErrorState(snapshot.error.toString());
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return _buildEmptyState();
+              } else {
+                streamList.value = snapshot.data ?? [];
+                return _buildServerList();
+              }
+            },
           ),
-          child: Obx(() {
-            if (streamList.isEmpty) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            return ListView(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  child: const AnymexText(
-                    text: "Choose Server",
-                    size: 18,
-                    variant: TextVariant.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...streamList.value.map((e) {
-                  return InkWell(
-                    onTap: () {
-                      Get.back();
-                      navigate(() => WatchPage(
-                            episodeSrc: e,
-                            episodeList: widget.episodeList,
-                            anilistData: widget.anilistData!,
-                            currentEpisode: selectedEpisode.value,
-                            episodeTracks: streamList,
-                          ));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 3.0, horizontal: 10),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 2.5, horizontal: 10),
-                        title: AnymexText(
-                          text: e.quality.toUpperCase(),
-                          variant: TextVariant.bold,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        tileColor: Theme.of(context)
-                            .colorScheme
-                            .secondaryContainer
-                            .withOpacity(0.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        trailing: const Icon(Iconsax.play5),
-                        subtitle: AnymexText(
-                          text: sourceController.activeSource.value!.name!
-                              .toUpperCase(),
-                          variant: TextVariant.semiBold,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            );
-          }),
         );
       },
     );
   }
 
-  Future<void> fetchServers(String url) async {
-    serverDialog();
-    final videoList =
-        await getVideo(source: sourceController.activeSource.value!, url: url);
-    streamList.value = videoList;
+  Widget _buildLoadingState() {
+    return const SizedBox(
+      height: 200,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorState(String errorMessage) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        10.height(),
+        AnymexText(
+          text: "Error Occured",
+          variant: TextVariant.bold,
+          size: 18,
+        ),
+        20.height(),
+        AnymexText(
+          text: "Server-chan is taking a nap!",
+          variant: TextVariant.semiBold,
+          size: 18,
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: AnymexText(
+            text: errorMessage,
+            variant: TextVariant.regular,
+            size: 14,
+            textAlign: TextAlign.center,
+            color: Colors.red.withOpacity(0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return const SizedBox(
+      height: 200,
+      child: Center(
+        child: AnymexText(
+          text: "No servers available",
+          variant: TextVariant.bold,
+          size: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServerList() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
+      child: ListView(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            alignment: Alignment.center,
+            child: const AnymexText(
+              text: "Choose Server",
+              size: 18,
+              variant: TextVariant.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ...streamList.map((e) {
+            return InkWell(
+              onTap: () {
+                Get.back();
+                navigate(() => WatchPage(
+                      episodeSrc: e,
+                      episodeList: widget.episodeList,
+                      anilistData: widget.anilistData!,
+                      currentEpisode: selectedEpisode.value,
+                      episodeTracks: streamList,
+                    ));
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
+                  title: AnymexText(
+                    text: e.quality.toUpperCase(),
+                    variant: TextVariant.bold,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  tileColor: Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  trailing: const Icon(Iconsax.play5),
+                  subtitle: AnymexText(
+                    text: sourceController.activeSource.value!.name!
+                        .toUpperCase(),
+                    variant: TextVariant.semiBold,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
   }
 
   Widget _normalEpisode(
