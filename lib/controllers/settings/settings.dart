@@ -38,243 +38,148 @@ class Settings extends GetxController {
     }
   }
 
-  bool get transculentBar => uiSettings.value.translucentTabBar;
-  set transculentBar(bool value) {
-    uiSettings.update((settings) {
-      settings?.translucentTabBar = value;
-    });
+
+  T _getUISetting<T>(T Function(UISettings settings) getter) {
+    return getter(uiSettings.value);
+  }
+
+  void _setUISetting<T>(void Function(UISettings? settings) setter) {
+    uiSettings.update(setter);
     saveUISettings();
   }
 
-  double get glowDensity => uiSettings.value.glowDensity;
-  set glowDensity(double value) {
-    uiSettings.update((settings) {
-      settings?.glowDensity = value;
-    });
-    saveUISettings();
+  T _getPlayerSetting<T>(T Function(PlayerSettings settings) getter) {
+    return getter(playerSettings.value);
   }
 
-  bool get enableAnimation => uiSettings.value.enableAnimation;
-  set enableAnimation(bool value) {
-    uiSettings.update((settings) {
-      settings?.enableAnimation = value;
-    });
-    saveUISettings();
-  }
-
-  bool get defaultPortraitMode => playerSettings.value.defaultPortraitMode;
-  set defaultPortraitMode(bool value) {
-    playerSettings.update((settings) {
-      settings?.defaultPortraitMode = value;
-    });
+  void _setPlayerSetting<T>(void Function(PlayerSettings? settings) setter) {
+    playerSettings.update(setter);
     savePlayerSettings();
   }
 
-  bool get disableGradient => uiSettings.value.disableGradient;
-  set disableGradient(bool value) {
-    uiSettings.update((settings) {
-      settings?.disableGradient = value;
-    });
-    saveUISettings();
-  }
+  bool get transculentBar => _getUISetting((s) => s.translucentTabBar);
+  set transculentBar(bool value) =>
+      _setUISetting((s) => s?.translucentTabBar = value);
 
-  Map<String, bool> get homePageCards => uiSettings.value.homePageCards;
-  Map<String, bool> get homePageCardsMal => uiSettings.value.homePageCardsMal;
+  double get glowDensity => _getUISetting((s) => s.glowDensity);
+  set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);
 
+  bool get enableAnimation => _getUISetting((s) => s.enableAnimation);
+  set enableAnimation(bool value) =>
+      _setUISetting((s) => s?.enableAnimation = value);
+
+  bool get disableGradient => _getUISetting((s) => s.disableGradient);
+  set disableGradient(bool value) =>
+      _setUISetting((s) => s?.disableGradient = value);
+
+  Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
+  Map<String, bool> get homePageCardsMal =>
+      _getUISetting((s) => s.homePageCardsMal);
+
+  double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
+  set glowMultiplier(double value) =>
+      _setUISetting((s) => s?.glowMultiplier = value);
+
+  double get radiusMultiplier => _getUISetting((s) => s.radiusMultiplier);
+  set radiusMultiplier(double value) =>
+      _setUISetting((s) => s?.radiusMultiplier = value);
+
+  double get blurMultiplier => _getUISetting((s) => s.blurMultipler);
+  set blurMultiplier(double value) =>
+      _setUISetting((s) => s?.blurMultipler = value);
+
+  double get cardRoundness => _getUISetting((s) => s.cardRoundness);
+  set cardRoundness(double value) =>
+      _setUISetting((s) => s?.cardRoundness = value);
+
+  bool get saikouLayout => _getUISetting((s) => s.saikouLayout);
+  set saikouLayout(bool value) => _setUISetting((s) => s?.saikouLayout = value);
+
+  double get tabBarHeight => _getUISetting((s) => s.tabBarHeight);
+  set tabBarHeight(double value) =>
+      _setUISetting((s) => s?.tabBarHeight = value);
+
+  double get tabBarWidth => _getUISetting((s) => s.tabBarWidth);
+  set tabBarWidth(double value) => _setUISetting((s) => s?.tabBarWidth = value);
+
+  double get tabBarRoundness => _getUISetting((s) => s.tabBarRoundness);
+  set tabBarRoundness(double value) =>
+      _setUISetting((s) => s?.tabBarRoundness = value);
+
+  bool get compactCards => _getUISetting((s) => s.compactCards);
+  set compactCards(bool value) => _setUISetting((s) => s?.compactCards = value);
+
+  int get animationDuration => _getUISetting((s) => s.animationDuration);
+  set animationDuration(int value) =>
+      _setUISetting((s) => s?.animationDuration = value);
+
+  // Player Settings
+  bool get defaultPortraitMode =>
+      _getPlayerSetting((s) => s.defaultPortraitMode);
+  set defaultPortraitMode(bool value) =>
+      _setPlayerSetting((s) => s?.defaultPortraitMode = value);
+
+  double get speed => _getPlayerSetting((s) => s.speed);
+  set speed(double value) => _setPlayerSetting((s) => s?.speed = value);
+
+  String get resizeMode => _getPlayerSetting((s) => s.resizeMode);
+  set resizeMode(String value) =>
+      _setPlayerSetting((s) => s?.resizeMode = value);
+
+  bool get showSubtitle => _getPlayerSetting((s) => s.showSubtitle);
+  set showSubtitle(bool value) =>
+      _setPlayerSetting((s) => s?.showSubtitle = value);
+
+  int get subtitleSize => _getPlayerSetting((s) => s.subtitleSize);
+  set subtitleSize(int value) =>
+      _setPlayerSetting((s) => s?.subtitleSize = value);
+
+  String get subtitleColor => _getPlayerSetting((s) => s.subtitleColor);
+  set subtitleColor(String value) =>
+      _setPlayerSetting((s) => s?.subtitleColor = value);
+
+  String get subtitleFont => _getPlayerSetting((s) => s.subtitleFont);
+  set subtitleFont(String value) =>
+      _setPlayerSetting((s) => s?.subtitleFont = value);
+
+  String get subtitleBackgroundColor =>
+      _getPlayerSetting((s) => s.subtitleBackgroundColor);
+  set subtitleBackgroundColor(String value) =>
+      _setPlayerSetting((s) => s?.subtitleBackgroundColor = value);
+
+  String get subtitleOutlineColor =>
+      _getPlayerSetting((s) => s.subtitleOutlineColor);
+  set subtitleOutlineColor(String value) =>
+      _setPlayerSetting((s) => s?.subtitleOutlineColor = value);
+
+  int get skipDuration => _getPlayerSetting((s) => s.skipDuration);
+  set skipDuration(int value) =>
+      _setPlayerSetting((s) => s?.skipDuration = value);
+
+  int get seekDuration => _getPlayerSetting((s) => s.seekDuration);
+  set seekDuration(int value) =>
+      _setPlayerSetting((s) => s?.seekDuration = value);
+
+  double get bottomMargin => _getPlayerSetting((s) => s.bottomMargin);
+  set bottomMargin(double value) =>
+      _setPlayerSetting((s) => s?.bottomMargin = value);
+
+  int get playerStyle => _getPlayerSetting((s) => s.playerStyle);
+  set playerStyle(int value) =>
+      _setPlayerSetting((s) => s?.playerStyle = value);
+
+  // Special cases that don't fit the pattern
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;
-    uiSettings.update((settings) {
-      settings?.homePageCards = currentCards;
-    });
-    saveUISettings();
+    _setUISetting((s) => s?.homePageCards = currentCards);
   }
 
   void updateHomePageCardMal(String key, bool value) {
     final currentCards =
         Map<String, bool>.from(uiSettings.value.homePageCardsMal);
     currentCards[key] = value;
-    uiSettings.update((settings) {
-      settings?.homePageCardsMal = currentCards;
-    });
-    saveUISettings();
-  }
-
-  double get glowMultiplier => uiSettings.value.glowMultiplier;
-  set glowMultiplier(double value) {
-    uiSettings.update((settings) {
-      settings?.glowMultiplier = value;
-    });
-    saveUISettings();
-  }
-
-  double get radiusMultiplier => uiSettings.value.radiusMultiplier;
-  set radiusMultiplier(double value) {
-    uiSettings.update((settings) {
-      settings?.radiusMultiplier = value;
-    });
-    saveUISettings();
-  }
-
-  double get blurMultiplier => uiSettings.value.blurMultipler;
-  set blurMultiplier(double value) {
-    uiSettings.update((settings) {
-      settings?.blurMultipler = value;
-    });
-    saveUISettings();
-  }
-
-  double get cardRoundness => uiSettings.value.cardRoundness;
-  set cardRoundness(double value) {
-    uiSettings.update((settings) {
-      settings?.cardRoundness = value;
-    });
-    saveUISettings();
-  }
-
-  bool get saikouLayout => uiSettings.value.saikouLayout;
-  set saikouLayout(bool value) {
-    uiSettings.update((settings) {
-      settings?.saikouLayout = value;
-    });
-    saveUISettings();
-  }
-
-  double get tabBarHeight => uiSettings.value.tabBarHeight;
-  set tabBarHeight(double value) {
-    uiSettings.update((settings) {
-      settings?.tabBarHeight = value;
-    });
-    saveUISettings();
-  }
-
-  double get tabBarWidth => uiSettings.value.tabBarWidth;
-  set tabBarWidth(double value) {
-    uiSettings.update((settings) {
-      settings?.tabBarWidth = value;
-    });
-    saveUISettings();
-  }
-
-  double get tabBarRoundness => uiSettings.value.tabBarRoundness;
-  set tabBarRoundness(double value) {
-    uiSettings.update((settings) {
-      settings?.tabBarRoundness = value;
-    });
-    saveUISettings();
-  }
-
-  bool get compactCards => uiSettings.value.compactCards;
-  set compactCards(bool value) {
-    uiSettings.update((settings) {
-      settings?.compactCards = value;
-    });
-    saveUISettings();
-  }
-
-  int get animationDuration => uiSettings.value.animationDuration;
-  set animationDuration(int value) {
-    uiSettings.update((settings) {
-      settings?.animationDuration = value;
-    });
-    saveUISettings();
-  }
-
-  double get speed => playerSettings.value.speed;
-  set speed(double value) {
-    playerSettings.update((settings) {
-      settings?.speed = value;
-    });
-    savePlayerSettings();
-  }
-
-  String get resizeMode => playerSettings.value.resizeMode;
-  set resizeMode(String value) {
-    playerSettings.update((settings) {
-      settings?.resizeMode = value;
-    });
-    savePlayerSettings();
-  }
-
-  bool get showSubtitle => playerSettings.value.showSubtitle;
-  set showSubtitle(bool value) {
-    playerSettings.update((settings) {
-      settings?.showSubtitle = value;
-    });
-    savePlayerSettings();
-  }
-
-  int get subtitleSize => playerSettings.value.subtitleSize;
-  set subtitleSize(int value) {
-    playerSettings.update((settings) {
-      settings?.subtitleSize = value;
-    });
-    savePlayerSettings();
-  }
-
-  String get subtitleColor => playerSettings.value.subtitleColor;
-  set subtitleColor(String value) {
-    playerSettings.update((settings) {
-      settings?.subtitleColor = value;
-    });
-    savePlayerSettings();
-  }
-
-  String get subtitleFont => playerSettings.value.subtitleFont;
-  set subtitleFont(String value) {
-    playerSettings.update((settings) {
-      settings?.subtitleFont = value;
-    });
-    savePlayerSettings();
-  }
-
-  String get subtitleBackgroundColor =>
-      playerSettings.value.subtitleBackgroundColor;
-  set subtitleBackgroundColor(String value) {
-    playerSettings.update((settings) {
-      settings?.subtitleBackgroundColor = value;
-    });
-    savePlayerSettings();
-  }
-
-  String get subtitleOutlineColor => playerSettings.value.subtitleOutlineColor;
-  set subtitleOutlineColor(String value) {
-    playerSettings.update((settings) {
-      settings?.subtitleOutlineColor = value;
-    });
-    savePlayerSettings();
-  }
-
-  int get skipDuration => playerSettings.value.skipDuration;
-  set skipDuration(int value) {
-    playerSettings.update((settings) {
-      settings?.skipDuration = value;
-    });
-    savePlayerSettings();
-  }
-
-  int get seekDuration => playerSettings.value.seekDuration;
-  set seekDuration(int value) {
-    playerSettings.update((settings) {
-      settings?.seekDuration = value;
-    });
-    savePlayerSettings();
-  }
-
-  double get bottomMargin => playerSettings.value.bottomMargin;
-  set bottomMargin(double value) {
-    playerSettings.update((settings) {
-      settings?.bottomMargin = value;
-    });
-    savePlayerSettings();
-  }
-
-  int get playerStyle => playerSettings.value.playerStyle;
-  set playerStyle(int value) {
-    playerSettings.update((settings) {
-      settings?.playerStyle = value;
-    });
-    savePlayerSettings();
+    _setUISetting((s) => s?.homePageCardsMal = currentCards);
   }
 
   void savePlayerSettings() {
