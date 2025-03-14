@@ -28,7 +28,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late bool customTheme;
   late int selectedColorIndex;
   late bool isOled;
-  late bool isGrid = true;
   late int selectedVariantIndex;
   final settings = Get.find<Settings>();
 
@@ -250,35 +249,16 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   AnymexCard(
                     padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AnymexText(
-                              text: "Custom Themes",
-                              size: 16,
-                              variant: TextVariant.semiBold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isGrid = !isGrid;
-                                  });
-                                },
-                                icon: Icon(
-                                  isGrid
-                                      ? Icons.grid_view_rounded
-                                      : HugeIcons.strokeRoundedGridTable,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ))
-                          ],
+                        AnymexText(
+                          text: "Custom Themes",
+                          size: 16,
+                          variant: TextVariant.semiBold,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(height: 10),
-                        isGrid
-                            ? SingleChildScrollView(
-                                child: _buildColorTemplates())
-                            : _buildColorButtons()
+                        SingleChildScrollView(child: _buildColorTemplates())
                       ],
                     ),
                   ),
@@ -862,101 +842,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildColorButtons() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: colorList.asMap().entries.map((entry) {
-        int index = entry.key;
-        Color color = entry.value;
-        bool isSelected = index == selectedColorIndex;
-
-        return GestureDetector(
-          onTap: () {
-            handleColorSelection(index);
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected
-                    ? color
-                    : Theme.of(context).colorScheme.outline.withOpacity(0.5),
-                width: 2,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? 0.3
-                                    : 0.6),
-                        blurRadius: 15.0,
-                        spreadRadius: 2.0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : [],
-            ),
-            child: AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedOpacity(
-                    opacity: isSelected ? 1.0 : 0.8,
-                    duration: const Duration(milliseconds: 300),
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                      ),
-                      child: isSelected
-                          ? const Center(
-                              child: Icon(
-                                HugeIcons.strokeRoundedSparkles,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    colorKeys[index],
-                    style: TextStyle(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.surface
-                          : Theme.of(context).textTheme.bodyMedium?.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 }

@@ -175,6 +175,7 @@ class CustomSliderTile extends StatelessWidget {
   final double min;
   final double? divisions;
   final Function(double value) onChanged;
+  final Function(double value)? onChangedEnd;
 
   const CustomSliderTile({
     super.key,
@@ -183,6 +184,7 @@ class CustomSliderTile extends StatelessWidget {
     required this.description,
     required this.sliderValue,
     required this.onChanged,
+    this.onChangedEnd,
     required this.max,
     this.divisions,
     this.min = 0.0,
@@ -266,6 +268,7 @@ class CustomSliderTile extends StatelessWidget {
                       onChanged: onChanged,
                       max: max,
                       min: min,
+                      onDragEnd: onChangedEnd,
                       glowBlurMultiplier: 1,
                       glowSpreadMultiplier: 1,
                       divisions: divisions?.toInt() ?? (max * 10).toInt(),

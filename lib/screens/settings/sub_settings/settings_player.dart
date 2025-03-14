@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:outlined_text/outlined_text.dart';
 
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
@@ -350,6 +351,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   description: 'Adjust Sub Size',
                                   icon: Iconsax.subtitle5,
                                 ),
+                                CustomSliderTile(
+                                  sliderValue:
+                                      settings.subtitleOutlineWidth.toDouble(),
+                                  min: 1.0,
+                                  max: 5.0,
+                                  divisions: 5,
+                                  onChanged: (double value) {
+                                    settings.subtitleOutlineWidth =
+                                        value.toInt();
+                                  },
+                                  title: 'Subtitle Outline Width',
+                                  description: 'Adjust Subtitle Outline Width',
+                                  icon: Iconsax.subtitle5,
+                                ),
                                 const SizedBox(height: 20),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -366,31 +381,32 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       ),
                                       const SizedBox(height: 10),
                                       Container(
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            color: colorOptions[settings
-                                                .subtitleBackgroundColor],
-                                            borderRadius:
-                                                BorderRadius.circular(12)),
-                                        padding: const EdgeInsets.all(10),
-                                        child: Text(
-                                          'Subtitle Preview Text',
-                                          style: TextStyle(
-                                            color: colorOptions[
-                                                settings.subtitleColor],
-                                            fontSize: settings.subtitleSize
-                                                .toDouble(),
-                                            shadows: [
-                                              Shadow(
-                                                offset: const Offset(1.0, 1.0),
-                                                blurRadius: 10.0,
-                                                color: fontColorOptions[settings
-                                                    .subtitleOutlineColor]!,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              color: colorOptions[settings
+                                                  .subtitleBackgroundColor],
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          padding: const EdgeInsets.all(10),
+                                          child: OutlinedText(
+                                            text: Text(
+                                              'Subtitle Preview Text',
+                                              style: TextStyle(
+                                                color: colorOptions[
+                                                    settings.subtitleColor],
+                                                fontSize: settings.subtitleSize
+                                                    .toDouble(),
                                               ),
+                                            ),
+                                            strokes: [
+                                              OutlinedTextStroke(
+                                                  color: fontColorOptions[settings
+                                                      .subtitleOutlineColor]!,
+                                                  width: settings
+                                                      .subtitleOutlineWidth
+                                                      .toDouble())
                                             ],
-                                          ),
-                                        ),
-                                      ),
+                                          )),
                                     ],
                                   ),
                                 ),
@@ -402,6 +418,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  static List<Shadow> outlinedText(
+      {int strokeWidth = 2, Color strokeColor = Colors.black}) {
+    return List.generate(
+      strokeWidth,
+      (index) => Shadow(
+        offset: Offset(index * 0.5, index * 0.5),
+        blurRadius: index.toDouble(),
+        color: strokeColor,
       ),
     );
   }
