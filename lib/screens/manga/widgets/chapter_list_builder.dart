@@ -15,6 +15,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class ChapterListBuilder extends StatefulWidget {
@@ -39,7 +40,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   Widget build(BuildContext context) {
     if (widget.chapters == null || widget.chapters!.isEmpty) {
       return const SizedBox(
-          height: 500, child: Center(child: CircularProgressIndicator()));
+          height: 500, child: Center(child: AnymexProgressIndicator()));
     }
     return Obx(() {
       final chunkedChapters = chunkChapter(

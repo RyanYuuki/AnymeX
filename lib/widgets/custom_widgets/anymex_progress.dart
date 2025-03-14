@@ -244,8 +244,6 @@ class AnymexProgressIndicator extends ProgressIndicator {
     this.padding,
   });
 
-  @override
-  Color? get backgroundColor => super.backgroundColor;
 
   /// The width of the line used to draw the circle.
   final double? strokeWidth;

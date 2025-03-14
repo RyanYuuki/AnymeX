@@ -14,6 +14,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -163,7 +164,7 @@ class EpisodeSection extends StatelessWidget {
         if (episodeList!.value.isEmpty || episodeList?.value == null) {
           return const SizedBox(
             height: 500,
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(child: AnymexProgressIndicator()),
           );
         }
 

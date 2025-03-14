@@ -13,6 +13,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -155,7 +156,7 @@ class _CalendarState extends State<Calendar>
                   .toList();
 
               return isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: AnymexProgressIndicator())
                   : filteredList.isEmpty
                       ? const Center(child: Text("No Anime Airing on this day"))
                       : GridView.builder(

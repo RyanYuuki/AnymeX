@@ -5,7 +5,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +142,7 @@ class ProfileTile extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: [
                         colorScheme.secondaryContainer.withOpacity(0.6),
-                        colorScheme.surfaceVariant.withOpacity(0.5)
+                        colorScheme.surfaceContainerHighest.withOpacity(0.5)
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -203,7 +202,7 @@ class ProfileTile extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     colorScheme.secondaryContainer.withOpacity(0.6),
-                    colorScheme.surfaceVariant.withOpacity(0.5)
+                    colorScheme.surfaceContainerHighest.withOpacity(0.5)
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

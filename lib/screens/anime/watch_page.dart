@@ -1,7 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -30,6 +28,7 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -1871,7 +1870,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           horizontal:
               getResponsiveSize(context, mobileSize: 25, dektopSize: 50)),
       child: SizedBox(
-          height: size, width: size, child: const CircularProgressIndicator()),
+          height: size, width: size, child: const AnymexProgressIndicator()),
     );
   }
 

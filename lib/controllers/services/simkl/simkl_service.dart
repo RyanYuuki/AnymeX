@@ -17,6 +17,7 @@ import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -187,7 +188,7 @@ class SimklService extends GetxController
   RxList<Widget> animeWidgets(BuildContext context) => [
         if (trendingMovies.isEmpty)
           const Center(
-            child: CircularProgressIndicator(),
+            child: AnymexProgressIndicator(),
           )
         else ...[
           // TappableSearchBar(
@@ -219,7 +220,7 @@ class SimklService extends GetxController
   RxList<Widget> mangaWidgets(BuildContext context) => [
         if (trendingSeries.isEmpty)
           const Center(
-            child: CircularProgressIndicator(),
+            child: AnymexProgressIndicator(),
           )
         else ...[
           // CustomSearchBar(

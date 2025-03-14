@@ -22,6 +22,7 @@ import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -61,14 +62,14 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
       {bool isManga = false}) {
     return list.isEmpty
-        ? const CircularProgressIndicator()
+        ? const AnymexProgressIndicator()
         : buildSection(title, list, isManga: isManga);
   }
 
   @override
   RxList<Widget> animeWidgets(BuildContext context) => [
         Obx(() => trendingAnimes.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
                   // CustomSearchBar(
@@ -132,7 +133,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() => trendingManga.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
                   // CustomSearchBar(

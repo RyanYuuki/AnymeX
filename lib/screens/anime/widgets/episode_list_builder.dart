@@ -14,6 +14,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -234,7 +235,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   Widget _buildLoadingState() {
     return const SizedBox(
       height: 200,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(child: AnymexProgressIndicator()),
     );
   }
 
@@ -344,7 +345,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -17,6 +17,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -75,7 +76,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             child: Obx(() {
               if (streamList.isEmpty) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: AnymexProgressIndicator(),
                 );
               }
 

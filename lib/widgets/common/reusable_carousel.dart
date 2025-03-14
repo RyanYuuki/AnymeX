@@ -13,6 +13,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -55,7 +56,7 @@ class ReusableCarousel extends StatelessWidget {
           height: 10,
         ),
         isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: AnymexProgressIndicator())
             : _buildCarousel(context, newData, isDesktop),
       ],
     );

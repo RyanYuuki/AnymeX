@@ -10,6 +10,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive/hive.dart';
@@ -277,7 +278,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSearchResults() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: AnymexProgressIndicator());
     }
 
     if (_searchResults == null || _searchResults!.isEmpty) {
@@ -520,7 +521,7 @@ class _SearchPageState extends State<SearchPage> {
                 Expanded(child: _buildSearchResults()),
               ] else if (_isLoading) ...[
                 const Center(
-                  child: CircularProgressIndicator(),
+                  child: AnymexProgressIndicator(),
                 )
               ] else ...[
                 Expanded(

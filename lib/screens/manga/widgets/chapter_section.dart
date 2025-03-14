@@ -183,7 +183,7 @@ class ChapterSection extends StatelessWidget {
                         chapters: chapterList,
                         anilistData: anilistData,
                       )
-                    : Center(child: AnymexText(text: "No Match Found"))
+                    : const Center(child: AnymexText(text: "No Match Found"))
             ],
           ),
         ));
