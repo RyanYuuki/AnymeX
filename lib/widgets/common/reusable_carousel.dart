@@ -17,6 +17,9 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+// This will be your future enum for different card styles
+// enum CardStyle { compact, expanded, grid, list }
+
 class ReusableCarousel extends StatelessWidget {
   final List<dynamic> data;
   final String title;
@@ -37,9 +40,6 @@ class ReusableCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    final newData = convertData(data, variant: variant);
-
     if (isEmptyOrOffline()) {
       return _buildOfflinePlaceholder(context);
     }
@@ -51,20 +51,23 @@ class ReusableCarousel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTitle(context),
-        const SizedBox(
-          height: 10,
-        ),
+        _buildHeaderTitle(context),
+        const SizedBox(height: 10),
         isLoading
             ? const Center(child: AnymexProgressIndicator())
-            : _buildCarousel(context, newData, isDesktop),
+            : _buildCarouselList(context),
       ],
     );
   }
 
+  // Simple utility methods
   bool isEmptyOrOffline() => data.isEmpty && variant == DataVariant.offline;
 
-  Widget _buildTitle(BuildContext context) {
+  bool isDesktop(BuildContext context) =>
+      MediaQuery.of(context).size.width > 600;
+
+  // Header title section
+  Widget _buildHeaderTitle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
       child: Text(
@@ -78,16 +81,14 @@ class ReusableCarousel extends StatelessWidget {
     );
   }
 
+  // Offline placeholder display
   Widget _buildOfflinePlaceholder(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: [
-        _buildTitle(context),
-        const SizedBox(
-          height: 15,
-          width: double.infinity,
-        ),
+        _buildHeaderTitle(context),
+        const SizedBox(height: 15, width: double.infinity),
         SizedBox(
           height: 280,
           child: Column(
@@ -95,13 +96,10 @@ class ReusableCarousel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded),
-              const SizedBox(
-                height: 10,
-                width: double.infinity,
-              ),
+              const SizedBox(height: 10, width: double.infinity),
               AnymexText(
                 text: isManga
-                    ? "For real, why aren’t you reading yet? 📚"
+                    ? "For real, why aren't you reading yet? 📚"
                     : "Lowkey time for a binge sesh 🎬",
                 variant: TextVariant.semiBold,
               ),
@@ -112,92 +110,152 @@ class ReusableCarousel extends StatelessWidget {
     );
   }
 
-  Widget _buildCarousel(
-      BuildContext context, List<dynamic> newData, bool isDesktop) {
-    final settings = Get.find<Settings>();
+  // Main carousel list builder
+  Widget _buildCarouselList(BuildContext context) {
+    final bool desktop = isDesktop(context);
+    final List<dynamic> processedData = convertData(data, variant: variant);
+    final Settings settings = Get.find<Settings>();
+
     return SizedBox(
-      height: isDesktop ? 290 : 230,
+      height: desktop ? 290 : 230,
       child: ListView.builder(
-        itemCount: newData.length,
+        itemCount: processedData.length,
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
-        itemBuilder: (BuildContext context, int index) {
-          final itemData = newData[index];
-          final tag = generateTag('${itemData.id}-$index');
-
-          return Obx(() => TVWrapper(
-              onTap: () => _navigateToDetailsPage(itemData, tag, isManga),
-              child: settings.enableAnimation
-                  ? SlideAndScaleAnimation(
-                      child:
-                          _buildCarouselItem(context, itemData, tag, isDesktop))
-                  : _buildCarouselItem(context, itemData, tag, isDesktop)));
-        },
+        itemBuilder: (context, index) => _buildCarouselItemWrapper(
+            context, processedData[index], index, desktop, settings),
       ),
     );
   }
 
-  Widget _buildCarouselItem(
-      BuildContext context, CarouselData itemData, String tag, bool isDesktop) {
+  Widget _buildCarouselItemWrapper(BuildContext context, CarouselData itemData,
+      int index, bool desktop, Settings settings) {
+    final String tag = generateTag('${itemData.id}-$index');
+
+    return Obx(() => TVWrapper(
+          onTap: () => _navigateToDetailsPage(itemData, tag),
+          child: settings.enableAnimation
+              ? SlideAndScaleAnimation(
+                  child: _buildCarouselCard(context, itemData, tag, desktop))
+              : _buildCarouselCard(context, itemData, tag, desktop),
+        ));
+  }
+
+  Widget _buildCarouselCard(
+      BuildContext context, CarouselData itemData, String tag, bool desktop) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+      constraints: BoxConstraints(maxWidth: desktop ? 150 : 108),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12.multiplyRoundness()),
-            child: Stack(
-              children: [
-                Hero(
-                  tag: tag,
-                  child: NetworkSizedImage(
-                    imageUrl: itemData.poster!,
-                    radius: 12,
-                    height: isDesktop ? 210 : 160,
-                    width: double.infinity,
-                  ),
-                ),
-                _buildExtraData(context, itemData),
-              ],
-            ),
-          ),
-          if (itemData.title != null &&
-              itemData.title!.isNotEmpty &&
-              itemData.title != '?') ...[
+          _buildCardImage(context, itemData, tag, desktop),
+          if (_shouldShowTitle(itemData)) ...[
             const SizedBox(height: 10),
-            AnymexText(
-              text: itemData.title ?? '?',
-              maxLines: 2,
-              size: isDesktop ? 14 : 12,
-              variant: TextVariant.semiBold,
-              overflow: TextOverflow.ellipsis,
-            ),
+            _buildCardTitle(itemData, desktop),
           ],
         ],
       ),
     );
   }
 
-  void _navigateToDetailsPage(CarouselData itemData, String tag, bool isManga) {
+  Widget _buildCardImage(
+      BuildContext context, CarouselData itemData, String tag, bool desktop) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12.multiplyRoundness()),
+      child: Stack(
+        children: [
+          Hero(
+            tag: tag,
+            child: NetworkSizedImage(
+              imageUrl: itemData.poster!,
+              radius: 12,
+              height: desktop ? 210 : 160,
+              width: double.infinity,
+            ),
+          ),
+          _buildCardBadge(context, itemData),
+        ],
+      ),
+    );
+  }
+
+  // Badge overlay for showing extra data
+  Widget _buildCardBadge(BuildContext context, CarouselData itemData) {
+    return Positioned(
+      right: 0,
+      bottom: 0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(8),
+            bottomRight: Radius.circular(8),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _getIconForVariant(itemData.extraData ?? ''),
+              size: 16,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+            const SizedBox(width: 4),
+            AnymexText(
+              text: itemData.extraData ?? '',
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 12,
+              variant: TextVariant.bold,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Card title text widget
+  Widget _buildCardTitle(CarouselData itemData, bool desktop) {
+    return AnymexText(
+      text: itemData.title ?? '?',
+      maxLines: 2,
+      size: desktop ? 14 : 12,
+      variant: TextVariant.semiBold,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  void _navigateToDetailsPage(CarouselData itemData, String tag) {
     final controller = Get.find<SourceController>();
+    final bool isMediaManga = _determineIfManga(itemData);
 
-    final isMangaPage =
-        (variant == DataVariant.relation && itemData.extraData == "MANGA") ||
-            (source?.isManga ?? false) ||
-            isManga;
+    final MediaType mediaType =
+        isMediaManga ? MediaType.manga : MediaType.anime;
 
-    final page = isMangaPage
+    // Create appropriate page
+    final Widget page = isMediaManga
         ? MangaDetailsPage(
-            key: ValueKey(itemData.id),
-            media: Media.fromCarouselData(itemData, MediaType.manga),
+            media: Media.fromCarouselData(itemData, mediaType),
             tag: tag,
           )
         : AnimeDetailsPage(
-            media: Media.fromCarouselData(itemData, MediaType.anime),
+            media: Media.fromCarouselData(itemData, mediaType),
             tag: tag,
           );
 
+    _setActiveSource(controller, itemData);
+
+    navigate(() => page);
+  }
+
+  bool _determineIfManga(CarouselData itemData) {
+    return (variant == DataVariant.relation && itemData.extraData == "MANGA") ||
+        (source?.isManga ?? false) ||
+        isManga;
+  }
+
+  void _setActiveSource(SourceController controller, CarouselData itemData) {
     if (source != null) {
       controller.setActiveSource(source!);
     } else if (itemData.source != null) {
@@ -207,51 +265,21 @@ class ReusableCarousel extends StatelessWidget {
         controller.getExtensionByName(itemData.source!);
       }
     }
-
-    navigate(() => page);
   }
 
-  Positioned _buildExtraData(BuildContext context, CarouselData itemData) {
-    return Positioned(
-        right: 0,
-        bottom: 0,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              bottomRight: Radius.circular(8),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                getIcon(variant, itemData.extraData ?? ''),
-                size: 16,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              const SizedBox(width: 4),
-              AnymexText(
-                text: itemData.extraData ?? '',
-                color: Theme.of(context).colorScheme.onPrimary,
-                size: 12,
-                variant: TextVariant.bold,
-              ),
-            ],
-          ),
-        ));
+  bool _shouldShowTitle(CarouselData itemData) {
+    return itemData.title != null &&
+        itemData.title!.isNotEmpty &&
+        itemData.title != '?';
   }
 
-  IconData getIcon(DataVariant variant, String extraData) {
+  IconData _getIconForVariant(String extraData) {
     switch (variant) {
-      case DataVariant.anilist || DataVariant.offline:
-        final icon = isManga ? Iconsax.book : Iconsax.play5;
-        return icon;
+      case DataVariant.anilist:
+      case DataVariant.offline:
+        return isManga ? Iconsax.book : Iconsax.play5;
       case DataVariant.relation:
-        final icon = extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
-        return icon;
+        return extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
       case DataVariant.extension:
         return Iconsax.status;
       default:
@@ -260,6 +288,7 @@ class ReusableCarousel extends StatelessWidget {
   }
 }
 
+// Utility function for tag generation
 String generateTag(String url) {
   final randomNum = Random().nextInt(10000);
   return '$url-$randomNum';

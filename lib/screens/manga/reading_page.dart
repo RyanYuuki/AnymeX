@@ -15,7 +15,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart' hide AnymexProgressIndicator;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -47,7 +47,7 @@ class ReadingPage extends StatefulWidget {
 class _ReadingPageState extends State<ReadingPage> {
   final sourceController = Get.find<SourceController>();
   ScrollController scrollController = ScrollController();
-  final PageController pageController = PageController();
+  PageController pageController = PageController();
   final isMenuToggled = true.obs;
 
   late Rx<Chapter> currentChapter;
@@ -87,11 +87,10 @@ class _ReadingPageState extends State<ReadingPage> {
   @override
   void initState() {
     super.initState();
-    currentChapter = Rx(widget.currentChapter);
-    anilistData = Rx(widget.anilistData);
-    chapterList = RxList(widget.chapterList);
+    _initScrollController();
+    _initPageController();
+    _initWidgetVars();
     _getPreferences();
-    scrollController.addListener(_updateScrollProgress);
     ever(currentChapter, (_) => fetchImages());
     ever(isMenuToggled, (_) {
       SystemChrome.setEnabledSystemUIMode(isMenuToggled.value
@@ -100,7 +99,25 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     fetchImages();
     _focusNode.requestFocus();
-    updateAnilist(false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateAnilist(false);
+    });
+  }
+
+  void _initWidgetVars() {
+    currentChapter = Rx(widget.currentChapter);
+    anilistData = Rx(widget.anilistData);
+    chapterList = RxList(widget.chapterList);
+  }
+
+  void _initScrollController({double offset = 0}) {
+    scrollController = ScrollController(initialScrollOffset: offset);
+    scrollController.addListener(_updateScrollProgress);
+  }
+
+  void _initPageController({int page = 0}) {
+    pageController = PageController(initialPage: page);
+    pageController.addListener(() {});
   }
 
   void _getPreferences() {
@@ -172,6 +189,7 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     scrollController.removeListener(_updateScrollProgress);
     scrollController.dispose();
+    pageController.dispose();
     super.dispose();
   }
 
@@ -179,17 +197,9 @@ class _ReadingPageState extends State<ReadingPage> {
     currentPageIndex.value = chapter.pageNumber ?? 1;
 
     if (activeMode.value != ReadingMode.webtoon) {
-      pageController.animateToPage(
-        chapter.pageNumber ?? 0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      _initPageController(page: chapter.pageNumber ?? 0);
     } else {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        scrollController.jumpTo(
-          chapter.currentOffset ?? 0,
-        );
-      });
+      _initScrollController(offset: chapter.currentOffset ?? 0);
     }
 
     _updateNavigationState();
@@ -199,11 +209,13 @@ class _ReadingPageState extends State<ReadingPage> {
     currentPageIndex.value = pageIndex;
 
     if (activeMode.value != ReadingMode.webtoon) {
-      pageController.animateToPage(
-        pageIndex,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (pageController.hasClients) {
+        pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     } else {
       if (scrollController.hasClients) {
         final maxScrollExtent = scrollController.position.maxScrollExtent;
@@ -353,11 +365,9 @@ class _ReadingPageState extends State<ReadingPage> {
         _loadNextChapter();
       }
 
-      _debounce = Timer(const Duration(milliseconds: 300), () {
-        if (currentPage != currentPageIndex.value) {
-          currentPageIndex.value = currentPage;
-        }
-      });
+      if (currentPage != currentPageIndex.value) {
+        currentPageIndex.value = currentPage;
+      }
     }
   }
 
@@ -492,7 +502,7 @@ class _ReadingPageState extends State<ReadingPage> {
 
   PageView _buildPageViewMode() {
     return PageView.builder(
-      controller: PageController(initialPage: currentPageIndex.value),
+      controller: pageController,
       scrollDirection: Axis.horizontal,
       reverse: activeMode.value == ReadingMode.rtl,
       onPageChanged: (index) {
@@ -723,9 +733,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     value: currentPageIndex.value.toDouble(),
                     label: currentPageIndex.value.toString(),
                     onChanged: (value) {
-                      final pageIndex = value.toInt();
                       navigateToPage(value.toInt());
-                      currentPageIndex.value = pageIndex;
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                     inactiveColor: Theme.of(context)
@@ -802,8 +810,12 @@ class _ReadingPageState extends State<ReadingPage> {
                     child: ToggleButtons(
                       isSelected: selections,
                       onPressed: (int index) {
+                        final pageIndex = currentPageIndex.value;
                         activeMode.value = ReadingMode.values[index];
                         _savePreferences();
+                        Future.delayed(const Duration(milliseconds: 50), () {
+                          navigateToPage(pageIndex);
+                        });
                       },
                       children: const [
                         Tooltip(
