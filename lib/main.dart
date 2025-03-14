@@ -284,7 +284,6 @@ class _FilterScreenState extends State<FilterScreen> {
     });
   }
 
-
   final routes = [
     const SizedBox.shrink(),
     const HomePage(),
@@ -307,10 +306,9 @@ class _FilterScreenState extends State<FilterScreen> {
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Glow(
-      child: PlatformBuilderWithTablet(
+      child: PlatformBuilder(
         strictMode: false,
         desktopBuilder: _buildDesktopLayout(context, authService, isSimkl),
-        tabletBuilder: _buildDesktopLayout(context, authService, isSimkl),
         androidBuilder: _buildAndroidLayout(isSimkl),
       ),
     );

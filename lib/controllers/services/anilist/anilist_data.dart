@@ -168,7 +168,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   navigate(() => const Calendar());
                 },
                 backgroundImage:
-                    trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+                    trendingAnimes[5].cover ?? trendingAnimes[6].poster),
             const SizedBox(width: 10),
             ImageButton(
                 buttonText: "AI Picks",
@@ -182,7 +182,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                       ));
                 },
                 backgroundImage:
-                    trendingAnimes[5].cover ?? trendingAnimes[3].poster)
+                    trendingAnimes[1].cover ?? trendingAnimes[0].poster)
           ],
         ),
       ),
