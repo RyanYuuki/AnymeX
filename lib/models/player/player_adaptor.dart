@@ -32,20 +32,25 @@ class PlayerSettings {
   bool defaultPortraitMode;
   @HiveField(13)
   int playerStyle;
+  @HiveField(14)
+  int subtitleOutlineWidth;
 
-  PlayerSettings(
-      {this.speed = 1.0,
-      this.resizeMode = "Contain",
-      this.subtitleSize = 16,
-      this.subtitleColor = "White",
-      this.subtitleFont = 'Poppins',
-      this.subtitleBackgroundColor = "Black",
-      this.subtitleOutlineColor = "Black",
-      this.showSubtitle = true,
-      this.skipDuration = 85,
-      this.seekDuration = 10,
-      this.bottomMargin = 5,
-      this.playerStyle = 0,
-      this.transculentControls = false,
-      this.defaultPortraitMode = false});
+
+  PlayerSettings({
+    this.speed = 1.0,
+    this.resizeMode = "Contain",
+    this.subtitleSize = 16,
+    this.subtitleColor = "White",
+    this.subtitleFont = 'Poppins',
+    this.subtitleBackgroundColor = "Black",
+    this.subtitleOutlineColor = "Black",
+    this.showSubtitle = true,
+    this.skipDuration = 85,
+    this.seekDuration = 10,
+    this.bottomMargin = 5,
+    this.playerStyle = 0,
+    this.transculentControls = false,
+    this.defaultPortraitMode = false,
+    this.subtitleOutlineWidth = 1,
+  });
 }

@@ -36,6 +36,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:outlined_text/outlined_text.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
@@ -207,7 +208,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
-    player.open(Media(episode.value.url.replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
+    player.open(Media(
+        episode.value.url
+            .replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
         httpHeaders: {'Referer': sourceController.activeSource.value!.baseUrl!},
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
@@ -801,27 +804,26 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   duration: const Duration(milliseconds: 200),
                   switchInCurve: Curves.easeIn,
                   switchOutCurve: Curves.easeOut,
-                  child: Text(
-                    [
-                      for (final line in subtitleText)
-                        if (line.trim().isNotEmpty) line.trim(),
-                    ].join('\n'),
-                    key: ValueKey(
-                        subtitleText.join()), // Unique key for AnimatedSwitcher
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: fontColorOptions[settings.subtitleColor],
-                      fontSize: settings.subtitleSize.toDouble(),
-                      fontFamily: "Poppins-Bold",
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(1.0, 1.0),
-                          blurRadius: 10.0,
+                  child: OutlinedText(
+                    text: Text(
+                      [
+                        for (final line in subtitleText)
+                          if (line.trim().isNotEmpty) line.trim(),
+                      ].join('\n'),
+                      key: ValueKey(subtitleText.join()),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: fontColorOptions[settings.subtitleColor],
+                        fontSize: settings.subtitleSize.toDouble(),
+                        fontFamily: "Poppins-Bold",
+                      ),
+                    ),
+                    strokes: [
+                      OutlinedTextStroke(
                           color:
                               fontColorOptions[settings.subtitleOutlineColor]!,
-                        ),
-                      ],
-                    ),
+                          width: settings.subtitleOutlineWidth.toDouble())
+                    ],
                   ),
                 ),
               ),

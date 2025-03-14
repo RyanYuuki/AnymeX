@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
+final settingsController = Get.put(Settings());
+
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
+  late Box preferences;
   final canShowUpdate = true.obs;
   RxBool isTV = false.obs;
 
@@ -21,6 +24,7 @@ class Settings extends GetxController {
     uiSettings = Rx<UISettings>(uiBox.get('settings') ?? UISettings());
     playerSettings =
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
+    preferences = Hive.box('preferences');
     isTv().then((e) {
       isTV.value = e;
     });
@@ -37,7 +41,6 @@ class Settings extends GetxController {
       showWelcomeDialogg(context);
     }
   }
-
 
   T _getUISetting<T>(T Function(UISettings settings) getter) {
     return getter(uiSettings.value);
@@ -168,7 +171,11 @@ class Settings extends GetxController {
   set playerStyle(int value) =>
       _setPlayerSetting((s) => s?.playerStyle = value);
 
-  // Special cases that don't fit the pattern
+  int get subtitleOutlineWidth =>
+      _getPlayerSetting((s) => s.subtitleOutlineWidth);
+  set subtitleOutlineWidth(int value) =>
+      _setPlayerSetting((s) => s?.subtitleOutlineWidth = value);
+
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;

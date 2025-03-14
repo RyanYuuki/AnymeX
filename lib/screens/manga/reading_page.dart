@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -10,10 +11,11 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AnymexProgressIndicator;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -88,6 +90,7 @@ class _ReadingPageState extends State<ReadingPage> {
     currentChapter = Rx(widget.currentChapter);
     anilistData = Rx(widget.anilistData);
     chapterList = RxList(widget.chapterList);
+    _getPreferences();
     scrollController.addListener(_updateScrollProgress);
     ever(currentChapter, (_) => fetchImages());
     ever(isMenuToggled, (_) {
@@ -98,6 +101,23 @@ class _ReadingPageState extends State<ReadingPage> {
     fetchImages();
     _focusNode.requestFocus();
     updateAnilist(false);
+  }
+
+  void _getPreferences() {
+    activeMode.value = ReadingMode.values[
+        settingsController.preferences.get('reading_mode', defaultValue: 0)];
+    pageWidthMultiplier.value =
+        settingsController.preferences.get('image_width') ?? 1;
+    scrollSpeedMultiplier.value =
+        settingsController.preferences.get('scroll_speed') ?? 1;
+  }
+
+  void _savePreferences() {
+    settingsController.preferences.put('reading_mode', activeMode.value.index);
+    settingsController.preferences
+        .put('image_width', pageWidthMultiplier.value);
+    settingsController.preferences
+        .put('scroll_speed', scrollSpeedMultiplier.value);
   }
 
   void _loadNextChapter() {
@@ -376,7 +396,7 @@ class _ReadingPageState extends State<ReadingPage> {
                 child: SizedBox(
                   width: 60,
                   height: 60,
-                  child: CircularProgressIndicator(),
+                  child: AnymexProgressIndicator(),
                 ),
               );
             }
@@ -447,7 +467,6 @@ class _ReadingPageState extends State<ReadingPage> {
                             size: 12,
                             variant: TextVariant.semiBold,
                           ),
-                          
                           AnymexText(
                             text: "Ch. ${chapterList.length}",
                             size: 12,
@@ -499,7 +518,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       mangaPages.length),
                   width: double.infinity,
                   child: Center(
-                    child: CircularProgressIndicator(
+                    child: AnymexProgressIndicator(
                       value: progress.progress,
                     ),
                   ))),
@@ -538,7 +557,7 @@ class _ReadingPageState extends State<ReadingPage> {
                               mangaPages.length),
                           width: double.infinity,
                           child: Center(
-                            child: CircularProgressIndicator(
+                            child: AnymexProgressIndicator(
                               value: progress.progress,
                             ),
                           ))),
@@ -784,6 +803,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       isSelected: selections,
                       onPressed: (int index) {
                         activeMode.value = ReadingMode.values[index];
+                        _savePreferences();
                       },
                       children: const [
                         Tooltip(
@@ -810,6 +830,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       onChanged: (double value) {
                         pageWidthMultiplier.value = value;
                       },
+                      onChangedEnd: (e) => _savePreferences(),
                       description: 'Only Works with webtoon mode',
                       icon: Icons.image_aspect_ratio_rounded,
                       min: 1.0,
@@ -825,6 +846,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       onChanged: (double value) {
                         scrollSpeedMultiplier.value = value;
                       },
+                      onChangedEnd: (e) => _savePreferences(),
                       description:
                           'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
                       icon: Icons.speed,
