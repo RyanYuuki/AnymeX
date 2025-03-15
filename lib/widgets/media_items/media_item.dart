@@ -104,7 +104,7 @@ class GridAnimeCard extends StatelessWidget {
         children: [
           Stack(
             children: [
-              TVWrapper(
+              AnymexOnTap(
                 margin: 0,
                 onTap: () {
                   navigate(() => isManga
@@ -237,7 +237,7 @@ class BlurAnimeCard extends StatelessWidget {
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: () {
         navigate(() => AnimeDetailsPage(media: data, tag: data.title));
       },

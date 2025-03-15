@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class TVWrapper extends StatelessWidget {
+class AnymexOnTap extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget child;
   final double scale;
@@ -14,7 +14,7 @@ class TVWrapper extends StatelessWidget {
   final double borderWidth;
   final double? margin;
 
-  const TVWrapper({
+  const AnymexOnTap({
     super.key,
     this.onTap,
     required this.child,
@@ -85,7 +85,7 @@ class TVWrapper extends StatelessWidget {
   }
 }
 
-class TvWrapperAdv extends StatelessWidget {
+class AnymexOnTapAdv extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget child;
   final double scale;
@@ -95,7 +95,7 @@ class TvWrapperAdv extends StatelessWidget {
   final double? margin;
   final KeyEventResult Function(FocusNode, KeyEvent)? onKeyEvent;
 
-  const TvWrapperAdv({
+  const AnymexOnTapAdv({
     super.key,
     this.onTap,
     required this.child,

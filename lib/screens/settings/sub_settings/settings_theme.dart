@@ -387,7 +387,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
               brightness: Brightness.dark);
           bool isSelected = themeMode == theme['label'];
           bool isSystem = theme['label'] == "System";
-          return TVWrapper(
+          return AnymexOnTap(
             onTap: () {
               handleThemeMode(theme['label']);
             },

@@ -213,7 +213,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
         children: [
           Stack(
             children: [
-              TVWrapper(
+              AnymexOnTap(
                 margin: 0,
                 onTap: () {
                   navigate(() => AnimeDetailsPage(
@@ -373,7 +373,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: () {
         navigate(
             () => AnimeDetailsPage(media: widget.data, tag: widget.data.title));

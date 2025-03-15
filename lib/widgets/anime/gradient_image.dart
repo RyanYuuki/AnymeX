@@ -108,7 +108,7 @@ class GradientPoster extends StatelessWidget {
           Positioned(
               top: 30,
               right: 20,
-              child: TVWrapper(
+              child: AnymexOnTap(
                 onTap: () {
                   Get.back();
                 },

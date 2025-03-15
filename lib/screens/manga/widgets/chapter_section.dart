@@ -67,7 +67,7 @@ class ChapterSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TVWrapper(
+                  AnymexOnTap(
                     onTap: () {
                       showWrongTitleModal(
                         context,

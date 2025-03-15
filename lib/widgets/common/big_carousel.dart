@@ -47,7 +47,7 @@ class _BigCarouselState extends State<BigCarousel> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: Column(
         children: [
-          TvWrapperAdv(
+          AnymexOnTapAdv(
             onKeyEvent: (node, event) {
               if (event is KeyDownEvent) {
                 if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {

@@ -93,7 +93,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   ),
                   const SizedBox(height: 10),
                   ...streamList.value.map((e) {
-                    return TVWrapper(
+                    return AnymexOnTap(
                       onTap: () {
                         widget.onEpisodeSelected(
                             e, streamList, chosenEpisode.value);
@@ -197,7 +197,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   final isSelected =
                       widget.currentEpisode.number == episode.number;
                   final watchedEpisode = episode.number.toInt() <= userProgress;
-                  return TVWrapper(
+                  return AnymexOnTap(
                     onTap: () {
                       if (isSelected) {
                         fetchServers(episode.link!);

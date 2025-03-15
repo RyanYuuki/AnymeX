@@ -185,7 +185,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       : currentEpisode
                           ? 0.8
                           : 1,
-                  child: TVWrapper(
+                  child: AnymexOnTap(
                     onTap: () => _handleEpisodeSelection(episode),
                     child: isAnify.value
                         ? _anifyEpisode(isSelected, context, episode)

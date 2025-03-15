@@ -1031,7 +1031,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   children: episodeTracks.map((e) {
                     final isSelected = episode.value.quality == e.quality;
-                    return TVWrapper(
+                    return AnymexOnTap(
                       onTap: () {
                         episode.value = e;
                         player.open(Media(e.url,
@@ -1099,7 +1099,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // "None" option
-                    TVWrapper(
+                    AnymexOnTap(
                       onTap: () {
                         selectedSubIndex.value = -1;
                         Get.back();
@@ -1112,7 +1112,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     ...subtitles.asMap().entries.map((entry) {
                       final index = entry.key;
                       final e = entry.value;
-                      return TVWrapper(
+                      return AnymexOnTap(
                         onTap: () {
                           selectedSubIndex.value = index;
                           Get.back();
@@ -1123,7 +1123,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       );
                     }),
                     // "Add Subtitle" option
-                    TVWrapper(
+                    AnymexOnTap(
                       onTap: () async {
                         final result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
@@ -1763,7 +1763,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         margin: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 50),
         child: BlurWrapper(
           borderRadius: BorderRadius.circular(radius),
-          child: TVWrapper(
+          child: AnymexOnTap(
             onTap: () {
               player.playOrPause();
             },
@@ -1839,7 +1839,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           EdgeInsets.symmetric(horizontal: isPlay ? (isMobile ? 20 : 50) : 0),
       child: BlurWrapper(
         borderRadius: BorderRadius.circular(radius),
-        child: TVWrapper(
+        child: AnymexOnTap(
           onTap: onTap,
           bgColor: Colors.transparent,
           focusedBorderColor: Colors.transparent,
@@ -1877,7 +1877,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Widget _buildIcon({VoidCallback? onTap, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: () {
           onTap?.call();
         },

@@ -55,7 +55,7 @@ class Header extends StatelessWidget {
               ),
               const Spacer(),
               if (profileData.serviceType.value == ServicesType.extensions) ...[
-                TVWrapper(
+                AnymexOnTap(
                     child: CircleAvatar(
                   radius: 24,
                   backgroundColor:
@@ -74,7 +74,7 @@ class Header extends StatelessWidget {
                 )),
               ] else ...[
                 getResponsiveValue(context,
-                    mobileValue: TVWrapper(
+                    mobileValue: AnymexOnTap(
                       child: CircleAvatar(
                           radius: 24,
                           backgroundColor: Theme.of(context)
@@ -150,8 +150,8 @@ class Header extends StatelessWidget {
     });
   }
 
-  TVWrapper _profileIcon(BuildContext context, ServiceHandler profileData) {
-    return TVWrapper(
+  AnymexOnTap _profileIcon(BuildContext context, ServiceHandler profileData) {
+    return AnymexOnTap(
       onTap: () {
         return SettingsSheet.show(context);
       },

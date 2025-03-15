@@ -205,7 +205,7 @@ class EpisodeSection extends StatelessWidget {
                         ],
                       )),
                 ),
-                TVWrapper(
+                AnymexOnTap(
                   onTap: () {
                     showWrongTitleModal(
                       context,

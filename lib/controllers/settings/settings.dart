@@ -64,6 +64,9 @@ class Settings extends GetxController {
   set transculentBar(bool value) =>
       _setUISetting((s) => s?.translucentTabBar = value);
 
+  int get cardStyle => _getUISetting((s) => s.cardStyle);
+  set cardStyle(int value) => _setUISetting((s) => s?.cardStyle = value);
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);
 

@@ -46,7 +46,12 @@ class AnymexExpansionTile extends StatelessWidget {
 class AnymexCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
-  const AnymexCard({super.key, required this.child, this.padding});
+  final bool enableAnimation;
+  const AnymexCard(
+      {super.key,
+      required this.child,
+      this.padding,
+      this.enableAnimation = false});
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +64,17 @@ class AnymexCard extends StatelessWidget {
       elevation: 2,
       shadowColor: colorScheme.shadow.withOpacity(0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: padding ?? const EdgeInsets.all(0.0),
-        child: child,
-      ),
+      child: enableAnimation
+          ? AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              padding: padding ?? const EdgeInsets.all(0.0),
+              child: child,
+            )
+          : Padding(
+              padding: padding ?? const EdgeInsets.all(0.0),
+              child: child,
+            ),
     );
   }
 }

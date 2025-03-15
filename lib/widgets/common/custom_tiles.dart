@@ -27,7 +27,7 @@ class CustomSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: () {
         onChanged(!switchValue);
       },
@@ -109,7 +109,7 @@ class CustomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: onTap,
       child: InkWell(
         onTap: onTap,
@@ -192,7 +192,7 @@ class CustomSliderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TvWrapperAdv(
+    return AnymexOnTapAdv(
       onKeyEvent: (p0, e) {
         if (e is KeyDownEvent) {
           double step = (max - min) / (divisions ?? (max - min));
@@ -297,7 +297,7 @@ class CustomSliderTile extends StatelessWidget {
 }
 
 extension TVSupport on Widget {
-  TVWrapper tvSupport() {
-    return TVWrapper(child: this);
+  AnymexOnTap tvSupport() {
+    return AnymexOnTap(child: this);
   }
 }

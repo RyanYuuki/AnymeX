@@ -102,7 +102,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
-                        return TVWrapper(
+                        return AnymexOnTap(
                           onTap: () {
                             widget.onTap(item);
                             Get.back();

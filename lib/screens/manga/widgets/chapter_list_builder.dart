@@ -122,7 +122,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     (readChap?.number ?? continueChapter?.number);
                 final alreadyRead = chapter.number! <
                     (readChap?.number ?? continueChapter?.number ?? 0);
-                return TVWrapper(
+                return AnymexOnTap(
                   onTap: () {
                     navigate(() => ReadingPage(
                           anilistData: widget.anilistData,

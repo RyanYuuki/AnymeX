@@ -41,7 +41,7 @@ class MangaHistoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.multiplyRadius()),
         color: Theme.of(context).colorScheme.surface.withAlpha(144),
       ),
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: () {
           if (data.currentChapter == null) {
             snackBar(

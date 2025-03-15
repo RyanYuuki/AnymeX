@@ -52,6 +52,9 @@ class UISettings extends HiveObject {
   @HiveField(15)
   Map<String, bool> homePageCardsMal;
 
+  @HiveField(16)
+  int cardStyle;
+
   UISettings({
     this.glowMultiplier = 1.0,
     this.radiusMultiplier = 1.0,
@@ -94,5 +97,6 @@ class UISettings extends HiveObject {
     },
     this.enableAnimation = true,
     this.disableGradient = false,
+    this.cardStyle = 1,
   });
 }

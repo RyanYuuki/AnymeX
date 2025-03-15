@@ -283,7 +283,7 @@ class _NavBarItemState extends State<NavBarItem>
                     );
                   },
                 ),
-                TVWrapper(
+                AnymexOnTap(
                   margin: 0,
                   scale: 1,
                   onTap: widget.onTap,

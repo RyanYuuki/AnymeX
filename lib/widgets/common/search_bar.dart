@@ -154,7 +154,7 @@ class TappableSearchBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: onSubmitted,
         scale: 1,
         margin: 0,

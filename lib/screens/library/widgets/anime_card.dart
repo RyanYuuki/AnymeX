@@ -22,7 +22,7 @@ class AnimeCard extends StatelessWidget {
   const AnimeCard({super.key, required this.data, required this.cardtype});
   @override
   Widget build(BuildContext context) {
-    return TVWrapper(
+    return AnymexOnTap(
       margin: 0,
       scale: 1,
       onTap: () {
@@ -182,7 +182,7 @@ class AnimeHistoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.multiplyRadius()),
         color: Theme.of(context).colorScheme.surface.withAlpha(144),
       ),
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: () {
           if (data.currentEpisode == null ||
               data.currentEpisode?.currentTrack == null ||

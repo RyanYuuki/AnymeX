@@ -197,7 +197,7 @@ class _ExtensionListTileWidgetState
     }
 
     return !sourceNotEmpty
-        ? TVWrapper(
+        ? AnymexOnTap(
             child: IconButton(
                 onPressed: () => _handleSourceAction(),
                 icon: const Icon(Icons.download)),
@@ -207,7 +207,7 @@ class _ExtensionListTileWidgetState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TVWrapper(
+                AnymexOnTap(
                   onTap: onTap,
                   child: IconButton(
                     onPressed: onTap,
@@ -217,7 +217,7 @@ class _ExtensionListTileWidgetState
                     ),
                   ),
                 ),
-                TVWrapper(
+                AnymexOnTap(
                   child: IconButton(
                     onPressed: () async {
                       var sourcePreference =

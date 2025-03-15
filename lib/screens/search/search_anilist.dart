@@ -321,7 +321,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildListItem(Media media) {
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: () => _navigateToDetails(media),
       child: Container(
         margin: const EdgeInsets.only(top: 10),
