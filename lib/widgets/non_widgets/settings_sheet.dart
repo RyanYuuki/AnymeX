@@ -137,7 +137,7 @@ class SettingsSheet extends StatelessWidget {
               children: [
                 Text(serviceHandler.profileData.value.name ?? 'Guest'),
                 if (serviceHandler.serviceType.value != ServicesType.extensions)
-                  TVWrapper(
+                  AnymexOnTap(
                     onTap: () {
                       if (serviceHandler.isLoggedIn.value) {
                         serviceHandler.logout();
@@ -158,7 +158,7 @@ class SettingsSheet extends StatelessWidget {
             const Expanded(
               child: SizedBox.shrink(),
             ),
-            TVWrapper(
+            AnymexOnTap(
               child: IconButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -172,7 +172,7 @@ class SettingsSheet extends StatelessWidget {
           const SizedBox(height: 10),
           if (serviceHandler.isLoggedIn.value &&
               serviceHandler.serviceType.value == ServicesType.anilist)
-            TVWrapper(
+            AnymexOnTap(
               child: ListTile(
                 leading: const Icon(Iconsax.user),
                 title: const Text('View Profile'),
@@ -191,7 +191,7 @@ class SettingsSheet extends StatelessWidget {
                 navigate(() => const ExtensionScreen());
               },
             ),
-          TVWrapper(
+          AnymexOnTap(
             child: ListTile(
               leading: const Icon(HugeIcons.strokeRoundedAiSetting),
               title: const Text('Change Service'),
@@ -201,7 +201,7 @@ class SettingsSheet extends StatelessWidget {
               },
             ),
           ),
-          TVWrapper(
+          AnymexOnTap(
             child: ListTile(
               leading: const Icon(Iconsax.document_download),
               title: const Text('Downloads (WIP)'),
@@ -211,7 +211,7 @@ class SettingsSheet extends StatelessWidget {
               },
             ),
           ),
-          TVWrapper(
+          AnymexOnTap(
             child: ListTile(
               leading: const Icon(Iconsax.setting),
               title: const Text('Settings'),
