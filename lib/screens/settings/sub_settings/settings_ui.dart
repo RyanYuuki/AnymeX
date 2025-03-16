@@ -10,6 +10,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -268,13 +269,16 @@ class _CardStyleSelectorState extends State<CardStyleSelector> {
                 child: child,
               );
             },
-            child: MediaCardGate(
-              key: ValueKey(_selectedStyle),
-              cardStyle: _selectedStyle,
-              itemData: widget.sampleData,
-              tag: '',
-              variant: DataVariant.regular,
-              isManga: false,
+            child: SizedBox(
+              height: getCardHeight(_selectedStyle, getPlatform(context)),
+              child: MediaCardGate(
+                key: ValueKey(_selectedStyle),
+                cardStyle: _selectedStyle,
+                itemData: widget.sampleData,
+                tag: '',
+                variant: DataVariant.regular,
+                isManga: false,
+              ),
             ),
           ),
         ),

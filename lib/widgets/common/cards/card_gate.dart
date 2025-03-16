@@ -1,8 +1,8 @@
 import 'package:anymex/models/Carousel/carousel.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 
 double getCardHeight(CardStyle style, bool isDesktop) {
@@ -13,13 +13,15 @@ double getCardHeight(CardStyle style, bool isDesktop) {
       return isDesktop ? 300 : 240;
     case CardStyle.saikou:
       return isDesktop ? 290 : 230;
+    case CardStyle.minimalExotic:
+      return isDesktop ? 260 : 210;
     default:
       return isDesktop ? 230 : 170;
   }
 }
 
 class MediaCardGate extends StatelessWidget {
-  final CarouselData itemData;
+  final dynamic itemData;
   final String tag;
   final DataVariant variant;
   final bool isManga;
@@ -40,39 +42,47 @@ class MediaCardGate extends StatelessWidget {
   }
 
   getCard(context) {
-    final isDesktop =
-        getResponsiveValue(context, mobileValue: false, desktopValue: true);
+    final data = itemData is CarouselData ? itemData : convertData(itemData);
     switch (cardStyle) {
       case CardStyle.saikou:
         return SaikouCard(
-          itemData: itemData,
+          itemData: data,
           tag: tag,
           variant: variant,
           isManga: isManga,
         );
       case CardStyle.exotic:
         return ExoticCard(
-          itemData: itemData,
+          itemData: data,
           tag: tag,
           variant: variant,
           isManga: isManga,
         );
       case CardStyle.modern:
-        return SizedBox(
-          height: getCardHeight(CardStyle.modern, isDesktop),
-          child: ModernCard(
-            itemData: itemData,
-            tag: tag,
-            variant: variant,
-            isManga: isManga,
-          ),
+        return ModernCard(
+          itemData: data,
+          tag: tag,
+          variant: variant,
+          isManga: isManga,
         );
       case CardStyle.blur:
-        return SizedBox(
-          height: getCardHeight(CardStyle.blur, isDesktop),
-          child: BlurCard(
-              itemData: itemData, tag: tag, variant: variant, isManga: isManga),
-        );
+        return BlurCard(
+            itemData: data, tag: tag, variant: variant, isManga: isManga);
+      case CardStyle.minimalExotic:
+        return MinimalExoticCard(
+            itemData: data, tag: tag, variant: variant, isManga: isManga);
     }
+  }
+
+  CarouselData convertData(OfflineMedia data, {bool isManga = false}) {
+    return CarouselData(
+        title: data.name,
+        id: data.id,
+        poster: data.poster,
+        extraData: data.rating,
+        source: (isManga
+                ? data.currentChapter?.number?.toString()
+                : data.currentEpisode?.number) ??
+            '1');
   }
 }

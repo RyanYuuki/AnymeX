@@ -22,6 +22,7 @@ class CustomSearchBar extends StatefulWidget {
   final bool disableIcons;
   final String hintText;
   final EdgeInsets? padding;
+  final bool enableGlow;
 
   const CustomSearchBar({
     super.key,
@@ -38,6 +39,7 @@ class CustomSearchBar extends StatefulWidget {
     this.suffixIconWidget,
     this.padding,
     this.focusNode,
+    this.enableGlow = true,
   });
 
   @override
@@ -88,7 +90,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     return Container(
       padding: widget.padding ??
           const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-      decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
+      decoration: BoxDecoration(
+          boxShadow: widget.enableGlow ? [lightGlowingShadow(context)] : []),
       clipBehavior: Clip.antiAlias,
       child: TextField(
         focusNode: widget.focusNode ?? _focusNode,

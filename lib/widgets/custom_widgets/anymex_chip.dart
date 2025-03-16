@@ -36,7 +36,7 @@ class AnymexChip extends ConsumerWidget {
 }
 
 class AnymexIconChip extends ConsumerWidget {
-  final IconData icon;
+  final Widget icon;
   final bool isSelected;
   final Function(bool e) onSelected;
 
@@ -52,7 +52,7 @@ class AnymexIconChip extends ConsumerWidget {
     return FilterChip(
       selected: isSelected,
       onSelected: onSelected,
-      label: Icon(icon),
+      label: icon,
       labelStyle: TextStyle(
         color: isSelected
             ? Theme.of(context).colorScheme.onPrimaryContainer

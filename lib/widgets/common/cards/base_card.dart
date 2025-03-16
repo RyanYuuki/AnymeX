@@ -5,7 +5,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-enum CardStyle { saikou, exotic, modern, blur }
+enum CardStyle { saikou, exotic, minimalExotic , modern, blur }
 
 abstract class CarouselCard extends StatelessWidget {
   final CarouselData itemData;
@@ -26,12 +26,49 @@ abstract class CarouselCard extends StatelessWidget {
   }
 
   Widget buildCardTitle(bool isDesktop) {
-    return AnymexText(
-      text: itemData.title ?? '?',
-      maxLines: 2,
-      size: isDesktop ? 14 : 12,
-      variant: TextVariant.semiBold,
-      overflow: TextOverflow.ellipsis,
+    return SizedBox(
+      height: 50,
+      child: AnymexText(
+        text: itemData.title ?? '?',
+        maxLines: 2,
+        size: isDesktop ? 14 : 12,
+        variant: TextVariant.semiBold,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget buildCardBadgeV2(
+      BuildContext context, DataVariant variant, bool isManga) {
+    final theme = Theme.of(context);
+
+    return Positioned(
+      top: 6,
+      left: 6,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              getIconForVariant(itemData.extraData ?? '', variant, isManga),
+              size: 16,
+              color: theme.colorScheme.onPrimary,
+            ),
+            const SizedBox(width: 4),
+            AnymexText(
+              text: itemData.extraData ?? '',
+              color: theme.colorScheme.onPrimary,
+              size: 12,
+              variant: TextVariant.bold,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -77,6 +114,7 @@ abstract class CarouselCard extends StatelessWidget {
     switch (variant) {
       case DataVariant.anilist:
       case DataVariant.offline:
+      case DataVariant.library:
         return isManga ? Iconsax.book : Iconsax.play5;
       case DataVariant.relation:
         return extraData == "MANGA" ? Iconsax.book : Iconsax.play5;

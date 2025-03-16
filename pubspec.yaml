@@ -70,6 +70,7 @@ dependencies:
       url: https://github.com/leanflutter/uni_links_desktop.git
       ref: main
   outlined_text: ^1.0.1
+  hardware_button_listener: ^0.0.1
 
 dev_dependencies:
   flutter_test:
