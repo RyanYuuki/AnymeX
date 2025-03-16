@@ -10,9 +10,10 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +29,7 @@ class _CalendarState extends State<Calendar>
     with SingleTickerProviderStateMixin {
   final serviceHandler = Get.find<ServiceHandler>();
   RxList<Media> calendarData = <Media>[].obs;
+  RxList<Media> listData = <Media>[].obs;
   RxList<Media> rawData = <Media>[].obs;
   late TabController _tabController;
   List<DateTime> dateTabs = [];
@@ -38,12 +40,11 @@ class _CalendarState extends State<Calendar>
   @override
   void initState() {
     super.initState();
-    final ids = serviceHandler.animeList.map((e) => e.id).toSet();
+    final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
     fetchCalendarData(calendarData).then((_) {
       setState(() {
         rawData.value = calendarData.map((e) => e).toList();
-        calendarData.value =
-            calendarData.where((e) => ids.contains(e.id)).toList();
+        listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
         isLoading = false;
       });
     });
@@ -122,14 +123,13 @@ class _CalendarState extends State<Calendar>
             tabAlignment: TabAlignment.start,
             tabs: dateTabs.map((date) {
               return Obx(() {
-                List<Media> filteredList =
-                    (includeList ? calendarData : rawData)
-                        .where((media) =>
-                            DateTime.fromMillisecondsSinceEpoch(
-                                    media.nextAiringEpisode!.airingAt * 1000)
-                                .day ==
-                            date.day)
-                        .toList();
+                List<Media> filteredList = (includeList ? listData : rawData)
+                    .where((media) =>
+                        DateTime.fromMillisecondsSinceEpoch(
+                                media.nextAiringEpisode!.airingAt * 1000)
+                            .day ==
+                        date.day)
+                    .toList();
 
                 return Tab(
                   child: AnymexText(
@@ -146,7 +146,7 @@ class _CalendarState extends State<Calendar>
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
-              List<Media> filteredList = (includeList ? calendarData : rawData)
+              List<Media> filteredList = (includeList ? listData : rawData)
                   .where((media) =>
                       DateTime.fromMillisecondsSinceEpoch(
                               media.nextAiringEpisode!.airingAt * 1000)
@@ -155,7 +155,7 @@ class _CalendarState extends State<Calendar>
                   .toList();
 
               return isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: AnymexProgressIndicator())
                   : filteredList.isEmpty
                       ? const Center(child: Text("No Anime Airing on this day"))
                       : GridView.builder(
@@ -212,7 +212,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
         children: [
           Stack(
             children: [
-              TVWrapper(
+              AnymexOnTap(
                 margin: 0,
                 onTap: () {
                   navigate(() => AnimeDetailsPage(
@@ -372,7 +372,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: () {
         navigate(
             () => AnimeDetailsPage(media: widget.data, tag: widget.data.title));

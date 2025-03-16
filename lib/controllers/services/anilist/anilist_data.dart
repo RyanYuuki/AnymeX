@@ -168,7 +168,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   navigate(() => const Calendar());
                 },
                 backgroundImage:
-                    trendingAnimes[3].cover ?? trendingAnimes[3].poster),
+                    trendingAnimes[5].cover ?? trendingAnimes[6].poster),
             const SizedBox(width: 10),
             ImageButton(
                 buttonText: "AI Picks",
@@ -182,7 +182,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                       ));
                 },
                 backgroundImage:
-                    trendingAnimes[5].cover ?? trendingAnimes[3].poster)
+                    trendingAnimes[1].cover ?? trendingAnimes[0].poster)
           ],
         ),
       ),
@@ -243,7 +243,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   void _initFallback() {
-    if (trendingAnimes.value.isEmpty) {
+    if (trendingAnimes.isEmpty) {
       upcomingAnimes.value = fb.upcomingAnimes;
       popularAnimes.value = fb.popularAnimes;
       trendingAnimes.value = fb.trendingAnimes;
@@ -623,7 +623,7 @@ averageScore
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
     final data = await anilistSearch(
         isManga: isManga,
         query: query,
@@ -631,19 +631,20 @@ averageScore
         season: filters?['season'],
         status: filters?['status'],
         format: filters?['format'],
-        genres: filters?['genres']);
+        genres: filters?['genres'],
+        isAdult: args);
     return data;
   }
 
-  static Future<List<Media>> anilistSearch({
-    required bool isManga,
-    String? query,
-    String? sort,
-    String? season,
-    String? status,
-    String? format,
-    List<String>? genres,
-  }) async {
+  static Future<List<Media>> anilistSearch(
+      {required bool isManga,
+      String? query,
+      String? sort,
+      String? season,
+      String? status,
+      String? format,
+      List<String>? genres,
+      required bool isAdult}) async {
     const url = 'https://graphql.anilist.co/';
     final headers = {'Content-Type': 'application/json'};
 
@@ -654,7 +655,7 @@ averageScore
       if (status != null) 'status': status.toUpperCase(),
       if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
       if (genres != null && genres.isNotEmpty) 'genre_in': genres,
-      'isAdult': false,
+      'isAdult': isAdult,
     };
 
     final String commonFields = '''
@@ -766,6 +767,9 @@ averageScore
       cacheController.addCache(media);
       return Media.fromJson(media);
     } else {
+      if(response.body.contains('Too Many')) {
+        snackBar('Chill for a min, you got rate limited.');
+      }
       throw Exception(response.body);
     }
   }

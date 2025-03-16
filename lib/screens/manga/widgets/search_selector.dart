@@ -3,11 +3,11 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_anilist.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void searchTypeSheet(BuildContext context, String searchTerm) {
+void searchTypeSheet(BuildContext context) {
   showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -29,11 +29,11 @@ void searchTypeSheet(BuildContext context, String searchTerm) {
         return Container(
           padding: const EdgeInsets.all(10),
           width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.3,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.multiplyRadius()),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const AnymexText(

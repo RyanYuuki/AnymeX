@@ -299,7 +299,8 @@ enum DataVariant {
   relation,
   anilist,
   extension,
-  offline
+  offline,
+  library
 }
 
 List<CarouselData> convertData(List<dynamic> data,
@@ -325,7 +326,9 @@ List<CarouselData> convertData(List<dynamic> data,
             id: e.id.toString(),
             title: e.title,
             poster: e.poster,
-            extraData: (e as Relation).relationType);
+            source: (e as Relation).type,
+            args: e.type,
+            extraData: (e).relationType);
       case DataVariant.anilist:
         return CarouselData(
             id: e.id.toString(),
@@ -519,4 +522,21 @@ Future<bool> isTv() async {
 
 void navigate(dynamic page) {
   Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
+}
+
+extension SizedBoxExt on num {
+  SizedBox width() {
+    return SizedBox(width: toDouble());
+  }
+
+  SizedBox height() {
+    return SizedBox(height: toDouble());
+  }
+}
+
+String getRandomTag({String? addition}) {
+  if (addition != null) {
+    return '$addition-${DateTime.now().millisecond}';
+  }
+  return DateTime.now().millisecond.toString();
 }

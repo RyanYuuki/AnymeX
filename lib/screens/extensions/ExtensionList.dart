@@ -1,8 +1,9 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/minor_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
 
@@ -88,7 +89,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               child: const Text('Refresh'),
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: AnymexProgressIndicator()),
         ),
       ),
     );

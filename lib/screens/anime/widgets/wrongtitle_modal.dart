@@ -6,6 +6,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class WrongTitleModal extends StatefulWidget {
@@ -76,7 +77,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                 future: searchFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: AnymexProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),
@@ -101,7 +102,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
-                        return TVWrapper(
+                        return AnymexOnTap(
                           onTap: () {
                             widget.onTap(item);
                             Get.back();

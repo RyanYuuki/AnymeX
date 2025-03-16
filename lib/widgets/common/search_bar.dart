@@ -10,6 +10,7 @@ import 'package:iconly/iconly.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final Function(String) onSubmitted;
   final Function(String)? onChanged;
   final VoidCallback? onPrefixIconPressed;
@@ -21,6 +22,7 @@ class CustomSearchBar extends StatefulWidget {
   final bool disableIcons;
   final String hintText;
   final EdgeInsets? padding;
+  final bool enableGlow;
 
   const CustomSearchBar({
     super.key,
@@ -36,6 +38,8 @@ class CustomSearchBar extends StatefulWidget {
     this.suffixWidget,
     this.suffixIconWidget,
     this.padding,
+    this.focusNode,
+    this.enableGlow = true,
   });
 
   @override
@@ -86,10 +90,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     return Container(
       padding: widget.padding ??
           const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-      decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
+      decoration: BoxDecoration(
+          boxShadow: widget.enableGlow ? [lightGlowingShadow(context)] : []),
       clipBehavior: Clip.antiAlias,
       child: TextField(
-        focusNode: _focusNode,
+        focusNode: widget.focusNode ?? _focusNode,
         controller: widget.controller,
         onSubmitted: (value) {
           widget.onSubmitted(value);
@@ -152,7 +157,7 @@ class TappableSearchBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
       decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
       clipBehavior: Clip.antiAlias,
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: onSubmitted,
         scale: 1,
         margin: 0,

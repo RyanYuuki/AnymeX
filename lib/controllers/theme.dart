@@ -2,6 +2,7 @@ import 'package:anymex/constants/contants.dart';
 import 'package:anymex/constants/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -112,6 +113,15 @@ class ThemeProvider extends ChangeNotifier {
     _updateTheme();
   }
 
+  void syncStatusBar() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: isLightMode ? Brightness.dark : Brightness.light,
+        statusBarIconBrightness:
+            isLightMode ? Brightness.dark : Brightness.light));
+  }
+
   void clearCache() {
     final box = Hive.box("themeData");
     box.clear();
@@ -142,6 +152,7 @@ class ThemeProvider extends ChangeNotifier {
           brightness: Brightness.dark,
           dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]),
     );
+    syncStatusBar();
     notifyListeners();
   }
 }

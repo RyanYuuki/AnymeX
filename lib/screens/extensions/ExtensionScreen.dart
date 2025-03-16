@@ -10,8 +10,8 @@ import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_button.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -169,7 +169,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: TVWrapper(
+                      child: AnymexOnTap(
                         onTap: () {
                           Get.back();
                         },
@@ -189,7 +189,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: TVWrapper(
+                      child: AnymexOnTap(
                         onTap: () async {
                           controller.activeAnimeRepo = animeRepoController.text;
                           controller.activeMangaRepo = mangaRepoController.text;
@@ -252,7 +252,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             ),
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
-              TVWrapper(
+              AnymexOnTap(
                 onTap: () {
                   repoSheet();
                 },
@@ -264,7 +264,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                   },
                 ),
               ),
-              TVWrapper(
+              AnymexOnTap(
                 child: IconButton(
                   icon: Icon(Iconsax.language_square, color: theme.primary),
                   onPressed: () {

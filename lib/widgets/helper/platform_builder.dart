@@ -72,6 +72,24 @@ dynamic getResponsiveValue(context,
   }
 }
 
+dynamic getPlatform(context, {bool strictMode = false}) {
+  final currentWidth = MediaQuery.of(context).size.width;
+  final isMobile = Platform.isAndroid || Platform.isIOS;
+  if (strictMode) {
+    if (!isMobile) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    if (currentWidth > maxMobileWidth) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
 int getResponsiveCrossAxisCount(
   BuildContext context, {
   int baseColumns = 2,

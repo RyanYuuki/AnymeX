@@ -9,8 +9,8 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
-import 'package:anymex/controllers/settings/adaptors/ui/ui_adaptor.dart';
+import 'package:anymex/models/player/player_adaptor.dart';
+import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
@@ -19,22 +19,18 @@ import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
-import 'package:anymex/screens/library/anime_library.dart';
-import 'package:anymex/screens/library/history.dart';
-import 'package:anymex/screens/library/manga_library.dart';
+import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/extensions.dart';
-import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:desktop_webview_window/desktop_webview_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -203,6 +199,7 @@ Future<void> initializeHive() async {
   await Hive.openBox('themeData');
   await Hive.openBox('loginData');
   await Hive.openBox('auth');
+  await Hive.openBox('preferences');
   await Hive.openBox<UISettings>("UiSettings");
   await Hive.openBox<PlayerSettings>("PlayerSettings");
 }
@@ -274,39 +271,17 @@ class FilterScreen extends StatefulWidget {
 class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
-  int _selectedLibraryIndex = 1;
-  bool showLibrary = false;
 
   void _onItemTapped(int index) {
     setState(() {
-      showLibrary = false;
       _selectedIndex = index;
     });
   }
 
   void _onMobileItemTapped(int index) {
     setState(() {
-      showLibrary = false;
       _mobileSelectedIndex = index;
     });
-  }
-
-  void _onLibraryTapped(int index) {
-    if (mounted) {
-      setState(() {
-        showLibrary = true;
-        _mobileSelectedIndex = index;
-      });
-    }
-  }
-
-  void _onLibraryTappedDesktop(int index) {
-    if (mounted) {
-      setState(() {
-        showLibrary = true;
-        _selectedLibraryIndex = index;
-      });
-    }
   }
 
   final routes = [
@@ -314,27 +289,15 @@ class _FilterScreenState extends State<FilterScreen> {
     const HomePage(),
     const AnimeHomePage(),
     const MangaHomePage(),
+    const MyLibrary(),
     const ExtensionScreen(),
-    const MyAnimeLibrary(),
   ];
 
   final mobileRoutes = [
     const HomePage(),
     const AnimeHomePage(),
     const MangaHomePage(),
-  ];
-
-  final List<Widget> _libraryRoutes = [
-    const SizedBox.shrink(),
-    const MyAnimeLibrary(),
-    const MyMangaLibrary(),
-    const HistoryPage(),
-  ];
-
-  final List<Widget> _desktopLibraryRoutes = [
-    const MyAnimeLibrary(),
-    const MyMangaLibrary(),
-    const HistoryPage(),
+    const MyLibrary()
   ];
 
   @override
@@ -413,90 +376,22 @@ class _FilterScreenState extends State<FilterScreen> {
                         label: 'Manga',
                       ),
                       NavItem(
+                        unselectedIcon: HugeIcons.strokeRoundedLibrary,
+                        selectedIcon: HugeIcons.strokeRoundedLibrary,
+                        onTap: _onItemTapped,
+                        label: 'Library',
+                      ),
+                      NavItem(
                         unselectedIcon: Icons.extension_outlined,
                         selectedIcon: Icons.extension_rounded,
                         onTap: _onItemTapped,
                         label: "Extensions",
                       ),
-                      NavItem(
-                        unselectedIcon: HugeIcons.strokeRoundedLibrary,
-                        selectedIcon: HugeIcons.strokeRoundedLibrary,
-                        onTap: (val) {
-                          _onLibraryTappedDesktop(0);
-                          setState(() {
-                            _selectedIndex = val;
-                          });
-                        },
-                        label: 'Library',
-                      ),
                     ],
                   ),
-                  if (showLibrary) ...[
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: getResponsiveValueWithTablet(context,
-                          mobileValue: 0.0,
-                          tabletValue: 200.0,
-                          desktopValue: 180.0),
-                      child: ResponsiveNavBar(
-                          fit: true,
-                          isDesktop: true,
-                          currentIndex: _selectedLibraryIndex,
-                          margin: const EdgeInsets.fromLTRB(20, 0, 15, 0),
-                          items: getResponsiveValueWithTablet(
-                            context,
-                            mobileValue: [],
-                            tabletValue: [
-                              NavItem(
-                                unselectedIcon: Iconsax.play,
-                                selectedIcon: Iconsax.play5,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                              NavItem(
-                                unselectedIcon: isSimkl
-                                    ? Iconsax.monitor
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                selectedIcon: isSimkl
-                                    ? Iconsax.monitor5
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                              NavItem(
-                                unselectedIcon: Iconsax.clock,
-                                selectedIcon: Iconsax.clock5,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                            ],
-                            desktopValue: [
-                              NavItem(
-                                unselectedIcon: Iconsax.play,
-                                selectedIcon: Iconsax.play5,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                              NavItem(
-                                unselectedIcon: isSimkl
-                                    ? Iconsax.monitor
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                selectedIcon: isSimkl
-                                    ? Iconsax.monitor5
-                                    : HugeIcons.strokeRoundedBookOpen01,
-                                onTap: _onLibraryTappedDesktop,
-                                label: 'Library',
-                              ),
-                            ],
-                          )),
-                    ),
-                  ],
                 ],
               ))),
-          Expanded(
-              child: showLibrary
-                  ? _desktopLibraryRoutes[_selectedLibraryIndex]
-                  : routes[_selectedIndex]),
+          Expanded(child: routes[_selectedIndex]),
         ],
       ),
     );
@@ -504,15 +399,12 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildAndroidLayout(bool isSimkl) {
     return Scaffold(
-        body: showLibrary
-            ? _libraryRoutes[_mobileSelectedIndex]
-            : mobileRoutes[_mobileSelectedIndex],
+        body: mobileRoutes[_mobileSelectedIndex],
         extendBody: true,
         bottomNavigationBar: ResponsiveNavBar(
           isDesktop: false,
           fit: true,
           currentIndex: _mobileSelectedIndex,
-          isShowingLibrary: showLibrary,
           margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
           items: [
             NavItem(
@@ -536,42 +428,8 @@ class _FilterScreenState extends State<FilterScreen> {
             NavItem(
               unselectedIcon: HugeIcons.strokeRoundedLibrary,
               selectedIcon: HugeIcons.strokeRoundedLibrary,
-              onTap: (val) {
-                _onLibraryTapped(1);
-              },
+              onTap: _onMobileItemTapped,
               label: 'Library',
-            ),
-          ],
-          libraryItems: [
-            NavItem(
-              unselectedIcon: IconlyBold.arrow_left,
-              selectedIcon: Iconsax.arrow_left,
-              onTap: (val) => setState(() {
-                showLibrary = false;
-                _mobileSelectedIndex = 0;
-              }),
-              label: 'Back',
-            ),
-            NavItem(
-              unselectedIcon: Iconsax.play,
-              selectedIcon: Iconsax.play5,
-              onTap: _onLibraryTapped,
-              label: 'Anime',
-            ),
-            NavItem(
-              unselectedIcon:
-                  isSimkl ? Iconsax.monitor : HugeIcons.strokeRoundedBookOpen01,
-              selectedIcon: isSimkl
-                  ? Iconsax.monitor5
-                  : HugeIcons.strokeRoundedBookOpen01,
-              onTap: _onLibraryTapped,
-              label: 'Manga',
-            ),
-            NavItem(
-              unselectedIcon: Iconsax.clock,
-              selectedIcon: Iconsax.clock5,
-              onTap: _onLibraryTapped,
-              label: 'History',
             ),
           ],
         ));

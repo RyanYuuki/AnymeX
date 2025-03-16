@@ -14,9 +14,10 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -75,7 +76,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             child: Obx(() {
               if (streamList.isEmpty) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: AnymexProgressIndicator(),
                 );
               }
 
@@ -92,7 +93,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   ),
                   const SizedBox(height: 10),
                   ...streamList.value.map((e) {
-                    return TVWrapper(
+                    return AnymexOnTap(
                       onTap: () {
                         widget.onEpisodeSelected(
                             e, streamList, chosenEpisode.value);
@@ -196,7 +197,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   final isSelected =
                       widget.currentEpisode.number == episode.number;
                   final watchedEpisode = episode.number.toInt() <= userProgress;
-                  return TVWrapper(
+                  return AnymexOnTap(
                     onTap: () {
                       if (isSelected) {
                         fetchServers(episode.link!);

@@ -10,12 +10,11 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -48,7 +47,7 @@ class _BigCarouselState extends State<BigCarousel> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: Column(
         children: [
-          TvWrapperAdv(
+          AnymexOnTapAdv(
             onKeyEvent: (node, event) {
               if (event is KeyDownEvent) {
                 if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {

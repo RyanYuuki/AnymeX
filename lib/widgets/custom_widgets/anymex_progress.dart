@@ -97,8 +97,8 @@ abstract class ProgressIndicator extends StatefulWidget {
   }
 }
 
-class _CircularProgressIndicatorPainter extends CustomPainter {
-  _CircularProgressIndicatorPainter({
+class _AnymexProgressIndicatorPainter extends CustomPainter {
+  _AnymexProgressIndicatorPainter({
     this.trackColor,
     required this.valueColor,
     required this.value,
@@ -208,7 +208,7 @@ class _CircularProgressIndicatorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CircularProgressIndicatorPainter oldPainter) {
+  bool shouldRepaint(_AnymexProgressIndicatorPainter oldPainter) {
     return oldPainter.trackColor != trackColor ||
         oldPainter.valueColor != valueColor ||
         oldPainter.value != value ||
@@ -224,11 +224,11 @@ class _CircularProgressIndicatorPainter extends CustomPainter {
   }
 }
 
-class CircularProgressIndicator extends ProgressIndicator {
+class AnymexProgressIndicator extends ProgressIndicator {
   /// Creates a circular progress indicator.
   ///
   /// {@macro flutter.material.ProgressIndicator.ProgressIndicator}
-  const CircularProgressIndicator({
+  const AnymexProgressIndicator({
     super.key,
     super.value,
     super.backgroundColor,
@@ -244,8 +244,6 @@ class CircularProgressIndicator extends ProgressIndicator {
     this.padding,
   });
 
-  @override
-  Color? get backgroundColor => super.backgroundColor;
 
   /// The width of the line used to draw the circle.
   final double? strokeWidth;
@@ -285,14 +283,14 @@ class CircularProgressIndicator extends ProgressIndicator {
   static const double strokeAlignOutside = 1.0;
 
   @override
-  State<CircularProgressIndicator> createState() =>
-      _CircularProgressIndicatorState();
+  State<AnymexProgressIndicator> createState() =>
+      _AnymexProgressIndicatorState();
 }
 
 const int _kIndeterminateLinearDuration = 1800;
 const int _kIndeterminateCircularDuration = 1333 * 2222;
 
-class _CircularProgressIndicatorState extends State<CircularProgressIndicator>
+class _AnymexProgressIndicatorState extends State<AnymexProgressIndicator>
     with SingleTickerProviderStateMixin {
   static const int _pathCount = _kIndeterminateCircularDuration ~/ 1333;
   static const int _rotationCount = _kIndeterminateCircularDuration ~/ 2222;
@@ -324,7 +322,7 @@ class _CircularProgressIndicatorState extends State<CircularProgressIndicator>
   }
 
   @override
-  void didUpdateWidget(CircularProgressIndicator oldWidget) {
+  void didUpdateWidget(AnymexProgressIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value == null && !_controller.isAnimating) {
       _controller.repeat();
@@ -349,31 +347,24 @@ class _CircularProgressIndicatorState extends State<CircularProgressIndicator>
     final dynamic indicatorTheme = ProgressIndicatorTheme.of(context);
     const bool year2023 = false;
     final CustomProgressIndicatorThemeData defaults =
-        _CircularProgressIndicatorDefaultsM3(context,
+        _AnymexProgressIndicatorDefaultsM3(context,
             indeterminate: widget.value == null);
     final Color? trackColor = widget.backgroundColor ??
         indicatorTheme.circularTrackColor ??
         defaults.circularTrackColor;
-    final double strokeWidth = widget.strokeWidth ??
-        indicatorTheme.strokeWidth ??
-        defaults.strokeWidth!;
-    final double strokeAlign = widget.strokeAlign ??
-        indicatorTheme.strokeAlign ??
-        defaults.strokeAlign!;
-    final StrokeCap? strokeCap = widget.strokeCap ?? indicatorTheme.strokeCap;
-    final BoxConstraints constraints = widget.constraints ??
-        indicatorTheme.constraints ??
-        defaults.constraints!;
-    final double? trackGap =
-        widget.trackGap ?? indicatorTheme.trackGap ?? defaults.trackGap;
-    final EdgeInsetsGeometry? effectivePadding = widget.padding ??
-        indicatorTheme.circularTrackPadding ??
-        defaults.circularTrackPadding;
+    final double strokeWidth = widget.strokeWidth ?? defaults.strokeWidth!;
+    final double strokeAlign = widget.strokeAlign ?? defaults.strokeAlign!;
+    final StrokeCap? strokeCap = widget.strokeCap;
+    final BoxConstraints constraints =
+        widget.constraints ?? defaults.constraints!;
+    final double? trackGap = widget.trackGap ?? defaults.trackGap;
+    final EdgeInsetsGeometry? effectivePadding =
+        widget.padding ?? defaults.circularTrackPadding;
 
     Widget result = ConstrainedBox(
       constraints: constraints,
       child: CustomPaint(
-        painter: _CircularProgressIndicatorPainter(
+        painter: _AnymexProgressIndicatorPainter(
           trackColor: trackColor,
           valueColor:
               widget._getValueColor(context, defaultColor: defaults.color),
@@ -424,7 +415,7 @@ class _CircularProgressIndicatorState extends State<CircularProgressIndicator>
 }
 
 class _RefreshProgressIndicatorPainter
-    extends _CircularProgressIndicatorPainter {
+    extends _AnymexProgressIndicatorPainter {
   _RefreshProgressIndicatorPainter({
     required super.valueColor,
     required super.value,
@@ -479,9 +470,9 @@ class _RefreshProgressIndicatorPainter
   }
 }
 
-class _CircularProgressIndicatorDefaultsM3Year2023
+class _AnymexProgressIndicatorDefaultsM3Year2023
     extends CustomProgressIndicatorThemeData {
-  _CircularProgressIndicatorDefaultsM3Year2023(this.context,
+  _AnymexProgressIndicatorDefaultsM3Year2023(this.context,
       {required this.indeterminate});
 
   final BuildContext context;
@@ -495,7 +486,7 @@ class _CircularProgressIndicatorDefaultsM3Year2023
   double get strokeWidth => 4.0;
 
   @override
-  double? get strokeAlign => CircularProgressIndicator.strokeAlignCenter;
+  double? get strokeAlign => AnymexProgressIndicator.strokeAlignCenter;
 
   @override
   BoxConstraints get constraints =>
@@ -509,9 +500,9 @@ class _CircularProgressIndicatorDefaultsM3Year2023
 //   dev/tools/gen_defaults/bin/gen_defaults.dart.
 
 // dart format off
-class _CircularProgressIndicatorDefaultsM3
+class _AnymexProgressIndicatorDefaultsM3
     extends CustomProgressIndicatorThemeData {
-  _CircularProgressIndicatorDefaultsM3(this.context,
+  _AnymexProgressIndicatorDefaultsM3(this.context,
       {required this.indeterminate});
 
   final BuildContext context;
@@ -529,7 +520,7 @@ class _CircularProgressIndicatorDefaultsM3
   double get strokeWidth => 4.0;
 
   @override
-  double? get strokeAlign => CircularProgressIndicator.strokeAlignInside;
+  double? get strokeAlign => AnymexProgressIndicator.strokeAlignInside;
 
   @override
   BoxConstraints get constraints => const BoxConstraints(
@@ -598,7 +589,7 @@ class CustomProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator(
+    return AnymexProgressIndicator(
       value: value,
       backgroundColor: backgroundColor,
       color: color,
@@ -653,7 +644,7 @@ class CustomProgressIndicatorThemeData with Diagnosticable {
   /// {@macro flutter.material.LinearProgressIndicator.minHeight}
   final double? linearMinHeight;
 
-  /// {@macro flutter.material.CircularProgressIndicator.trackColor}
+  /// {@macro flutter.material.AnymexProgressIndicator.trackColor}
   final Color? circularTrackColor;
 
   /// {@macro flutter.material.RefreshProgressIndicator.backgroundColor}
@@ -674,37 +665,37 @@ class CustomProgressIndicatorThemeData with Diagnosticable {
   /// is false, then no stop indicator will be drawn.
   final double? stopIndicatorRadius;
 
-  /// Overrides the stroke width of the [CircularProgressIndicator].
+  /// Overrides the stroke width of the [AnymexProgressIndicator].
   final double? strokeWidth;
 
-  /// Overrides the stroke align of the [CircularProgressIndicator].
+  /// Overrides the stroke align of the [AnymexProgressIndicator].
   final double? strokeAlign;
 
-  /// Overrides the stroke cap of the [CircularProgressIndicator].
+  /// Overrides the stroke cap of the [AnymexProgressIndicator].
   final StrokeCap? strokeCap;
 
-  /// Overrides the constraints of the [CircularProgressIndicator].
+  /// Overrides the constraints of the [AnymexProgressIndicator].
   final BoxConstraints? constraints;
 
   /// Overrides the active indicator and the background track.
   ///
-  /// If [CircularProgressIndicator.year2023] is false or [ThemeData.useMaterial3]
+  /// If [AnymexProgressIndicator.year2023] is false or [ThemeData.useMaterial3]
   /// is false, then no track gap will be drawn.
   ///
   /// If [LinearProgressIndicator.year2023] is false or [ThemeData.useMaterial3]
   /// is false, then no track gap will be drawn.
   final double? trackGap;
 
-  /// Overrides the padding of the [CircularProgressIndicator].
+  /// Overrides the padding of the [AnymexProgressIndicator].
   final EdgeInsetsGeometry? circularTrackPadding;
 
-  /// Overrides the [CircularProgressIndicator.year2023] and
+  /// Overrides the [AnymexProgressIndicator.year2023] and
   /// [LinearProgressIndicator.year2023] properties.
   ///
-  /// When true, the [CircularProgressIndicator] and [LinearProgressIndicator]
+  /// When true, the [AnymexProgressIndicator] and [LinearProgressIndicator]
   /// will use the 2023 Material Design 3 appearance. Defaults to true.
   ///
-  /// If this is set to false, the [CircularProgressIndicator] and
+  /// If this is set to false, the [AnymexProgressIndicator] and
   /// [LinearProgressIndicator] will use the latest Material Design 3 appearance,
   /// which was introduced in December 2023.
   ///

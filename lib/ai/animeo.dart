@@ -60,7 +60,7 @@ Future<List<Media>> getAiRecommendations(bool isManga, int page,
 Future<void> syncUserList(String username, bool isAL) async {
   final url = !isAL
       ? 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=MyAnimeList&externalListProfileName=$username'
-      : 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=Anilist&externalListProfileName=$username';
+      : 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=AniList&externalListProfileName=$username';
   final resp = await http.get(Uri.parse(url));
 
   if (resp.statusCode == 200) {

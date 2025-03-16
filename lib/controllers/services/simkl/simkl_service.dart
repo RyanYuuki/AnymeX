@@ -17,6 +17,7 @@ import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -39,7 +40,7 @@ class SimklService extends GetxController
     final isSeries = id.split('*').last == "SERIES";
     log(isSeries.toString());
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client-id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
       cacheController.addCache(data);
@@ -51,8 +52,9 @@ class SimklService extends GetxController
   }
 
   Future<void> fetchMovies() async {
+    final url = "https://api.simkl.com/movies/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20";
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/movies/trending?extended=overview&client-id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20"));
+        url));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
       final list = data.map((e) {
@@ -60,13 +62,15 @@ class SimklService extends GetxController
       }).toList();
       trendingMovies.value = list;
     } else {
+      log(url);
+      log("Error Ocurred: ${resp.body}");
       throw Exception('Failed to fetch trending movies: ${resp.statusCode}');
     }
   }
 
   Future<void> fetchSeries() async {
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/tv/trending?extended=overview&client-id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/tv/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
 
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
@@ -109,7 +113,7 @@ class SimklService extends GetxController
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
     final movieData = await searchMovies(query);
     final seriesData = await searchSeries(query);
     return [...movieData, ...seriesData];
@@ -184,7 +188,7 @@ class SimklService extends GetxController
   RxList<Widget> animeWidgets(BuildContext context) => [
         if (trendingMovies.isEmpty)
           const Center(
-            child: CircularProgressIndicator(),
+            child: AnymexProgressIndicator(),
           )
         else ...[
           // TappableSearchBar(
@@ -216,7 +220,7 @@ class SimklService extends GetxController
   RxList<Widget> mangaWidgets(BuildContext context) => [
         if (trendingSeries.isEmpty)
           const Center(
-            child: CircularProgressIndicator(),
+            child: AnymexProgressIndicator(),
           )
         else ...[
           // CustomSearchBar(

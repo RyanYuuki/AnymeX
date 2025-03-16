@@ -13,7 +13,6 @@ class ResponsiveNavBar extends StatefulWidget {
   final bool isDesktop;
   final int currentIndex;
   final List<NavItem> items;
-  final List<NavItem>? libraryItems;
   final bool fit;
   final double? height;
   final EdgeInsets? margin;
@@ -23,14 +22,12 @@ class ResponsiveNavBar extends StatefulWidget {
   final Color? backgroundColor;
   final double? blurIntensity;
   final EdgeInsets? itemPadding;
-  final bool isShowingLibrary;
 
   const ResponsiveNavBar({
     super.key,
     required this.isDesktop,
     required this.currentIndex,
     required this.items,
-    this.libraryItems,
     this.fit = false,
     this.height,
     this.margin,
@@ -40,7 +37,6 @@ class ResponsiveNavBar extends StatefulWidget {
     this.backgroundColor,
     this.blurIntensity,
     this.itemPadding,
-    this.isShowingLibrary = false,
   });
 
   @override
@@ -115,38 +111,32 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                   );
                 }
               }),
-              widget.isShowingLibrary
-                  ? _buildFlex(
-                      widget.libraryItems ?? [],
-                      widget.isDesktop,
-                      const Key('libraryItems'),
-                    )
-                  : getResponsiveValue(context,
-                      strictMode: true,
-                      mobileValue: getResponsiveValue(context,
-                          mobileValue: _buildFlex(
-                            widget.items,
-                            widget.isDesktop,
-                            const Key('normalItems'),
-                          ),
-                          desktopValue: settings.isTV.value
-                              ? _buildFlex(
-                                  widget.items,
-                                  widget.isDesktop,
-                                  const Key('normalItems'),
-                                )
-                              : SingleChildScrollView(
-                                  child: _buildFlex(
-                                    widget.items,
-                                    widget.isDesktop,
-                                    const Key('normalItems'),
-                                  ),
-                                )),
-                      desktopValue: _buildFlex(
+              getResponsiveValue(context,
+                  strictMode: true,
+                  mobileValue: getResponsiveValue(context,
+                      mobileValue: _buildFlex(
                         widget.items,
                         widget.isDesktop,
                         const Key('normalItems'),
-                      )),
+                      ),
+                      desktopValue: settings.isTV.value
+                          ? _buildFlex(
+                              widget.items,
+                              widget.isDesktop,
+                              const Key('normalItems'),
+                            )
+                          : SingleChildScrollView(
+                              child: _buildFlex(
+                                widget.items,
+                                widget.isDesktop,
+                                const Key('normalItems'),
+                              ),
+                            )),
+                  desktopValue: _buildFlex(
+                    widget.items,
+                    widget.isDesktop,
+                    const Key('normalItems'),
+                  )),
             ],
           ),
         ),
@@ -293,7 +283,7 @@ class _NavBarItemState extends State<NavBarItem>
                     );
                   },
                 ),
-                TVWrapper(
+                AnymexOnTap(
                   margin: 0,
                   scale: 1,
                   onTap: widget.onTap,

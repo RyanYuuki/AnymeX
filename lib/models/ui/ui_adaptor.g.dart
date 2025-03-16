@@ -17,28 +17,42 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UISettings(
-      glowMultiplier: fields[0] as double,
-      radiusMultiplier: fields[1] as double,
-      saikouLayout: fields[2] as bool,
-      tabBarHeight: fields[3] as double,
-      tabBarWidth: fields[4] as double,
-      tabBarRoundness: fields[5] as double,
-      compactCards: fields[6] as bool,
-      cardRoundness: fields[7] as double,
-      blurMultipler: fields[8] as double,
-      animationDuration: fields[9] as int,
-      glowDensity: fields[11] as double,
-      translucentTabBar: fields[10] as bool,
-      homePageCards: (fields[12] as Map).cast<String, bool>(),
-      enableAnimation: fields[13] as bool,
-      disableGradient: fields[14] as bool,
-    );
+        glowMultiplier: fields[0] as double,
+        radiusMultiplier: fields[1] as double,
+        saikouLayout: fields[2] as bool,
+        tabBarHeight: fields[3] as double,
+        tabBarWidth: fields[4] as double,
+        tabBarRoundness: fields[5] as double,
+        compactCards: fields[6] as bool,
+        cardRoundness: fields[7] as double,
+        blurMultipler: fields[8] as double,
+        animationDuration: fields[9] as int,
+        glowDensity: fields[11] as double,
+        translucentTabBar: fields[10] as bool,
+        homePageCards: (fields[12] as Map).cast<String, bool>(),
+        enableAnimation: fields[13] as bool,
+        disableGradient: fields[14] as bool,
+        homePageCardsMal: fields[15] != null
+            ? (fields[15] as Map).cast<String, bool>()
+            : {
+                "Continue Watching": true,
+                "Continue Reading": true,
+                "Completed TV": false,
+                "Completed Manga": false,
+                "Paused Animes": false,
+                "Paused Manga": false,
+                "Dropped Animes": false,
+                "Dropped Manga": false,
+                "Planning Animes": false,
+                "Planning Manga": false,
+              },
+        cardStyle: fields[16] ?? 2);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -68,7 +82,11 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(13)
       ..write(obj.enableAnimation)
       ..writeByte(14)
-      ..write(obj.disableGradient);
+      ..write(obj.disableGradient)
+      ..writeByte(15)
+      ..write(obj.homePageCardsMal)
+      ..writeByte(16)
+      ..write(obj.cardStyle);
   }
 
   @override

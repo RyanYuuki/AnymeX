@@ -7,7 +7,7 @@ import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class MangaStats extends StatelessWidget {
@@ -36,7 +36,6 @@ class MangaStats extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             children: [
-              StateItem(label: "Japanese", value: data.romajiTitle),
               StateItem(label: "Type", value: data.type),
               StateItem(label: "Rating", value: '${data.rating}/10'),
               StateItem(label: "Popularity", value: data.popularity),
@@ -46,6 +45,22 @@ class MangaStats extends StatelessWidget {
                   label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
             ],
+          ),
+        ),
+        const SizedBox(height: 30),
+        const AnymexText(
+          text: "Romaji Title",
+          variant: TextVariant.bold,
+          size: 17,
+        ),
+        10.height(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: AnymexText(
+            text: data.romajiTitle,
+            variant: TextVariant.semiBold,
+            size: 14,
+            color: Colors.grey[300],
           ),
         ),
         const SizedBox(height: 30),
@@ -92,7 +107,9 @@ class MangaStats extends StatelessWidget {
                   navigate(() => SearchPage(
                         searchTerm: '',
                         isManga: true,
-                        initialFilters: {'genres': e},
+                        initialFilters: {
+                          'genres': [e]
+                        },
                       ));
                 },
                 backgroundImage: covers[index].cover!);

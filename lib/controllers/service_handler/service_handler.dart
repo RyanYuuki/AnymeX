@@ -33,8 +33,6 @@ class ServiceHandler extends GetxController {
         return simklService;
       case ServicesType.extensions:
         return extensionService;
-      default:
-        return anilistService;
     }
   }
 
@@ -115,8 +113,10 @@ class ServiceHandler extends GetxController {
   }
 
   Future<List<Media>?> search(String query,
-          {bool isManga = false, Map<String, dynamic>? filters}) async =>
-      service.search(query, isManga: isManga, filters: filters);
+          {bool isManga = false,
+          Map<String, dynamic>? filters,
+          dynamic args}) async =>
+      service.search(query, isManga: isManga, filters: filters, args: args);
 
   void changeService(ServicesType type) {
     final box = Hive.box('themeData');

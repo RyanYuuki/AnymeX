@@ -1,4 +1,3 @@
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/source_preference.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -8,8 +7,8 @@ import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:isar/isar.dart';
 
@@ -141,7 +140,7 @@ class _ExtensionListTileWidgetState
           ? const SizedBox(
               height: 20,
               width: 20,
-              child: CircularProgressIndicator(strokeWidth: 2.0),
+              child: AnymexProgressIndicator(strokeWidth: 2.0),
             )
           : _BuildButtons(sourceNotEmpty, updateAvailable),
     );
@@ -198,7 +197,7 @@ class _ExtensionListTileWidgetState
     }
 
     return !sourceNotEmpty
-        ? TVWrapper(
+        ? AnymexOnTap(
             child: IconButton(
                 onPressed: () => _handleSourceAction(),
                 icon: const Icon(Icons.download)),
@@ -208,7 +207,7 @@ class _ExtensionListTileWidgetState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TVWrapper(
+                AnymexOnTap(
                   onTap: onTap,
                   child: IconButton(
                     onPressed: onTap,
@@ -218,7 +217,7 @@ class _ExtensionListTileWidgetState
                     ),
                   ),
                 ),
-                TVWrapper(
+                AnymexOnTap(
                   child: IconButton(
                     onPressed: () async {
                       var sourcePreference =

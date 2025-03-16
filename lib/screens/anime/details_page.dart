@@ -26,13 +26,14 @@ import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/minor_widgets/custom_button.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -167,7 +168,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _mapToService() async {
     final mappedData =
         await mapMedia(formatTitles(anilistData!) ?? [], searchedTitle);
-    await _fetchSourceDetails(mappedData);
+    if (mappedData != null) {
+      await _fetchSourceDetails(mappedData);
+    }
   }
 
   void _processExtensionData(Media tempData) async {
@@ -449,7 +452,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           ] else ...[
             const SizedBox(
               height: 400,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: AnymexProgressIndicator()),
             )
           ],
           ExpandablePageView(
@@ -512,12 +515,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           title: "Relations",
           variant: DataVariant.relation,
         ),
+        CharactersCarousel(characters: anilistData!.characters ?? []),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Animes",
           variant: DataVariant.recommendation,
         ),
-        CharactersCarousel(characters: anilistData!.characters ?? []),
       ],
     );
   }

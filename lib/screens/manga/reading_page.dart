@@ -1,21 +1,26 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 
 enum ReadingMode {
   webtoon,
@@ -42,7 +47,7 @@ class ReadingPage extends StatefulWidget {
 class _ReadingPageState extends State<ReadingPage> {
   final sourceController = Get.find<SourceController>();
   ScrollController scrollController = ScrollController();
-  final PageController pageController = PageController();
+  PageController pageController = PageController();
   final isMenuToggled = true.obs;
 
   late Rx<Chapter> currentChapter;
@@ -79,13 +84,18 @@ class _ReadingPageState extends State<ReadingPage> {
   final _isLoadingNextChapter = false.obs;
   final scrolledToNext = false.obs;
 
+  // VOl UP and Down Actions
+  // final _hardwareButtonListener = HardwareButtonListener();
+  // late StreamSubscription<HardwareButton> _buttonSubscription;
+
   @override
   void initState() {
     super.initState();
-    currentChapter = Rx(widget.currentChapter);
-    anilistData = Rx(widget.anilistData);
-    chapterList = RxList(widget.chapterList);
-    scrollController.addListener(_updateScrollProgress);
+    // _initHwButtonsListener();
+    _initScrollController();
+    _initPageController();
+    _initWidgetVars();
+    _getPreferences();
     ever(currentChapter, (_) => fetchImages());
     ever(isMenuToggled, (_) {
       SystemChrome.setEnabledSystemUIMode(isMenuToggled.value
@@ -94,7 +104,53 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     fetchImages();
     _focusNode.requestFocus();
-    updateAnilist(false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateAnilist(false);
+    });
+  }
+
+  // void _initHwButtonsListener() {
+  //   _buttonSubscription = _hardwareButtonListener.listen((event) {
+  //     if (event.buttonName == 'VOLUME_UP') {
+  //       navigatePageHeight(true);
+  //     }
+  //     if (event.buttonName == 'VOLUME_DOWN') {
+  //       navigatePageHeight(false);
+  //     }
+  //   });
+  // }
+
+  void _initWidgetVars() {
+    currentChapter = Rx(widget.currentChapter);
+    anilistData = Rx(widget.anilistData);
+    chapterList = RxList(widget.chapterList);
+  }
+
+  void _initScrollController({double offset = 0}) {
+    scrollController = ScrollController(initialScrollOffset: offset);
+    scrollController.addListener(_updateScrollProgress);
+  }
+
+  void _initPageController({int page = 0}) {
+    pageController = PageController(initialPage: page);
+    pageController.addListener(() {});
+  }
+
+  void _getPreferences() {
+    activeMode.value = ReadingMode.values[
+        settingsController.preferences.get('reading_mode', defaultValue: 0)];
+    pageWidthMultiplier.value =
+        settingsController.preferences.get('image_width') ?? 1;
+    scrollSpeedMultiplier.value =
+        settingsController.preferences.get('scroll_speed') ?? 1;
+  }
+
+  void _savePreferences() {
+    settingsController.preferences.put('reading_mode', activeMode.value.index);
+    settingsController.preferences
+        .put('image_width', pageWidthMultiplier.value);
+    settingsController.preferences
+        .put('scroll_speed', scrollSpeedMultiplier.value);
   }
 
   void _loadNextChapter() {
@@ -103,6 +159,7 @@ class _ReadingPageState extends State<ReadingPage> {
       _isLoadingNextChapter.value = true;
       navigateToChapter(false).then((_) {
         _isLoadingNextChapter.value = false;
+        navigateToPage(1);
       });
     }
   }
@@ -149,6 +206,9 @@ class _ReadingPageState extends State<ReadingPage> {
     });
     scrollController.removeListener(_updateScrollProgress);
     scrollController.dispose();
+    pageController.dispose();
+    // _buttonSubscription.cancel();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
@@ -156,17 +216,9 @@ class _ReadingPageState extends State<ReadingPage> {
     currentPageIndex.value = chapter.pageNumber ?? 1;
 
     if (activeMode.value != ReadingMode.webtoon) {
-      pageController.animateToPage(
-        chapter.pageNumber ?? 0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      _initPageController(page: chapter.pageNumber ?? 0);
     } else {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        scrollController.jumpTo(
-          chapter.currentOffset ?? 0,
-        );
-      });
+      _initScrollController(offset: chapter.currentOffset ?? 0);
     }
 
     _updateNavigationState();
@@ -176,16 +228,52 @@ class _ReadingPageState extends State<ReadingPage> {
     currentPageIndex.value = pageIndex;
 
     if (activeMode.value != ReadingMode.webtoon) {
-      pageController.animateToPage(
-        pageIndex,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (pageController.hasClients) {
+        pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     } else {
       if (scrollController.hasClients) {
         final maxScrollExtent = scrollController.position.maxScrollExtent;
         final targetScroll =
             (pageIndex / (mangaPages.length - 1)) * maxScrollExtent;
+
+        scrollController.animateTo(
+          targetScroll,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+
+    _updateNavigationState();
+  }
+
+  void navigatePageHeight(bool isLeft) {
+    final pageIndex =
+        (isLeft ? currentPageIndex.value - 1 : currentPageIndex.value + 1)
+            .clamp(1, mangaPages.length - 1);
+    if (activeMode.value != ReadingMode.webtoon) {
+      if (pageController.hasClients) {
+        pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    } else {
+      if (scrollController.hasClients) {
+        final currentScroll = scrollController.position.pixels;
+        final screenWidth = MediaQuery.of(context).size.width;
+        final scrollAmount = screenWidth * 0.8;
+        final maxScroll = scrollController.position.maxScrollExtent;
+        final targetScroll = (isLeft
+                ? currentScroll - scrollAmount
+                : currentScroll + scrollAmount)
+            .clamp(0.0, maxScroll);
 
         scrollController.animateTo(
           targetScroll,
@@ -326,15 +414,13 @@ class _ReadingPageState extends State<ReadingPage> {
       currentChapter.value.maxOffset = maxScrollExtent;
 
       if (scrollController.position.pixels.floor() ==
-          (scrollController.position.maxScrollExtent + 120).floor()) {
+          (scrollController.position.maxScrollExtent + 70).floor()) {
         _loadNextChapter();
       }
 
-      _debounce = Timer(const Duration(milliseconds: 300), () {
-        if (currentPage != currentPageIndex.value) {
-          currentPageIndex.value = currentPage;
-        }
-      });
+      if (currentPage != currentPageIndex.value) {
+        currentPageIndex.value = currentPage;
+      }
     }
   }
 
@@ -357,6 +443,10 @@ class _ReadingPageState extends State<ReadingPage> {
     final currentChapterIndex = chapterList.indexOf(currentChapter.value);
     canGoBackward.value = currentChapterIndex > 0;
     canGoForward.value = currentChapterIndex < chapterList.length - 1;
+    if (chapterList.length == 1) {
+      canGoBackward.value = false;
+      canGoForward.value = false;
+    }
   }
 
   @override
@@ -373,7 +463,7 @@ class _ReadingPageState extends State<ReadingPage> {
                 child: SizedBox(
                   width: 60,
                   height: 60,
-                  child: CircularProgressIndicator(),
+                  child: AnymexProgressIndicator(),
                 ),
               );
             }
@@ -408,6 +498,57 @@ class _ReadingPageState extends State<ReadingPage> {
                           child: _buildWebtoonMode())),
                 _buildTopControls(context),
                 _bottomControls(context),
+                if (!isMenuToggled.value)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.5),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.5, 1.0],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          AnymexText(
+                            text:
+                                "Page $currentPageIndex / ${mangaPages.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          10.width(),
+                          AnymexText(
+                            text: "Ch. ${currentChapter.value.number}/",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          AnymexText(
+                            text: "Ch. ${chapterList.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          const Spacer(),
+                          AnymexText(
+                            text: DateFormat("hh:mm a").format(DateTime.now()),
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           }),
@@ -418,7 +559,7 @@ class _ReadingPageState extends State<ReadingPage> {
 
   PageView _buildPageViewMode() {
     return PageView.builder(
-      controller: PageController(initialPage: currentPageIndex.value),
+      controller: pageController,
       scrollDirection: Axis.horizontal,
       reverse: activeMode.value == ReadingMode.rtl,
       onPageChanged: (index) {
@@ -444,7 +585,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       mangaPages.length),
                   width: double.infinity,
                   child: Center(
-                    child: CircularProgressIndicator(
+                    child: AnymexProgressIndicator(
                       value: progress.progress,
                     ),
                   ))),
@@ -483,17 +624,12 @@ class _ReadingPageState extends State<ReadingPage> {
                               mangaPages.length),
                           width: double.infinity,
                           child: Center(
-                            child: CircularProgressIndicator(
+                            child: AnymexProgressIndicator(
                               value: progress.progress,
                             ),
                           ))),
             );
           }),
-          const SizedBox(height: 10),
-          const AnymexText(
-            text: "Scroll To Next Chapter!",
-            variant: TextVariant.semiBold,
-          )
         ],
       ),
     );
@@ -649,9 +785,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     value: currentPageIndex.value.toDouble(),
                     label: currentPageIndex.value.toString(),
                     onChanged: (value) {
-                      final pageIndex = value.toInt();
                       navigateToPage(value.toInt());
-                      currentPageIndex.value = pageIndex;
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                     inactiveColor: Theme.of(context)
@@ -668,8 +802,9 @@ class _ReadingPageState extends State<ReadingPage> {
                         Theme.of(context).colorScheme.surface.withOpacity(0.80),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
-                  icon: const Icon(Icons.skip_next_rounded,
-                      size: 35, color: Colors.white),
+                  icon: Icon(Icons.skip_next_rounded,
+                      color: canGoForward.value ? Colors.white : Colors.grey,
+                      size: 35),
                   onPressed: () async {
                     await navigateToChapter(false);
                     navigateToPage(1);
@@ -710,11 +845,12 @@ class _ReadingPageState extends State<ReadingPage> {
                   ),
                 ),
                 Obx(() {
-                  return ListTile(
-                    title: const Text('Layout'),
-                    subtitle: Text(
-                      'Currently: ${activeMode.value.name.toUpperCase()}',
-                    ),
+                  return CustomTile(
+                    title: 'Layout',
+                    description:
+                        'Currently: ${activeMode.value.name.toUpperCase()}',
+                    icon: Iconsax.card,
+                    postFix: 0.height(),
                   );
                 }),
                 Obx(() {
@@ -727,7 +863,12 @@ class _ReadingPageState extends State<ReadingPage> {
                     child: ToggleButtons(
                       isSelected: selections,
                       onPressed: (int index) {
+                        final pageIndex = currentPageIndex.value;
                         activeMode.value = ReadingMode.values[index];
+                        _savePreferences();
+                        Future.delayed(const Duration(milliseconds: 50), () {
+                          navigateToPage(pageIndex);
+                        });
                       },
                       children: const [
                         Tooltip(
@@ -754,6 +895,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       onChanged: (double value) {
                         pageWidthMultiplier.value = value;
                       },
+                      onChangedEnd: (e) => _savePreferences(),
                       description: 'Only Works with webtoon mode',
                       icon: Icons.image_aspect_ratio_rounded,
                       min: 1.0,
@@ -769,6 +911,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       onChanged: (double value) {
                         scrollSpeedMultiplier.value = value;
                       },
+                      onChangedEnd: (e) => _savePreferences(),
                       description:
                           'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
                       icon: Icons.speed,
@@ -777,6 +920,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       divisions: 9,
                     );
                   }),
+                20.height()
               ],
             ),
           ),

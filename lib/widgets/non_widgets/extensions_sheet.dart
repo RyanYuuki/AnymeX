@@ -7,7 +7,7 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

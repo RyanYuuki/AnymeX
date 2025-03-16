@@ -50,34 +50,32 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
-
     <key>CFBundleURLTypes</key>
     <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>dar</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>dar</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>anymex</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>anymex</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>sugoireads</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>sugoireads</string>
-            </array>
-        </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>dar</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>dar</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>anymex</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>anymex</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>sugoireads</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>sugoireads</string>
+        </array>
+      </dict>
     </array>
-
   </dict>
 </plist>

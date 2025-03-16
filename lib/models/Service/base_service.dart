@@ -9,5 +9,5 @@ abstract class BaseService {
   Future<Media> fetchDetails(dynamic id);
   Future<void> fetchHomePage();
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters});
+      {bool isManga = false, Map<String, dynamic>? filters, dynamic args});
 }

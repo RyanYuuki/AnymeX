@@ -6,8 +6,8 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -67,7 +67,7 @@ class ChapterSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TVWrapper(
+                  AnymexOnTap(
                     onTap: () {
                       showWrongTitleModal(
                         context,
@@ -183,7 +183,7 @@ class ChapterSection extends StatelessWidget {
                         chapters: chapterList,
                         anilistData: anilistData,
                       )
-                    : Center(child: AnymexText(text: "No Match Found"))
+                    : const Center(child: AnymexText(text: "No Match Found"))
             ],
           ),
         ));

@@ -1,11 +1,15 @@
 import 'package:anymex/constants/contants.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -24,8 +28,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late bool customTheme;
   late int selectedColorIndex;
   late bool isOled;
-  late bool isGrid = true;
   late int selectedVariantIndex;
+  final settings = Get.find<Settings>();
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -79,7 +83,11 @@ class _SettingsThemeState extends State<SettingsTheme> {
     customTheme = provider.currentThemeMode == "custom";
     selectedColorIndex = box.get("customColorIndex", defaultValue: 0);
     isOled = provider.isOled;
-    themeMode = provider.isSystemMode ? "System" : provider.isLightMode ? "Light" : "Dark";
+    themeMode = provider.isSystemMode
+        ? "System"
+        : provider.isLightMode
+            ? "Light"
+            : "Dark";
     selectedVariantIndex = provider.selectedVariantIndex;
   }
 
@@ -146,7 +154,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
+            padding: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -167,92 +175,93 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ],
                 ),
                 const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                  child: Text("Appearance",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      )),
-                ),
-                _buildModeTemplates(),
-                const SizedBox(height: 30),
-                CustomSwitchTile(
-                  icon: HugeIcons.strokeRoundedPaintBrush01,
-                  title: "Default Theme",
-                  description: "Play around with App theme",
-                  switchValue: defaultTheme,
-                  onChanged: handleDefaultSwitch,
-                ),
-                const SizedBox(height: 10),
-                CustomSwitchTile(
-                  icon: HugeIcons.strokeRoundedBlur,
-                  title: "Material You",
-                  description: "Take color from your wallpaper (A12+)",
-                  switchValue: materialTheme,
-                  onChanged: handleMaterialSwitch,
-                ),
-                const SizedBox(height: 10),
-                CustomTile(
-                  icon: HugeIcons.strokeRoundedPaintBoard,
-                  title: "Palette",
-                  description: "Choose your favourite palette!",
-                  onTap: () {
-                    showPaletteSelectionDialog(context);
-                  },
-                ),
-                const SizedBox(height: 10),
-                CustomSwitchTile(
-                  icon: HugeIcons.strokeRoundedMoon,
-                  title: "Oled Mode",
-                  description: "Go Super Dark Mode!",
-                  switchValue: isOled,
-                  onChanged: handleOledSwitch,
-                ),
-                const SizedBox(height: 10),
-                CustomSwitchTile(
-                  icon: HugeIcons.strokeRoundedColors,
-                  title: "Custom Theme",
-                  description: "Choose your favourite color!",
-                  switchValue: customTheme,
-                  onChanged: handleCustomThemeSwitch,
-                ),
-                if (customTheme)
-                  CustomTile(
-                    icon: HugeIcons.strokeRoundedColors,
-                    title: "Choose Colors from dialog",
-                    description: "Choose your favourite color from dialog!",
-                    onTap: () {
-                      showColorSelectionDialog(context);
-                    },
-                  ),
-                const SizedBox(height: 10),
-                if (customTheme) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                AnymexExpansionTile(
+                  title: 'Appearance',
+                  content: Column(
                     children: [
-                      Text("Custom Themes",
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold)),
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isGrid = !isGrid;
-                            });
-                          },
-                          icon: Icon(
-                            isGrid
-                                ? Icons.grid_view_rounded
-                                : HugeIcons.strokeRoundedGridTable,
-                            color: Theme.of(context).colorScheme.primary,
-                          ))
+                      _buildModeTemplates(),
+                      const SizedBox(height: 30),
+                      CustomSwitchTile(
+                        icon: HugeIcons.strokeRoundedPaintBrush01,
+                        title: "Default Theme",
+                        description: "Play around with App theme",
+                        switchValue: defaultTheme,
+                        onChanged: handleDefaultSwitch,
+                      ),
+                      const SizedBox(height: 10),
+                      CustomSwitchTile(
+                        icon: HugeIcons.strokeRoundedBlur,
+                        title: "Material You",
+                        description: "Take color from your wallpaper (A12+)",
+                        switchValue: materialTheme,
+                        onChanged: handleMaterialSwitch,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  isGrid
-                      ? SingleChildScrollView(child: _buildColorTemplates())
-                      : _buildColorButtons()
+                  initialExpanded: true,
+                ),
+                const SizedBox(height: 10),
+                AnymexExpansionTile(
+                    initialExpanded: true,
+                    title: 'Extras',
+                    content: Column(
+                      children: [
+                        Obx(() {
+                          return CustomSwitchTile(
+                              icon: HugeIcons.strokeRoundedFlower,
+                              title: "Bloom",
+                              description:
+                                  "Enables a soft, glowing gradient effect.",
+                              switchValue: !settings.disableGradient,
+                              onChanged: (val) {
+                                settings.disableGradient = !val;
+                              });
+                        }),
+                        CustomTile(
+                          icon: HugeIcons.strokeRoundedPaintBoard,
+                          title: "Palette",
+                          description: "Choose your favourite palette!",
+                          onTap: () {
+                            showPaletteSelectionDialog(context);
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        CustomSwitchTile(
+                          icon: HugeIcons.strokeRoundedMoon,
+                          title: "Oled Mode",
+                          description: "Go Super Dark Mode!",
+                          switchValue: isOled,
+                          onChanged: handleOledSwitch,
+                        ),
+                        const SizedBox(height: 10),
+                        // ExpansionTile(title: AnymexText(text: "Custom Theme")),
+                        CustomSwitchTile(
+                          icon: HugeIcons.strokeRoundedColors,
+                          title: "Custom Theme",
+                          description: "Choose your favourite color!",
+                          switchValue: customTheme,
+                          onChanged: handleCustomThemeSwitch,
+                        ),
+                      ],
+                    )),
+                const SizedBox(height: 10),
+                if (customTheme) ...[
+                  AnymexCard(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymexText(
+                          text: "Custom Themes",
+                          size: 16,
+                          variant: TextVariant.semiBold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 10),
+                        SingleChildScrollView(child: _buildColorTemplates())
+                      ],
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -284,28 +293,24 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: dynamicSchemeVariantKeys.length,
-                    itemBuilder: (context, index) {
-                      String label = dynamicSchemeVariantKeys[index];
-                      bool isSelected = index == selectedVariantIndex;
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: dynamicSchemeVariantKeys.length,
+                  itemBuilder: (context, index) {
+                    String label = dynamicSchemeVariantKeys[index];
+                    bool isSelected = index == selectedVariantIndex;
 
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 7),
-                        child: ListTileWithCheckMark(
-                          color: Theme.of(context).colorScheme.primary,
-                          active: isSelected,
-                          leading:
-                              const Icon(HugeIcons.strokeRoundedColorPicker),
-                          title: label,
-                          onTap: () => handlePaletteChange(index),
-                        ),
-                      );
-                    },
-                  ),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 7),
+                      child: ListTileWithCheckMark(
+                        color: Theme.of(context).colorScheme.primary,
+                        active: isSelected,
+                        leading: const Icon(HugeIcons.strokeRoundedColorPicker),
+                        title: label,
+                        onTap: () => handlePaletteChange(index),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
                 Padding(
@@ -329,113 +334,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryFixed,
-                          ),
-                          child: const Text('Confirm',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "LexendDeca",
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void showColorSelectionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Container(
-            width: getResponsiveValue(context,
-                mobileValue: null, desktopValue: 500.0),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Custom Colors',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: colorList.length,
-                    itemBuilder: (context, index) {
-                      Color color = colorList[index];
-                      bool isSelected = index == selectedColorIndex;
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 7),
-                        child: ListTileWithCheckMark(
-                          color: color,
-                          active: isSelected,
-                          leading: CircleAvatar(
-                            backgroundColor: color,
-                            radius: 12,
-                          ),
-                          title: colorKeys[index],
-                          onTap: () {
-                            handleColorSelection(index);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                          ),
-                          child: Text('Cancel',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 14,
-                                  fontFamily: "LexendDeca",
                                   fontWeight: FontWeight.bold)),
                         ),
                       ),
@@ -489,7 +387,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
               brightness: Brightness.dark);
           bool isSelected = themeMode == theme['label'];
           bool isSystem = theme['label'] == "System";
-          return TVWrapper(
+          return AnymexOnTap(
             onTap: () {
               handleThemeMode(theme['label']);
             },
@@ -944,101 +842,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildColorButtons() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: colorList.asMap().entries.map((entry) {
-        int index = entry.key;
-        Color color = entry.value;
-        bool isSelected = index == selectedColorIndex;
-
-        return GestureDetector(
-          onTap: () {
-            handleColorSelection(index);
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected
-                    ? color
-                    : Theme.of(context).colorScheme.outline.withOpacity(0.5),
-                width: 2,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? 0.3
-                                    : 0.6),
-                        blurRadius: 15.0,
-                        spreadRadius: 2.0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : [],
-            ),
-            child: AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedOpacity(
-                    opacity: isSelected ? 1.0 : 0.8,
-                    duration: const Duration(milliseconds: 300),
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                      ),
-                      child: isSelected
-                          ? const Center(
-                              child: Icon(
-                                HugeIcons.strokeRoundedSparkles,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    colorKeys[index],
-                    style: TextStyle(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.surface
-                          : Theme.of(context).textTheme.bodyMedium?.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 }

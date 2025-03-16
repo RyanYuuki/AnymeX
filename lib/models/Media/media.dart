@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Carousel/carousel.dart';
@@ -277,9 +276,10 @@ class Media {
     );
   }
 
-  factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga) {
+  factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga,
+      {bool isMal = false}) {
     return Media(
-      id: json['idMal']?.toString() ?? json['id'].toString(),
+      id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',

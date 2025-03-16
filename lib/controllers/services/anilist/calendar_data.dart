@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
   int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
   int startTime = currentTime - 86400;
   int endTime = currentTime + (86400 * 6);
+  final isMAL = serviceHandler.serviceType.value == ServicesType.mal;
 
   const String query = '''
     query (\$page: Int, \$startTime: Int, \$endTime: Int) {
@@ -63,7 +65,7 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
     final schedules = responseData['data']['Page']['airingSchedules'];
 
     List<Media> newMediaList = schedules.map<Media>((schedule) {
-      return Media.fromSmallJson(schedule['media'], false)
+      return Media.fromSmallJson(schedule['media'], false, isMal: isMAL)
         ..nextAiringEpisode = NextAiringEpisode(
             airingAt: schedule['airingAt'],
             timeUntilAiring: schedule['timeUntilAiring'],

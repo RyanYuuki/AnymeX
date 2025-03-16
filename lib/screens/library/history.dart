@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/screens/library/anime_library.dart';
-import 'package:anymex/screens/library/manga_library.dart';
+import 'package:anymex/screens/library/widgets/anime_card.dart';
+import 'package:anymex/screens/library/widgets/manga_card.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

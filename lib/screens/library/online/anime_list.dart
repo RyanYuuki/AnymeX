@@ -2,10 +2,10 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -157,7 +157,7 @@ class AnimeListContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (animeData == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: AnymexProgressIndicator());
     }
 
     final filteredAnimeList = filterListByStatus(animeData!, tabType);

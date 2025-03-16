@@ -16,6 +16,7 @@ import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/extensions_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:anymex/core/Extensions/extensions_provider.dart';
@@ -169,8 +170,8 @@ class SourceController extends GetxController implements BaseService {
 
   void _initializeEmptySections() {
     final offlineStorage = Get.find<OfflineStorageController>();
-    _animeSections.value = [const Center(child: CircularProgressIndicator())];
-    _mangaSections.value = [const Center(child: CircularProgressIndicator())];
+    _animeSections.value = [const Center(child: AnymexProgressIndicator())];
+    _mangaSections.value = [const Center(child: AnymexProgressIndicator())];
     _homeSections.value = [
       Obx(
         () => buildSection(
@@ -291,7 +292,7 @@ class SourceController extends GetxController implements BaseService {
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters}) async {
+      {bool isManga = false, Map<String, dynamic>? filters, dynamic args}) async {
     final data = await m.search(
         source: (isManga ? activeMangaSource.value : activeSource.value)!,
         query: query,

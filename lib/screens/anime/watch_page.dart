@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -8,7 +7,7 @@ import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settings/adaptors/player/player_adaptor.dart';
+import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -23,18 +22,20 @@ import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_button.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
-import 'package:anymex/widgets/minor_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:outlined_text/outlined_text.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
@@ -76,12 +77,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final episodeDuration = const Duration(minutes: 24).obs;
   final formattedTime = "00:00".obs;
   final formattedDuration = "24:00".obs;
-  final showControls = false.obs;
+  final showControls = true.obs;
   final isBuffering = true.obs;
   final bufferred = const Duration(milliseconds: 0).obs;
   final playbackSpeed = 1.0.obs;
   final isFullscreen = false.obs;
-  final selectedSubIndex = 0.obs;
+  final selectedSubIndex = (-1).obs;
   final selectedAudioIndex = 0.obs;
   final settings = Get.find<Settings>();
   final RxString resizeMode = "Cover".obs;
@@ -206,7 +207,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
-    player.open(Media(episode.value.url,
+    player.open(Media(
+        episode.value.url
+            .replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
+        httpHeaders: {'Referer': sourceController.activeSource.value!.baseUrl!},
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
   }
@@ -214,23 +218,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   // Continuous Tracking
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
+  StreamSubscription<Duration>? _positionSubscription;
+  bool _isSeeking = false;
+  int lastProcessedSecond = -1;
 
   void _attachListeners() {
-    player.stream.playing.listen((e) {
-      isPlaying.value = e;
+    _positionSubscription = player.stream.position.listen((e) {
+      if (_isSeeking) return;
 
-      if (e) {
-        Future.delayed(const Duration(seconds: 2), () {
-          isSwitchingEpisode = false;
-        });
-      }
-    });
-
-    player.stream.position.listen((e) {
       currentPosition.value = e;
       formattedTime.value = formatDuration(e);
 
-      if (!isSwitchingEpisode) {
+      if (!isSwitchingEpisode && e.inSeconds != lastProcessedSecond) {
+        lastProcessedSecond = e.inSeconds;
         currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
       }
 
@@ -255,13 +255,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       }
     });
 
+    player.stream.playing.listen((e) {
+      isPlaying.value = e;
+
+      if (e) {
+        Future.delayed(const Duration(seconds: 2), () {
+          isSwitchingEpisode = false;
+        });
+      }
+    });
+
     player.stream.duration.listen((e) {
       episodeDuration.value = e;
       currentEpisode.value.durationInMilliseconds = e.inMilliseconds;
       formattedDuration.value = formatDuration(e);
     });
 
-    player.stream.buffering.listen((e) {
+    playerController.player.stream.buffering.listen((e) {
       isBuffering.value = e;
     });
 
@@ -276,6 +286,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.stream.subtitle.listen((e) {
       subtitleText.value = e;
     });
+  }
+
+  void startSeeking() {
+    _isSeeking = true;
+  }
+
+  void endSeeking(Duration position) {
+    currentPosition.value = position;
+    formattedTime.value = formatDuration(position);
+    currentEpisode.value.timeStampInMilliseconds = position.inSeconds * 1000;
+
+    _isSeeking = false;
   }
 
   void _initRxVariables() {
@@ -612,7 +634,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   : Get.width,
               child: Video(
                 controller: playerController,
-                alignment: Alignment.center,
+                filterQuality: FilterQuality.medium,
                 controls: null,
                 fit: resizeModes[resizeMode.value]!,
                 subtitleViewConfiguration: const SubtitleViewConfiguration(
@@ -781,27 +803,26 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   duration: const Duration(milliseconds: 200),
                   switchInCurve: Curves.easeIn,
                   switchOutCurve: Curves.easeOut,
-                  child: Text(
-                    [
-                      for (final line in subtitleText)
-                        if (line.trim().isNotEmpty) line.trim(),
-                    ].join('\n'),
-                    key: ValueKey(
-                        subtitleText.join()), // Unique key for AnimatedSwitcher
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: fontColorOptions[settings.subtitleColor],
-                      fontSize: settings.subtitleSize.toDouble(),
-                      fontFamily: "Poppins-Bold",
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(1.0, 1.0),
-                          blurRadius: 10.0,
+                  child: OutlinedText(
+                    text: Text(
+                      [
+                        for (final line in subtitleText)
+                          if (line.trim().isNotEmpty) line.trim(),
+                      ].join('\n'),
+                      key: ValueKey(subtitleText.join()),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: fontColorOptions[settings.subtitleColor],
+                        fontSize: settings.subtitleSize.toDouble(),
+                        fontFamily: "Poppins-Bold",
+                      ),
+                    ),
+                    strokes: [
+                      OutlinedTextStroke(
                           color:
                               fontColorOptions[settings.subtitleOutlineColor]!,
-                        ),
-                      ],
-                    ),
+                          width: settings.subtitleOutlineWidth.toDouble())
+                    ],
                   ),
                 ),
               ),
@@ -1010,7 +1031,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   children: episodeTracks.map((e) {
                     final isSelected = episode.value.quality == e.quality;
-                    return TVWrapper(
+                    return AnymexOnTap(
                       onTap: () {
                         episode.value = e;
                         player.open(Media(e.url,
@@ -1078,20 +1099,20 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // "None" option
-                    TVWrapper(
+                    AnymexOnTap(
                       onTap: () {
-                        selectedSubIndex.value = 0;
+                        selectedSubIndex.value = -1;
                         Get.back();
                         player.setSubtitleTrack(SubtitleTrack.no());
                       },
                       child: subtitleTile("None", Iconsax.subtitle5,
-                          selectedSubIndex.value == 0),
+                          selectedSubIndex.value == -1),
                     ),
                     // Existing subtitles
                     ...subtitles.asMap().entries.map((entry) {
-                      final index = entry.key + 1;
+                      final index = entry.key;
                       final e = entry.value;
-                      return TVWrapper(
+                      return AnymexOnTap(
                         onTap: () {
                           selectedSubIndex.value = index;
                           Get.back();
@@ -1102,7 +1123,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       );
                     }),
                     // "Add Subtitle" option
-                    TVWrapper(
+                    AnymexOnTap(
                       onTap: () async {
                         final result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
@@ -1342,10 +1363,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             child: SizedBox(
                               height: 27,
                               child: VideoSliderTheme(
-                                color: themeFgColor.value,
-                                inactiveTrackColor:
-                                    _getBgColor().withOpacity(0.8),
-                                child: Slider(
+                                  color: themeFgColor.value,
+                                  inactiveTrackColor:
+                                      _getBgColor().withOpacity(0.8),
+                                  child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
                                         skipTraversal: true),
@@ -1363,20 +1384,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     secondaryTrackValue: bufferred
                                         .value.inMilliseconds
                                         .toDouble(),
-                                    onChangeStart: (val) {
-                                      if (episodeDuration.value.inMilliseconds
-                                              .toDouble() !=
-                                          0.0) {
-                                        player.pause();
-                                      }
+                                    onChangeStart: (_) {
+                                      startSeeking();
                                     },
-                                    onChangeEnd: (val) {
+                                    onChangeEnd: (val) async {
                                       if (episodeDuration.value.inMilliseconds
                                               .toDouble() !=
                                           0.0) {
-                                        player.seek(Duration(
-                                            milliseconds: val.toInt()));
-                                        player.play();
+                                        final newPosition =
+                                            Duration(milliseconds: val.toInt());
+                                        await player.seek(newPosition);
+                                        endSeeking(newPosition);
                                       }
                                     },
                                     onChanged: (val) {
@@ -1388,8 +1406,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                         formattedTime.value = formatDuration(
                                             currentPosition.value);
                                       }
-                                    }),
-                              ),
+                                    },
+                                  )),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -1682,13 +1700,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 }
               },
             ),
-            isBuffering.value
-                ? _buildBufferingIndicator()
-                : buildPlayButton(
-                    isPlaying: isPlaying,
-                    color: themeBgColor.value,
-                    iconColor: themeFgColor.value,
-                  ),
+            Obx(
+              () => isBuffering.value
+                  ? _buildBufferingIndicator()
+                  : buildPlayButton(
+                      isPlaying: isPlaying,
+                      color: themeBgColor.value,
+                      iconColor: themeFgColor.value,
+                    ),
+            ),
             _buildPlaybackButton(
               icon: Icons.skip_next_rounded,
               color: currentEpisode.value.number.toInt() >=
@@ -1743,7 +1763,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         margin: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 50),
         child: BlurWrapper(
           borderRadius: BorderRadius.circular(radius),
-          child: TVWrapper(
+          child: AnymexOnTap(
             onTap: () {
               player.playOrPause();
             },
@@ -1819,7 +1839,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           EdgeInsets.symmetric(horizontal: isPlay ? (isMobile ? 20 : 50) : 0),
       child: BlurWrapper(
         borderRadius: BorderRadius.circular(radius),
-        child: TVWrapper(
+        child: AnymexOnTap(
           onTap: onTap,
           bgColor: Colors.transparent,
           focusedBorderColor: Colors.transparent,
@@ -1850,14 +1870,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           horizontal:
               getResponsiveSize(context, mobileSize: 25, dektopSize: 50)),
       child: SizedBox(
-          height: size, width: size, child: const CircularProgressIndicator()),
+          height: size, width: size, child: const AnymexProgressIndicator()),
     );
   }
 
   Widget _buildIcon({VoidCallback? onTap, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3),
-      child: TVWrapper(
+      child: AnymexOnTap(
         onTap: () {
           onTap?.call();
         },

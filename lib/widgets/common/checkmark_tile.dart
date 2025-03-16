@@ -59,7 +59,7 @@ class ListTileWithCheckMark extends StatelessWidget {
         ],
       ),
     );
-    return TVWrapper(
+    return AnymexOnTap(
       onTap: onTap,
       child: InkWell(
         borderRadius: br,

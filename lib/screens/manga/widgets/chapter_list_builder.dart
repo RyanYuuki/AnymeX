@@ -6,6 +6,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
+import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -13,8 +14,9 @@ import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class ChapterListBuilder extends StatefulWidget {
@@ -29,17 +31,30 @@ class ChapterListBuilder extends StatefulWidget {
 
 class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final selectedChunkIndex = 1.obs;
+  final selectedScanIndex = 0.obs;
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
   int? userProgress;
   Chapter? readChap;
   Chapter? continueChapter;
 
+  List<String> makeScanlators() {
+    List<String> scanlators = [];
+    for (Chapter i in widget.chapters ?? []) {
+      if (i.scanlator?.isNotEmpty ?? false) {
+        if (!scanlators.contains(i.scanlator)) {
+          scanlators.add(i.scanlator!);
+        }
+      }
+    }
+    return scanlators;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.chapters == null || widget.chapters!.isEmpty) {
       return const SizedBox(
-          height: 500, child: Center(child: CircularProgressIndicator()));
+          height: 500, child: Center(child: AnymexProgressIndicator()));
     }
     return Obx(() {
       final chunkedChapters = chunkChapter(
@@ -47,6 +62,25 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       final selectedChapters = chunkedChapters.isNotEmpty
           ? chunkedChapters[selectedChunkIndex.value].obs
           : [].obs;
+      final scanlators = makeScanlators();
+      if (scanlators.isEmpty) {
+        selectedScanIndex.value = 0;
+      }
+      final filteredChapters = selectedScanIndex.value == 0 ||
+              scanlators.isEmpty
+          ? selectedChapters
+          : selectedChapters
+              .where((chapter) =>
+                  chapter.scanlator == scanlators[selectedScanIndex.value - 1])
+              .toList()
+              .obs;
+      final filteredFullChapters = selectedScanIndex.value == 0 ||
+              scanlators.isEmpty
+          ? widget.chapters
+          : widget.chapters
+              ?.where((chapter) =>
+                  chapter.scanlator == scanlators[selectedScanIndex.value - 1])
+              .toList();
 
       if (auth.isLoggedIn.value &&
           auth.serviceType.value != ServicesType.extensions) {
@@ -82,7 +116,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   onPressed: () {
                     navigate(() => ReadingPage(
                           anilistData: widget.anilistData,
-                          chapterList: widget.chapters!,
+                          chapterList: filteredFullChapters!,
                           currentChapter: continueChapter!,
                         ));
                   },
@@ -91,6 +125,11 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   backgroundImage:
                       widget.anilistData.cover ?? widget.anilistData.poster,
                   chapter: readChap ?? continueChapter!),
+            ),
+          if (scanlators.isNotEmpty)
+            ScanlatorsRanges(
+              selectedScanIndex: selectedScanIndex,
+              scanlators: scanlators,
             ),
           ChapterRanges(
               selectedChunkIndex: selectedChunkIndex,
@@ -101,7 +140,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: selectedChapters.length,
+              itemCount: filteredChapters.length,
               padding: const EdgeInsets.only(top: 10),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: getResponsiveCrossAxisCount(context,
@@ -114,18 +153,18 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15),
               itemBuilder: (context, index) {
-                final chapter = selectedChapters[index] as Chapter;
+                final chapter = filteredChapters[index] as Chapter;
                 final savedChaps = offlineStorage.getReadChapter(
                     widget.anilistData.id, chapter.number!);
                 final isSelected = chapter.number ==
                     (readChap?.number ?? continueChapter?.number);
                 final alreadyRead = chapter.number! <
                     (readChap?.number ?? continueChapter?.number ?? 0);
-                return TVWrapper(
+                return AnymexOnTap(
                   onTap: () {
                     navigate(() => ReadingPage(
                           anilistData: widget.anilistData,
-                          chapterList: widget.chapters!,
+                          chapterList: filteredFullChapters!,
                           currentChapter: chapter,
                         ));
                   },
@@ -202,7 +241,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                               onTap: () {
                                 navigate(() => ReadingPage(
                                       anilistData: widget.anilistData,
-                                      chapterList: widget.chapters!,
+                                      chapterList: filteredFullChapters!,
                                       currentChapter: chapter,
                                     ));
                               },

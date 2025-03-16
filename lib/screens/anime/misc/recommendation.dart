@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:anymex/ai/animeo.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -12,8 +11,9 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/minor_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class AIRecommendation extends StatefulWidget {
@@ -102,7 +102,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
         body: Obx(() => recItems.isEmpty
             ? !serviceHandler.isLoggedIn.value
                 ? _buildInputBox(context)
-                : const Center(child: CircularProgressIndicator())
+                : const Center(child: AnymexProgressIndicator())
             : _buildRecommendations(context)),
       ),
     );
@@ -164,7 +164,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Obx(() => isLoading.value
                       ? const Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
+                          child: Center(child: AnymexProgressIndicator()),
                         )
                       : const SizedBox.shrink());
                 }

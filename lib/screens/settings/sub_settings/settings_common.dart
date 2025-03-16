@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
         body: SingleChildScrollView(
           child: Padding(
             padding: getResponsiveValue(context,
-                mobileValue: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
+                mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
                 desktopValue:
                     const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0)),
             child: Column(
@@ -50,21 +51,24 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 10),
-                      child: Text("Anilist",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ),
-                    CustomTile(
-                      icon: Icons.format_list_bulleted_sharp,
-                      title: 'Manage Anilist Lists',
-                      description: "Choose which list to show on home page",
-                      onTap: () => _showHomePageCardsDialog(context),
-                    ),
+                    AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'Anilist',
+                        content: CustomTile(
+                          icon: Icons.format_list_bulleted_sharp,
+                          title: 'Manage Anilist Lists',
+                          description: "Choose which list to show on home page",
+                          onTap: () => _showHomePageCardsDialog(context, false),
+                        )),
+                    AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'MyAnimeList',
+                        content: CustomTile(
+                          icon: Icons.format_list_bulleted_sharp,
+                          title: 'Manage MyAnimeList Lists',
+                          description: "Choose which list to show on home page",
+                          onTap: () => _showHomePageCardsDialog(context, true),
+                        )),
                   ],
                 )
               ],
@@ -75,7 +79,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
     );
   }
 
-  void _showHomePageCardsDialog(BuildContext context) {
+  void _showHomePageCardsDialog(BuildContext context, bool isMal) {
     showDialog(
       context: context,
       builder: (context) {
@@ -84,7 +88,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
           content: SizedBox(
             width: double.maxFinite,
             child: Obx(() {
-              final homePageCards = settings.homePageCards;
+              final homePageCards =
+                  isMal ? settings.homePageCardsMal : settings.homePageCards;
               return ListView.builder(
                 shrinkWrap: true,
                 itemCount: homePageCards.length,
@@ -97,7 +102,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     value: value,
                     onChanged: (bool? newValue) {
                       if (newValue != null) {
-                        settings.updateHomePageCard(key, newValue);
+                        isMal
+                            ? settings.updateHomePageCardMal(key, newValue)
+                            : settings.updateHomePageCard(key, newValue);
                       }
                     },
                   );

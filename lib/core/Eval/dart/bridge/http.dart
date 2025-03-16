@@ -718,7 +718,7 @@ extension FutureResponseExtension<T> on Future<T> {
         print("Http error: $error");
       }
       debugPrint("[TEST]: $error");
-      snackBar("No Streams Found");
+      snackBar("Error occured");
       throw error.toString();
     });
     return this;

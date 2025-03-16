@@ -49,35 +49,54 @@ class UISettings extends HiveObject {
   @HiveField(14)
   bool disableGradient;
 
-  UISettings(
-      {this.glowMultiplier = 1.0,
-      this.radiusMultiplier = 1.0,
-      this.saikouLayout = false,
-      this.tabBarHeight = 50.0,
-      this.tabBarWidth = 180.0,
-      this.tabBarRoundness = 10.0,
-      this.compactCards = false,
-      this.cardRoundness = 1.0,
-      this.blurMultipler = 1.0,
-      this.animationDuration = 200,
-      this.glowDensity = 0.3,
-      this.translucentTabBar = true,
-      this.homePageCards = const {
-        "Continue Watching": true,
-        "Continue Reading": true,
-        "Completed TV": false,
-        "Completed Manga": false,
-        "Completed Movie": false,
-        "Paused Animes": false,
-        "Paused Manga": false,
-        "Dropped Animes": false,
-        "Dropped Manga": false,
-        "Planning Animes": false,
-        "Planning Manga": false,
-        "Rewatching Animes": false,
-        "Rewatching Manga": false,
-      },
-      this.enableAnimation = true, 
-      this.disableGradient = false,
-      });
+  @HiveField(15)
+  Map<String, bool> homePageCardsMal;
+
+  @HiveField(16)
+  int cardStyle;
+
+  UISettings({
+    this.glowMultiplier = 1.0,
+    this.radiusMultiplier = 1.0,
+    this.saikouLayout = false,
+    this.tabBarHeight = 50.0,
+    this.tabBarWidth = 180.0,
+    this.tabBarRoundness = 10.0,
+    this.compactCards = false,
+    this.cardRoundness = 1.0,
+    this.blurMultipler = 1.0,
+    this.animationDuration = 200,
+    this.glowDensity = 0.3,
+    this.translucentTabBar = true,
+    this.homePageCards = const {
+      "Continue Watching": true,
+      "Continue Reading": true,
+      "Completed TV": false,
+      "Completed Manga": false,
+      "Completed Movie": false,
+      "Paused Animes": false,
+      "Paused Manga": false,
+      "Dropped Animes": false,
+      "Dropped Manga": false,
+      "Planning Animes": false,
+      "Planning Manga": false,
+      "Rewatching Animes": false,
+      "Rewatching Manga": false,
+    },
+    this.homePageCardsMal = const {
+      "Continue Watching": true,
+      "Continue Reading": true,
+      "Completed TV": false,
+      "Completed Manga": false,
+      "Paused Animes": false,
+      "Paused Manga": false,
+      "Dropped Animes": false,
+      "Dropped Manga": false,
+      "Planning Animes": false,
+      "Planning Manga": false,
+    },
+    this.enableAnimation = true,
+    this.disableGradient = false,
+    this.cardStyle = 2,
+  });
 }
