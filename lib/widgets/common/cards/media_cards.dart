@@ -141,6 +141,7 @@ class ModernCard extends CarouselCard {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
+                        Colors.black.withOpacity(0.5),
                         Colors.black.withOpacity(0.7),
                       ],
                     ),
@@ -357,6 +358,7 @@ class MinimalExoticCard extends CarouselCard {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
+                                Colors.black.withOpacity(0.5),
                                 Colors.black.withOpacity(0.7),
                               ],
                             ),
@@ -408,7 +410,11 @@ class MinimalExoticCard extends CarouselCard {
                   ] else ...[
                     Icon(
                       getIconForVariant(
-                          itemData.extraData ?? '', variant, isManga),
+                          variant == DataVariant.relation
+                              ? itemData.args!
+                              : itemData.extraData ?? '',
+                          variant,
+                          isManga),
                       size: 16,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),

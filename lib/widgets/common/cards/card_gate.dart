@@ -14,7 +14,7 @@ double getCardHeight(CardStyle style, bool isDesktop) {
     case CardStyle.saikou:
       return isDesktop ? 290 : 230;
     case CardStyle.minimalExotic:
-      return isDesktop ? 260 : 210;
+      return isDesktop ? 270 : 210;
     default:
       return isDesktop ? 230 : 170;
   }

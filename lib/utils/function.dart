@@ -327,6 +327,7 @@ List<CarouselData> convertData(List<dynamic> data,
             title: e.title,
             poster: e.poster,
             source: (e as Relation).type,
+            args: e.type,
             extraData: (e).relationType);
       case DataVariant.anilist:
         return CarouselData(

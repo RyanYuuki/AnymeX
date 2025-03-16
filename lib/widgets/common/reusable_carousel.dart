@@ -9,7 +9,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/common/cards/media_cards.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -52,26 +52,24 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeaderTitle(),
-        const SizedBox(height: 10),
-        widget.isLoading
-            ? const Center(child: AnymexProgressIndicator())
-            : _buildCarouselList(),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeaderTitle(),
+          const SizedBox(height: 10),
+          widget.isLoading
+              ? const Center(child: AnymexProgressIndicator())
+              : _buildCarouselList(),
+        ],
+      ),
     );
   }
 
   // Computed properties
   bool get _isEmptyOrOffline =>
       widget.data.isEmpty && widget.variant == DataVariant.offline;
-
-  bool get _isDesktop => MediaQuery.of(context).size.width > 600;
-
-  double get _carouselHeight =>
-      getCardHeight(CardStyle.values[settingsController.cardStyle], _isDesktop);
 
   // Header title section
   Widget _buildHeaderTitle() {
@@ -122,16 +120,19 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final List<CarouselData> processedData =
         convertData(widget.data, variant: widget.variant);
 
-    return SizedBox(
-      height: _carouselHeight,
-      child: ListView.builder(
-        itemCount: processedData.length,
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
-        itemBuilder: (context, index) =>
-            _buildCarouselItem(processedData[index], index),
-      ),
-    );
+    return Obx(() {
+      return SizedBox(
+        height: getCardHeight(CardStyle.values[settingsController.cardStyle],
+            getPlatform(context)),
+        child: ListView.builder(
+          itemCount: processedData.length,
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
+          itemBuilder: (context, index) =>
+              _buildCarouselItem(processedData[index], index),
+        ),
+      );
+    });
   }
 
   Widget _buildCarouselItem(CarouselData itemData, int index) {
@@ -157,7 +158,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   void _navigateToDetailsPage(CarouselData itemData, String tag) {
     final controller = Get.find<SourceController>();
     bool isMediaManga = _determineIfManga(itemData);
-    if(widget.variant == DataVariant.recommendation) {
+    if (widget.variant == DataVariant.recommendation) {
       isMediaManga = widget.isManga;
     }
     final MediaType mediaType =

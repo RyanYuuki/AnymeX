@@ -5,7 +5,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-enum CardStyle { saikou, exotic, minimalExotic , modern, blur }
+enum CardStyle { saikou, exotic, minimalExotic, modern, blur }
 
 abstract class CarouselCard extends StatelessWidget {
   final CarouselData itemData;
@@ -114,10 +114,14 @@ abstract class CarouselCard extends StatelessWidget {
     switch (variant) {
       case DataVariant.anilist:
       case DataVariant.offline:
-      case DataVariant.library:
         return isManga ? Iconsax.book : Iconsax.play5;
+      case DataVariant.library:
+        return Iconsax.star5;
       case DataVariant.relation:
-        return extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
+        if (extraData == "MANGA" || extraData == "ANIME") {
+          return extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
+        }
+        return isManga ? Iconsax.book5 : Iconsax.play5;
       case DataVariant.extension:
         return Iconsax.status;
       default:
