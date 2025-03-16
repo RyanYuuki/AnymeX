@@ -56,6 +56,7 @@
 * [91e03e0](https://github.com/RyanYuuki/AnymeX/commit/91e03e0): style: minor text adjustment on card
 
 ### 🧹 Chores & Documentation
+* [515fe5b](https://github.com/RyanYuuki/AnymeX/commit/515fe5b): chore: probable fix of invalid package name
 * [c28b1ba](https://github.com/RyanYuuki/AnymeX/commit/c28b1ba): chore: app name change
 * [fba26ec](https://github.com/RyanYuuki/AnymeX/commit/fba26ec): chore: rollback to old workflow
 * [dc35c66](https://github.com/RyanYuuki/AnymeX/commit/dc35c66): chore: version and package name changes
