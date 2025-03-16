@@ -97,6 +97,6 @@ class UISettings extends HiveObject {
     },
     this.enableAnimation = true,
     this.disableGradient = false,
-    this.cardStyle = 1,
+    this.cardStyle = 2,
   });
 }

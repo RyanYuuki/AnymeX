@@ -515,12 +515,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           title: "Relations",
           variant: DataVariant.relation,
         ),
+        CharactersCarousel(characters: anilistData!.characters ?? []),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Animes",
           variant: DataVariant.recommendation,
         ),
-        CharactersCarousel(characters: anilistData!.characters ?? []),
       ],
     );
   }

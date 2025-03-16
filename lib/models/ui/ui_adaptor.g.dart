@@ -46,7 +46,7 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
                 "Planning Animes": false,
                 "Planning Manga": false,
               },
-        cardStyle: fields[16] ?? 0);
+        cardStyle: fields[16] ?? 2);
   }
 
   @override

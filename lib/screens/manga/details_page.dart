@@ -366,16 +366,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         CharactersCarousel(
             characters: anilistData!.characters ?? [], isManga: true),
         ReusableCarousel(
+          data: anilistData!.relations ?? [],
+          title: "Relations",
+          variant: DataVariant.relation,
+        ),
+        ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Manga",
           variant: DataVariant.recommendation,
           isManga: true,
         ),
-        ReusableCarousel(
-          data: anilistData!.relations ?? [],
-          title: "Relations",
-          variant: DataVariant.relation,
-        )
       ],
     );
   }

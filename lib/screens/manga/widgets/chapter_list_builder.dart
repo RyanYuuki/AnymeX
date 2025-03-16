@@ -116,7 +116,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   onPressed: () {
                     navigate(() => ReadingPage(
                           anilistData: widget.anilistData,
-                          chapterList: widget.chapters!,
+                          chapterList: filteredFullChapters!,
                           currentChapter: continueChapter!,
                         ));
                   },
