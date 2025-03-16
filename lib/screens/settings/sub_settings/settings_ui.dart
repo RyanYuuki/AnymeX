@@ -269,7 +269,8 @@ class _CardStyleSelectorState extends State<CardStyleSelector> {
                 child: child,
               );
             },
-            child: SizedBox(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
               height: getCardHeight(_selectedStyle, getPlatform(context)),
               child: MediaCardGate(
                 key: ValueKey(_selectedStyle),

@@ -18,6 +18,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hardware_button_listener/hardware_button_listener.dart';
+import 'package:hardware_button_listener/models/hardware_button.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -84,9 +86,14 @@ class _ReadingPageState extends State<ReadingPage> {
   final _isLoadingNextChapter = false.obs;
   final scrolledToNext = false.obs;
 
+  // VOl UP and Down Actions
+  // final _hardwareButtonListener = HardwareButtonListener();
+  // late StreamSubscription<HardwareButton> _buttonSubscription;
+
   @override
   void initState() {
     super.initState();
+    // _initHwButtonsListener();
     _initScrollController();
     _initPageController();
     _initWidgetVars();
@@ -103,6 +110,17 @@ class _ReadingPageState extends State<ReadingPage> {
       updateAnilist(false);
     });
   }
+
+  // void _initHwButtonsListener() {
+  //   _buttonSubscription = _hardwareButtonListener.listen((event) {
+  //     if (event.buttonName == 'VOLUME_UP') {
+  //       navigatePageHeight(true);
+  //     }
+  //     if (event.buttonName == 'VOLUME_DOWN') {
+  //       navigatePageHeight(false);
+  //     }
+  //   });
+  // }
 
   void _initWidgetVars() {
     currentChapter = Rx(widget.currentChapter);
@@ -143,6 +161,7 @@ class _ReadingPageState extends State<ReadingPage> {
       _isLoadingNextChapter.value = true;
       navigateToChapter(false).then((_) {
         _isLoadingNextChapter.value = false;
+        navigateToPage(1);
       });
     }
   }
@@ -190,6 +209,8 @@ class _ReadingPageState extends State<ReadingPage> {
     scrollController.removeListener(_updateScrollProgress);
     scrollController.dispose();
     pageController.dispose();
+    // _buttonSubscription.cancel();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
@@ -221,6 +242,40 @@ class _ReadingPageState extends State<ReadingPage> {
         final maxScrollExtent = scrollController.position.maxScrollExtent;
         final targetScroll =
             (pageIndex / (mangaPages.length - 1)) * maxScrollExtent;
+
+        scrollController.animateTo(
+          targetScroll,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+
+    _updateNavigationState();
+  }
+
+  void navigatePageHeight(bool isLeft) {
+    final pageIndex =
+        (isLeft ? currentPageIndex.value - 1 : currentPageIndex.value + 1)
+            .clamp(1, mangaPages.length - 1);
+    if (activeMode.value != ReadingMode.webtoon) {
+      if (pageController.hasClients) {
+        pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    } else {
+      if (scrollController.hasClients) {
+        final currentScroll = scrollController.position.pixels;
+        final screenWidth = MediaQuery.of(context).size.width;
+        final scrollAmount = screenWidth * 0.8;
+        final maxScroll = scrollController.position.maxScrollExtent;
+        final targetScroll = (isLeft
+                ? currentScroll - scrollAmount
+                : currentScroll + scrollAmount)
+            .clamp(0.0, maxScroll);
 
         scrollController.animateTo(
           targetScroll,
@@ -361,7 +416,7 @@ class _ReadingPageState extends State<ReadingPage> {
       currentChapter.value.maxOffset = maxScrollExtent;
 
       if (scrollController.position.pixels.floor() ==
-          (scrollController.position.maxScrollExtent + 120).floor()) {
+          (scrollController.position.maxScrollExtent + 70).floor()) {
         _loadNextChapter();
       }
 
@@ -390,6 +445,10 @@ class _ReadingPageState extends State<ReadingPage> {
     final currentChapterIndex = chapterList.indexOf(currentChapter.value);
     canGoBackward.value = currentChapterIndex > 0;
     canGoForward.value = currentChapterIndex < chapterList.length - 1;
+    if (chapterList.length == 1) {
+      canGoBackward.value = false;
+      canGoForward.value = false;
+    }
   }
 
   @override
@@ -573,11 +632,6 @@ class _ReadingPageState extends State<ReadingPage> {
                           ))),
             );
           }),
-          const SizedBox(height: 10),
-          const AnymexText(
-            text: "Scroll To Next Chapter!",
-            variant: TextVariant.semiBold,
-          )
         ],
       ),
     );
@@ -750,8 +804,9 @@ class _ReadingPageState extends State<ReadingPage> {
                         Theme.of(context).colorScheme.surface.withOpacity(0.80),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
-                  icon: const Icon(Icons.skip_next_rounded,
-                      size: 35, color: Colors.white),
+                  icon: Icon(Icons.skip_next_rounded,
+                      color: canGoForward.value ? Colors.white : Colors.grey,
+                      size: 35),
                   onPressed: () async {
                     await navigateToChapter(false);
                     navigateToPage(1);
