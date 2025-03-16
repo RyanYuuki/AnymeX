@@ -1,3 +1,4 @@
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -13,8 +14,9 @@ class EmptyLibrary extends StatelessWidget {
       height: Get.height,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          150.height(),
           const Text(
             '(─‿─)',
             style: TextStyle(fontSize: 50, fontFamily: "Roboto"),

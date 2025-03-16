@@ -326,7 +326,8 @@ List<CarouselData> convertData(List<dynamic> data,
             id: e.id.toString(),
             title: e.title,
             poster: e.poster,
-            extraData: (e as Relation).relationType);
+            source: (e as Relation).type,
+            extraData: (e).relationType);
       case DataVariant.anilist:
         return CarouselData(
             id: e.id.toString(),
@@ -532,6 +533,9 @@ extension SizedBoxExt on num {
   }
 }
 
-String getRandomTag() {
+String getRandomTag({String? addition}) {
+  if (addition != null) {
+    return '$addition-${DateTime.now().millisecond}';
+  }
   return DateTime.now().millisecond.toString();
 }

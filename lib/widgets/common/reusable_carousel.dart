@@ -156,7 +156,10 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   void _navigateToDetailsPage(CarouselData itemData, String tag) {
     final controller = Get.find<SourceController>();
-    final bool isMediaManga = _determineIfManga(itemData);
+    bool isMediaManga = _determineIfManga(itemData);
+    if(widget.variant == DataVariant.recommendation) {
+      isMediaManga = widget.isManga;
+    }
     final MediaType mediaType =
         isMediaManga ? MediaType.manga : MediaType.anime;
     final media = Media.fromCarouselData(itemData, mediaType);
@@ -177,7 +180,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   bool _determineIfManga(CarouselData itemData) {
     return (widget.variant == DataVariant.relation &&
-            itemData.extraData == "MANGA") ||
+            itemData.source == "MANGA") ||
         (widget.source?.isManga ?? false) ||
         widget.isManga;
   }
