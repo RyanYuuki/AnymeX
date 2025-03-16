@@ -369,6 +369,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           data: anilistData!.recommendations,
           title: "Recommended Manga",
           variant: DataVariant.recommendation,
+          isManga: true,
         ),
         ReusableCarousel(
           data: anilistData!.relations ?? [],

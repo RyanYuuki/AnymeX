@@ -29,6 +29,7 @@ class _CalendarState extends State<Calendar>
     with SingleTickerProviderStateMixin {
   final serviceHandler = Get.find<ServiceHandler>();
   RxList<Media> calendarData = <Media>[].obs;
+  RxList<Media> listData = <Media>[].obs;
   RxList<Media> rawData = <Media>[].obs;
   late TabController _tabController;
   List<DateTime> dateTabs = [];
@@ -39,12 +40,11 @@ class _CalendarState extends State<Calendar>
   @override
   void initState() {
     super.initState();
-    final ids = serviceHandler.animeList.map((e) => e.id).toSet();
+    final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
     fetchCalendarData(calendarData).then((_) {
       setState(() {
         rawData.value = calendarData.map((e) => e).toList();
-        calendarData.value =
-            calendarData.where((e) => ids.contains(e.id)).toList();
+        listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
         isLoading = false;
       });
     });
@@ -123,14 +123,13 @@ class _CalendarState extends State<Calendar>
             tabAlignment: TabAlignment.start,
             tabs: dateTabs.map((date) {
               return Obx(() {
-                List<Media> filteredList =
-                    (includeList ? calendarData : rawData)
-                        .where((media) =>
-                            DateTime.fromMillisecondsSinceEpoch(
-                                    media.nextAiringEpisode!.airingAt * 1000)
-                                .day ==
-                            date.day)
-                        .toList();
+                List<Media> filteredList = (includeList ? listData : rawData)
+                    .where((media) =>
+                        DateTime.fromMillisecondsSinceEpoch(
+                                media.nextAiringEpisode!.airingAt * 1000)
+                            .day ==
+                        date.day)
+                    .toList();
 
                 return Tab(
                   child: AnymexText(
@@ -147,7 +146,7 @@ class _CalendarState extends State<Calendar>
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
-              List<Media> filteredList = (includeList ? calendarData : rawData)
+              List<Media> filteredList = (includeList ? listData : rawData)
                   .where((media) =>
                       DateTime.fromMillisecondsSinceEpoch(
                               media.nextAiringEpisode!.airingAt * 1000)

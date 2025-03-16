@@ -4,9 +4,12 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/widgets/anime_card.dart';
 import 'package:anymex/screens/library/widgets/manga_card.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
@@ -25,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:iconsax/iconsax.dart';
 
 enum SortType {
   title,
@@ -111,6 +115,9 @@ class _MyLibraryState extends State<MyLibrary> {
     isAscending = settingsController.preferences.get(
         '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_order',
         defaultValue: true);
+    gridCount.value = settingsController.preferences.get(
+        '${isAnimeSelected.value ? 'anime' : 'manga'}_grid_size',
+        defaultValue: 0);
   }
 
   void _savePreferences() {
@@ -119,6 +126,9 @@ class _MyLibraryState extends State<MyLibrary> {
         currentSort.index);
     settingsController.preferences.put(
         '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_order', isAscending);
+    settingsController.preferences.put(
+        '${isAnimeSelected.value ? 'anime' : 'manga'}_grid_size',
+        gridCount.value);
   }
 
   void _search(String val) {
@@ -181,7 +191,7 @@ class _MyLibraryState extends State<MyLibrary> {
       case CardStyle.modern:
         return isDesktop ? 220 : 170;
       case CardStyle.exotic:
-        return isDesktop ? 270 : 280;
+        return isDesktop ? 270 : 210;
       case CardStyle.saikou:
         return isDesktop ? 270 : 230;
       case CardStyle.minimalExotic:
@@ -199,14 +209,14 @@ class _MyLibraryState extends State<MyLibrary> {
                 MediaQuery.of(context).size.width - 120,
                 itemWidth: 170),
             crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            mainAxisSpacing: 20,
             mainAxisExtent:
                 getCardHeight(CardStyle.values[settingsController.cardStyle]));
       } else {
         return const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            mainAxisSpacing: 20,
             childAspectRatio: 2 / 3);
       }
     }
@@ -215,16 +225,26 @@ class _MyLibraryState extends State<MyLibrary> {
       return SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: gridCount.value,
         crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        mainAxisSpacing: 20,
         childAspectRatio: 2 / 3,
       );
     }
-    return SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: gridCount.value,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        mainAxisExtent:
-            getCardHeight(CardStyle.values[settingsController.cardStyle]));
+    if (getPlatform(context)) {
+      return SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: gridCount.value,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 20,
+          mainAxisExtent:
+              getCardHeight(CardStyle.values[settingsController.cardStyle]));
+    } else {
+      return SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: gridCount.value,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 20,
+          mainAxisExtent:
+              (MediaQuery.of(context).size.width / gridCount.value) * (3 / 2) +
+                  10);
+    }
   }
 
   Widget _buildSliverTabsBody() {
@@ -246,13 +266,31 @@ class _MyLibraryState extends State<MyLibrary> {
                   gridDelegate: getSliverDel(),
                   delegate: SliverChildBuilderDelegate(
                     (context, i) {
-                      return MediaCardGate(
-                          itemData: items[i],
-                          tag: '${getRandomTag()}-$i',
-                          variant: DataVariant.library,
-                          isManga: !isAnimeSelected.value,
-                          cardStyle:
-                              CardStyle.values[settingsController.cardStyle]);
+                      final tag = getRandomTag(addition: i.toString());
+                      return AnymexOnTap(
+                        margin: 0,
+                        scale: 1,
+                        onTap: () {
+                          if (isAnimeSelected.value) {
+                            navigate(() => AnimeDetailsPage(
+                                media: Media.fromOfflineMedia(
+                                    items[i], MediaType.anime),
+                                tag: tag));
+                          } else {
+                            navigate(() => MangaDetailsPage(
+                                media: Media.fromOfflineMedia(
+                                    items[i], MediaType.manga),
+                                tag: tag));
+                          }
+                        },
+                        child: MediaCardGate(
+                            itemData: items[i],
+                            tag: '${getRandomTag()}-$i',
+                            variant: DataVariant.library,
+                            isManga: !isAnimeSelected.value,
+                            cardStyle:
+                                CardStyle.values[settingsController.cardStyle]),
+                      );
                     },
                     childCount: items.length,
                   ),
@@ -302,9 +340,17 @@ class _MyLibraryState extends State<MyLibrary> {
               child: AnymexIconChip(
                 icon: Row(
                   children: [
-                    const Icon(Icons.history),
+                    Icon(
+                        selectedListIndex.value == -1
+                            ? Iconsax.clock5
+                            : Iconsax.clock,
+                        color: selectedListIndex.value == -1
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurfaceVariant),
                     5.width(),
-                    AnymexText(text: '(${historyData.length})')
+                    AnymexText(
+                        text:
+                            '(${isAnimeSelected.value ? historyData.length : historyDataManga.length})')
                   ],
                 ),
                 isSelected: selectedListIndex.value == -1,
@@ -346,6 +392,7 @@ class _MyLibraryState extends State<MyLibrary> {
   }
 
   final RxBool isSearchActive = false.obs;
+  bool _isSearchAnimating = false;
 
   Widget _buildHeader() {
     return Obx(() => Container(
@@ -356,74 +403,187 @@ class _MyLibraryState extends State<MyLibrary> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (!isSearchActive.value)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Library',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Poppins-Bold",
+                  Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      // Title content
+                      AnimatedSlide(
+                        offset: isSearchActive.value
+                            ? const Offset(-1.0, 0)
+                            : Offset.zero,
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOutCubic,
+                        child: AnimatedOpacity(
+                          opacity: isSearchActive.value ? 0.0 : 1.0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Library',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Poppins-Bold",
+                                ),
+                              ),
+                              Text(
+                                'Discover your favorite series',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          'Discover your favorite series',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 1,
-                              ),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                isSearchActive.value = false;
-                              },
-                              icon: Icon(Icons.arrow_back_ios_new,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary),
-                              constraints: const BoxConstraints(
-                                minHeight: 40,
-                                minWidth: 40,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: CustomSearchBar(
-                                controller: controller,
-                                onChanged: _search,
-                                hintText: isAnimeSelected.value
-                                    ? 'Search Anime...'
-                                    : 'Search Manga...',
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
+
+                      AnimatedContainer(
+                        width: isSearchActive.value
+                            ? MediaQuery.of(context).size.width * 0.7
+                            : 0,
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeOutCubic,
+                        child: AnimatedOpacity(
+                          opacity: isSearchActive.value ? 1.0 : 0.0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutCubic,
+                          child: Row(
+                            children: [
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.elasticOut,
+                                tween: Tween<double>(
+                                  begin: 0.0,
+                                  end: isSearchActive.value ? 1.0 : 0.0,
+                                ),
+                                builder: (context, value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: child,
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      width: 1,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: IconButton(
+                                    onPressed: () {
+                                      isSearchActive.value = false;
+                                    },
+                                    icon: Icon(Icons.arrow_back_ios_new,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                    constraints: const BoxConstraints(
+                                      minHeight: 40,
+                                      minWidth: 40,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: CustomSearchBar(
+                                    controller: controller,
+                                    onChanged: _search,
+                                    hintText: isAnimeSelected.value
+                                        ? 'Search Anime...'
+                                        : 'Search Manga...',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   Row(
                     children: [
-                      if (!isSearchActive.value)
-                        Container(
-                          margin: const EdgeInsets.only(right: 8),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: !isSearchActive.value
+                            ? Container(
+                                key: const ValueKey('searchButton'),
+                                margin: const EdgeInsets.only(right: 8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    isSearchActive.value = true;
+                                  },
+                                  icon: Icon(IconlyLight.search,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary),
+                                ),
+                              )
+                            : const SizedBox(
+                                key: ValueKey('emptySearch'), width: 0),
+                      ),
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutBack,
+                        tween: Tween<double>(
+                          begin: 0.9,
+                          end: 1.0,
+                        ),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: child,
+                          );
+                        },
+                        child: Container(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(12),
@@ -431,29 +591,25 @@ class _MyLibraryState extends State<MyLibrary> {
                               color: Theme.of(context).colorScheme.primary,
                               width: 1,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                           child: IconButton(
-                            onPressed: () => isSearchActive.value = true,
-                            icon: Icon(IconlyLight.search,
+                            onPressed: () {
+                              showSortingSettings(
+                                  isManga: !isAnimeSelected.value);
+                            },
+                            icon: Icon(Icons.sort,
                                 color: Theme.of(context).colorScheme.onPrimary),
                           ),
-                        ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 1,
-                          ),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            showSortingSettings(
-                                isManga: !isAnimeSelected.value);
-                          },
-                          icon: Icon(Icons.sort,
-                              color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
                     ],
@@ -461,7 +617,6 @@ class _MyLibraryState extends State<MyLibrary> {
                 ],
               ),
               const SizedBox(height: 16),
-              // Tab selection buttons for Anime/Manga
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                 child: Row(
@@ -474,8 +629,13 @@ class _MyLibraryState extends State<MyLibrary> {
                           decoration: BoxDecoration(
                             color: isAnimeSelected.value
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surface,
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
                             borderRadius: BorderRadius.circular(12),
+                            boxShadow: isAnimeSelected.value
+                                ? [glowingShadow(context)]
+                                : [],
                             border: Border.all(
                               color: isAnimeSelected.value
                                   ? Theme.of(context).colorScheme.primary
@@ -515,9 +675,14 @@ class _MyLibraryState extends State<MyLibrary> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
+                            boxShadow: !isAnimeSelected.value
+                                ? [glowingShadow(context)]
+                                : [],
                             color: !isAnimeSelected.value
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surface,
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: !isAnimeSelected.value
@@ -618,8 +783,10 @@ class _MyLibraryState extends State<MyLibrary> {
                                   sliderValue: gridCount.value.toDouble(),
                                   onChanged: (e) {
                                     gridCount.value = e.toInt();
+                                    _savePreferences();
                                   },
-                                  max: 10);
+                                  max: getResponsiveSize(context,
+                                      mobileSize: 4, dektopSize: 10));
                             })
                           ],
                         ))

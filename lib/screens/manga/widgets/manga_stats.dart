@@ -36,7 +36,6 @@ class MangaStats extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             children: [
-              StateItem(label: "Japanese", value: data.romajiTitle),
               StateItem(label: "Type", value: data.type),
               StateItem(label: "Rating", value: '${data.rating}/10'),
               StateItem(label: "Popularity", value: data.popularity),
@@ -46,6 +45,22 @@ class MangaStats extends StatelessWidget {
                   label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
             ],
+          ),
+        ),
+        const SizedBox(height: 30),
+        const AnymexText(
+          text: "Romaji Title",
+          variant: TextVariant.bold,
+          size: 17,
+        ),
+        10.height(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: AnymexText(
+            text: data.romajiTitle,
+            variant: TextVariant.semiBold,
+            size: 14,
+            color: Colors.grey[300],
           ),
         ),
         const SizedBox(height: 30),
