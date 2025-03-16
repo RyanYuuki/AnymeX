@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ryan.anymexbeta"
+    namespace = "com.ryan.anymex"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.ryan.anymexbeta"
+        applicationId = "com.ryan.anymex"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
