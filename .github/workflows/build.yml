@@ -331,7 +331,7 @@ jobs:
         with:
           artifacts: |
             build/windows/x64/runner/Release/AnymeX-Windows.zip,
-            build/windows/x64/installer/Release/AnymeX-x86_64-2.9.3-Installer.exe
+            build/windows/x64/installer/Release/AnymeX-x86_64-*-Installer.exe
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
