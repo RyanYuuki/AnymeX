@@ -766,10 +766,10 @@ averageScore
       final media = data['data']['Media'];
       cacheController.addCache(media);
       return Media.fromJson(media);
+    } else if (response.statusCode == 429) {
+      snackBar('Chill for a min, you got rate limited.');
+      throw Exception(response.body);
     } else {
-      if(response.body.contains('Too Many')) {
-        snackBar('Chill for a min, you got rate limited.');
-      }
       throw Exception(response.body);
     }
   }
