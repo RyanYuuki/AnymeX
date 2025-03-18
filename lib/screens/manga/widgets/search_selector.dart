@@ -42,7 +42,7 @@ void searchTypeSheet(BuildContext context) {
                 variant: TextVariant.semiBold,
               ),
               const SizedBox(
-                height: 15,
+                height: 10,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -51,12 +51,9 @@ void searchTypeSheet(BuildContext context) {
                       button1Cover, false),
                   _buildSearchTile(context, isSimkl ? "SERIES" : "MANGA",
                       button2Cover, isSimkl ? false : true),
-                  // _buildSearchTile(
-                  //     context,
-                  //     'https://images8.alphacoders.com/136/1362712.jpeg',
-                  //     "NOVEL"),
                 ],
               ),
+              20.height()
             ],
           ),
         );

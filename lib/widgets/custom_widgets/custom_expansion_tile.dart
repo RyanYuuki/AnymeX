@@ -47,23 +47,29 @@ class AnymexCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
   final bool enableAnimation;
+  final Color? color;
+  final ShapeBorder? shape;
   const AnymexCard(
       {super.key,
       required this.child,
       this.padding,
-      this.enableAnimation = false});
+      this.enableAnimation = false,
+      this.color,
+      this.shape});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final settings = Get.find<Settings>();
     return Card(
-      color: settings.disableGradient
-          ? colorScheme.surfaceContainerLow
-          : colorScheme.surfaceContainerLow.withOpacity(0.3),
+      color: color ??
+          (settings.disableGradient
+              ? colorScheme.surfaceContainerLow
+              : colorScheme.surfaceContainerLow.withOpacity(0.3)),
       elevation: 2,
       shadowColor: colorScheme.shadow.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: shape ??
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: enableAnimation
           ? AnimatedContainer(
               duration: const Duration(milliseconds: 300),
