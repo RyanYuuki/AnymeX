@@ -89,7 +89,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         userProgress = temp?.episodeCount?.toInt() ?? 0;
         readChap = offlineStorage.getReadChapter(
             widget.anilistData.id, userProgress?.toDouble() ?? 1);
-        continueChapter = widget.chapters?.firstWhereOrNull(
+        continueChapter = filteredFullChapters?.firstWhereOrNull(
           (e) => e.number?.toInt() == userProgress,
         );
       } else {
@@ -101,7 +101,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
             1;
         readChap = offlineStorage.getReadChapter(
             widget.anilistData.id, userProgress!.toDouble());
-        continueChapter = widget.chapters?.firstWhere(
+        continueChapter = filteredFullChapters?.firstWhere(
             (e) => e.number?.toInt() == userProgress,
             orElse: () => readChap ?? widget.chapters![0]);
       }

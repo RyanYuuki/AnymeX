@@ -419,34 +419,32 @@ class _ReadingPageState extends State<ReadingPage> {
       }
 
       if (currentPage != currentPageIndex.value) {
-        currentPageIndex.value = currentPage;
+        _debounce = Timer(const Duration(milliseconds: 50), () {
+          if (currentPage != currentPageIndex.value) {
+            currentPageIndex.value = currentPage;
+          }
+        });
       }
     }
   }
 
   Future<void> navigateToChapter(bool prev) async {
-    final currentChapterIndex = chapterList.indexOf(currentChapter.value);
+    final index = chapterList.indexOf(currentChapter.value);
+    if (index == -1) return;
 
-    if (prev) {
-      if (currentChapterIndex - 1 >= 0) {
-        currentChapter.value = chapterList[currentChapterIndex - 1];
-      }
-    } else {
-      if (currentChapterIndex + 1 < chapterList.length) {
-        currentChapter.value = chapterList[currentChapterIndex + 1];
-      }
+    final newIndex = prev ? index - 1 : index + 1;
+    if (newIndex >= 0 && newIndex < chapterList.length) {
+      currentChapter.value = chapterList[newIndex];
+      _updateNavigationState();
     }
-    _updateNavigationState();
   }
 
   void _updateNavigationState() {
-    final currentChapterIndex = chapterList.indexOf(currentChapter.value);
-    canGoBackward.value = currentChapterIndex > 0;
-    canGoForward.value = currentChapterIndex < chapterList.length - 1;
-    if (chapterList.length == 1) {
-      canGoBackward.value = false;
-      canGoForward.value = false;
-    }
+    final index = chapterList.indexOf(currentChapter.value);
+    if (index == -1) return;
+
+    canGoBackward.value = index > 0;
+    canGoForward.value = index < chapterList.length - 1;
   }
 
   @override
@@ -757,8 +755,9 @@ class _ReadingPageState extends State<ReadingPage> {
                       color: canGoBackward.value ? Colors.white : Colors.grey,
                       size: 35),
                   onPressed: () async {
-                    await navigateToChapter(true);
-                    navigateToPage(1);
+                    if (canGoBackward.value) {
+                      await navigateToChapter(true);
+                    }
                   },
                 ),
               ),
@@ -785,6 +784,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     value: currentPageIndex.value.toDouble(),
                     label: currentPageIndex.value.toString(),
                     onChanged: (value) {
+                      currentPageIndex.value = value.toInt();
                       navigateToPage(value.toInt());
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
@@ -806,8 +806,9 @@ class _ReadingPageState extends State<ReadingPage> {
                       color: canGoForward.value ? Colors.white : Colors.grey,
                       size: 35),
                   onPressed: () async {
-                    await navigateToChapter(false);
-                    navigateToPage(1);
+                    if (canGoForward.value) {
+                      await navigateToChapter(false);
+                    }
                   },
                 ),
               ),
