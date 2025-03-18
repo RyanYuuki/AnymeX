@@ -13,7 +13,6 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -64,35 +63,39 @@ class _MyLibraryState extends State<MyLibrary> {
   RxString searchQuery = ''.obs;
   RxInt selectedListIndex = 0.obs;
   RxBool isAnimeSelected = true.obs;
+  Rxn<ServicesType> selectedService = Rxn();
 
   @override
   void initState() {
     super.initState();
-    final handler = Get.find<ServiceHandler>();
+    _initLibraryData();
+    ever(serviceHandler.serviceType, (i) => _initLibraryData(index: i.index));
+    _getPreferences();
+  }
 
-    // Initialize anime data
+  void _initLibraryData({int? index}) {
+    final handler = index ?? Get.find<ServiceHandler>().serviceType.value.index;
+    selectedService.value = ServicesType.values[handler];
+
     customListData.value = offlineStorage.animeCustomListData
         .map((e) => CustomListData(
               listName: e.listName,
               listData: e.listData
-                  .where((item) =>
-                      item.serviceIndex == handler.serviceType.value.index)
+                  .where((item) => item.serviceIndex == handler)
                   .toList(),
             ))
         .toList();
 
     historyData.value = offlineStorage.animeLibrary
         .where((e) =>
-            e.currentEpisode?.currentTrack != null &&
-            e.serviceIndex == handler.serviceType.value.index)
+            e.currentEpisode?.currentTrack != null && e.serviceIndex == handler)
         .toList();
 
     customListDataManga.value = offlineStorage.mangaCustomListData
         .map((e) => CustomListData(
               listName: e.listName,
               listData: e.listData
-                  .where((item) =>
-                      item.serviceIndex == handler.serviceType.value.index)
+                  .where((item) => item.serviceIndex == handler)
                   .toList(),
             ))
         .toList();
@@ -100,12 +103,11 @@ class _MyLibraryState extends State<MyLibrary> {
     historyDataManga.value = offlineStorage.mangaLibrary
         .where((e) =>
             e.currentChapter?.currentOffset != null &&
-            e.serviceIndex == handler.serviceType.value.index)
+            e.serviceIndex == handler)
         .toList();
 
     initialCustomListData.value = customListData;
     initialCustomListMangaData.value = customListDataManga;
-    _getPreferences();
   }
 
   void _getPreferences() {
@@ -509,8 +511,8 @@ class _MyLibraryState extends State<MyLibrary> {
                                     controller: controller,
                                     onChanged: _search,
                                     hintText: isAnimeSelected.value
-                                        ? 'Search Anime...'
-                                        : 'Search Manga...',
+                                        ? 'Search ${selectedService.value == ServicesType.simkl ? 'Movies' : 'Anime'}...'
+                                        : 'Search ${selectedService.value == ServicesType.simkl ? 'Series' : 'Manga'}...',
                                   ),
                                 ),
                               ),
@@ -647,14 +649,16 @@ class _MyLibraryState extends State<MyLibrary> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.movie_outlined,
+                                Icons.movie_filter_rounded,
                                 color: isAnimeSelected.value
                                     ? Theme.of(context).colorScheme.onPrimary
                                     : Colors.grey,
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Anime',
+                                selectedService.value == ServicesType.simkl
+                                    ? 'Movies'
+                                    : 'Anime',
                                 style: TextStyle(
                                   fontFamily: "Poppins-Bold",
                                   fontSize: 16,
@@ -695,14 +699,18 @@ class _MyLibraryState extends State<MyLibrary> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.menu_book_outlined,
+                                selectedService.value == ServicesType.simkl
+                                    ? Iconsax.monitor
+                                    : Icons.menu_book_outlined,
                                 color: !isAnimeSelected.value
                                     ? Theme.of(context).colorScheme.onPrimary
                                     : Colors.grey,
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Manga',
+                                selectedService.value == ServicesType.simkl
+                                    ? 'Series'
+                                    : 'Manga',
                                 style: TextStyle(
                                   fontFamily: "Poppins-Bold",
                                   fontSize: 16,

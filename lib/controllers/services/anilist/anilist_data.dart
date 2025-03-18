@@ -140,16 +140,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
-      // TappableSearchBar(
-      //   onSubmitted: () {
-      //     navigate(() => const SearchPage(
-      //           searchTerm: "",
-      //           isManga: false,
-      //         ));
-      //   },
-      //   chipLabel: "ANIME",
-      //   hintText: "Search Anime...",
-      // ),
       buildBigCarousel(trendingAnimes, false),
       Padding(
         padding: EdgeInsets.only(
