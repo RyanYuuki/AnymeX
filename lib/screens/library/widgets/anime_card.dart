@@ -5,6 +5,7 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -142,46 +143,54 @@ class AnimeHistoryCard extends StatelessWidget {
     return 'Episode ${episode.number}';
   }
 
-  String _formatTime() {
+  double _calculateProgress() {
     if (data.currentEpisode?.durationInMilliseconds == null ||
         data.currentEpisode?.timeStampInMilliseconds == null) {
-      return '--:-- / --:--';
+      return 0.0;
     }
 
-    final duration = Duration(
-        milliseconds: data.currentEpisode!.durationInMilliseconds ?? 0);
-    final timestamp = Duration(
-        milliseconds: data.currentEpisode!.timeStampInMilliseconds ?? 0);
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 1;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+
+    return (timestamp / duration).clamp(0.0, 1.0);
+  }
+
+  String _formatTimeLeft() {
+    if (data.currentEpisode?.durationInMilliseconds == null ||
+        data.currentEpisode?.timeStampInMilliseconds == null) {
+      return '--:--';
+    }
+
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 0;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+    final timeLeft = Duration(milliseconds: duration - timestamp);
 
     String twoDigits(int n) => n.toString().padLeft(2, '0');
 
-    String formatDuration(Duration duration) {
-      final minutes = twoDigits(duration.inMinutes.remainder(60));
-      final seconds = twoDigits(duration.inSeconds.remainder(60));
-      return '$minutes:$seconds';
-    }
+    final minutes = twoDigits(timeLeft.inMinutes.remainder(60));
+    final seconds = twoDigits(timeLeft.inSeconds.remainder(60));
 
-    return '${formatDuration(timestamp)} / ${formatDuration(duration)}';
+    return '$minutes:$seconds left';
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final progress = _calculateProgress();
     final gradientColors = [
       Theme.of(context).colorScheme.surface.withOpacity(0.3),
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
     ];
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        border: Border(
-            right: BorderSide(
-                width: 2, color: Theme.of(context).colorScheme.primary)),
-        borderRadius: BorderRadius.circular(12.multiplyRadius()),
-        color: Theme.of(context).colorScheme.surface.withAlpha(144),
-      ),
+    return AnymexCard(
+      shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: colorScheme.primary.withOpacity(0.3),
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(16)),
+      color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
         onTap: () {
           if (data.currentEpisode == null ||
@@ -213,117 +222,553 @@ class AnimeHistoryCard extends StatelessWidget {
             }
           }
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.multiplyRadius()),
-          child: Stack(children: [
-            // Background image
-            Positioned.fill(
-              child: NetworkSizedImage(
-                imageUrl: data.currentEpisode?.thumbnail ??
-                    data.cover ??
-                    data.poster!,
-                radius: 0,
-                width: double.infinity,
-              ),
-            ),
-            Positioned.fill(
-              child: Blur(
-                blur: 4,
-                blurColor: Colors.transparent,
-                child: Container(),
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: gradientColors)),
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                NetworkSizedImage(
-                  width: getResponsiveSize(context,
-                      mobileSize: 100, dektopSize: 130),
-                  height: getResponsiveSize(context,
-                      mobileSize: 130, dektopSize: 180),
+        child: SizedBox(
+          height: getResponsiveSize(context, mobileSize: 140, dektopSize: 180),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(children: [
+              Positioned.fill(
+                child: NetworkSizedImage(
+                  imageUrl: data.currentEpisode?.thumbnail ??
+                      data.cover ??
+                      data.poster!,
                   radius: 0,
-                  imageUrl: data.poster!,
+                  width: double.infinity,
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                            height: getResponsiveSize(context,
-                                mobileSize: 5, dektopSize: 30)),
-                        AnymexText(
-                          text: _formatEpisodeNumber().toUpperCase(),
-                          size: getResponsiveSize(context,
-                              mobileSize: 18, dektopSize: 20),
-                          variant: TextVariant.bold,
-                          maxLines: 1,
-                          color: Theme.of(context).colorScheme.primary,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        AnymexText(
-                          text: data.currentEpisode?.title ?? '??',
-                          size: 14,
-                          maxLines: 2,
-                          variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
+              ),
+              Positioned.fill(
+                child: Blur(
+                  blur: 4,
+                  blurColor: Colors.transparent,
+                  child: Container(),
                 ),
-              ],
-            ),
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: Row(
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: gradientColors)),
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular((8.multiplyRadius())),
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                    child: AnymexText(
-                      text: formatTimeAgo(
-                          data.currentEpisode?.lastWatchedTime ?? 0),
-                      size: 12,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      variant: TextVariant.bold,
+                  SizedBox(
+                    width: getResponsiveSize(context,
+                        mobileSize: 100, dektopSize: 130),
+                    height: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16.multiplyRadius()),
+                        bottomLeft: Radius.circular(16.multiplyRadius()),
+                      ),
+                      child: NetworkSizedImage(
+                        imageUrl: data.poster!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        radius: 0,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular((8.multiplyRadius())),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: AnymexText(
-                      text: _formatTime(),
-                      size: 12,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      variant: TextVariant.bold,
+                  // Content
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Episode number
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(8.multiplyRadius()),
+                              color: colorScheme.primary,
+                            ),
+                            child: AnymexText(
+                              text: _formatEpisodeNumber(),
+                              size: 12,
+                              variant: TextVariant.bold,
+                              color: colorScheme.onPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          // Episode title
+                          AnymexText(
+                            text:
+                                data.currentEpisode?.title ?? data.name ?? '??',
+                            size: 15,
+                            maxLines: getResponsiveValue(context,
+                                mobileValue: 1, desktopValue: 2),
+                            variant: TextVariant.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          if (data.name != null &&
+                              data.name != data.currentEpisode?.title)
+                            AnymexText(
+                              text: data.name!,
+                              size: 14,
+                              maxLines: 1,
+                              variant: TextVariant.regular,
+                              color: colorScheme.onSurface.withOpacity(0.7),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          const Spacer(),
+                          // Progress indicator
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AnymexText(
+                                    text: formatTimeAgo(
+                                        data.currentEpisode?.lastWatchedTime ??
+                                            0),
+                                    size: 12,
+                                    color:
+                                        colorScheme.onSurface.withOpacity(0.7),
+                                  ),
+                                  AnymexText(
+                                    text: _formatTimeLeft(),
+                                    size: 12,
+                                    color: colorScheme.primary,
+                                    variant: TextVariant.bold,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              // Linear progress bar
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  backgroundColor: colorScheme.surfaceVariant,
+                                  color: colorScheme.primary,
+                                  minHeight: 5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AnimeHistoryCardV3 extends StatelessWidget {
+  final OfflineMedia data;
+
+  const AnimeHistoryCardV3({super.key, required this.data});
+
+  String _formatEpisodeNumber() {
+    final episode = data.currentEpisode;
+    if (episode == null) return 'Episode ??';
+    return 'Episode ${episode.number}';
+  }
+
+  double _calculateProgress() {
+    if (data.currentEpisode?.durationInMilliseconds == null ||
+        data.currentEpisode?.timeStampInMilliseconds == null) {
+      return 0.0;
+    }
+
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 1;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+
+    return (timestamp / duration).clamp(0.0, 1.0);
+  }
+
+  String _formatTimeLeft() {
+    if (data.currentEpisode?.durationInMilliseconds == null ||
+        data.currentEpisode?.timeStampInMilliseconds == null) {
+      return '--:--';
+    }
+
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 0;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+    final timeLeft = Duration(milliseconds: duration - timestamp);
+
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    final minutes = twoDigits(timeLeft.inMinutes.remainder(60));
+    final seconds = twoDigits(timeLeft.inSeconds.remainder(60));
+
+    return '$minutes:$seconds left';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final progress = _calculateProgress();
+
+    return AnymexCard(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: colorScheme.primary.withOpacity(0.3),
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(16.multiplyRadius()),
+      ),
+      color: colorScheme.secondaryContainer.withAlpha(120),
+      child: AnymexOnTap(
+        onTap: () {
+          if (data.currentEpisode == null ||
+              data.currentEpisode?.currentTrack == null ||
+              data.episodes == null ||
+              data.currentEpisode?.videoTracks == null) {
+            snackBar(
+              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+              duration: 2000,
+              maxLines: 3,
+            );
+          } else {
+            if (data.currentEpisode?.source == null) {
+              snackBar("Cant Play since user closed the app abruptly");
+            }
+            final source = Get.find<SourceController>()
+                .getExtensionByName(data.currentEpisode!.source!);
+            if (source == null) {
+              snackBar(
+                  "Install ${data.currentEpisode?.source} First, Then Click");
+            } else {
+              navigate(() => WatchPage(
+                    episodeSrc: data.currentEpisode!.currentTrack!,
+                    episodeList: data.episodes!,
+                    anilistData: convertOfflineToMedia(data),
+                    currentEpisode: data.currentEpisode!,
+                    episodeTracks: data.currentEpisode!.videoTracks!,
+                  ));
+            }
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Thumbnail at the top (horizontal)
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16.multiplyRadius()),
+                topRight: Radius.circular(16.multiplyRadius()),
+              ),
+              child: NetworkSizedImage(
+                imageUrl: data.currentEpisode?.thumbnail ??
+                    data.cover ??
+                    data.poster!,
+                width: double.infinity,
+                height: 130,
+                radius: 0,
+              ),
             ),
-          ]),
+            // Info content below the thumbnail
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Episode number and watched time in the same row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(8.multiplyRadius()),
+                          color: colorScheme.primary,
+                        ),
+                        child: AnymexText(
+                          text: _formatEpisodeNumber(),
+                          size: 12,
+                          variant: TextVariant.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(8.multiplyRadius()),
+                          color: colorScheme.surfaceVariant,
+                        ),
+                        child: AnymexText(
+                          text: formatTimeAgo(
+                              data.currentEpisode?.lastWatchedTime ?? 0),
+                          size: 12,
+                          variant: TextVariant.regular,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Episode title
+                  AnymexText(
+                    text: data.currentEpisode?.title ?? '??',
+                    size: 15,
+                    maxLines: 1,
+                    variant: TextVariant.bold,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  // Anime name if different
+                  if (data.name != null &&
+                      data.name != data.currentEpisode?.title)
+                    AnymexText(
+                      text: data.name!,
+                      size: 13,
+                      maxLines: 1,
+                      variant: TextVariant.regular,
+                      color: colorScheme.onSurface.withOpacity(0.7),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: 12),
+                  // Progress info
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Progress bar with flex for size
+                      Expanded(
+                        flex: 3,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            backgroundColor: colorScheme.surfaceVariant,
+                            color: colorScheme.primary,
+                            minHeight: 6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Time left
+                      AnymexText(
+                        text: _formatTimeLeft(),
+                        size: 12,
+                        color: colorScheme.primary,
+                        variant: TextVariant.bold,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AnimeHistoryCardV2 extends StatelessWidget {
+  final OfflineMedia data;
+
+  const AnimeHistoryCardV2({super.key, required this.data});
+
+  String _formatEpisodeNumber() {
+    final episode = data.currentEpisode;
+    if (episode == null) return 'Episode ??';
+    return 'Episode ${episode.number}';
+  }
+
+  double _calculateProgress() {
+    if (data.currentEpisode?.durationInMilliseconds == null ||
+        data.currentEpisode?.timeStampInMilliseconds == null) {
+      return 0.0;
+    }
+
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 1;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+
+    return (timestamp / duration).clamp(0.0, 1.0);
+  }
+
+  String _formatTimeLeft() {
+    if (data.currentEpisode?.durationInMilliseconds == null ||
+        data.currentEpisode?.timeStampInMilliseconds == null) {
+      return '--:--';
+    }
+
+    final duration = data.currentEpisode!.durationInMilliseconds ?? 0;
+    final timestamp = data.currentEpisode!.timeStampInMilliseconds ?? 0;
+    final timeLeft = Duration(milliseconds: duration - timestamp);
+
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    final minutes = twoDigits(timeLeft.inMinutes.remainder(60));
+    final seconds = twoDigits(timeLeft.inSeconds.remainder(60));
+
+    return '$minutes:$seconds left';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final progress = _calculateProgress();
+
+    return AnymexCard(
+      shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: colorScheme.primary.withOpacity(0.3),
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(16)),
+      color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+      child: AnymexOnTap(
+        onTap: () {
+          if (data.currentEpisode == null ||
+              data.currentEpisode?.currentTrack == null ||
+              data.episodes == null ||
+              data.currentEpisode?.videoTracks == null) {
+            snackBar(
+              "Error: Missing required data. It seems you closed the app directly after watching the episode!",
+              duration: 2000,
+              maxLines: 3,
+            );
+          } else {
+            if (data.currentEpisode?.source == null) {
+              snackBar("Cant Play since user closed the app abruptly");
+            }
+            final source = Get.find<SourceController>()
+                .getExtensionByName(data.currentEpisode!.source!);
+            if (source == null) {
+              snackBar(
+                  "Install ${data.currentEpisode?.source} First, Then Click");
+            } else {
+              navigate(() => WatchPage(
+                    episodeSrc: data.currentEpisode!.currentTrack!,
+                    episodeList: data.episodes!,
+                    anilistData: convertOfflineToMedia(data),
+                    currentEpisode: data.currentEpisode!,
+                    episodeTracks: data.currentEpisode!.videoTracks!,
+                  ));
+            }
+          }
+        },
+        child: SizedBox(
+          height: getResponsiveSize(context, mobileSize: 140, dektopSize: 180),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: getResponsiveSize(context,
+                    mobileSize: 100, dektopSize: 130),
+                height: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16.multiplyRadius()),
+                    bottomLeft: Radius.circular(16.multiplyRadius()),
+                  ),
+                  child: NetworkSizedImage(
+                    imageUrl: data.poster!,
+                    width: double.infinity,
+                    height: double.infinity,
+                    radius: 0,
+                  ),
+                ),
+              ),
+              // Content
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Episode number
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(8.multiplyRadius()),
+                          color: colorScheme.primary,
+                        ),
+                        child: AnymexText(
+                          text: _formatEpisodeNumber(),
+                          size: 12,
+                          variant: TextVariant.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Episode title
+                      AnymexText(
+                        text: data.currentEpisode?.title ?? data.name ?? '??',
+                        size: 15,
+                        maxLines: getResponsiveValue(context,
+                            mobileValue: 1, desktopValue: 2),
+                        variant: TextVariant.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      if (data.name != null &&
+                          data.name != data.currentEpisode?.title)
+                        AnymexText(
+                          text: data.name!,
+                          size: 14,
+                          maxLines: 1,
+                          variant: TextVariant.regular,
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      const Spacer(),
+                      // Progress indicator
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AnymexText(
+                                text: formatTimeAgo(
+                                    data.currentEpisode?.lastWatchedTime ?? 0),
+                                size: 12,
+                                color: colorScheme.onSurface.withOpacity(0.7),
+                              ),
+                              AnymexText(
+                                text: _formatTimeLeft(),
+                                size: 12,
+                                color: colorScheme.primary,
+                                variant: TextVariant.bold,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          // Linear progress bar
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor: colorScheme.surfaceVariant,
+                              color: colorScheme.primary,
+                              minHeight: 5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
