@@ -1,7 +1,7 @@
 name: anymex
 description: "An Anilist Client"
 publish_to: "GitHub"
-version: 2.9.3+6
+version: 2.9.3+7
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
