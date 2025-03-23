@@ -10,6 +10,7 @@
 | **Linux (AppImage)** | Standalone executable for Linux users. |
 | **Linux (RPM)** | For RPM-based Linux distributions like Fedora and CentOS. |
 | **Linux (ZIP)** | Compressed package for manual installation. |
+| **Linux ([AUR](https://aur.archlinux.org/))** | [Binary package](https://aur.archlinux.org/packages/anymex-bin) for Arch Linux. |
 | **Windows (ZIP)** | Portable version for Windows. |
 | **Windows (Installer)** | Standard Windows installer for easy setup. |
 
