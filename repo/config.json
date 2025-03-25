@@ -1,0 +1,9 @@
+{
+    "repo_url": "RyanYuuki/AnymeX",
+    "json_file": "repo/source.json",
+    "app_id": "com.ryan.anymex",
+    "app_name": "AnymeX",
+    "caption": "Update for AnymeX now available!",
+    "tint_colour": "71717A",
+    "image_url": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp"
+}
