@@ -394,7 +394,7 @@ class _MyLibraryState extends State<MyLibrary> {
   }
 
   final RxBool isSearchActive = false.obs;
-  bool _isSearchAnimating = false;
+  final bool _isSearchAnimating = false;
 
   Widget _buildHeader() {
     return Obx(() => Container(
