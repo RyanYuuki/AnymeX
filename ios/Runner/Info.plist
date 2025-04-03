@@ -6,6 +6,8 @@
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
     <string>AnymeX</string>
+    <key>FLTEnableImpeller</key>
+    <false />
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
