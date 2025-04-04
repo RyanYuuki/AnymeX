@@ -4,6 +4,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -63,90 +64,150 @@ class _ExtensionListTileWidgetState
             0;
     final sourceNotEmpty = widget.source.sourceCode?.isNotEmpty ?? false;
 
-    return ListTile(
-      tileColor: Colors.transparent,
-      leading: Container(
-        height: 37,
-        width: 37,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(32),
+    return AnymexCard(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          height: 42,
+          width: 42,
+          decoration: BoxDecoration(
+            color: theme.surfaceVariant,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: theme.shadow.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: widget.source.iconUrl!.isEmpty
+                ? Icon(Icons.extension_rounded, color: theme.primary)
+                : CachedNetworkImage(
+                    imageUrl: widget.source.iconUrl!,
+                    fit: BoxFit.cover,
+                    width: 42,
+                    height: 42,
+                    placeholder: (context, url) => Icon(
+                      Icons.extension_rounded,
+                      color: theme.primary,
+                    ),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.extension_rounded,
+                      color: theme.primary,
+                    ),
+                  ),
+          ),
         ),
-        child: widget.source.iconUrl!.isEmpty
-            ? const Icon(Icons.extension_rounded)
-            : CachedNetworkImage(
-                imageUrl: widget.source.iconUrl!,
-                fit: BoxFit.contain,
-                width: 37,
-                height: 37,
-                placeholder: (context, url) =>
-                    const Icon(Icons.extension_rounded),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.extension_rounded),
-              ),
-      ),
-      title: Text(widget.source.name!),
-      titleTextStyle: TextStyle(
-        color: theme.onSurface,
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.bold,
-        fontSize: 15.0,
-      ),
-      subtitle: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            completeLanguageName(widget.source.lang!.toLowerCase()),
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 10.0,
-            ),
+        title: Text(
+          widget.source.name!,
+          style: TextStyle(
+            color: theme.onSurface,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
           ),
-          const SizedBox(width: 4),
-          Text(
-            widget.source.version!,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 10.0,
-            ),
-          ),
-          if (widget.source.isNsfw!) const SizedBox(width: 4),
-          if (widget.source.isNsfw!)
-            const Text(
-              "(18+)",
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 10.0,
-              ),
-            ),
-          if (widget.source.isObsolete ?? false)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                "OBSOLETE",
-                style: TextStyle(
-                  color: theme.error,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: theme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    completeLanguageName(widget.source.lang!.toLowerCase()),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10.0,
+                      color: theme.primary,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: theme.tertiary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    "v${widget.source.version!}",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10.0,
+                      color: theme.tertiary,
+                    ),
+                  ),
+                ),
+                if (widget.source.isNsfw!) const SizedBox(width: 6),
+                if (widget.source.isNsfw!)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "18+",
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                if (widget.source.isObsolete ?? false) const SizedBox(width: 6),
+                if (widget.source.isObsolete ?? false)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      "OBSOLETE",
+                      style: TextStyle(
+                        color: theme.error,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.0,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-        ],
+          ],
+        ),
+        trailing: _isLoading
+            ? Container(
+                height: 50,
+                width: 50,
+                padding: const EdgeInsets.all(2),
+                child: const Center(
+                    child: AnymexProgressIndicator(strokeWidth: 2.0)),
+              )
+            : _buildButtons(sourceNotEmpty, updateAvailable, theme),
       ),
-      trailing: _isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: AnymexProgressIndicator(strokeWidth: 2.0),
-            )
-          : _BuildButtons(sourceNotEmpty, updateAvailable),
     );
   }
 
-  Widget _BuildButtons(bool sourceNotEmpty, bool updateAvailable) {
+  Widget _buildButtons(
+      bool sourceNotEmpty, bool updateAvailable, ColorScheme theme) {
     void onTap() async {
       if (updateAvailable) {
         setState(() => _isLoading = true);
@@ -197,44 +258,81 @@ class _ExtensionListTileWidgetState
     }
 
     return !sourceNotEmpty
-        ? AnymexOnTap(
-            child: IconButton(
+        ? Container(
+            decoration: BoxDecoration(
+              color: theme.primaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: AnymexOnTap(
+              child: IconButton(
                 onPressed: () => _handleSourceAction(),
-                icon: const Icon(Icons.download)),
+                icon: Icon(
+                  Icons.download,
+                  color: theme.onPrimaryContainer,
+                  size: 20,
+                ),
+                tooltip: "Download",
+              ),
+            ),
           )
-        : SizedBox(
-            width: 84,
+        : Container(
+            width: 100,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                AnymexOnTap(
-                  onTap: onTap,
-                  child: IconButton(
-                    onPressed: onTap,
-                    icon: Icon(
-                      size: 18,
-                      updateAvailable ? Icons.update : Iconsax.trash,
+                Container(
+                  decoration: BoxDecoration(
+                    color: updateAvailable
+                        ? theme.tertiaryContainer
+                        : theme.errorContainer.withAlpha(122),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: AnymexOnTap(
+                    onTap: onTap,
+                    child: IconButton(
+                      onPressed: onTap,
+                      icon: Icon(
+                        size: 18,
+                        updateAvailable ? Icons.update : Iconsax.trash,
+                        color: updateAvailable
+                            ? theme.onTertiaryContainer
+                            : theme.onErrorContainer,
+                      ),
+                      tooltip: updateAvailable ? "Update" : "Delete",
                     ),
                   ),
                 ),
-                AnymexOnTap(
-                  child: IconButton(
-                    onPressed: () async {
-                      var sourcePreference =
-                          getSourcePreference(source: widget.source)
-                              .map((e) => getSourcePreferenceEntry(
-                                  e.key!, widget.source.id!))
-                              .toList();
-                      navigate(
-                        () => SourcePreferenceWidget(
-                          source: widget.source,
-                          sourcePreference: sourcePreference,
-                        ),
-                      );
-                    },
-                    icon: const Icon(Iconsax.setting),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                )
+                  child: AnymexOnTap(
+                    child: IconButton(
+                      onPressed: () async {
+                        var sourcePreference =
+                            getSourcePreference(source: widget.source)
+                                .map((e) => getSourcePreferenceEntry(
+                                    e.key!, widget.source.id!))
+                                .toList();
+                        navigate(
+                          () => SourcePreferenceWidget(
+                            source: widget.source,
+                            sourcePreference: sourcePreference,
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Iconsax.setting,
+                        size: 18,
+                        color: theme.onSecondaryContainer,
+                      ),
+                      tooltip: "Settings",
+                    ),
+                  ),
+                ),
               ],
             ),
           );

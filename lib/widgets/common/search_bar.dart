@@ -23,6 +23,7 @@ class CustomSearchBar extends StatefulWidget {
   final String hintText;
   final EdgeInsets? padding;
   final bool enableGlow;
+  final BoxBorder? border;
 
   const CustomSearchBar({
     super.key,
@@ -40,6 +41,7 @@ class CustomSearchBar extends StatefulWidget {
     this.padding,
     this.focusNode,
     this.enableGlow = true,
+    this.border,
   });
 
   @override

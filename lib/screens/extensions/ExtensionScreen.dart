@@ -4,6 +4,7 @@ import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
+import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
@@ -89,142 +90,238 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: AnymexText(
-                    text: "Add Repository",
-                    size: 20,
-                    variant: TextVariant.semiBold,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color:
-                          Theme.of(context).colorScheme.surfaceContainerHigh),
-                  padding: const EdgeInsets.all(7),
-                  child: Text(
-                    "WARNING: Adding third-party repositories is not encouraged by the developer. Also make sure to add links for both anime and manga, it won’t work if you add only one.",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Anime Repository Input
-                const Padding(
-                  padding: EdgeInsets.only(left: 5, bottom: 5),
-                  child: Text(
-                    "Anime Repository",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                CustomSearchBar(
-                  prefixIcon: Icons.movie_filter_outlined,
-                  controller: animeRepoController,
-                  onSubmitted: (value) {},
-                  hintText: "Add Anime Repo...",
-                  disableIcons: true,
-                  padding: const EdgeInsets.all(0),
-                ),
-
-                const SizedBox(height: 15),
-
-                // Manga Repository Input
-                const Padding(
-                  padding: EdgeInsets.only(left: 5, bottom: 5),
-                  child: Text(
-                    "Manga Repository",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                CustomSearchBar(
-                  prefixIcon: Iconsax.book,
-                  controller: mangaRepoController,
-                  onSubmitted: (value) {},
-                  hintText: "Add Manga Repo...",
-                  disableIcons: true,
-                  padding: const EdgeInsets.all(0),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: AnymexOnTap(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: AnymeXButton(
-                          height: 50,
-                          width: double.infinity,
-                          borderRadius: BorderRadius.circular(30),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          variant: ButtonVariant.outline,
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: const Text("Cancel"),
+                ],
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Handle bar
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: AnymexOnTap(
-                        onTap: () async {
-                          controller.activeAnimeRepo = animeRepoController.text;
-                          controller.activeMangaRepo = mangaRepoController.text;
-                          removeOldData();
-                          _fetchData();
-                          _refreshData();
-                          Get.back();
-                          await removeOldData();
-                        },
-                        child: AnymeXButton(
-                          height: 50,
-                          width: double.infinity,
-                          borderRadius: BorderRadius.circular(30),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          variant: ButtonVariant.outline,
-                          onTap: () async {
-                            controller.activeAnimeRepo =
-                                animeRepoController.text;
-                            controller.activeMangaRepo =
-                                mangaRepoController.text;
-                            await removeOldData();
-                            _fetchData();
-                            _refreshData();
-                            Get.back();
-                          },
-                          child: const Text("Confirm"),
+
+                      // Title and warning
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.storage_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "Repository Settings",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Theme.of(context).colorScheme.errorContainer,
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: Theme.of(context).colorScheme.error,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "Adding third-party repositories is not encouraged by the developer. Ensure you add links for both anime and manga, as using only one won't work.",
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 24),
+
+                      Text(
+                        "Anime Repository",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      CustomSearchBar(
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.5),
+                          width: 1.5,
+                        ),
+                        prefixIcon: Icons.movie_filter_outlined,
+                        controller: animeRepoController,
+                        onSubmitted: (value) {},
+                        hintText: "Enter anime repository URL...",
+                        disableIcons: true,
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      Text(
+                        "Manga Repository",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      CustomSearchBar(
+                        prefixIcon: Iconsax.book,
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.5),
+                          width: 1.5,
+                        ),
+                        controller: mangaRepoController,
+                        onSubmitted: (value) {},
+                        hintText: "Enter manga repository URL...",
+                        disableIcons: true,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 4),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onSurface,
+                                elevation: 0,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                controller.activeAnimeRepo =
+                                    animeRepoController.text;
+                                controller.activeMangaRepo =
+                                    mangaRepoController.text;
+                                await removeOldData();
+                                _fetchData();
+                                _refreshData();
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                                elevation: 0,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                "Save Changes",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -241,6 +338,18 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
+            leading: Center(
+              child: AnymexOnTap(
+                onTap: () => Get.back(),
+                child: Container(
+                    width: 35,
+                    height: 35,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Theme.of(context).colorScheme.surfaceContainer),
+                    child: const Icon(Icons.arrow_back_ios_new_rounded)),
+              ),
+            ),
             title: Text(
               "Extensions",
               style: TextStyle(
