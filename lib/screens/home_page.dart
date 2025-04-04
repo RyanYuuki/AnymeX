@@ -3,6 +3,8 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -50,10 +52,22 @@ class _HomePageState extends State<HomePage> {
               Obx(
                 () => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    'Hey ${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}, What are we doing today?',
-                    style: const TextStyle(
-                        fontSize: 30, fontFamily: 'Poppins-Bold'),
+                  child: AnymexTextSpans(
+                    fontSize: 30,
+                    spans: [
+                      const AnymexTextSpan(
+                          text: 'Hey ', size: 30, variant: TextVariant.bold),
+                      AnymexTextSpan(
+                          text:
+                              '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                          size: 30,
+                          color: Theme.of(context).colorScheme.primary,
+                          variant: TextVariant.bold),
+                      const AnymexTextSpan(
+                          text: ', What are we doing today?',
+                          size: 30,
+                          variant: TextVariant.bold)
+                    ],
                     textAlign: TextAlign.center,
                   ),
                 ),

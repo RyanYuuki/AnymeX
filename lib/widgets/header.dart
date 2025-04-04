@@ -3,6 +3,8 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -124,10 +126,22 @@ class Header extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                        "Hey ${profileData.profileData.value.name ?? "Guest"}, What are we doing today?",
-                        style: const TextStyle(
-                            fontFamily: "Poppins-Bold", fontSize: 24)),
+                    AnymexTextSpans(
+                      fontSize: 24,
+                      spans: [
+                        const AnymexTextSpan(
+                            text: 'Hey ', variant: TextVariant.bold),
+                        AnymexTextSpan(
+                            text:
+                                '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                            color: Theme.of(context).colorScheme.primary,
+                            variant: TextVariant.bold),
+                        const AnymexTextSpan(
+                            text: ', What are we doing today?',
+                            variant: TextVariant.bold)
+                      ],
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 4),
                     const Text(
                         "Find your favourite Anime, Manga, Manhwa or whatever you like!",
