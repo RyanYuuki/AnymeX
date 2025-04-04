@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:developer';
+
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -7,9 +9,11 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/library/widgets/anime_card.dart';
-import 'package:anymex/screens/library/widgets/manga_card.dart';
+import 'package:anymex/screens/library/widgets/history_model.dart';
+import 'package:anymex/screens/library/widgets/unified_history_card.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
+import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
@@ -310,14 +314,19 @@ class _MyLibraryState extends State<MyLibrary> {
                     itemWidth: 400),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 0,
-                mainAxisExtent: getResponsiveSize(context,
-                    mobileSize: 140, dektopSize: 190)),
+                mainAxisExtent: getHistoryCardHeight(
+                    HistoryCardStyle
+                        .values[settingsController.historyCardStyle],
+                    context)),
             delegate: SliverChildBuilderDelegate(
               (context, i) {
-                final animeData = data[i];
-                return isAnimeSelected.value
-                    ? AnimeHistoryCard(data: animeData)
-                    : MangaHistoryCard(data: animeData);
+                final animeData = HistoryModel.fromOfflineMedia(
+                    data[i], !isAnimeSelected.value);
+                return HistoryCardGate(
+                  data: animeData,
+                  cardStyle: HistoryCardStyle
+                      .values[settingsController.historyCardStyle],
+                );
               },
               childCount: data.length,
             ),
@@ -394,7 +403,6 @@ class _MyLibraryState extends State<MyLibrary> {
   }
 
   final RxBool isSearchActive = false.obs;
-  bool _isSearchAnimating = false;
 
   Widget _buildHeader() {
     return Obx(() => Container(
@@ -408,7 +416,6 @@ class _MyLibraryState extends State<MyLibrary> {
                   Stack(
                     alignment: Alignment.centerLeft,
                     children: [
-                      // Title content
                       AnimatedSlide(
                         offset: isSearchActive.value
                             ? const Offset(-1.0, 0)
@@ -441,7 +448,6 @@ class _MyLibraryState extends State<MyLibrary> {
                           ),
                         ),
                       ),
-
                       AnimatedContainer(
                         width: isSearchActive.value
                             ? MediaQuery.of(context).size.width * 0.7

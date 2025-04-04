@@ -67,6 +67,9 @@ class Settings extends GetxController {
   int get cardStyle => _getUISetting((s) => s.cardStyle);
   set cardStyle(int value) => _setUISetting((s) => s?.cardStyle = value);
 
+  int get historyCardStyle => _getUISetting((s) => s.historyCardStyle);
+  set historyCardStyle(int value) => _setUISetting((s) => s?.historyCardStyle = value);
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);
 

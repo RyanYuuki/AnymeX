@@ -55,6 +55,9 @@ class UISettings extends HiveObject {
   @HiveField(16)
   int cardStyle;
 
+  @HiveField(17)
+  int historyCardStyle;
+
   UISettings({
     this.glowMultiplier = 1.0,
     this.radiusMultiplier = 1.0,
@@ -98,5 +101,6 @@ class UISettings extends HiveObject {
     this.enableAnimation = true,
     this.disableGradient = false,
     this.cardStyle = 2,
+    this.historyCardStyle = 0,
   });
 }

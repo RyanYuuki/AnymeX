@@ -46,13 +46,14 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
                 "Planning Animes": false,
                 "Planning Manga": false,
               },
-        cardStyle: fields[16] ?? 2);
+        cardStyle: fields[16] ?? 2,
+        historyCardStyle: fields[17] ?? 2);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(15)
       ..write(obj.homePageCardsMal)
       ..writeByte(16)
-      ..write(obj.cardStyle);
+      ..write(obj.cardStyle)
+      ..writeByte(17)
+      ..write(obj.historyCardStyle);
   }
 
   @override
