@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -160,7 +161,9 @@ class OfflineStorageController extends GetxController {
 
     if (existingAnime != null) {
       existingAnime.episodes = episodes;
+      currentEpisode?.source = sourceController.activeSource.value?.name;
       existingAnime.currentEpisode = currentEpisode;
+
       log('Updated anime: ${existingAnime.name}');
       animeLibrary.remove(existingAnime);
       animeLibrary.insert(0, existingAnime);
@@ -182,6 +185,7 @@ class OfflineStorageController extends GetxController {
 
     if (existingManga != null) {
       existingManga.chapters = chapters;
+      currentChapter?.sourceName = sourceController.activeSource.value?.name;
       existingManga.currentChapter = currentChapter;
       log('Updated manga: ${existingManga.name}');
       mangaLibrary.remove(existingManga);
@@ -199,6 +203,7 @@ class OfflineStorageController extends GetxController {
     OfflineMedia? existingManga = getMangaById(mangaId);
     if (existingManga != null) {
       existingManga.readChapters ??= [];
+      chapter.sourceName = sourceController.activeSource.value?.name;
       int index = existingManga.readChapters!
           .indexWhere((c) => c.number == chapter.number);
       if (index != -1) {
@@ -222,6 +227,7 @@ class OfflineStorageController extends GetxController {
       existingAnime.watchedEpisodes ??= [];
       int index = existingAnime.watchedEpisodes!
           .indexWhere((e) => e.number == episode.number);
+      episode.source = sourceController.activeSource.value?.name;
       if (index != -1) {
         episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
         existingAnime.watchedEpisodes![index] = episode;
