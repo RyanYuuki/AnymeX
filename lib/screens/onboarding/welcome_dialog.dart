@@ -182,7 +182,7 @@ Widget _buildIcon(BuildContext context, String url) {
       radius: 11,
       backgroundColor: Colors.transparent,
       child: Image.asset(
-        url,
+        'assets/images/$url',
         color: Theme.of(context).colorScheme.primary,
       ),
     ),

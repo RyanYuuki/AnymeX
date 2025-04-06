@@ -7,7 +7,7 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 
-enum MediaType{ anime, manga, novel, unknown }
+enum MediaType { manga, anime, novel }
 
 class Media {
   String id;
@@ -234,7 +234,7 @@ class Media {
         ? MediaType.anime
         : json['type'] == "MANGA"
             ? MediaType.manga
-            : MediaType.unknown;
+            : MediaType.novel;
     return Media(
       id: json['id'].toString(),
       romajiTitle: json['title']['romaji'] ?? '?',

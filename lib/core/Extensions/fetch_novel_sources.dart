@@ -9,13 +9,10 @@ part 'fetch_novel_sources.g.dart';
 @riverpod
 Future fetchNovelSourcesList(Ref ref, {int? id, required reFresh}) async {
   var repo = sourceController.activeNovelRepo;
-  if (reFresh) {
-    await fetchSourcesList(
-      sourcesIndexUrl: repo,
-      refresh: reFresh,
-      id: id,
-      ref: ref,
-      itemType: MediaType.novel,
-    );
-  }
+  await fetchSourcesList(
+    sourcesIndexUrl: repo,
+    id: id,
+    ref: ref,
+    itemType: MediaType.novel,
+  );
 }

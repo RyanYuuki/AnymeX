@@ -9,13 +9,10 @@ part 'fetch_manga_sources.g.dart';
 Future fetchMangaSourcesList(FetchMangaSourcesListRef ref,
     {int? id, required reFresh}) async {
   var repo = sourceController.activeMangaRepo;
-  if (reFresh) {
-    await fetchSourcesList(
-      sourcesIndexUrl: repo,
-      refresh: reFresh,
-      id: id,
-      ref: ref,
-      itemType: MediaType.manga,
-    );
-  }
+  await fetchSourcesList(
+    sourcesIndexUrl: repo,
+    id: id,
+    ref: ref,
+    itemType: MediaType.manga,
+  );
 }

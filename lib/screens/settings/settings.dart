@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/main.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -17,7 +18,6 @@ import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -144,6 +144,7 @@ Future<void> showClearCacheDialog(BuildContext context) async {
             onPressed: () async {
               Get.find<OfflineStorageController>().clearCache();
               Provider.of<ThemeProvider>(context, listen: false).clearCache();
+              isar.writeTxn(() => isar.clear());
               Navigator.of(context).pop();
             },
             child: const Text(

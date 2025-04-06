@@ -9,13 +9,10 @@ part 'fetch_anime_sources.g.dart';
 Future fetchAnimeSourcesList(FetchAnimeSourcesListRef ref,
     {int? id, required bool reFresh}) async {
   var repo = sourceController.activeAnimeRepo;
-  if (reFresh) {
-    await fetchSourcesList(
-      sourcesIndexUrl: repo,
-      refresh: reFresh,
-      id: id,
-      ref: ref,
-      itemType: MediaType.anime,
-    );
-  }
+  await fetchSourcesList(
+    sourcesIndexUrl: repo,
+    id: id,
+    ref: ref,
+    itemType: MediaType.anime,
+  );
 }

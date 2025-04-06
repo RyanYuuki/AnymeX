@@ -9,6 +9,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -105,17 +106,18 @@ void handleDeepLink(Uri uri) {
 
     if (repoUrl != null) {
       settings.activeAnimeRepo = repoUrl;
-      Extensions().addRepo(false, repoUrl);
+      Extensions().addRepo(MediaType.anime, repoUrl);
     }
     if (mangaUrl != null) {
       settings.activeMangaRepo = mangaUrl;
-      Extensions().addRepo(true, mangaUrl);
+      Extensions().addRepo(MediaType.manga, mangaUrl);
     }
     if (novelUrl != null) {
       settings.activeNovelRepo = novelUrl;
+      Extensions().addRepo(MediaType.novel, novelUrl);
     }
 
-    if (repoUrl != null || mangaUrl != null) {
+    if (repoUrl != null || mangaUrl != null || novelUrl != null) {
       snackBar("Added Repo Links Successfully!");
     } else {
       snackBar("Missing required parameters in the link.");

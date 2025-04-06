@@ -1,4 +1,5 @@
 import 'package:anymex/core/Eval/dart/model/source_preference.dart';
+import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -48,8 +49,12 @@ class _ExtensionListTileWidgetState
         ? await ref.watch(
             fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
                 .future)
-        : await ref.watch(
-            fetchAnimeSourcesListProvider(id: widget.source.id, reFresh: true)
+        : widget.mediaType == MediaType.anime
+            ? await ref.watch(fetchAnimeSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
+                .future)
+            : await ref.watch(fetchNovelSourcesListProvider(
+                    id: widget.source.id, reFresh: true)
                 .future);
 
     if (mounted) setState(() => _isLoading = false);

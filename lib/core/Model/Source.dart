@@ -89,7 +89,7 @@ class Source {
       this.sourceCode = '',
       this.headers = '',
       this.isManga = true,
-      this.itemType = MediaType.manga,
+      this.itemType = MediaType.anime,
       this.appMinVerReq = "",
       this.additionalParams = "",
       this.isLocal = false,
@@ -109,7 +109,7 @@ class Source {
     isAdded = json['isAdded'];
     isFullData = json['isFullData'];
     isManga = json['isManga'];
-    itemType = MediaType.values[json['itemType'] ?? 0];
+    itemType = MediaType.values[json['itemType'] ?? 1];
     isNsfw = json['isNsfw'];
     isPinned = json['isPinned'];
     lang = json['lang'];

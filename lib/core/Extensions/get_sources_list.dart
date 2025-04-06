@@ -3,32 +3,32 @@ import 'dart:convert';
 import 'package:anymex/models/Media/media.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import '../../../main.dart';
+
+import '../../main.dart';
+import '../Eval/dart/service.dart';
+import '../Eval/javascript/service.dart';
 import '../Model/Source.dart';
 import '../http/m_client.dart';
-import '../lib.dart';
 
 Future<void> fetchSourcesList(
     {int? id,
-    required bool refresh,
     required String sourcesIndexUrl,
     required Ref ref,
     required MediaType itemType}) async {
   final http = MClient.init(reqcopyWith: {'useDartHttpClient': true});
-  final req = await http.get(Uri.parse(sourcesIndexUrl.trim()));
+  final req = await http.get(Uri.parse(sourcesIndexUrl));
 
   final sourceList =
       (jsonDecode(req.body) as List).map((e) => Source.fromJson(e)).toList();
 
   isar.writeTxnSync(() async {
     for (var source in sourceList) {
-      if (source.itemType == itemType) {
+      if ((source.itemType == itemType)) {
         if (id != null) {
           if (id == source.id) {
             final sourc = isar.sources.getSync(id)!;
             final req = await http.get(Uri.parse(source.sourceCodeUrl!));
-            final headers =
-                getExtensionService(source..sourceCode = req.body).getHeaders();
+            final headers = getSourceHeaders(source..sourceCode = req.body);
             isar.writeTxnSync(() {
               isar.sources.putSync(sourc
                 ..headers = jsonEncode(headers)
@@ -46,27 +46,27 @@ Future<void> fetchSourcesList(
                 ..lang = source.lang
                 ..isNsfw = source.isNsfw
                 ..name = source.name
+                ..itemType = source.itemType
                 ..version = source.version
                 ..versionLast = source.version
-                ..itemType = itemType
                 ..isManga = source.isManga
                 ..isFullData = source.isFullData ?? false
                 ..appMinVerReq = source.appMinVerReq
                 ..sourceCodeLanguage = source.sourceCodeLanguage
-                ..additionalParams = source.additionalParams ?? ""
-                ..isObsolete = false);
+                ..additionalParams = source.additionalParams ?? "");
             });
+            // log("successfully installed or updated");
           }
         } else if (isar.sources.getSync(source.id!) != null) {
+          // log("exist");
           final sourc = isar.sources.getSync(source.id!)!;
           if (sourc.isAdded!) {
             if (compareVersions(sourc.version!, source.version!) < 0) {
-              // TODO: Add Auto Update
-              if (true) {
+              // log("update aivalable auto update");
+              if (4 / 1 == 0) {
+                // auto Update
                 final req = await http.get(Uri.parse(source.sourceCodeUrl!));
-                final headers =
-                    getExtensionService(source..sourceCode = req.body)
-                        .getHeaders();
+                final headers = getSourceHeaders(source..sourceCode = req.body);
                 isar.writeTxnSync(() {
                   isar.sources.putSync(sourc
                     ..headers = jsonEncode(headers)
@@ -83,18 +83,18 @@ Future<void> fetchSourcesList(
                     ..typeSource = source.typeSource
                     ..lang = source.lang
                     ..isNsfw = source.isNsfw
+                    ..itemType = source.itemType
                     ..name = source.name
                     ..version = source.version
                     ..versionLast = source.version
-                    ..itemType = itemType
                     ..isManga = source.isManga
                     ..isFullData = source.isFullData ?? false
                     ..appMinVerReq = source.appMinVerReq
                     ..sourceCodeLanguage = source.sourceCodeLanguage
-                    ..additionalParams = source.additionalParams ?? ""
-                    ..isObsolete = false);
+                    ..additionalParams = source.additionalParams ?? "");
                 });
               } else {
+                // log("update aivalable");
                 isar.sources.putSync(sourc..versionLast = source.version);
               }
             }
@@ -115,13 +115,12 @@ Future<void> fetchSourcesList(
             ..isNsfw = source.isNsfw
             ..name = source.name
             ..version = source.version
+            ..itemType = source.itemType
             ..versionLast = source.version
-            ..itemType = itemType
             ..isManga = source.isManga
             ..sourceCodeLanguage = source.sourceCodeLanguage
             ..isFullData = source.isFullData ?? false
-            ..appMinVerReq = source.appMinVerReq
-            ..isObsolete = false);
+            ..appMinVerReq = source.appMinVerReq);
           // log("new source");
         }
       }
@@ -130,18 +129,20 @@ Future<void> fetchSourcesList(
   checkIfSourceIsObsolete(sourceList, itemType);
 }
 
-void checkIfSourceIsObsolete(List<Source> sourceList, MediaType itemType) {
+void checkIfSourceIsObsolete(List<Source> sourceList, MediaType isManga) {
   for (var source in isar.sources
       .filter()
       .idIsNotNull()
-      .itemTypeEqualTo(itemType)
+      .itemTypeEqualTo(isManga)
       .findAllSync()) {
     if (sourceList.isNotEmpty && !(source.isLocal ?? false)) {
       final ids =
           sourceList.where((e) => e.id != null).map((e) => e.id).toList();
       if (ids.isNotEmpty) {
-        isar.writeTxnSync(() => isar.sources
-            .putSync(source..isObsolete = !ids.contains(source.id)));
+        if (!ids.contains(source.id)) {
+          isar.writeTxnSync(
+              () => isar.sources.putSync(source..isObsolete = true));
+        }
       }
     }
   }
@@ -175,4 +176,14 @@ int compareVersions(String version1, String version2) {
   }
 
   return 0;
+}
+
+Map<String, String> getSourceHeaders(Source source) {
+  Map<String, String> headers = {};
+  if (source.sourceCodeLanguage == SourceCodeLanguage.javascript) {
+    headers = JsExtensionService(source).getHeaders();
+  } else {
+    headers = DartExtensionService(source).getHeaders();
+  }
+  return headers;
 }

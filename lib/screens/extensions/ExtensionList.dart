@@ -1,3 +1,4 @@
+import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -42,6 +43,9 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
     } else if (widget.mediaType == MediaType.anime) {
       return await ref.refresh(
           fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
+    } else {
+      return await ref.refresh(
+          fetchNovelSourcesListProvider(id: null, reFresh: true).future);
     }
   }
 
@@ -50,6 +54,8 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
     } else if (widget.mediaType == MediaType.anime) {
       ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
+    } else {
+      ref.watch(fetchNovelSourcesListProvider(id: null, reFresh: false));
     }
   }
 

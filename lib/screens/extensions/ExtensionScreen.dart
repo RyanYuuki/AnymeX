@@ -9,6 +9,7 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   void initState() {
     super.initState();
     _checkPermission();
-    _tabBarController = TabController(length: 4, vsync: this);
+    _tabBarController = TabController(length: 6, vsync: this);
     _tabBarController.animateTo(0);
     _tabBarController.addListener(() {
       setState(() {
@@ -82,6 +83,9 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     );
     final mangaRepoController = TextEditingController(
       text: controller.activeMangaRepo,
+    );
+    final novelRepoController = TextEditingController(
+      text: controller.activeNovelRepo,
     );
 
     showModalBottomSheet(
@@ -241,6 +245,33 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 0, vertical: 4),
                       ),
+                      const SizedBox(height: 20),
+
+                      Text(
+                        "Novel Repository",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      CustomSearchBar(
+                        prefixIcon: Iconsax.book,
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.5),
+                          width: 1.5,
+                        ),
+                        controller: novelRepoController,
+                        onSubmitted: (value) {},
+                        hintText: "Enter novel repository URL...",
+                        disableIcons: true,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 4),
+                      ),
 
                       const SizedBox(height: 32),
 
@@ -335,18 +366,23 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
-            leading: Center(
-              child: AnymexOnTap(
-                onTap: () => Get.back(),
-                child: Container(
-                    width: 35,
-                    height: 35,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Theme.of(context).colorScheme.surfaceContainer),
-                    child: const Icon(Icons.arrow_back_ios_new_rounded)),
-              ),
-            ),
+            leading: getResponsiveValue(context,
+                mobileValue: Center(
+                  child: AnymexOnTap(
+                    onTap: () => Get.back(),
+                    child: Container(
+                        width: 35,
+                        height: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer),
+                        child: const Icon(Icons.arrow_back_ios_new_rounded)),
+                  ),
+                ),
+                desktopValue: const SizedBox.shrink()),
+            leadingWidth: getResponsiveValue(context,
+                mobileValue: null, desktopValue: 0.0),
             title: Text(
               "Extensions",
               style: TextStyle(
@@ -402,14 +438,12 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                 tabAlignment: TabAlignment.start,
                 dragStartBehavior: DragStartBehavior.start,
                 tabs: [
-                  _buildTab(
-                      context, MediaType.anime, "Installed Anime", false, true),
-                  _buildTab(context, MediaType.anime, "Available Anime", false,
-                      false),
-                  _buildTab(
-                      context, MediaType.manga, "Installed Manga", true, true),
-                  _buildTab(
-                      context, MediaType.manga, "Available Manga", true, false),
+                  _buildTab(context, MediaType.anime, "Installed Anime", true),
+                  _buildTab(context, MediaType.anime, "Available Anime", false),
+                  _buildTab(context, MediaType.manga, "Installed Manga", true),
+                  _buildTab(context, MediaType.manga, "Available Manga", false),
+                  _buildTab(context, MediaType.novel, "Installed Novel", true),
+                  _buildTab(context, MediaType.novel, "Available Novel", false),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -447,18 +481,18 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       mediaType: MediaType.manga,
                       selectedLanguage: _selectedLanguage,
                     ),
-                    // Extension(
-                    //   installed: true,
-                    //   query: _textEditingController.text,
-                    //   MediaType: MediaType.novel,
-                    //   selectedLanguage: _selectedLanguage,
-                    // ),
-                    // Extension(
-                    //   installed: false,
-                    //   query: _textEditingController.text,
-                    //   MediaType: MediaType.novel,
-                    //   selectedLanguage: _selectedLanguage,
-                    // ),
+                    Extension(
+                      installed: true,
+                      query: _textEditingController.text,
+                      mediaType: MediaType.novel,
+                      selectedLanguage: _selectedLanguage,
+                    ),
+                    Extension(
+                      installed: false,
+                      query: _textEditingController.text,
+                      mediaType: MediaType.novel,
+                      selectedLanguage: _selectedLanguage,
+                    ),
                   ],
                 ),
               ),
@@ -469,8 +503,8 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     );
   }
 
-  Widget _buildTab(BuildContext context, MediaType MediaType, String label,
-      bool isManga, bool installed) {
+  Widget _buildTab(
+      BuildContext context, MediaType mediaType, String label, bool installed) {
     return Tab(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -485,7 +519,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
           ),
           const SizedBox(width: 8),
           _extensionUpdateNumbers(
-              context, MediaType, installed, _selectedLanguage),
+              context, mediaType, installed, _selectedLanguage),
         ],
       ),
     );
@@ -501,7 +535,7 @@ Widget _extensionUpdateNumbers(BuildContext context, MediaType mediaType,
         .and()
         .isAddedEqualTo(installed)
         .isActiveEqualTo(true)
-        .isMangaEqualTo(mediaType == MediaType.manga)
+        .itemTypeEqualTo(mediaType)
         .watch(fireImmediately: true),
     builder: (context, snapshot) {
       if (snapshot.hasData && snapshot.data!.isNotEmpty) {
