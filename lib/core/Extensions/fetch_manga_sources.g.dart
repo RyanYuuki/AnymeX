@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: deprecated_member_use
-
 part of 'fetch_manga_sources.dart';
 
 // **************************************************************************
@@ -9,7 +7,7 @@ part of 'fetch_manga_sources.dart';
 // **************************************************************************
 
 String _$fetchMangaSourcesListHash() =>
-    r'9c17a230c69c18c07a68f566d295bfc7316dc6b7';
+    r'f66f3011e72a3b234d7729ef203fc5f255870db3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -157,6 +155,7 @@ class FetchMangaSourcesListProvider extends AutoDisposeFutureProvider<Object?> {
   }
 }
 
+// ignore: unused_element
 mixin FetchMangaSourcesListRef on AutoDisposeFutureProviderRef<Object?> {
   /// The parameter `id` of this provider.
   int? get id;
@@ -177,4 +176,4 @@ class _FetchMangaSourcesListProviderElement
   dynamic get reFresh => (origin as FetchMangaSourcesListProvider).reFresh;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

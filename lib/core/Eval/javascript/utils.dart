@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:anymex/core/Eval/javascript/http.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:js_packer/js_packer.dart';
 
 import '../../cryptoaes/js_unpacker.dart';
-import '../../log.dart';
 import '../dart/model/m_bridge.dart';
 
 class JsUtils {
@@ -13,7 +14,7 @@ class JsUtils {
 
   void init() {
     runtime.onMessage('log', (dynamic args) {
-      Logger.add(LoggerLevel.warning, "${args[0]}");
+      log("${args[0]}");
       return null;
     });
     runtime.onMessage('cryptoHandler', (dynamic args) {
@@ -28,19 +29,18 @@ class JsUtils {
     runtime.onMessage('deobfuscateJsPassword', (dynamic args) {
       return MBridge.deobfuscateJsPassword(args[0]);
     });
-    runtime.onMessage('evaluateJavascriptViaWebview', (dynamic args) async {
-      return await MBridge.evaluateJavascriptViaWebview(
-          args[0]!,
-          (args[1]! as Map).toMapStringString!,
-          (args[2]! as List).map((e) => e.toString()).toList());
-    });
     runtime.onMessage('unpackJsAndCombine', (dynamic args) {
       return JsUnpacker.unpackAndCombine(args[0]) ?? "";
     });
     runtime.onMessage('unpackJs', (dynamic args) {
       return JSPacker(args[0]).unpack() ?? "";
     });
-
+    runtime.onMessage('evaluateJavascriptViaWebview', (dynamic args) async {
+      return await MBridge.evaluateJavascriptViaWebview(
+          args[0]!,
+          (args[1]! as Map).toMapStringString!,
+          (args[2]! as List).map((e) => e.toString()).toList());
+    });
     runtime.evaluate('''
 console.log = function (message) {
     if (typeof message === "object") {

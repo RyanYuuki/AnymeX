@@ -5,6 +5,7 @@ import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class CharactersCarousel extends StatelessWidget {
   final List<Character> characters;
@@ -34,7 +35,7 @@ class CharactersCarousel extends StatelessWidget {
         const SizedBox(height: 15),
         SizedBox(
           height: isDesktop ? 290 : 210,
-          child: ListView.builder(
+          child: SuperListView.builder(
             itemCount: characters.length,
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
@@ -137,7 +138,7 @@ class CharactersCarousel extends StatelessWidget {
           const SizedBox(height: 15),
           SizedBox(
             height: isDesktop ? 290 : 230,
-            child: ListView.builder(
+            child: SuperListView.builder(
               itemCount: characters.length,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.only(left: 20),

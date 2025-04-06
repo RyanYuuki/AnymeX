@@ -52,7 +52,9 @@ class Header extends StatelessWidget {
                 children: [
                   Text("${getGreeting()},"),
                   Text(profileData.profileData.value.name ?? 'Guest',
-                      style: const TextStyle(fontFamily: "Poppins-SemiBold")),
+                      style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          color: Theme.of(context).colorScheme.primary)),
                 ],
               ),
               const Spacer(),

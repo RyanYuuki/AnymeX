@@ -1,5 +1,7 @@
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 
 void showFilterBottomSheet(
     BuildContext context, Function(dynamic args) onApplyFilter,
@@ -273,7 +275,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
           const SizedBox(height: 10),
           SizedBox(
             height: 40,
-            child: ListView(
+            child: SuperListView(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               children: genres

@@ -37,6 +37,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -939,7 +940,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         context: context,
         backgroundColor: Theme.of(context).colorScheme.surface,
         builder: (context) {
-          return ListView(
+          return SuperListView(
             padding: const EdgeInsets.all(20.0),
             children: [
               const Center(
@@ -952,7 +953,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               const SizedBox(height: 10),
               episode.value.audios != null
                   ? const SizedBox.shrink()
-                  : ListView.builder(
+                  : SuperListView.builder(
                       shrinkWrap: true,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       physics: const NeverScrollableScrollPhysics(),
@@ -1618,7 +1619,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 const SizedBox(height: 16),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.7,
-                  child: ListView.builder(
+                  child: SuperListView.builder(
                     shrinkWrap: true,
                     itemCount: cursedSpeed.length,
                     itemBuilder: (context, index) {

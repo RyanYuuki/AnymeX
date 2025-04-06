@@ -87,19 +87,24 @@ class SourceController extends GetxController implements BaseService {
   Future<void> initExtensions({bool refresh = true}) async {
     try {
       final container = ProviderContainer();
-      final extensions =
-          await container.read(getExtensionsStreamProvider(false).future);
-      final mangaExtensions =
-          await container.read(getExtensionsStreamProvider(true).future);
+      final extensions = await container
+          .read(getExtensionsStreamProvider(MediaType.anime).future);
+      final mangaExtensions = await container
+          .read(getExtensionsStreamProvider(MediaType.manga).future);
+      final novelExtensions = await container
+          .read(getExtensionsStreamProvider(MediaType.novel).future);
 
       installedExtensions.value =
           extensions.where((e) => e.isAdded ?? false).toList();
       installedMangaExtensions.value =
           mangaExtensions.where((e) => e.isAdded ?? false).toList();
+      installedNovelExtensions.value =
+          novelExtensions.where((e) => e.isAdded ?? false).toList();
 
       final box = Hive.box('themeData');
       final savedActiveSourceId = box.get('activeSourceId') as int?;
       final savedActiveMangaSourceId = box.get('activeMangaSourceId') as int?;
+      final savedActiveNovelSourceId = box.get('activeNovelSourceId') as int?;
       isExtensionsServiceAllowed.value =
           box.get('extensionsServiceAllowed', defaultValue: false);
 
@@ -107,6 +112,8 @@ class SourceController extends GetxController implements BaseService {
           .firstWhereOrNull((source) => source.id == savedActiveSourceId);
       activeMangaSource.value = installedMangaExtensions
           .firstWhereOrNull((source) => source.id == savedActiveMangaSourceId);
+      activeNovelSource.value = installedNovelExtensions
+          .firstWhereOrNull((source) => source.id == savedActiveNovelSourceId);
 
       if (activeSource.value == null && installedExtensions.isNotEmpty) {
         activeSource.value = installedExtensions[0];
@@ -114,6 +121,10 @@ class SourceController extends GetxController implements BaseService {
       if (activeMangaSource.value == null &&
           installedMangaExtensions.isNotEmpty) {
         activeMangaSource.value = installedMangaExtensions[0];
+      }
+      if (activeNovelSource.value == null &&
+          installedNovelExtensions.isNotEmpty) {
+        activeNovelSource.value = installedNovelExtensions[0];
       }
 
       _activeAnimeRepo.value = box.get("activeAnimeRepo", defaultValue: '');
@@ -128,14 +139,18 @@ class SourceController extends GetxController implements BaseService {
   }
 
   void setActiveSource(Source source) {
-    if (source.isManga!) {
+    if (source.itemType == MediaType.manga) {
       activeMangaSource.value = source;
       Hive.box('themeData').put('activeMangaSourceId', source.id);
       lastUpdatedSource.value = 'MANGA';
-    } else {
+    } else if (source.itemType == MediaType.anime) {
       activeSource.value = source;
       Hive.box('themeData').put('activeSourceId', source.id);
       lastUpdatedSource.value = 'ANIME';
+    } else {
+      activeSource.value = source;
+      Hive.box('themeData').put('activeNovelSourceId', source.id);
+      lastUpdatedSource.value = 'NOVEL';
     }
   }
 
@@ -165,6 +180,21 @@ class SourceController extends GetxController implements BaseService {
       return activeMangaSource.value;
     }
     lastUpdatedSource.value = 'MANGA';
+    return null;
+  }
+
+  Source? getNovelExtensionByName(String name) {
+    final selectedNovelSource = installedNovelExtensions.firstWhereOrNull(
+        (source) =>
+            '${source.name} (${source.lang?.toUpperCase()})' == name ||
+            source.name == name);
+
+    if (selectedNovelSource != null) {
+      activeNovelSource.value = selectedNovelSource;
+      Hive.box('themeData').put('activeNovelSourceId', selectedNovelSource.id);
+      return activeNovelSource.value;
+    }
+    lastUpdatedSource.value = 'NOVEL';
     return null;
   }
 
@@ -292,7 +322,9 @@ class SourceController extends GetxController implements BaseService {
 
   @override
   Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters, dynamic args}) async {
+      {bool isManga = false,
+      Map<String, dynamic>? filters,
+      dynamic args}) async {
     final data = await m.search(
         source: (isManga ? activeMangaSource.value : activeSource.value)!,
         query: query,

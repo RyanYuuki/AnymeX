@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-import '../main.dart';
+import '../../main.dart';
 import 'Eval/dart/model/source_preference.dart';
 import 'Model/Source.dart';
 import 'get_source_preference.dart';

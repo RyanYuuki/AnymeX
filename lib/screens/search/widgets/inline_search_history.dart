@@ -6,6 +6,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class InlineSearchHistory extends StatelessWidget {
   final RxList<String> searchTerms;
@@ -47,7 +48,7 @@ class InlineSearchHistory extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return ListView(
+    return SuperListView(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       children: [
         Row(
@@ -96,7 +97,7 @@ class InlineSearchHistory extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: ListView.builder(
+          child: SuperListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             // padding: const EdgeInsets.symmetric(vertical: 8),

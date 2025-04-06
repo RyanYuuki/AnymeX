@@ -1,8 +1,7 @@
 import 'package:anymex/utils/string_extensions.dart';
-
 import 'package:http_interceptor/http_interceptor.dart';
 
-import '../../models/Offline/Hive/video.dart';
+import 'package:anymex/models/Offline/Hive/video.dart';
 import '../http/m_client.dart';
 import '../xpath_selector.dart';
 

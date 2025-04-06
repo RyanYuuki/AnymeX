@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../../core/Eval/dart/model/source_preference.dart';
 import '../../../core/Model/Source.dart';
@@ -41,7 +42,7 @@ class _SourcePreferenceWidgetState extends State<SourcePreferenceWidget> {
               ? const Center(
                   child: Text("No Settings Available"),
                 )
-              : ListView.builder(
+              : SuperListView.builder(
                   shrinkWrap: true,
                   itemCount: widget.sourcePreference.length,
                   itemBuilder: (context, index) {
@@ -244,7 +245,7 @@ class _SourcePreferenceWidgetState extends State<SourcePreferenceWidget> {
         title: Text(pref.title!),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.8,
-          child: ListView.builder(
+          child: SuperListView.builder(
             shrinkWrap: true,
             itemCount: pref.entries!.length,
             itemBuilder: (context, index) {
@@ -278,7 +279,7 @@ class _SourcePreferenceWidgetState extends State<SourcePreferenceWidget> {
               title: Text(pref.title!),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
-                child: ListView.builder(
+                child: SuperListView.builder(
                   shrinkWrap: true,
                   itemCount: pref.entries!.length,
                   itemBuilder: (context, index) {

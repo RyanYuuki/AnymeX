@@ -5,6 +5,8 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 
 class SettingsCommon extends StatefulWidget {
   const SettingsCommon({super.key});
@@ -90,7 +92,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
             child: Obx(() {
               final homePageCards =
                   isMal ? settings.homePageCardsMal : settings.homePageCards;
-              return ListView.builder(
+              return SuperListView.builder(
                 shrinkWrap: true,
                 itemCount: homePageCards.length,
                 itemBuilder: (context, index) {

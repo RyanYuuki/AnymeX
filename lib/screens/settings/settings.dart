@@ -16,6 +16,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -30,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
-          body: ListView(
+          body: SuperListView(
         padding: getResponsiveValue(context,
             mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),

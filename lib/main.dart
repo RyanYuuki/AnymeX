@@ -46,6 +46,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:uni_links_desktop/uni_links_desktop.dart';
 import 'package:window_manager/window_manager.dart';
@@ -324,7 +325,7 @@ class _FilterScreenState extends State<FilterScreen> {
         children: [
           Obx(() => SizedBox(
               width: 120,
-              child: ListView(
+              child: SuperListView(
                 children: [
                   ResponsiveNavBar(
                     fit: true,

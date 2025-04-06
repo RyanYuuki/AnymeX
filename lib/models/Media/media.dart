@@ -7,7 +7,7 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 
-enum MediaType { anime, manga, novel, unknown }
+enum MediaType{ anime, manga, novel, unknown }
 
 class Media {
   String id;

@@ -7,6 +7,8 @@ import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 import 'package:get/get.dart';
 
 enum HistoryCardStyle { regular, blurred, bootiful }
@@ -91,7 +93,7 @@ class _HistoryCardSelectorState extends State<HistoryCardSelector> {
       children: [
         SizedBox(
           height: 50,
-          child: ListView(
+          child: SuperListView(
             scrollDirection: Axis.horizontal,
             children: HistoryCardStyle.values
                 .map((style) => Padding(

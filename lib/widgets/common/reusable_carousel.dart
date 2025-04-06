@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class ReusableCarousel extends StatefulWidget {
   final List<dynamic> data;
@@ -124,7 +125,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       return SizedBox(
         height: getCardHeight(CardStyle.values[settingsController.cardStyle],
             getPlatform(context)),
-        child: ListView.builder(
+        child: SuperListView.builder(
           itemCount: processedData.length,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),

@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';

@@ -65,12 +65,16 @@ dependencies:
   flutter_markdown: ^0.7.6
   device_info_plus: ^11.2.2
   uni_links: ^0.5.1
-  uni_links_desktop:
-    git:
-      url: https://github.com/leanflutter/uni_links_desktop.git
-      ref: main
+  uni_links_desktop: any
   outlined_text: ^1.0.1
+  super_sliver_list: ^0.4.1
 
+  html: any
+  path: any
+  crypto: any
+  path_provider: any
+  package_info_plus: any
+  url_launcher: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -85,14 +89,14 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: false
-  ios: true
+  ios: false
   image_path: "assets/images/logo.png"
   windows:
     generate: true
     image_path: "assets/images/logo.png"
-    icon_size: 48
+    icon_size: 256
   macos:
-    generate: true
+    generate: false
     image_path: "assets/images/logo.png"
 
 flutter:

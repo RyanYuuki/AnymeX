@@ -88,7 +88,7 @@
 //                     size: 20,
 //                   ),
 //                 )
-//               : ListView.builder(
+//               : SuperListView.builder(
 //                   shrinkWrap: true,
 //                   padding: const EdgeInsets.only(top: 10),
 //                   itemCount: searchData.length,

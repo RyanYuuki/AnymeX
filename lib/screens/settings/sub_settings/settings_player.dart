@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 import 'package:outlined_text/outlined_text.dart';
 
 class SettingsPlayer extends StatefulWidget {
@@ -69,7 +71,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                   const SizedBox(height: 16),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: ListView.builder(
+                    child: SuperListView.builder(
                       shrinkWrap: true,
                       itemCount: cursedSpeed.length,
                       itemBuilder: (context, index) {
@@ -140,7 +142,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
           content: SizedBox(
             height: 300,
             width: double.maxFinite,
-            child: ListView(
+            child: SuperListView(
               physics: const BouncingScrollPhysics(),
               children: colorOptions.entries.map((entry) {
                 return RadioListTile<Color>(

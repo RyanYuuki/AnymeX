@@ -39,11 +39,11 @@ class _SourceSearchPageState extends State<SourceSearchPage> {
   void initState() {
     super.initState();
     textController = TextEditingController(text: widget.initialTerm);
-    determineItemType();
+    determineMediaType();
     _search();
   }
 
-  void determineItemType() {
+  void determineMediaType() {
     if (widget.source is List<Source>) {
       isManga = widget.source[0].isManga ?? widget.isManga ?? false;
       wasAllSelected = true;

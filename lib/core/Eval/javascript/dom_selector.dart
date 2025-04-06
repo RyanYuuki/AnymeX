@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:anymex/core/dom_extensions.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:html/dom.dart';

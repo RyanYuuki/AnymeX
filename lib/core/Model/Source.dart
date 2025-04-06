@@ -1,3 +1,4 @@
+import 'package:anymex/models/Media/media.dart';
 import 'package:isar/isar.dart';
 
 import '../Eval/dart/model/m_source.dart';
@@ -51,6 +52,9 @@ class Source {
 
   bool? isManga;
 
+  @enumerated
+  late MediaType itemType;
+
   String? appMinVerReq;
 
   String? additionalParams;
@@ -85,6 +89,7 @@ class Source {
       this.sourceCode = '',
       this.headers = '',
       this.isManga = true,
+      this.itemType = MediaType.manga,
       this.appMinVerReq = "",
       this.additionalParams = "",
       this.isLocal = false,
@@ -104,6 +109,7 @@ class Source {
     isAdded = json['isAdded'];
     isFullData = json['isFullData'];
     isManga = json['isManga'];
+    itemType = MediaType.values[json['itemType'] ?? 0];
     isNsfw = json['isNsfw'];
     isPinned = json['isPinned'];
     lang = json['lang'];
@@ -135,6 +141,7 @@ class Source {
         'isAdded': isAdded,
         'isFullData': isFullData,
         'isManga': isManga,
+        'itemType': itemType.index,
         'isNsfw': isNsfw,
         'isPinned': isPinned,
         'lang': lang,

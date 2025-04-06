@@ -1,3 +1,4 @@
+import 'package:anymex/models/Media/media.dart';
 import 'package:isar/isar.dart';
 
 import 'chapter.dart';
@@ -25,6 +26,9 @@ class Manga {
   late Status status;
 
   bool? isManga;
+
+  @enumerated
+  late MediaType itemType;
 
   List<String>? genre;
 
@@ -65,6 +69,7 @@ class Manga {
       required this.status,
       required this.description,
       this.isManga = true,
+      this.itemType = MediaType.manga,
       this.dateAdded,
       this.lastUpdate,
       this.categories,
@@ -86,6 +91,7 @@ class Manga {
     imageUrl = json['imageUrl'];
     isLocalArchive = json['isLocalArchive'];
     isManga = json['isManga'];
+    itemType = MediaType.values[json['itemType'] ?? 0];
     lang = json['lang'];
     lastRead = json['lastRead'];
     lastUpdate = json['lastUpdate'];
@@ -108,7 +114,7 @@ class Manga {
         'id': id,
         'imageUrl': imageUrl,
         'isLocalArchive': isLocalArchive,
-        'isManga': isManga,
+        'itemType': itemType.index,
         'lang': lang,
         'lastRead': lastRead,
         'lastUpdate': lastUpdate,

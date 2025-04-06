@@ -40,9 +40,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Media> popularAnimes = <Media>[].obs;
   RxList<Media> trendingAnimes = <Media>[].obs;
   RxList<Media> latestAnimes = <Media>[].obs;
-  RxList<Media> top10Today = <Media>[].obs;
-  RxList<Media> top10Week = <Media>[].obs;
-  RxList<Media> top10Month = <Media>[].obs;
+  RxList<Media> recentlyUpdatedAnimes = <Media>[].obs;
 
   // Manga Data
   RxList<Media> popularMangas = <Media>[].obs;
@@ -176,6 +174,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           ],
         ),
       ),
+      buildSection('Recently Updated', recentlyUpdatedAnimes),
       buildSection('Trending Animes', trendingAnimes),
       buildSection('Popular Animes', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
@@ -186,17 +185,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
-      // CustomSearchBar(
-      //   onSubmitted: (val) {
-      //     navigate(() => SearchPage(
-      //           searchTerm: val,
-      //           isManga: true,
-      //         ));
-      //   },
-      //   suffixIconWidget: buildChip("MANGA"),
-      //   disableIcons: true,
-      //   hintText: "Search Manga...",
-      // ),
       buildBigCarousel(trendingMangas, true),
       Padding(
         padding: EdgeInsets.only(
@@ -221,7 +209,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildMangaSection('More Popular Mangas', morePopularMangas),
       buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
       buildMangaSection('Top Rated Mangas', topRatedMangas),
-      buildMangaSection('Top Updated Mangas', topUpdatedMangas),
       buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
     ].obs;
   }
@@ -238,16 +225,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       popularAnimes.value = fb.popularAnimes;
       trendingAnimes.value = fb.trendingAnimes;
       latestAnimes.value = fb.latestAnimes;
-      top10Today.value = fb.top10Today;
-      top10Week.value = fb.top10Week;
-      top10Month.value = fb.top10Month;
 
       popularMangas.value = fbm.popularMangas;
-      // morePopularMangas.value = fbm.top10Week;
       latestMangas.value = fbm.latestMangas;
-      // mostFavoriteMangas.value = fbm.top10Today;
-      // topRatedMangas.value = fbm.top10Week;
-      // topUpdatedMangas.value = fbm.upcomingMangas;
       topOngoingMangas.value = fbm.trendingMangas;
       trendingMangas.value = fbm.trendingMangas;
     }
@@ -259,20 +239,20 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     const String query = '''
   query {
     upcomingAnimes: Page(page: 1, perPage: 15) {
-    media(type: ANIME, status: NOT_YET_RELEASED, sort: [POPULARITY_DESC, TRENDING_DESC]) {
-      id
-      title {
-        romaji
-        english
-        native
-      }
-      type
-      averageScore
-      coverImage {
-        large
+      media(type: ANIME, status: NOT_YET_RELEASED, sort: [POPULARITY_DESC, TRENDING_DESC]) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        averageScore
+        coverImage {
+          large
+        }
       }
     }
-  }
     popularAnimes: Page(page: 1, perPage: 15) {
       media(type: ANIME, sort: POPULARITY_DESC) {
         id
@@ -283,7 +263,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         }
         episodes
         type
-averageScore
+        averageScore
         coverImage {
           large
         }
@@ -300,36 +280,54 @@ averageScore
         description
         bannerImage
         type
-averageScore
+        averageScore
         coverImage {
           large
         }
       }
     }
     latestAnimes: Page(page: 1, perPage: 15) {
-    media(
-      type: ANIME, 
-      status: FINISHED, 
-      sort: [END_DATE_DESC, SCORE_DESC, POPULARITY_DESC], 
-      averageScore_greater: 70, 
-      popularity_greater: 10000
-    ) {
-      id
-      title {
-        romaji
-        english
-        native
+      media(
+        type: ANIME, 
+        status: FINISHED, 
+        sort: [END_DATE_DESC, SCORE_DESC, POPULARITY_DESC], 
+        averageScore_greater: 70, 
+        popularity_greater: 10000
+      ) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        averageScore
+        coverImage {
+          large
+        }
       }
-      type
-      averageScore
-      coverImage {
-        large
+    }
+    recentlyUpdatedAnimes: Page(page: 1, perPage: 15) {
+      media(
+        type: ANIME,
+        sort: [UPDATED_AT_DESC, POPULARITY_DESC]
+      ) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        averageScore
+        coverImage {
+          large
+        }
+        updatedAt
       }
-      
     }
   }
-  }
-  ''';
+''';
 
     final headers = {
       'Content-Type': 'application/json',
@@ -353,6 +351,8 @@ averageScore
           parseMediaList(responseData['trendingAnimes']['media']);
       latestAnimes.value =
           parseMediaList(responseData['latestAnimes']['media']);
+      recentlyUpdatedAnimes.value =
+          parseMediaList(responseData['recentlyUpdatedAnimes']['media']);
     } else {
       throw Exception('Failed to load AniList data: ${response.statusCode}');
     }

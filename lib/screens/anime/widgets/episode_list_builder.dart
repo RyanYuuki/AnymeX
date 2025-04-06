@@ -22,6 +22,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class EpisodeListBuilder extends StatefulWidget {
   const EpisodeListBuilder({
@@ -293,7 +294,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.6,
       ),
-      child: ListView(
+      child: SuperListView(
         children: [
           Container(
             padding: const EdgeInsets.all(10),

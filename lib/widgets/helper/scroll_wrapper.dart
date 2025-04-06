@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class ScrollWrapper extends StatelessWidget {
   final EdgeInsets? customPadding;
@@ -13,7 +14,7 @@ class ScrollWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return SuperListView(
       padding: comfortPadding
           ? EdgeInsets.symmetric(
               vertical:

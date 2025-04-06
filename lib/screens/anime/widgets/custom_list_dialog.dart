@@ -3,6 +3,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class CustomListDialog extends StatefulWidget {
   final Media original;
@@ -120,7 +121,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: ListView.builder(
+              child: SuperListView.builder(
                 shrinkWrap: true,
                 itemCount: modifiedLists.length,
                 itemBuilder: (context, index) {

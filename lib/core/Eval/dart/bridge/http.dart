@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../../../http/m_client.dart';
@@ -713,14 +711,6 @@ Object? _toBodyObject(Object? value) {
 
 extension FutureResponseExtension<T> on Future<T> {
   Future<T> onErrorMessage() {
-    onError((error, stackTrace) {
-      if (kDebugMode) {
-        print("Http error: $error");
-      }
-      debugPrint("[TEST]: $error");
-      snackBar("Error occured");
-      throw error.toString();
-    });
     return this;
   }
 }

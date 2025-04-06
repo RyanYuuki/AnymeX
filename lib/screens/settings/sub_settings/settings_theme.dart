@@ -13,6 +13,8 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 import 'package:provider/provider.dart';
 
 class SettingsTheme extends StatefulWidget {
@@ -293,7 +295,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                ListView.builder(
+                SuperListView.builder(
                   shrinkWrap: true,
                   itemCount: dynamicSchemeVariantKeys.length,
                   itemBuilder: (context, index) {

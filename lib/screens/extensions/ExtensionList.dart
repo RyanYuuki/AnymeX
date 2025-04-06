@@ -7,7 +7,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
 
-import '../../core/Extensions/GetSourceList.dart';
+import '../../core/Extensions/get_sources_list.dart';
 import '../../core/Extensions/extensions_provider.dart';
 import '../../core/Extensions/fetch_anime_sources.dart';
 import '../../core/Extensions/fetch_manga_sources.dart';
@@ -55,8 +55,8 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
 
   @override
   Widget build(BuildContext context) {
-    final streamExtensions = ref.watch(
-        getExtensionsStreamProvider(widget.mediaType == MediaType.manga));
+    final streamExtensions =
+        ref.watch(getExtensionsStreamProvider(widget.mediaType));
 
     return RefreshIndicator(
       onRefresh: _refreshData,

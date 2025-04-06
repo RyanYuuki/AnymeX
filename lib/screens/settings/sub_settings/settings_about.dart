@@ -6,6 +6,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -24,7 +26,7 @@ class AboutPage extends StatelessWidget {
     final theme = Theme.of(context);
     return Glow(
       child: Scaffold(
-        body: ListView(
+        body: SuperListView(
           padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
           children: [
             const HeaderSection(),

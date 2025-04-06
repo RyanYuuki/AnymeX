@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:developer';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -10,7 +9,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
-import 'package:anymex/screens/library/widgets/unified_history_card.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';

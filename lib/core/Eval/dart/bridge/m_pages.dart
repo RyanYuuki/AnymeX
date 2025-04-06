@@ -90,9 +90,4 @@ class $MPages implements MPages, $Instance {
         'list': list.map((v) => v.toJson()).toList(),
         'hasNextPage': hasNextPage,
       };
-
-  @override
-  List<String> toMedia() {
-    return [""];
-  }
 }

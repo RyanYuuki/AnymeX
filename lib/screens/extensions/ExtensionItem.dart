@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:isar/isar.dart';
 
-import '../../core/Extensions/GetSourceList.dart';
+import '../../core/Extensions/get_sources_list.dart';
 import '../../core/Extensions/fetch_anime_sources.dart';
 import '../../core/Extensions/fetch_manga_sources.dart';
 import '../../core/extension_preferences_providers.dart';
@@ -72,7 +72,7 @@ class _ExtensionListTileWidgetState
           height: 42,
           width: 42,
           decoration: BoxDecoration(
-            color: theme.surfaceVariant,
+            color: theme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(

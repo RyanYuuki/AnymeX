@@ -1,4 +1,3 @@
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/string_extensions.dart';
 
 import '../../../Model/Manga.dart';
@@ -61,23 +60,6 @@ class MManga {
                     .map((e) => MChapter.fromJson(e))
                     .toList()
                 : []);
-  }
-
-  factory MManga.fromMedia(Media media) {
-    return MManga(
-        name: media.title,
-        imageUrl: media.poster,
-        description: media.description,
-        status: switch (media.status) {
-          "ONGOING" => Status.ongoing,
-          "COMPLETED" => Status.completed,
-          "ON_HIATUS" => Status.onHiatus,
-          "CANCELED" => Status.canceled,
-          "PUBLISHING_FINISHED" => Status.publishingFinished,
-          _ => Status.unknown,
-        },
-        genre: media.genres,
-        chapters: media.mediaContent);
   }
 
   Map<String, dynamic> toJson() => {

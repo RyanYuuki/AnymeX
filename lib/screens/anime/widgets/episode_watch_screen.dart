@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class EpisodeWatchScreen extends StatefulWidget {
   const EpisodeWatchScreen({
@@ -80,7 +81,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 );
               }
 
-              return ListView(
+              return SuperListView(
                 children: [
                   Container(
                     padding: EdgeInsets.all(10),
@@ -162,7 +163,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             mobileValue: MediaQuery.of(context).size.height * 0.8,
             desktopValue: null),
         child: Glow(
-          child: ListView(
+          child: SuperListView(
             padding: EdgeInsets.symmetric(
                 vertical: 20,
                 horizontal:

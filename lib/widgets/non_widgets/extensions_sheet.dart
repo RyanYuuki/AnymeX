@@ -10,6 +10,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 extensionSheet(String query, List<Source> sources) {
   final context = Get.context;
@@ -20,7 +21,7 @@ extensionSheet(String query, List<Source> sources) {
         return SizedBox(
           width: double.infinity,
           height: Get.height * 0.5,
-          child: ListView(
+          child: SuperListView(
             children: [
               const SizedBox(height: 10),
               const Center(

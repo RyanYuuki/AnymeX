@@ -1,10 +1,7 @@
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/screens/library/widgets/unified_history_card.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HistoryCardGate extends StatelessWidget {
   final HistoryModel data;

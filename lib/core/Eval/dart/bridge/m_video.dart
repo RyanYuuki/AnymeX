@@ -1,8 +1,8 @@
+import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:hive/hive.dart';
 
-import '../../../../models/Offline/Hive/video.dart';
 import 'm_track.dart';
 
 class $MVideo implements Video, $Instance {
@@ -156,7 +156,7 @@ class $MVideo implements Video, $Instance {
   bool get isInBox => false;
 
   @override
-  get key => false;
+  get key => null;
 
   @override
   Future<void> save() async {}
