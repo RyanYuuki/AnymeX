@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 
 enum MediaType { manga, anime, novel }
 
@@ -37,6 +38,7 @@ class Media {
   List<Media> recommendations;
   NextAiringEpisode? nextAiringEpisode;
   List<Ranking> rankings;
+  ServicesType? serviceType;
 
   Media(
       {this.id = '0',
@@ -65,7 +67,8 @@ class Media {
       this.recommendations = const [],
       this.nextAiringEpisode,
       this.rankings = const [],
-      this.mediaContent});
+      this.mediaContent,
+      this.serviceType});
 
   factory Media.fromMAL(Map<String, dynamic> json) {
     final node = json['node'] ?? {};
@@ -102,6 +105,7 @@ class Media {
       rankings: [],
       mediaContent: [],
       mediaType: node['media_type'] == 'tv' ? MediaType.anime : MediaType.manga,
+      serviceType: ServicesType.mal,
     );
   }
 
@@ -141,6 +145,7 @@ class Media {
       rankings: [],
       mediaContent: [],
       mediaType: node['media_type'] == 'tv' ? MediaType.anime : MediaType.manga,
+      serviceType: ServicesType.mal,
     );
   }
 
@@ -187,6 +192,7 @@ class Media {
               .toList()
               .cast<Media>() ??
           [],
+      serviceType: ServicesType.simkl,
     );
   }
 
@@ -202,6 +208,7 @@ class Media {
         type: isMovie ? 'MOVIE' : 'SERIES',
         rating: '0.0',
         mediaType: type,
+        serviceType: ServicesType.simkl,
         aired: json['year']?.toString() ?? 'Unknown air date');
   }
 
@@ -226,6 +233,7 @@ class Media {
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: manga.chapters,
+      serviceType: ServicesType.extensions,
     );
   }
 
@@ -273,6 +281,7 @@ class Media {
           .map((ranking) => Ranking.fromJson(ranking))
           .toList(),
       mediaType: type,
+      serviceType: ServicesType.anilist,
     );
   }
 
@@ -288,58 +297,64 @@ class Media {
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       type: isManga ? 'MANGA' : 'ANIME',
       mediaType: isManga ? MediaType.manga : MediaType.anime,
+      serviceType: ServicesType.anilist,
     );
   }
   factory Media.fromCarouselData(CarouselData data, MediaType type) {
     return Media(
-      id: data.id!.toString(),
-      romajiTitle: data.title ?? '?',
-      title: data.title ?? '?',
-      poster: data.poster ?? '?',
-      rating: data.extraData ?? '0.0',
-      mediaType: type,
-    );
+        id: data.id!.toString(),
+        romajiTitle: data.title ?? '?',
+        title: data.title ?? '?',
+        poster: data.poster ?? '?',
+        rating: data.extraData ?? '0.0',
+        mediaType: type,
+        serviceType: data.servicesType);
   }
 
   factory Media.fromRecs(Map<String, dynamic> json) {
     return Media(
-      id: json['node']['mediaRecommendation']['id'].toString(),
-      title: json['node']['mediaRecommendation']['title']['romaji'] ??
-          json['node']['mediaRecommendation']['title']['english'],
-      poster: json['node']['mediaRecommendation']['coverImage']['large'],
-      rating:
-          ((json['node']['mediaRecommendation']['averageScore'] ?? 0) / 10 ?? 0)
-              .toString(),
-    );
+        id: json['node']['mediaRecommendation']['id'].toString(),
+        title: json['node']['mediaRecommendation']['title']['romaji'] ??
+            json['node']['mediaRecommendation']['title']['english'],
+        poster: json['node']['mediaRecommendation']['coverImage']['large'],
+        rating:
+            ((json['node']['mediaRecommendation']['averageScore'] ?? 0) / 10 ??
+                    0)
+                .toString(),
+        serviceType: ServicesType.anilist);
   }
 
   factory Media.fromOfflineMedia(OfflineMedia offline, MediaType type) {
     return Media(
-        id: offline.id?.toString() ?? '0',
-        title: offline.name ?? offline.english ?? offline.jname ?? '?',
-        romajiTitle: offline.jname ?? '?',
-        description: offline.description ?? '?',
-        poster: offline.poster ?? '?',
-        cover: offline.cover,
-        totalEpisodes: offline.totalEpisodes?.toString() ?? '?',
-        type: offline.type ?? '?',
-        season: offline.season ?? '?',
-        premiered: offline.premiered ?? '?',
-        duration: offline.duration ?? '?',
-        status: offline.status ?? '?',
-        rating: offline.rating ?? '?',
-        popularity: offline.popularity ?? '?',
-        format: offline.format ?? '?',
-        aired: offline.aired ?? '?',
-        totalChapters: offline.totalChapters?.toString() ?? '?',
-        genres: offline.genres ?? const [],
-        studios: offline.studios,
-        characters: null,
-        relations: null,
-        recommendations: const [],
-        nextAiringEpisode: null,
-        rankings: const [],
-        mediaType: type);
+      id: offline.id?.toString() ?? '0',
+      title: offline.name ?? offline.english ?? offline.jname ?? '?',
+      romajiTitle: offline.jname ?? '?',
+      description: offline.description ?? '?',
+      poster: offline.poster ?? '?',
+      cover: offline.cover,
+      totalEpisodes: offline.totalEpisodes?.toString() ?? '?',
+      type: offline.type ?? '?',
+      season: offline.season ?? '?',
+      premiered: offline.premiered ?? '?',
+      duration: offline.duration ?? '?',
+      status: offline.status ?? '?',
+      rating: offline.rating ?? '?',
+      popularity: offline.popularity ?? '?',
+      format: offline.format ?? '?',
+      aired: offline.aired ?? '?',
+      totalChapters: offline.totalChapters?.toString() ?? '?',
+      genres: offline.genres ?? const [],
+      studios: offline.studios,
+      characters: null,
+      relations: null,
+      recommendations: const [],
+      nextAiringEpisode: null,
+      rankings: const [],
+      mediaType: type,
+      serviceType: offline.serviceIndex != null
+          ? ServicesType.values[offline.serviceIndex!]
+          : null,
+    );
   }
 
   static String _parseDateRange(

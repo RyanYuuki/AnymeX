@@ -308,10 +308,11 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       }
     }
     recentlyUpdatedAnimes: Page(page: 1, perPage: 15) {
-      media(
-        type: ANIME,
-        sort: [UPDATED_AT_DESC, POPULARITY_DESC]
-      ) {
+    media(
+      type: ANIME,
+      sort: [UPDATED_AT_DESC, POPULARITY_DESC],
+      isAdult: false
+    ) {
         id
         title {
           romaji
