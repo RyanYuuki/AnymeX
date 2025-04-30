@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -750,37 +749,51 @@ class _MyLibraryState extends State<MyLibrary> {
                         title: 'Sort By',
                         initialExpanded: true,
                         content: Column(children: [
-                          _buildSortTile(
-                            title: 'Title',
-                            currentSort: currentSort,
-                            sortType: SortType.title,
-                            isAscending: isAscending,
-                            onTap: () =>
-                                _handleSortChange(SortType.title, setState),
+                          Row(
+                            children: [
+                              _buildSortBox(
+                                title: 'Title',
+                                currentSort: currentSort,
+                                sortType: SortType.title,
+                                isAscending: isAscending,
+                                onTap: () =>
+                                    _handleSortChange(SortType.title, setState),
+                                icon: Icons.sort_by_alpha,
+                              ),
+                              _buildSortBox(
+                                title: 'Last Added',
+                                currentSort: currentSort,
+                                sortType: SortType.lastAdded,
+                                isAscending: isAscending,
+                                onTap: () => _handleSortChange(
+                                    SortType.lastAdded, setState),
+                                icon: Icons.add_circle_outline,
+                              ),
+                            ],
                           ),
-                          _buildSortTile(
-                            title: 'Last Added',
-                            currentSort: currentSort,
-                            sortType: SortType.lastAdded,
-                            isAscending: isAscending,
-                            onTap: () =>
-                                _handleSortChange(SortType.lastAdded, setState),
-                          ),
-                          _buildSortTile(
-                            title: isManga ? 'Last Read' : 'Last Watched',
-                            currentSort: currentSort,
-                            sortType: SortType.lastRead,
-                            isAscending: isAscending,
-                            onTap: () =>
-                                _handleSortChange(SortType.lastRead, setState),
-                          ),
-                          _buildSortTile(
-                            title: 'Rating',
-                            currentSort: currentSort,
-                            sortType: SortType.rating,
-                            isAscending: isAscending,
-                            onTap: () =>
-                                _handleSortChange(SortType.rating, setState),
+                          Row(
+                            children: [
+                              _buildSortBox(
+                                title: isManga ? 'Last Read' : 'Last Watched',
+                                currentSort: currentSort,
+                                sortType: SortType.lastRead,
+                                isAscending: isAscending,
+                                onTap: () => _handleSortChange(
+                                    SortType.lastRead, setState),
+                                icon: isManga
+                                    ? Icons.menu_book
+                                    : Icons.visibility,
+                              ),
+                              _buildSortBox(
+                                title: 'Rating',
+                                currentSort: currentSort,
+                                sortType: SortType.rating,
+                                isAscending: isAscending,
+                                onTap: () => _handleSortChange(
+                                    SortType.rating, setState),
+                                icon: Icons.star_border,
+                              ),
+                            ],
                           ),
                         ])),
                     AnymexExpansionTile(
@@ -813,57 +826,121 @@ class _MyLibraryState extends State<MyLibrary> {
   SortType currentSort = SortType.lastAdded;
   bool isAscending = false;
 
-  Widget _buildSortTile({
+  Widget _buildSortBox({
     required String title,
     required SortType currentSort,
     required SortType sortType,
     required bool isAscending,
     required VoidCallback onTap,
+    required IconData icon,
   }) {
     final isSelected = currentSort == sortType;
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-      child: Material(
-        elevation: 0,
-        color: theme.colorScheme.secondaryContainer
-            .withOpacity(isSelected ? 1.0 : 0.7),
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          splashColor: theme.colorScheme.primary.withOpacity(0.1),
-          highlightColor: theme.colorScheme.primary.withOpacity(0.05),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: isSelected
-                  ? Border.all(color: theme.colorScheme.primary, width: 1.5)
-                  : null,
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              title: AnymexText(
-                text: title,
-                variant: isSelected ? TextVariant.bold : TextVariant.regular,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSecondaryContainer,
+    return Expanded(
+      child: SizedBox(
+        height: 90,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+          child: Material(
+            clipBehavior: Clip.antiAlias,
+            elevation: isSelected ? 3 : 0,
+            shadowColor: isSelected
+                ? theme.colorScheme.primary.withOpacity(0.4)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: onTap,
+              splashColor: theme.colorScheme.primary.withOpacity(0.15),
+              highlightColor: theme.colorScheme.primary.withOpacity(0.05),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            theme.colorScheme.primary.withOpacity(0.15),
+                            theme.colorScheme.primaryContainer,
+                          ],
+                        )
+                      : null,
+                  color: isSelected
+                      ? null
+                      : theme.colorScheme.surfaceVariant.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.outline.withOpacity(0.2),
+                    width: isSelected ? 1.5 : 0.5,
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (isSelected)
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.primary.withOpacity(0.12),
+                            ),
+                          ),
+                        Icon(
+                          icon,
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurfaceVariant,
+                          size: 24,
+                        ),
+                        if (isSelected)
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isAscending
+                                    ? Icons.arrow_upward
+                                    : Icons.arrow_downward,
+                                color: theme.colorScheme.onPrimary,
+                                size: 12,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 200),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                      child: AnymexText(
+                        text:  title,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              trailing: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: isSelected ? null : 0,
-                child: isSelected
-                    ? AnymexIcon(
-                        isAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                      )
-                    : null,
-              ),
-              selected: isSelected,
-              selectedTileColor: Colors.transparent,
-              onTap: null,
             ),
           ),
         ),

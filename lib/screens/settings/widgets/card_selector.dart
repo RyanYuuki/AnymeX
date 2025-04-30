@@ -1,5 +1,6 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Carousel/carousel.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -11,7 +12,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-
 
 void showCardStyleSwitcher(BuildContext context) {
   final selectedStyle = CardStyle.values[settingsController.cardStyle].obs;

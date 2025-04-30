@@ -1,14 +1,16 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -305,42 +307,21 @@ enum DataVariant {
 
 List<CarouselData> convertData(List<dynamic> data,
     {DataVariant variant = DataVariant.regular, bool isManga = false}) {
-  return data.map((e) {
+  return data.map<CarouselData>((e) {
     switch (variant) {
       case DataVariant.extension:
-        final d = e as MManga;
-        return CarouselData(
-            id: d.link, title: d.name, poster: d.imageUrl, extraData: '??');
+        return (e as MManga).toCarouselData(variant: variant, isManga: isManga);
       case DataVariant.offline:
-        final d = e as OfflineMedia;
-        return CarouselData(
-          source: d.currentChapter?.sourceName ?? d.currentEpisode?.source,
-          id: d.id,
-          title: d.name,
-          poster: d.poster,
-          extraData: (d.currentChapter?.number ?? d.currentEpisode?.number ?? 0)
-              .toString(),
-        );
+        return (e as OfflineMedia)
+            .toCarouselData(variant: variant, isManga: isManga);
       case DataVariant.relation:
-        return CarouselData(
-            id: e.id.toString(),
-            title: e.title,
-            poster: e.poster,
-            source: (e as Relation).type,
-            args: e.type,
-            extraData: (e).relationType);
+        return (e as Relation)
+            .toCarouselData(variant: variant, isManga: isManga);
       case DataVariant.anilist:
-        return CarouselData(
-            id: e.id.toString(),
-            title: e.title,
-            poster: e.poster,
-            extraData: (e as TrackedMedia).episodeCount ?? "??");
+        return (e as TrackedMedia)
+            .toCarouselData(variant: variant, isManga: isManga);
       default:
-        return CarouselData(
-            id: e.id.toString(),
-            title: e.title,
-            poster: e.poster,
-            extraData: (e as Media).rating.toString());
+        return (e as Media).toCarouselData(variant: variant, isManga: isManga);
     }
   }).toList();
 }

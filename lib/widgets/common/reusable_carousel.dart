@@ -1,8 +1,9 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Carousel/carousel.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';

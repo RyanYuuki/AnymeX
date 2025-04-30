@@ -78,14 +78,18 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
             return Scrollbar(
               interactive: true,
               controller: controller,
-              child: CustomScrollView(
-                controller: controller,
-                slivers: [
-                  if (widget.installed) _buildUpdatePendingList(updateEntries),
-                  if (widget.installed) _buildInstalledList(installedEntries),
-                  if (!widget.installed)
-                    _buildNotInstalledList(notInstalledEntries),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: CustomScrollView(
+                  controller: controller,
+                  slivers: [
+                    if (widget.installed)
+                      _buildUpdatePendingList(updateEntries),
+                    if (widget.installed) _buildInstalledList(installedEntries),
+                    if (!widget.installed)
+                      _buildNotInstalledList(notInstalledEntries),
+                  ],
+                ),
               ),
             );
           },

@@ -1,5 +1,4 @@
-// Base abstract class for all card styles
-import 'package:anymex/models/Carousel/carousel.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
