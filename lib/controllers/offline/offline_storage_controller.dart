@@ -335,30 +335,6 @@ class OfflineStorageController extends GetxController {
     return null;
   }
 
-  Chapter? getHighestChapter(String anilistId) {
-    OfflineMedia? manga = getMangaById(anilistId);
-    if (manga != null &&
-        manga.readChapters != null &&
-        manga.readChapters!.isNotEmpty) {
-      manga.readChapters?.sort((a, b) => b.number!.compareTo(a.number!));
-      return manga.readChapters!.first;
-    }
-    log('No chapters found for manga with ID: $anilistId');
-    return null;
-  }
-
-  Episode? getHighestEpisode(String anilistId) {
-    OfflineMedia? anime = getAnimeById(anilistId);
-    if (anime != null &&
-        anime.watchedEpisodes != null &&
-        anime.watchedEpisodes!.isNotEmpty) {
-      anime.watchedEpisodes!
-          .sort((a, b) => int.parse(b.number).compareTo(int.parse(a.number)));
-      return anime.watchedEpisodes!.first;
-    }
-    log('No episodes found for anime with ID: $anilistId');
-    return null;
-  }
 
   void clearCache() {
     _offlineStorageBox.clear();
