@@ -1,5 +1,6 @@
 import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
@@ -20,12 +21,14 @@ class Extension extends ConsumerStatefulWidget {
   final MediaType mediaType;
   final String query;
   final String selectedLanguage;
+  final bool showRecommended;
 
   const Extension({
     required this.installed,
     required this.query,
     required this.mediaType,
     required this.selectedLanguage,
+    this.showRecommended = true,
     super.key,
   });
 
@@ -74,6 +77,9 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
             final installedEntries = _getInstalledEntries(data);
             final updateEntries = _getUpdateEntries(data);
             final notInstalledEntries = _getNotInstalledEntries(data);
+            final recommendedEntries = widget.showRecommended
+                ? _getRecommendedEntries(data)
+                : [].cast<Source>();
 
             return Scrollbar(
               interactive: true,
@@ -83,6 +89,9 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
                 child: CustomScrollView(
                   controller: controller,
                   slivers: [
+                    if (widget.showRecommended &&
+                        (recommendedEntries.isNotEmpty))
+                      _buildRecommendedList(recommendedEntries),
                     if (widget.installed)
                       _buildUpdatePendingList(updateEntries),
                     if (widget.installed) _buildInstalledList(installedEntries),
@@ -139,8 +148,21 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         .toList();
   }
 
+  // New method to identify recommended extensions
+  List<Source> _getRecommendedEntries(List<Source> data) {
+    final extens = widget.mediaType == MediaType.anime
+        ? Extensions().getRecommmendedExtensions()
+        : Extensions().getRecommmendedMangaExtensions();
+    return data
+        .where((element) =>
+            extens.contains(element.name?.toLowerCase()) &&
+            element.lang == 'en')
+        .toList();
+  }
+
   SliverGroupedListView<Source, String> _buildUpdatePendingList(
       List<Source> updateEntries) {
+    // (no changes to this method)
     return SliverGroupedListView<Source, String>(
       elements: updateEntries,
       groupBy: (element) => "",
@@ -192,6 +214,33 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       groupSeparatorBuilder: (_) => const Padding(
         padding: EdgeInsets.symmetric(horizontal: 12),
         child: SizedBox(),
+      ),
+      itemBuilder: (context, Source element) => ExtensionListTileWidget(
+        source: element,
+        mediaType: widget.mediaType,
+      ),
+      groupComparator: (group1, group2) => group1.compareTo(group2),
+      itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
+      order: GroupedListOrder.ASC,
+    );
+  }
+
+  // New method to build recommended list
+  SliverGroupedListView<Source, String> _buildRecommendedList(
+      List<Source> recommendedEntries) {
+    return SliverGroupedListView<Source, String>(
+      elements: recommendedEntries,
+      groupBy: (element) => "",
+      groupSeparatorBuilder: (_) => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          children: [
+            Text(
+              'Recommended',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+          ],
+        ),
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,

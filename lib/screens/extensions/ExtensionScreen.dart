@@ -462,6 +462,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       query: _textEditingController.text,
                       mediaType: MediaType.anime,
                       selectedLanguage: _selectedLanguage,
+                      showRecommended: false,
                     ),
                     Extension(
                       installed: false,
@@ -474,6 +475,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       query: _textEditingController.text,
                       mediaType: MediaType.manga,
                       selectedLanguage: _selectedLanguage,
+                      showRecommended: false,
                     ),
                     Extension(
                       installed: false,
@@ -486,6 +488,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                       query: _textEditingController.text,
                       mediaType: MediaType.novel,
                       selectedLanguage: _selectedLanguage,
+                      showRecommended: false,
                     ),
                     Extension(
                       installed: false,
