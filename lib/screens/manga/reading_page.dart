@@ -512,7 +512,7 @@ class _ReadingPageState extends State<ReadingPage> {
                             Theme.of(context)
                                 .colorScheme
                                 .surface
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.50),
                             Colors.transparent,
                           ],
                           stops: const [0.5, 1.0],
@@ -648,7 +648,7 @@ class _ReadingPageState extends State<ReadingPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              Theme.of(context).colorScheme.surface.withValues(alpha: 0.50),
               Colors.transparent,
             ],
             stops: const [0.5, 1.0],
@@ -720,7 +720,7 @@ class _ReadingPageState extends State<ReadingPage> {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.5),
+              Colors.black.withValues(alpha: 0.50),
               Colors.transparent,
             ],
             stops: const [0.5, 1.0],
@@ -733,7 +733,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   desktopValue: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.6)),
+                      .withValues(alpha: 0.60)),
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           padding: EdgeInsets.all(
@@ -747,8 +747,10 @@ class _ReadingPageState extends State<ReadingPage> {
               const SizedBox(width: 5),
               Container(
                 decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surface.withOpacity(0.80),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surface
+                        .withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
                   icon: Icon(Icons.skip_previous_rounded,
@@ -769,7 +771,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .surface
-                          .withOpacity(0.80),
+                          .withValues(alpha: 0.80),
                       borderRadius: BorderRadius.circular(20)),
                   child: CustomSlider(
                     enableComfortPadding: true,
@@ -791,15 +793,17 @@ class _ReadingPageState extends State<ReadingPage> {
                     inactiveColor: Theme.of(context)
                         .colorScheme
                         .inverseSurface
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.10),
                   ),
                 ),
               ),
               const SizedBox(width: 5),
               Container(
                 decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surface.withOpacity(0.80),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surface
+                        .withValues(alpha: 0.80),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
                   icon: Icon(Icons.skip_next_rounded,
