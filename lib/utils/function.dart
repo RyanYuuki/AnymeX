@@ -472,10 +472,10 @@ List<TrackedMedia> filterListByLabel(
     if (label == "Dropped Manga" && anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Planning Anime" && anime.watchingStatus == 'PLANNING') {
+    if (label == "Planned Anime" && anime.watchingStatus == 'PLANNING') {
       return true;
     }
-    if (label == "Planning Manga" && anime.watchingStatus == 'PLANNING') {
+    if (label == "Planned Manga" && anime.watchingStatus == 'PLANNING') {
       return true;
     }
     if (label == "Rewatching Anime" && anime.watchingStatus == 'REPEATING') {
