@@ -48,14 +48,15 @@ import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:uni_links_desktop/uni_links_desktop.dart';
+import 'package:app_links/app_links.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 late Isar isar;
 WebViewEnvironment? webViewEnvironment;
+final _appLinks = AppLinks();
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -77,51 +78,60 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 
 void initDeepLinkListener() async {
   try {
-    final initialUri = await getInitialUri();
-    if (initialUri != null) {
-      handleDeepLink(initialUri);
+    final initialLinkString = await _appLinks.getInitialLinkString();
+
+    if (initialLinkString != null) {
+      final initialUri = Uri.tryParse(initialLinkString);
+      if (initialUri != null) {
+        handleDeepLink(initialUri);
+      } else {
+        snackBar('Invalid initial deep link received.');
+      }
     }
-  } catch (err) {
-    snackBar('Error getting initial deep link: $err');
+  } catch (e) {
+    snackBar('Error getting initial deep link: $e');
   }
 
-  uriLinkStream.listen((Uri? uri) {
-    if (uri != null) {
-      handleDeepLink(uri);
-    }
-  }, onError: (err) {
+  _appLinks.uriLinkStream.listen((Uri uri) {
+    handleDeepLink(uri);
+  }, onError: (err, stackTrace) {
     snackBar('Error Opening link: $err');
   });
 }
 
 void handleDeepLink(Uri uri) {
-  if (uri.host == "add-repo") {
-    String? repoUrl =
-        (uri.queryParameters["url"] ?? uri.queryParameters['anime_url'])
-            ?.trim();
-    String? mangaUrl = uri.queryParameters["manga_url"]?.trim();
-    String? novelUrl = uri.queryParameters["novel_url"]?.trim();
+  if (uri.host != "add-repo") {
+    return;
+  }
 
-    final settings = Get.find<SourceController>();
+  final settings = Get.find<SourceController>();
+  bool repoAdded = false;
 
-    if (repoUrl != null) {
-      settings.activeAnimeRepo = repoUrl;
-      Extensions().addRepo(MediaType.anime, repoUrl);
-    }
-    if (mangaUrl != null) {
-      settings.activeMangaRepo = mangaUrl;
-      Extensions().addRepo(MediaType.manga, mangaUrl);
-    }
-    if (novelUrl != null) {
-      settings.activeNovelRepo = novelUrl;
-      Extensions().addRepo(MediaType.novel, novelUrl);
-    }
+  final String? animeUrl = uri.queryParameters["url"]?.trim() ??
+      uri.queryParameters['anime_url']?.trim();
+  final String? mangaUrl = uri.queryParameters["manga_url"]?.trim();
+  final String? novelUrl = uri.queryParameters["novel_url"]?.trim();
 
-    if (repoUrl != null || mangaUrl != null || novelUrl != null) {
-      snackBar("Added Repo Links Successfully!");
-    } else {
-      snackBar("Missing required parameters in the link.");
-    }
+  if (animeUrl != null && animeUrl.isNotEmpty) {
+    settings.activeAnimeRepo = animeUrl;
+    Extensions().addRepo(MediaType.anime, animeUrl);
+    repoAdded = true;
+  }
+  if (mangaUrl != null && mangaUrl.isNotEmpty) {
+    settings.activeMangaRepo = mangaUrl;
+    Extensions().addRepo(MediaType.manga, mangaUrl);
+    repoAdded = true;
+  }
+  if (novelUrl != null && novelUrl.isNotEmpty) {
+    settings.activeNovelRepo = novelUrl;
+    Extensions().addRepo(MediaType.novel, novelUrl);
+    repoAdded = true;
+  }
+
+  if (repoAdded) {
+    snackBar("Added Repo Links Successfully!");
+  } else {
+    snackBar("Missing required parameters in the link.");
   }
 }
 
