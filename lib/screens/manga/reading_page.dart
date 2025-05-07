@@ -13,14 +13,12 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 
 enum ReadingMode {
   webtoon,
@@ -580,7 +578,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   imageUrl: page.url,
                   fit: BoxFit.cover,
                   httpHeaders: {
-                    'Referrer':
+                    'Referer':
                         sourceController.activeMangaSource.value!.baseUrl!,
                   },
                   width: getResponsiveSize(context,
