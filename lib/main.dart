@@ -8,6 +8,7 @@ import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
@@ -226,6 +227,7 @@ void _initializeGetxController() {
   Get.put(SourceController());
   Get.put(Settings());
   Get.put(ServiceHandler());
+  Get.put(GreetingController());
   Get.lazyPut(() => CacheController());
 }
 
