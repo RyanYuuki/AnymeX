@@ -38,7 +38,6 @@ class AnymexText extends StatelessWidget {
         fontFamily = "Poppins-Bold";
         break;
       case TextVariant.regular:
-      default:
         fontFamily = "Poppins";
     }
 

@@ -115,7 +115,7 @@ class InlineSearchHistory extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.5),
+                      .withValues(alpha: 0.50),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: color,
@@ -136,13 +136,13 @@ class InlineSearchHistory extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.2),
+                              color: color.withValues(alpha: 0.20),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Iconsax.search_normal,
                               size: 22,
-                              color: color.withOpacity(0.8),
+                              color: color.withValues(alpha: 0.80),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -186,8 +186,10 @@ class InlineSearchHistory extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+        color: Theme.of(context)
+            .colorScheme
+            .secondaryContainer
+            .withValues(alpha: 0.50),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color,
@@ -195,7 +197,7 @@ class InlineSearchHistory extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.30),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -213,13 +215,13 @@ class InlineSearchHistory extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.20),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Iconsax.search_normal,
                     size: 16,
-                    color: color.withOpacity(0.8),
+                    color: color.withValues(alpha: 0.80),
                   ),
                 ),
                 const SizedBox(width: 12),
