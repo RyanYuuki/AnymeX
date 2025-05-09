@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -14,8 +13,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
+import 'dart:math';
 
 import 'package:provider/provider.dart';
+
+String getGreeting() {
+  final hour = DateTime.now().hour;
+  final random = Random();
+
+  if (hour >= 5 && hour < 12) {
+    return random.nextBool() ? "Good yawning!" : "Good morning!";
+  } else if (hour >= 12 && hour < 17) {
+    return random.nextBool() ? "Good snacking!" : "Good afternoon!";
+  } else if (hour >= 17 && hour < 21) {
+    return random.nextBool() ? "Good chilling!" : "Good evening!";
+  } else {
+    return random.nextBool() ? "Good midnight!" : "Good night!";
+  }
+}
 
 class Header extends StatelessWidget {
   final bool isHomePage;
@@ -24,7 +39,6 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileData = Get.find<ServiceHandler>();
-    final greetingController = Get.find<GreetingController>();
     return Obx(() {
       if (!isHomePage) {
         return Padding(
@@ -36,9 +50,7 @@ class Header extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Obx(() => Text(
-                        "${greetingController.currentGreeting.value},",
-                      )),
+                  Text("${getGreeting()},"),
                   Text(profileData.profileData.value.name ?? 'Guest',
                       style: TextStyle(
                           fontFamily: "Poppins-SemiBold",
@@ -72,7 +84,7 @@ class Header extends StatelessWidget {
                           backgroundColor: Theme.of(context)
                               .colorScheme
                               .secondaryContainer
-                              .withValues(alpha: 0.50),
+                              .withOpacity(0.5),
                           child: IconButton(
                               onPressed: () {
                                 searchTypeSheet(context);
@@ -127,7 +139,7 @@ class Header extends StatelessWidget {
                             color: Theme.of(context).colorScheme.primary,
                             variant: TextVariant.bold),
                         const AnymexTextSpan(
-                            text: ', what are we doing today?',
+                            text: ', What are we doing today?',
                             variant: TextVariant.bold)
                       ],
                       textAlign: TextAlign.center,
@@ -161,10 +173,8 @@ class Header extends StatelessWidget {
       },
       child: CircleAvatar(
         radius: 24,
-        backgroundColor: Theme.of(context)
-            .colorScheme
-            .secondaryContainer
-            .withValues(alpha: 0.50),
+        backgroundColor:
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
         child: profileData.isLoggedIn.value
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(50),
@@ -211,31 +221,13 @@ class NetworkSizedImage extends StatelessWidget {
           alignment: alignment,
           imageUrl: imageUrl,
           placeholder: (context, url) => placeHolderWidget(context),
-          errorWidget: (context, url, error) {
-            if (errorImage != null && errorImage!.isNotEmpty) {
-              return CachedNetworkImage(
-                width: width,
-                height: height,
-                fit: BoxFit.cover,
-                alignment: alignment,
-                imageUrl: errorImage!,
-                placeholder: (context, url) => placeHolderWidget(context),
-                errorWidget: (context, url, error) =>
-                    _buildFallbackErrorWidget(),
-              );
-            } else {
-              return _buildFallbackErrorWidget();
-            }
-          },
+          errorWidget: (context, url, error) => CachedNetworkImage(
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            alignment: alignment,
+            imageUrl: errorImage ?? '',
+          ),
         ));
-  }
-
-  Widget _buildFallbackErrorWidget() {
-    return Container(
-      width: width,
-      height: height,
-      color: Colors.grey[300],
-      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-    );
   }
 }

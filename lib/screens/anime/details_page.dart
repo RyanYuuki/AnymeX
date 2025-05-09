@@ -518,7 +518,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         CharactersCarousel(characters: anilistData!.characters ?? []),
         ReusableCarousel(
           data: anilistData!.recommendations,
-          title: "Recommended Anime",
+          title: "Recommended Animes",
           variant: DataVariant.recommendation,
         ),
       ],

@@ -118,13 +118,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       Column(
         children: [
           ReusableCarousel(
-            title: "Recommended Anime",
+            title: "Recommended Animes",
             data: isLoggedIn.value
                 ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
                 : recAnimes,
           ),
           ReusableCarousel(
-            title: "Recommended Manga",
+            title: "Recommended Mangas",
             data: isLoggedIn.value
                 ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
                 : recMangas,

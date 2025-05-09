@@ -1,6 +1,6 @@
 <div align="center">
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
-  
+   
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android_ios_windows_linux_macos-06599d?color=white&labelColor=black&style=for-the-badge"/>
   <a href="https://github.com/RyanYuuki/AnymeX/releases"><img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?color=white&labelColor=black&label=Downloads&style=for-the-badge" alt="GitHub Downloads"></a>
@@ -17,11 +17,9 @@
 </div>
 
 # AnymeX
-
 **AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) & [**Simkl**](https://simkl.com/) support!
 
 ## Downloads
-
 <div align="center">
 <p>
    <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&display_name=tag&style=for-the-badge&label=Stable" alt="Latest Stable Release"/></a>
@@ -30,7 +28,6 @@
 </div>
 
 ## iOS Sideloading Sources
-
 <div align="center">
 
 <a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Altstore&labelColor=black&color=white"></a>
@@ -43,8 +40,8 @@
 
 </div>
 
-## Disclaimer
 
+## Disclaimer
 - **Purpose**: AnymeX is a hybrid tracking and management tool for anime, manga and other media supported by AniList, MyAnimeList & Simkl. This application is designed for tracking use only.
 - **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.
 - **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
@@ -64,7 +61,6 @@
 -->
 
 ## Support Us
-
 <a href='https://ko-fi.com/ryanyuuki7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 > ⭐ **Star This Repository To Support The Developer And Encourage The Development Of The Application!**
 <details>
@@ -75,18 +71,13 @@
 </details>
 
 ## Official Communities
-
 Join our communities to stay updated and contribute to the discussion:
 
 <a href="https://discord.gg/5gAHhMvTcx" style="margin-right: 10px; display: inline-block;"><img src="https://files.catbox.moe/tb0004.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
 <a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://files.catbox.moe/z66xwr.png" alt="Telegram" height="40" style="vertical-align: middle;"></a>
 
 ## Contribute
-
-We welcome contributions, from translations to new features.  
-Our development environment setup guide is available [here](./DEVELOPMENT.md).  
-For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion).  
-Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
+We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
 
 <!--<details>
 <summary>Weblate Translation Graph</summary>
@@ -94,7 +85,6 @@ Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/
 </details>-->
 
 ## Acknowledgments
-
 A heartfelt thank you to everyone who has contributed to the development of AnymeX.
 Your efforts are invaluable.
 
@@ -107,5 +97,4 @@ Your efforts are invaluable.
 </a>
 
 ## License
-
 AnymeX is licensed under the MIT License. More info can be found [here](LICENSE.md).

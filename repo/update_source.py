@@ -65,12 +65,6 @@ class AppConfig(TypedDict):
 def load_config(config_path: str) -> AppConfig:
     """
     Load repo configuration values.
-
-    Args:
-        config_path: File path for configuration details
-    
-    Returns:
-        AppConfig: Dictionary with config values
     """
     try:
         with open(config_path, 'r') as config_file:
@@ -98,9 +92,6 @@ def fetch_all_releases(repo_url: str) -> List[GitHubRelease]:
     """
     Fetch all GitHub releases for the repository, sorted by published date (oldest first).
 
-    Args:
-        repo_url: The GitHub repo url (user/repo)      
-
     Returns:
         List[GitHubRelease]: List of all releases sorted by publication date
     """
@@ -119,9 +110,6 @@ def fetch_all_releases(repo_url: str) -> List[GitHubRelease]:
 def fetch_latest_release(repo_url: str) -> GitHubRelease:
     """
     Fetch the latest GitHub release for the repository.
-
-    Args:
-        repo_url: The GitHub repo url (user/repo)    
 
     Returns:
         GitHubRelease: The latest release
@@ -271,10 +259,9 @@ def update_json_file(
     fetched_data_latest: GitHubRelease,
 ) -> None:
     """
-    Update the source file with the fetched GitHub releases.
+    Update the apps.json file with the fetched GitHub releases.
 
     Args:
-        config: Configuration object with the repo/app details
         json_file: Path to the JSON file
         fetched_data_all: List of all GitHub releases
         fetched_data_latest: The latest GitHub release
@@ -300,7 +287,11 @@ def update_json_file(
         base_version = normalize_version(full_version)
 
         # Clean up description
-        description = format_description(release["body"])
+        description = release["body"]
+        keyword = "{APP_NAME} Release Information"
+        if keyword in description:
+            description = description.split(keyword, 1)[1].strip()
+        description = format_description(description)
 
         # Find download URL and size
         download_url, size = find_download_url_and_size(release)
@@ -322,8 +313,8 @@ def update_json_file(
 
     deduplicated_versions = process_versions(releases)
     app["versions"] = []
-    for version in deduplicated_versions:
-        app["versions"].insert(0, version)
+    for i in deduplicated_versions:
+        app["versions"].insert(0, i)
     app["versions"] = sorted(
         app["versions"], key=lambda x: x.get("date", ""), reverse=True
     )

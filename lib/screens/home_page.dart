@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                           color: Theme.of(context).colorScheme.primary,
                           variant: TextVariant.bold),
                       const AnymexTextSpan(
-                          text: ', what are we doing today?',
+                          text: ', What are we doing today?',
                           size: 30,
                           variant: TextVariant.bold)
                     ],

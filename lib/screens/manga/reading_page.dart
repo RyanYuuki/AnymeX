@@ -13,12 +13,14 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 
 enum ReadingMode {
   webtoon,
@@ -61,8 +63,6 @@ class _ReadingPageState extends State<ReadingPage> {
   int _pointersCount = 0;
   final TransformationController _zoomController = TransformationController();
   double currentScaleValue = 1.0;
-  double _previousOffset = 0;
-
   // Settings
   final activeMode = ReadingMode.webtoon.obs;
   final pageWidthMultiplier = 1.0.obs;
@@ -133,24 +133,7 @@ class _ReadingPageState extends State<ReadingPage> {
 
   void _initPageController({int page = 0}) {
     pageController = PageController(initialPage: page);
-    scrollController.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    final currentOffset = scrollController.offset;
-
-    const threshold = 25.0; // Avoid jittery toggling
-
-    if ((currentOffset - _previousOffset).abs() > threshold) {
-      if (currentOffset > _previousOffset) {
-        isMenuToggled.value = false; // Scroll down, hide AppBar
-      } else {
-        isMenuToggled.value = true; // Scroll up, show AppBar
-      }
-      _previousOffset = currentOffset;
-    }
-
-    _updateScrollProgress();
+    pageController.addListener(() {});
   }
 
   void _getPreferences() {
@@ -472,11 +455,6 @@ class _ReadingPageState extends State<ReadingPage> {
         focusNode: _focusNode,
         onKeyEvent: handleKeyPress,
         child: Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: Container(),
-          ),
           body: Obx(() {
             if (isLoading.value) {
               return const Center(
@@ -516,8 +494,59 @@ class _ReadingPageState extends State<ReadingPage> {
                               setState(() => _pointersCount++),
                           onPointerUp: (_) => setState(() => _pointersCount--),
                           child: _buildWebtoonMode())),
-                _buildAnimatedAppBar(),
+                _buildTopControls(context),
                 _bottomControls(context),
+                if (!isMenuToggled.value)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.5),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.5, 1.0],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          AnymexText(
+                            text:
+                                "Page $currentPageIndex / ${mangaPages.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          10.width(),
+                          AnymexText(
+                            text: "Ch. ${currentChapter.value.number}/",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          AnymexText(
+                            text: "Ch. ${chapterList.length}",
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                          const Spacer(),
+                          AnymexText(
+                            text: DateFormat("hh:mm a").format(DateTime.now()),
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           }),
@@ -604,74 +633,68 @@ class _ReadingPageState extends State<ReadingPage> {
     );
   }
 
-  Widget _buildAnimatedAppBar() {
+  AnimatedPositioned _buildTopControls(BuildContext context) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      top: isMenuToggled.value
-          ? 0
-          : -(kToolbarHeight + MediaQuery.of(context).padding.top),
+      top: isMenuToggled.value ? 0 : -120,
       left: 0,
       right: 0,
       child: Container(
-        color: Theme.of(context).appBarTheme.backgroundColor ??
-            Theme.of(context).colorScheme.surface.withValues(alpha: 0.80),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        height: 90,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              Colors.transparent,
+            ],
+            stops: const [0.5, 1.0],
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            SizedBox(height: MediaQuery.of(context).padding.top),
-            SizedBox(
-              height: kToolbarHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: const Icon(IconlyBold.arrow_left, size: 30),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          currentChapter.value.title ??
-                              'Chapter ${currentChapter.value.number}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Page $currentPageIndex / ${mangaPages.length}, Ch. ${currentChapter.value.number?.toInt()} / ${chapterList.length}',
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.white70),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.settings,
-                        color: canGoForward.value ? Colors.white : Colors.grey,
-                        size: 30),
-                    onPressed: () {
-                      showSettings(context);
-                    },
-                  ),
-                  const SizedBox(width: 10),
-                ],
-              ),
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(IconlyBold.arrow_left, color: Colors.white),
             ),
+            const SizedBox(width: 10),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 190,
+                  child: Text(
+                      currentChapter.value.title ??
+                          'Chapter ${currentChapter.value.number}',
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+                const SizedBox(height: 3),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 190,
+                  child: Text(anilistData.value.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.white70)),
+                ),
+              ],
+            ),
+            const Spacer(),
+            IconButton(
+                onPressed: () {
+                  showSettings(context);
+                },
+                icon: const Icon(Icons.settings))
           ],
         ),
       ),
@@ -680,7 +703,7 @@ class _ReadingPageState extends State<ReadingPage> {
 
   AnimatedPositioned _bottomControls(BuildContext context) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       bottom: isMenuToggled.value ? 0 : -150,
       left: getResponsiveSize(context,
@@ -697,7 +720,7 @@ class _ReadingPageState extends State<ReadingPage> {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withValues(alpha: 0.50),
+              Colors.black.withOpacity(0.5),
               Colors.transparent,
             ],
             stops: const [0.5, 1.0],
@@ -710,7 +733,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   desktopValue: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withValues(alpha: 0.60)),
+                      .withOpacity(0.6)),
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           padding: EdgeInsets.all(
@@ -724,10 +747,8 @@ class _ReadingPageState extends State<ReadingPage> {
               const SizedBox(width: 5),
               Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surface
-                        .withValues(alpha: 0.8),
+                    color:
+                        Theme.of(context).colorScheme.surface.withOpacity(0.80),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
                   icon: Icon(Icons.skip_previous_rounded,
@@ -748,7 +769,7 @@ class _ReadingPageState extends State<ReadingPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .surface
-                          .withValues(alpha: 0.80),
+                          .withOpacity(0.80),
                       borderRadius: BorderRadius.circular(20)),
                   child: CustomSlider(
                     enableComfortPadding: true,
@@ -770,17 +791,15 @@ class _ReadingPageState extends State<ReadingPage> {
                     inactiveColor: Theme.of(context)
                         .colorScheme
                         .inverseSurface
-                        .withValues(alpha: 0.10),
+                        .withOpacity(0.1),
                   ),
                 ),
               ),
               const SizedBox(width: 5),
               Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surface
-                        .withValues(alpha: 0.80),
+                    color:
+                        Theme.of(context).colorScheme.surface.withOpacity(0.80),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
                   icon: Icon(Icons.skip_next_rounded,
