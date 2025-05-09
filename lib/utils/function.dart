@@ -460,25 +460,25 @@ List<TrackedMedia> filterListByLabel(
     if (label == "Completed Movie" && anime.watchingStatus == 'COMPLETED') {
       return true;
     }
-    if (label == "Paused Anime" && anime.watchingStatus == 'PAUSED') {
+    if (label == "Paused Animes" && anime.watchingStatus == 'PAUSED') {
       return true;
     }
     if (label == "Paused Manga" && anime.watchingStatus == 'PAUSED') {
       return true;
     }
-    if (label == "Dropped Anime" && anime.watchingStatus == 'DROPPED') {
+    if (label == "Dropped Animes" && anime.watchingStatus == 'DROPPED') {
       return true;
     }
     if (label == "Dropped Manga" && anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Planned Anime" && anime.watchingStatus == 'PLANNING') {
+    if (label == "Planning Animes" && anime.watchingStatus == 'PLANNING') {
       return true;
     }
-    if (label == "Planned Manga" && anime.watchingStatus == 'PLANNING') {
+    if (label == "Planning Manga" && anime.watchingStatus == 'PLANNING') {
       return true;
     }
-    if (label == "Rewatching Anime" && anime.watchingStatus == 'REPEATING') {
+    if (label == "Rewatching Animes" && anime.watchingStatus == 'REPEATING') {
       return true;
     }
     if (label == "Rewatching Manga" && anime.watchingStatus == 'REPEATING') {

@@ -30,13 +30,13 @@ class ProfileInfo extends StatelessWidget {
           version,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontFamily: "Poppins-SemiBold",
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.70),
+            color: theme.colorScheme.onSurface.withOpacity(0.7),
           ),
         ),
         Text(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.50),
+            color: theme.colorScheme.onSurface.withOpacity(0.5),
           ),
         ),
       ],
@@ -207,13 +207,13 @@ class ProfileSection extends StatelessWidget {
           Text(
             version,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.70),
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
           Text(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.50),
+              color: theme.colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
           InfoCard(
@@ -282,8 +282,7 @@ class InfoCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.70),
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -346,8 +345,7 @@ class CustomSection extends StatelessWidget {
                           subtitle!,
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.70),
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                       ),
@@ -401,8 +399,7 @@ class CustomListTile extends StatelessWidget {
                   Text(
                     title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.90),
+                        color: theme.colorScheme.onSurface.withOpacity(0.9),
                         fontFamily: 'Poppins-SemiBold'),
                   ),
                   const SizedBox(height: 1),
@@ -411,8 +408,7 @@ class CustomListTile extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.70)),
+                          color: theme.colorScheme.onSurface.withOpacity(0.7)),
                     )
                 ],
               ),

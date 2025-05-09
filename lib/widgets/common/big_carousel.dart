@@ -101,7 +101,7 @@ class _BigCarouselState extends State<BigCarousel> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  title,
+                                  title ?? '??',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -150,8 +150,7 @@ class _BigCarouselState extends State<BigCarousel> {
                                 ? anime.description
                                 : 'Description Not Available',
                             size: 12,
-                            color: ColorScheme.inverseSurface
-                                .withValues(alpha: 0.70),
+                            color: ColorScheme.inverseSurface.withOpacity(0.7),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 3,
                             stripHtml: true,
@@ -192,10 +191,8 @@ class _BigCarouselState extends State<BigCarousel> {
               dotHeight: 8,
               dotWidth: 8,
               activeDotColor: Theme.of(context).colorScheme.primary,
-              dotColor: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.50),
+              dotColor:
+                  Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
         ],

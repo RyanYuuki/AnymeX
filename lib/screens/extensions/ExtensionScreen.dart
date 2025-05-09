@@ -107,7 +107,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.20),
+                    color: Colors.black.withOpacity(0.2),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -130,7 +130,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurfaceVariant
-                                .withValues(alpha: 0.40),
+                                .withOpacity(0.4),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -207,7 +207,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withValues(alpha: 0.50),
+                              .withOpacity(0.5),
                           width: 1.5,
                         ),
                         prefixIcon: Icons.movie_filter_outlined,
@@ -235,7 +235,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withValues(alpha: 0.50),
+                              .withOpacity(0.5),
                           width: 1.5,
                         ),
                         controller: mangaRepoController,
@@ -262,7 +262,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withValues(alpha: 0.50),
+                              .withOpacity(0.5),
                           width: 1.5,
                         ),
                         controller: novelRepoController,
