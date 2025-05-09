@@ -147,8 +147,6 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         .where((element) => !element.isAdded!)
         .toList();
   }
-
-  // New method to identify recommended extensions
   List<Source> _getRecommendedEntries(List<Source> data) {
     final extens = widget.mediaType == MediaType.anime
         ? Extensions().getRecommmendedExtensions()
@@ -162,7 +160,6 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
 
   SliverGroupedListView<Source, String> _buildUpdatePendingList(
       List<Source> updateEntries) {
-    // (no changes to this method)
     return SliverGroupedListView<Source, String>(
       elements: updateEntries,
       groupBy: (element) => "",

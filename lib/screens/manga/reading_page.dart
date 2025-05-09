@@ -855,72 +855,156 @@ class _ReadingPageState extends State<ReadingPage> {
                   );
                 }),
                 Obx(() {
-                  final selections = List<bool>.generate(
-                    ReadingMode.values.length,
-                    (index) =>
-                        index == ReadingMode.values.indexOf(activeMode.value),
-                  );
-                  return Center(
-                    child: ToggleButtons(
-                      isSelected: selections,
-                      onPressed: (int index) {
-                        final pageIndex = currentPageIndex.value;
-                        activeMode.value = ReadingMode.values[index];
-                        _savePreferences();
-                        Future.delayed(const Duration(milliseconds: 50), () {
-                          navigateToPage(pageIndex);
-                        });
-                      },
-                      children: const [
-                        Tooltip(
-                          message: 'Webtoon',
-                          child: Icon(Icons.view_day),
-                        ),
-                        Tooltip(
-                          message: 'LTR',
-                          child: Icon(Icons.format_textdirection_l_to_r),
-                        ),
-                        Tooltip(
-                          message: 'RTL',
-                          child: Icon(Icons.format_textdirection_r_to_l),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: ReadingMode.values.map((mode) {
+                            final isSelected = mode == activeMode.value;
+                            return Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  final pageIndex = currentPageIndex.value;
+                                  activeMode.value = mode;
+                                  _savePreferences();
+                                  Future.delayed(
+                                      const Duration(milliseconds: 50), () {
+                                    navigateToPage(pageIndex);
+                                  });
+                                },
+                                child: AnimatedContainer(
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  duration: const Duration(milliseconds: 200),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .outline
+                                              .withOpacity(0.5),
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withOpacity(0.3),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            )
+                                          ]
+                                        : null,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        mode == ReadingMode.values[0]
+                                            ? Icons.view_day
+                                            : mode == ReadingMode.values[1]
+                                                ? Icons
+                                                    .format_textdirection_l_to_r
+                                                : Icons
+                                                    .format_textdirection_r_to_l,
+                                        color: isSelected
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                        size: 22,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        mode == ReadingMode.values[0]
+                                            ? 'Webtoon'
+                                            : mode == ReadingMode.values[1]
+                                                ? 'LTR'
+                                                : 'RTL',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
+                                          color: isSelected
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ],
                     ),
                   );
                 }),
-                if (!Platform.isAndroid && !Platform.isIOS)
-                  Obx(() {
-                    return CustomSliderTile(
-                      title: 'Image Width',
-                      sliderValue: pageWidthMultiplier.value,
-                      onChanged: (double value) {
-                        pageWidthMultiplier.value = value;
-                      },
-                      onChangedEnd: (e) => _savePreferences(),
-                      description: 'Only Works with webtoon mode',
-                      icon: Icons.image_aspect_ratio_rounded,
-                      min: 1.0,
-                      max: 4.0,
-                      divisions: 39,
-                    );
-                  }),
-                if (!Platform.isAndroid && !Platform.isIOS)
-                  Obx(() {
-                    return CustomSliderTile(
-                      title: 'Scroll Multiplier',
-                      sliderValue: scrollSpeedMultiplier.value,
-                      onChanged: (double value) {
-                        scrollSpeedMultiplier.value = value;
-                      },
-                      onChangedEnd: (e) => _savePreferences(),
-                      description:
-                          'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
-                      icon: Icons.speed,
-                      min: 1.0,
-                      max: 5.0,
-                      divisions: 9,
-                    );
-                  }),
+                getResponsiveValue(
+                  context,
+                  mobileValue: const SizedBox.shrink(),
+                  desktopValue: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(children: [
+                      Obx(() {
+                        return CustomSliderTile(
+                          title: 'Image Width',
+                          sliderValue: pageWidthMultiplier.value,
+                          onChanged: (double value) {
+                            pageWidthMultiplier.value = value;
+                          },
+                          onChangedEnd: (e) => _savePreferences(),
+                          description: 'Only Works with webtoon mode',
+                          icon: Icons.image_aspect_ratio_rounded,
+                          min: 1.0,
+                          max: 4.0,
+                          divisions: 39,
+                        );
+                      }),
+                      if (!(Platform.isAndroid && Platform.isIOS))
+                        Obx(() {
+                          return CustomSliderTile(
+                            title: 'Scroll Multiplier',
+                            sliderValue: scrollSpeedMultiplier.value,
+                            onChanged: (double value) {
+                              scrollSpeedMultiplier.value = value;
+                            },
+                            onChangedEnd: (e) => _savePreferences(),
+                            description:
+                                'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                            icon: Icons.speed,
+                            min: 1.0,
+                            max: 5.0,
+                            divisions: 9,
+                          );
+                        }),
+                    ]),
+                  ),
+                ),
                 20.height()
               ],
             ),

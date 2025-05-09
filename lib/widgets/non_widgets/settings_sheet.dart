@@ -31,20 +31,17 @@ class SettingsSheet extends StatelessWidget {
       {
         'type': ServicesType.anilist,
         'name': "AniList",
-        'icon':
-            'https://icons.iconarchive.com/icons/simpleicons-team/simple/256/anilist-icon.png',
+        'icon': 'anilist-icon.png',
       },
       {
         'type': ServicesType.mal,
         'name': "MyAnimeList",
-        'icon':
-            'https://cdn.icon-icons.com/icons2/3913/PNG/512/myanimelist_logo_icon_248409.png',
+        'icon': 'mal-icon.png',
       },
       {
         'type': ServicesType.simkl,
         'name': "Simkl",
-        'icon':
-            'https://icon-icons.com/icons2/3915/PNG/512/simkl_logo_icon_249621.png',
+        'icon': 'simkl-icon.png',
       },
       if (serviceHandler.extensionService.installedExtensions.length > 2 &&
           serviceHandler.extensionService.installedMangaExtensions.length > 2)
@@ -71,12 +68,9 @@ class SettingsSheet extends StatelessWidget {
             ),
             ...services.map((service) => ListTile(
                   leading: service['icon'] != null
-                      ? CachedNetworkImage(
-                          httpHeaders: const {
-                            'Referer': 'https://icon-icons.com/'
-                          },
+                      ? Image.asset(
                           color: Theme.of(context).colorScheme.primary,
-                          imageUrl: service['icon'] as String,
+                          'assets/images/${service['icon']}',
                           width: 30,
                         )
                       : Icon(
