@@ -8,9 +8,9 @@
 <p align="center">
 <a href="https://www.codefactor.io/repository/github/RyanYuuki/AnymeX"><img src="https://img.shields.io/codefactor/grade/github/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge&label=Codefactor" alt="CodeFactor"/></a>
   <!--<a href="https://hosted.weblate.org/engage/echo"><img alt="Weblate project translated" src="https://img.shields.io/weblate/progress/echo?color=white&labelColor=black&label=Translated&style=flat-square"></a>-->
-<a href="https://github.com/RyanYuuki/AnymeX/commits/main">
+<!-- <a href="https://github.com/RyanYuuki/AnymeX/commits/main">
     <img src="https://img.shields.io/github/last-commit/RyanYuuki/AnymeX?color=white&labelColor=black&label=Latest Commit&style=for-the-badge" alt="GitHub Last Commit">
-</a>
+</a> -->
 <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
       <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
 </p>
