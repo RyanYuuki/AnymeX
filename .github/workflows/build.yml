@@ -63,6 +63,9 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Generate Splash Screens
+        run: dart run flutter_native_splash:create
+
       - name: Build Android with Split ABI
         run: flutter build apk --split-per-abi
 
@@ -117,6 +120,9 @@ jobs:
 
       - name: Get Dependencies
         run: flutter pub get
+
+      - name: Generate Splash Screens
+        run: dart run flutter_native_splash:create
 
       - name: Setup Signing Files
         env:

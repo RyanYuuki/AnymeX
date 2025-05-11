@@ -41,10 +41,31 @@ SIMKL_CLIENT_ID: 0
 SIMKL_CLIENT_SECRET: 0
 MAL_CLIENT_ID: 0
 MAL_CLIENT_SECRET: 0
-CALLBACK_SCHEME: 0
+CALLBACK_SCHEME: anymex://callback
 ```
 
 You can however create your own API keys and populate the values as necessary.
+
+### AniList
+
+| Key         | Value             |
+| ------------| ----------------- |
+| Name        | *any*             |
+| Redirect URL| anymex://callback |
+
+### Simlk
+
+| Key         | Value             |
+| ------------| ----------------- |
+| tbd         | *tbd*             |
+| tbd         | tbd               |
+
+### My Anime List
+
+| Key         | Value             |
+| ------------| ----------------- |
+| tbd         | *tbd*             |
+| tbd         | tbd               |
 
 ## Run the App
 
