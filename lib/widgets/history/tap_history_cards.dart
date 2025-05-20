@@ -49,7 +49,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
         }
       },
       child: Container(
-        margin: EdgeInsets.only(left: 15),
+        margin: const EdgeInsets.only(left: 15),
         width: getResponsiveSize(context,
             mobileSize: MediaQuery.of(context).size.width / 1.5,
             dektopSize: MediaQuery.of(context).size.width / 3),
@@ -160,7 +160,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: colorScheme.surfaceVariant,
+                                          color: colorScheme.surfaceContainerHighest,
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),
