@@ -39,6 +39,7 @@ class Media {
   NextAiringEpisode? nextAiringEpisode;
   List<Ranking> rankings;
   ServicesType? serviceType;
+  DateTime? createdAt;
 
   Media(
       {this.id = '0',
@@ -68,7 +69,9 @@ class Media {
       this.nextAiringEpisode,
       this.rankings = const [],
       this.mediaContent,
-      this.serviceType});
+      this.serviceType,
+      DateTime? createdAt})
+      : createdAt = DateTime.now();
 
   factory Media.fromMAL(Map<String, dynamic> json) {
     final node = json['node'] ?? {};

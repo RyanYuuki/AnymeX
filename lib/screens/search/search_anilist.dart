@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -95,10 +96,11 @@ class _SearchPageState extends State<SearchPage> {
         _activeFilters = Map<String, dynamic>.from(filters);
       }
 
-      final results = await _serviceHandler.search(searchQuery,
+      final results = await _serviceHandler.search(SearchParams(
+          query: searchQuery,
           isManga: widget.isManga,
           filters: _activeFilters.isNotEmpty ? _activeFilters : null,
-          args: isAdult.value);
+          args: isAdult.value));
 
       if (query != null &&
           query.isNotEmpty &&

@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' show max;
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/core/Search/getVideo.dart';
@@ -183,8 +184,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         widget.anilistData.id, currentEpisode);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       if (updateAL) {
-        await serviceHandler.updateListEntry(
-            listId: anilistData.value.id, progress: epNum, isAnime: true);
+        await serviceHandler.updateListEntry(UpdateListEntryParams(
+            listId: anilistData.value.id, progress: epNum, isAnime: true));
         serviceHandler.onlineService
             .setCurrentMedia(anilistData.value.id.toString());
       }
@@ -1491,7 +1492,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                                     resizeModeList.length;
                                             resizeMode.value =
                                                 resizeModeList[newIndex];
-                                            snackBar(resizeMode.value);
                                           },
                                           icon: Icons.aspect_ratio_rounded),
                                       if (!Platform.isAndroid &&

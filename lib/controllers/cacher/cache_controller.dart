@@ -30,7 +30,7 @@ class CacheController extends GetxController {
     return currentPool.map((e) => cacheDataParser(e)).toList();
   }
 
-  Media? getCacheByAnimeId(String id) {
+  Media? getCacheById(String id) {
     final pool = getCacheContainer();
     final data = pool.map((e) => cacheDataParser(e)).toList();
     return data.firstWhereOrNull((e) => e.id == id);

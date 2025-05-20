@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
@@ -70,19 +71,10 @@ class ServiceHandler extends GetxController {
   @override
   Future<void> refresh() => onlineService.refresh();
 
-  Future<void> updateListEntry({
-    required String listId,
-    double? score,
-    String? status,
-    int? progress,
-    bool isAnime = true,
-  }) async =>
-      onlineService.updateListEntry(
-          listId: listId,
-          score: score,
-          status: status,
-          progress: progress,
-          isAnime: isAnime);
+  Future<void> updateListEntry(
+    UpdateListEntryParams params,
+  ) async =>
+      onlineService.updateListEntry(params);
 
   RxList<Widget> animeWidgets(BuildContext context) =>
       service.animeWidgets(context);
@@ -107,16 +99,13 @@ class ServiceHandler extends GetxController {
 
   Future<void> fetchHomePage() => service.fetchHomePage();
 
-  Future<Media> fetchDetails(dynamic id) async {
-    Media? data = cacheController.getCacheByAnimeId(id);
-    return data ?? service.fetchDetails(id);
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
+    Media? data = cacheController.getCacheById(params.id);
+    return data ?? service.fetchDetails(params);
   }
 
-  Future<List<Media>?> search(String query,
-          {bool isManga = false,
-          Map<String, dynamic>? filters,
-          dynamic args}) async =>
-      service.search(query, isManga: isManga, filters: filters, args: args);
+  Future<List<Media>?> search(SearchParams params) async =>
+      service.search(params);
 
   void changeService(ServicesType type) {
     final box = Hive.box('themeData');

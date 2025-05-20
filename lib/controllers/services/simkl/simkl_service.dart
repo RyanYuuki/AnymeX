@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -35,7 +36,8 @@ class SimklService extends GetxController
   RxList<TrackedMedia> continueWatchingSeries = <TrackedMedia>[].obs;
 
   @override
-  Future<Media> fetchDetails(dynamic id) async {
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
+    final id = params.id;
     final newId = id.split('*').first;
     final isSeries = id.split('*').last == "SERIES";
     log(isSeries.toString());
@@ -52,9 +54,9 @@ class SimklService extends GetxController
   }
 
   Future<void> fetchMovies() async {
-    final url = "https://api.simkl.com/movies/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20";
-    final resp = await get(Uri.parse(
-        url));
+    final url =
+        "https://api.simkl.com/movies/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20";
+    final resp = await get(Uri.parse(url));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
       final list = data.map((e) {
@@ -112,10 +114,9 @@ class SimklService extends GetxController
   }
 
   @override
-  Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
-    final movieData = await searchMovies(query);
-    final seriesData = await searchSeries(query);
+  Future<List<Media>> search(SearchParams params) async {
+    final movieData = await searchMovies(params.query);
+    final seriesData = await searchSeries(params.query);
     return [...movieData, ...seriesData];
   }
 
@@ -255,13 +256,10 @@ class SimklService extends GetxController
   Rx<Profile> profileData = Profile().obs;
 
   @override
-  Future<void> updateListEntry({
-    required String listId,
-    double? score,
-    String? status,
-    int? progress,
-    bool isAnime = true,
-  }) async {
+  Future<void> updateListEntry(UpdateListEntryParams params) async {
+    final listId = params.listId;
+    final status = params.status;
+    final progress = params.progress;
     try {
       final isMovie = listId.split('*').last == 'MOVIE';
       final id = listId.split('*').first;

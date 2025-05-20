@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'dart:async';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -311,7 +312,9 @@ class SourceController extends GetxController implements BaseService {
   }
 
   @override
-  Future<Media> fetchDetails(dynamic id) async {
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
+    final id = params.id;
+
     final isAnime = lastUpdatedSource.value == "ANIME";
     final data = await getDetail(
         url: id,
@@ -321,18 +324,16 @@ class SourceController extends GetxController implements BaseService {
   }
 
   @override
-  Future<List<Media>> search(String query,
-      {bool isManga = false,
-      Map<String, dynamic>? filters,
-      dynamic args}) async {
+  Future<List<Media>> search(SearchParams params) async {
     final data = await m.search(
-        source: (isManga ? activeMangaSource.value : activeSource.value)!,
-        query: query,
+        source:
+            (params.isManga ? activeMangaSource.value : activeSource.value)!,
+        query: params.query,
         page: 1,
         filterList: []);
     return data
-            ?.map((e) => Media.fromManga(
-                e ?? MManga(), isManga ? MediaType.manga : MediaType.anime))
+            ?.map((e) => Media.fromManga(e ?? MManga(),
+                params.isManga ? MediaType.manga : MediaType.anime))
             .toList() ??
         [];
   }

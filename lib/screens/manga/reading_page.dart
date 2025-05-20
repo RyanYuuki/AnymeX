@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/core/Eval/dart/model/page.dart';
@@ -189,14 +190,14 @@ class _ReadingPageState extends State<ReadingPage> {
         anilistData.value, chapterList, currentChapter.value);
     offlineStorage.addOrUpdateReadChapter(
         widget.anilistData.id, currentChapter.value);
-    await anilist.updateListEntry(
+    await anilist.updateListEntry(UpdateListEntryParams(
       listId: anilistData.value.id,
       status: "CURRENT",
       isAnime: false,
       progress: next
           ? currentChapter.value.number!.toInt()
           : currentChapter.value.number!.toInt() - 1,
-    );
+    ));
   }
 
   @override

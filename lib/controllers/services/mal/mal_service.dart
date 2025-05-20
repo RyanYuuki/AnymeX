@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -204,21 +205,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  Future<Media> fetchDetails(dynamic id) async {
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
     try {
       final animeData = await fetchWithToken(
-        'https://api.myanimelist.net/v2/anime/$id',
+        'https://api.myanimelist.net/v2/anime/${params.id}',
       );
       return animeData;
     } catch (animeError) {
       try {
         final mangaData = await fetchWithToken(
-          'https://api.myanimelist.net/v2/manga/$id',
+          'https://api.myanimelist.net/v2/manga/${params.id}',
         );
         return mangaData;
       } catch (mangaError) {
         throw Exception(
-            'Failed to fetch details for both anime and manga with ID: $id');
+            'Failed to fetch details for both anime and manga with ID: ${params.id}');
       }
     }
   }
@@ -233,11 +234,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
-    final mediaType = isManga ? 'manga' : 'anime';
+  Future<List<Media>> search(SearchParams params) async {
+    final mediaType = params.isManga ? 'manga' : 'anime';
     final data = await fetchDataFromApi(
-      'https://api.myanimelist.net/v2/$mediaType?q=$query&limit=30',
+      'https://api.myanimelist.net/v2/$mediaType?q=${params.query}&limit=30',
     );
     return data;
   }
@@ -529,13 +529,13 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  Future<void> updateListEntry({
-    required String listId,
-    double? score,
-    String? status,
-    int? progress,
-    bool isAnime = true,
-  }) async {
+  Future<void> updateListEntry(UpdateListEntryParams params) async {
+    final listId = params.listId;
+    final score = params.score;
+    final status = params.status;
+    final progress = params.progress;
+    final isAnime = params.isAnime;
+
     final token = await storage.get('mal_auth_token');
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');

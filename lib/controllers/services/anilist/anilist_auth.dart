@@ -145,7 +145,7 @@ class AnilistAuth extends GetxController {
 
         log('User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        fetchFollowersAndFollowing(userProfile.id ?? '');
+        // fetchFollowersAndFollowing(userProfile.id ?? '');
       } else {
         log('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');

@@ -1,12 +1,15 @@
 // ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
+import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -89,9 +92,26 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 30),
             ],
             Obx(() {
-              return Column(
-                children: serviceHandler.homeWidgets(context),
-              );
+              final children =
+                  List<Widget>.from(serviceHandler.homeWidgets(context));
+              final data = cacheController.getStoredAnime();
+              if (data.isNotEmpty) {
+                children.insert(
+                  2,
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: cacheController.getStoredAnime().length,
+                      itemBuilder: (context, i) {
+                        final media = cacheController.getStoredAnime()[i];
+                        return RecentlyOpenedAnimeCard(media: media);
+                      },
+                    ),
+                  ),
+                );
+              }
+              return Column(children: children);
             }),
             const SizedBox(height: 50)
           ],

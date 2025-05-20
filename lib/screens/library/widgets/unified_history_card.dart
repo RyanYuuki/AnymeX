@@ -201,7 +201,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                 topRight: Radius.circular(16.multiplyRadius()),
               ),
               child: NetworkSizedImage(
-                imageUrl: media.cover,
+                imageUrl: media.cover.isEmpty ? media.poster : media.cover,
                 width: double.infinity,
                 height: 130,
                 radius: 0,

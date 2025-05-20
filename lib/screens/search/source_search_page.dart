@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/core/Search/search.dart';
@@ -78,7 +79,8 @@ class _SourceSearchPageState extends State<SourceSearchPage> {
         }
       }
     } else {
-      final data = await serviceHandler.search(textController.text);
+      final data =
+          await serviceHandler.search(SearchParams(query: textController.text));
       searchData.value = data ?? [];
     }
   }

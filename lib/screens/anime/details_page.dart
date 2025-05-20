@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
 import 'dart:developer';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Search/get_detail.dart';
@@ -128,7 +129,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
-      final tempData = await fetcher.fetchDetails(widget.media.id.toString());
+      final tempData = await fetcher
+          .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
       final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
 
       setState(() {
@@ -624,12 +626,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           media: anilistData ?? widget.media,
           onUpdate: (id, score, status, progress) async {
             final id = fetcher.onlineService.currentMedia.value.id;
-            await fetcher.onlineService.updateListEntry(
+            await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
                 listId: id ?? widget.media.id,
                 isAnime: true,
                 score: score,
                 status: status,
-                progress: progress);
+                progress: progress));
             setState(() {});
           },
           onDelete: (s) async {

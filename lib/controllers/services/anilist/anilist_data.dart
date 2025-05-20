@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show min;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/core/Model/Source.dart';
@@ -311,7 +312,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     media(
       type: ANIME,
       sort: [UPDATED_AT_DESC, POPULARITY_DESC],
-      isAdult: false
+      status: RELEASING,
+      isAdult: false,
+      countryOfOrigin: "JP"
     ) {
         id
         title {
@@ -613,17 +616,17 @@ averageScore
   }
 
   @override
-  Future<List<Media>> search(String query,
-      {bool isManga = false, Map<String, dynamic>? filters, args}) async {
+  Future<List<Media>> search(SearchParams params) async {
+    final filters = params.filters;
     final data = await anilistSearch(
-        isManga: isManga,
-        query: query,
+        isManga: params.isManga,
+        query: params.query,
         sort: filters?['sort'],
         season: filters?['season'],
         status: filters?['status'],
         format: filters?['format'],
         genres: filters?['genres'],
-        isAdult: args);
+        isAdult: params.args);
     return data;
   }
 
@@ -732,10 +735,10 @@ averageScore
   }
 
   @override
-  Future<Media> fetchDetails(dynamic animeId) async {
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
     const String url = 'https://graphql.anilist.co/';
     final Map<String, dynamic> variables = {
-      'id': int.parse(animeId),
+      'id': int.parse(params.id),
     };
 
     final Map<String, dynamic> body = {
@@ -780,18 +783,13 @@ averageScore
   Rx<Profile> get profileData => anilistAuth.profileData;
 
   @override
-  Future<void> updateListEntry(
-          {required String listId,
-          double? score,
-          String? status,
-          int? progress,
-          bool isAnime = true}) =>
+  Future<void> updateListEntry(UpdateListEntryParams params) =>
       anilistAuth.updateListEntry(
-          listId: listId,
-          score: score,
-          status: status,
-          progress: progress,
-          isAnime: isAnime);
+          listId: params.listId,
+          score: params.score,
+          status: params.status,
+          progress: params.progress,
+          isAnime: params.isAnime);
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async =>
