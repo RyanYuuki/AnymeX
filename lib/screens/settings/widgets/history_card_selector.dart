@@ -18,7 +18,7 @@ double getHistoryCardHeight(HistoryCardStyle style, BuildContext context) {
     case HistoryCardStyle.bootiful:
       return 270;
     default:
-      return getResponsiveSize(context, mobileSize: 150, dektopSize: 190);
+      return getResponsiveSize(context, mobileSize: 150, desktopSize: 190);
   }
 }
 

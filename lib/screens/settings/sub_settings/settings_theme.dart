@@ -400,7 +400,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   height: 150,
                   width: getResponsiveSize(context,
                       mobileSize: MediaQuery.of(context).size.width / 2,
-                      dektopSize: 300),
+                      desktopSize: 300),
                   clipBehavior: Clip.antiAlias,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(

@@ -167,7 +167,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             padding: EdgeInsets.symmetric(
                 vertical: 20,
                 horizontal:
-                    getResponsiveSize(context, mobileSize: 20, dektopSize: 10)),
+                    getResponsiveSize(context, mobileSize: 20, desktopSize: 10)),
             children: [
               Row(
                 children: const [

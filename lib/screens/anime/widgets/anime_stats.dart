@@ -64,7 +64,7 @@ class AnimeStats extends StatelessWidget {
                   AnymexText(
                     text: countdown,
                     size: getResponsiveSize(context,
-                        mobileSize: 16, dektopSize: 20),
+                        mobileSize: 16, desktopSize: 20),
                     variant: TextVariant.bold,
                     color: Theme.of(context).colorScheme.onSurface,
                     textAlign: TextAlign.center,

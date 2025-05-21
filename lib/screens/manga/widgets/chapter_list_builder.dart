@@ -121,7 +121,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                         ));
                   },
                   height: getResponsiveSize(context,
-                      mobileSize: 80, dektopSize: 100),
+                      mobileSize: 80, desktopSize: 100),
                   backgroundImage:
                       widget.anilistData.cover ?? widget.anilistData.poster,
                   chapter: readChap ?? continueChapter!),
@@ -206,7 +206,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                               SizedBox(
                                 width: getResponsiveSize(context,
                                     mobileSize: Get.width * 0.4,
-                                    dektopSize: 200),
+                                    desktopSize: 200),
                                 child: AnymexText(
                                   text:
                                       '${chapter.title} ${savedChaps?.pageNumber != null ? '(${savedChaps?.pageNumber}/${savedChaps?.totalPages})' : ''}',
@@ -219,7 +219,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                               SizedBox(
                                 width: getResponsiveSize(context,
                                     mobileSize: Get.width * 0.4,
-                                    dektopSize: 200),
+                                    desktopSize: 200),
                                 child: AnymexText(
                                   text:
                                       '${chapter.releaseDate} • ${Get.find<SourceController>().activeMangaSource.value!.name}',

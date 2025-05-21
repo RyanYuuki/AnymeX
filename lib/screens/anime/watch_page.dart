@@ -632,7 +632,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               width: isEpisodeDialogOpen.value
                   ? Get.width *
                       getResponsiveSize(context,
-                          mobileSize: 0.6, dektopSize: 0.7, isStrict: true)
+                          mobileSize: 0.6, desktopSize: 0.7, isStrict: true)
                   : Get.width,
               child: Video(
                 controller: playerController,
@@ -649,7 +649,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               width: isEpisodeDialogOpen.value
                   ? Get.width *
                       getResponsiveSize(context,
-                          mobileSize: 0.4, dektopSize: 0.3, isStrict: true)
+                          mobileSize: 0.4, desktopSize: 0.3, isStrict: true)
                   : 0,
               child: Focus(
                 focusNode: FocusNode(
@@ -684,7 +684,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           right: isEpisodeDialogOpen.value
               ? Get.width *
                   getResponsiveSize(context,
-                      mobileSize: 0.4, dektopSize: 0.3, isStrict: true)
+                      mobileSize: 0.4, desktopSize: 0.3, isStrict: true)
               : 0,
           child: KeyboardListener(
             focusNode: FocusNode(
@@ -1203,7 +1203,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         right: isEpisodeDialogOpen.value
             ? Get.width *
                 getResponsiveSize(context,
-                    mobileSize: 0.4, dektopSize: 0.3, isStrict: true)
+                    mobileSize: 0.4, desktopSize: 0.3, isStrict: true)
             : 0,
         child: IgnorePointer(
           ignoring: !showControls.value,
@@ -1241,7 +1241,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             Container(
                               width: getResponsiveSize(context,
                                   mobileSize: Get.width * 0.3,
-                                  dektopSize: isEpisodeDialogOpen.value
+                                  desktopSize: isEpisodeDialogOpen.value
                                       ? Get.width * 0.3
                                       : (Get.width * 0.6)),
                               padding: const EdgeInsets.only(top: 3.0),
@@ -1744,13 +1744,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final padding = getResponsiveSize(
       context,
       mobileSize: 10,
-      dektopSize: 20,
+      desktopSize: 20,
       isStrict: true,
     );
     final radius = getResponsiveSize(
       context,
       mobileSize: 20.multiplyRadius(),
-      dektopSize: 40.multiplyRadius(),
+      desktopSize: 40.multiplyRadius(),
       isStrict: true,
     );
 
@@ -1795,7 +1795,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   size: getResponsiveSize(
                     context,
                     mobileSize: 40,
-                    dektopSize: 80,
+                    desktopSize: 80,
                     isStrict: true,
                   ),
                 ),
@@ -1818,11 +1818,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final isMobile = Platform.isAndroid || Platform.isIOS;
     final padding = getResponsiveSize(context,
         mobileSize: isPlay ? 10 : 5,
-        dektopSize: isPlay ? 20 : 10,
+        desktopSize: isPlay ? 20 : 10,
         isStrict: true);
     final radius = getResponsiveSize(context,
         mobileSize: 20.multiplyRadius(),
-        dektopSize: 40.multiplyRadius(),
+        desktopSize: 40.multiplyRadius(),
         isStrict: true);
 
     return Container(
@@ -1856,7 +1856,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               icon,
               color: iconColor ?? color,
               size: getResponsiveSize(context,
-                  mobileSize: 40, dektopSize: 80, isStrict: true),
+                  mobileSize: 40, desktopSize: 80, isStrict: true),
             ),
           ),
         ),
@@ -1865,11 +1865,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildBufferingIndicator() {
-    final size = getResponsiveSize(context, mobileSize: 50, dektopSize: 70);
+    final size = getResponsiveSize(context, mobileSize: 50, desktopSize: 70);
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal:
-              getResponsiveSize(context, mobileSize: 25, dektopSize: 50)),
+              getResponsiveSize(context, mobileSize: 25, desktopSize: 50)),
       child: SizedBox(
           height: size, width: size, child: const AnymexProgressIndicator()),
     );

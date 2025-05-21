@@ -576,7 +576,7 @@ class _ReadingPageState extends State<ReadingPage> {
               },
               width: getResponsiveSize(context,
                   mobileSize: double.infinity,
-                  dektopSize: defaultWidth.value * pageWidthMultiplier.value),
+                  desktopSize: defaultWidth.value * pageWidthMultiplier.value),
               progressIndicatorBuilder: (context, url, progress) => SizedBox(
                   height: ((currentChapter.value.maxOffset ??
                           (MediaQuery.of(context).size.height *
@@ -613,7 +613,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   },
                   width: getResponsiveSize(context,
                       mobileSize: double.infinity,
-                      dektopSize:
+                      desktopSize:
                           defaultWidth.value * pageWidthMultiplier.value),
                   progressIndicatorBuilder: (context, url, progress) =>
                       SizedBox(
@@ -708,9 +708,9 @@ class _ReadingPageState extends State<ReadingPage> {
       curve: Curves.easeInOut,
       bottom: isMenuToggled.value ? 0 : -150,
       left: getResponsiveSize(context,
-          mobileSize: 0, dektopSize: Get.width * 0.3),
+          mobileSize: 0, desktopSize: Get.width * 0.3),
       right: getResponsiveSize(context,
-          mobileSize: 0, dektopSize: Get.width * 0.3),
+          mobileSize: 0, desktopSize: Get.width * 0.3),
       child: Container(
         padding: getResponsiveValue(context,
             mobileValue:
@@ -738,10 +738,10 @@ class _ReadingPageState extends State<ReadingPage> {
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           padding: EdgeInsets.all(
-              getResponsiveSize(context, mobileSize: 0, dektopSize: 10)),
+              getResponsiveSize(context, mobileSize: 0, desktopSize: 10)),
           margin: EdgeInsets.only(
               bottom:
-                  getResponsiveSize(context, mobileSize: 30, dektopSize: 0)),
+                  getResponsiveSize(context, mobileSize: 30, desktopSize: 0)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

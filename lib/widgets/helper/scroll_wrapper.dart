@@ -18,7 +18,7 @@ class ScrollWrapper extends StatelessWidget {
       padding: comfortPadding
           ? EdgeInsets.symmetric(
               vertical:
-                  getResponsiveSize(context, mobileSize: 50, dektopSize: 40))
+                  getResponsiveSize(context, mobileSize: 50, desktopSize: 40))
           : customPadding,
       physics: const BouncingScrollPhysics(),
       children: children,

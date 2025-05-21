@@ -71,7 +71,7 @@ class MangaHistoryCard extends StatelessWidget {
           }
         },
         child: SizedBox(
-          height: getResponsiveSize(context, mobileSize: 140, dektopSize: 180),
+          height: getResponsiveSize(context, mobileSize: 140, desktopSize: 180),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Stack(children: [
@@ -103,7 +103,7 @@ class MangaHistoryCard extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: getResponsiveSize(context,
-                        mobileSize: 100, dektopSize: 130),
+                        mobileSize: 100, desktopSize: 130),
                     height: double.infinity,
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
@@ -286,9 +286,9 @@ class MangaHistoryCard extends StatelessWidget {
 //               children: [
 //                 NetworkSizedImage(
 //                   width: getResponsiveSize(context,
-//                       mobileSize: 100, dektopSize: 130),
+//                       mobileSize: 100, desktopSize: 130),
 //                   height: getResponsiveSize(context,
-//                       mobileSize: 130, dektopSize: 180),
+//                       mobileSize: 130, desktopSize: 180),
 //                   radius: 0,
 //                   imageUrl: data.poster!,
 //                 ),
@@ -300,11 +300,11 @@ class MangaHistoryCard extends StatelessWidget {
 //                       children: [
 //                         SizedBox(
 //                             height: getResponsiveSize(context,
-//                                 mobileSize: 05, dektopSize: 30)),
+//                                 mobileSize: 05, desktopSize: 30)),
 //                         AnymexText(
 //                           text: _formatEpisodeNumber().toUpperCase(),
 //                           size: getResponsiveSize(context,
-//                               mobileSize: 18, dektopSize: 20),
+//                               mobileSize: 18, desktopSize: 20),
 //                           variant: TextVariant.bold,
 //                           maxLines: 1,
 //                           color: Theme.of(context).colorScheme.primary,

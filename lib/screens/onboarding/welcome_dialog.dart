@@ -24,7 +24,7 @@ void showWelcomeDialogg(BuildContext context) {
             child: Container(
               width: getResponsiveSize(context,
                   mobileSize: MediaQuery.of(context).size.width - 20,
-                  dektopSize: MediaQuery.of(context).size.width * 0.4),
+                  desktopSize: MediaQuery.of(context).size.width * 0.4),
               decoration: BoxDecoration(
                 color: Theme.of(context).dialogBackgroundColor,
                 borderRadius: BorderRadius.circular(12),

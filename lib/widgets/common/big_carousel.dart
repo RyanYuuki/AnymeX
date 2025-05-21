@@ -163,7 +163,7 @@ class _BigCarouselState extends State<BigCarousel> {
               },
               options: CarouselOptions(
                 height: getResponsiveSize(context,
-                    mobileSize: 270, dektopSize: 450),
+                    mobileSize: 270, desktopSize: 450),
                 viewportFraction: 1,
                 initialPage: 0,
                 enableInfiniteScroll: true,
@@ -216,7 +216,7 @@ class _BigCarouselState extends State<BigCarousel> {
 
   Container _buildItem(BuildContext context, String tag, String posterUrl) {
     return Container(
-      height: getResponsiveSize(context, mobileSize: 170, dektopSize: 330),
+      height: getResponsiveSize(context, mobileSize: 170, desktopSize: 330),
       margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Hero(
         tag: tag,

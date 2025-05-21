@@ -42,9 +42,9 @@ class SeasonsGrid extends StatelessWidget {
                             width: getResponsiveSize(context,
                                 mobileSize:
                                     Get.width / filteredRelations.length - 30,
-                                dektopSize: 300),
+                                desktopSize: 300),
                             height: getResponsiveSize(context,
-                                mobileSize: 60, dektopSize: 80),
+                                mobileSize: 60, desktopSize: 80),
                             buttonText: relation.relationType,
                             onPressed: () {
                               navigate(
@@ -98,7 +98,7 @@ class BlurredButton extends StatelessWidget {
           height: height,
           margin: EdgeInsets.symmetric(
               horizontal:
-                  getResponsiveSize(context, mobileSize: 0, dektopSize: 20)),
+                  getResponsiveSize(context, mobileSize: 0, desktopSize: 20)),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Theme.of(context).colorScheme.primary)),

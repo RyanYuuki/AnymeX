@@ -112,7 +112,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   Widget _buildContinueButton() {
     return ContinueEpisodeButton(
-      height: getResponsiveSize(context, mobileSize: 80, dektopSize: 100),
+      height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
       onPressed: () => _handleEpisodeSelection(continueEpisode.value),
       backgroundImage: continueEpisode.value.thumbnail ??
           savedEpisode.value.thumbnail ??
@@ -162,12 +162,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 desktopItemWidth: 200,
               ),
               mainAxisSpacing:
-                  getResponsiveSize(context, mobileSize: 15, dektopSize: 10),
+                  getResponsiveSize(context, mobileSize: 15, desktopSize: 10),
               crossAxisSpacing: 15,
               mainAxisExtent: isAnify.value
                   ? 200
                   : getResponsiveSize(context,
-                      mobileSize: 100, dektopSize: 130),
+                      mobileSize: 100, desktopSize: 130),
             ),
             itemCount: selectedEpisodes.length,
             itemBuilder: (context, index) {

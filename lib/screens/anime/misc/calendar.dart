@@ -169,7 +169,7 @@ class _CalendarState extends State<Calendar>
                                       itemWidth: isGrid ? 120 : 400),
                                   mainAxisExtent: getResponsiveSize(context,
                                       mobileSize: isGrid ? 250 : 150,
-                                      dektopSize: isGrid ? 250 : 180),
+                                      desktopSize: isGrid ? 250 : 180),
                                   crossAxisSpacing: 10,
                                   mainAxisSpacing: 25),
                           itemBuilder: (context, index) {
@@ -418,9 +418,9 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
               children: [
                 NetworkSizedImage(
                   width: getResponsiveSize(context,
-                      mobileSize: 120, dektopSize: 130),
+                      mobileSize: 120, desktopSize: 130),
                   height: getResponsiveSize(context,
-                      mobileSize: 150, dektopSize: 180),
+                      mobileSize: 150, desktopSize: 180),
                   radius: 0,
                   imageUrl: widget.data.poster,
                 ),
@@ -432,7 +432,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                       children: [
                         SizedBox(
                             height: getResponsiveSize(context,
-                                mobileSize: 10, dektopSize: 30)),
+                                mobileSize: 10, desktopSize: 30)),
                         AnymexText(
                           text:
                               "Episode ${widget.data.nextAiringEpisode!.episode}",

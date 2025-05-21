@@ -811,7 +811,7 @@ class _MyLibraryState extends State<MyLibrary> {
                                     _savePreferences();
                                   },
                                   max: getResponsiveSize(context,
-                                      mobileSize: 4, dektopSize: 10));
+                                      mobileSize: 4, desktopSize: 10));
                             })
                           ],
                         ))

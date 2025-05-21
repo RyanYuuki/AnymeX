@@ -142,16 +142,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildBigCarousel(trendingAnimes, false),
       Padding(
         padding: EdgeInsets.only(
-            top: getResponsiveSize(context, mobileSize: 10, dektopSize: 0),
-            bottom: getResponsiveSize(context, mobileSize: 20, dektopSize: 0)),
+            top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
+            bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ImageButton(
                 width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                    mobileSize: Get.width / 2 - 20, desktopSize: 300),
                 height:
-                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+                    getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
                 buttonText: "Calendar",
                 onPressed: () {
                   navigate(() => const Calendar());
@@ -162,9 +162,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
             ImageButton(
                 buttonText: "AI Picks",
                 width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, dektopSize: 300),
+                    mobileSize: Get.width / 2 - 20, desktopSize: 300),
                 height:
-                    getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+                    getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
                 onPressed: () async {
                   navigate(() => const AIRecommendation(
                         isManga: false,
@@ -189,13 +189,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildBigCarousel(trendingMangas, true),
       Padding(
         padding: EdgeInsets.only(
-            top: getResponsiveSize(context, mobileSize: 10, dektopSize: 0),
-            bottom: getResponsiveSize(context, mobileSize: 20, dektopSize: 0)),
+            top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
+            bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
         child: ImageButton(
             buttonText: "AI Picks",
             width: getResponsiveSize(context,
-                mobileSize: Get.width - 40, dektopSize: 300),
-            height: getResponsiveSize(context, mobileSize: 70, dektopSize: 90),
+                mobileSize: Get.width - 40, desktopSize: 300),
+            height: getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
             onPressed: () async {
               navigate(() => const AIRecommendation(
                     isManga: true,

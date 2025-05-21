@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 
 double getResponsiveSize(context,
     {required double mobileSize,
-    required double dektopSize,
+    required double desktopSize,
     bool isStrict = false}) {
   final currentWidth = MediaQuery.of(context).size.width;
   if (isStrict) {
     if (Platform.isAndroid || Platform.isIOS) {
       return mobileSize;
     } else {
-      return dektopSize;
+      return desktopSize;
     }
   } else {
     if (currentWidth > maxMobileWidth) {
-      return dektopSize;
+      return desktopSize;
     } else {
       return mobileSize;
     }

@@ -35,7 +35,7 @@ class UnifiedHistoryCard extends StatelessWidget {
       child: AnymexOnTap(
         onTap: media.onTap,
         child: SizedBox(
-          height: getResponsiveSize(context, mobileSize: 140, dektopSize: 180),
+          height: getResponsiveSize(context, mobileSize: 140, desktopSize: 180),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Stack(children: [
@@ -67,7 +67,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: getResponsiveSize(context,
-                        mobileSize: 100, dektopSize: 130),
+                        mobileSize: 100, desktopSize: 130),
                     height: double.infinity,
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
@@ -322,13 +322,13 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
       child: AnymexOnTap(
         onTap: media.onTap,
         child: SizedBox(
-          height: getResponsiveSize(context, mobileSize: 140, dektopSize: 180),
+          height: getResponsiveSize(context, mobileSize: 140, desktopSize: 180),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 width: getResponsiveSize(context,
-                    mobileSize: 100, dektopSize: 130),
+                    mobileSize: 100, desktopSize: 130),
                 height: double.infinity,
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(

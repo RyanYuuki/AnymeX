@@ -87,18 +87,18 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   Padding(
                     padding: EdgeInsets.only(
                         top: getResponsiveSize(context,
-                            mobileSize: 10, dektopSize: 0),
+                            mobileSize: 10, desktopSize: 0),
                         bottom: getResponsiveSize(context,
-                            mobileSize: 20, dektopSize: 0)),
+                            mobileSize: 20, desktopSize: 0)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ImageButton(
                             width: getResponsiveSize(context,
                                 mobileSize: Get.width / 2 - 20,
-                                dektopSize: 300),
+                                desktopSize: 300),
                             height: getResponsiveSize(context,
-                                mobileSize: 70, dektopSize: 90),
+                                mobileSize: 70, desktopSize: 90),
                             buttonText: "Calendar",
                             onPressed: () {
                               navigate(() => const Calendar());
@@ -110,9 +110,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                             buttonText: "AI Picks",
                             width: getResponsiveSize(context,
                                 mobileSize: Get.width / 2 - 20,
-                                dektopSize: 300),
+                                desktopSize: 300),
                             height: getResponsiveSize(context,
-                                mobileSize: 70, dektopSize: 90),
+                                mobileSize: 70, desktopSize: 90),
                             onPressed: () async {
                               navigate(() => const AIRecommendation(
                                     isManga: false,
@@ -151,15 +151,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   Padding(
                     padding: EdgeInsets.only(
                         top: getResponsiveSize(context,
-                            mobileSize: 10, dektopSize: 0),
+                            mobileSize: 10, desktopSize: 0),
                         bottom: getResponsiveSize(context,
-                            mobileSize: 20, dektopSize: 0)),
+                            mobileSize: 20, desktopSize: 0)),
                     child: ImageButton(
                         buttonText: "AI Picks",
                         width: getResponsiveSize(context,
-                            mobileSize: Get.width - 40, dektopSize: 300),
+                            mobileSize: Get.width - 40, desktopSize: 300),
                         height: getResponsiveSize(context,
-                            mobileSize: 70, dektopSize: 90),
+                            mobileSize: 70, desktopSize: 90),
                         onPressed: () async {
                           navigate(() => const AIRecommendation(
                                 isManga: true,
