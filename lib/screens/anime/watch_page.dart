@@ -185,7 +185,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       if (updateAL) {
         await serviceHandler.updateListEntry(UpdateListEntryParams(
-            listId: anilistData.value.id, progress: epNum, isAnime: true));
+            listId: anilistData.value.id,
+            progress: epNum,
+            isAnime: true,
+            syncIds: [widget.anilistData.idMal]));
         serviceHandler.onlineService
             .setCurrentMedia(anilistData.value.id.toString());
       }
@@ -470,7 +473,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _skipSegments(bool isLeft) {
-    player.pause();
     if (isLeftSide.value != isLeft) {
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
@@ -481,41 +483,25 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     final totalDuration = episodeDuration.value;
 
-    if (isLeft) {
-      final newPosition =
-          max(0, currentPosition.value.inSeconds - skipDuration.value);
-      formattedTime.value = formatDuration(Duration(seconds: newPosition));
-    } else {
-      final newPosition = (currentPosition.value.inSeconds + skipDuration.value)
-          .clamp(0, totalDuration.inSeconds);
-      formattedTime.value = formatDuration(Duration(seconds: newPosition));
-    }
+    final newSeekPosition = isLeft
+        ? max(0, currentPosition.value.inSeconds - skipDuration.value)
+        : (currentPosition.value.inSeconds + skipDuration.value)
+            .clamp(0, totalDuration.inSeconds);
+
+    formattedTime.value = formatDuration(Duration(seconds: newSeekPosition));
 
     isLeft
         ? _leftAnimationController.forward(from: 0)
         : _rightAnimationController.forward(from: 0);
 
+    player.seek(Duration(seconds: newSeekPosition));
+
     doubleTapTimeout?.cancel();
-
     doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
-      if (currentPosition.value == const Duration(seconds: 0)) return;
-
-      if (isLeft) {
-        final newPosition =
-            max(0, currentPosition.value.inSeconds - skipDuration.value);
-        player.seek(Duration(seconds: newPosition));
-      } else {
-        final newPosition =
-            (currentPosition.value.inSeconds + skipDuration.value)
-                .clamp(0, totalDuration.inSeconds);
-        player.seek(Duration(seconds: newPosition));
-      }
-
       _leftAnimationController.stop();
       _rightAnimationController.stop();
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
-      player.play();
     });
   }
 
@@ -1367,7 +1353,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               child: VideoSliderTheme(
                                   color: themeFgColor.value,
                                   inactiveTrackColor:
-                                      _getBgColor().withOpacity(0.8),
+                                      _getBgColor().withOpacity(0.1),
                                   child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,

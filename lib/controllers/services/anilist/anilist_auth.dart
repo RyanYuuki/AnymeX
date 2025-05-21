@@ -438,7 +438,6 @@ class AnilistAuth extends GetxController {
             status: status,
             progress: progress,
             isAnime: isAnime));
-        snackBar('Initiated Two Way Sync');
       }
 
       if (response.statusCode == 200) {

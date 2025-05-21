@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -558,6 +559,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
       },
       body: body,
     );
+
+    if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
+      await serviceHandler.anilistService.updateListEntry(UpdateListEntryParams(
+          listId: params.syncIds![0],
+          score: score,
+          status: status,
+          progress: progress,
+          isAnime: isAnime));
+    }
 
     if (req.statusCode == 200) {
       // snackBar(
