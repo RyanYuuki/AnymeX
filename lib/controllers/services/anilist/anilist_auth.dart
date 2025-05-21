@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -369,6 +371,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> updateListEntry({
     required String listId,
+    String? malId,
     double? score,
     String? status,
     int? progress,
@@ -428,9 +431,17 @@ class AnilistAuth extends GetxController {
         }),
       );
 
+      if (malId != null) {
+        serviceHandler.malService.updateListEntry(UpdateListEntryParams(
+            listId: malId,
+            score: score,
+            status: status,
+            progress: progress,
+            isAnime: isAnime));
+        snackBar('Initiated Two Way Sync');
+      }
+
       if (response.statusCode == 200) {
-        // snackBar(
-        //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
         final newMedia = currentMedia.value
           ..episodeCount = progress.toString()
           ..watchingStatus = status

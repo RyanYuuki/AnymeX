@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/media_mapper.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -106,6 +107,21 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     _fetchAnilistData();
   }
 
+  Future<void> _syncMediaIds() async {
+    final id = await MediaSyncer.mapMediaId(widget.media.id);
+    if (id != null) {
+      setState(() {
+        anilistData?.idMal = id;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   void _initListVars() {
     animeProgress.value = currentAnime.value?.episodeCount?.toInt() ?? 0;
     animeScore.value = currentAnime.value?.score?.toDouble() ?? 0.0;
@@ -154,7 +170,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         _processExtensionData(tempData);
       } else {
-        await _mapToService();
+        Future.wait([_mapToService(), _syncMediaIds()]);
       }
     } catch (e) {
       if (e.toString().contains('author')) {
@@ -628,6 +644,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
                 listId: id ?? widget.media.id,
+                syncIds: anilistData?.idMal != null ? [anilistData!.idMal] : [],
                 isAnime: true,
                 score: score,
                 status: status,

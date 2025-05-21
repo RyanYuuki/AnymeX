@@ -2,6 +2,7 @@ const detailsQuery = '''
     query (\$id: Int) {
       Media(id: \$id) {
         id
+        idMal
         title {
           romaji
           english

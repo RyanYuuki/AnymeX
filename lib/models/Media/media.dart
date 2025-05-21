@@ -248,6 +248,7 @@ class Media {
             : MediaType.novel;
     return Media(
       id: json['id'].toString(),
+      idMal: json['idMal'].toString(),
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '?',

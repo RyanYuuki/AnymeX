@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
               final children =
                   List<Widget>.from(serviceHandler.homeWidgets(context));
               final data = cacheController.getStoredAnime();
-              if (data.isNotEmpty) {
+              if (data.isNotEmpty && children.length > 2) {
                 children.insert(
                   2,
                   SizedBox(

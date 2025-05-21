@@ -786,6 +786,7 @@ averageScore
   Future<void> updateListEntry(UpdateListEntryParams params) =>
       anilistAuth.updateListEntry(
           listId: params.listId,
+          malId: params.syncIds?[0],
           score: params.score,
           status: params.status,
           progress: params.progress,
