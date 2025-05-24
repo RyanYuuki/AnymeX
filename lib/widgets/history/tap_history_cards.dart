@@ -160,7 +160,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: colorScheme.surfaceVariant,
+                                          color: colorScheme.surfaceContainerHighest,
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),
