@@ -147,6 +147,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         .where((element) => !element.isAdded!)
         .toList();
   }
+
   List<Source> _getRecommendedEntries(List<Source> data) {
     final extens = widget.mediaType == MediaType.anime
         ? Extensions().getRecommmendedExtensions()

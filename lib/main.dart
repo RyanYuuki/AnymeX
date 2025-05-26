@@ -178,7 +178,9 @@ void main(List<String> args) async {
         systemNavigationBarColor: Colors.transparent,
         statusBarColor: Colors.transparent));
   }
-  initDeepLinkListener();
+  if (!Platform.isLinux) {
+    initDeepLinkListener();
+  }
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),

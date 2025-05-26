@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/core/Model/Manga.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
@@ -17,6 +18,7 @@ extension MMangaMapper on MManga {
       title: name,
       poster: imageUrl,
       extraData: '??',
+      releasing: status == Status.ongoing,
     );
   }
 }
@@ -27,13 +29,13 @@ extension OfflineMediaMapper on OfflineMedia {
     bool isManga = false,
   }) {
     return CarouselData(
-      id: id,
-      title: name,
-      poster: poster,
-      source: currentChapter?.sourceName ?? currentEpisode?.source,
-      extraData:
-          (currentChapter?.number ?? currentEpisode?.number ?? 0).toString(),
-    );
+        id: id,
+        title: name,
+        poster: poster,
+        source: currentChapter?.sourceName ?? currentEpisode?.source,
+        extraData:
+            (currentChapter?.number ?? currentEpisode?.number ?? 0).toString(),
+        releasing: status == "RELEASING");
   }
 }
 
@@ -47,6 +49,7 @@ extension RelationMapper on Relation {
       source: type,
       args: type,
       extraData: relationType,
+      releasing: status == "RELEASING",
     );
   }
 }
@@ -55,11 +58,11 @@ extension TrackedMediaMapper on TrackedMedia {
   CarouselData toCarouselData(
       {DataVariant variant = DataVariant.anilist, bool isManga = false}) {
     return CarouselData(
-      id: id.toString(),
-      title: title,
-      poster: poster,
-      extraData: episodeCount ?? "??",
-    );
+        id: id.toString(),
+        title: title,
+        poster: poster,
+        extraData: episodeCount ?? "??",
+        releasing: mediaStatus == "RELEASING");
   }
 }
 
@@ -67,10 +70,10 @@ extension MediaMapper on Media {
   CarouselData toCarouselData(
       {DataVariant variant = DataVariant.regular, bool isManga = false}) {
     return CarouselData(
-      id: id.toString(),
-      title: title,
-      poster: poster,
-      extraData: rating.toString(),
-    );
+        id: id.toString(),
+        title: title,
+        poster: poster,
+        extraData: rating.toString(),
+        releasing: status == "RELEASING");
   }
 }

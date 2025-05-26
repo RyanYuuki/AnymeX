@@ -8,6 +8,7 @@ class CarouselData {
   String? source;
   String? args;
   ServicesType? servicesType;
+  bool releasing;
 
   CarouselData(
       {this.id,
@@ -16,5 +17,6 @@ class CarouselData {
       this.extraData,
       this.source,
       this.args,
-      this.servicesType});
+      this.servicesType,
+      required this.releasing});
 }

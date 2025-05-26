@@ -85,6 +85,7 @@ class MediaCardGate extends StatelessWidget {
                 ? data.currentChapter?.number?.toString()
                 : data.currentEpisode?.number) ??
             '1',
+        releasing: data.status == "RELEASING",
         servicesType: serviceHandler.serviceType.value);
   }
 }

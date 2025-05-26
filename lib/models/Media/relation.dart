@@ -6,6 +6,7 @@ class Relation {
   final String type;
   final String averageScore;
   final String relationType;
+  final String status;
 
   Relation({
     required this.id,
@@ -15,6 +16,7 @@ class Relation {
     required this.type,
     required this.averageScore,
     required this.relationType,
+    required this.status,
   });
 
   factory Relation.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Relation {
       poster: json['node']['coverImage']['large'],
       type: json['node']['type'],
       averageScore: (json['node']['averageScore'] ?? 0).toString(),
+      status: json['node']['status'],
     );
   }
 }

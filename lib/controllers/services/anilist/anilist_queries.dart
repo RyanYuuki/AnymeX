@@ -75,6 +75,7 @@ averageScore
               }
               bannerImage
               type
+              status
               averageScore
 
             }
