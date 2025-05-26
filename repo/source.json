@@ -14,21 +14,28 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.3",
-      "versionDate": "2025-03-18T10:46:54Z",
-      "versionDescription": "\n\n\ud83d\udee0\ufe0f Bug Fixes & Improvements\n* [f59966a](https://github.com/RyanYuuki/AnymeX/commit/f59966a): fix: scanlator error fix and ontap fix\n* [c45887d](https://github.com/RyanYuuki/AnymeX/commit/c45887d): fix: fixed static labels on library page\n* [4d128e8](https://github.com/RyanYuuki/AnymeX/commit/4d128e8): fix: rate limit handling fix\n\n\ud83c\udfa8 Style Changes\n* [5da603e](https://github.com/RyanYuuki/AnymeX/commit/5da603e): style: improved history cards\n\n\ud83e\uddf9 Chores & Documentation\n* [444c2e3](https://github.com/RyanYuuki/AnymeX/commit/444c2e3): chore: version code increment\n* [751c2b3](https://github.com/RyanYuuki/AnymeX/commit/751c2b3): chore: version increment\n\n",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.3-hotfix/AnymeX-iOS-v2.9.3-hotfix.ipa",
+      "version": "2.9.4",
+      "versionDate": "2025-05-26T06:32:19Z",
+      "versionDescription": "",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4/AnymeX-iOS-v2.9.4.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 38627825,
+      "size": 38732133,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_2.webp"
       ],
       "versions": [
+        {
+          "version": "2.9.4",
+          "date": "2025-05-26T06:32:19Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4/AnymeX-iOS-v2.9.4.ipa",
+          "size": 38732133
+        },
         {
           "version": "2.9.3",
           "date": "2025-03-18T10:46:54Z",
@@ -70,13 +77,6 @@
           "localizedDescription": "\n\n\ud83c\udf89 New Features\n* [0a2aa4a](https://github.com/RyanYuuki/AnymeX/commit/0a2aa4a): feat: supports accumulated seek and  fixed seekbar glitching\n* [d56da68](https://github.com/RyanYuuki/AnymeX/commit/d56da68): feat: improved tracking, remember timestamp (barebone)\n* [bb268cc](https://github.com/RyanYuuki/AnymeX/commit/bb268cc): feat: portrait switcher in video player\n\n\ud83d\udee0\ufe0f Bug Fixes & Improvements\n* [735c0f6](https://github.com/RyanYuuki/AnymeX/commit/735c0f6): fix: increased dTap time to be more human\n* [695e80f](https://github.com/RyanYuuki/AnymeX/commit/695e80f): fix: fixed gray boxes in anime list\n* [b782437](https://github.com/RyanYuuki/AnymeX/commit/b782437): fix: fixed manga pages not loading\n* [9b0356d](https://github.com/RyanYuuki/AnymeX/commit/9b0356d): fix: fixed double tap to seek not working\n* [4f3f890](https://github.com/RyanYuuki/AnymeX/commit/4f3f890): fix: fixed login\n\n\ud83c\udfa8 Style Changes\n* [62d0f05](https://github.com/RyanYuuki/AnymeX/commit/62d0f05): style: added bottom margin to nav bar\n\n\ud83e\uddf9 Chores & Documentation\n* [19affb0](https://github.com/RyanYuuki/AnymeX/commit/19affb0): build: changed package & app name\n* [586f621](https://github.com/RyanYuuki/AnymeX/commit/586f621): chore: cleaning changelog\n* [77ad3c0](https://github.com/RyanYuuki/AnymeX/commit/77ad3c0): build: deps update\n* [750451c](https://github.com/RyanYuuki/AnymeX/commit/750451c): chore: remove unwanted files\n\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.8.5-beta/AnymeX-iOS-v2.8.5-beta.ipa",
           "size": 37062431
-        },
-        {
-          "version": "2.8.4",
-          "date": "2024-12-06T15:58:42Z",
-          "localizedDescription": "\ud83c\udf89 New Features\r\n* [5965eba](https://github.com/RyanYuuki/AnymeX/commit/5965eba): feat: Notify dc & tg (24)\r\n* [9b657d0](https://github.com/RyanYuuki/AnymeX/commit/9b657d0): feat: flamescomics basic init\r\n* [2407030](https://github.com/RyanYuuki/AnymeX/commit/2407030): feat: mangadex basic init\r\n\r\n\ud83d\udee0\ufe0f Bug Fixes & Improvements\r\n* [fd6d03f](https://github.com/RyanYuuki/AnymeX/commit/fd6d03f): fix: fixed update popups on alpha and beta\r\n* [98bf3a6](https://github.com/RyanYuuki/AnymeX/commit/98bf3a6): fix: attempt at fixing anilist login on macOS\r\n* [6992528](https://github.com/RyanYuuki/AnymeX/commit/6992528): fix: workflow (26)\r\n* [c063159](https://github.com/RyanYuuki/AnymeX/commit/c063159): fix: role id for stable (25)\r\n\r\n\ud83d\udd27 Refactors\r\n* [2a89f3e](https://github.com/RyanYuuki/AnymeX/commit/2a89f3e): refactor: dart warning fixes\r\n* [f6aa5f6](https://github.com/RyanYuuki/AnymeX/commit/f6aa5f6): refactor: following dart best practices\r\n\r\n\ud83e\uddf9 Chores & Documentation\r\n* [4f2ce24](https://github.com/RyanYuuki/AnymeX/commit/4f2ce24): build: another attempt at fixing macos installation\r\n* [6ef1209](https://github.com/RyanYuuki/AnymeX/commit/6ef1209): chore: cleaned up some cods\r\n* [1e1d839](https://github.com/RyanYuuki/AnymeX/commit/1e1d839): build: downgraded to 3.22.3\r\n\r\n",
-          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.8.4-1-alpha/AnymeX-iOS-v2.8.41-alpha.ipa",
-          "size": 27376662
         }
       ],
       "appPermissions": {
@@ -123,6 +123,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.3-hotfix"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.4 - 26 May",
+      "identifier": "release-2.9.4",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-05-26T06:32:19Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.4"
     }
   ]
 }
