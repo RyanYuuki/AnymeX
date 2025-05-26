@@ -17,7 +17,6 @@ Future<List<Media>> getAiRecommendations(
   final isAL = service.serviceType.value == ServicesType.anilist;
   final userName = query ?? service.onlineService.profileData.value.name;
 
-
   Future<List<Media>> fetchRecommendations() async {
     try {
       final url = isManga
@@ -58,13 +57,8 @@ Future<List<Media>> getAiRecommendations(
   List<Media> recommendations = await fetchRecommendations();
 
   if (recommendations.isEmpty) {
-    snackBar("Syncing Your List...");
-    try {
-      await syncUserList(userName!, isAL);
-      recommendations = await fetchRecommendations();
-    } catch (e) {
-      log(e.toString());
-    }
+    recommendations = await syncAndFetchRecommendations(
+        userName!, isAL, fetchRecommendations);
   }
 
   if (recommendations.isEmpty) {
@@ -74,20 +68,65 @@ Future<List<Media>> getAiRecommendations(
   return recommendations;
 }
 
+Future<List<Media>> syncAndFetchRecommendations(String username, bool isAL,
+    Future<List<Media>> Function() fetchRecommendations) async {
+  try {
+    snackBar("Getting Your ${isAL ? 'AniList' : 'MyAnimeList'} Data...", duration: 1000);
+    await getUserList(username, isAL);
+
+    snackBar("Syncing Your List...", duration: 1000);
+    await syncUserList(username, isAL);
+
+    snackBar("Fetching AI Recommendations...", duration: 1000);
+    final recommendations = await fetchRecommendations();
+
+    if (recommendations.isNotEmpty) {
+      snackBar("Recommendations Ready!", duration: 1000);
+      return recommendations;
+    }
+  } catch (e) {
+    log('Sync and fetch error: $e');
+    snackBar('Sync Failed!');
+  }
+
+  return [];
+}
+
+Future<void> getUserList(String username, bool isAL) async {
+  try {
+    final url =
+        'https://anibrain.ai/api/-/list/${isAL ? 'anilist' : 'myanimelist'}/fetch-list?profileId=$username&refresh=false';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      log('User list fetched successfully: ${response.body.toString()}');
+    } else {
+      log('Failed to fetch user list: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to fetch user list');
+    }
+  } catch (e) {
+    log('Get user list error: $e');
+    rethrow;
+  }
+}
+
 Future<void> syncUserList(String username, bool isAL) async {
-  final url = !isAL
-      ? 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=MyAnimeList&externalListProfileName=$username'
-      : 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=AniList&externalListProfileName=$username';
+  try {
+    final url = !isAL
+        ? 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=MyAnimeList&externalListProfileName=$username'
+        : 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=AniList&externalListProfileName=$username';
 
-  final future1 = http.get(Uri.parse(
-      'https://anibrain.ai/api/-/list/${isAL ? 'anilist' : 'myanimelist'}/fetch-list?profileId=$username&refresh=false'));
-  final future2 = http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url));
 
-  final responses = await Future.wait([future1, future2]);
-
-  if (responses[0].statusCode == 200 && responses[1].statusCode == 200) {
-    snackBar("Sync Successful! Getting Recommendations");
-  } else {
-    snackBar('Sync Failed!!');
+    if (response.statusCode == 200) {
+      log('User list synced successfully: ${response.body.toString()}');
+    } else {
+      log('Failed to sync user list: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to sync user list');
+    }
+  } catch (e) {
+    log('Sync user list error: $e');
+    rethrow;
   }
 }
