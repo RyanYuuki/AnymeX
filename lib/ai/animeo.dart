@@ -71,7 +71,8 @@ Future<List<Media>> getAiRecommendations(
 Future<List<Media>> syncAndFetchRecommendations(String username, bool isAL,
     Future<List<Media>> Function() fetchRecommendations) async {
   try {
-    snackBar("Getting Your ${isAL ? 'AniList' : 'MyAnimeList'} Data...", duration: 1000);
+    snackBar("Getting Your ${isAL ? 'AniList' : 'MyAnimeList'} Data...",
+        duration: 1000);
     await getUserList(username, isAL);
 
     snackBar("Syncing Your List...", duration: 1000);
@@ -113,9 +114,8 @@ Future<void> getUserList(String username, bool isAL) async {
 
 Future<void> syncUserList(String username, bool isAL) async {
   try {
-    final url = !isAL
-        ? 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=MyAnimeList&externalListProfileName=$username'
-        : 'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=AniList&externalListProfileName=$username';
+    final url =
+        'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$username';
 
     final response = await http.get(Uri.parse(url));
 
