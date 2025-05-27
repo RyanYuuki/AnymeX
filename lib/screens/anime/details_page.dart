@@ -220,21 +220,28 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       rawEpisodes.value = _createRawEpisodes(episodes);
       episodeList.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
-      final newEps = await AnilistData.fetchEpisodesFromAnify(
-        widget.media.id.toString(),
-        episodeList.value,
-      );
-      if (newEps.first.thumbnail == null &&
-          (newEps.first.thumbnail?.isEmpty ?? true)) {
-        showAnify.value = false;
-      }
-      episodeList.value = newEps;
       if (mounted) {
         setState(() {});
       }
+      applyAnifyCovers();
     } catch (e) {
       episodeError.value = true;
       log(e.toString());
+    }
+  }
+
+  Future<void> applyAnifyCovers() async {
+    final newEps = await AnilistData.fetchEpisodesFromAnify(
+      widget.media.id.toString(),
+      episodeList.value,
+    );
+    if (newEps.first.thumbnail == null &&
+        (newEps.first.thumbnail?.isEmpty ?? true)) {
+      showAnify.value = false;
+    }
+    episodeList.value = newEps;
+    if (mounted) {
+      setState(() {});
     }
   }
 
