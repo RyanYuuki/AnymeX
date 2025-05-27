@@ -323,7 +323,7 @@ class _FilterScreenState extends State<FilterScreen> {
       BuildContext context, ServiceHandler authService, bool isSimkl) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Provider.of<ThemeProvider>(context).isOled ? Colors.black : Colors.transparent,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

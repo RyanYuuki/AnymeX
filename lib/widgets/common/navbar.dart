@@ -56,89 +56,87 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
     final settings = Get.find<Settings>();
     final RxBool translucent = settings.transculentBar.obs;
 
-    return SizedBox(
+    return AnimatedContainer(
       width: MediaQuery.of(context).size.width,
-      child: AnimatedContainer(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(
-            color: theme.colorScheme.onSurface.withOpacity(0.2),
-            width: 1,
-          ),
-          borderRadius: widget.borderRadius ??
-              BorderRadius.circular(
-                  widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withOpacity(0.2),
+          width: 1,
         ),
-        padding: widget.padding ?? const EdgeInsets.all(0),
-        margin: widget.margin ??
-            EdgeInsets.symmetric(
-              horizontal: widget.isDesktop ? 5 : 40,
-              vertical: widget.isDesktop ? 0 : 20,
-            ),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        height: calculatedHeight,
-        child: ClipRRect(
-          borderRadius: widget.borderRadius ??
-              BorderRadius.circular(
-                  widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Obx(() {
-                if (translucent.value) {
-                  return Positioned.fill(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: widget.blurIntensity ?? 15,
-                        sigmaY: widget.blurIntensity ?? 15,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: widget.backgroundColor ?? Colors.transparent,
-                        ),
-                      ),
+        borderRadius: widget.borderRadius ??
+            BorderRadius.circular(
+                widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
+      ),
+      padding: widget.padding ?? const EdgeInsets.all(0),
+      margin: widget.margin ??
+          EdgeInsets.symmetric(
+            horizontal: widget.isDesktop ? 5 : 40,
+            vertical: widget.isDesktop ? 0 : 20,
+          ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      height: calculatedHeight,
+      child: ClipRRect(
+        borderRadius: widget.borderRadius ??
+            BorderRadius.circular(
+                widget.isDesktop ? 40.multiplyRadius() : 24.multiplyRadius()),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Obx(() {
+              if (translucent.value) {
+                return Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: widget.blurIntensity ?? 15,
+                      sigmaY: widget.blurIntensity ?? 15,
                     ),
-                  );
-                } else {
-                  return Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: widget.backgroundColor ??
-                            theme.colorScheme.secondaryContainer,
+                        color: widget.backgroundColor ?? Colors.transparent,
                       ),
                     ),
-                  );
-                }
-              }),
-              getResponsiveValue(context,
-                  strictMode: true,
-                  mobileValue: getResponsiveValue(context,
-                      mobileValue: _buildFlex(
-                        widget.items,
-                        widget.isDesktop,
-                        const Key('normalItems'),
-                      ),
-                      desktopValue: settings.isTV.value
-                          ? _buildFlex(
+                  ),
+                );
+              } else {
+                return Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.backgroundColor ??
+                          theme.colorScheme.secondaryContainer,
+                    ),
+                  ),
+                );
+              }
+            }),
+            getResponsiveValue(context,
+                strictMode: true,
+                mobileValue: getResponsiveValue(context,
+                    mobileValue: _buildFlex(
+                      widget.items,
+                      widget.isDesktop,
+                      const Key('normalItems'),
+                    ),
+                    desktopValue: settings.isTV.value
+                        ? _buildFlex(
+                            widget.items,
+                            widget.isDesktop,
+                            const Key('normalItems'),
+                          )
+                        : SingleChildScrollView(
+                            child: _buildFlex(
                               widget.items,
                               widget.isDesktop,
                               const Key('normalItems'),
-                            )
-                          : SingleChildScrollView(
-                              child: _buildFlex(
-                                widget.items,
-                                widget.isDesktop,
-                                const Key('normalItems'),
-                              ),
-                            )),
-                  desktopValue: _buildFlex(
-                    widget.items,
-                    widget.isDesktop,
-                    const Key('normalItems'),
-                  )),
-            ],
-          ),
+                            ),
+                          )),
+                desktopValue: _buildFlex(
+                  widget.items,
+                  widget.isDesktop,
+                  const Key('normalItems'),
+                )),
+          ],
         ),
       ),
     );
