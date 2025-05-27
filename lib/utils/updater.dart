@@ -63,10 +63,11 @@ class UpdateChecker {
   }
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
-  latestVersion = latestVersion.replaceAll(RegExp(r'v|-.*$'), '');
-  log("Current Ver: $currentVersion, Latest Ver: $latestVersion");
-  return currentVersion != latestVersion;
-}
+    latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
+    currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
+    log("Current Ver: $currentVersion, Latest Ver: $latestVersion");
+    return currentVersion != latestVersion;
+  }
 
   void _showUpdateBottomSheet(
     BuildContext context,
