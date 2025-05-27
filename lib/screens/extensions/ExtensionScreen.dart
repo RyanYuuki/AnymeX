@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/core/Extensions/extensions_provider.dart';
 import 'package:anymex/core/Extensions/fetch_anime_sources.dart';
 import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
+import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
@@ -60,6 +64,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   Future<void> _fetchData() async {
     ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
     ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
+    ref.watch(fetchNovelSourcesListProvider(id: null, reFresh: false));
   }
 
   Future<void> _refreshData() async {
@@ -67,6 +72,8 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
         .refresh(fetchMangaSourcesListProvider(id: null, reFresh: true).future);
     await ref
         .refresh(fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
+    await ref
+        .refresh(fetchNovelSourcesListProvider(id: null, reFresh: true).future);
   }
 
   _checkPermission() async {
@@ -355,6 +362,48 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     );
   }
 
+  Future<void> _fixSources() async {
+    AlertDialogBuilder(context)
+      ..setTitle("Fix Sources")
+      ..setMessage("Are you sure you want to fix sources?")
+      ..setNegativeButton('No', () {})
+      ..setPositiveButton("Yes", () async {
+        await _fetchData();
+        final allExtensions = await ref
+            .watch(getExtensionsStreamProvider(MediaType.manga).future);
+
+        List<int> currentInstalledAnimeExtensions = [];
+        List<int> currentInstalledMangaExtensions = [];
+
+        allExtensions.forEach((e) {
+          if (e.isAdded!) {
+            if (e.isManga == true) {
+              currentInstalledMangaExtensions.add(e.id!);
+              print('Manga Extension ID: ${e.name} - ${e.id}');
+            } else {
+              currentInstalledAnimeExtensions.add(e.id!);
+              print('Anime Extension ID: ${e.name} - ${e.id}');
+            }
+          }
+        });
+
+        for (int e in currentInstalledAnimeExtensions) {
+          log('installing $e');
+          await ref.watch(
+              fetchAnimeSourcesListProvider(id: e, reFresh: true).future);
+        }
+
+        for (int e in currentInstalledMangaExtensions) {
+          log('installing $e');
+          await ref.watch(
+              fetchMangaSourcesListProvider(id: e, reFresh: true).future);
+        }
+        removeOldData();
+        await _fetchData();
+      })
+      ..show();
+  }
+
   @override
   Widget build(BuildContext context) {
     _fetchData();
@@ -394,6 +443,11 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             ),
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
+              AnymexOnTap(
+                  onTap: _fixSources,
+                  child: IconButton(
+                      onPressed: _fixSources,
+                      icon: const Icon(Icons.bug_report))),
               AnymexOnTap(
                 onTap: () {
                   repoSheet();

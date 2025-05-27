@@ -1,7 +1,7 @@
 name: anymex
 description: "An Anilist Client"
 publish_to: "GitHub"
-version: 2.9.4
+version: 2.9.41
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
@@ -122,6 +122,6 @@ inno_bundle:
   id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
   publisher: Ryan Yuuki
   name: AnymeX
-  version: 2.9.3
+  version: 2.9.41
   admin: auto
   installer_icon: ./anymex.ico

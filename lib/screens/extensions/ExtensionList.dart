@@ -81,24 +81,20 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
                 ? _getRecommendedEntries(data)
                 : [].cast<Source>();
 
-            return Scrollbar(
-              interactive: true,
-              controller: controller,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomScrollView(
-                  controller: controller,
-                  slivers: [
-                    if (widget.showRecommended &&
-                        (recommendedEntries.isNotEmpty))
-                      _buildRecommendedList(recommendedEntries),
-                    if (widget.installed)
-                      _buildUpdatePendingList(updateEntries),
-                    if (widget.installed) _buildInstalledList(installedEntries),
-                    if (!widget.installed)
-                      _buildNotInstalledList(notInstalledEntries),
-                  ],
-                ),
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: CustomScrollView(
+                controller: controller,
+                slivers: [
+                  if (widget.showRecommended &&
+                      (recommendedEntries.isNotEmpty))
+                    _buildRecommendedList(recommendedEntries),
+                  if (widget.installed)
+                    _buildUpdatePendingList(updateEntries),
+                  if (widget.installed) _buildInstalledList(installedEntries),
+                  if (!widget.installed)
+                    _buildNotInstalledList(notInstalledEntries),
+                ],
               ),
             );
           },
