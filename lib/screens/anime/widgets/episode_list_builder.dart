@@ -219,7 +219,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: settingsController.preferences.get('universal_scrapper')
+          child: settingsController.preferences.get('universal_scrapper', defaultValue: false)
               ? _buildUniversalScraper(url)
               : FutureBuilder<List<Video>>(
                   future: getVideo(
