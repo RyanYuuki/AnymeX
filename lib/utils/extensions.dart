@@ -34,7 +34,8 @@ class Extensions {
       'VnVtZXRv',
       'QW5pcGxheQ==',
       'R29qbw==',
-      'QW5pbWVHRw=='
+      'QW5pbWVHRw==',
+      'YWxsYW5pbWU='
     ];
 
     return encodedSources
