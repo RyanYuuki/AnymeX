@@ -3,6 +3,7 @@ const detailsQuery = '''
       Media(id: \$id) {
         id
         idMal
+        isAdult
         title {
           romaji
           english
@@ -14,7 +15,7 @@ const detailsQuery = '''
         }
         bannerImage
         type
-averageScore
+        averageScore
         episodes
         type
         season

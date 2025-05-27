@@ -40,10 +40,12 @@ class Media {
   List<Ranking> rankings;
   ServicesType? serviceType;
   DateTime? createdAt;
+  bool? isAdult;
 
   Media(
       {this.id = '0',
       this.idMal = '0',
+      this.isAdult,
       this.mediaType = MediaType.anime,
       this.title = '?',
       this.romajiTitle = '?',
@@ -253,6 +255,7 @@ class Media {
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '?',
       poster: json['coverImage']['large'] ?? '?',
+      isAdult: json['isAdult'] ?? false,
       cover: json['bannerImage'],
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
       type: json['type'] ?? '?',

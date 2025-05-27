@@ -73,14 +73,38 @@ class GradientPoster extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Hero(
-                tag: tag,
-                child: NetworkSizedImage(
-                    imageUrl: posterUrl,
-                    radius: 16.multiplyRoundness(),
-                    width: isDesktop ? 150 : 120,
-                    height: isDesktop ? 200 : 180),
-              ),
+              Stack(children: [
+                Hero(
+                  tag: tag,
+                  child: NetworkSizedImage(
+                      imageUrl: posterUrl,
+                      radius: 16.multiplyRoundness(),
+                      width: isDesktop ? 150 : 120,
+                      height: isDesktop ? 200 : 180),
+                ),
+                Positioned(
+                  bottom: 7,
+                  right: 7,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.red, width: 1),
+                    ),
+                    child: const Text(
+                      '18+',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Poppins-Bold",
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
               const SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
