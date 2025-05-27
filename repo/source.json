@@ -15,14 +15,14 @@
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
       "version": "2.9.4",
-      "versionDate": "2025-05-27T10:55:11Z",
+      "versionDate": "2025-05-27T11:19:11Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfix/AnymeX-iOS-v2.9.4-hotfix.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfixx/AnymeX-iOS-v2.9.4-hotfixx.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 38740454,
+      "size": 38740478,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -31,10 +31,10 @@
       "versions": [
         {
           "version": "2.9.4",
-          "date": "2025-05-27T10:55:11Z",
+          "date": "2025-05-27T11:19:11Z",
           "localizedDescription": "",
-          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfix/AnymeX-iOS-v2.9.4-hotfix.ipa",
-          "size": 38740454
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfixx/AnymeX-iOS-v2.9.4-hotfixx.ipa",
+          "size": 38740478
         },
         {
           "version": "2.9.3",
@@ -145,6 +145,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.4-hotfix"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.4-hotfixx - 27 May",
+      "identifier": "release-2.9.4-hotfixx",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-05-27T11:19:11Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.4-hotfixx"
     }
   ]
 }
