@@ -1,6 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
+import 'dart:async';
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -14,12 +16,14 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -201,6 +205,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     );
   }
 
+  HeadlessInAppWebView? headlessWebView;
+  Timer? scrapingTimer;
+
   Future<void> fetchServers(String url) async {
     showModalBottomSheet(
       context: context,
@@ -212,32 +219,205 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: FutureBuilder<List<Video>>(
-            future: getVideo(
-                source: sourceController.activeSource.value!, url: url),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingState();
-              } else if (snapshot.hasError) {
-                return _buildErrorState(snapshot.error.toString());
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _buildEmptyState();
-              } else {
-                streamList.value = snapshot.data ?? [];
-                return _buildServerList();
-              }
-            },
-          ),
+          child: settingsController.preferences.get('universal_scrapper')
+              ? _buildUniversalScraper(url)
+              : FutureBuilder<List<Video>>(
+                  future: getVideo(
+                      source: sourceController.activeSource.value!, url: url),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return _buildEmptyState();
+                    } else {
+                      streamList.value = snapshot.data ?? [];
+                      return _buildServerList();
+                    }
+                  },
+                ),
         );
       },
     );
   }
 
-  Widget _buildLoadingState() {
-    return const SizedBox(
-      height: 200,
-      child: Center(child: AnymexProgressIndicator()),
+  Widget _buildUniversalScraper(String url) {
+    return FutureBuilder<List<Video>>(
+      future: _scrapeVideoStreams(url),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildScrapingLoadingState(false);
+        } else if (snapshot.hasError) {
+          return _buildErrorState(snapshot.error.toString());
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildEmptyState();
+        } else {
+          streamList.value = snapshot.data ?? [];
+          return _buildServerList();
+        }
+      },
     );
+  }
+
+  Future<List<Video>> _scrapeVideoStreams(String url) async {
+    final completer = Completer<List<Video>>();
+    final foundVideos = <Video>[];
+    debugPrint('Calling => $url');
+
+    // await headlessWebView?.dispose();
+
+    // scrapingTimer = Timer(Duration(seconds: 30), () {
+    //   headlessWebView?.dispose();
+    //   if (!completer.isCompleted) {
+    //     completer.complete(foundVideos);
+    //   }
+    // });
+
+    // try {
+    //   headlessWebView = HeadlessInAppWebView(
+    //     initialUrlRequest: URLRequest(
+    //         url: WebUri(
+    //             "https://www.animegg.org/shingeki-no-kyojin-episode-1#subbed")),
+    //     initialSettings: InAppWebViewSettings(
+    //       userAgent:
+    //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    //       javaScriptEnabled: true,
+    //     ),
+    //     onLoadStop: (controller, loadedUrl) async {
+    //       await Future.delayed(Duration(seconds: 8));
+
+    //       try {
+    //         await controller.evaluateJavascript(source: """
+    //         // Click play buttons
+    //         const playButtons = document.querySelectorAll('button[class*="play"], .play-button, [aria-label*="play"], [title*="play"]');
+    //         playButtons.forEach(btn => btn.click());
+            
+    //         // Click video elements
+    //         const videos = document.querySelectorAll('video');
+    //         videos.forEach(video => {
+    //           video.play().catch(e => {});
+    //           video.click();
+    //         });
+            
+    //         // Trigger common video container clicks
+    //         const containers = document.querySelectorAll('.video-container, .player-container, .video-player, .player');
+    //         containers.forEach(container => container.click());
+    //       """);
+    //       } catch (e) {
+    //         print('JavaScript execution error: $e');
+    //       }
+
+    //       await Future.delayed(Duration(seconds: 5));
+
+    //       if (!completer.isCompleted) {
+    //         completer.complete(foundVideos);
+    //       }
+    //     },
+    //     shouldInterceptRequest: (controller, request) async {
+    //       final requestUrl = request.url.toString();
+    //       final headers = request.headers ?? {};
+
+    //       if (_isVideoStream(requestUrl)) {
+    //         final video = Video(
+    //           requestUrl,
+    //           _extractQuality(requestUrl),
+    //           url,
+    //           headers:
+    //               headers.isNotEmpty ? Map<String, String>.from(headers) : null,
+    //         );
+
+    //         if (!foundVideos.any((v) => v.url == requestUrl)) {
+    //           foundVideos.add(video);
+    //         }
+    //       }
+
+    //       return null;
+    //     },
+    //     onReceivedServerTrustAuthRequest: (controller, challenge) async {
+    //       return ServerTrustAuthResponse(
+    //           action: ServerTrustAuthResponseAction.PROCEED);
+    //     },
+    //   );
+
+    //   await headlessWebView?.run();
+    // } catch (e) {
+    //   print('Headless WebView error: $e');
+    //   if (!completer.isCompleted) {
+    //     completer.complete(foundVideos);
+    //   }
+    // }
+
+    // final result = await completer.future;
+    // scrapingTimer?.cancel();
+    // await headlessWebView?.dispose();
+
+    return [];
+  }
+
+  bool _isVideoStream(String url) {
+    final lowercaseUrl = url.toLowerCase();
+    return lowercaseUrl.contains('.m3u8') ||
+        lowercaseUrl.contains('.mp4') ||
+        lowercaseUrl.contains('manifest') ||
+        (lowercaseUrl.contains('video') &&
+            (lowercaseUrl.contains('stream') ||
+                lowercaseUrl.contains('play'))) ||
+        lowercaseUrl.contains('playlist') ||
+        lowercaseUrl.contains('.mpd');
+  }
+
+  String _extractQuality(String url) {
+    final lowercaseUrl = url.toLowerCase();
+
+    if (lowercaseUrl.contains('1080')) return '1080p';
+    if (lowercaseUrl.contains('720')) return '720p';
+    if (lowercaseUrl.contains('480')) return '480p';
+    if (lowercaseUrl.contains('360')) return '360p';
+    if (lowercaseUrl.contains('240')) return '240p';
+    if (lowercaseUrl.contains('4k') || lowercaseUrl.contains('2160')) {
+      return '4K';
+    }
+    if (lowercaseUrl.contains('hd')) return 'HD';
+
+    return '1080p';
+  }
+
+  Widget _buildScrapingLoadingState(bool fromSrc) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text(
+            'Scanning for video streams...',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'This may take up to 30 seconds',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          10.height(),
+          if (!fromSrc)
+            AnymexChip(
+              showCheck: false,
+              isSelected: true,
+              label: 'Using Universal Scrapper',
+              onSelected: (v) {},
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    scrapingTimer?.cancel();
+    headlessWebView?.dispose();
+    super.dispose();
   }
 
   Widget _buildErrorState(String errorMessage) {

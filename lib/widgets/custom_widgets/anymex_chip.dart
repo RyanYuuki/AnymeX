@@ -56,6 +56,7 @@ class AnymexChip extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
         selectedColor: Theme.of(context).colorScheme.primary,
         side: BorderSide.none,
+        showCheckmark: showCheck,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
