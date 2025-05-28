@@ -32,7 +32,7 @@ class Settings extends GetxController {
 
   void checkForUpdates(BuildContext context) {
     canShowUpdate.value
-        ? UpdateChecker().checkForUpdates(context, canShowUpdate)
+        ? UpdateManager().checkForUpdates(context, canShowUpdate)
         : null;
   }
 
@@ -68,7 +68,8 @@ class Settings extends GetxController {
   set cardStyle(int value) => _setUISetting((s) => s?.cardStyle = value);
 
   int get historyCardStyle => _getUISetting((s) => s.historyCardStyle);
-  set historyCardStyle(int value) => _setUISetting((s) => s?.historyCardStyle = value);
+  set historyCardStyle(int value) =>
+      _setUISetting((s) => s?.historyCardStyle = value);
 
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);

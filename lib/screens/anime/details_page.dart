@@ -108,11 +108,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Future<void> _syncMediaIds() async {
-    final id = await MediaSyncer.mapMediaId(widget.media.id);
-    if (id != null) {
-      setState(() {
-        anilistData?.idMal = id;
-      });
+    try {
+      final id = await MediaSyncer.mapMediaId(widget.media.id);
+      if (id != null) {
+        setState(() {
+          anilistData?.idMal = id;
+        });
+      } else {
+        snackBar('Mapper Failed, Two way sync may not work');
+      }
+    } catch (e) {
+      log("Media Syncer Failed => $e");
+      snackBar('Syncer Failed, Two way sync may not work');
     }
   }
 
@@ -145,6 +152,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
+      log("Fetch Initiated for Media => ${widget.media.id}");
+
       final tempData = await fetcher
           .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
       final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
@@ -166,6 +175,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         showAnify.value = false;
       }
+      log("Data Loaded for media => ${widget.media.title}");
 
       if (isExtensions) {
         _processExtensionData(tempData);
@@ -176,10 +186,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (e.toString().contains('author')) {
         log("Hianime Error Handling");
         await _mapToService();
-      } else {
-        log(e.toString());
       }
-      log(e.toString());
+      log("Media Details Fetch Failed => $e");
     }
   }
 
