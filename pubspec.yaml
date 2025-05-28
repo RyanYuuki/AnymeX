@@ -75,6 +75,8 @@ dependencies:
   path_provider: any
   package_info_plus: any
   url_launcher: any
+  dio: ^5.8.0+1
+  install_plugin: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

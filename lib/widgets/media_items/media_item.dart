@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';

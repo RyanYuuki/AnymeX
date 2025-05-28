@@ -41,10 +41,10 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
     return AnymexOnTap(
       onTap: () {
         if (media.type != "MANGA") {
-          Get.to(() =>
+          navigate(() =>
               AnimeDetailsPage(media: media, tag: media.createdAt.toString()));
         } else {
-          Get.to(() =>
+          navigate(() =>
               MangaDetailsPage(media: media, tag: media.createdAt.toString()));
         }
       },
