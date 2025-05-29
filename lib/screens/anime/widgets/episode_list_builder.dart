@@ -219,7 +219,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: settingsController.preferences.get('universal_scrapper', defaultValue: false)
+          child: settingsController.preferences
+                  .get('universal_scrapper', defaultValue: false)
               ? _buildUniversalScraper(url)
               : FutureBuilder<List<Video>>(
                   future: getVideo(
@@ -265,99 +266,101 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final foundVideos = <Video>[];
     debugPrint('Calling => $url');
 
-    // await headlessWebView?.dispose();
+    await headlessWebView?.dispose();
 
-    // scrapingTimer = Timer(Duration(seconds: 30), () {
-    //   headlessWebView?.dispose();
-    //   if (!completer.isCompleted) {
-    //     completer.complete(foundVideos);
-    //   }
-    // });
+    scrapingTimer = Timer(Duration(seconds: 30), () {
+      headlessWebView?.dispose();
+      if (!completer.isCompleted) {
+        completer.complete(foundVideos);
+      }
+    });
 
-    // try {
-    //   headlessWebView = HeadlessInAppWebView(
-    //     initialUrlRequest: URLRequest(
-    //         url: WebUri(
-    //             "https://www.animegg.org/shingeki-no-kyojin-episode-1#subbed")),
-    //     initialSettings: InAppWebViewSettings(
-    //       userAgent:
-    //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    //       javaScriptEnabled: true,
-    //     ),
-    //     onLoadStop: (controller, loadedUrl) async {
-    //       await Future.delayed(Duration(seconds: 8));
+    try {
+      headlessWebView = HeadlessInAppWebView(
+        initialUrlRequest: URLRequest(url: WebUri(url)),
+        initialSettings: InAppWebViewSettings(
+          userAgent:
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          javaScriptEnabled: true,
+        ),
+        onLoadStop: (controller, loadedUrl) async {
+          await Future.delayed(Duration(seconds: 8));
 
-    //       try {
-    //         await controller.evaluateJavascript(source: """
-    //         // Click play buttons
-    //         const playButtons = document.querySelectorAll('button[class*="play"], .play-button, [aria-label*="play"], [title*="play"]');
-    //         playButtons.forEach(btn => btn.click());
-            
-    //         // Click video elements
-    //         const videos = document.querySelectorAll('video');
-    //         videos.forEach(video => {
-    //           video.play().catch(e => {});
-    //           video.click();
-    //         });
-            
-    //         // Trigger common video container clicks
-    //         const containers = document.querySelectorAll('.video-container, .player-container, .video-player, .player');
-    //         containers.forEach(container => container.click());
-    //       """);
-    //       } catch (e) {
-    //         print('JavaScript execution error: $e');
-    //       }
+          try {
+            await controller.evaluateJavascript(source: """
+          const playButtons = document.querySelectorAll('button[class*="play"], .play-button, [aria-label*="play"], [title*="play"]');
+          playButtons.forEach(btn => btn.click());
+          
+          const videos = document.querySelectorAll('video');
+          videos.forEach(video => {
+            video.play().catch(e => {});
+            video.click();
+          });
+          
+          const containers = document.querySelectorAll('.video-container, .player-container, .video-player, .player');
+          containers.forEach(container => container.click());
+        """);
+          } catch (e) {
+            print('JavaScript execution error: $e');
+          }
 
-    //       await Future.delayed(Duration(seconds: 5));
+          await Future.delayed(Duration(seconds: 5));
 
-    //       if (!completer.isCompleted) {
-    //         completer.complete(foundVideos);
-    //       }
-    //     },
-    //     shouldInterceptRequest: (controller, request) async {
-    //       final requestUrl = request.url.toString();
-    //       final headers = request.headers ?? {};
+          if (!completer.isCompleted) {
+            completer.complete(foundVideos);
+          }
+        },
+        shouldInterceptRequest: (controller, request) async {
+          final requestUrl = request.url.toString();
+          final headers = request.headers ?? {};
+          print('Intercepted request: $requestUrl');
 
-    //       if (_isVideoStream(requestUrl)) {
-    //         final video = Video(
-    //           requestUrl,
-    //           _extractQuality(requestUrl),
-    //           url,
-    //           headers:
-    //               headers.isNotEmpty ? Map<String, String>.from(headers) : null,
-    //         );
+          if (_isVideoStream(requestUrl)) {
+            final video = Video(
+              requestUrl,
+              _extractQuality(requestUrl),
+              url,
+              headers:
+                  headers.isNotEmpty ? Map<String, String>.from(headers) : null,
+            );
 
-    //         if (!foundVideos.any((v) => v.url == requestUrl)) {
-    //           foundVideos.add(video);
-    //         }
-    //       }
+            final baseUrl = requestUrl.split('?')[0];
+            if (!foundVideos.any((v) => v.url.split('?')[0] == baseUrl)) {
+              foundVideos.add(video);
+              print(
+                  'Added video stream: $requestUrl (Quality: ${video.quality})');
+            } else {
+              print('Skipped duplicate stream: $requestUrl');
+            }
+          }
 
-    //       return null;
-    //     },
-    //     onReceivedServerTrustAuthRequest: (controller, challenge) async {
-    //       return ServerTrustAuthResponse(
-    //           action: ServerTrustAuthResponseAction.PROCEED);
-    //     },
-    //   );
+          return null;
+        },
+        onReceivedServerTrustAuthRequest: (controller, challenge) async {
+          return ServerTrustAuthResponse(
+              action: ServerTrustAuthResponseAction.PROCEED);
+        },
+      );
 
-    //   await headlessWebView?.run();
-    // } catch (e) {
-    //   print('Headless WebView error: $e');
-    //   if (!completer.isCompleted) {
-    //     completer.complete(foundVideos);
-    //   }
-    // }
+      await headlessWebView?.run();
+    } catch (e) {
+      print('Headless WebView error: $e');
+      if (!completer.isCompleted) {
+        completer.complete(foundVideos);
+      }
+    }
 
-    // final result = await completer.future;
-    // scrapingTimer?.cancel();
-    // await headlessWebView?.dispose();
+    final result = await completer.future;
+    scrapingTimer?.cancel();
+    await headlessWebView?.dispose();
 
-    return [];
+    print('Final video count: ${result.length}');
+    return result;
   }
 
   bool _isVideoStream(String url) {
     final lowercaseUrl = url.toLowerCase();
-    return lowercaseUrl.contains('.m3u8') ||
+    return lowercaseUrl.contains('m3u8') ||
         lowercaseUrl.contains('.mp4') ||
         lowercaseUrl.contains('manifest') ||
         (lowercaseUrl.contains('video') &&
@@ -369,18 +372,35 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   String _extractQuality(String url) {
     final lowercaseUrl = url.toLowerCase();
+    final filename = url.split('/').last.toLowerCase();
 
-    if (lowercaseUrl.contains('1080')) return '1080p';
-    if (lowercaseUrl.contains('720')) return '720p';
-    if (lowercaseUrl.contains('480')) return '480p';
-    if (lowercaseUrl.contains('360')) return '360p';
-    if (lowercaseUrl.contains('240')) return '240p';
-    if (lowercaseUrl.contains('4k') || lowercaseUrl.contains('2160')) {
+    if (filename.contains('master.m3u8')) return 'Auto';
+    if (filename.contains('playlist.m3u8')) return 'Auto';
+
+    final qualityPatterns = [
+      RegExp(r'\b2160p\b', caseSensitive: false), // 4K
+      RegExp(r'\b1080p\b', caseSensitive: false),
+      RegExp(r'\b720p\b', caseSensitive: false),
+      RegExp(r'\b480p\b', caseSensitive: false),
+      RegExp(r'\b360p\b', caseSensitive: false),
+      RegExp(r'\b240p\b', caseSensitive: false),
+    ];
+
+    final qualityLabels = ['4K', '1080p', '720p', '480p', '360p', '240p'];
+
+    for (int i = 0; i < qualityPatterns.length; i++) {
+      if (qualityPatterns[i].hasMatch(url)) {
+        return qualityLabels[i];
+      }
+    }
+
+    if (lowercaseUrl.contains('4k') || lowercaseUrl.contains('uhd')) {
       return '4K';
     }
+
     if (lowercaseUrl.contains('hd')) return 'HD';
 
-    return '1080p';
+    return url.split('/').last;
   }
 
   Widget _buildScrapingLoadingState(bool fromSrc) {

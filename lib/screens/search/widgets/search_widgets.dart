@@ -43,30 +43,35 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     'Score': {
       'desc': 'SCORE_DESC',
       'asc': 'SCORE',
+      'label': 'SCORE',
       'descLabel': 'Score ↓ — Score (High to Low)',
       'ascLabel': 'Score ↑ — Score (Low to High)',
     },
     'Popularity': {
       'desc': 'POPULARITY_DESC',
       'asc': 'POPULARITY',
+      'label': 'POPULARITY',
       'descLabel': 'Popularity ↓ — Most Popular First',
       'ascLabel': 'Popularity ↑ — Least Popular First',
     },
     'Trending': {
       'desc': 'TRENDING_DESC',
       'asc': 'TRENDING',
+      'label': 'TRENDING',
       'descLabel': 'Trending ↓ — Trending Top First',
       'ascLabel': 'Trending ↑ — Low Trending First',
     },
     'Start Date': {
       'desc': 'START_DATE_DESC',
       'asc': 'START_DATE',
+      'label': 'START_DATE',
       'descLabel': 'Start Date ↓ — Newest First',
       'ascLabel': 'Start Date ↑ — Oldest First',
     },
     'Title': {
       'desc': 'TITLE_ROMAJI_DESC',
       'asc': 'TITLE_ROMAJI',
+      'label': 'TITLE_ROMAJI',
       'descLabel': 'Title Z–A — Title (Z to A)',
       'ascLabel': 'Title A–Z — Title (A to Z)',
     },
@@ -240,11 +245,23 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
+  Widget _buildSortControls() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: _buildSortSelector(),
+        ),
+        const SizedBox(width: 12),
+        _buildSortDirectionToggle(),
+      ],
+    );
+  }
+
   Widget _buildSortSelector() {
     String displayText = 'Select Sort Option';
-    if (selectedSortBy != null && selectedSortType != null) {
-      displayText = sortOptions[selectedSortBy!]![
-          selectedSortType == 'desc' ? 'descLabel' : 'ascLabel']!;
+    if (selectedSortBy != null) {
+      displayText = sortOptions[selectedSortBy!]!['label']!;
     }
 
     return Container(
@@ -318,6 +335,78 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
+  Widget _buildSortDirectionToggle() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDescending = selectedSortType == 'desc';
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colorScheme.outline.withOpacity(0.3),
+          width: 1.5,
+        ),
+        color: colorScheme.surface,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: selectedSortBy != null
+              ? () {
+                  setState(() {
+                    selectedSortType =
+                        selectedSortType == 'desc' ? 'asc' : 'desc';
+                  });
+                }
+              : null,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              children: [
+                Text(
+                  'Order',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isDescending
+                          ? Icons.arrow_downward_rounded
+                          : Icons.arrow_upward_rounded,
+                      size: 16,
+                      color: selectedSortBy != null
+                          ? colorScheme.primary
+                          : colorScheme.onSurface.withOpacity(0.5),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      isDescending ? 'Desc' : 'Asc',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: selectedSortBy != null
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showSortBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -357,7 +446,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
               const SizedBox(height: 16),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.4,
-                child: _buildSortBy(),
+                child: _buildSortOptions(),
               ),
               const SizedBox(height: 16),
             ],
@@ -367,7 +456,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
-  Widget _buildSortBy() {
+  Widget _buildSortOptions() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -377,160 +466,67 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final entry = sortOptions.entries.elementAt(index);
-        final isDescSelected =
-            selectedSortBy == entry.key && selectedSortType == 'desc';
-        final isAscSelected =
-            selectedSortBy == entry.key && selectedSortType == 'asc';
+        final isSelected = selectedSortBy == entry.key;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Descending option
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              setState(() {
+                selectedSortBy = entry.key;
+                // Set default sort type if not already set
+                selectedSortType ??= 'desc';
+              });
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  setState(() {
-                    selectedSortBy = entry.key;
-                    selectedSortType = 'desc';
-                  });
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isDescSelected
-                          ? colorScheme.primary
-                          : colorScheme.outline.withOpacity(0.2),
-                      width: isDescSelected ? 2 : 1,
-                    ),
-                    color: isDescSelected
-                        ? colorScheme.primaryContainer.withOpacity(0.3)
-                        : Colors.transparent,
-                  ),
-                  child: Row(
-                    children: [
-                      Radio<String>(
-                        value: '${entry.key}_desc',
-                        groupValue:
-                            selectedSortBy != null && selectedSortType != null
-                                ? '${selectedSortBy}_$selectedSortType'
-                                : null,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedSortBy = entry.key;
-                            selectedSortType = 'desc';
-                          });
-                          Navigator.pop(context);
-                        },
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_downward_rounded,
-                        size: 18,
-                        color: isDescSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          entry.value['descLabel']!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: isDescSelected
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                            fontWeight: isDescSelected
-                                ? FontWeight.w500
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                border: Border.all(
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.outline.withOpacity(0.2),
+                  width: isSelected ? 2 : 1,
                 ),
+                color: isSelected
+                    ? colorScheme.primaryContainer.withOpacity(0.3)
+                    : Colors.transparent,
+              ),
+              child: Row(
+                children: [
+                  Radio<String>(
+                    value: entry.key,
+                    groupValue: selectedSortBy ?? '',
+                    onChanged: (value) {
+                      setState(() {
+                        selectedSortBy = value;
+                        // Set default sort type if not already set
+                        selectedSortType ??= 'desc';
+                      });
+                      Navigator.pop(context);
+                    },
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      entry.value['label']!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
+                        fontWeight:
+                            isSelected ? FontWeight.w500 : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            // Ascending option
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  setState(() {
-                    selectedSortBy = entry.key;
-                    selectedSortType = 'asc';
-                  });
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isAscSelected
-                          ? colorScheme.primary
-                          : colorScheme.outline.withOpacity(0.2),
-                      width: isAscSelected ? 2 : 1,
-                    ),
-                    color: isAscSelected
-                        ? colorScheme.primaryContainer.withOpacity(0.3)
-                        : Colors.transparent,
-                  ),
-                  child: Row(
-                    children: [
-                      Radio<String>(
-                        value: '${entry.key}_asc',
-                        groupValue:
-                            selectedSortBy != null && selectedSortType != null
-                                ? '${selectedSortBy}_$selectedSortType'
-                                : null,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedSortBy = entry.key;
-                            selectedSortType = 'asc';
-                          });
-                          Navigator.pop(context);
-                        },
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_upward_rounded,
-                        size: 18,
-                        color: isAscSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          entry.value['ascLabel']!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: isAscSelected
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                            fontWeight: isAscSelected
-                                ? FontWeight.w500
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         );
       },
     );
@@ -703,7 +699,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
           ),
           const SizedBox(height: 24),
           _buildSectionTitle('Sort Options'),
-          _buildSortSelector(),
+          _buildSortControls(),
           const SizedBox(height: 20),
           _buildSectionTitle('Filter Options'),
           Row(

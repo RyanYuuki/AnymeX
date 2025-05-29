@@ -243,7 +243,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       widget.media.id.toString(),
       episodeList.value,
     );
-    if (newEps.first.thumbnail == null &&
+    if (newEps.isNotEmpty && newEps.first.thumbnail == null &&
         (newEps.first.thumbnail?.isEmpty ?? true)) {
       showAnify.value = false;
     }

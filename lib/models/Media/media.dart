@@ -247,7 +247,7 @@ class Media {
         ? MediaType.anime
         : json['type'] == "MANGA"
             ? MediaType.manga
-            : MediaType.novel;
+            : MediaType.novel;  
     return Media(
       id: json['id'].toString(),
       idMal: json['idMal'].toString(),
