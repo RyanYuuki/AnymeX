@@ -17,34 +17,33 @@
 </div>
 
 # AnymeX
-**AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/) & [**Simkl**](https://simkl.com/) support!
+**AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/) support!
+> [!NOTE]
+> AnymeX is intended for tracking purposes only.
+>
+> It does **not** host, provide, or maintain any streaming content or extensions.
+>
+> Users are fully responsible for how they use this app. The developer disclaims all liability for misuse or legal issues. Legal concerns should be addressed to third-party sources, not AnymeX.
 
 ## Downloads
 <div align="center">
-<p>
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&display_name=tag&style=for-the-badge&label=Stable" alt="Latest Stable Release"/></a>
-   <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&include_prereleases&label=Beta&style=for-the-badge" alt="Latest Beta"/></a>
-</p>
+  <p>
+    <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&display_name=tag&style=for-the-badge&label=Stable" alt="Latest Stable Release"/></a>
+    <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&include_prereleases&label=Beta&style=for-the-badge" alt="Latest Beta"/></a>
+  </p>
 </div>
-
-## iOS Sideloading Sources
 <div align="center">
-
-<a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Altstore&labelColor=black&color=white"></a>
-&nbsp;
-<a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Feather Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=feather&labelColor=black&color=white"></a>
-&nbsp;
-<a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Sidestore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=sidestore&labelColor=black&color=white"></a>
-
-<a href="https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Direct URL" src="https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white"></a>
-
+   
+### iOS Sideloading Sources
 </div>
-
-
-## Disclaimer
-- **Purpose**: AnymeX is a hybrid tracking and management tool for anime, manga and other media supported by AniList, MyAnimeList & Simkl. This application is designed for tracking use only.
-- **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.
-- **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
+<div align="center">
+  <p>
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="AltStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=AltStore&labelColor=black&color=white"></a>
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Feather Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=Feather&labelColor=black&color=white"></a>
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="SideStore Source" src="https://img.shields.io/badge/open_in_app-_?style=for-the-badge&label=SideStore&labelColor=black&color=white"></a>
+    <a href="https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Direct Source URL" src="https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white"></a>
+  </p>
+</div>
 
 ## Screenshots
 
@@ -62,7 +61,8 @@
 
 ## Support Us
 <a href='https://ko-fi.com/ryanyuuki7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-> ⭐ **Star This Repository To Support The Developer And Encourage The Development Of The Application!**
+> [!TIP]
+> ⭐ **Star this repository to support the developer & encourage the development of the app!**
 <details>
   <summary>Star History</summary>
   <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
@@ -75,6 +75,7 @@ Join our communities to stay updated and contribute to the discussion:
 
 <a href="https://discord.gg/5gAHhMvTcx" style="margin-right: 10px; display: inline-block;"><img src="https://files.catbox.moe/tb0004.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
 <a href="https://t.me/AnymeX_Discussion" style="display: inline-block;"><img src="https://files.catbox.moe/z66xwr.png" alt="Telegram" height="40" style="vertical-align: middle;"></a>
+<a href="https://www.reddit.com/r/AnymeX_/" style="display: inline-block;"><img src="https://cdn3.iconfinder.com/data/icons/2018-social-media-black-and-white-logos/1000/2018_social_media_popular_app_logo_reddit-1024.png" alt="Reddit" height="40" style="vertical-align: middle;"></a>
 
 ## Contribute
 We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
