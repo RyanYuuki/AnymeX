@@ -375,7 +375,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
         List<int> currentInstalledAnimeExtensions = [];
         List<int> currentInstalledMangaExtensions = [];
 
-        allExtensions.forEach((e) {
+        for (var e in allExtensions) {
           if (e.isAdded!) {
             if (e.isManga == true) {
               currentInstalledMangaExtensions.add(e.id!);
@@ -385,7 +385,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
               print('Anime Extension ID: ${e.name} - ${e.id}');
             }
           }
-        });
+        }
 
         for (int e in currentInstalledAnimeExtensions) {
           log('installing $e');
