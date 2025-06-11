@@ -1,6 +1,6 @@
 <div align="center">
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
-   
+  
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android_ios_windows_linux_macos-06599d?color=white&labelColor=black&style=for-the-badge"/>
   <a href="https://github.com/RyanYuuki/AnymeX/releases"><img src="https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?color=white&labelColor=black&label=Downloads&style=for-the-badge" alt="GitHub Downloads"></a>
@@ -17,6 +17,7 @@
 </div>
 
 # AnymeX
+
 **AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/) support!
 > [!NOTE]
 > AnymeX is intended for tracking purposes only.
@@ -26,12 +27,16 @@
 > Users are fully responsible for how they use this app. The developer disclaims all liability for misuse or legal issues. Legal concerns should be addressed to third-party sources, not AnymeX.
 
 ## Downloads
+
 <div align="center">
   <p>
     <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&display_name=tag&style=for-the-badge&label=Stable" alt="Latest Stable Release"/></a>
     <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&include_prereleases&label=Beta&style=for-the-badge" alt="Latest Beta"/></a>
   </p>
 </div>
+
+## iOS Sideloading Sources
+
 <div align="center">
    
 ### iOS Sideloading Sources
@@ -44,6 +49,12 @@
     <a href="https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/source.json"><img alt="Direct Source URL" src="https://img.shields.io/badge/copy_%2F_paste-_?style=for-the-badge&label=Direct%20Source%20URL&labelColor=black&color=white"></a>
   </p>
 </div>
+
+## Disclaimer
+
+- **Purpose**: AnymeX is a hybrid tracking and management tool for anime, manga and other media supported by AniList, MyAnimeList & Simkl. This application is designed for tracking use only.
+- **Content Policy**: AnymeX does not provide, maintain, or host streaming extensions or copyrighted content.
+- **Responsibility**: Users are responsible for their actions. The developer disclaims all liability for misuse, including legal issues with third-party content or external sources. Any legal action should be taken against the providers of extensions, not AnymeX.
 
 ## Screenshots
 
@@ -60,6 +71,7 @@
 -->
 
 ## Support Us
+
 <a href='https://ko-fi.com/ryanyuuki7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 > [!TIP]
 > ⭐ **Star this repository to support the developer & encourage the development of the app!**
@@ -71,6 +83,7 @@
 </details>
 
 ## Official Communities
+
 Join our communities to stay updated and contribute to the discussion:
 
 <a href="https://discord.gg/5gAHhMvTcx" style="margin-right: 10px; display: inline-block;"><img src="https://files.catbox.moe/tb0004.png" alt="Discord" height="40" style="vertical-align: middle;"></a>
@@ -78,7 +91,11 @@ Join our communities to stay updated and contribute to the discussion:
 <a href="https://www.reddit.com/r/AnymeX_/" style="display: inline-block;"><img src="https://cdn3.iconfinder.com/data/icons/2018-social-media-black-and-white-logos/1000/2018_social_media_popular_app_logo_reddit-1024.png" alt="Reddit" height="40" style="vertical-align: middle;"></a>
 
 ## Contribute
-We welcome contributions, from translations to new features. For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion). Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
+
+We welcome contributions, from translations to new features.  
+Our development environment setup guide is available [here](./DEVELOPMENT.md).  
+For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion).  
+Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
 
 <!--<details>
 <summary>Weblate Translation Graph</summary>
@@ -86,6 +103,7 @@ We welcome contributions, from translations to new features. For inquiries, join
 </details>-->
 
 ## Acknowledgments
+
 A heartfelt thank you to everyone who has contributed to the development of AnymeX.
 Your efforts are invaluable.
 
@@ -98,4 +116,5 @@ Your efforts are invaluable.
 </a>
 
 ## License
+
 AnymeX is licensed under the MIT License. More info can be found [here](LICENSE.md).

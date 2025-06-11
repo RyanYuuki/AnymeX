@@ -1,27 +1,28 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:anymex/controllers/service_handler/params.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/core/Eval/dart/model/page.dart';
-import 'package:anymex/core/Search/get_pages.dart';
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/slider_semantics.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
+
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/core/Eval/dart/model/page.dart';
+import 'package:anymex/core/Search/get_pages.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
+import 'package:anymex/widgets/common/slider_semantics.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 
 enum ReadingMode {
   webtoon,
@@ -50,6 +51,7 @@ class _ReadingPageState extends State<ReadingPage> {
   ScrollController scrollController = ScrollController();
   PageController pageController = PageController();
   final isMenuToggled = true.obs;
+  late final ValueNotifier<bool> _appBarVisibility;
 
   late Rx<Chapter> currentChapter;
   late Rx<Media> anilistData;
@@ -64,6 +66,8 @@ class _ReadingPageState extends State<ReadingPage> {
   int _pointersCount = 0;
   final TransformationController _zoomController = TransformationController();
   double currentScaleValue = 1.0;
+  double _previousOffset = 0;
+
   // Settings
   final activeMode = ReadingMode.webtoon.obs;
   final pageWidthMultiplier = 1.0.obs;
@@ -93,6 +97,10 @@ class _ReadingPageState extends State<ReadingPage> {
   void initState() {
     super.initState();
     // _initHwButtonsListener();
+    _appBarVisibility = ValueNotifier<bool>(isMenuToggled.value);
+    isMenuToggled.listen((value) {
+      _appBarVisibility.value = value;
+    });
     _initScrollController();
     _initPageController();
     _initWidgetVars();
@@ -134,7 +142,24 @@ class _ReadingPageState extends State<ReadingPage> {
 
   void _initPageController({int page = 0}) {
     pageController = PageController(initialPage: page);
-    pageController.addListener(() {});
+    scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final currentOffset = scrollController.offset;
+
+    const threshold = 25.0; // Avoid jittery toggling
+
+    if ((currentOffset - _previousOffset).abs() > threshold) {
+      if (currentOffset > _previousOffset) {
+        isMenuToggled.value = false; // Scroll down, hide AppBar
+      } else {
+        isMenuToggled.value = true; // Scroll up, show AppBar
+      }
+      _previousOffset = currentOffset;
+    }
+
+    _updateScrollProgress();
   }
 
   void _getPreferences() {
@@ -205,6 +230,7 @@ class _ReadingPageState extends State<ReadingPage> {
     Future.delayed(Duration.zero, () async {
       await updateAnilist(true);
     });
+    _appBarVisibility.dispose();
     scrollController.removeListener(_updateScrollProgress);
     scrollController.dispose();
     pageController.dispose();
@@ -456,6 +482,11 @@ class _ReadingPageState extends State<ReadingPage> {
         focusNode: _focusNode,
         onKeyEvent: handleKeyPress,
         child: Scaffold(
+          extendBodyBehindAppBar: true,
+          // appBar: PreferredSize(
+          //   preferredSize: const Size.fromHeight(kToolbarHeight),
+          //   child: Container(),
+          // ),
           body: Obx(() {
             if (isLoading.value) {
               return const Center(
@@ -495,59 +526,8 @@ class _ReadingPageState extends State<ReadingPage> {
                               setState(() => _pointersCount++),
                           onPointerUp: (_) => setState(() => _pointersCount--),
                           child: _buildWebtoonMode())),
-                _buildTopControls(context),
+                _buildAnimatedAppBar(),
                 _bottomControls(context),
-                if (!isMenuToggled.value)
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Theme.of(context)
-                                .colorScheme
-                                .surface
-                                .withOpacity(0.5),
-                            Colors.transparent,
-                          ],
-                          stops: const [0.5, 1.0],
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          AnymexText(
-                            text:
-                                "Page $currentPageIndex / ${mangaPages.length}",
-                            size: 12,
-                            variant: TextVariant.semiBold,
-                          ),
-                          10.width(),
-                          AnymexText(
-                            text: "Ch. ${currentChapter.value.number}/",
-                            size: 12,
-                            variant: TextVariant.semiBold,
-                          ),
-                          AnymexText(
-                            text: "Ch. ${chapterList.length}",
-                            size: 12,
-                            variant: TextVariant.semiBold,
-                          ),
-                          const Spacer(),
-                          AnymexText(
-                            text: DateFormat("hh:mm a").format(DateTime.now()),
-                            size: 12,
-                            variant: TextVariant.semiBold,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
               ],
             );
           }),
@@ -634,77 +614,64 @@ class _ReadingPageState extends State<ReadingPage> {
     );
   }
 
-  AnimatedPositioned _buildTopControls(BuildContext context) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      top: isMenuToggled.value ? 0 : -120,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: 90,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
-              Colors.transparent,
-            ],
-            stops: const [0.5, 1.0],
+  Widget _buildAnimatedAppBar() {
+    return CustomAnimatedAppBar(
+      isVisible: _appBarVisibility,
+      scrollController: scrollController,
+      headerContent: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(width: 10),
+          IconButton(
+            icon: const Icon(IconlyBold.arrow_left, size: 30),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(IconlyBold.arrow_left, color: Colors.white),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width - 190,
-                  child: Text(
-                      currentChapter.value.title ??
-                          'Chapter ${currentChapter.value.number}',
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.white)),
+                Text(
+                  currentChapter.value.title ??
+                      'Chapter ${currentChapter.value.number}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.primary),
                 ),
-                const SizedBox(height: 3),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width - 190,
-                  child: Text(anilistData.value.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.white70)),
+                const SizedBox(height: 2),
+                Text(
+                  'Page $currentPageIndex / ${mangaPages.length}, Ch. ${currentChapter.value.number?.toInt()} / ${chapterList.length}',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
                 ),
               ],
             ),
-            const Spacer(),
-            IconButton(
-                onPressed: () {
-                  showSettings(context);
-                },
-                icon: const Icon(Icons.settings))
-          ],
-        ),
+          ),
+          const SizedBox(width: 15),
+          IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(Icons.settings,
+                color: canGoForward.value ? Colors.white : Colors.grey,
+                size: 30),
+            onPressed: () {
+              showSettings(context);
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
       ),
     );
   }
 
   AnimatedPositioned _bottomControls(BuildContext context) {
     return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 450),
       curve: Curves.easeInOut,
       bottom: isMenuToggled.value ? 0 : -150,
       left: getResponsiveSize(context,
@@ -721,7 +688,7 @@ class _ReadingPageState extends State<ReadingPage> {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.5),
+              Colors.black.withOpacity(0.50),
               Colors.transparent,
             ],
             stops: const [0.5, 1.0],
@@ -734,7 +701,7 @@ class _ReadingPageState extends State<ReadingPage> {
                   desktopValue: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.6)),
+                      .withOpacity(0.60)),
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           padding: EdgeInsets.all(
@@ -749,7 +716,7 @@ class _ReadingPageState extends State<ReadingPage> {
               Container(
                 decoration: BoxDecoration(
                     color:
-                        Theme.of(context).colorScheme.surface.withOpacity(0.80),
+                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(30)),
                 child: IconButton(
                   icon: Icon(Icons.skip_previous_rounded,
@@ -792,7 +759,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     inactiveColor: Theme.of(context)
                         .colorScheme
                         .inverseSurface
-                        .withOpacity(0.1),
+                        .withOpacity(0.10),
                   ),
                 ),
               ),
@@ -856,156 +823,72 @@ class _ReadingPageState extends State<ReadingPage> {
                   );
                 }),
                 Obx(() {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: ReadingMode.values.map((mode) {
-                            final isSelected = mode == activeMode.value;
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  final pageIndex = currentPageIndex.value;
-                                  activeMode.value = mode;
-                                  _savePreferences();
-                                  Future.delayed(
-                                      const Duration(milliseconds: 50), () {
-                                    navigateToPage(pageIndex);
-                                  });
-                                },
-                                child: AnimatedContainer(
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 4),
-                                  duration: const Duration(milliseconds: 200),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).colorScheme.surface,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .outline
-                                              .withOpacity(0.5),
-                                      width: 1.5,
-                                    ),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                                  .withOpacity(0.3),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 2),
-                                            )
-                                          ]
-                                        : null,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        mode == ReadingMode.values[0]
-                                            ? Icons.view_day
-                                            : mode == ReadingMode.values[1]
-                                                ? Icons
-                                                    .format_textdirection_l_to_r
-                                                : Icons
-                                                    .format_textdirection_r_to_l,
-                                        color: isSelected
-                                            ? Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                        size: 22,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        mode == ReadingMode.values[0]
-                                            ? 'Webtoon'
-                                            : mode == ReadingMode.values[1]
-                                                ? 'LTR'
-                                                : 'RTL',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.normal,
-                                          color: isSelected
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                  final selections = List<bool>.generate(
+                    ReadingMode.values.length,
+                    (index) =>
+                        index == ReadingMode.values.indexOf(activeMode.value),
+                  );
+                  return Center(
+                    child: ToggleButtons(
+                      isSelected: selections,
+                      onPressed: (int index) {
+                        final pageIndex = currentPageIndex.value;
+                        activeMode.value = ReadingMode.values[index];
+                        _savePreferences();
+                        Future.delayed(const Duration(milliseconds: 50), () {
+                          navigateToPage(pageIndex);
+                        });
+                      },
+                      children: const [
+                        Tooltip(
+                          message: 'Webtoon',
+                          child: Icon(Icons.view_day),
+                        ),
+                        Tooltip(
+                          message: 'LTR',
+                          child: Icon(Icons.format_textdirection_l_to_r),
+                        ),
+                        Tooltip(
+                          message: 'RTL',
+                          child: Icon(Icons.format_textdirection_r_to_l),
                         ),
                       ],
                     ),
                   );
                 }),
-                getResponsiveValue(
-                  context,
-                  mobileValue: const SizedBox.shrink(),
-                  desktopValue: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(children: [
-                      Obx(() {
-                        return CustomSliderTile(
-                          title: 'Image Width',
-                          sliderValue: pageWidthMultiplier.value,
-                          onChanged: (double value) {
-                            pageWidthMultiplier.value = value;
-                          },
-                          onChangedEnd: (e) => _savePreferences(),
-                          description: 'Only Works with webtoon mode',
-                          icon: Icons.image_aspect_ratio_rounded,
-                          min: 1.0,
-                          max: 4.0,
-                          divisions: 39,
-                        );
-                      }),
-                      if (!(Platform.isAndroid && Platform.isIOS))
-                        Obx(() {
-                          return CustomSliderTile(
-                            title: 'Scroll Multiplier',
-                            sliderValue: scrollSpeedMultiplier.value,
-                            onChanged: (double value) {
-                              scrollSpeedMultiplier.value = value;
-                            },
-                            onChangedEnd: (e) => _savePreferences(),
-                            description:
-                                'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
-                            icon: Icons.speed,
-                            min: 1.0,
-                            max: 5.0,
-                            divisions: 9,
-                          );
-                        }),
-                    ]),
-                  ),
-                ),
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  Obx(() {
+                    return CustomSliderTile(
+                      title: 'Image Width',
+                      sliderValue: pageWidthMultiplier.value,
+                      onChanged: (double value) {
+                        pageWidthMultiplier.value = value;
+                      },
+                      onChangedEnd: (e) => _savePreferences(),
+                      description: 'Only Works with webtoon mode',
+                      icon: Icons.image_aspect_ratio_rounded,
+                      min: 1.0,
+                      max: 4.0,
+                      divisions: 39,
+                    );
+                  }),
+                if (!Platform.isAndroid && !Platform.isIOS)
+                  Obx(() {
+                    return CustomSliderTile(
+                      title: 'Scroll Multiplier',
+                      sliderValue: scrollSpeedMultiplier.value,
+                      onChanged: (double value) {
+                        scrollSpeedMultiplier.value = value;
+                      },
+                      onChangedEnd: (e) => _savePreferences(),
+                      description:
+                          'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                      icon: Icons.speed,
+                      min: 1.0,
+                      max: 5.0,
+                      divisions: 9,
+                    );
+                  }),
                 20.height()
               ],
             ),

@@ -32,22 +32,20 @@ Widget buildLoader(String title) {
 
 Container buildChip(String label) {
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
     decoration: BoxDecoration(
       color: Get.theme.colorScheme.primary,
       borderRadius: BorderRadius.circular(10),
     ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AnymexText(
-            text: label,
-            variant: TextVariant.bold,
-            color: Get.theme.colorScheme.onPrimary),
-      ],
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: AnymexText(
+        text: label,
+        variant: TextVariant.bold,
+        color: Get.theme.colorScheme.onPrimary,
+        size: 14,
+      ),
     ),
   );
 }
