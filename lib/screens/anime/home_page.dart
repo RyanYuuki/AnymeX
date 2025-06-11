@@ -55,8 +55,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!isDesktop)
-                  SizedBox(height: statusBarHeight + appBarHeight),
+                SizedBox(height: statusBarHeight + appBarHeight),
                 const SizedBox(height: 10),
                 Obx(() {
                   return Column(
