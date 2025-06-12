@@ -89,6 +89,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final settings = Get.find<Settings>();
   final RxString resizeMode = "Cover".obs;
   late PlayerSettings playerSettings;
+  late FocusNode _keyboardListenerFocusNode;
 
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
@@ -157,6 +158,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         _hideControlsTimer?.cancel();
       } else if (showControls.value) {
         _startHideControlsTimer();
+      }
+    });
+    _keyboardListenerFocusNode = FocusNode(
+      canRequestFocus: !settings.isTV.value,
+      skipTraversal: settings.isTV.value,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_keyboardListenerFocusNode.hasFocus) {
+        _keyboardListenerFocusNode.requestFocus();
       }
     });
   }
@@ -505,6 +515,25 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
+  void _megaSkip(invert) {
+    if (invert) {
+      final duration = Duration(
+          seconds: currentPosition.value.inSeconds - settings.skipDuration);
+      if (duration.inMilliseconds < 0) {
+        currentPosition.value = const Duration(milliseconds: 0);
+        player.seek(const Duration(seconds: 0));
+      } else {
+        currentPosition.value = duration;
+        player.seek(duration);
+      }
+    } else {
+      final duration = Duration(
+          seconds: currentPosition.value.inSeconds + settings.skipDuration);
+      currentPosition.value = duration;
+      player.seek(duration);
+    }
+  }
+
   void toggleControls({bool? val}) {
     showControls.value = val ?? !showControls.value;
 
@@ -544,10 +573,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
-      focusNode: FocusNode(
-        canRequestFocus: !settings.isTV.value,
-        skipTraversal: settings.isTV.value,
-      ),
+      focusNode: _keyboardListenerFocusNode,
+      autofocus: !settings.isTV.value,
       onKeyEvent: (e) {
         if (e is KeyDownEvent && !settings.isTV.value) {
           if (e.logicalKey == LogicalKeyboardKey.space) {
@@ -556,6 +583,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             _skipSegments(true);
           } else if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
             _skipSegments(false);
+          } else if (e.logicalKey == LogicalKeyboardKey.period) {
+            _megaSkip(false);
+          } else if (e.logicalKey == LogicalKeyboardKey.comma) {
+            _megaSkip(true);
           }
         }
       },
