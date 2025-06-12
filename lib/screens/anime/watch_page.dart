@@ -515,7 +515,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
-  void _megaSkip(invert) {
+  void _megaSkip(bool invert) {
     if (invert) {
       final duration = Duration(
           seconds: currentPosition.value.inSeconds - settings.skipDuration);
@@ -567,6 +567,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     } else {
       windowManager.setFullScreen(false);
     }
+    _keyboardListenerFocusNode.dispose();
     super.dispose();
   }
 
@@ -583,9 +584,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             _skipSegments(true);
           } else if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
             _skipSegments(false);
-          } else if (e.logicalKey == LogicalKeyboardKey.period) {
+          } else if (e.logicalKey == LogicalKeyboardKey.period ||
+              e.character == '>') {
             _megaSkip(false);
-          } else if (e.logicalKey == LogicalKeyboardKey.comma) {
+          } else if (e.logicalKey == LogicalKeyboardKey.comma ||
+              e.character == '<') {
             _megaSkip(true);
           }
         }
