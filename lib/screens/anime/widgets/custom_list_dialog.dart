@@ -36,7 +36,7 @@ class _CustomListDialogState extends State<CustomListDialog>
   late Animation<double> _fadeAnimation;
 
   // Track check/uncheck animations
-  Map<String, bool> _recentlyChanged = {};
+  final Map<String, bool> _recentlyChanged = {};
 
   @override
   void initState() {
@@ -469,7 +469,7 @@ class _CustomListDialogState extends State<CustomListDialog>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomSearchBar(
-                        padding: EdgeInsets.all(0),
+                        padding: const EdgeInsets.all(0),
                         disableIcons: true,
                         onSubmitted: (_) {},
                         controller: _searchController,
@@ -532,7 +532,7 @@ class _CustomListDialogState extends State<CustomListDialog>
                                     const SizedBox(height: 16),
                                     Text(
                                       _searchQuery.isNotEmpty
-                                          ? 'No lists match "${_searchQuery}"'
+                                          ? 'No lists match "$_searchQuery"'
                                           : 'No collections created yet',
                                       style: textTheme.bodyMedium?.copyWith(
                                         color: colorScheme.onSurfaceVariant
