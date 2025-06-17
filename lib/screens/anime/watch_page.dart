@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -220,28 +221,22 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         },
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
+    player.setRate(prevRate.value);
   }
 
-  // Continuous Tracking
+// Continuous Tracking
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
   StreamSubscription<Duration>? _positionSubscription;
   bool _isSeeking = false;
   int lastProcessedSecond = -1;
-  Timer? _positionUpdateTimer;
   Duration _lastPosition = Duration.zero;
+  DateTime _lastUIUpdate = DateTime.now();
 
   void _attachListeners() {
     _positionSubscription = player.stream.position.listen((e) {
-      if (_isSeeking) return;
 
-      _positionUpdateTimer?.cancel();
-      _positionUpdateTimer = Timer(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          currentPosition.value = e;
-          formattedTime.value = formatDuration(e);
-        }
-      });
+      if (_isSeeking) return;
 
       if (_lastPosition.inSeconds != e.inSeconds) {
         _lastPosition = e;
@@ -250,6 +245,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         if (e.inSeconds % 30 == 0 && isPlaying.value && !isSwitchingEpisode) {
           trackEpisode(e, episodeDuration.value, currentEpisode.value);
         }
+      }
+
+      final now = DateTime.now();
+      if (mounted && now.difference(_lastUIUpdate).inMilliseconds >= 1000) {
+        _lastUIUpdate = now;
+        currentPosition.value = e;
+        formattedTime.value = formatDuration(e);
+        log('UI Updated with accurate stream position: ${e.inSeconds}s');
       }
 
       if (e.inSeconds >= episodeDuration.value.inSeconds - 1) {
@@ -353,6 +356,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     resizeMode.value = settings.resizeMode;
     isLoggedIn = serviceHandler.isLoggedIn.value;
     skipDuration.value = settings.seekDuration;
+    prevRate.value = playerSettings.speed;
   }
 
   final Map<int, String> _durationCache = <int, String>{};
@@ -489,9 +493,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _skipSegments(bool isLeft) {
-    double? cachedScreenWidth;
-    cachedScreenWidth ??= MediaQuery.of(context).size.width;
-
+    player.pause();
     if (isLeftSide.value != isLeft) {
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
@@ -526,6 +528,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       _rightAnimationController.reset();
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
+      player.play();
     });
   }
 
@@ -552,7 +555,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _positionUpdateTimer?.cancel();
     _volumeTimer?.cancel();
     _brightnessTimer?.cancel();
     _hideControlsTimer?.cancel();
@@ -628,16 +630,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 color: Colors.black.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   AnymexText(
-                    text: "2x",
+                    text: "${(prevRate.value * 2).toInt()}x",
                     variant: TextVariant.semiBold,
                   ),
-                  SizedBox(width: 5),
-                  Icon(Icons.fast_forward)
+                  const SizedBox(width: 5),
+                  const Icon(Icons.fast_forward)
                 ],
               ),
             ));
@@ -734,7 +736,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               behavior: HitTestBehavior.opaque,
               onLongPressStart: (e) {
                 pressed2x.value = true;
-                player.setRate(2.0);
+                player.setRate(prevRate.value * 2);
               },
               onLongPressEnd: (e) {
                 pressed2x.value = false;
