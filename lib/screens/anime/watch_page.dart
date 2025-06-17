@@ -215,7 +215,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.open(Media(
         episode.value.url
             .replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
-        httpHeaders: {'Referer': sourceController.activeSource.value!.baseUrl!},
+        httpHeaders: {
+          'Referer': sourceController.activeSource.value!.baseUrl ?? ''
+        },
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
   }
@@ -226,28 +228,28 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   StreamSubscription<Duration>? _positionSubscription;
   bool _isSeeking = false;
   int lastProcessedSecond = -1;
+  Timer? _positionUpdateTimer;
+  Duration _lastPosition = Duration.zero;
 
   void _attachListeners() {
     _positionSubscription = player.stream.position.listen((e) {
       if (_isSeeking) return;
 
-      currentPosition.value = e;
-      formattedTime.value = formatDuration(e);
+      _positionUpdateTimer?.cancel();
+      _positionUpdateTimer = Timer(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          currentPosition.value = e;
+          formattedTime.value = formatDuration(e);
+        }
+      });
 
-      if (!isSwitchingEpisode && e.inSeconds != lastProcessedSecond) {
-        lastProcessedSecond = e.inSeconds;
+      if (_lastPosition.inSeconds != e.inSeconds) {
+        _lastPosition = e;
         currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
-      }
 
-      if (lastProcessedMinute != e.inMinutes &&
-          !isSwitchingEpisode &&
-          isPlaying.value) {
-        lastProcessedMinute = e.inMinutes;
-        trackEpisode(e, episodeDuration.value, currentEpisode.value);
-      }
-
-      if (e.inSeconds == 0 && !isSwitchingEpisode) {
-        currentEpisode.value.timeStampInMilliseconds = 0;
+        if (e.inSeconds % 30 == 0 && isPlaying.value && !isSwitchingEpisode) {
+          trackEpisode(e, episodeDuration.value, currentEpisode.value);
+        }
       }
 
       if (e.inSeconds >= episodeDuration.value.inSeconds - 1) {
@@ -353,13 +355,27 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     skipDuration.value = settings.seekDuration;
   }
 
+  final Map<int, String> _durationCache = <int, String>{};
+
   String formatDuration(Duration duration) {
+    final key = duration.inSeconds;
+    if (_durationCache.containsKey(key)) {
+      return _durationCache[key]!;
+    }
+
     final hours = duration.inHours.toString().padLeft(2, '0');
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return duration.inHours > 0
-        ? '$hours:$minutes:$seconds'
-        : '$minutes:$seconds';
+
+    final result =
+        duration.inHours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+
+    if (_durationCache.length > 100) {
+      _durationCache.clear();
+    }
+
+    _durationCache[key] = result;
+    return result;
   }
 
   String extractQuality(String quality) {
@@ -473,33 +489,41 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _skipSegments(bool isLeft) {
+    double? cachedScreenWidth;
+    cachedScreenWidth ??= MediaQuery.of(context).size.width;
+
     if (isLeftSide.value != isLeft) {
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
     }
+
     isLeftSide.value = isLeft;
     doubleTapLabel.value += 10;
     skipDuration.value += 10;
 
-    final totalDuration = episodeDuration.value;
+    final currentSeconds = currentPosition.value.inSeconds;
+    final maxSeconds = episodeDuration.value.inSeconds;
 
     final newSeekPosition = isLeft
-        ? max(0, currentPosition.value.inSeconds - skipDuration.value)
-        : (currentPosition.value.inSeconds + skipDuration.value)
-            .clamp(0, totalDuration.inSeconds);
+        ? (currentSeconds - skipDuration.value).clamp(0, maxSeconds)
+        : (currentSeconds + skipDuration.value).clamp(0, maxSeconds);
 
+    // Batch UI updates
     formattedTime.value = formatDuration(Duration(seconds: newSeekPosition));
-
-    isLeft
-        ? _leftAnimationController.forward(from: 0)
-        : _rightAnimationController.forward(from: 0);
-
     player.seek(Duration(seconds: newSeekPosition));
 
+    // Optimize animations
+    if (isLeft) {
+      _leftAnimationController.forward(from: 0);
+    } else {
+      _rightAnimationController.forward(from: 0);
+    }
+
+    // Reset after delay
     doubleTapTimeout?.cancel();
-    doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
-      _leftAnimationController.stop();
-      _rightAnimationController.stop();
+    doubleTapTimeout = Timer(const Duration(milliseconds: 800), () {
+      _leftAnimationController.reset();
+      _rightAnimationController.reset();
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
     });
@@ -514,6 +538,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _startHideControlsTimer() {
+    if (!isPlaying.value) {
+      return;
+    }
     _hideControlsTimer?.cancel();
 
     _hideControlsTimer = Timer(const Duration(seconds: 5), () {
@@ -525,11 +552,21 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    Future.delayed(Duration.zero, () async {
-      await trackEpisode(
-          currentPosition.value, episodeDuration.value, currentEpisode.value);
-    });
+    _positionUpdateTimer?.cancel();
+    _volumeTimer?.cancel();
+    _brightnessTimer?.cancel();
+    _hideControlsTimer?.cancel();
+    doubleTapTimeout?.cancel();
+    _positionSubscription?.cancel();
+
+    trackEpisode(
+        currentPosition.value, episodeDuration.value, currentEpisode.value,
+        updateAL: false);
+
     player.dispose();
+    _leftAnimationController.dispose();
+    _rightAnimationController.dispose();
+
     if (isMobile && !settings.isTV.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations(
@@ -622,7 +659,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   : Get.width,
               child: Video(
                 controller: playerController,
-                filterQuality: FilterQuality.medium,
                 controls: null,
                 fit: resizeModes[resizeMode.value]!,
                 subtitleViewConfiguration: const SubtitleViewConfiguration(
@@ -659,6 +695,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           ],
         ));
   }
+
+  final prevRate = 1.0.obs;
 
   Obx _buildOverlay(BuildContext context) {
     return Obx(
@@ -700,7 +738,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               },
               onLongPressEnd: (e) {
                 pressed2x.value = false;
-                player.setRate(1.0);
+                player.setRate(prevRate.value);
               },
               onTap: toggleControls,
               onDoubleTapDown: (e) => _handleDoubleTap(e),
@@ -1024,7 +1062,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                         episode.value = e;
                         player.open(Media(e.url,
                             start: currentPosition.value,
-                            end: episodeDuration.value));
+                            end: episodeDuration.value,
+                            httpHeaders: {
+                              'Referer': sourceController
+                                      .activeSource.value!.baseUrl ??
+                                  ''
+                            }));
                         Get.back();
                       },
                       child: Padding(
@@ -1381,7 +1424,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                           0.0) {
                                         final newPosition =
                                             Duration(milliseconds: val.toInt());
-                                        await player.seek(newPosition);
+                                        player.seek(newPosition);
                                         endSeeking(newPosition);
                                       }
                                     },
@@ -1633,6 +1676,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       active: speed == currentSpeed,
       leading: const Icon(Icons.speed),
       onTap: () {
+        prevRate.value = speed;
         player.setRate(speed);
         Navigator.of(context).pop();
       },
