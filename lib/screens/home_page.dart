@@ -2,6 +2,7 @@
 
 import 'dart:io' show Platform;
 
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,7 +65,8 @@ class _HomePageState extends State<HomePage> {
     const appBarHeight = kToolbarHeight + 20;
     final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
 
-    final bool isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+    bool isMobile =
+        getResponsiveValue(context, desktopValue: false, mobileValue: true);
 
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
