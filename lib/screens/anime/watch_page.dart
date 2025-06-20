@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;

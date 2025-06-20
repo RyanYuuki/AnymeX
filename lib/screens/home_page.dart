@@ -1,9 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
 
-import 'dart:io' show Platform;
 
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +13,6 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';

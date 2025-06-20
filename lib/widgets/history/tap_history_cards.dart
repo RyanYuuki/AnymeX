@@ -9,7 +9,6 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class RecentlyOpenedAnimeCard extends StatelessWidget {
   final Media media;
@@ -160,7 +159,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: colorScheme.surfaceVariant,
+                                          color: colorScheme.surfaceContainerHighest,
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),

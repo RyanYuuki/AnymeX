@@ -1,5 +1,4 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors
-import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/core/Search/getVideo.dart';
@@ -17,7 +16,6 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';

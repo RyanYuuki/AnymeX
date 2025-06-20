@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:anymex/utils/abi_checker.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
