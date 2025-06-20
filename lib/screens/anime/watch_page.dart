@@ -19,6 +19,7 @@ import 'package:anymex/screens/anime/widgets/episode_watch_screen.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -112,13 +113,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Timer? _hideControlsTimer;
   final pressed2x = false.obs;
 
-  //
+  // Service Related Handlers and Variables
   final sourceController = Get.find<SourceController>();
   final serviceHandler = Get.find<ServiceHandler>();
   final isEpisodeDialogOpen = false.obs;
   late bool isLoggedIn;
   final leftOriented = true.obs;
   final isMobile = Platform.isAndroid || Platform.isIOS;
+
+  // Video Player Visual Profile
+  final currentVisualProfile = 'natural'.obs;
+
+  void applySavedProfile() => ColorProfileManager()
+      .applyColorProfile(currentVisualProfile.value, player);
 
   @override
   void initState() {
@@ -146,6 +153,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _initHiveVariables();
     _initPlayer(true);
     _attachListeners();
+    applySavedProfile();
     if (isMobile) {
       _handleVolumeAndBrightness();
     }
@@ -207,7 +215,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       player = Player(
           configuration:
               const PlayerConfiguration(bufferSize: 1024 * 1024 * 64));
-      playerController = VideoController(player);
+      playerController = VideoController(player,
+          configuration: const VideoControllerConfiguration(
+              androidAttachSurfaceAfterVideoParameters: true));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
@@ -235,7 +245,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   void _attachListeners() {
     _positionSubscription = player.stream.position.listen((e) {
-
       if (_isSeeking) return;
 
       if (_lastPosition.inSeconds != e.inSeconds) {
@@ -357,6 +366,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     isLoggedIn = serviceHandler.isLoggedIn.value;
     skipDuration.value = settings.seekDuration;
     prevRate.value = playerSettings.speed;
+    currentVisualProfile.value = settings.preferences
+        .get('currentVisualProfile', defaultValue: 'natural');
   }
 
   final Map<int, String> _durationCache = <int, String>{};
@@ -595,6 +606,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             _skipSegments(true);
           } else if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
             _skipSegments(false);
+          } else if (e.logicalKey == LogicalKeyboardKey.space) {
+            player.playOrPause();
           }
         }
       },
@@ -1515,6 +1528,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                             icon: Icons.screen_rotation),
                                       ],
                                       _buildIcon(
+                                          onTap: () async {
+                                            showColorProfileSheet(context);
+                                          },
+                                          icon: Icons
+                                              .hdr_enhanced_select_rounded),
+                                      _buildIcon(
                                           onTap: () {
                                             final newIndex =
                                                 (resizeModeList.indexOf(
@@ -1920,6 +1939,26 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               icon,
               color: Colors.white,
             )),
+      ),
+    );
+  }
+
+  void showColorProfileSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ColorProfileBottomSheet(
+        currentProfile: currentVisualProfile.value,
+        player: player,
+        onProfileSelected: (profile) {
+          print('Selected profile: $profile');
+          currentVisualProfile.value = profile;
+          settings.preferences.put('currentVisualProfile', profile);
+        },
+        onCustomSettingsChanged: (settings) {
+          print('Custom settings applied: $settings');
+        },
       ),
     );
   }
