@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.4",
-      "versionDate": "2025-05-27T11:58:17Z",
+      "version": "2.9.5",
+      "versionDate": "2025-06-20T15:34:34Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfix/AnymeX-iOS-v2.9.4-hotfix.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.5/AnymeX-iOS-v2.9.5.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 38740440,
+      "size": 38911458,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "2.9.5",
+          "date": "2025-06-20T15:34:34Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.5/AnymeX-iOS-v2.9.5.ipa",
+          "size": 38911458
+        },
+        {
           "version": "2.9.4",
           "date": "2025-05-27T11:58:17Z",
-          "localizedDescription": "",
+          "localizedDescription": "\ud83c\udf89 New Features\r\n* [5913756](https://github.com/RyanYuuki/AnymeX/commit/5913756): feat: significant improve on mapper\r\n* [bb5ad9c](https://github.com/RyanYuuki/AnymeX/commit/bb5ad9c): feat: adult indicator for adult stuff\r\n\r\n\ud83d\udee0\ufe0f Bug Fixes & Improvements\r\n* [a05a56f](https://github.com/RyanYuuki/AnymeX/commit/a05a56f): fix: fixed potential update popup issue\r\n* [a4b5a07](https://github.com/RyanYuuki/AnymeX/commit/a4b5a07): fix: fixed not installing issue\r\n* [d5317df](https://github.com/RyanYuuki/AnymeX/commit/d5317df): fix: speeded up the episode loading\r\n* [a8c344e](https://github.com/RyanYuuki/AnymeX/commit/a8c344e): fix: fixed srcs getting mixed\r\n* [993c40a](https://github.com/RyanYuuki/AnymeX/commit/993c40a): fix: fix oled on navbar\r\n\r\n\ud83c\udfa8 Style Changes\r\n* [3cb77b3](https://github.com/RyanYuuki/AnymeX/commit/3cb77b3): style: minor ui changes\r\n\r\n\ud83e\uddf9 Chores & Documentation\r\n* [5f8def3](https://github.com/RyanYuuki/AnymeX/commit/5f8def3): chore: cleaning up some stuff",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.4-hotfix/AnymeX-iOS-v2.9.4-hotfix.ipa",
           "size": 38740440
         },
@@ -156,6 +163,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.4-hotfixx"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.5 - 20 Jun",
+      "identifier": "release-2.9.5",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-06-20T15:34:34Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.5"
     }
   ]
 }

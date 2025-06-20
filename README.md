@@ -31,7 +31,6 @@
 <div align="center">
   <p>
     <a href="https://github.com/RyanYuuki/AnymeX/releases/latest"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&display_name=tag&style=for-the-badge&label=Stable" alt="Latest Stable Release"/></a>
-    <a href="https://github.com/RyanYuuki/AnymeX/releases/"><img src="https://img.shields.io/github/v/release/RyanYuuki/AnymeX?color=white&labelColor=black&include_prereleases&label=Beta&style=for-the-badge" alt="Latest Beta"/></a>
   </p>
 </div>
 

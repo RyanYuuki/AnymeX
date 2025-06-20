@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math' show max;
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
@@ -18,6 +18,7 @@ import 'package:anymex/screens/anime/widgets/episode_watch_screen.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -112,13 +113,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Timer? _hideControlsTimer;
   final pressed2x = false.obs;
 
-  //
+  // Service Related Handlers and Variables
   final sourceController = Get.find<SourceController>();
   final serviceHandler = Get.find<ServiceHandler>();
   final isEpisodeDialogOpen = false.obs;
   late bool isLoggedIn;
   final leftOriented = true.obs;
   final isMobile = Platform.isAndroid || Platform.isIOS;
+
+  // Video Player Visual Profile
+  final currentVisualProfile = 'natural'.obs;
+
+  void applySavedProfile() => ColorProfileManager()
+      .applyColorProfile(currentVisualProfile.value, player);
 
   @override
   void initState() {
@@ -146,6 +153,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _initHiveVariables();
     _initPlayer(true);
     _attachListeners();
+    applySavedProfile();
     if (isMobile) {
       _handleVolumeAndBrightness();
     }
@@ -216,7 +224,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       player = Player(
           configuration:
               const PlayerConfiguration(bufferSize: 1024 * 1024 * 64));
-      playerController = VideoController(player);
+      playerController = VideoController(player,
+          configuration: const VideoControllerConfiguration(
+              androidAttachSurfaceAfterVideoParameters: true));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
@@ -225,39 +235,42 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.open(Media(
         episode.value.url
             .replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
-        httpHeaders: {'Referer': sourceController.activeSource.value!.baseUrl!},
+        httpHeaders: {
+          'Referer': sourceController.activeSource.value!.baseUrl ?? ''
+        },
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
+    player.setRate(prevRate.value);
   }
 
-  // Continuous Tracking
+// Continuous Tracking
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
   StreamSubscription<Duration>? _positionSubscription;
   bool _isSeeking = false;
   int lastProcessedSecond = -1;
+  Duration _lastPosition = Duration.zero;
+  DateTime _lastUIUpdate = DateTime.now();
 
   void _attachListeners() {
     _positionSubscription = player.stream.position.listen((e) {
       if (_isSeeking) return;
 
-      currentPosition.value = e;
-      formattedTime.value = formatDuration(e);
-
-      if (!isSwitchingEpisode && e.inSeconds != lastProcessedSecond) {
-        lastProcessedSecond = e.inSeconds;
+      if (_lastPosition.inSeconds != e.inSeconds) {
+        _lastPosition = e;
         currentEpisode.value.timeStampInMilliseconds = e.inMilliseconds;
+
+        if (e.inSeconds % 30 == 0 && isPlaying.value && !isSwitchingEpisode) {
+          trackEpisode(e, episodeDuration.value, currentEpisode.value);
+        }
       }
 
-      if (lastProcessedMinute != e.inMinutes &&
-          !isSwitchingEpisode &&
-          isPlaying.value) {
-        lastProcessedMinute = e.inMinutes;
-        trackEpisode(e, episodeDuration.value, currentEpisode.value);
-      }
-
-      if (e.inSeconds == 0 && !isSwitchingEpisode) {
-        currentEpisode.value.timeStampInMilliseconds = 0;
+      final now = DateTime.now();
+      if (mounted && now.difference(_lastUIUpdate).inMilliseconds >= 1000) {
+        _lastUIUpdate = now;
+        currentPosition.value = e;
+        formattedTime.value = formatDuration(e);
+        log('UI Updated with accurate stream position: ${e.inSeconds}s');
       }
 
       if (e.inSeconds >= episodeDuration.value.inSeconds - 1) {
@@ -361,15 +374,32 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     resizeMode.value = settings.resizeMode;
     isLoggedIn = serviceHandler.isLoggedIn.value;
     skipDuration.value = settings.seekDuration;
+    prevRate.value = playerSettings.speed;
+    currentVisualProfile.value = settings.preferences
+        .get('currentVisualProfile', defaultValue: 'natural');
   }
 
+  final Map<int, String> _durationCache = <int, String>{};
+
   String formatDuration(Duration duration) {
+    final key = duration.inSeconds;
+    if (_durationCache.containsKey(key)) {
+      return _durationCache[key]!;
+    }
+
     final hours = duration.inHours.toString().padLeft(2, '0');
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return duration.inHours > 0
-        ? '$hours:$minutes:$seconds'
-        : '$minutes:$seconds';
+
+    final result =
+        duration.inHours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+
+    if (_durationCache.length > 100) {
+      _durationCache.clear();
+    }
+
+    _durationCache[key] = result;
+    return result;
   }
 
   String extractQuality(String quality) {
@@ -483,35 +513,42 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _skipSegments(bool isLeft) {
+    player.pause();
     if (isLeftSide.value != isLeft) {
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
     }
+
     isLeftSide.value = isLeft;
     doubleTapLabel.value += 10;
     skipDuration.value += 10;
 
-    final totalDuration = episodeDuration.value;
+    final currentSeconds = currentPosition.value.inSeconds;
+    final maxSeconds = episodeDuration.value.inSeconds;
 
     final newSeekPosition = isLeft
-        ? max(0, currentPosition.value.inSeconds - skipDuration.value)
-        : (currentPosition.value.inSeconds + skipDuration.value)
-            .clamp(0, totalDuration.inSeconds);
+        ? (currentSeconds - skipDuration.value).clamp(0, maxSeconds)
+        : (currentSeconds + skipDuration.value).clamp(0, maxSeconds);
 
+    // Batch UI updates
     formattedTime.value = formatDuration(Duration(seconds: newSeekPosition));
-
-    isLeft
-        ? _leftAnimationController.forward(from: 0)
-        : _rightAnimationController.forward(from: 0);
-
     player.seek(Duration(seconds: newSeekPosition));
 
+    // Optimize animations
+    if (isLeft) {
+      _leftAnimationController.forward(from: 0);
+    } else {
+      _rightAnimationController.forward(from: 0);
+    }
+
+    // Reset after delay
     doubleTapTimeout?.cancel();
-    doubleTapTimeout = Timer(const Duration(milliseconds: 1000), () {
-      _leftAnimationController.stop();
-      _rightAnimationController.stop();
+    doubleTapTimeout = Timer(const Duration(milliseconds: 800), () {
+      _leftAnimationController.reset();
+      _rightAnimationController.reset();
       doubleTapLabel.value = 0;
       skipDuration.value = 0;
+      player.play();
     });
   }
 
@@ -543,6 +580,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   void _startHideControlsTimer() {
+    if (!isPlaying.value) {
+      return;
+    }
     _hideControlsTimer?.cancel();
 
     _hideControlsTimer = Timer(const Duration(seconds: 5), () {
@@ -554,11 +594,20 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    Future.delayed(Duration.zero, () async {
-      await trackEpisode(
-          currentPosition.value, episodeDuration.value, currentEpisode.value);
-    });
+    _volumeTimer?.cancel();
+    _brightnessTimer?.cancel();
+    _hideControlsTimer?.cancel();
+    doubleTapTimeout?.cancel();
+    _positionSubscription?.cancel();
+
+    trackEpisode(
+        currentPosition.value, episodeDuration.value, currentEpisode.value,
+        updateAL: false);
+
     player.dispose();
+    _leftAnimationController.dispose();
+    _rightAnimationController.dispose();
+
     if (isMobile && !settings.isTV.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations(
@@ -625,16 +674,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 color: Colors.black.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   AnymexText(
-                    text: "2x",
+                    text: "${(prevRate.value * 2).toInt()}x",
                     variant: TextVariant.semiBold,
                   ),
-                  SizedBox(width: 5),
-                  Icon(Icons.fast_forward)
+                  const SizedBox(width: 5),
+                  const Icon(Icons.fast_forward)
                 ],
               ),
             ));
@@ -656,7 +705,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                   : Get.width,
               child: Video(
                 controller: playerController,
-                filterQuality: FilterQuality.medium,
                 controls: null,
                 fit: resizeModes[resizeMode.value]!,
                 subtitleViewConfiguration: const SubtitleViewConfiguration(
@@ -694,6 +742,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         ));
   }
 
+  final prevRate = 1.0.obs;
+
   Obx _buildOverlay(BuildContext context) {
     return Obx(
       () => AnimatedPositioned(
@@ -730,11 +780,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               behavior: HitTestBehavior.opaque,
               onLongPressStart: (e) {
                 pressed2x.value = true;
-                player.setRate(2.0);
+                player.setRate(prevRate.value * 2);
               },
               onLongPressEnd: (e) {
                 pressed2x.value = false;
-                player.setRate(1.0);
+                player.setRate(prevRate.value);
               },
               onTap: toggleControls,
               onDoubleTapDown: (e) => _handleDoubleTap(e),
@@ -1058,7 +1108,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                         episode.value = e;
                         player.open(Media(e.url,
                             start: currentPosition.value,
-                            end: episodeDuration.value));
+                            end: episodeDuration.value,
+                            httpHeaders: {
+                              'Referer': sourceController
+                                      .activeSource.value!.baseUrl ??
+                                  ''
+                            }));
                         Get.back();
                       },
                       child: Padding(
@@ -1415,7 +1470,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                           0.0) {
                                         final newPosition =
                                             Duration(milliseconds: val.toInt());
-                                        await player.seek(newPosition);
+                                        player.seek(newPosition);
                                         endSeeking(newPosition);
                                       }
                                     },
@@ -1503,6 +1558,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                             },
                                             icon: Icons.screen_rotation),
                                       ],
+                                      _buildIcon(
+                                          onTap: () =>
+                                              showColorProfileSheet(context),
+                                          icon: Icons.hdr_on_rounded),
                                       _buildIcon(
                                           onTap: () {
                                             final newIndex =
@@ -1667,6 +1726,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       active: speed == currentSpeed,
       leading: const Icon(Icons.speed),
       onTap: () {
+        prevRate.value = speed;
         player.setRate(speed);
         Navigator.of(context).pop();
       },
@@ -1908,6 +1968,26 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               icon,
               color: Colors.white,
             )),
+      ),
+    );
+  }
+
+  void showColorProfileSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ColorProfileBottomSheet(
+        currentProfile: currentVisualProfile.value,
+        player: player,
+        onProfileSelected: (profile) {
+          print('Selected profile: $profile');
+          currentVisualProfile.value = profile;
+          settings.preferences.put('currentVisualProfile', profile);
+        },
+        onCustomSettingsChanged: (settings) {
+          print('Custom settings applied: $settings');
+        },
       ),
     );
   }

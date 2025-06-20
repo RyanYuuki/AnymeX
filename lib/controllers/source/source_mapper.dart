@@ -192,7 +192,9 @@ AnimeMatchResult matchAnimeTitle(
 
     for (int i = 0; i < s1.length; i++) {
       if (s1Matches[i]) {
-        while (j < s2.length && !s2Matches[j]) j++;
+        while (j < s2.length && !s2Matches[j]) {
+          j++;
+        }
         if (j < s2.length && s1[i] != s2[j]) transpositions++;
         j++;
       }

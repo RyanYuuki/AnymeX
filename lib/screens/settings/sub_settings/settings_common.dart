@@ -5,7 +5,6 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsCommon extends StatefulWidget {
@@ -79,23 +78,23 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           description: "Choose which list to show on home page",
                           onTap: () => _showHomePageCardsDialog(context, true),
                         )),
-                    AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Experimental',
-                        content: CustomSwitchTile(
-                          switchValue: uniScrapper,
-                          icon: Iconsax.global,
-                          title: 'Use Universal Scrapper',
-                          description:
-                              "it could be really slow depending on the site, might not work for all sites its in testing stages.",
-                          onChanged: (v) {
-                            setState(() {
-                              uniScrapper = v;
-                            });
-                            settingsController.preferences
-                                .put('universal_scrapper', v);
-                          },
-                        )),
+                    // AnymexExpansionTile(
+                    //     initialExpanded: true,
+                    //     title: 'Experimental',
+                    //     content: CustomSwitchTile(
+                    //       switchValue: uniScrapper,
+                    //       icon: Iconsax.global,
+                    //       title: 'Use Universal Scrapper',
+                    //       description:
+                    //           "it could be really slow depending on the site, might not work for all sites its in testing stages.",
+                    //       onChanged: (v) {
+                    //         setState(() {
+                    //           uniScrapper = v;
+                    //         });
+                    //         settingsController.preferences
+                    //             .put('universal_scrapper', v);
+                    //       },
+                    //     )),
                   ],
                 )
               ],
