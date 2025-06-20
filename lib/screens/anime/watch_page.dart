@@ -1528,9 +1528,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                             icon: Icons.screen_rotation),
                                       ],
                                       _buildIcon(
-                                          onTap: () async {
-                                            showColorProfileSheet(context);
-                                          },
+                                          onTap: () =>
+                                              showColorProfileSheet(context),
                                           icon: Icons.hdr_on_rounded),
                                       _buildIcon(
                                           onTap: () {
