@@ -173,7 +173,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       skipTraversal: settings.isTV.value,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_keyboardListenerFocusNode.hasFocus) {
+      if (mounted && !_keyboardListenerFocusNode.hasFocus) {
         _keyboardListenerFocusNode.requestFocus();
       }
     });
