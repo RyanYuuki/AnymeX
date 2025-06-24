@@ -183,6 +183,16 @@ class Settings extends GetxController {
   set subtitleOutlineWidth(int value) =>
       _setPlayerSetting((s) => s?.subtitleOutlineWidth = value);
 
+  bool get autoSkipOP => _getPlayerSetting((s) => s.autoSkipOP);
+  set autoSkipOP(bool value) => _setPlayerSetting((s) => s?.autoSkipOP = value);
+
+  bool get autoSkipED => _getPlayerSetting((s) => s.autoSkipED);
+  set autoSkipED(bool value) => _setPlayerSetting((s) => s?.autoSkipED = value);
+
+  bool get autoSkipOnce => _getPlayerSetting((s) => s.autoSkipOnce);
+  set autoSkipOnce(bool value) =>
+      _setPlayerSetting((s) => s?.autoSkipOnce = value);
+
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;

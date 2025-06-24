@@ -42,6 +42,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:anymex/utils/aniskip.dart' as aniskip;
 
 class WatchPage extends StatefulWidget {
   final model.Video episodeSrc;
@@ -91,6 +92,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final RxString resizeMode = "Cover".obs;
   late PlayerSettings playerSettings;
   late FocusNode _keyboardListenerFocusNode;
+  aniskip.EpisodeSkipTimes? skipTimes;
+  final isOPSkippedOnce = false.obs;
+  final isEDSkippedOnce = false.obs;
 
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
@@ -149,6 +153,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
+    skipTimes = null;
     _initRxVariables();
     _initHiveVariables();
     _initPlayer(true);
@@ -241,6 +246,17 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
     player.setRate(prevRate.value);
+    isOPSkippedOnce.value = false;
+    isEDSkippedOnce.value = false;
+    final skipQuery = aniskip.SkipSearchQuery(
+        idMAL: widget.anilistData.idMal,
+        episodeNumber: currentEpisode.value.number);
+    aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
+      skipTimes = skipTimeResult;
+    }).onError((error, stackTrace) {
+      debugPrint("An error occurred: $error");
+      debugPrint("Stack trace: $stackTrace");
+    });
   }
 
 // Continuous Tracking
@@ -262,6 +278,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
         if (e.inSeconds % 30 == 0 && isPlaying.value && !isSwitchingEpisode) {
           trackEpisode(e, episodeDuration.value, currentEpisode.value);
+        }
+
+        if (isPlaying.value && skipTimes != null && !isSwitchingEpisode) {
+          _handleAutoSkip();
         }
       }
 
@@ -568,6 +588,37 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           seconds: currentPosition.value.inSeconds + settings.skipDuration);
       currentPosition.value = duration;
       player.seek(duration);
+    }
+  }
+
+  void _handleAutoSkip() {
+    if (skipTimes?.op != null && playerSettings.autoSkipOP) {
+      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) {
+        return;
+      }
+      if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+          currentPosition.value.inSeconds < skipTimes!.op!.end) {
+        final skipNeeded = skipTimes!.op!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isOPSkippedOnce.value = true;
+      }
+    }
+    if (skipTimes?.ed != null && playerSettings.autoSkipED) {
+      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) {
+        return;
+      }
+      if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+          currentPosition.value.inSeconds < skipTimes!.ed!.end) {
+        final skipNeeded = skipTimes!.ed!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isEDSkippedOnce.value = true;
+      }
     }
   }
 
