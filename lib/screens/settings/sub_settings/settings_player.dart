@@ -261,6 +261,31 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     _showResizeModeDialog();
                                   },
                                 ),
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.fast_forward,
+                                    title: "Auto Skip OP",
+                                    description: "Auto skip the opening song",
+                                    switchValue: settings.autoSkipOP,
+                                    onChanged: (val) =>
+                                        settings.autoSkipOP = val),
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.fast_forward_outlined,
+                                    title: "Auto Skip ED",
+                                    description: "Auto skip the ending song",
+                                    switchValue: settings.autoSkipED,
+                                    onChanged: (val) =>
+                                        settings.autoSkipED = val),
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.all_inclusive,
+                                    title: "Auto Skip Once Only",
+                                    description:
+                                        "Auto skip only once per watch",
+                                    switchValue: settings.autoSkipOnce,
+                                    onChanged: (val) =>
+                                        settings.autoSkipOnce = val),
                                 CustomSliderTile(
                                   sliderValue: settings.seekDuration.toDouble(),
                                   max: 50,

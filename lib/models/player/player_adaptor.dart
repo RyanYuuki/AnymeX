@@ -34,23 +34,30 @@ class PlayerSettings {
   int playerStyle;
   @HiveField(14)
   int subtitleOutlineWidth;
+  @HiveField(15)
+  bool autoSkipOP;
+  @HiveField(16)
+  bool autoSkipED;
+  @HiveField(17)
+  bool autoSkipOnce;
 
-
-  PlayerSettings({
-    this.speed = 1.0,
-    this.resizeMode = "Contain",
-    this.subtitleSize = 16,
-    this.subtitleColor = "White",
-    this.subtitleFont = 'Poppins',
-    this.subtitleBackgroundColor = "Black",
-    this.subtitleOutlineColor = "Black",
-    this.showSubtitle = true,
-    this.skipDuration = 85,
-    this.seekDuration = 10,
-    this.bottomMargin = 5,
-    this.playerStyle = 0,
-    this.transculentControls = false,
-    this.defaultPortraitMode = false,
-    this.subtitleOutlineWidth = 1,
-  });
+  PlayerSettings(
+      {this.speed = 1.0,
+      this.resizeMode = "Contain",
+      this.subtitleSize = 16,
+      this.subtitleColor = "White",
+      this.subtitleFont = 'Poppins',
+      this.subtitleBackgroundColor = "Black",
+      this.subtitleOutlineColor = "Black",
+      this.showSubtitle = true,
+      this.skipDuration = 85,
+      this.seekDuration = 10,
+      this.bottomMargin = 5,
+      this.playerStyle = 0,
+      this.transculentControls = false,
+      this.defaultPortraitMode = false,
+      this.subtitleOutlineWidth = 1,
+      this.autoSkipED = false,
+      this.autoSkipOP = false,
+      this.autoSkipOnce = false});
 }
