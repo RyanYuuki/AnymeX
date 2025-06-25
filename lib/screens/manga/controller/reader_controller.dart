@@ -15,7 +15,7 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:manga_page_view/manga_page_view.dart';
 
 enum LoadingState { loading, loaded, error }
 
@@ -42,20 +42,12 @@ class ReaderController extends GetxController {
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
 
-  // Scroll Controllers
-  ItemScrollController? itemScrollController;
-  ScrollOffsetController? scrollOffsetController;
-  ItemPositionsListener? itemPositionsListener;
-  ScrollOffsetListener? scrollOffsetListener;
+  MangaPageViewController? pageViewController;
 
   PageController? pageController;
-  bool _isNavigating = false;
 
   void _initializeControllers() {
-    itemScrollController = ItemScrollController();
-    scrollOffsetController = ScrollOffsetController();
-    itemPositionsListener = ItemPositionsListener.create();
-    scrollOffsetListener = ScrollOffsetListener.create();
+    pageViewController = MangaPageViewController();
   }
 
   void _getPreferences() {
@@ -75,29 +67,9 @@ class ReaderController extends GetxController {
         .put('scroll_speed', scrollSpeedMultiplier.value);
   }
 
-  void _setupPositionListener() {
-    if (itemPositionsListener != null) {
-      itemPositionsListener!.itemPositions.removeListener(_onPositionChanged);
-      itemPositionsListener!.itemPositions.addListener(_onPositionChanged);
-    }
-  }
-
-  void _onPositionChanged() async {
-    if (itemPositionsListener == null) return;
-
-    final positions = itemPositionsListener!.itemPositions.value;
-    if (positions.isEmpty || _isNavigating) return;
-
-    final topItem = currentPageIndex.value >= (pageList.length - 2)
-        ? positions.last
-        : positions.first;
-    final newPageIndex = topItem.index + 1;
-
-    if (newPageIndex != currentPageIndex.value) {
-      currentPageIndex.value = newPageIndex;
-      currentChapter.value?.sourceName =
-          sourceController.activeMangaSource.value?.name;
-      currentChapter.value?.pageNumber = newPageIndex;
+  void _setupPageViewListener() {
+    if (pageViewController != null) {
+      pageViewController!.addPageChangeListener(onPageChanged);
     }
   }
 
@@ -109,7 +81,7 @@ class ReaderController extends GetxController {
     currentChapter.value?.pageNumber = number;
   }
 
-  void init(Media data, List<Chapter> chList, Chapter curCh) {
+  Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
     media = data;
     chapterList = chList;
     currentChapter.value = curCh;
@@ -118,11 +90,14 @@ class ReaderController extends GetxController {
     _getPreferences();
 
     pageController = PageController(initialPage: curCh.pageNumber ?? 0);
-    _setupPositionListener();
+    _setupPageViewListener();
 
     // Fetch images + track
-    Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     fetchImages(currentChapter.value!.link!);
+
+    await Future.delayed(const Duration(milliseconds: 100));
+    pageViewController?.moveToPage(curCh.pageNumber ?? 0);
   }
 
   void _initTracking() {
@@ -159,12 +134,10 @@ class ReaderController extends GetxController {
   void navigateToChapter(int index) async {
     if (index < 0 || index >= chapterList.length) return;
     _saveTracking();
-    _isNavigating = true;
     currentChapter.value = chapterList[index];
     currentPageIndex.value = 1;
 
     await fetchImages(currentChapter.value!.link!);
-    _isNavigating = false;
   }
 
   void chapterNavigator(bool next) async {
@@ -218,35 +191,15 @@ class ReaderController extends GetxController {
   Future<void> navigateToPage(int pageIndex) async {
     if (pageIndex < 0 || pageIndex >= pageList.length) return;
 
-    _isNavigating = true;
-
     try {
-      if (activeMode.value == ReadingMode.webtoon) {
-        if (itemScrollController != null && itemScrollController!.isAttached) {
-          itemScrollController!.jumpTo(
-            index: pageIndex,
-          );
-        }
-      } else {
-        if (pageController != null && pageController!.hasClients) {
-          pageController!.jumpToPage(
-            pageIndex,
-          );
-        }
-      }
+      pageViewController?.moveToPage(pageIndex);
     } catch (e) {
       log('Navigation error: ${e.toString()}');
-    } finally {
-      _isNavigating = false;
     }
   }
 
   void changeActiveMode(ReadingMode readingMode) async {
-    final currentPage = currentPageIndex.value - 1;
     activeMode.value = readingMode;
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    await navigateToPage(currentPage);
   }
 
   void savePreferences() => _savePreferences();
@@ -268,8 +221,8 @@ class ReaderController extends GetxController {
       }
     }
 
-    itemPositionsListener?.itemPositions.removeListener(_onPositionChanged);
     pageController?.dispose();
+    pageViewController?.dispose();
     super.onClose();
   }
 }

@@ -56,7 +56,7 @@ dependencies:
   json_annotation: ^4.9.0
   json_path: ^0.7.4
   kenburns_nullsafety: ^1.0.1
-
+  manga_page_view: ^1.0.1
   
   # repo => https://github.com/media-kit/media-kit
   media_kit: ^1.2.0
