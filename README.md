@@ -59,7 +59,7 @@
 
 | Home | Search | Details | Library |
 | ------- | ------- | ------ | ------- |
-|![The home page containing multiple sections of stuff, you've read or watched.](github_assets/android/Screenshot_20250215_125405-portrait.png) | ![The search page showing multiple search results for JoJo’s Bizarre Adventure.](github_assets/android/Screenshot_20250215_125450-portrait.png) | ![The details page of Re:Zero Kara Hajimeru Isekai Seikatsu.](github_assets/android/Screenshot_20250215_125506-portrait.png) | ![The library page showing the user’s watching list.](github_assets/android/Screenshot_20250215_125513-portrait.png) |
+|![The home page containing multiple sections of stuff, you've read or watched.](github_assets/android/Home-portrait.png) | ![The search page showing multiple search results for JoJo’s Bizarre Adventure.](github_assets/android/Search-portrait.png) | ![The details page of Re:Zero Kara Hajimeru Isekai Seikatsu.](github_assets/android/Details-portrait.png) | ![The library page showing the user’s watching list.](github_assets/android/Library-portrait.png) |
 
 <!-- Once I make the screenshots I'll add this back
 ### 💻 Desktop
