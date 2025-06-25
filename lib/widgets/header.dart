@@ -34,6 +34,7 @@ class Header extends StatelessWidget {
               const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Obx(() => Text(
                         "${greetingController.currentGreeting.value},",

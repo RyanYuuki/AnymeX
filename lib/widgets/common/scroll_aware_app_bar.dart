@@ -14,6 +14,7 @@ class CustomAnimatedAppBar extends StatefulWidget {
   final SystemUiOverlayStyle? visibleStatusBarStyle;
   final SystemUiOverlayStyle? hiddenStatusBarStyle;
   static const double kAppBarOffset = 20.0;
+  final double scrollThreshold; // Threshold for blur effect
 
   const CustomAnimatedAppBar({
     super.key,
@@ -25,6 +26,7 @@ class CustomAnimatedAppBar extends StatefulWidget {
     this.backgroundColor,
     this.visibleStatusBarStyle = SystemUiOverlayStyle.dark,
     this.hiddenStatusBarStyle = SystemUiOverlayStyle.light,
+    this.scrollThreshold = 10.0,
   });
 
   @override
@@ -33,6 +35,9 @@ class CustomAnimatedAppBar extends StatefulWidget {
 
 class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
     with ScrollAwareAppBarMixin<CustomAnimatedAppBar> {
+  // Add a ValueNotifier for tracking scroll position
+  late ValueNotifier<bool> _isAtTopNotifier;
+
   @override
   ScrollController get scrollController {
     assert(widget.scrollController != null);
@@ -42,14 +47,38 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
   @override
   void initState() {
     super.initState();
+
+    _isAtTopNotifier = ValueNotifier<bool>(
+        (widget.scrollController?.offset ?? 0.0) <= widget.scrollThreshold);
+
     _getEffectiveIsVisibleNotifier().addListener(_updateSystemOverlayStyle);
+
+    if (widget.scrollController != null) {
+      widget.scrollController!.addListener(_onScrollChanged);
+    }
+
     _updateSystemOverlayStyle();
   }
 
   @override
   void dispose() {
     _getEffectiveIsVisibleNotifier().removeListener(_updateSystemOverlayStyle);
+
+    // Remove scroll listener
+    if (widget.scrollController != null) {
+      widget.scrollController!.removeListener(_onScrollChanged);
+    }
+
+    _isAtTopNotifier.dispose();
     super.dispose();
+  }
+
+  // Scroll listener that updates immediately
+  void _onScrollChanged() {
+    final bool isAtTop = scrollController.offset <= widget.scrollThreshold;
+    if (_isAtTopNotifier.value != isAtTop) {
+      _isAtTopNotifier.value = isAtTop;
+    }
   }
 
   ValueNotifier<bool> _getEffectiveIsVisibleNotifier() {
@@ -72,11 +101,6 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
           statusBarColor: Colors.transparent,
         ),
       );
-    } else {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.immersive,
-        overlays: [],
-      );
     }
   }
 
@@ -85,15 +109,20 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
     return ValueListenableBuilder<bool>(
       valueListenable: _getEffectiveIsVisibleNotifier(),
       builder: (BuildContext context, bool isVisible, Widget? child) {
-        return AnimatedAppBar.animatedAppBar(
-          isVisible: isVisible,
-          animationDuration: widget.animationDuration,
-          animationCurve: widget.animationCurve,
-          offset: CustomAnimatedAppBar.kAppBarOffset,
-          topPadding: 10,
-          bottomPadding: 10,
-          content: widget.headerContent,
-          backgroundColor: widget.backgroundColor,
+        return ValueListenableBuilder<bool>(
+          valueListenable: _isAtTopNotifier,
+          builder: (BuildContext context, bool isAtTop, Widget? child) {
+            return AnimatedAppBar(
+              isVisible: isVisible,
+              animationDuration: widget.animationDuration,
+              animationCurve: widget.animationCurve,
+              offset: CustomAnimatedAppBar.kAppBarOffset,
+              topPadding: 10,
+              bottomPadding: 10,
+              content: widget.headerContent,
+              isAtTop: isAtTop,
+            );
+          },
         );
       },
     );

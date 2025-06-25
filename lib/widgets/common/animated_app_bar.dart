@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class AnimatedAppBar extends StatelessWidget {
   final bool isVisible;
@@ -9,8 +10,11 @@ class AnimatedAppBar extends StatelessWidget {
   final double topPadding;
   final double bottomPadding;
   final double offset;
+  final bool isAtTop; // New parameter to control transparency/blur
+  final double blurSigma; // Blur intensity
+  final double backgroundOpacity; // Background opacity when not at top
 
-  const AnimatedAppBar.animatedAppBar({
+  const AnimatedAppBar({
     super.key,
     required this.isVisible,
     this.animationDuration = const Duration(milliseconds: 450),
@@ -20,6 +24,9 @@ class AnimatedAppBar extends StatelessWidget {
     this.topPadding = 0,
     this.bottomPadding = 0,
     this.offset = 0,
+    this.isAtTop = true,
+    this.blurSigma = 10.0,
+    this.backgroundOpacity = 0.8,
   });
 
   @override
@@ -33,21 +40,36 @@ class AnimatedAppBar extends StatelessWidget {
       top: isVisible ? 0 : -(appBarContentHeight + statusBarHeight + offset),
       left: 0,
       right: 0,
-      child: Container(
-        color: backgroundColor ??
-            Theme.of(context).appBarTheme.backgroundColor ??
-            Theme.of(context).colorScheme.surface.withOpacity(0.80),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: statusBarHeight),
-            if (topPadding > 0) SizedBox(height: topPadding),
-            SizedBox(
-              height: kToolbarHeight,
-              child: content,
+      child: AnimatedContainer(
+        duration: animationDuration,
+        curve: animationCurve,
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: isAtTop ? 0 : blurSigma,
+              sigmaY: isAtTop ? 0 : blurSigma,
             ),
-            if (bottomPadding > 0) SizedBox(height: bottomPadding),
-          ],
+            child: Container(
+              color: isAtTop
+                  ? Colors.transparent
+                  : (backgroundColor ??
+                          Theme.of(context).appBarTheme.backgroundColor ??
+                          Theme.of(context).colorScheme.surface)
+                      .withOpacity(backgroundOpacity),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: statusBarHeight),
+                  if (topPadding > 0) SizedBox(height: topPadding),
+                  SizedBox(
+                    height: kToolbarHeight,
+                    child: content,
+                  ),
+                  if (bottomPadding > 0) SizedBox(height: bottomPadding),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
