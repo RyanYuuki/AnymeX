@@ -72,6 +72,7 @@ dependencies:
   pseudom: ^1.0.1
   riverpod_annotation: ^2.6.1
   screen_brightness: ^0.2.2+1
+  scrollable_positioned_list: ^0.3.8
   shimmer: ^3.0.0
   smooth_page_indicator: ^1.2.0+3
   super_sliver_list: ^0.4.1

@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -72,7 +73,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const UnifiedHeader(isHomePage: false),
+            headerContent: const Header(isHomePage: false),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light

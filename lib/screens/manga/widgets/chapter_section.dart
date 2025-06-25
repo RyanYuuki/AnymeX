@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'dart:developer';
 
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -5,6 +7,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/widgets/common/no_source.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
@@ -177,6 +180,11 @@ class ChapterSection extends StatelessWidget {
               ),
               if (sourceController.activeMangaSource.value == null)
                 const NoSourceSelectedWidget()
+              else if (chapterList.value.isEmpty)
+                const SizedBox(
+                  height: 500,
+                  child: Center(child: AnymexProgressIndicator()),
+                )
               else
                 searchedTitle.value != "No match found"
                     ? ChapterListBuilder(

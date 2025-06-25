@@ -19,6 +19,7 @@
 # AnymeX
 
 **AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/) support!
+
 > [!NOTE]
 > AnymeX is intended for tracking purposes only.
 >
@@ -57,9 +58,9 @@
 
 ## Screenshots
 
-| Home | Search | Details | Library |
-| ------- | ------- | ------ | ------- |
-|![The home page containing multiple sections of stuff, you've read or watched.](github_assets/android/Screenshot_20250215_125405-portrait.png) | ![The search page showing multiple search results for JoJo’s Bizarre Adventure.](github_assets/android/Screenshot_20250215_125450-portrait.png) | ![The details page of Re:Zero Kara Hajimeru Isekai Seikatsu.](github_assets/android/Screenshot_20250215_125506-portrait.png) | ![The library page showing the user’s watching list.](github_assets/android/Screenshot_20250215_125513-portrait.png) |
+| Home                                                                                                                                           | Search                                                                                                                                          | Details                                                                                                                      | Library                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ![The home page containing multiple sections of stuff, you've read or watched.](github_assets/android/Screenshot_20250215_125405-portrait.png) | ![The search page showing multiple search results for JoJo’s Bizarre Adventure.](github_assets/android/Screenshot_20250215_125450-portrait.png) | ![The details page of Re:Zero Kara Hajimeru Isekai Seikatsu.](github_assets/android/Screenshot_20250215_125506-portrait.png) | ![The library page showing the user’s watching list.](github_assets/android/Screenshot_20250215_125513-portrait.png) |
 
 <!-- Once I make the screenshots I'll add this back
 ### 💻 Desktop
@@ -72,8 +73,10 @@
 ## Support Us
 
 <a href='https://ko-fi.com/ryanyuuki7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 > [!TIP]
 > ⭐ **Star this repository to support the developer & encourage the development of the app!**
+
 <details>
   <summary>Star History</summary>
   <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
@@ -100,6 +103,10 @@ Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/
 <summary>Weblate Translation Graph</summary>
 <a href="https://hosted.weblate.org/projects/echo/#languages"><img src="https://hosted.weblate.org/widget/echo/app/multi-auto.svg" alt="Translation status" /></a>
 </details>-->
+
+## Visitors
+
+<img src="https://count.getloli.com/@ryanyuuki?name=anymex&theme=rule34&padding=8&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" />
 
 ## Acknowledgments
 
