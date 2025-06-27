@@ -95,6 +95,7 @@ class ReaderBottomControls extends StatelessWidget {
         : Expanded(
             child: CustomSlider(
               value: controller.currentPageIndex.value.toDouble(),
+              label: controller.currentPageIndex.value.toString(),
               min: 1,
               max: controller.pageList.length.toDouble(),
               divisions: controller.pageList.length > 1
