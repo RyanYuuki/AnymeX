@@ -52,31 +52,36 @@ class _ReadingPageState extends State<ReadingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Obx(() => GestureDetector(
-            onTap: () => controller.toggleControls(),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ReaderView(controller: controller),
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  top: controller.showControls.value ? 0 : -200,
-                  left: 0,
-                  right: 0,
-                  child: ReaderTopControls(controller: controller),
-                ),
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  bottom: controller.showControls.value ? 0 : -200,
-                  left: 0,
-                  right: 0,
-                  child: ReaderBottomControls(controller: controller),
-                ),
-              ],
+      body: Obx(
+        () => Stack(
+          fit: StackFit.expand,
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => controller.toggleControls(),
+              // Force multiple taps to trigger single tap instead
+              onDoubleTap: () {},
+              child: ReaderView(controller: controller),
             ),
-          )),
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              top: controller.showControls.value ? 0 : -200,
+              left: 0,
+              right: 0,
+              child: ReaderTopControls(controller: controller),
+            ),
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              bottom: controller.showControls.value ? 0 : -200,
+              left: 0,
+              right: 0,
+              child: ReaderBottomControls(controller: controller),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

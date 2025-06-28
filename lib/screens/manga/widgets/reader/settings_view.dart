@@ -58,6 +58,7 @@ class ReaderSettings {
                       onPressed: (int index) {
                         final mode = ReadingMode.values[index];
                         controller.changeActiveMode(mode);
+                        controller.savePreferences();
                       },
                       children: const [
                         Tooltip(

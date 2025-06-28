@@ -1,4 +1,3 @@
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
@@ -7,7 +6,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:manga_page_view/manga_page_view.dart';
 
 class ReaderView extends StatelessWidget {
   final ReaderController controller;
@@ -26,7 +25,7 @@ class ReaderView extends StatelessWidget {
         case LoadingState.error:
           return _buildErrorView();
         case LoadingState.loaded:
-          return _buildContentView();
+          return _buildContentView(context);
       }
     });
   }
@@ -95,104 +94,144 @@ class ReaderView extends StatelessWidget {
     );
   }
 
-  Widget _buildContentView() {
-    if (controller.activeMode.value == ReadingMode.webtoon) {
-      return ScrollablePositionedList.builder(
-        itemCount: controller.pageList.length,
-        itemScrollController: controller.itemScrollController,
-        itemPositionsListener: controller.itemPositionsListener,
-        scrollOffsetListener: controller.scrollOffsetListener,
-        initialScrollIndex: (controller.currentPageIndex.value - 1)
-            .clamp(0, controller.pageList.length - 1),
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          return _buildImage(context, controller.pageList[index], index);
-        },
-      );
-    } else {
-      return PageView.builder(
-        itemCount: controller.pageList.length,
-        controller: controller.pageController,
-        reverse: controller.activeMode.value == ReadingMode.rtl,
-        onPageChanged: (index) => controller.onPageChanged(index),
-        itemBuilder: (context, index) {
-          return _buildImage(context, controller.pageList[index], index);
-        },
-      );
-    }
+  Widget _buildContentView(BuildContext context) {
+    return MangaPageView(
+      mode: controller.activeMode.value == ReadingMode.webtoon
+          ? MangaPageViewMode.continuous
+          : MangaPageViewMode.paged,
+      direction: switch (controller.activeMode.value) {
+        ReadingMode.webtoon => MangaPageViewDirection.down,
+        ReadingMode.rtl => MangaPageViewDirection.left,
+        ReadingMode.ltr => MangaPageViewDirection.right,
+      },
+      controller: controller.pageViewController,
+      options: MangaPageViewOptions(
+        padding: MediaQuery.paddingOf(context),
+        mainAxisOverscroll: false,
+        crossAxisOverscroll: false,
+        minZoomLevel:
+            controller.activeMode.value == ReadingMode.webtoon ? 0.5 : 1.0,
+        maxZoomLevel: 8.0,
+        pageWidthLimit: getResponsiveSize(context,
+            mobileSize: double.infinity,
+            desktopSize: controller.defaultWidth.value *
+                controller.pageWidthMultiplier.value),
+      ),
+      pageCount: controller.pageList.length,
+      pageBuilder: (context, index) {
+        return _buildImage(context, controller.pageList[index], index);
+      },
+      onPageChange: (index) => controller.onPageChanged(index),
+
+      // For previous/next chapter switching
+      startEdgeDragIndicatorBuilder: (context, info) {
+        return Center(
+          child: AnimatedScale(
+            scale: info.isTriggered ? 1.5 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.elasticOut,
+            child: Icon(
+              Icons.skip_previous_rounded,
+              color: info.isTriggered ? Colors.white : Colors.white54,
+              size: 36,
+            ),
+          ),
+        );
+      },
+      endEdgeDragIndicatorBuilder: (context, info) {
+        return Center(
+          child: AnimatedScale(
+            scale: info.isTriggered ? 1.5 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.elasticOut,
+            child: Icon(
+              Icons.skip_next_rounded,
+              color: info.isTriggered ? Colors.white : Colors.white54,
+              size: 36,
+            ),
+          ),
+        );
+      },
+      onStartEdgeDrag:
+          controller.chapterList.indexOf(controller.currentChapter.value!) >
+                      0 &&
+                  controller.loadingState.value == LoadingState.loaded
+              ? () => controller.chapterNavigator(false)
+              : null,
+      onEndEdgeDrag:
+          controller.chapterList.indexOf(controller.currentChapter.value!) <
+                      controller.chapterList.length - 1 &&
+                  controller.loadingState.value == LoadingState.loaded
+              ? () => controller.chapterNavigator(true)
+              : null,
+    );
   }
 
   Widget _buildImage(BuildContext context, PageUrl page, int index) {
-    return Obx(() {
-      return Center(
-        child: SizedBox(
-          width: getResponsiveSize(context,
-              mobileSize: double.infinity,
-              desktopSize: controller.defaultWidth.value *
-                  controller.pageWidthMultiplier.value),
-          child: CachedNetworkImage(
-            imageUrl: page.url,
-            httpHeaders: page.headers,
-            fit: BoxFit.fitWidth,
-            progressIndicatorBuilder: (context, url, progress) => SizedBox(
-              height: Get.height / 2,
-              width: double.infinity,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnymexProgressIndicator(
-                      value: progress.progress,
-                    ),
-                    const SizedBox(height: 8),
-                    Text('Loading page ${index + 1}...'),
-                  ],
-                ),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              height: Get.height / 2,
-              width: double.infinity,
-              color: Colors.grey.withOpacity(0.1),
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return CachedNetworkImage(
+          imageUrl: page.url,
+          httpHeaders: page.headers,
+          fit: BoxFit.contain,
+          progressIndicatorBuilder: (context, url, progress) => SizedBox(
+            height: Get.height / 2,
+            width: double.infinity,
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.broken_image_outlined,
-                    size: 48,
-                    color: Colors.grey.withOpacity(0.7),
+                  AnymexProgressIndicator(
+                    value: progress.progress,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Failed to load page ${index + 1}',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Force refresh the specific image
-                      final imageProvider = CachedNetworkImageProvider(
-                        page.url,
-                        headers: page.headers,
-                      );
-                      imageProvider.evict();
-                      // Trigger rebuild
-                      controller.update();
-                    },
-                    icon: const Icon(Icons.refresh, size: 16),
-                    label: const Text('Retry'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      textStyle: const TextStyle(fontSize: 12),
-                    ),
-                  ),
+                  Text('Loading page ${index + 1}...'),
                 ],
               ),
             ),
           ),
-        ),
-      );
-    });
+          errorWidget: (context, url, error) => Container(
+            height: Get.height / 2,
+            width: double.infinity,
+            color: Colors.grey.withOpacity(0.1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.broken_image_outlined,
+                  size: 48,
+                  color: Colors.grey.withOpacity(0.7),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Failed to load page ${index + 1}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Force refresh the specific image
+                    final imageProvider = CachedNetworkImageProvider(
+                      page.url,
+                      headers: page.headers,
+                    );
+                    imageProvider.evict();
+                    // Trigger rebuild of only this image widget
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
