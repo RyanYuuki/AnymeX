@@ -58,7 +58,6 @@ class ReaderSettings {
                       onPressed: (int index) {
                         final mode = ReadingMode.values[index];
                         controller.changeActiveMode(mode);
-                        controller.savePreferences();
                       },
                       children: const [
                         Tooltip(
@@ -75,6 +74,15 @@ class ReaderSettings {
                         ),
                       ],
                     ),
+                  );
+                }),
+                Obx(() {
+                  return CustomSwitchTile(
+                    icon: Icons.fast_forward,
+                    title: "Spaced Pages",
+                    description: "Add gaps between pages. Continuous mode only",
+                    switchValue: controller.spacedPages.value,
+                    onChanged: (val) => controller.toggleSpacedPages(),
                   );
                 }),
                 if (!Platform.isAndroid && !Platform.isIOS)
