@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -445,7 +444,7 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                             : null,
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
