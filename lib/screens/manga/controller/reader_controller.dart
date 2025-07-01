@@ -67,12 +67,13 @@ class ReaderController extends GetxController {
 
   void onPageChanged(int index) async {
     final number = index + 1;
-    if (showControls.value && number != currentPageIndex.value) {
-      showControls.value = false;
-    }
     currentPageIndex.value = number;
     currentChapter.value?.pageNumber = number;
     currentChapter.value?.totalPages = pageList.length;
+
+    if (number == currentChapter.value?.totalPages) {
+      _saveTracking();
+    }
   }
 
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {

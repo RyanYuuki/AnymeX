@@ -372,7 +372,7 @@ class ChapterListItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).colorScheme.secondary.withAlpha(100)
-                : Theme.of(context).colorScheme.secondaryContainer,
+                : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.4),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(

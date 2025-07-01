@@ -15,44 +15,58 @@ class ReaderTopControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => AnimatedAppBar(
-          bottomPadding: 5,
-          animationDuration: const Duration(milliseconds: 300),
-          height: 120,
-          isVisible: controller.showControls.value,
-          content: Container(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.8),
-                  Colors.black.withOpacity(0.4),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
+    return Obx(() {
+      final mediaQuery = MediaQuery.of(context);
+      final statusBarHeight = mediaQuery.padding.top;
+      const topControlsHeight = 50.0;
+      const gapBetweenControls = 8.0;
+
+      final topControlsVisiblePosition = statusBarHeight + 8;
+      final topControlsHiddenPosition =
+          -(statusBarHeight + topControlsHeight + gapBetweenControls + 20);
+
+      final pageInfoVisiblePosition =
+          topControlsVisiblePosition + topControlsHeight + gapBetweenControls;
+      final pageInfoHiddenPosition = statusBarHeight + 8;
+
+      return Stack(
+        children: [
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            top: controller.showControls.value
+                ? topControlsVisiblePosition
+                : topControlsHiddenPosition,
+            left: 10,
+            right: 10,
+            child: Container(
+              height: topControlsHeight,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      _buildBackButton(context),
-                      const SizedBox(width: 6),
-                      _buildChapterInfo(context),
-                      const SizedBox(width: 6),
-                      _buildSettingsButton(context),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPageInfo(context),
+                  _buildBackButton(context),
+                  const SizedBox(width: 6),
+                  _buildChapterInfo(context),
+                  const SizedBox(width: 6),
+                  _buildSettingsButton(context),
                 ],
               ),
             ),
           ),
-        ));
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            top: controller.showControls.value
+                ? pageInfoVisiblePosition
+                : pageInfoHiddenPosition,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: _buildPageInfo(context),
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildBackButton(BuildContext context) {

@@ -7,6 +7,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/widgets/common/no_source.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -94,80 +95,7 @@ class ChapterSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Obx(() => DropdownButtonFormField<String>(
-                    value: sourceController.installedMangaExtensions.isEmpty
-                        ? "No Sources Installed"
-                        : '${sourceController.activeMangaSource.value?.name} (${sourceController.activeMangaSource.value?.lang?.toUpperCase()})',
-                    decoration: InputDecoration(
-                      label: TextButton.icon(
-                        onPressed: () {},
-                        label: const AnymexText(
-                          text: "Select Source",
-                          variant: TextVariant.bold,
-                        ),
-                        icon: const Icon(Iconsax.folder5),
-                      ),
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.inverseSurface),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryFixedVariant),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                    isExpanded: true,
-                    items: [
-                      if (sourceController.installedMangaExtensions.isEmpty)
-                        const DropdownMenuItem<String>(
-                          value: "No Sources Installed",
-                          child: Text(
-                            "No Sources Installed",
-                            style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-                          ),
-                        ),
-                      ...sourceController.installedMangaExtensions
-                          .map<DropdownMenuItem<String>>((source) {
-                        return DropdownMenuItem<String>(
-                          value:
-                              '${source.name} (${source.lang?.toUpperCase()})',
-                          child: Text(
-                            '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
-                            style:
-                                const TextStyle(fontFamily: 'Poppins-SemiBold'),
-                          ),
-                        );
-                      }),
-                    ],
-                    onChanged: (value) async {
-                      chapterList.value = [];
-                      try {
-                        sourceController.getMangaExtensionByName(value!);
-                        await mapToAnilist();
-                      } catch (e) {
-                        log(e.toString());
-                      }
-                    },
-                    dropdownColor:
-                        Theme.of(context).colorScheme.secondaryContainer,
-                    icon: Icon(Icons.arrow_drop_down,
-                        color: Theme.of(context).colorScheme.primary),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 16,
-                    ),
-                  )),
+              Obx(() => buildMangaSourceDropdown()),
               const SizedBox(height: 20),
               const Row(
                 children: [
@@ -195,5 +123,54 @@ class ChapterSection extends StatelessWidget {
             ],
           ),
         ));
+  }
+
+  Widget buildMangaSourceDropdown() {
+    List<DropdownItem> items = sourceController.installedMangaExtensions.isEmpty
+        ? [
+            const DropdownItem(
+              value: "No Sources Installed",
+              text: "No Sources Installed",
+            ),
+          ]
+        : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
+            return DropdownItem(
+              value: '${source.name} (${source.lang?.toUpperCase()})',
+              text:
+                  '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
+            );
+          }).toList();
+
+    DropdownItem? selectedItem;
+    if (sourceController.installedMangaExtensions.isEmpty) {
+      selectedItem = items.first;
+    } else {
+      final activeSource = sourceController.activeMangaSource.value;
+      if (activeSource != null) {
+        selectedItem = DropdownItem(
+          value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
+          text:
+              '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
+        );
+      } else if (items.isNotEmpty) {
+        selectedItem = null;
+      }
+    }
+
+    return AnymexDropdown(
+      items: items,
+      selectedItem: selectedItem,
+      label: "SELECT SOURCE",
+      icon: Iconsax.folder5,
+      onChanged: (DropdownItem item) async {
+        chapterList.value = [];
+        try {
+          sourceController.getMangaExtensionByName(item.value);
+          await mapToAnilist();
+        } catch (e) {
+          log(e.toString());
+        }
+      },
+    );
   }
 }
