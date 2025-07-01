@@ -41,7 +41,7 @@ class AboutPage extends StatelessWidget {
                       width: double.infinity,
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainer,
+                        color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -123,7 +123,7 @@ class AboutPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12)),
               child: CustomSection(
                 icon: Iconsax.link_circle,
@@ -151,7 +151,7 @@ class AboutPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer,
+                color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: CustomSection(
@@ -194,7 +194,7 @@ class AboutPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer,
+                color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: CustomSection(

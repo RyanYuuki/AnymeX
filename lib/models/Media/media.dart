@@ -20,6 +20,7 @@ class Media {
   String? cover;
   String totalEpisodes;
   String type;
+  String color;
   String season;
   String premiered;
   String duration;
@@ -48,6 +49,7 @@ class Media {
       this.isAdult,
       this.mediaType = MediaType.anime,
       this.title = '?',
+      this.color = '',
       this.romajiTitle = '?',
       this.description = '?',
       this.poster = '?',
@@ -247,7 +249,7 @@ class Media {
         ? MediaType.anime
         : json['type'] == "MANGA"
             ? MediaType.manga
-            : MediaType.novel;  
+            : MediaType.novel;
     return Media(
       id: json['id'].toString(),
       idMal: json['idMal'].toString(),
@@ -256,6 +258,7 @@ class Media {
       description: json['description'] ?? '?',
       poster: json['coverImage']['large'] ?? '?',
       isAdult: json['isAdult'] ?? false,
+      color: json['coverImage']['color'] ?? '',
       cover: json['bannerImage'],
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
       type: json['type'] ?? '?',

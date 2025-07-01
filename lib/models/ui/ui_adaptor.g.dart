@@ -50,7 +50,8 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
         historyCardStyle: fields[17] ?? 2,
         liquidMode: fields[18] ?? true,
         liquidBackgroundPath: fields[19] ?? '',
-        retainOriginalColor: fields[20] ?? false);
+        retainOriginalColor: fields[20] ?? false,
+        usePosterColor: fields[21] ?? true);
   }
 
   @override
@@ -98,7 +99,9 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(19)
       ..write(obj.liquidBackgroundPath)
       ..writeByte(20)
-      ..write(obj.retainOriginalColor);
+      ..write(obj.retainOriginalColor)
+      ..writeByte(21)
+      ..write(obj.usePosterColor);
   }
 
   @override

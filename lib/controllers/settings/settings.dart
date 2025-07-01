@@ -60,6 +60,10 @@ class Settings extends GetxController {
     savePlayerSettings();
   }
 
+  bool get usePosterColor => _getUISetting((s) => s.usePosterColor);
+  set usePosterColor(bool value) =>
+      _setUISetting((s) => s?.usePosterColor = value);
+
   bool get liquidMode => _getUISetting((s) => s.liquidMode);
   set liquidMode(bool value) => _setUISetting((s) => s?.liquidMode = value);
 

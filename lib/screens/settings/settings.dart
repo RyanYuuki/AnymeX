@@ -46,57 +46,71 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
           const SizedBox(height: 30),
-          CustomTile(
-              icon: IconlyLight.profile,
-              title: "Accounts",
-              description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
-              onTap: () {
-                navigate(() => const SettingsAccounts());
-              }),
-          CustomTile(
-              icon: HugeIcons.strokeRoundedBulb,
-              title: "Common",
-              description: "Tweak Settings",
-              onTap: () {
-                navigate(() => const SettingsCommon());
-              }),
-          CustomTile(
-              icon: HugeIcons.strokeRoundedPaintBoard,
-              title: "UI",
-              description: "Play around with App UI",
-              onTap: () {
-                navigate(() => const SettingsUi());
-              }),
-          CustomTile(
-              icon: HugeIcons.strokeRoundedPlay,
-              title: "Player",
-              description: "Play around with Player",
-              onTap: () {
-                navigate(() => const SettingsPlayer());
-              }),
-          CustomTile(
-              icon: HugeIcons.strokeRoundedPaintBrush01,
-              title: "Theme",
-              description: "Play around with App theme",
-              onTap: () {
-                navigate(() => const SettingsTheme());
-              }),
-          CustomTile(
-              icon: Iconsax.trash,
-              title: "Clear Cache",
-              description: "Clear all the settings.",
-              onTap: () {
-                showClearCacheDialog(context);
-              }),
-          const SizedBox(height: 10),
-          CustomTile(
-            icon: HugeIcons.strokeRoundedInformationCircle,
-            title: "About",
-            description: "About the App",
-            onTap: () async {
-              navigate(() => const AboutPage());
-            },
-          ),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.3)),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                CustomTile(
+                    icon: IconlyLight.profile,
+                    title: "Accounts",
+                    description:
+                        "Manage your MyAnimeList, Anilist, Simkl Accounts!",
+                    onTap: () {
+                      navigate(() => const SettingsAccounts());
+                    }),
+                CustomTile(
+                    icon: HugeIcons.strokeRoundedBulb,
+                    title: "Common",
+                    description: "Tweak Settings",
+                    onTap: () {
+                      navigate(() => const SettingsCommon());
+                    }),
+                CustomTile(
+                    icon: HugeIcons.strokeRoundedPaintBoard,
+                    title: "UI",
+                    description: "Play around with App UI",
+                    onTap: () {
+                      navigate(() => const SettingsUi());
+                    }),
+                CustomTile(
+                    icon: HugeIcons.strokeRoundedPlay,
+                    title: "Player",
+                    description: "Play around with Player",
+                    onTap: () {
+                      navigate(() => const SettingsPlayer());
+                    }),
+                CustomTile(
+                    icon: HugeIcons.strokeRoundedPaintBrush01,
+                    title: "Theme",
+                    description: "Play around with App theme",
+                    onTap: () {
+                      navigate(() => const SettingsTheme());
+                    }),
+                CustomTile(
+                    icon: Iconsax.trash,
+                    title: "Clear Cache",
+                    description: "Clear all the settings.",
+                    onTap: () {
+                      showClearCacheDialog(context);
+                    }),
+                const SizedBox(height: 10),
+                CustomTile(
+                  icon: HugeIcons.strokeRoundedInformationCircle,
+                  title: "About",
+                  description: "About the App",
+                  onTap: () async {
+                    navigate(() => const AboutPage());
+                  },
+                ),
+              ],
+            ),
+          )
         ],
       )),
     );
@@ -112,7 +126,10 @@ class CustomBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
         style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainer),
+            backgroundColor: Theme.of(context)
+                .colorScheme
+                .primaryContainer
+                .withOpacity(0.5)),
         onPressed: () {
           Navigator.pop(context);
         },

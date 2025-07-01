@@ -50,12 +50,7 @@ class AnimatedAppBar extends StatelessWidget {
               sigmaY: isAtTop ? 0 : blurSigma,
             ),
             child: Container(
-              color: isAtTop
-                  ? Colors.transparent
-                  : (backgroundColor ??
-                          Theme.of(context).appBarTheme.backgroundColor ??
-                          Theme.of(context).colorScheme.surface)
-                      .withOpacity(backgroundOpacity),
+              color: Colors.transparent,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

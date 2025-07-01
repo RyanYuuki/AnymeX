@@ -72,8 +72,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ImageButton(
               width: isDesktop ? 300 : Get.width / 2 - 40,
@@ -144,8 +144,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         padding: EdgeInsets.only(
             top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
             bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Wrap(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ImageButton(
                 width: getResponsiveSize(context,

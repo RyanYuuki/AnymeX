@@ -167,8 +167,10 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   children: [
                     IconButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer),
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withOpacity(0.5)),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -245,6 +247,17 @@ class _SettingsThemeState extends State<SettingsTheme> {
                                             "Enable this if you want to retain the original color of your wallpaper",
                                         onChanged: (e) =>
                                             settings.retainOriginalColor = e,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      CustomSwitchTile(
+                                        switchValue: settings.usePosterColor,
+                                        icon: HugeIcons
+                                            .strokeRoundedImageDownload,
+                                        title: "Use Poster Color",
+                                        description:
+                                            "Applies anime/manga poster color on details page",
+                                        onChanged: (e) =>
+                                            settings.usePosterColor = e,
                                       ),
                                       const SizedBox(height: 10),
                                       CustomTile(

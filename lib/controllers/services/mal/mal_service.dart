@@ -255,8 +255,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
       Obx(() => Column(
             children: [
               isLoggedIn.value
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ? Wrap(
+                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ImageButton(
                           width: isDesktop ? 300 : Get.width / 2 - 40,

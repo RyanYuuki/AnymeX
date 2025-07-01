@@ -43,7 +43,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     IconButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
+                            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
                       ),
                       onPressed: () {
                         Get.back();

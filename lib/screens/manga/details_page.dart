@@ -84,8 +84,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
-  // Mangayomi Extensions
   final sourceController = Get.find<SourceController>();
+
+  String posterColor = '';
 
   @override
   void initState() {
@@ -125,10 +126,15 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
 
       setState(() {
-        anilistData = tempData
-          ..id = widget.media.id
-          ..title = widget.media.title
-          ..poster = widget.media.poster;
+        if (isExtensions) {
+          anilistData = tempData
+            ..id = widget.media.id
+            ..title = widget.media.title
+            ..poster = widget.media.poster;
+        } else {
+          anilistData = tempData;
+          posterColor = tempData.color;
+        }
       });
 
       if (isExtensions) {
@@ -208,6 +214,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Widget _buildDesktopLayout(BuildContext context) {
     return Glow(
+      color: posterColor,
       child: Scaffold(
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,6 +392,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Glow _buildAndroidLayout(BuildContext context) {
     return Glow(
+      color: posterColor,
       child: Scaffold(
           extendBody: true,
           bottomNavigationBar: _buildMobiledNav(),

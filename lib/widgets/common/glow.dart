@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,18 +14,28 @@ class Glow extends StatelessWidget {
   final Widget child;
   final Alignment begin;
   final Alignment end;
+  final String color;
 
   const Glow({
     super.key,
     required this.child,
     this.begin = Alignment.topLeft,
     this.end = Alignment.bottomRight,
+    this.color = '',
   });
 
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
-    final theme = Theme.of(context).colorScheme;
+    print('Changing Accent to $color');
+    final theme = color.isNotEmpty && settings.usePosterColor
+        ? ColorScheme.fromSeed(
+            brightness: Theme.of(context).brightness,
+            seedColor: Color(
+              int.parse(color.replaceAll('#', '0xFF')),
+            ),
+          )
+        : Theme.of(context).colorScheme;
 
     return Obx(() {
       settings.liquidBackgroundPath;
@@ -32,6 +43,7 @@ class Glow extends StatelessWidget {
 
       if (liquidMode) {
         return LiquidMode(
+          theme: theme,
           gradientVariant: GradientVariant.subtle,
           child: child,
         );
@@ -49,17 +61,17 @@ class LiquidMode extends StatelessWidget {
   final Widget child;
   final GradientVariant gradientVariant;
   final bool useTexture;
+  final ColorScheme theme;
 
-  const LiquidMode({
-    super.key,
-    required this.child,
-    this.gradientVariant = GradientVariant.subtle,
-    this.useTexture = false,
-  });
+  const LiquidMode(
+      {super.key,
+      required this.child,
+      this.gradientVariant = GradientVariant.subtle,
+      this.useTexture = false,
+      required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
     final imagePath = settingsController.liquidBackgroundPath.isEmpty
         ? 'assets/images/bg_glass.png'
         : "file://${settingsController.liquidBackgroundPath}";

@@ -67,6 +67,9 @@ class UISettings extends HiveObject {
   @HiveField(20)
   bool retainOriginalColor;
 
+  @HiveField(21)
+  bool usePosterColor;
+
   UISettings(
       {this.glowMultiplier = 1.0,
       this.radiusMultiplier = 1.0,
@@ -113,5 +116,6 @@ class UISettings extends HiveObject {
       this.historyCardStyle = 0,
       this.liquidMode = true,
       this.retainOriginalColor = false,
-      this.liquidBackgroundPath = ''});
+      this.liquidBackgroundPath = '',
+      this.usePosterColor = true});
 }

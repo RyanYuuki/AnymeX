@@ -53,8 +53,10 @@ class _SettingsUiState extends State<SettingsUi> {
                     children: [
                       IconButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceContainer,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withOpacity(0.5),
                         ),
                         onPressed: () {
                           Get.back();
@@ -101,7 +103,8 @@ class _SettingsUiState extends State<SettingsUi> {
                                   description: "Change card style",
                                 ),
                                 CustomTile(
-                                  onTap: () => showHistoryCardStyleSelector(context),
+                                  onTap: () =>
+                                      showHistoryCardStyleSelector(context),
                                   icon: Iconsax.card5,
                                   title: "History Card Style",
                                   description: "Change history card style",

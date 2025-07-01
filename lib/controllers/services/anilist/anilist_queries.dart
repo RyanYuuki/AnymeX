@@ -11,6 +11,7 @@ const detailsQuery = '''
         }
         description
         coverImage {
+          color
           large   
         }
         bannerImage

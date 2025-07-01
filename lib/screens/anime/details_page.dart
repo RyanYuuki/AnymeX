@@ -89,6 +89,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // Episode Countdown
   final RxInt timeLeft = 0.obs;
 
+  String posterColor = '';
+
   void _onPageSelected(int index) {
     selectedPage.value = index;
     controller.animateToPage(index,
@@ -166,6 +168,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             ..id = widget.media.id;
         } else {
           anilistData = tempData;
+          posterColor = tempData.color;
         }
       });
       timeLeft.value = tempData.nextAiringEpisode?.airingAt ?? 0;
@@ -243,7 +246,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       widget.media.id.toString(),
       episodeList.value,
     );
-    if (newEps.isNotEmpty && newEps.first.thumbnail == null &&
+    if (newEps.isNotEmpty &&
+        newEps.first.thumbnail == null &&
         (newEps.first.thumbnail?.isEmpty ?? true)) {
       showAnify.value = false;
     }
@@ -337,6 +341,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Glow _buildAndroidLayout(BuildContext context) {
     return Glow(
+      color: posterColor,
       child: Scaffold(
           extendBody: true,
           bottomNavigationBar: _buildMobiledNav(),
@@ -346,6 +351,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildDesktopLayout(BuildContext context) {
     return Glow(
+      color: posterColor,
       child: Scaffold(
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

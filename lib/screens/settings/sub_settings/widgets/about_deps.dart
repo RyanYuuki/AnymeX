@@ -140,14 +140,13 @@ class HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         IconButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainer),
+                    Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5)),
             onPressed: () {
               Navigator.pop(context);
             },
