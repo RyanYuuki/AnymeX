@@ -1,6 +1,8 @@
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/liquid.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -8,6 +10,7 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -192,12 +195,73 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       ),
                       const SizedBox(height: 10),
                       CustomSwitchTile(
-                        icon: HugeIcons.strokeRoundedBlur,
+                        icon: HugeIcons.strokeRoundedImage01,
                         title: "Material You",
                         description: "Take color from your wallpaper (A12+)",
                         switchValue: materialTheme,
                         onChanged: handleMaterialSwitch,
                       ),
+                      const SizedBox(height: 10),
+                      Obx(() {
+                        return Column(
+                          children: [
+                            CustomSwitchTile(
+                              icon: HugeIcons.strokeRoundedBlur,
+                              title: "Liquid Mode",
+                              description:
+                                  "Make everything glassy & liquidy...",
+                              switchValue: settings.liquidMode,
+                              onChanged: (e) {
+                                settings.disableGradient = false;
+                                settings.liquidMode = e;
+                              },
+                            ),
+                            settings.liquidMode
+                                ? Column(
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      CustomTile(
+                                        icon: HugeIcons.strokeRoundedImageAdd01,
+                                        title: "Liquid Background",
+                                        description:
+                                            "Choose a custom background for liquid mode",
+                                        onTap: () async {
+                                          await Liquid.pickLiquidBackground(
+                                              context);
+                                          await Future.delayed(
+                                              const Duration(seconds: 4));
+                                          snackBar(
+                                              'Restart your app for the changes to take effect.');
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                      CustomSwitchTile(
+                                        switchValue:
+                                            settings.retainOriginalColor,
+                                        icon: HugeIcons
+                                            .strokeRoundedImageComposition,
+                                        title: "Retain Original Color",
+                                        description:
+                                            "Enable this if you want to retain the original color of your wallpaper",
+                                        onChanged: (e) =>
+                                            settings.retainOriginalColor = e,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      CustomTile(
+                                        icon: HugeIcons.strokeRoundedRefresh,
+                                        title: "Reset to Default Picture",
+                                        postFix: 0.width(),
+                                        description:
+                                            "Reset to default wallpaper!",
+                                        onTap: () =>
+                                            settings.liquidBackgroundPath = "",
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
+                          ],
+                        );
+                      }),
                     ],
                   ),
                   initialExpanded: true,
@@ -210,14 +274,14 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       children: [
                         Obx(() {
                           return CustomSwitchTile(
+                              disabled: settings.liquidMode,
                               icon: HugeIcons.strokeRoundedFlower,
                               title: "Bloom",
                               description:
                                   "Enables a soft, glowing gradient effect.",
                               switchValue: !settings.disableGradient,
-                              onChanged: (val) {
-                                settings.disableGradient = !val;
-                              });
+                              onChanged: (val) =>
+                                  settings.disableGradient = !val);
                         }),
                         CustomTile(
                           icon: HugeIcons.strokeRoundedPaintBoard,

@@ -286,6 +286,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     switchValue: settings.autoSkipOnce,
                                     onChanged: (val) =>
                                         settings.autoSkipOnce = val),
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.play_disabled_rounded,
+                                    title: "Enable Swipe Controls",
+                                    description:
+                                        "Enable if you want to use brightness and volume controls",
+                                    switchValue: settings.enableSwipeControls,
+                                    onChanged: (val) =>
+                                        settings.enableSwipeControls = val),
                                 CustomSliderTile(
                                   sliderValue: settings.seekDuration.toDouble(),
                                   max: 50,

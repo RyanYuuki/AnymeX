@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +50,13 @@ class ColorProfileManager {
       "saturation": 28,
       "gamma": -2,
       "hue": 1,
+    },
+    "anime_4k": {
+      "brightness": 10,
+      "contrast": 32,
+      "saturation": 38,
+      "gamma": -3,
+      "hue": 3,
     },
     "vivid": {
       "brightness": 12,
@@ -106,6 +114,13 @@ class ColorProfileManager {
       "gamma": 5,
       "hue": 0,
     },
+    "custom": {
+      "brightness": 0,
+      "contrast": 0,
+      "saturation": 0,
+      "gamma": 0,
+      "hue": 0,
+    },
   };
 
   static const Map<String, String> profileDescriptions = {
@@ -115,6 +130,7 @@ class ColorProfileManager {
     "anime": "Enhanced colors perfect for animation",
     "anime_vibrant": "Maximum saturation for colorful anime",
     "anime_soft": "Gentle enhancement for pastel anime",
+    "anime_4k": "Ultra-sharp with vibrant 4K clarity",
     "vivid": "Bright and punchy colors",
     "vivid_pop": "Maximum vibrancy for eye-catching content",
     "vivid_warm": "Vivid colors with warm temperature",
@@ -123,6 +139,7 @@ class ColorProfileManager {
     "warm": "Warmer tones for comfort viewing",
     "cool": "Cooler tones for clarity",
     "grayscale": "Black and white viewing",
+    "custom": "Your personalized settings",
   };
 
   static const Map<String, IconData> profileIcons = {
@@ -132,6 +149,7 @@ class ColorProfileManager {
     "anime": Icons.animation,
     "anime_vibrant": Icons.color_lens,
     "anime_soft": Icons.blur_on,
+    "anime_4k": Icons.four_k,
     "vivid": Icons.palette,
     "vivid_pop": Icons.auto_awesome,
     "vivid_warm": Icons.wb_sunny,
@@ -140,6 +158,7 @@ class ColorProfileManager {
     "warm": Icons.wb_sunny,
     "cool": Icons.ac_unit,
     "grayscale": Icons.gradient,
+    "custom": Icons.tune,
   };
 
   Future<void> applyColorProfile(String profile, dynamic player) async {
@@ -174,6 +193,7 @@ class ColorProfileManager {
 
 class ColorProfileBottomSheet extends StatefulWidget {
   final String currentProfile;
+  final Map<String, int> activeSettings;
   final Function(String) onProfileSelected;
   final Function(Map<String, int>) onCustomSettingsChanged;
   final dynamic player;
@@ -181,6 +201,7 @@ class ColorProfileBottomSheet extends StatefulWidget {
   const ColorProfileBottomSheet({
     super.key,
     required this.currentProfile,
+    required this.activeSettings,
     required this.onProfileSelected,
     required this.onCustomSettingsChanged,
     required this.player,
@@ -208,7 +229,13 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _selectedProfile = widget.currentProfile;
-    _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
+
+    // Initialize custom settings based on current profile
+    if (widget.currentProfile.toLowerCase() == 'custom') {
+      _customSettings = Map.from(widget.activeSettings);
+    } else {
+      _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
+    }
   }
 
   @override
@@ -220,6 +247,15 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   void _showProfileAppliedFeedback(String profileName) {
     HapticFeedback.lightImpact();
     log('Applied ${profileName.toUpperCase()} profile');
+  }
+
+  void _applyCustomSettings() async {
+    setState(() => _selectedProfile = 'custom');
+    await ColorProfileManager()
+        .applyCustomSettings(_customSettings, widget.player);
+    widget.onProfileSelected('custom');
+    widget.onCustomSettingsChanged(_customSettings);
+    _showProfileAppliedFeedback('Custom');
   }
 
   @override
@@ -247,10 +283,17 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
             child: Row(
               children: [
-                Icon(
-                  Icons.tune,
-                  color: theme.colorScheme.primary,
-                  size: 28,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.tune,
+                    color: theme.colorScheme.onPrimaryContainer,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -275,7 +318,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
             margin: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: TabBar(
               controller: _tabController,
@@ -284,7 +334,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.dashboard, size: 20),
+                      Icon(Icons.dashboard_customize, size: 20),
                       SizedBox(width: 8),
                       Text('Presets'),
                     ],
@@ -303,12 +353,20 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ],
               indicator: BoxDecoration(
                 color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               labelColor: theme.colorScheme.onPrimary,
               unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
           Expanded(
@@ -327,7 +385,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
 
   Widget _buildPresetsTab(ThemeData theme) {
     Map<String, List<String>> groupedProfiles = {
-      'Anime': ['anime', 'anime_vibrant', 'anime_soft'],
+      'Anime': ['anime', 'anime_vibrant', 'anime_soft', 'anime_4k'],
       'Cinema': ['cinema', 'cinema_dark', 'cinema_hdr'],
       'Vivid': ['vivid', 'vivid_pop', 'vivid_warm'],
       'Other': ['natural', 'dark', 'warm', 'cool', 'grayscale'],
@@ -336,24 +394,49 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
-          'Choose a preset that matches your viewing preference',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primaryContainer.withOpacity(0.3),
+                theme.colorScheme.secondaryContainer.withOpacity(0.3),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Choose a preset that matches your viewing preference',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 20),
         ...groupedProfiles.entries.map((category) {
           return AnymexExpansionTile(
             title: category.key,
-            initialExpanded: category.key == 'Cinema' ||
-                category.key == 'Anime' ||
-                category.key == 'Vivid',
+            initialExpanded: true,
             content: Column(
               children: category.value.map((profileKey) {
                 final isSelected = _selectedProfile == profileKey;
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: const EdgeInsets.only(bottom: 12),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -364,39 +447,87 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                         widget.onProfileSelected(profileKey);
                         _showProfileAppliedFeedback(profileKey);
                       },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
+                      borderRadius: BorderRadius.circular(16),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
+                          gradient: isSelected
+                              ? LinearGradient(
+                                  colors: [
+                                    theme.colorScheme.primaryContainer,
+                                    theme.colorScheme.primaryContainer
+                                        .withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                              : null,
                           color: isSelected
-                              ? theme.colorScheme.primaryContainer
+                              ? null
                               : theme.colorScheme.surfaceVariant
                                   .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           border: isSelected
                               ? Border.all(
-                                  color: theme.colorScheme.primary, width: 2)
+                                  color: theme.colorScheme.primary,
+                                  width: 2,
+                                )
+                              : Border.all(
+                                  color: theme.colorScheme.outline
+                                      .withOpacity(0.2),
+                                  width: 1,
+                                ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.2),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
                               : null,
                         ),
                         child: Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? LinearGradient(
+                                        colors: [
+                                          theme.colorScheme.primary,
+                                          theme.colorScheme.primary
+                                              .withOpacity(0.8),
+                                        ],
+                                      )
+                                    : null,
                                 color: isSelected
-                                    ? theme.colorScheme.primary
+                                    ? null
                                     : theme.colorScheme.surface,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: theme.colorScheme.primary
+                                              .withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
                               ),
                               child: Icon(
                                 ColorProfileManager.profileIcons[profileKey],
                                 color: isSelected
                                     ? theme.colorScheme.onPrimary
                                     : theme.colorScheme.onSurface,
-                                size: 20,
+                                size: 24,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,13 +537,13 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                         .replaceAll('_', ' ')
                                         .toUpperCase(),
                                     style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
                                       color: isSelected
                                           ? theme.colorScheme.onPrimaryContainer
                                           : theme.colorScheme.onSurface,
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 4),
                                   Text(
                                     ColorProfileManager
                                             .profileDescriptions[profileKey] ??
@@ -428,10 +559,17 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                               ),
                             ),
                             if (isSelected)
-                              Icon(
-                                Icons.check_circle,
-                                color: theme.colorScheme.primary,
-                                size: 20,
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.check,
+                                  color: theme.colorScheme.onPrimary,
+                                  size: 16,
+                                ),
                               ),
                           ],
                         ),
@@ -451,10 +589,37 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
-          'Fine-tune individual settings to your preference',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primaryContainer.withOpacity(0.3),
+                theme.colorScheme.secondaryContainer.withOpacity(0.3),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.tune,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Fine-tune individual settings to your preference',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 24),
@@ -462,35 +627,30 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           return _buildSliderTile(setting, theme);
         }),
         const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: FilledButton.tonal(
-                onPressed: () {
-                  setState(() {
-                    _customSettings =
-                        Map.from(ColorProfileManager.profiles['natural']!);
-                  });
-                  ColorProfileManager()
-                      .applyCustomSettings(_customSettings, widget.player);
-                  widget.onCustomSettingsChanged(_customSettings);
-                },
-                child: const Text('Reset to Default'),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.tonal(
+            onPressed: () {
+              setState(() {
+                _customSettings =
+                    Map.from(ColorProfileManager.profiles['natural']!);
+              });
+            },
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: () {
-                  ColorProfileManager()
-                      .applyCustomSettings(_customSettings, widget.player);
-                  widget.onCustomSettingsChanged(_customSettings);
-                  _showProfileAppliedFeedback('Custom');
-                },
-                child: const Text('Apply Custom'),
-              ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.refresh, size: 20),
+                SizedBox(width: 8),
+                Text('Reset to Default'),
+              ],
             ),
-          ],
+          ),
         ),
       ],
     );
@@ -502,10 +662,21 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceVariant,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,39 +692,45 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.primary.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Text(
                   value.toString(),
-                  style: theme.textTheme.labelMedium?.copyWith(
+                  style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onPrimary,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              trackHeight: 6,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-            ),
-            child: Slider(
-              value: value.toDouble(),
-              min: -100,
-              max: 100,
-              divisions: 200,
-              onChanged: (newValue) {
-                setState(() {
-                  _customSettings[setting] = newValue.round();
-                });
-              },
-            ),
+          const SizedBox(height: 16),
+          CustomSlider(
+            value: value.toDouble(),
+            min: -100,
+            max: 100,
+            divisions: 200,
+            onChanged: (newValue) {
+              setState(() {
+                _customSettings[setting] = newValue.round();
+              });
+              _applyCustomSettings(); // Apply changes immediately
+            },
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -562,12 +739,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 '-100',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
                 '100',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
