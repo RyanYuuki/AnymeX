@@ -136,7 +136,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                 color: Theme.of(context).colorScheme.surface,
                 shadowColor: Theme.of(context).shadowColor.withOpacity(0.1),
                 child: Container(
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxHeight: 300,
                   ),
                   decoration: BoxDecoration(
@@ -222,7 +222,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _isOpen
