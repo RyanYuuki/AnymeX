@@ -1,5 +1,4 @@
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -8,77 +7,69 @@ void showFilterBottomSheet(
     {Map<String, dynamic>? currentFilters}) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
+    backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (BuildContext context) {
-      return FilterOptionsContent(
-        onApplyFilter: (args) {
-          onApplyFilter(args);
-        },
+      return FuturisticFilterSheet(
+        onApplyFilter: onApplyFilter,
         currentFilters: currentFilters,
       );
     },
   );
 }
 
-class FilterOptionsContent extends StatefulWidget {
-  const FilterOptionsContent({
+class FuturisticFilterSheet extends StatefulWidget {
+  const FuturisticFilterSheet({
     super.key,
     required this.onApplyFilter,
     this.currentFilters,
   });
+
   final Function(dynamic args) onApplyFilter;
   final Map<String, dynamic>? currentFilters;
 
   @override
-  State<FilterOptionsContent> createState() => _FilterOptionsContentState();
+  State<FuturisticFilterSheet> createState() => _FuturisticFilterSheetState();
 }
 
-class _FilterOptionsContentState extends State<FilterOptionsContent> {
-  // Improved sort options with better formatting
-  Map<String, Map<String, String>> sortOptions = {
+class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
+    with TickerProviderStateMixin {
+  late AnimationController _slideController;
+  late AnimationController _fadeController;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  // Data structures
+  final Map<String, Map<String, String>> sortOptions = {
     'Score': {
       'desc': 'SCORE_DESC',
       'asc': 'SCORE',
       'label': 'SCORE',
-      'descLabel': 'Score ↓ — Score (High to Low)',
-      'ascLabel': 'Score ↑ — Score (Low to High)',
     },
     'Popularity': {
       'desc': 'POPULARITY_DESC',
       'asc': 'POPULARITY',
       'label': 'POPULARITY',
-      'descLabel': 'Popularity ↓ — Most Popular First',
-      'ascLabel': 'Popularity ↑ — Least Popular First',
     },
     'Trending': {
       'desc': 'TRENDING_DESC',
       'asc': 'TRENDING',
       'label': 'TRENDING',
-      'descLabel': 'Trending ↓ — Trending Top First',
-      'ascLabel': 'Trending ↑ — Low Trending First',
     },
     'Start Date': {
       'desc': 'START_DATE_DESC',
       'asc': 'START_DATE',
       'label': 'START_DATE',
-      'descLabel': 'Start Date ↓ — Newest First',
-      'ascLabel': 'Start Date ↑ — Oldest First',
     },
     'Title': {
       'desc': 'TITLE_ROMAJI_DESC',
       'asc': 'TITLE_ROMAJI',
       'label': 'TITLE_ROMAJI',
-      'descLabel': 'Title Z–A — Title (Z to A)',
-      'ascLabel': 'Title A–Z — Title (A to Z)',
     },
   };
 
-  List<String> season = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
-  List<String> status = [
+  final List<String> seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+  final List<String> statuses = [
     'All',
     'FINISHED',
     'NOT_YET_RELEASED',
@@ -86,8 +77,15 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     'CANCELLED',
     'HIATUS'
   ];
-  List<String> format = ['TV', 'TV SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA'];
-  List<String> genres = [
+  final List<String> formats = [
+    'TV',
+    'TV SHORT',
+    'MOVIE',
+    'SPECIAL',
+    'OVA',
+    'ONA'
+  ];
+  final List<String> genres = [
     'Action',
     'Adventure',
     'Comedy',
@@ -105,20 +103,48 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     'Supernatural',
   ];
 
+  // Selected values
   String? selectedSortBy;
-  String? selectedSortType; // 'desc' or 'asc'
+  String? selectedSortType;
   String? selectedSeason;
   String? selectedStatus;
   String? selectedFormat;
-  List<String>? selectedGenres;
+  List<String> selectedGenres = [];
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
+    _loadCurrentFilters();
+  }
 
+  void _initializeAnimations() {
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
+    );
+
+    _slideController.forward();
+    _fadeController.forward();
+  }
+
+  void _loadCurrentFilters() {
     if (widget.currentFilters != null) {
-      // Handle sort conversion from old format to new
-      String? currentSort = widget.currentFilters!['sort'];
+      final filters = widget.currentFilters!;
+
+      // Load sort options
+      String? currentSort = filters['sort'];
       if (currentSort != null) {
         for (String sortKey in sortOptions.keys) {
           if (sortOptions[sortKey]!['desc'] == currentSort) {
@@ -133,100 +159,346 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
         }
       }
 
-      selectedSeason = widget.currentFilters!['season'] ?? selectedSeason;
-      selectedStatus = widget.currentFilters!['status'] ?? selectedStatus;
-      selectedFormat = widget.currentFilters!['format'] ?? selectedFormat;
+      selectedSeason = filters['season'];
+      selectedStatus = filters['status'];
+      selectedFormat = filters['format'];
 
-      if (widget.currentFilters!['genres'] != null &&
-          widget.currentFilters!['genres'] is List) {
-        selectedGenres = List<String>.from(widget.currentFilters!['genres']);
+      if (filters['genres'] != null && filters['genres'] is List) {
+        selectedGenres = List<String>.from(filters['genres']);
       }
     }
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface,
+  @override
+  void dispose() {
+    _slideController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return AnimatedBuilder(
+      animation: _slideAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _slideAnimation.value * 100),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border.all(
+                  color: colorScheme.primary.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSortSection(),
+                          const SizedBox(height: 24),
+                          _buildFiltersSection(),
+                          const SizedBox(height: 24),
+                          _buildGenresSection(),
+                          const SizedBox(height: 32),
+                          _buildActionButtons(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: colorScheme.primary.withOpacity(0.1),
+            width: 1,
+          ),
         ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.tune_rounded,
+                color: colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'FILTERS',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCustomSelector({
+  Widget _buildSectionHeader(String title, IconData icon) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: colorScheme.primary,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('SORT', Icons.sort_rounded),
+        Row(
+          children: [
+            Expanded(flex: 3, child: _buildSortSelector()),
+            const SizedBox(width: 12),
+            _buildSortDirectionToggle(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFiltersSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
+        Row(
+          children: [
+            Expanded(
+              child: _buildNeonSelector(
+                hint: 'Season',
+                value: selectedSeason,
+                options: seasons,
+                onChanged: (value) => setState(() => selectedSeason = value),
+                icon: Icons.calendar_today_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildNeonSelector(
+                hint: 'Status',
+                value: selectedStatus,
+                options: statuses,
+                onChanged: (value) => setState(() => selectedStatus = value),
+                icon: Icons.info_outline_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildNeonSelector(
+          hint: 'Format',
+          value: selectedFormat,
+          options: formats,
+          onChanged: (value) => setState(() => selectedFormat = value),
+          icon: Icons.video_library_rounded,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenresSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('GENRES', Icons.category_rounded),
+        Container(
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colorScheme.primary.withOpacity(0.3),
+              width: 1,
+            ),
+            color: colorScheme.surface.withOpacity(0.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: SuperListView(
+              physics: const BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              children: genres.map((genre) => _buildGenreChip(genre)).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenreChip(String genre) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isSelected = selectedGenres.contains(genre);
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: FilterChip(
+        label: Text(
+          genre,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+          ),
+        ),
+        selected: isSelected,
+        checkmarkColor: colorScheme.onPrimary,
+        selectedColor: colorScheme.primary,
+        backgroundColor: colorScheme.surface,
+        side: BorderSide(
+          color: isSelected
+              ? colorScheme.primary
+              : colorScheme.outline.withOpacity(0.3),
+          width: 1,
+        ),
+        onSelected: (selected) {
+          setState(() {
+            selected ? selectedGenres.add(genre) : selectedGenres.remove(genre);
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildNeonSelector({
     required String hint,
     required String? value,
     required List<String> options,
     required Function(String?) onChanged,
-    IconData? icon,
+    required IconData icon,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final hasValue = value != null;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-          width: 1.5,
+          color: hasValue
+              ? colorScheme.primary.withOpacity(0.6)
+              : colorScheme.outline.withOpacity(0.3),
+          width: hasValue ? 2 : 1,
         ),
-        color: Theme.of(context).colorScheme.surface,
+        color: hasValue
+            ? colorScheme.primary.withOpacity(0.05)
+            : colorScheme.surface.withOpacity(0.5),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            _showOptionBottomSheet(
-              context: context,
-              title: hint,
-              options: options,
-              selectedValue: value,
-              onSelected: onChanged,
-              icon: icon,
-            );
-          },
+          onTap: () => _showNeonBottomSheet(
+            title: hint,
+            options: options,
+            selectedValue: value,
+            onSelected: onChanged,
+            icon: icon,
+          ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                if (icon != null) ...[
-                  Icon(
-                    icon,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                ],
+                Icon(
+                  icon,
+                  size: 20,
+                  color: hasValue
+                      ? colorScheme.primary
+                      : colorScheme.onSurface.withOpacity(0.7),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        hint,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                          fontWeight: FontWeight.w500,
+                        hint.toUpperCase(),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         value ?? 'Select $hint',
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: value != null
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.5),
+                          color: hasValue
+                              ? colorScheme.onSurface
+                              : colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                     ],
@@ -234,8 +506,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                 ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: colorScheme.onSurface.withOpacity(0.6),
                 ),
               ],
             ),
@@ -245,49 +516,41 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
-  Widget _buildSortControls() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: _buildSortSelector(),
-        ),
-        const SizedBox(width: 12),
-        _buildSortDirectionToggle(),
-      ],
-    );
-  }
-
   Widget _buildSortSelector() {
-    String displayText = 'Select Sort Option';
-    if (selectedSortBy != null) {
-      displayText = sortOptions[selectedSortBy!]!['label']!;
-    }
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final hasValue = selectedSortBy != null;
+    final displayText =
+        hasValue ? sortOptions[selectedSortBy!]!['label']! : 'Select Sort';
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-          width: 1.5,
+          color: hasValue
+              ? colorScheme.primary.withOpacity(0.6)
+              : colorScheme.outline.withOpacity(0.3),
+          width: hasValue ? 2 : 1,
         ),
-        color: Theme.of(context).colorScheme.surface,
+        color: hasValue
+            ? colorScheme.primary.withOpacity(0.05)
+            : colorScheme.surface.withOpacity(0.5),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            _showSortBottomSheet();
-          },
+          onTap: _showSortBottomSheet,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Icon(
                   Icons.sort_rounded,
                   size: 20,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: hasValue
+                      ? colorScheme.primary
+                      : colorScheme.onSurface.withOpacity(0.7),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -295,28 +558,21 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sort By',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                          fontWeight: FontWeight.w500,
+                        'SORT BY',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         displayText,
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: selectedSortBy != null
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.5),
+                          color: hasValue
+                              ? colorScheme.onSurface
+                              : colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                     ],
@@ -324,8 +580,7 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                 ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: colorScheme.onSurface.withOpacity(0.6),
                 ),
               ],
             ),
@@ -339,38 +594,39 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDescending = selectedSortType == 'desc';
+    final isActive = selectedSortBy != null;
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.3),
-          width: 1.5,
+          color: isActive
+              ? colorScheme.primary.withOpacity(0.6)
+              : colorScheme.outline.withOpacity(0.3),
+          width: isActive ? 2 : 1,
         ),
-        color: colorScheme.surface,
+        color: isActive
+            ? colorScheme.primary.withOpacity(0.05)
+            : colorScheme.surface.withOpacity(0.5),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: selectedSortBy != null
-              ? () {
-                  setState(() {
-                    selectedSortType =
-                        selectedSortType == 'desc' ? 'asc' : 'desc';
-                  });
-                }
+          onTap: isActive
+              ? () => setState(
+                  () => selectedSortType = isDescending ? 'asc' : 'desc')
               : null,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Text(
-                  'Order',
-                  style: TextStyle(
-                    fontSize: 12,
+                  'ORDER',
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -382,17 +638,16 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
                           ? Icons.arrow_downward_rounded
                           : Icons.arrow_upward_rounded,
                       size: 16,
-                      color: selectedSortBy != null
+                      color: isActive
                           ? colorScheme.primary
                           : colorScheme.onSurface.withOpacity(0.5),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      isDescending ? 'Desc' : 'Asc',
-                      style: TextStyle(
-                        fontSize: 14,
+                      isDescending ? 'DESC' : 'ASC',
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: selectedSortBy != null
+                        color: isActive
                             ? colorScheme.onSurface
                             : colorScheme.onSurface.withOpacity(0.5),
                       ),
@@ -407,261 +662,227 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
-  void _showSortBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Sort By',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
-                child: _buildSortOptions(),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSortOptions() {
+  Widget _buildActionButtons() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: sortOptions.entries.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final entry = sortOptions.entries.elementAt(index);
-        final isSelected = selectedSortBy == entry.key;
-
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              setState(() {
-                selectedSortBy = entry.key;
-                // Set default sort type if not already set
-                selectedSortType ??= 'desc';
-              });
-              Navigator.pop(context);
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.outline.withOpacity(0.2),
-                  width: isSelected ? 2 : 1,
-                ),
-                color: isSelected
-                    ? colorScheme.primaryContainer.withOpacity(0.3)
-                    : Colors.transparent,
-              ),
-              child: Row(
-                children: [
-                  Radio<String>(
-                    value: entry.key,
-                    groupValue: selectedSortBy ?? '',
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSortBy = value;
-                        // Set default sort type if not already set
-                        selectedSortType ??= 'desc';
-                      });
-                      Navigator.pop(context);
-                    },
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      entry.value['label']!,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurface,
-                        fontWeight:
-                            isSelected ? FontWeight.w500 : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: _buildNeonButton(
+            text: 'RESET',
+            icon: Icons.refresh_rounded,
+            isPrimary: false,
+            onTap: _resetFilters,
           ),
-        );
-      },
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 2,
+          child: _buildNeonButton(
+            text: 'APPLY FILTERS',
+            icon: Icons.check_rounded,
+            isPrimary: true,
+            onTap: _applyFilters,
+          ),
+        ),
+      ],
     );
   }
 
-  void _showOptionBottomSheet({
-    required BuildContext context,
+  Widget _buildNeonButton({
+    required String text,
+    required IconData icon,
+    required bool isPrimary,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isPrimary
+              ? colorScheme.primary
+              : colorScheme.outline.withOpacity(0.5),
+          width: 2,
+        ),
+        color: isPrimary ? colorScheme.primary : Colors.transparent,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color:
+                      isPrimary ? colorScheme.onPrimary : colorScheme.onSurface,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  text,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: isPrimary
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSortBottomSheet() {
+    _showNeonBottomSheet(
+      title: 'Sort By',
+      options: sortOptions.keys.toList(),
+      selectedValue: selectedSortBy,
+      onSelected: (value) {
+        setState(() {
+          selectedSortBy = value;
+          selectedSortType ??= 'desc';
+        });
+      },
+      icon: Icons.sort_rounded,
+    );
+  }
+
+  void _showNeonBottomSheet({
     required String title,
     required List<String> options,
     required String? selectedValue,
     required Function(String?) onSelected,
-    IconData? icon,
+    required IconData icon,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: colorScheme.primary.withOpacity(0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.primary.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
-                  ],
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: colorScheme.primary.withOpacity(0.2),
+                      width: 1,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  child: ListView.separated(
-                      itemCount: options.length,
-                      separatorBuilder: (context, index) => 5.height(),
-                      itemBuilder: (context, i) {
-                        final entry = options.asMap().entries.elementAt(i);
-                        final index = entry.key;
-                        final option = entry.value;
-                        final theme = Theme.of(context);
-                        final colorScheme = theme.colorScheme;
-                        final isSelected = selectedValue == option;
-
-                        return Column(
-                          children: [
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onTap: () {
-                                  onSelected(option);
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 12),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.outline
-                                              .withOpacity(0.2),
-                                      width: isSelected ? 2 : 1,
-                                    ),
-                                    color: isSelected
-                                        ? colorScheme.primaryContainer
-                                            .withOpacity(0.3)
-                                        : Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Radio<String>(
-                                        value: option,
-                                        groupValue: selectedValue,
-                                        onChanged: (value) {
-                                          onSelected(value);
-                                          Navigator.pop(context);
-                                        },
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        visualDensity: VisualDensity.compact,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          option,
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                : colorScheme.onSurface,
-                                            fontWeight: isSelected
-                                                ? FontWeight.w500
-                                                : FontWeight.normal,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary.withOpacity(0.5),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: colorScheme.primary.withOpacity(0.3),
+                              width: 1,
                             ),
-                            if (index != options.length - 1)
-                              const SizedBox(height: 0),
-                          ],
-                        );
-                      })),
+                          ),
+                          child: Icon(
+                            icon,
+                            color: colorScheme.primary,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          title.toUpperCase(),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  shrinkWrap: true,
+                  itemCount: options.length,
+                  itemBuilder: (context, index) {
+                    final option = options[index];
+                    final isSelected = selectedValue == option;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: FutureisticOptionTile(
+                        option: option,
+                        isSelected: isSelected,
+                        onTap: () {
+                          onSelected(option);
+                          Navigator.pop(context);
+                        },
+                        colorScheme: colorScheme,
+                        theme: theme,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );
@@ -669,205 +890,30 @@ class _FilterOptionsContentState extends State<FilterOptionsContent> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Filter & Sort',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildSectionTitle('Sort Options'),
-          _buildSortControls(),
-          const SizedBox(height: 20),
-          _buildSectionTitle('Filter Options'),
-          Row(
-            children: [
-              Expanded(
-                child: _buildCustomSelector(
-                  hint: 'Season',
-                  value: selectedSeason,
-                  options: season,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedSeason = value;
-                    });
-                  },
-                  icon: Icons.calendar_today_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildCustomSelector(
-                  hint: 'Status',
-                  value: selectedStatus,
-                  options: status,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedStatus = value;
-                    });
-                  },
-                  icon: Icons.info_outline_rounded,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildCustomSelector(
-            hint: 'Format',
-            value: selectedFormat,
-            options: format,
-            onChanged: (value) {
-              setState(() {
-                selectedFormat = value;
-              });
-            },
-            icon: Icons.video_library_rounded,
-          ),
-          const SizedBox(height: 20),
-          _buildSectionTitle('Genres'),
-          Container(
-            height: 70,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                width: 1.5,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: SuperListView(
-                physics: const BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                children: genres
-                    .map((genre) => Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: FilterChip(
-                            label: Text(
-                              genre,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: selectedGenres?.contains(genre) ?? false
-                                    ? Theme.of(context).colorScheme.onPrimary
-                                    : Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            selected: selectedGenres?.contains(genre) ?? false,
-                            selectedColor:
-                                Theme.of(context).colorScheme.primary,
-                            checkmarkColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                            side: BorderSide(
-                              color: selectedGenres?.contains(genre) ?? false
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .withOpacity(0.3),
-                              width: 1.5,
-                            ),
-                            onSelected: (selected) {
-                              selectedGenres ??= [];
-                              setState(() {
-                                selected
-                                    ? selectedGenres?.add(genre)
-                                    : selectedGenres?.remove(genre);
-                              });
-                            },
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
-          Row(
-            children: [
-              Expanded(
-                child: AnymexButton(
-                  padding: const EdgeInsets.all(16),
-                  color: Colors.transparent,
-                  border: BorderSide(
-                      width: 1.5,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .outline
-                          .withOpacity(0.5)),
-                  radius: (16),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: AnymexButton(
-                  padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).colorScheme.primary,
-                  border: BorderSide.none,
-                  radius: (16),
-                  onTap: () {
-                    String? finalSort;
-                    if (selectedSortBy != null && selectedSortType != null) {
-                      finalSort =
-                          sortOptions[selectedSortBy!]![selectedSortType!];
-                    }
+  void _resetFilters() {
+    setState(() {
+      selectedSortBy = null;
+      selectedSortType = null;
+      selectedSeason = null;
+      selectedStatus = null;
+      selectedFormat = null;
+      selectedGenres.clear();
+    });
+  }
 
-                    widget.onApplyFilter({
-                      'season': selectedSeason,
-                      'sort': finalSort,
-                      'format': selectedFormat,
-                      'genres': selectedGenres,
-                      'status': selectedStatus,
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Apply Filters',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onPrimary),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
+  void _applyFilters() {
+    String? finalSort;
+    if (selectedSortBy != null && selectedSortType != null) {
+      finalSort = sortOptions[selectedSortBy!]![selectedSortType!];
+    }
+
+    widget.onApplyFilter({
+      'season': selectedSeason,
+      'sort': finalSort,
+      'format': selectedFormat,
+      'genres': selectedGenres.isEmpty ? null : selectedGenres,
+      'status': selectedStatus,
+    });
+    Navigator.pop(context);
   }
 }
