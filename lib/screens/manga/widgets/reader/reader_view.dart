@@ -95,75 +95,80 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildContentView(BuildContext context) {
-    return MangaPageView(
-      mode: controller.activeMode.value == ReadingMode.webtoon
-          ? MangaPageViewMode.continuous
-          : MangaPageViewMode.paged,
-      direction: switch (controller.activeMode.value) {
-        ReadingMode.webtoon => MangaPageViewDirection.down,
-        ReadingMode.rtl => MangaPageViewDirection.left,
-        ReadingMode.ltr => MangaPageViewDirection.right,
-      },
-      controller: controller.pageViewController,
-      options: MangaPageViewOptions(
-        padding: MediaQuery.paddingOf(context),
-        mainAxisOverscroll: false,
-        crossAxisOverscroll: false,
-        minZoomLevel:
-            controller.activeMode.value == ReadingMode.webtoon ? 0.5 : 1.0,
-        maxZoomLevel: 8.0,
-        pageWidthLimit: getResponsiveSize(context,
-            mobileSize: double.infinity,
-            desktopSize: controller.defaultWidth.value *
-                controller.pageWidthMultiplier.value),
-      ),
-      pageCount: controller.pageList.length,
-      pageBuilder: (context, index) {
-        return _buildImage(context, controller.pageList[index], index);
-      },
-      onPageChange: (index) => controller.onPageChanged(index),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => controller.toggleControls(),
+      onDoubleTap: () {},
+      child: MangaPageView(
+        mode: controller.activeMode.value == ReadingMode.webtoon
+            ? MangaPageViewMode.continuous
+            : MangaPageViewMode.paged,
+        direction: switch (controller.activeMode.value) {
+          ReadingMode.webtoon => MangaPageViewDirection.down,
+          ReadingMode.rtl => MangaPageViewDirection.left,
+          ReadingMode.ltr => MangaPageViewDirection.right,
+        },
+        controller: controller.pageViewController,
+        options: MangaPageViewOptions(
+          padding: MediaQuery.paddingOf(context),
+          mainAxisOverscroll: false,
+          crossAxisOverscroll: false,
+          minZoomLevel:
+              controller.activeMode.value == ReadingMode.webtoon ? 0.5 : 1.0,
+          maxZoomLevel: 8.0,
+          pageWidthLimit: getResponsiveSize(context,
+              mobileSize: double.infinity,
+              desktopSize: controller.defaultWidth.value *
+                  controller.pageWidthMultiplier.value),
+        ),
+        pageCount: controller.pageList.length,
+        pageBuilder: (context, index) {
+          return _buildImage(context, controller.pageList[index], index);
+        },
+        onPageChange: (index) => controller.onPageChanged(index),
 
-      // For previous/next chapter switching
-      startEdgeDragIndicatorBuilder: (context, info) {
-        return Center(
-          child: AnimatedScale(
-            scale: info.isTriggered ? 1.5 : 1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.elasticOut,
-            child: Icon(
-              Icons.skip_previous_rounded,
-              color: info.isTriggered ? Colors.white : Colors.white54,
-              size: 36,
+        // For previous/next chapter switching
+        startEdgeDragIndicatorBuilder: (context, info) {
+          return Center(
+            child: AnimatedScale(
+              scale: info.isTriggered ? 1.5 : 1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.elasticOut,
+              child: Icon(
+                Icons.skip_previous_rounded,
+                color: info.isTriggered ? Colors.white : Colors.white54,
+                size: 36,
+              ),
             ),
-          ),
-        );
-      },
-      endEdgeDragIndicatorBuilder: (context, info) {
-        return Center(
-          child: AnimatedScale(
-            scale: info.isTriggered ? 1.5 : 1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.elasticOut,
-            child: Icon(
-              Icons.skip_next_rounded,
-              color: info.isTriggered ? Colors.white : Colors.white54,
-              size: 36,
+          );
+        },
+        endEdgeDragIndicatorBuilder: (context, info) {
+          return Center(
+            child: AnimatedScale(
+              scale: info.isTriggered ? 1.5 : 1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.elasticOut,
+              child: Icon(
+                Icons.skip_next_rounded,
+                color: info.isTriggered ? Colors.white : Colors.white54,
+                size: 36,
+              ),
             ),
-          ),
-        );
-      },
-      onStartEdgeDrag:
-          controller.chapterList.indexOf(controller.currentChapter.value!) >
-                      0 &&
-                  controller.loadingState.value == LoadingState.loaded
-              ? () => controller.chapterNavigator(false)
-              : null,
-      onEndEdgeDrag:
-          controller.chapterList.indexOf(controller.currentChapter.value!) <
-                      controller.chapterList.length - 1 &&
-                  controller.loadingState.value == LoadingState.loaded
-              ? () => controller.chapterNavigator(true)
-              : null,
+          );
+        },
+        onStartEdgeDrag:
+            controller.chapterList.indexOf(controller.currentChapter.value!) >
+                        0 &&
+                    controller.loadingState.value == LoadingState.loaded
+                ? () => controller.chapterNavigator(false)
+                : null,
+        onEndEdgeDrag:
+            controller.chapterList.indexOf(controller.currentChapter.value!) <
+                        controller.chapterList.length - 1 &&
+                    controller.loadingState.value == LoadingState.loaded
+                ? () => controller.chapterNavigator(true)
+                : null,
+      ),
     );
   }
 

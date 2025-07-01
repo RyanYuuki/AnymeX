@@ -2,7 +2,7 @@
 
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
-import 'package:anymex/screens/search/search_anilist.dart';
+import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';

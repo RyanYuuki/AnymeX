@@ -15,52 +15,61 @@ class ReaderBottomControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                Theme.of(context).colorScheme.surface.withOpacity(0.0),
-              ],
+    return Obx(() => AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          bottom: controller.showControls.value ? 0 : -200,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Theme.of(context).colorScheme.surface.withOpacity(0.95),
+                  Theme.of(context).colorScheme.surface.withOpacity(0.0),
+                ],
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Center(
-              child: Container(
-                width: getResponsiveSize(context,
-                    mobileSize: double.infinity,
-                    desktopSize: MediaQuery.of(context).size.width * 0.4),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.1),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
+            child: SafeArea(
+              child: Center(
+                child: Container(
+                  width: getResponsiveSize(context,
+                      mobileSize: double.infinity,
+                      desktopSize: MediaQuery.of(context).size.width * 0.4),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
                       color: Theme.of(context)
                           .colorScheme
-                          .shadow
-                          .withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                          .outline
+                          .withOpacity(0.1),
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildPreviousButton(context),
-                    10.width(),
-                    _buildSliderSection(),
-                    10.width(),
-                    _buildNextButton(context),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .shadow
+                            .withOpacity(0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildPreviousButton(context),
+                      10.width(),
+                      _buildSliderSection(),
+                      10.width(),
+                      _buildNextButton(context),
+                    ],
+                  ),
                 ),
               ),
             ),

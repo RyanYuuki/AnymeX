@@ -14,36 +14,43 @@ class ReaderTopControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Container(
-          height: 120,
-          padding:
-              const EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 12),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withOpacity(0.8),
-                Colors.black.withOpacity(0.4),
-                Colors.transparent,
-              ],
+    return Obx(() => AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          top: controller.showControls.value ? 0 : -200,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 120,
+            padding:
+                const EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.8),
+                  Colors.black.withOpacity(0.4),
+                  Colors.transparent,
+                ],
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    _buildBackButton(context),
-                    const SizedBox(width: 6),
-                    _buildChapterInfo(context),
-                    const SizedBox(width: 6),
-                    _buildSettingsButton(context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                _buildPageInfo(context),
-              ],
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _buildBackButton(context),
+                      const SizedBox(width: 6),
+                      _buildChapterInfo(context),
+                      const SizedBox(width: 6),
+                      _buildSettingsButton(context),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _buildPageInfo(context),
+                ],
+              ),
             ),
           ),
         ));
