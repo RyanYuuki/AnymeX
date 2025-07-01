@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -41,14 +41,15 @@ enum BlurStrength {
 class Liquid {
   static Future<void> pickLiquidBackground(BuildContext context) async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 100,
+      final pickedFile = await FilePicker.platform.pickFiles(
+        allowCompression: false,
+        type: FileType.image,
+        allowMultiple: false,
       );
 
-      if (pickedFile != null) {
-        await _showImagePreviewDialog(context, pickedFile.path);
+      if ((pickedFile?.files.isNotEmpty ?? false) &&
+          pickedFile?.files.first.path != null) {
+        await _showImagePreviewDialog(context, pickedFile!.files.first.path!);
       }
     } catch (e) {
       log('Error picking image: $e');

@@ -46,7 +46,6 @@ dependencies:
   hugeicons: ^0.0.7
   iconly: ^1.0.1
   iconsax: ^0.0.8
-  image_picker: ^1.1.2
   install_plugin: ^2.1.0
   intl: ^0.20.1
   isar: ^3.1.0+1
@@ -138,6 +137,6 @@ inno_bundle:
   id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
   publisher: Ryan Yuuki
   name: AnymeX
-  version: 2.9.5
+  version: 2.9.6
   admin: auto
   installer_icon: ./anymex.ico

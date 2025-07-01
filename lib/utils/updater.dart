@@ -277,16 +277,6 @@ class UpdateManager {
       ),
     );
   }
-
-  // Helper method for showing snackbars (implement according to your app's snackbar system)
-  void snackBar(String message) {
-    // Replace this with your app's snackbar implementation
-    Get.snackbar(
-      'Update Manager',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
 }
 
 class UpdateBottomSheet extends StatefulWidget {
@@ -383,7 +373,6 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       } else if (Platform.isWindows) {
         await _downloadWindows(downloadUrl);
       } else {
-        // For other platforms, just open the URL
         final Uri url = Uri.parse(downloadUrl);
         if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -401,12 +390,6 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
   }
 
   Future<void> _downloadAndInstallAndroid(String downloadUrl) async {
-    // Request storage permission
-    final permission = await Permission.storage.request();
-    if (!permission.isGranted) {
-      throw Exception('Storage permission denied');
-    }
-
     setState(() {
       _downloadStatus = 'Downloading APK...';
     });
