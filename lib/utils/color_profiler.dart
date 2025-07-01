@@ -385,7 +385,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
 
   Widget _buildPresetsTab(ThemeData theme) {
     Map<String, List<String>> groupedProfiles = {
-      'Anime': ['anime', 'anime_vibrant', 'anime_soft', 'anime_4k'],
+      'Anime': ['anime_4k', 'anime', 'anime_vibrant', 'anime_soft'],
       'Cinema': ['cinema', 'cinema_dark', 'cinema_hdr'],
       'Vivid': ['vivid', 'vivid_pop', 'vivid_warm'],
       'Other': ['natural', 'dark', 'warm', 'cool', 'grayscale'],
