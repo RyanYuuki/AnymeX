@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.5",
-      "versionDate": "2025-06-20T15:34:34Z",
+      "version": "2.9.6",
+      "versionDate": "2025-07-01T11:12:32Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.5/AnymeX-iOS-v2.9.5.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.6/AnymeX-iOS-v2.9.6.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 38911458,
+      "size": 39521302,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "2.9.6",
+          "date": "2025-07-01T11:12:32Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.6/AnymeX-iOS-v2.9.6.ipa",
+          "size": 39521302
+        },
+        {
           "version": "2.9.5",
           "date": "2025-06-20T15:34:34Z",
-          "localizedDescription": "",
+          "localizedDescription": "**New Update is Here!**\r\n\r\n\u2022 Added new Video Presets feature: choose from Vivid, Anime, Cinema, or create your own Custom filter for a personalized viewing experience.\r\n\u2022 Improved Search Filter UI for better clarity and usability.\r\n\u2022 Updated Scroll\u2022Aware Header with a refined version by @tanakrit\u2022d \r\n\u2022 Increased max subtitle size limit by @HiroDane\r\n\u2022 Significantly improved player performance and responsiveness.\r\n\u2022 Fixed issue where playback speed would not apply correctly.\r\n\u2022 Resolved bug showing adult indicators on all media items.\r\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.5/AnymeX-iOS-v2.9.5.ipa",
           "size": 38911458
         },
@@ -174,6 +181,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.5"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.6 - 01 Jul",
+      "identifier": "release-2.9.6",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-07-01T11:12:32Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.6"
     }
   ]
 }
