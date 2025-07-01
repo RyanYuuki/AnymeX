@@ -86,11 +86,9 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               child: CustomScrollView(
                 controller: controller,
                 slivers: [
-                  if (widget.showRecommended &&
-                      (recommendedEntries.isNotEmpty))
+                  if (widget.showRecommended && (recommendedEntries.isNotEmpty))
                     _buildRecommendedList(recommendedEntries),
-                  if (widget.installed)
-                    _buildUpdatePendingList(updateEntries),
+                  if (widget.installed) _buildUpdatePendingList(updateEntries),
                   if (widget.installed) _buildInstalledList(installedEntries),
                   if (!widget.installed)
                     _buildNotInstalledList(notInstalledEntries),
@@ -145,9 +143,12 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
   }
 
   List<Source> _getRecommendedEntries(List<Source> data) {
-    final extens = widget.mediaType == MediaType.anime
-        ? Extensions().getRecommmendedExtensions()
-        : Extensions().getRecommmendedMangaExtensions();
+    final extens = [
+      ...(widget.mediaType == MediaType.anime
+          ? Extensions().getRecommmendedExtensions()
+          : Extensions().getRecommmendedMangaExtensions()),
+      'special'
+    ];
     return data
         .where((element) =>
             extens.contains(element.name?.toLowerCase()) &&

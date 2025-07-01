@@ -844,7 +844,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               onTap: toggleControls,
               onDoubleTapDown: (e) => _handleDoubleTap(e),
               onVerticalDragUpdate: (e) async {
-                if (isMobile) {
+                if (isMobile && settings.enableSwipeControls) {
                   final screenHeight = MediaQuery.of(context).size.height;
                   final topBoundary = screenHeight * 0.2;
                   final bottomBoundary = screenHeight * 0.8;

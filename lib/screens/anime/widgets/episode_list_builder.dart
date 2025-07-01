@@ -532,7 +532,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   tileColor: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.5),
+                      .withOpacity(0.4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -567,10 +567,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       height: 100,
       decoration: BoxDecoration(
         color: isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
+            ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
             : isFiller
                 ? Colors.orange
-                : Theme.of(context).colorScheme.secondaryContainer,
+                : Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withOpacity(0.4),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -680,10 +683,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
+            ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
             : isFiller
                 ? Colors.orangeAccent.withAlpha(120)
-                : Theme.of(context).colorScheme.secondaryContainer,
+                : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

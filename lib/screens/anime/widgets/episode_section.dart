@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/source_preference.dart';
 import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/core/extension_preferences_providers.dart';
@@ -13,6 +14,7 @@ import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/no_source.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
@@ -117,68 +119,43 @@ class _EpisodeSectionState extends State<EpisodeSection> {
   }
 
   Widget buildSourceDropdown() {
-    final sourceController = Get.find<ServiceHandler>().extensionService;
+    List<DropdownItem> items = sourceController.installedExtensions.isEmpty
+        ? [
+            const DropdownItem(
+              value: "No Sources Installed",
+              text: "No Sources Installed",
+            ),
+          ]
+        : sourceController.installedExtensions.map<DropdownItem>((source) {
+            return DropdownItem(
+              value: '${source.name} (${source.lang?.toUpperCase()})',
+              text:
+                  '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
+            );
+          }).toList();
 
-    List<DropdownMenuItem<String>> items =
-        sourceController.installedExtensions.isEmpty
-            ? [
-                const DropdownMenuItem<String>(
-                  value: "No Sources Installed",
-                  child: Text(
-                    "No Sources Installed",
-                    style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-                  ),
-                ),
-              ]
-            : sourceController.installedExtensions
-                .map<DropdownMenuItem<String>>((source) {
-                return DropdownMenuItem<String>(
-                  value: '${source.name} (${source.lang?.toUpperCase()})',
-                  child: Text(
-                    '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
-                    style: const TextStyle(fontFamily: 'Poppins-SemiBold'),
-                  ),
-                );
-              }).toList();
+    DropdownItem? selectedItem;
+    if (sourceController.installedExtensions.isEmpty) {
+      selectedItem = items.first;
+    } else {
+      final activeSource = sourceController.activeSource.value;
+      if (activeSource != null) {
+        selectedItem = DropdownItem(
+          value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
+          text:
+              '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
+        );
+      }
+    }
 
-    return DropdownButtonFormField<String>(
-      value: sourceController.installedExtensions.isEmpty
-          ? "No Sources Installed"
-          : '${sourceController.activeSource.value?.name} (${sourceController.activeSource.value?.lang?.toUpperCase()})',
-      decoration: InputDecoration(
-        label: TextButton.icon(
-          onPressed: () {},
-          label: const AnymexText(
-            text: "Select Source",
-            variant: TextVariant.bold,
-          ),
-          icon: const Icon(Iconsax.folder5),
-        ),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.secondaryContainer,
-        labelStyle:
-            TextStyle(color: Theme.of(context).colorScheme.inverseSurface),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onPrimaryFixedVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
-      ),
-      isExpanded: true,
+    return AnymexDropdown(
       items: items,
-      onChanged: handleSourceChange,
-      dropdownColor: Theme.of(context).colorScheme.secondaryContainer,
-      icon: Icon(Icons.arrow_drop_down,
-          color: Theme.of(context).colorScheme.primary),
-      style: TextStyle(
-        color: Theme.of(context).colorScheme.onSurface,
-        fontSize: 16,
-      ),
+      selectedItem: selectedItem,
+      label: "SELECT SOURCE",
+      icon: Iconsax.folder5,
+      onChanged: (DropdownItem item) => handleSourceChange(item.value),
+      actionIcon: Icons.settings_outlined,
+      onActionPressed: () => openSourcePreferences(context),
     );
   }
 
@@ -303,17 +280,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             Obx(() => Row(
                   children: [
                     Expanded(child: buildSourceDropdown()),
-                    const SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                      ),
-                      child: IconButton(
-                        onPressed: () => openSourcePreferences(context),
-                        icon: const Icon(Iconsax.setting),
-                      ),
-                    ),
                   ],
                 )),
           ],
