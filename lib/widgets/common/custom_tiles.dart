@@ -13,10 +13,12 @@ class CustomSwitchTile extends StatelessWidget {
   final String description;
   final bool switchValue;
   final EdgeInsets padding;
+  final bool disabled;
   final Function(bool value) onChanged;
 
   const CustomSwitchTile({
     super.key,
+    this.disabled = false,
     required this.icon,
     required this.title,
     required this.description,
@@ -27,9 +29,65 @@ class CustomSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (disabled) {
+      return Opacity(
+        opacity: 0.4,
+        child: AnymexOnTap(
+          onTap: () {},
+          child: Padding(
+            padding: padding,
+            child: Row(
+              children: [
+                AnymexIcon(icon,
+                    size: 30, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                    decoration: BoxDecoration(
+                      boxShadow: switchValue ? [glowingShadow(context)] : [],
+                    ),
+                    child: Switch(
+                      value: switchValue,
+                      onChanged: (e) {},
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      inactiveTrackColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ))
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return AnymexOnTap(
       onTap: () {
-        onChanged(!switchValue);
+        onChanged?.call(!switchValue);
       },
       child: Padding(
         padding: padding,

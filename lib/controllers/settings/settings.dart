@@ -60,6 +60,18 @@ class Settings extends GetxController {
     savePlayerSettings();
   }
 
+  bool get liquidMode => _getUISetting((s) => s.liquidMode);
+  set liquidMode(bool value) => _setUISetting((s) => s?.liquidMode = value);
+
+  bool get retainOriginalColor => _getUISetting((s) => s.retainOriginalColor);
+  set retainOriginalColor(bool value) =>
+      _setUISetting((s) => s?.retainOriginalColor = value);
+
+  String get liquidBackgroundPath =>
+      _getUISetting((s) => s.liquidBackgroundPath);
+  set liquidBackgroundPath(String value) =>
+      _setUISetting((s) => s?.liquidBackgroundPath = value);
+
   bool get transculentBar => _getUISetting((s) => s.translucentTabBar);
   set transculentBar(bool value) =>
       _setUISetting((s) => s?.translucentTabBar = value);
@@ -192,6 +204,11 @@ class Settings extends GetxController {
   bool get autoSkipOnce => _getPlayerSetting((s) => s.autoSkipOnce);
   set autoSkipOnce(bool value) =>
       _setPlayerSetting((s) => s?.autoSkipOnce = value);
+
+  bool get enableSwipeControls =>
+      _getPlayerSetting((s) => s.enableSwipeControls);
+  set enableSwipeControls(bool value) =>
+      _setPlayerSetting((s) => s?.enableSwipeControls = value);
 
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
