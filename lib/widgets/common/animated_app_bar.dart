@@ -6,6 +6,7 @@ class AnimatedAppBar extends StatelessWidget {
   final Duration animationDuration;
   final Curve animationCurve;
   final Widget content;
+  final double? height;
   final Color? backgroundColor;
   final double topPadding;
   final double bottomPadding;
@@ -16,6 +17,7 @@ class AnimatedAppBar extends StatelessWidget {
 
   const AnimatedAppBar({
     super.key,
+    this.height,
     required this.isVisible,
     this.animationDuration = const Duration(milliseconds: 450),
     this.animationCurve = Curves.easeInOut,
@@ -57,7 +59,7 @@ class AnimatedAppBar extends StatelessWidget {
                   SizedBox(height: statusBarHeight),
                   if (topPadding > 0) SizedBox(height: topPadding),
                   SizedBox(
-                    height: kToolbarHeight,
+                    height: height ?? kToolbarHeight,
                     child: content,
                   ),
                   if (bottomPadding > 0) SizedBox(height: bottomPadding),

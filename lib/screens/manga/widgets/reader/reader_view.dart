@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
@@ -126,8 +127,6 @@ class ReaderView extends StatelessWidget {
           return _buildImage(context, controller.pageList[index], index);
         },
         onPageChange: (index) => controller.onPageChanged(index),
-
-        // For previous/next chapter switching
         startEdgeDragIndicatorBuilder: (context, info) {
           return Center(
             child: AnimatedScale(
@@ -176,8 +175,11 @@ class ReaderView extends StatelessWidget {
     return StatefulBuilder(
       builder: (context, setState) {
         return CachedNetworkImage(
+          filterQuality: FilterQuality.high,
           imageUrl: page.url,
-          httpHeaders: page.headers,
+          httpHeaders: (page.headers?.isEmpty ?? true)
+              ? {'Referer': sourceController.activeMangaSource.value!.baseUrl!}
+              : page.headers,
           fit: BoxFit.contain,
           progressIndicatorBuilder: (context, url, progress) => SizedBox(
             height: Get.height / 2,

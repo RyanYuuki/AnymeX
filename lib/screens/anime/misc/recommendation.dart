@@ -262,7 +262,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
         padding: const EdgeInsets.all(8),
         margin: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondaryContainer,
+            color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
             borderRadius: BorderRadius.circular(12.multiplyRoundness())),
         child: Row(
           children: [

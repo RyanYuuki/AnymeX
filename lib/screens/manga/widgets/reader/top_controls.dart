@@ -1,5 +1,6 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
+import 'package:anymex/widgets/common/animated_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,14 +15,12 @@ class ReaderTopControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => AnimatedPositioned(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          top: controller.showControls.value ? 0 : -200,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 120,
+    return Obx(() => AnimatedAppBar(
+          bottomPadding: 5,
+          animationDuration: const Duration(milliseconds: 300),
+          height: 120,
+          isVisible: controller.showControls.value,
+          content: Container(
             padding:
                 const EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 12),
             decoration: BoxDecoration(

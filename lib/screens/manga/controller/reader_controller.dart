@@ -67,6 +67,9 @@ class ReaderController extends GetxController {
 
   void onPageChanged(int index) async {
     final number = index + 1;
+    if (showControls.value && number != currentPageIndex.value) {
+      showControls.value = false;
+    }
     currentPageIndex.value = number;
     currentChapter.value?.pageNumber = number;
     currentChapter.value?.totalPages = pageList.length;
@@ -110,7 +113,9 @@ class ReaderController extends GetxController {
   }
 
   void toggleControls() {
+    log(showControls.value.toString());
     showControls.value = !showControls.value;
+    log(showControls.value.toString());
   }
 
   void navigateToChapter(int index) async {
