@@ -117,5 +117,5 @@ class UISettings extends HiveObject {
       this.liquidMode = true,
       this.retainOriginalColor = false,
       this.liquidBackgroundPath = '',
-      this.usePosterColor = true});
+      this.usePosterColor = false});
 }

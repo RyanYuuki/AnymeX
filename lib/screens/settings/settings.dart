@@ -34,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
           body: SuperListView(
         padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
+            mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
         children: [
           const Row(
@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
               borderRadius: BorderRadius.circular(12),
                 color: Theme.of(context)
                     .colorScheme
-                    .primaryContainer
+                    .surfaceContainer
                     .withOpacity(0.3)),
             child: ListView(
               shrinkWrap: true,

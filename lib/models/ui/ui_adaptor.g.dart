@@ -51,7 +51,7 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
         liquidMode: fields[18] ?? true,
         liquidBackgroundPath: fields[19] ?? '',
         retainOriginalColor: fields[20] ?? false,
-        usePosterColor: fields[21] ?? true);
+        usePosterColor: fields[21] ?? false);
   }
 
   @override

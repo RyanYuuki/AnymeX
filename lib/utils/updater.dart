@@ -210,7 +210,7 @@ class UpdateManager {
           _showUpdateBottomSheet(context, currentVersion,
               latestRelease['tag_name'], latestRelease['body'], downloadUrls);
         } else {
-          snackBar("You're already using the latest version");
+          print("You're already using the latest version");
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');

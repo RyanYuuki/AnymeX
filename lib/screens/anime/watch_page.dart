@@ -398,8 +398,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     prevRate.value = playerSettings.speed;
     currentVisualProfile.value = settings.preferences
         .get('currentVisualProfile', defaultValue: 'natural');
-    customSettings.value =
-        settings.preferences.get('currentVisualSettings', defaultValue: {});
+    customSettings.value = (settings.preferences
+            .get('currentVisualSettings', defaultValue: {}) as Map)
+        .cast<String, int>();
   }
 
   final Map<int, String> _durationCache = <int, String>{};
