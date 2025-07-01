@@ -40,6 +40,8 @@ class PlayerSettings {
   bool autoSkipED;
   @HiveField(17)
   bool autoSkipOnce;
+  @HiveField(18)
+  bool enableSwipeControls;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -59,5 +61,6 @@ class PlayerSettings {
       this.subtitleOutlineWidth = 1,
       this.autoSkipED = false,
       this.autoSkipOP = false,
-      this.autoSkipOnce = false});
+      this.autoSkipOnce = false,
+      this.enableSwipeControls = true});
 }

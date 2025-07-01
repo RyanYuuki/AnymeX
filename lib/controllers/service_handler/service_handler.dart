@@ -74,7 +74,7 @@ class ServiceHandler extends GetxController {
   Future<void> updateListEntry(
     UpdateListEntryParams params,
   ) async =>
-      onlineService.updateListEntry(params);
+      await onlineService.updateListEntry(params);
 
   RxList<Widget> animeWidgets(BuildContext context) =>
       service.animeWidgets(context);

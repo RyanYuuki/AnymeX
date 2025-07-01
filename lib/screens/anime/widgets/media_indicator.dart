@@ -13,7 +13,7 @@ class MediaIndicatorBuilder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment:
-            isVolumeIndicator ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isVolumeIndicator ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
           Container(
             clipBehavior: Clip.antiAlias,

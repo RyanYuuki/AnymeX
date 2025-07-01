@@ -47,13 +47,16 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
                 "Planning Manga": false,
               },
         cardStyle: fields[16] ?? 2,
-        historyCardStyle: fields[17] ?? 2);
+        historyCardStyle: fields[17] ?? 2,
+        liquidMode: fields[18] ?? true,
+        liquidBackgroundPath: fields[19] ?? '',
+        retainOriginalColor: fields[20] ?? false);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -89,7 +92,13 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(16)
       ..write(obj.cardStyle)
       ..writeByte(17)
-      ..write(obj.historyCardStyle);
+      ..write(obj.historyCardStyle)
+      ..writeByte(18)
+      ..write(obj.liquidMode)
+      ..writeByte(19)
+      ..write(obj.liquidBackgroundPath)
+      ..writeByte(20)
+      ..write(obj.retainOriginalColor);
   }
 
   @override

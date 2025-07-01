@@ -102,9 +102,7 @@ class _MyLibraryState extends State<MyLibrary> {
         .toList();
 
     historyDataManga.value = offlineStorage.mangaLibrary
-        .where((e) =>
-            e.currentChapter?.currentOffset != null &&
-            e.serviceIndex == handler)
+        .where((e) => e.serviceIndex == handler)
         .toList();
 
     initialCustomListData.value = customListData;
@@ -889,7 +887,8 @@ class _MyLibraryState extends State<MyLibrary> {
                             height: 42,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: theme.colorScheme.primary.withOpacity(0.12),
+                              color:
+                                  theme.colorScheme.primary.withOpacity(0.12),
                             ),
                           ),
                         Icon(
@@ -932,7 +931,7 @@ class _MyLibraryState extends State<MyLibrary> {
                             : theme.colorScheme.onSurfaceVariant,
                       ),
                       child: AnymexText(
-                        text:  title,
+                        text: title,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

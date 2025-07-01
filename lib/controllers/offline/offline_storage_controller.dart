@@ -203,13 +203,14 @@ class OfflineStorageController extends GetxController {
     OfflineMedia? existingManga = getMangaById(mangaId);
     if (existingManga != null) {
       existingManga.readChapters ??= [];
-      chapter.sourceName = sourceController.activeSource.value?.name;
+      chapter.sourceName = sourceController.activeMangaSource.value?.name;
       int index = existingManga.readChapters!
           .indexWhere((c) => c.number == chapter.number);
       if (index != -1) {
         chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
         existingManga.readChapters![index] = chapter;
         log('Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
+        log('Page number => ${chapter.pageNumber} / ${chapter.totalPages}');
       } else {
         chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
         existingManga.readChapters!.add(chapter);
@@ -334,7 +335,6 @@ class OfflineStorageController extends GetxController {
     }
     return null;
   }
-
 
   void clearCache() {
     _offlineStorageBox.clear();

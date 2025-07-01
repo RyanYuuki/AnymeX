@@ -127,6 +127,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   // Video Player Visual Profile
   final currentVisualProfile = 'natural'.obs;
+  RxMap<String, int> customSettings = <String, int>{}.obs;
 
   void applySavedProfile() => ColorProfileManager()
       .applyColorProfile(currentVisualProfile.value, player);
@@ -397,6 +398,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     prevRate.value = playerSettings.speed;
     currentVisualProfile.value = settings.preferences
         .get('currentVisualProfile', defaultValue: 'natural');
+    customSettings.value =
+        settings.preferences.get('currentVisualSettings', defaultValue: {});
   }
 
   final Map<int, String> _durationCache = <int, String>{};
@@ -540,8 +543,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
 
     isLeftSide.value = isLeft;
-    doubleTapLabel.value += 10;
-    skipDuration.value += 10;
+    doubleTapLabel.value += settings.seekDuration;
+    skipDuration.value += settings.seekDuration;
 
     final currentSeconds = currentPosition.value.inSeconds;
     final maxSeconds = episodeDuration.value.inSeconds;
@@ -703,7 +706,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             _buildSubtitle(),
             _buildRippleEffect(),
             _build2xThingy(),
-            if (isMobile) ...[
+            if (isMobile && settings.enableSwipeControls) ...[
               _buildBrightnessSlider(),
               _buildVolumeSlider(),
             ]
@@ -2029,15 +2032,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ColorProfileBottomSheet(
+        activeSettings: customSettings.value,
         currentProfile: currentVisualProfile.value,
         player: player,
         onProfileSelected: (profile) {
-          print('Selected profile: $profile');
           currentVisualProfile.value = profile;
           settings.preferences.put('currentVisualProfile', profile);
         },
-        onCustomSettingsChanged: (settings) {
-          print('Custom settings applied: $settings');
+        onCustomSettingsChanged: (sett) {
+          customSettings.value = sett;
+          settings.preferences.put('currentVisualSettings', sett);
         },
       ),
     );

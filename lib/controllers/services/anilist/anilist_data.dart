@@ -54,7 +54,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Media> trendingMangas = <Media>[].obs;
 
   // Novel Data
-  Map<Source, List<MManga>?> novelData = {};
+  RxList<MManga> novelData = <MManga>[].obs;
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
@@ -208,9 +208,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildMangaSection('Latest Mangas', latestMangas),
       buildMangaSection('Popular Mangas', popularMangas),
       buildMangaSection('More Popular Mangas', morePopularMangas),
-      buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
-      buildMangaSection('Top Rated Mangas', topRatedMangas),
-      buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
+
+      // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
+      // buildMangaSection('Top Rated Mangas', topRatedMangas),
+      // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
     ].obs;
   }
 
@@ -646,7 +647,7 @@ averageScore
       if (query != null && query.isNotEmpty) 'search': query,
       if (sort != null) 'sort': [sort],
       if (season != null) 'season': season.toUpperCase(),
-      if (status != null) 'status': status.toUpperCase(),
+      if (status != null && status != 'All') 'status': status.toUpperCase(),
       if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
       if (genres != null && genres.isNotEmpty) 'genre_in': genres,
       'isAdult': isAdult,
