@@ -207,8 +207,8 @@ class Liquid {
       await _clearLiquidBackground();
 
       final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final String savedPath =
-          path.join(appDocDir.path, 'liquid_background.jpg');
+      final String savedPath = path.join(appDocDir.path,
+          'liquid_background_${DateTime.now().microsecondsSinceEpoch}.jpg');
 
       final ReceivePort progressPort = ReceivePort();
 
@@ -260,7 +260,6 @@ class Liquid {
         if (await file.exists()) {
           await file.delete();
         }
-        settings.liquidBackgroundPath = '';
       }
     } catch (e) {
       log('Error clearing liquid background: $e');
@@ -445,7 +444,7 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                             : null,
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

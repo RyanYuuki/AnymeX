@@ -27,7 +27,6 @@ class Glow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
-    print('Changing Accent to $color');
     final theme = color.isNotEmpty && settings.usePosterColor
         ? ColorScheme.fromSeed(
             brightness: Theme.of(context).brightness,
@@ -73,7 +72,7 @@ class LiquidMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePath = settingsController.liquidBackgroundPath.isEmpty
-        ? 'assets/images/bg_glass.png'
+        ? 'assets/images/bg_glass.jpg'
         : "file://${settingsController.liquidBackgroundPath}";
 
     return Stack(

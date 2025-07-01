@@ -6,6 +6,15 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    
+    <!-- New permissions for downloading and installing APKs -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+    
+    <!-- For Android 13+ (API 33+) - Granular media permissions -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    
     <!-- TV app permissions and features -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -77,6 +86,17 @@
             </intent-filter>
         </activity>
 
+        <!-- FileProvider for sharing downloaded APK files -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <meta-data android:name="flutterEmbedding" android:value="2"/>
         <meta-data android:name="flutter.deeplinking.enabled" android:value="true"/>
         <meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false"/>
@@ -97,6 +117,10 @@
         </intent>
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService"/>
+        </intent>
+        <!-- Add package installer query -->
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE"/>
         </intent>
     </queries>
 </manifest>

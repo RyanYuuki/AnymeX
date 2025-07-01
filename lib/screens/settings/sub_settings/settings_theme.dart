@@ -226,14 +226,10 @@ class _SettingsThemeState extends State<SettingsTheme> {
                                         icon: HugeIcons.strokeRoundedImageAdd01,
                                         title: "Liquid Background",
                                         description:
-                                            "Choose a custom background for liquid mode",
+                                            "Choose a custom background for liquid mode.",
                                         onTap: () async {
                                           await Liquid.pickLiquidBackground(
                                               context);
-                                          await Future.delayed(
-                                              const Duration(seconds: 4));
-                                          snackBar(
-                                              'Restart your app for the changes to take effect.');
                                         },
                                       ),
                                       const SizedBox(height: 10),
