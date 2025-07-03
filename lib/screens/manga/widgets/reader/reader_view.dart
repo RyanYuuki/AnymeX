@@ -216,13 +216,13 @@ class ReaderView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
                     // Force refresh the specific image
                     final imageProvider = CachedNetworkImageProvider(
                       page.url,
                       headers: page.headers,
                     );
-                    imageProvider.evict();
+                    await imageProvider.evict();
                     // Trigger rebuild of only this image widget
                     setState(() {});
                   },
