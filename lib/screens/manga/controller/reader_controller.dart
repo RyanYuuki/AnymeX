@@ -30,10 +30,12 @@ class ReaderController extends GetxController {
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
-  final RxBool spacedPages = false.obs;
+
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
       MangaPageViewDirection.down.obs;
+  final RxBool spacedPages = false.obs;
+  final RxBool overscrollToChapter = true.obs;
 
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
@@ -43,8 +45,6 @@ class ReaderController extends GetxController {
   final RxString errorMessage = ''.obs;
 
   MangaPageViewController? pageViewController;
-
-  PageController? pageController;
 
   void _initializeControllers() {
     pageViewController = MangaPageViewController();
@@ -63,6 +63,8 @@ class ReaderController extends GetxController {
         settingsController.preferences.get('scroll_speed') ?? 1;
     spacedPages.value =
         settingsController.preferences.get('spaced_pages', defaultValue: false);
+    overscrollToChapter.value = settingsController.preferences
+        .get('overscroll_to_chapter', defaultValue: true);
   }
 
   void _savePreferences() {
@@ -75,6 +77,8 @@ class ReaderController extends GetxController {
     settingsController.preferences
         .put('scroll_speed', scrollSpeedMultiplier.value);
     settingsController.preferences.put('spaced_pages', spacedPages.value);
+    settingsController.preferences
+        .put('overscroll_to_chapter', overscrollToChapter.value);
   }
 
   void onPageChanged(int index) async {
@@ -133,6 +137,11 @@ class ReaderController extends GetxController {
 
   void toggleSpacedPages() {
     spacedPages.value = !spacedPages.value;
+    savePreferences();
+  }
+
+  void toggleOverscrollToChapter() {
+    overscrollToChapter.value = !overscrollToChapter.value;
     savePreferences();
   }
 

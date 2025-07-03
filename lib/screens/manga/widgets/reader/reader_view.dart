@@ -103,6 +103,8 @@ class ReaderView extends StatelessWidget {
             controller.chapterList.length - 1;
     final isLoaded = controller.loadingState.value == LoadingState.loaded;
     final currentLayout = controller.readingLayout.value;
+    final canOverscroll = controller.overscrollToChapter.value;
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => controller.toggleControls(),
@@ -188,10 +190,10 @@ class ReaderView extends StatelessWidget {
             ],
           );
         },
-        onStartEdgeDrag: hasPreviousChapter && isLoaded
+        onStartEdgeDrag: hasPreviousChapter && canOverscroll && isLoaded
             ? () => controller.chapterNavigator(false)
             : null,
-        onEndEdgeDrag: hasNextChapter && isLoaded
+        onEndEdgeDrag: hasNextChapter && canOverscroll && isLoaded
             ? () => controller.chapterNavigator(true)
             : null,
       ),

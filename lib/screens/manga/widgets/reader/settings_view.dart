@@ -127,6 +127,15 @@ class ReaderSettings {
                     onChanged: (val) => controller.toggleSpacedPages(),
                   );
                 }),
+                Obx(() {
+                  return CustomSwitchTile(
+                    icon: Iconsax.arrow,
+                    title: "Overscroll",
+                    description: "To Prev/Next Chapter",
+                    switchValue: controller.overscrollToChapter.value,
+                    onChanged: (val) => controller.toggleOverscrollToChapter(),
+                  );
+                }),
                 if (!Platform.isAndroid && !Platform.isIOS)
                   Obx(() {
                     return CustomSliderTile(
