@@ -102,27 +102,23 @@ class ReaderView extends StatelessWidget {
         controller.chapterList.indexOf(controller.currentChapter.value!) <
             controller.chapterList.length - 1;
     final isLoaded = controller.loadingState.value == LoadingState.loaded;
-
+    final currentLayout = controller.readingLayout.value;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => controller.toggleControls(),
       onDoubleTap: () {},
       child: MangaPageView(
-        mode: controller.activeMode.value == ReadingMode.webtoon
-            ? MangaPageViewMode.continuous
-            : MangaPageViewMode.paged,
-        direction: switch (controller.activeMode.value) {
-          ReadingMode.webtoon => MangaPageViewDirection.down,
-          ReadingMode.rtl => MangaPageViewDirection.left,
-          ReadingMode.ltr => MangaPageViewDirection.right,
-        },
+        mode: controller.readingLayout.value,
+        direction: controller.readingDirection.value,
         controller: controller.pageViewController,
         options: MangaPageViewOptions(
           padding: MediaQuery.paddingOf(context),
           mainAxisOverscroll: false,
           crossAxisOverscroll: false,
-          minZoomLevel:
-              controller.activeMode.value == ReadingMode.webtoon ? 0.5 : 1.0,
+          minZoomLevel: switch (currentLayout) {
+            MangaPageViewMode.continuous => 0.75,
+            MangaPageViewMode.paged => 1.0
+          },
           maxZoomLevel: 8.0,
           spacing: controller.spacedPages.value ? 20 : 0,
           pageWidthLimit: getResponsiveSize(context,
@@ -130,6 +126,8 @@ class ReaderView extends StatelessWidget {
               desktopSize: controller.defaultWidth.value *
                   controller.pageWidthMultiplier.value),
           edgeIndicatorContainerSize: 240,
+          precacheAhead: currentLayout == MangaPageViewMode.paged ? 2 : 0,
+          precacheBehind: currentLayout == MangaPageViewMode.paged ? 2 : 0,
         ),
         pageCount: controller.pageList.length,
         pageBuilder: (context, index) {
@@ -201,6 +199,9 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context, PageUrl page, int index) {
+    // Size to use when images aren't ready (loading/failing)
+    const initialSize = Size(512, 512);
+
     return StatefulBuilder(
       builder: (context, setState) {
         return CachedNetworkImage(
@@ -210,62 +211,66 @@ class ReaderView extends StatelessWidget {
               ? {'Referer': sourceController.activeMangaSource.value!.baseUrl!}
               : page.headers,
           fit: BoxFit.contain,
-          progressIndicatorBuilder: (context, url, progress) => SizedBox(
-            height: Get.height / 2,
-            width: double.infinity,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnymexProgressIndicator(
-                    value: progress.progress,
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Loading page ${index + 1}...'),
-                ],
+          progressIndicatorBuilder: (context, url, progress) {
+            return SizedBox.fromSize(
+              size: initialSize,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnymexProgressIndicator(
+                      value: progress.progress,
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Loading page ${index + 1}...'),
+                  ],
+                ),
               ),
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            height: Get.height / 2,
-            width: double.infinity,
-            color: Colors.grey.withOpacity(0.1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.broken_image_outlined,
-                  size: 48,
-                  color: Colors.grey.withOpacity(0.7),
+            );
+          },
+          errorWidget: (context, url, error) {
+            return SizedBox.fromSize(
+              size: initialSize,
+              child: Container(
+                color: Colors.grey.withOpacity(0.1),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.broken_image_outlined,
+                      size: 48,
+                      color: Colors.grey.withOpacity(0.7),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Failed to load page ${index + 1}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        // Force refresh the specific image
+                        final imageProvider = CachedNetworkImageProvider(
+                          page.url,
+                          headers: page.headers,
+                        );
+                        await imageProvider.evict();
+                        // Trigger rebuild of only this image widget
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        textStyle: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Failed to load page ${index + 1}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    // Force refresh the specific image
-                    final imageProvider = CachedNetworkImageProvider(
-                      page.url,
-                      headers: page.headers,
-                    );
-                    await imageProvider.evict();
-                    // Trigger rebuild of only this image widget
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.refresh, size: 16),
-                  label: const Text('Retry'),
-                  style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    textStyle: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

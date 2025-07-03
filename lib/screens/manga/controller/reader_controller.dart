@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:developer';
 
@@ -12,7 +10,7 @@ import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/screens/manga/reading_page.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
@@ -29,11 +27,13 @@ class ReaderController extends GetxController {
   final OfflineStorageController offlineStorageController =
       Get.find<OfflineStorageController>();
 
-  final Rx<ReadingMode> activeMode = ReadingMode.webtoon.obs;
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
   final RxBool spacedPages = false.obs;
+  final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
+  final Rx<MangaPageViewDirection> readingDirection =
+      MangaPageViewDirection.down.obs;
 
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
@@ -44,14 +44,19 @@ class ReaderController extends GetxController {
 
   MangaPageViewController? pageViewController;
 
+  PageController? pageController;
+
   void _initializeControllers() {
     pageViewController = MangaPageViewController();
-    pageViewController?.addPageChangeListener(onPageChanged);
   }
 
   void _getPreferences() {
-    activeMode.value = ReadingMode.values[
-        settingsController.preferences.get('reading_mode', defaultValue: 0)];
+    readingLayout.value = MangaPageViewMode.values[settingsController
+        .preferences
+        .get('reading_layout', defaultValue: 0 /* continuous */)];
+    readingDirection.value = MangaPageViewDirection.values[settingsController
+        .preferences
+        .get('reading_direction', defaultValue: 1 /* down */)];
     pageWidthMultiplier.value =
         settingsController.preferences.get('image_width') ?? 1;
     scrollSpeedMultiplier.value =
@@ -61,7 +66,10 @@ class ReaderController extends GetxController {
   }
 
   void _savePreferences() {
-    settingsController.preferences.put('reading_mode', activeMode.value.index);
+    settingsController.preferences
+        .put('reading_layout', readingLayout.value.index);
+    settingsController.preferences
+        .put('reading_direction', readingDirection.value.index);
     settingsController.preferences
         .put('image_width', pageWidthMultiplier.value);
     settingsController.preferences
@@ -191,8 +199,13 @@ class ReaderController extends GetxController {
     }
   }
 
-  void changeActiveMode(ReadingMode readingMode) async {
-    activeMode.value = readingMode;
+  void changeReadingLayout(MangaPageViewMode mode) async {
+    readingLayout.value = mode;
+    savePreferences();
+  }
+
+  void changeReadingDirection(MangaPageViewDirection direction) async {
+    readingDirection.value = direction;
     savePreferences();
   }
 
