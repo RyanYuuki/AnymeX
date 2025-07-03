@@ -343,54 +343,53 @@ jobs:
           tag: ${{ github.ref_name }}
 
   build-macos:
-  runs-on: macos-latest
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "3.27.4"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.27.4"
 
-    - name: Setup .env File
-      env:
-        AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-        AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-        SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-        SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-        MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-        MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-        CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-      run: |
-        echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-        echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-        echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-        echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-        echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-        echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-        echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
+        run: |
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
-    - name: Get Dependencies
-      run: flutter pub get
+      - name: Get Dependencies
+        run: flutter pub get
 
-    - name: Build macOS
-      run: flutter build macos --release
+      - name: Build macOS
+        run: flutter build macos --release
 
-    - name: Create DMG file for macOS Build
-      run: |
-        mkdir -p build/macos/Release
-        cp -R build/macos/Build/Products/Release/AnymeX.app build/macos/Release/
-        ln -s /Applications build/macos/Release/Applications
-        hdiutil create -volname "AnymeX" -srcfolder build/macos/Release -ov -format UDZO build/macos/Release/AnymeX.dmg
+      - name: Create DMG file for macOS Build
+        run: |
+          mkdir -p build/macos/Release
+          ln -s /Applications build/macos/Build/Products/Release/Applications
+          hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release -ov -format UDZO build/macos/Release/AnymeX.dmg
 
-    - name: Release macOS Builds
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "build/macos/Release/AnymeX.dmg"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        allowUpdates: true
-        tag: ${{ github.ref_name }}
+      - name: Release macOS Builds
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/macos/Release/AnymeX.dmg"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   ios-source-build:
     needs: build-ios
