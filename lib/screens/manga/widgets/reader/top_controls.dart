@@ -130,7 +130,7 @@ class ReaderTopControls extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    'Ch ${controller.currentChapter.value!.number}/${controller.chapterList.last.number}',
+                    'Chapter ${controller.currentChapter.value?.number?.round() ?? '-'} of ${controller.chapterList.last.number?.round() ?? '-'}',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 10,

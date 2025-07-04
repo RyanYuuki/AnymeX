@@ -9,12 +9,6 @@ import 'package:get/get.dart';
 
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 
-enum ReadingMode {
-  webtoon,
-  ltr,
-  rtl,
-}
-
 class ReadingPage extends StatefulWidget {
   final Media anilistData;
   final List<Chapter> chapterList;

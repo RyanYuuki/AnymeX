@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:developer';
 
@@ -12,7 +10,7 @@ import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/screens/manga/reading_page.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
@@ -29,10 +27,15 @@ class ReaderController extends GetxController {
   final OfflineStorageController offlineStorageController =
       Get.find<OfflineStorageController>();
 
-  final Rx<ReadingMode> activeMode = ReadingMode.webtoon.obs;
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
+
+  final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
+  final Rx<MangaPageViewDirection> readingDirection =
+      MangaPageViewDirection.down.obs;
+  final RxBool spacedPages = false.obs;
+  final RxBool overscrollToChapter = true.obs;
 
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
@@ -45,24 +48,37 @@ class ReaderController extends GetxController {
 
   void _initializeControllers() {
     pageViewController = MangaPageViewController();
-    pageViewController?.addPageChangeListener(onPageChanged);
   }
 
   void _getPreferences() {
-    activeMode.value = ReadingMode.values[
-        settingsController.preferences.get('reading_mode', defaultValue: 0)];
+    readingLayout.value = MangaPageViewMode.values[settingsController
+        .preferences
+        .get('reading_layout', defaultValue: 0 /* continuous */)];
+    readingDirection.value = MangaPageViewDirection.values[settingsController
+        .preferences
+        .get('reading_direction', defaultValue: 1 /* down */)];
     pageWidthMultiplier.value =
         settingsController.preferences.get('image_width') ?? 1;
     scrollSpeedMultiplier.value =
         settingsController.preferences.get('scroll_speed') ?? 1;
+    spacedPages.value =
+        settingsController.preferences.get('spaced_pages', defaultValue: false);
+    overscrollToChapter.value = settingsController.preferences
+        .get('overscroll_to_chapter', defaultValue: true);
   }
 
   void _savePreferences() {
-    settingsController.preferences.put('reading_mode', activeMode.value.index);
+    settingsController.preferences
+        .put('reading_layout', readingLayout.value.index);
+    settingsController.preferences
+        .put('reading_direction', readingDirection.value.index);
     settingsController.preferences
         .put('image_width', pageWidthMultiplier.value);
     settingsController.preferences
         .put('scroll_speed', scrollSpeedMultiplier.value);
+    settingsController.preferences.put('spaced_pages', spacedPages.value);
+    settingsController.preferences
+        .put('overscroll_to_chapter', overscrollToChapter.value);
   }
 
   void onPageChanged(int index) async {
@@ -117,6 +133,16 @@ class ReaderController extends GetxController {
     log(showControls.value.toString());
     showControls.value = !showControls.value;
     log(showControls.value.toString());
+  }
+
+  void toggleSpacedPages() {
+    spacedPages.value = !spacedPages.value;
+    savePreferences();
+  }
+
+  void toggleOverscrollToChapter() {
+    overscrollToChapter.value = !overscrollToChapter.value;
+    savePreferences();
   }
 
   void navigateToChapter(int index) async {
@@ -182,8 +208,14 @@ class ReaderController extends GetxController {
     }
   }
 
-  void changeActiveMode(ReadingMode readingMode) async {
-    activeMode.value = readingMode;
+  void changeReadingLayout(MangaPageViewMode mode) async {
+    readingLayout.value = mode;
+    savePreferences();
+  }
+
+  void changeReadingDirection(MangaPageViewDirection direction) async {
+    readingDirection.value = direction;
+    savePreferences();
   }
 
   void savePreferences() => _savePreferences();

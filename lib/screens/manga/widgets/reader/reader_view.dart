@@ -10,6 +10,9 @@ import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
 class ReaderView extends StatelessWidget {
+  // Size to use when images aren't ready (loading/failing)
+  static const initialPageSize = Size(300, 300);
+
   final ReaderController controller;
 
   const ReaderView({
@@ -96,77 +99,107 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildContentView(BuildContext context) {
+    final hasPreviousChapter =
+        controller.chapterList.indexOf(controller.currentChapter.value!) > 0;
+    final hasNextChapter =
+        controller.chapterList.indexOf(controller.currentChapter.value!) <
+            controller.chapterList.length - 1;
+    final isLoaded = controller.loadingState.value == LoadingState.loaded;
+    final currentLayout = controller.readingLayout.value;
+    final canOverscroll = controller.overscrollToChapter.value;
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => controller.toggleControls(),
       onDoubleTap: () {},
       child: MangaPageView(
-        mode: controller.activeMode.value == ReadingMode.webtoon
-            ? MangaPageViewMode.continuous
-            : MangaPageViewMode.paged,
-        direction: switch (controller.activeMode.value) {
-          ReadingMode.webtoon => MangaPageViewDirection.down,
-          ReadingMode.rtl => MangaPageViewDirection.left,
-          ReadingMode.ltr => MangaPageViewDirection.right,
-        },
+        mode: controller.readingLayout.value,
+        direction: controller.readingDirection.value,
         controller: controller.pageViewController,
         options: MangaPageViewOptions(
           padding: MediaQuery.paddingOf(context),
           mainAxisOverscroll: false,
           crossAxisOverscroll: false,
-          minZoomLevel:
-              controller.activeMode.value == ReadingMode.webtoon ? 0.5 : 1.0,
+          minZoomLevel: switch (currentLayout) {
+            MangaPageViewMode.continuous => 0.75,
+            MangaPageViewMode.paged => 1.0
+          },
           maxZoomLevel: 8.0,
+          spacing: controller.spacedPages.value ? 20 : 0,
           pageWidthLimit: getResponsiveSize(context,
               mobileSize: double.infinity,
               desktopSize: controller.defaultWidth.value *
                   controller.pageWidthMultiplier.value),
+          edgeIndicatorContainerSize: 240,
+          initialPageSize: initialPageSize,
+          precacheAhead: currentLayout == MangaPageViewMode.paged ? 2 : 0,
+          precacheBehind: currentLayout == MangaPageViewMode.paged ? 2 : 0,
         ),
         pageCount: controller.pageList.length,
         pageBuilder: (context, index) {
           return _buildImage(context, controller.pageList[index], index);
         },
         onPageChange: (index) => controller.onPageChanged(index),
+
+        // For previous/next chapter switching
         startEdgeDragIndicatorBuilder: (context, info) {
-          return Center(
-            child: AnimatedScale(
-              scale: info.isTriggered ? 1.5 : 1,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.elasticOut,
-              child: Icon(
-                Icons.skip_previous_rounded,
-                color: info.isTriggered ? Colors.white : Colors.white54,
-                size: 36,
+          return Column(
+            spacing: 16,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: info.isTriggered ? 1.6 : 1,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.elasticOut,
+                child: Icon(
+                  hasPreviousChapter
+                      ? Icons.skip_previous_rounded
+                      : Icons.block_rounded,
+                  color: info.isTriggered ? Colors.white : Colors.white54,
+                  size: 36,
+                ),
               ),
-            ),
+              Text(
+                hasPreviousChapter ? 'Previous chapter' : "No previous chapter",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: info.isTriggered ? Colors.white : Colors.white54),
+              )
+            ],
           );
         },
         endEdgeDragIndicatorBuilder: (context, info) {
-          return Center(
-            child: AnimatedScale(
-              scale: info.isTriggered ? 1.5 : 1,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.elasticOut,
-              child: Icon(
-                Icons.skip_next_rounded,
-                color: info.isTriggered ? Colors.white : Colors.white54,
-                size: 36,
+          return Column(
+            spacing: 16,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: info.isTriggered ? 1.6 : 1,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.elasticOut,
+                child: Icon(
+                  hasNextChapter
+                      ? Icons.skip_next_rounded
+                      : Icons.block_rounded,
+                  color: info.isTriggered ? Colors.white : Colors.white54,
+                  size: 36,
+                ),
               ),
-            ),
+              Text(
+                hasNextChapter ? 'Next chapter' : "No next chapter",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: info.isTriggered ? Colors.white : Colors.white54),
+              )
+            ],
           );
         },
-        onStartEdgeDrag:
-            controller.chapterList.indexOf(controller.currentChapter.value!) >
-                        0 &&
-                    controller.loadingState.value == LoadingState.loaded
-                ? () => controller.chapterNavigator(false)
-                : null,
-        onEndEdgeDrag:
-            controller.chapterList.indexOf(controller.currentChapter.value!) <
-                        controller.chapterList.length - 1 &&
-                    controller.loadingState.value == LoadingState.loaded
-                ? () => controller.chapterNavigator(true)
-                : null,
+        onStartEdgeDrag: hasPreviousChapter && canOverscroll && isLoaded
+            ? () => controller.chapterNavigator(false)
+            : null,
+        onEndEdgeDrag: hasNextChapter && canOverscroll && isLoaded
+            ? () => controller.chapterNavigator(true)
+            : null,
       ),
     );
   }
@@ -181,62 +214,66 @@ class ReaderView extends StatelessWidget {
               ? {'Referer': sourceController.activeMangaSource.value!.baseUrl!}
               : page.headers,
           fit: BoxFit.contain,
-          progressIndicatorBuilder: (context, url, progress) => SizedBox(
-            height: Get.height / 2,
-            width: double.infinity,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnymexProgressIndicator(
-                    value: progress.progress,
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Loading page ${index + 1}...'),
-                ],
+          progressIndicatorBuilder: (context, url, progress) {
+            return SizedBox.fromSize(
+              size: initialPageSize,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnymexProgressIndicator(
+                      value: progress.progress,
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Loading page ${index + 1}...'),
+                  ],
+                ),
               ),
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            height: Get.height / 2,
-            width: double.infinity,
-            color: Colors.grey.withOpacity(0.1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.broken_image_outlined,
-                  size: 48,
-                  color: Colors.grey.withOpacity(0.7),
+            );
+          },
+          errorWidget: (context, url, error) {
+            return SizedBox.fromSize(
+              size: initialPageSize,
+              child: Container(
+                color: Colors.grey.withOpacity(0.1),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.broken_image_outlined,
+                      size: 48,
+                      color: Colors.grey.withOpacity(0.7),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Failed to load page ${index + 1}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        // Force refresh the specific image
+                        final imageProvider = CachedNetworkImageProvider(
+                          page.url,
+                          headers: page.headers,
+                        );
+                        await imageProvider.evict();
+                        // Trigger rebuild of only this image widget
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        textStyle: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Failed to load page ${index + 1}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Force refresh the specific image
-                    final imageProvider = CachedNetworkImageProvider(
-                      page.url,
-                      headers: page.headers,
-                    );
-                    imageProvider.evict();
-                    // Trigger rebuild of only this image widget
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.refresh, size: 16),
-                  label: const Text('Retry'),
-                  style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    textStyle: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
