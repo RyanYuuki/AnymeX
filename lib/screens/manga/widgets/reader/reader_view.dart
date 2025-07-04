@@ -10,6 +10,9 @@ import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
 class ReaderView extends StatelessWidget {
+  // Size to use when images aren't ready (loading/failing)
+  static const initialPageSize = Size(300, 300);
+
   final ReaderController controller;
 
   const ReaderView({
@@ -128,6 +131,7 @@ class ReaderView extends StatelessWidget {
               desktopSize: controller.defaultWidth.value *
                   controller.pageWidthMultiplier.value),
           edgeIndicatorContainerSize: 240,
+          initialPageSize: initialPageSize,
           precacheAhead: currentLayout == MangaPageViewMode.paged ? 2 : 0,
           precacheBehind: currentLayout == MangaPageViewMode.paged ? 2 : 0,
         ),
@@ -201,9 +205,6 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context, PageUrl page, int index) {
-    // Size to use when images aren't ready (loading/failing)
-    const initialSize = Size(512, 512);
-
     return StatefulBuilder(
       builder: (context, setState) {
         return CachedNetworkImage(
@@ -215,7 +216,7 @@ class ReaderView extends StatelessWidget {
           fit: BoxFit.contain,
           progressIndicatorBuilder: (context, url, progress) {
             return SizedBox.fromSize(
-              size: initialSize,
+              size: initialPageSize,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +233,7 @@ class ReaderView extends StatelessWidget {
           },
           errorWidget: (context, url, error) {
             return SizedBox.fromSize(
-              size: initialSize,
+              size: initialPageSize,
               child: Container(
                 color: Colors.grey.withOpacity(0.1),
                 child: Column(
