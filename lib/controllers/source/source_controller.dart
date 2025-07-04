@@ -268,7 +268,7 @@ class SourceController extends GetxController implements BaseService {
       log('Fetched home page data.');
     } catch (error) {
       log('Error in fetchHomePage: $error');
-      Get.snackbar('Error', 'Failed to fetch data from sources.');
+      snackBar('Failed to fetch data from sources.');
     }
   }
 

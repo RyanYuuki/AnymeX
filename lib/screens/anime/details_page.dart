@@ -116,12 +116,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         setState(() {
           anilistData?.idMal = id;
         });
-      } else {
-        snackBar('Mapper Failed, Two way sync may not work');
       }
     } catch (e) {
       log("Media Syncer Failed => $e");
-      snackBar('Syncer Failed, Two way sync may not work');
     }
   }
 

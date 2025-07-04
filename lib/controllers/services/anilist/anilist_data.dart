@@ -609,7 +609,6 @@ averageScore
       return episodeList;
     } catch (e, stack) {
       log("Error fetching Anify data: $e\n$stack");
-      snackBar("Data not found for Anify, Trying Kitsu Now.");
 
       return await Kitsu.fetchKitsuEpisodes(animeId, episodeList)
           .catchError((_) => episodeList);
