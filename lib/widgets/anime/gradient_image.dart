@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -30,16 +31,21 @@ class GradientPoster extends StatelessWidget {
         SizedBox(
           height: isDesktop ? 460 : 400,
           child: KenBurns(
-            maxScale: 2.5,
+            maxScale: 1.5,
             minAnimationDuration: const Duration(milliseconds: 6000),
             maxAnimationDuration: const Duration(milliseconds: 20000),
-            child: NetworkSizedImage(
-              imageUrl: data?.cover ?? posterUrl,
-              errorImage: data?.poster,
-              radius: 0,
-              height: 300,
-              width: double.infinity,
-            ),
+            child: Obx(() {
+              return NetworkSizedImage(
+                imageUrl: data?.cover ?? posterUrl,
+                errorImage: data?.poster,
+                radius: 0,
+                height: 300,
+                width: double.infinity,
+                color: settingsController.liquidMode
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                    : null,
+              );
+            }),
           ),
         ),
         Container(

@@ -188,6 +188,7 @@ class NetworkSizedImage extends StatelessWidget {
   final double width;
   final Alignment alignment;
   final String? errorImage;
+  final Color? color;
   const NetworkSizedImage({
     super.key,
     required this.imageUrl,
@@ -196,6 +197,7 @@ class NetworkSizedImage extends StatelessWidget {
     required this.width,
     this.alignment = Alignment.center,
     this.errorImage,
+    this.color,
   });
 
   @override
@@ -207,6 +209,8 @@ class NetworkSizedImage extends StatelessWidget {
           height: height,
           fit: BoxFit.cover,
           alignment: alignment,
+          color: color,
+          colorBlendMode: color != null ? BlendMode.color : null,
           imageUrl: imageUrl,
           placeholder: (context, url) => placeHolderWidget(context),
           errorWidget: (context, url, error) {
