@@ -10,9 +10,6 @@ import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
 class ReaderView extends StatelessWidget {
-  // Size to use when images aren't ready (loading/failing)
-  static const initialPageSize = Size(300, 300);
-
   final ReaderController controller;
 
   const ReaderView({
@@ -25,16 +22,16 @@ class ReaderView extends StatelessWidget {
     return Obx(() {
       switch (controller.loadingState.value) {
         case LoadingState.loading:
-          return _buildLoadingView();
+          return _buildLoadingView(context);
         case LoadingState.error:
-          return _buildErrorView();
+          return _buildErrorView(context);
         case LoadingState.loaded:
           return _buildContentView(context);
       }
     });
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingView(BuildContext context) {
     return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +44,7 @@ class ReaderView extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorView() {
+  Widget _buildErrorView(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -62,7 +59,7 @@ class ReaderView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Failed to load chapter',
-              style: Theme.of(Get.context!).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -70,7 +67,7 @@ class ReaderView extends StatelessWidget {
               controller.errorMessage.value.isNotEmpty
                   ? controller.errorMessage.value
                   : 'Something went wrong while loading the pages',
-              style: Theme.of(Get.context!).textTheme.bodyMedium?.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey,
                   ),
               textAlign: TextAlign.center,
@@ -99,6 +96,8 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildContentView(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final initialPageSize = Size(size.width, size.height);
     final hasPreviousChapter =
         controller.chapterList.indexOf(controller.currentChapter.value!) > 0;
     final hasNextChapter =
@@ -132,8 +131,12 @@ class ReaderView extends StatelessWidget {
                   controller.pageWidthMultiplier.value),
           edgeIndicatorContainerSize: 240,
           initialPageSize: initialPageSize,
-          precacheAhead: currentLayout == MangaPageViewMode.paged ? 2 : 0,
-          precacheBehind: currentLayout == MangaPageViewMode.paged ? 2 : 0,
+          precacheAhead: currentLayout == MangaPageViewMode.paged
+              ? 2
+              : controller.preloadPages.value,
+          precacheBehind: currentLayout == MangaPageViewMode.paged
+              ? 2
+              : controller.preloadPages.value,
         ),
         pageCount: controller.pageList.length,
         pageBuilder: (context, index) {
@@ -205,6 +208,8 @@ class ReaderView extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context, PageUrl page, int index) {
+    final size = MediaQuery.of(context).size;
+    final initialPageSize = Size(size.width, size.height);
     return StatefulBuilder(
       builder: (context, setState) {
         return CachedNetworkImage(
@@ -252,13 +257,11 @@ class ReaderView extends StatelessWidget {
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: () async {
-                        // Force refresh the specific image
                         final imageProvider = CachedNetworkImageProvider(
                           page.url,
                           headers: page.headers,
                         );
                         await imageProvider.evict();
-                        // Trigger rebuild of only this image widget
                         setState(() {});
                       },
                       icon: const Icon(Icons.refresh, size: 16),

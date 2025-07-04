@@ -231,6 +231,7 @@ class CustomSliderTile extends StatelessWidget {
   final double sliderValue;
   final double max;
   final double min;
+  final String? label;
   final double? divisions;
   final Function(double value) onChanged;
   final Function(double value)? onChangedEnd;
@@ -241,6 +242,7 @@ class CustomSliderTile extends StatelessWidget {
     required this.title,
     required this.description,
     required this.sliderValue,
+    this.label,
     required this.onChanged,
     this.onChangedEnd,
     required this.max,
@@ -326,6 +328,7 @@ class CustomSliderTile extends StatelessWidget {
                       onChanged: onChanged,
                       max: max,
                       min: min,
+                      label: label ?? sliderValue.toStringAsFixed(1),
                       onDragEnd: onChangedEnd,
                       glowBlurMultiplier: 1,
                       glowSpreadMultiplier: 1,

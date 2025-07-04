@@ -57,6 +57,19 @@ class ReaderSettings {
                           ])
                             IconButton.filled(
                               isSelected: layout == currentLayout,
+                              style: IconButton.styleFrom(
+                                backgroundColor: layout == currentLayout
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.2)
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
+                                foregroundColor: layout == currentLayout
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).iconTheme.color,
+                              ),
                               tooltip: switch (layout) {
                                 MangaPageViewMode.continuous => 'Continuous',
                                 MangaPageViewMode.paged => 'Paged',
@@ -97,12 +110,26 @@ class ReaderSettings {
                           ])
                             IconButton.filled(
                               isSelected: direction == currentDirection,
+                              enableFeedback: true,
                               tooltip: switch (direction) {
                                 MangaPageViewDirection.down => "Top-Down",
                                 MangaPageViewDirection.right => "LTR",
                                 MangaPageViewDirection.up => "Bottom-Up",
                                 MangaPageViewDirection.left => "RTL",
                               },
+                              style: IconButton.styleFrom(
+                                backgroundColor: direction == currentDirection
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.2)
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
+                                foregroundColor: direction == currentDirection
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).iconTheme.color,
+                              ),
                               icon: switch (direction) {
                                 MangaPageViewDirection.down =>
                                   const Icon(Iconsax.arrow_down),
@@ -138,6 +165,23 @@ class ReaderSettings {
                       switchValue: controller.overscrollToChapter.value,
                       onChanged: (val) =>
                           controller.toggleOverscrollToChapter(),
+                    );
+                  }),
+                  Obx(() {
+                    return CustomSliderTile(
+                      title: 'Preload Page',
+                      sliderValue: controller.preloadPages.value.toDouble(),
+                      onChanged: (double value) {
+                        controller.preloadPages.value = value.toInt();
+                      },
+                      onChangedEnd: (e) => controller.savePreferences(),
+                      description:
+                          'Preload Pages ahead of time for faster loading (Consumes more network and ram)',
+                      icon: Icons.image_aspect_ratio_rounded,
+                      min: 1.0,
+                      max: 15.0,
+                      label: controller.preloadPages.value.toString(),
+                      divisions: 15,
                     );
                   }),
                   if (!Platform.isAndroid && !Platform.isIOS)

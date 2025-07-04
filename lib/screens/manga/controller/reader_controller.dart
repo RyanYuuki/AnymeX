@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -10,7 +9,6 @@ import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
@@ -39,10 +37,14 @@ class ReaderController extends GetxController {
 
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
+  RxInt preloadPages = 5.obs;
 
   final RxBool showControls = true.obs;
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
+
+  final Map<int, double> imageHeights = {};
+  final totalOffset = 0.0.obs;
 
   MangaPageViewController? pageViewController;
 
@@ -65,6 +67,7 @@ class ReaderController extends GetxController {
         settingsController.preferences.get('spaced_pages', defaultValue: false);
     overscrollToChapter.value = settingsController.preferences
         .get('overscroll_to_chapter', defaultValue: true);
+    preloadPages.value = settingsController.preferences.get('preload_pages');
   }
 
   void _savePreferences() {
@@ -79,6 +82,7 @@ class ReaderController extends GetxController {
     settingsController.preferences.put('spaced_pages', spacedPages.value);
     settingsController.preferences
         .put('overscroll_to_chapter', overscrollToChapter.value);
+    settingsController.preferences.put('preload_pages', preloadPages.value);
   }
 
   void onPageChanged(int index) async {
@@ -86,7 +90,6 @@ class ReaderController extends GetxController {
     currentPageIndex.value = number;
     currentChapter.value?.pageNumber = number;
     currentChapter.value?.totalPages = pageList.length;
-
     if (number == currentChapter.value?.totalPages) {
       _saveTracking();
     }
@@ -110,8 +113,6 @@ class ReaderController extends GetxController {
       offlineStorageController.addOrUpdateManga(
           media, chapterList, currentChapter.value);
     }
-
-    log('Saved chapter: ${savedChapter.value?.pageNumber} & current chapter: ${currentChapter.value?.number}');
 
     serviceHandler.updateListEntry(UpdateListEntryParams(
         listId: media.id,
@@ -161,7 +162,20 @@ class ReaderController extends GetxController {
   }
 
   void chapterNavigator(bool next) async {
-    final index = chapterList.indexOf(currentChapter.value!);
+    final current = currentChapter.value;
+    if (current == null) return;
+
+    final targetNumber = next ? current.number! + 1 : current.number! - 1;
+
+    final numberMatchIndex =
+        chapterList.indexWhere((chapter) => chapter.number == targetNumber);
+
+    if (numberMatchIndex != -1) {
+      navigateToChapter(numberMatchIndex);
+      return;
+    }
+
+    final index = chapterList.indexOf(current);
     if (index == -1) return;
 
     final newIndex = next ? index + 1 : index - 1;
@@ -172,6 +186,7 @@ class ReaderController extends GetxController {
 
   Future<void> fetchImages(String url) async {
     _initTracking();
+    currentPageIndex.value = 1;
     try {
       loadingState.value = LoadingState.loading;
       pageList.clear();
@@ -182,15 +197,18 @@ class ReaderController extends GetxController {
 
       if (data != null && data.isNotEmpty) {
         pageList.value = data;
-        currentPageIndex.value = savedChapter.value?.pageNumber ?? 1;
-
-        currentChapter.value?.totalPages = pageList.length;
         loadingState.value = LoadingState.loaded;
 
         if (savedChapter.value?.pageNumber != null &&
-            savedChapter.value!.pageNumber! > 1) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          navigateToPage(savedChapter.value!.pageNumber! - 1);
+            savedChapter.value!.pageNumber! <= pageList.length) {
+          currentPageIndex.value = savedChapter.value?.pageNumber ?? 1;
+          currentChapter.value?.totalPages = pageList.length;
+
+          if (savedChapter.value?.pageNumber != null &&
+              savedChapter.value!.pageNumber! > 1) {
+            await Future.delayed(const Duration(milliseconds: 100));
+            navigateToPage(savedChapter.value!.pageNumber! - 1);
+          }
         }
       } else {
         throw Exception('No pages found for this chapter');
