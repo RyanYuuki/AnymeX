@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/core/Model/Manga.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
 
@@ -47,7 +49,12 @@ class CacheController extends GetxController {
       case ServicesType.simkl:
         return Media.fromSimkl(parsedMap, true);
       default:
-        return Media.fromJson(parsedMap);
+        parsedMap['status'] = parseStatusToInt(parsedMap['status']);
+        return Media.fromManga(
+            MManga.fromJson(parsedMap),
+            serviceHandler.extensionService.lastUpdatedSource.value == "ANIME"
+                ? MediaType.anime
+                : MediaType.manga);
     }
   }
 
@@ -63,5 +70,22 @@ class CacheController extends GetxController {
       default:
         return cachedExtensionData;
     }
+  }
+}
+
+int parseStatusToInt(String status) {
+  switch (status) {
+    case 'ONGOING':
+      return 0;
+    case 'COMPLETED':
+      return 1;
+    case 'ONHIATUS':
+      return 2;
+    case 'CANCELED':
+      return 3;
+    case 'PUBLISHINGFINISHED':
+      return 4;
+    default:
+      return -1;
   }
 }
