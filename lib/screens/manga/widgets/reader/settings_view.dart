@@ -168,6 +168,15 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
+                    return CustomSwitchTile(
+                      icon: Iconsax.eye,
+                      title: "Persistent Page Indicator",
+                      description: "Always show page indicator",
+                      switchValue: controller.showPageIndicator.value,
+                      onChanged: (val) => controller.togglePageIndicator(),
+                    );
+                  }),
+                  Obx(() {
                     return CustomSliderTile(
                       title: 'Preload Page',
                       sliderValue: controller.preloadPages.value.toDouble(),

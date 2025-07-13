@@ -214,6 +214,10 @@ class Settings extends GetxController {
   set enableSwipeControls(bool value) =>
       _setPlayerSetting((s) => s?.enableSwipeControls = value);
 
+  int get markAsCompleted => _getPlayerSetting((s) => s.markAsCompleted);
+  set markAsCompleted(int value) =>
+      _getPlayerSetting((s) => s.markAsCompleted = value);
+
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;

@@ -144,16 +144,18 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
 
   List<Source> _getRecommendedEntries(List<Source> data) {
     final extens = [
+      'special',
       ...(widget.mediaType == MediaType.anime
           ? Extensions().getRecommmendedExtensions()
           : Extensions().getRecommmendedMangaExtensions()),
-      'special'
     ];
-    return data
-        .where((element) =>
-            extens.contains(element.name?.toLowerCase()) &&
-            element.lang == 'en')
-        .toList();
+
+    return data.where((element) {
+      final name = element.name?.toLowerCase() ?? '';
+      final lang = element.lang?.toLowerCase() ?? '';
+      final matchesExtension = extens.any((ext) => name.contains(ext));
+      return matchesExtension && (lang == 'en' || lang == 'all');
+    }).toList();
   }
 
   SliverGroupedListView<Source, String> _buildUpdatePendingList(

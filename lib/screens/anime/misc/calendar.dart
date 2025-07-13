@@ -398,10 +398,12 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
               ),
             ),
             Positioned.fill(
-              child: Blur(
-                blur: 4,
-                blurColor: Colors.transparent,
-                child: Container(),
+              child: RepaintBoundary(
+                child: Blur(
+                  blur: 4,
+                  blurColor: Colors.transparent,
+                  child: Container(),
+                ),
               ),
             ),
             Positioned.fill(

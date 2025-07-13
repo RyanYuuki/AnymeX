@@ -167,12 +167,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       final episodeNum = widget.currentEpisode.number.toInt() - 1;
       trackAnilistAndLocal(episodeNum, widget.currentEpisode);
     }
-    ever(isPlaying, (playing) {
-      if (!playing) {
-        _hideControlsTimer?.cancel();
-      } else if (showControls.value) {
-        _startHideControlsTimer();
-      }
+    ever(isBuffering, (buffering) {
+      if (showControls.value && !buffering) _startHideControlsTimer();
     });
     _keyboardListenerFocusNode = FocusNode(
       canRequestFocus: !settings.isTV.value,
@@ -191,7 +187,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final percentageCompletion =
         (position.inMilliseconds / episodeDuration.value.inMilliseconds) * 100;
 
-    bool crossed = percentageCompletion >= 90;
+    bool crossed = percentageCompletion >= settings.markAsCompleted;
     final epNum = crossed
         ? currentEpisode.number.toInt()
         : currentEpisode.number.toInt() - 1;
@@ -238,12 +234,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       episodeDuration.value = Duration.zero;
       bufferred.value = Duration.zero;
     }
-    player.open(Media(
-        episode.value.url
-            .replaceAll('wf1.jonextugundu.net', 'stormywind74.xyz'),
-        httpHeaders: {
-          'Referer': sourceController.activeSource.value!.baseUrl ?? ''
-        },
+    player.open(Media(episode.value.url,
+        httpHeaders: episode.value.headers ??
+            {'Referer': sourceController.activeSource.value!.baseUrl!},
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
     player.setRate(prevRate.value);
@@ -636,6 +629,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   void _startHideControlsTimer() {
     if (!isPlaying.value) {
+      _hideControlsTimer?.cancel();
       return;
     }
     _hideControlsTimer?.cancel();
@@ -710,7 +704,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             if (isMobile && settings.enableSwipeControls) ...[
               _buildBrightnessSlider(),
               _buildVolumeSlider(),
-            ]
+            ],
+            Obx(() => isBuffering.value && !showControls.value
+                ? _buildBufferingIndicator()
+                : const SizedBox.shrink()),
           ],
         ),
       ),
@@ -1161,14 +1158,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     return AnymexOnTap(
                       onTap: () {
                         episode.value = e;
-                        player.open(Media(e.url,
-                            start: currentPosition.value,
-                            end: episodeDuration.value,
-                            httpHeaders: {
-                              'Referer': sourceController
-                                      .activeSource.value!.baseUrl ??
-                                  ''
-                            }));
+                        player.open(Media(
+                          e.url,
+                          start: currentPosition.value,
+                          end: episodeDuration.value,
+                          httpHeaders: episode.value.headers ??
+                              {
+                                'Referer': sourceController
+                                    .activeSource.value!.baseUrl!
+                              },
+                        ));
                         Get.back();
                       },
                       child: Padding(

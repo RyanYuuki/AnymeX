@@ -512,7 +512,7 @@ class _MyLibraryState extends State<MyLibrary> {
                                     controller: controller,
                                     onChanged: _search,
                                     hintText: isAnimeSelected.value
-                                        ? 'Search ${selectedService.value == ServicesType.simkl ? 'Movies' : 'Anime'}...'
+                                        ? 'Search ${selectedService.value == ServicesType.simkl ? 'Movies/Series' : 'Anime'}...'
                                         : 'Search ${selectedService.value == ServicesType.simkl ? 'Series' : 'Manga'}...',
                                   ),
                                 ),
@@ -658,7 +658,7 @@ class _MyLibraryState extends State<MyLibrary> {
                               const SizedBox(width: 8),
                               Text(
                                 selectedService.value == ServicesType.simkl
-                                    ? 'Movies'
+                                    ? 'Movies & Series'
                                     : 'Anime',
                                 style: TextStyle(
                                   fontFamily: "Poppins-Bold",
@@ -673,58 +673,63 @@ class _MyLibraryState extends State<MyLibrary> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _switchCategory(false),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            boxShadow: !isAnimeSelected.value
-                                ? [glowingShadow(context)]
-                                : [],
-                            color: !isAnimeSelected.value
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .secondaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
+                    if (serviceHandler.serviceType.value !=
+                        ServicesType.simkl) ...[
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => _switchCategory(false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              boxShadow: !isAnimeSelected.value
+                                  ? [glowingShadow(context)]
+                                  : [],
                               color: !isAnimeSelected.value
                                   ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey.withOpacity(0.5),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                selectedService.value == ServicesType.simkl
-                                    ? Iconsax.monitor
-                                    : Icons.menu_book_outlined,
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
                                 color: !isAnimeSelected.value
-                                    ? Theme.of(context).colorScheme.onPrimary
-                                    : Colors.grey,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey.withOpacity(0.5),
+                                width: 1,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                selectedService.value == ServicesType.simkl
-                                    ? 'Series'
-                                    : 'Manga',
-                                style: TextStyle(
-                                  fontFamily: "Poppins-Bold",
-                                  fontSize: 16,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  selectedService.value == ServicesType.simkl
+                                      ? Iconsax.monitor
+                                      : Icons.menu_book_outlined,
                                   color: !isAnimeSelected.value
                                       ? Theme.of(context).colorScheme.onPrimary
                                       : Colors.grey,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 8),
+                                Text(
+                                  selectedService.value == ServicesType.simkl
+                                      ? 'Series'
+                                      : 'Manga',
+                                  style: TextStyle(
+                                    fontFamily: "Poppins-Bold",
+                                    fontSize: 16,
+                                    color: !isAnimeSelected.value
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ]
                   ],
                 ),
               ),

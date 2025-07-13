@@ -191,8 +191,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     children: [
                       IconButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withOpacity(0.5),
                         ),
                         onPressed: () {
                           Get.back();
@@ -298,12 +300,13 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 CustomSliderTile(
                                   sliderValue: settings.seekDuration.toDouble(),
                                   max: 50,
-                                  divisions: 9,
+                                  divisions: 10,
                                   onChanged: (double value) {
                                     setState(() {
                                       settings.seekDuration = value.toInt();
                                     });
                                   },
+                                  label: settings.seekDuration.toString(),
                                   title: 'DoubleTap to Seek',
                                   description:
                                       'Adjust Double Tap To Seek Duration',
@@ -313,12 +316,27 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   sliderValue: settings.skipDuration.toDouble(),
                                   max: 120,
                                   divisions: 24,
+                                  label: settings.skipDuration.toString(),
                                   onChanged: (double value) {
                                     settings.skipDuration = value.toInt();
                                   },
                                   title: 'MegaSkip Duration',
                                   description: 'Adjust MegaSkip Duration',
                                   icon: Iconsax.forward5,
+                                ),
+                                CustomSliderTile(
+                                  sliderValue:
+                                      settings.markAsCompleted.toDouble(),
+                                  max: 100,
+                                  divisions: 20,
+                                  label: settings.markAsCompleted.toString(),
+                                  onChanged: (double value) {
+                                    settings.markAsCompleted = value.toInt();
+                                  },
+                                  title: 'Mark As Watched',
+                                  description:
+                                      'How much in percentage to mark episode as watched',
+                                  icon: Iconsax.tick_circle,
                                 ),
                               ],
                             )),

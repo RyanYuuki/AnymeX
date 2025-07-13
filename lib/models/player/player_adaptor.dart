@@ -42,6 +42,8 @@ class PlayerSettings {
   bool autoSkipOnce;
   @HiveField(18)
   bool enableSwipeControls;
+  @HiveField(19)
+  int markAsCompleted;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -62,5 +64,6 @@ class PlayerSettings {
       this.autoSkipED = false,
       this.autoSkipOP = false,
       this.autoSkipOnce = false,
-      this.enableSwipeControls = true});
+      this.enableSwipeControls = true,
+      this.markAsCompleted = 90});
 }

@@ -27,16 +27,15 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool test = false;
   @override
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
           body: SuperListView(
-                  padding: getResponsiveValue(context,
+        padding: getResponsiveValue(context,
             mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
-                  children: [
+        children: [
           const Row(
             children: [
               CustomBackButton(),
@@ -48,7 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 30),
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12),
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
@@ -111,8 +110,8 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           )
-                  ],
-                )),
+        ],
+      )),
     );
   }
 }
