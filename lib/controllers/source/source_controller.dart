@@ -135,7 +135,7 @@ class SourceController extends GetxController implements BaseService {
       log('Extensions initialized.');
     } catch (e) {
       log('Error initializing extensions: $e');
-      snackBar('Failed to initialize extensions.');
+      errorSnackBar('Failed to initialize extensions.');
     }
   }
 
@@ -268,7 +268,7 @@ class SourceController extends GetxController implements BaseService {
       log('Fetched home page data.');
     } catch (error) {
       log('Error in fetchHomePage: $error');
-      snackBar('Failed to fetch data from sources.');
+      errorSnackBar('Failed to fetch data from sources.');
     }
   }
 
@@ -319,8 +319,9 @@ class SourceController extends GetxController implements BaseService {
     final data = await getDetail(
         url: id,
         source: (isAnime ? activeSource.value : activeMangaSource.value)!);
-    cacheController.addCache(data!.toJson());
-    return Media.fromManga(data, isAnime ? MediaType.anime : MediaType.manga);
+    if (serviceHandler.serviceType.value != ServicesType.extensions)
+      cacheController.addCache(data!.toJson());
+    return Media.fromManga(data!, isAnime ? MediaType.anime : MediaType.manga);
   }
 
   @override

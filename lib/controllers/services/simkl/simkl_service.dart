@@ -272,7 +272,7 @@ class SimklService extends GetxController
       final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
 
       if (token == null || apiKey == null) {
-        snackBar('Authentication token or API key missing');
+        log('Authentication token or API key missing');
         return;
       }
 
@@ -321,7 +321,7 @@ class SimklService extends GetxController
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       log('Exception: $e\n$stack');
-      snackBar('An unexpected error occurred');
+      errorSnackBar('An unexpected error occurred');
     }
   }
 

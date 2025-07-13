@@ -762,14 +762,13 @@ averageScore
         cacheController.addCache(media);
         return Media.fromJson(media);
       } else if (response.statusCode == 429) {
-        snackBar('Chill for a min, you got rate limited.');
+        warningSnackBar('Chill for a min, you got rate limited.');
         throw Exception(response.body);
       } else {
         throw Exception(response.body);
       }
     } catch (e) {
       log('Error occurred while fetching details: $e');
-      snackBar('Anilist Acting up');
     }
     return Media();
   }

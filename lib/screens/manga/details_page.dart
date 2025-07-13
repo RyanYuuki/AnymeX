@@ -98,6 +98,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   void _checkMangaPresence() {
+    if(serviceHandler.serviceType.value == ServicesType.extensions) return;
     fetcher.onlineService
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = fetcher.onlineService.currentMedia;
@@ -138,16 +139,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       });
 
       if (isExtensions) {
+        log("Data Loaded for media => ${widget.media.title}");
         _processExtensionData(tempData);
       } else {
         await _mapToService();
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e.toString().contains("dynamic")) {
         _fetchAnilistData();
       }
       log(e.toString());
-      snackBar("Retrying!, $e", duration: 2000);
+      log(stackTrace.toString());
+      snackBar("Retrying Fetch AnilistData!, $e", duration: 2000);
     }
   }
 
@@ -191,7 +194,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       if (e.toString().contains("dynamic")) {
         _fetchSourceDetails(media);
       }
-      snackBar("Retrying!, $e", duration: 2000);
+      snackBar("Retrying Fetch SourceData!, $e", duration: 2000);
+      log(e.toString());
     }
   }
 

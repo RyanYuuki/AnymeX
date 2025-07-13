@@ -472,12 +472,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       const Spacer(),
                       IconButton(
                           onPressed: () {
-                            snackBar("dont know what to do with it WIP");
+                            snackBar("WIP");
                           },
                           icon: const Icon(Iconsax.heart)),
                       IconButton(
                           onPressed: () {
-                            snackBar("dont know what to do with it WIP");
+                            snackBar("WIP");
                           },
                           icon: const Icon(Icons.share)),
                     ],

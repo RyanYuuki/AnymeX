@@ -159,7 +159,7 @@ class LoggerInterceptor extends InterceptorContract {
     debugPrint(
         "----- Response -----\n${response.request?.method}: ${response.request?.url}, statusCode: ${response.statusCode} ${cloudflare ? "Failed to bypass Cloudflare" : ""}");
     if (cloudflare) {
-      snackBar("${response.statusCode} Failed to bypass Cloudflare");
+      errorSnackBar("${response.statusCode} Failed to bypass Cloudflare");
     }
     return response;
   }
