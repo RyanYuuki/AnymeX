@@ -222,9 +222,27 @@ class UpdateManager {
   }
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
-    latestVersion = latestVersion.replaceAll(RegExp(r'v|-.*$'), '');
-    log("Current Ver: $currentVersion, Latest Ver: $latestVersion");
-    return currentVersion != latestVersion;
+    final tagMatch = RegExp(r'-(hotfix|beta|alpha)', caseSensitive: false)
+        .firstMatch(latestVersion);
+    final hasSpecialTag = tagMatch != null;
+
+    final strippedLatest = latestVersion.replaceAll(RegExp(r'v|-.*$'), '');
+    final strippedCurrent = currentVersion.replaceAll(RegExp(r'v|-.*$'), '');
+
+    log("Current Ver: $strippedCurrent, Latest Ver: $strippedLatest");
+
+    List<int> parseVersion(String v) => v.split('.').map(int.parse).toList();
+    final currentParts = parseVersion(strippedCurrent);
+    final latestParts = parseVersion(strippedLatest);
+
+    for (int i = 0; i < latestParts.length; i++) {
+      if (i >= currentParts.length || latestParts[i] > currentParts[i]) {
+        return true;
+      } else if (latestParts[i] < currentParts[i]) {
+        return false;
+      }
+    }
+    return hasSpecialTag;
   }
 
   Future<String> _getCurrentVersion() async {

@@ -147,7 +147,11 @@ void main(List<String> args) async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
-    windowManager.setTitle("AnymeX (●'◡'●)");
+    try {
+      windowManager.setTitle("AnymeX (●'◡'●)");
+    } catch(e) {
+      windowManager.setTitle("AnymeX");
+    }
     if (defaultTargetPlatform == TargetPlatform.windows) {
       try {
         final availableVersion = await WebViewEnvironment.getAvailableVersion();

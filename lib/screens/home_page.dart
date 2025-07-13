@@ -160,6 +160,23 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           );
+                        } else if (data.isNotEmpty) {
+                          children.insert(
+                            0,
+                            SizedBox(
+                              height: 100,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    cacheController.getStoredAnime().length,
+                                itemBuilder: (context, i) {
+                                  final media =
+                                      cacheController.getStoredAnime()[i];
+                                  return RecentlyOpenedAnimeCard(media: media);
+                                },
+                              ),
+                            ),
+                          );
                         }
                         return Column(children: children);
                       }),

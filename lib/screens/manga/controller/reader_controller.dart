@@ -10,6 +10,7 @@ import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
@@ -141,9 +142,13 @@ class ReaderController extends GetxController {
   }
 
   void toggleControls() {
-    log(showControls.value.toString());
     showControls.value = !showControls.value;
-    log(showControls.value.toString());
+
+    if (showControls.value) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
   }
 
   void togglePageIndicator() {
