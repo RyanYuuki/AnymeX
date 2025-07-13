@@ -1,13 +1,16 @@
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -36,6 +39,64 @@ enum BlurStrength {
   const BlurStrength(this.radius, this.label);
   final int radius;
   final String label;
+}
+
+class FastBlurProcessor {
+  static Uint8List _fastBoxBlur(
+      Uint8List pixels, int width, int height, int radius) {
+    if (radius <= 0) return pixels;
+    final Uint8List output = Uint8List(pixels.length);
+
+    for (int y = 0; y < height; y++) {
+      int sum = 0;
+      int count = 0;
+
+      for (int x = 0; x < radius && x < width; x++) {
+        final int idx = (y * width + x) * 4;
+        sum += pixels[idx];
+        count++;
+      }
+
+      for (int x = 0; x < width; x++) {
+        final int idx = (y * width + x) * 4;
+
+        if (x + radius < width) {
+          final int newIdx = (y * width + x + radius) * 4;
+          sum += pixels[newIdx];
+          count++;
+        }
+
+        if (x - radius - 1 >= 0) {
+          final int oldIdx = (y * width + x - radius - 1) * 4;
+          sum -= pixels[oldIdx];
+          count--;
+        }
+
+        output[idx] = (sum / count).round();
+        output[idx + 1] = pixels[idx + 1];
+        output[idx + 2] = pixels[idx + 2];
+        output[idx + 3] = pixels[idx + 3];
+      }
+    }
+
+    return output;
+  }
+
+  static Uint8List _ultraFastBlur(
+      Uint8List pixels, int width, int height, int radius) {
+    if (radius <= 0) return pixels;
+
+    const int passes = 3;
+    final int smallRadius = (radius / passes).round();
+
+    Uint8List current = pixels;
+
+    for (int pass = 0; pass < passes; pass++) {
+      current = _fastBoxBlur(current, width, height, smallRadius);
+    }
+
+    return current;
+  }
 }
 
 class Liquid {
@@ -132,9 +193,9 @@ class Liquid {
       );
 
       progressController.setProcessing(true);
-      progressController.updateProgress('Preparing to process image...', 0.1);
+      progressController.updateProgress('Preparing to process image...', 0.05);
 
-      await _processAndSaveBlurredImage(
+      await _processAndSaveBlurredImageFast(
           imagePath, progressController, blurStrength);
     } catch (e) {
       log('Error processing image: $e');
@@ -147,55 +208,146 @@ class Liquid {
     }
   }
 
-  static Future<String?> _processImageInIsolate(
-      Map<String, dynamic> params) async {
+  static Future<Uint8List?> _gpuBlurImage(
+    Uint8List imageBytes,
+    int blurRadius,
+    Function(String, double) onProgress,
+  ) async {
+    try {
+      onProgress('Decoding image with GPU optimization...', 0.2);
+
+      final ui.Codec codec = await ui.instantiateImageCodec(imageBytes);
+      final ui.FrameInfo frame = await codec.getNextFrame();
+      final ui.Image originalImage = frame.image;
+
+      onProgress('Preparing GPU blur operation...', 0.3);
+
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(recorder);
+
+      final int width = originalImage.width;
+      final int height = originalImage.height;
+      const double maxDimension = 1920.0;
+
+      double scale = 1.0;
+      if (width > maxDimension || height > maxDimension) {
+        scale = maxDimension / (width > height ? width : height);
+      }
+
+      final int scaledWidth = (width * scale).round();
+      final int scaledHeight = (height * scale).round();
+
+      onProgress('Applying GPU-accelerated blur...', 0.5);
+
+      canvas.scale(scale, scale);
+
+      canvas.saveLayer(
+        Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+        Paint()
+          ..imageFilter = ui.ImageFilter.blur(
+            sigmaX: blurRadius.toDouble(),
+            sigmaY: blurRadius.toDouble(),
+          ),
+      );
+
+      canvas.drawImage(originalImage, Offset.zero, Paint());
+      canvas.restore();
+
+      onProgress('Finalizing GPU processing...', 0.8);
+
+      final ui.Picture picture = recorder.endRecording();
+      final ui.Image blurredImage =
+          await picture.toImage(scaledWidth, scaledHeight);
+
+      onProgress('Encoding final image...', 0.9);
+
+      final ByteData? byteData =
+          await blurredImage.toByteData(format: ui.ImageByteFormat.png);
+
+      originalImage.dispose();
+      blurredImage.dispose();
+      picture.dispose();
+
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      debugPrint('GPU blur error: $e');
+      return null;
+    }
+  }
+
+  static Future<String?> _cpuOptimizedBlur(Map<String, dynamic> params) async {
     try {
       final String imagePath = params['imagePath'];
       final String outputPath = params['outputPath'];
       final int blurRadius = params['blurRadius'];
       final SendPort? progressPort = params['progressPort'];
 
-      progressPort?.send({'step': 'Loading image file...', 'progress': 0.3});
+      progressPort
+          ?.send({'step': 'Loading image (CPU optimized)...', 'progress': 0.1});
 
       final File originalFile = File(imagePath);
       final Uint8List imageBytes = await originalFile.readAsBytes();
 
-      progressPort?.send({'step': 'Decoding image...', 'progress': 0.4});
+      progressPort?.send({'step': 'Decoding image...', 'progress': 0.2});
 
       img.Image? originalImage = img.decodeImage(imageBytes);
       if (originalImage == null) return null;
 
-      if (originalImage.width > 1920 || originalImage.height > 1080) {
-        progressPort?.send({
-          'step': 'Resizing image for optimal processing...',
-          'progress': 0.5
-        });
-        originalImage = img.copyResize(originalImage, width: 1920);
+      const int maxDimension = 1280;
+      if (originalImage.width > maxDimension ||
+          originalImage.height > maxDimension) {
+        progressPort
+            ?.send({'step': 'Optimizing image size...', 'progress': 0.3});
+
+        final double scale = maxDimension /
+            (originalImage.width > originalImage.height
+                ? originalImage.width
+                : originalImage.height);
+
+        originalImage = img.copyResize(
+          originalImage,
+          width: (originalImage.width * scale).round(),
+          height: (originalImage.height * scale).round(),
+          interpolation: img.Interpolation.linear,
+        );
       }
 
       progressPort
-          ?.send({'step': 'Applying gaussian blur effect...', 'progress': 0.6});
+          ?.send({'step': 'Applying ultra-fast blur...', 'progress': 0.5});
 
-      img.Image blurredImage =
-          img.gaussianBlur(originalImage, radius: blurRadius);
+      final Uint8List pixels = originalImage.getBytes();
+      final int width = originalImage.width;
+      final int height = originalImage.height;
+
+      final Uint8List blurredPixels = FastBlurProcessor._ultraFastBlur(
+        pixels,
+        width,
+        height,
+        blurRadius,
+      );
+
+      progressPort?.send({'step': 'Reconstructing image...', 'progress': 0.8});
+
+      final img.Image blurredImage = img.Image.fromBytes(
+        width: width,
+        height: height,
+        bytes: blurredPixels.buffer,
+      );
 
       progressPort
-          ?.send({'step': 'Encoding processed image...', 'progress': 0.8});
+          ?.send({'step': 'Saving optimized image...', 'progress': 0.9});
 
       final File savedFile = File(outputPath);
       await savedFile.writeAsBytes(img.encodeJpg(blurredImage, quality: 85));
 
-      progressPort
-          ?.send({'step': 'Saving to device storage...', 'progress': 0.9});
-
       return outputPath;
     } catch (e) {
-      debugPrint('Error in isolate: $e');
+      debugPrint('CPU blur error: $e');
       return null;
     }
   }
 
-  static Future<void> _processAndSaveBlurredImage(
+  static Future<void> _processAndSaveBlurredImageFast(
     String imagePath,
     ProgressController progressController,
     BlurStrength blurStrength,
@@ -203,44 +355,65 @@ class Liquid {
     try {
       final settings = Get.find<Settings>();
 
-      progressController.updateProgress(
-          'Clearing previous background...', 0.25);
+      progressController.updateProgress('Clearing previous background...', 0.1);
       await _clearLiquidBackground();
 
       final Directory appDocDir = await getApplicationDocumentsDirectory();
       final String savedPath = path.join(appDocDir.path,
           'liquid_background_${DateTime.now().microsecondsSinceEpoch}.jpg');
 
-      final ReceivePort progressPort = ReceivePort();
+      progressController.updateProgress(
+          'Initializing GPU acceleration...', 0.15);
 
-      progressPort.listen((data) {
-        if (data is Map<String, dynamic>) {
-          final step = data['step'] as String?;
-          final progress = data['progress'] as double?;
-          if (step != null && progress != null) {
-            progressController.updateProgress(step, progress);
+      final File originalFile = File(imagePath);
+      final Uint8List imageBytes = await originalFile.readAsBytes();
+
+      String? result;
+
+      final Uint8List? gpuResult = await _gpuBlurImage(
+        imageBytes,
+        blurStrength.radius,
+        (step, progress) => progressController.updateProgress(step, progress),
+      );
+
+      if (gpuResult != null) {
+        progressController.updateProgress(
+            'Saving GPU-processed image...', 0.95);
+        await File(savedPath).writeAsBytes(gpuResult);
+        result = savedPath;
+      } else {
+        progressController.updateProgress(
+            'Falling back to CPU optimization...', 0.4);
+
+        final ReceivePort progressPort = ReceivePort();
+        progressPort.listen((data) {
+          if (data is Map<String, dynamic>) {
+            final step = data['step'] as String?;
+            final progress = data['progress'] as double?;
+            if (step != null && progress != null) {
+              progressController.updateProgress(step, progress);
+            }
           }
-        }
-      });
+        });
 
-      final String? result = await compute(_processImageInIsolate, {
-        'imagePath': imagePath,
-        'outputPath': savedPath,
-        'blurRadius': blurStrength.radius,
-        'progressPort': progressPort.sendPort,
-      });
+        result = await compute(_cpuOptimizedBlur, {
+          'imagePath': imagePath,
+          'outputPath': savedPath,
+          'blurRadius': blurStrength.radius,
+          'progressPort': progressPort.sendPort,
+        });
 
-      progressPort.close();
+        progressPort.close();
+      }
 
       if (result != null) {
-        progressController.updateProgress('Applying new background...', 0.95);
+        progressController.updateProgress('Applying new background...', 0.98);
         settings.liquidBackgroundPath = result;
         log('Liquid background saved successfully: $result');
 
         progressController.updateProgress(
             'Background applied successfully! ✓', 1.0);
-        await Future.delayed(const Duration(seconds: 1));
-        Get.delete<ProgressController>();
+        await Future.delayed(const Duration(milliseconds: 800));
       } else {
         progressController.updateProgress('Failed to process image', 0.0);
         log('Failed to process image');
@@ -268,13 +441,7 @@ class Liquid {
   }
 
   static void _showErrorSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    errorSnackBar(message);
   }
 }
 
@@ -325,12 +492,24 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      'Set Background',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Set Background',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'GPU-accelerated processing',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
@@ -401,12 +580,22 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Blur Strength',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.tune_rounded,
+                        color: colorScheme.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Blur Strength',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   ...BlurStrength.values.map((strength) {
@@ -429,7 +618,7 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                           ),
                         ),
                         subtitle: Text(
-                          'Blur radius: ${strength.radius}px',
+                          'Optimized for speed • ~${strength.radius < 50 ? '3-5' : strength.radius < 90 ? '5-7' : '7-10'}s',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -450,7 +639,6 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
               ),
             ),
 
-            // Action Buttons
             Container(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -496,13 +684,13 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.auto_fix_high_rounded,
+                            Icons.flash_on_rounded,
                             size: 18,
                             color: colorScheme.onPrimary,
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Apply Background',
+                            'Fast Process',
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w600,

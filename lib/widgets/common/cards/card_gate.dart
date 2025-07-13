@@ -78,7 +78,7 @@ class MediaCardGate extends StatelessWidget {
   CarouselData convertData(OfflineMedia data, {bool isManga = false}) {
     return CarouselData(
         title: data.name,
-        id: data.id,
+        id: data.id.toString(),
         poster: data.poster,
         extraData: data.rating,
         source: (isManga

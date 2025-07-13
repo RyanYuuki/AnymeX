@@ -5,6 +5,7 @@ import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -154,7 +155,9 @@ class SettingsSheet extends StatelessWidget {
             ),
             AnymexOnTap(
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    snackBar('This feature is not available yet.');
+                  },
                   style: ElevatedButton.styleFrom(
                       backgroundColor:
                           Theme.of(context).colorScheme.surfaceContainerHighest,
