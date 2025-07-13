@@ -987,10 +987,10 @@ packages:
     dependency: "direct main"
     description:
       name: manga_page_view
-      sha256: "218323434ef87f55102514f440d37ea0c4e28584d78f6230f46a6fb0cf3cf6ed"
+      sha256: "1e075fe21396c4bd73d2c092a5a628273ceac2cc92553e175c7bd02eaf9d2c66"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.5"
   markdown:
     dependency: transitive
     description:

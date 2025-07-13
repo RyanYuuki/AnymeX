@@ -147,7 +147,7 @@ void main(List<String> args) async {
   MediaKit.ensureInitialized();
   if (!Platform.isAndroid && !Platform.isIOS) {
     await WindowManager.instance.ensureInitialized();
-    windowManager.setTitle("AnymeX");
+    windowManager.setTitle("AnymeX (●'◡'●)");
     if (defaultTargetPlatform == TargetPlatform.windows) {
       try {
         final availableVersion = await WebViewEnvironment.getAvailableVersion();
@@ -325,7 +325,9 @@ class _FilterScreenState extends State<FilterScreen> {
       BuildContext context, ServiceHandler authService, bool isSimkl) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Provider.of<ThemeProvider>(context).isOled ? Colors.black : Colors.transparent,
+      backgroundColor: Provider.of<ThemeProvider>(context).isOled
+          ? Colors.black
+          : Colors.transparent,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -350,7 +352,8 @@ class _FilterScreenState extends State<FilterScreen> {
                               radius: 24,
                               backgroundColor: Theme.of(context)
                                   .colorScheme
-                                  .surfaceContainer,
+                                  .surfaceContainer
+                                  .withValues(alpha: 0.3),
                               child: authService.isLoggedIn.value
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(59),
