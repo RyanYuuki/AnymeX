@@ -9,6 +9,7 @@ import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:manga_page_view/manga_page_view.dart';
 
@@ -38,6 +39,7 @@ class ReaderController extends GetxController {
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
+  RxBool showPageIndicator = false.obs;
 
   final RxBool showControls = true.obs;
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
@@ -45,6 +47,9 @@ class ReaderController extends GetxController {
 
   final Map<int, double> imageHeights = {};
   final totalOffset = 0.0.obs;
+
+  RxBool canGoNext = false.obs;
+  RxBool canGoPrev = false.obs;
 
   MangaPageViewController? pageViewController;
 
@@ -67,7 +72,10 @@ class ReaderController extends GetxController {
         settingsController.preferences.get('spaced_pages', defaultValue: false);
     overscrollToChapter.value = settingsController.preferences
         .get('overscroll_to_chapter', defaultValue: true);
-    preloadPages.value = settingsController.preferences.get('preload_pages');
+    preloadPages.value =
+        settingsController.preferences.get('preload_pages', defaultValue: 3);
+    showPageIndicator.value = settingsController.preferences
+        .get('show_page_indicator', defaultValue: false);
   }
 
   void _savePreferences() {
@@ -83,6 +91,8 @@ class ReaderController extends GetxController {
     settingsController.preferences
         .put('overscroll_to_chapter', overscrollToChapter.value);
     settingsController.preferences.put('preload_pages', preloadPages.value);
+    settingsController.preferences
+        .put('show_page_indicator', showPageIndicator.value);
   }
 
   void onPageChanged(int index) async {
@@ -136,6 +146,11 @@ class ReaderController extends GetxController {
     log(showControls.value.toString());
   }
 
+  void togglePageIndicator() {
+    showPageIndicator.value = !showPageIndicator.value;
+    savePreferences();
+  }
+
   void toggleSpacedPages() {
     spacedPages.value = !spacedPages.value;
     savePreferences();
@@ -184,8 +199,14 @@ class ReaderController extends GetxController {
     }
   }
 
+  void _syncAvailability() {
+    final index = chapterList.indexOf(currentChapter.value!);
+    canGoPrev.value = index > 0;
+    canGoNext.value = index < chapterList.length - 1;
+  }
+
   Future<void> fetchImages(String url) async {
-    _initTracking();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
     currentPageIndex.value = 1;
     try {
       loadingState.value = LoadingState.loading;
@@ -203,6 +224,7 @@ class ReaderController extends GetxController {
             savedChapter.value!.pageNumber! <= pageList.length) {
           currentPageIndex.value = savedChapter.value?.pageNumber ?? 1;
           currentChapter.value?.totalPages = pageList.length;
+          _syncAvailability();
 
           if (savedChapter.value?.pageNumber != null &&
               savedChapter.value!.pageNumber! > 1) {

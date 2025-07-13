@@ -162,23 +162,31 @@ class ReaderTopControls extends StatelessWidget {
   }
 
   Widget _buildPageInfo(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.15)),
-      ),
-      child: Text(
-        controller.loadingState.value == LoadingState.loading
-            ? 'Loading...'
-            : controller.loadingState.value == LoadingState.error
-                ? 'Error loading pages'
-                : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.9),
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
+    return AnimatedOpacity(
+      opacity: controller.showPageIndicator.value
+          ? 1
+          : controller.showControls.value
+              ? 1
+              : 0,
+      duration: const Duration(milliseconds: 300),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.15)),
+        ),
+        child: Text(
+          controller.loadingState.value == LoadingState.loading
+              ? 'Loading...'
+              : controller.loadingState.value == LoadingState.error
+                  ? 'Error loading pages'
+                  : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );

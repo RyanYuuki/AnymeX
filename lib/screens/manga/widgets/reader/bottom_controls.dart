@@ -78,27 +78,27 @@ class ReaderBottomControls extends StatelessWidget {
   }
 
   Widget _buildPreviousButton(BuildContext context) {
-    return IconButton(
-      onPressed:
-          controller.chapterList.indexOf(controller.currentChapter.value!) >
-                      0 &&
-                  controller.loadingState.value == LoadingState.loaded
-              ? () => controller.chapterNavigator(false)
-              : null,
-      icon: const Icon(Icons.skip_previous_rounded),
-      style: IconButton.styleFrom(
-        padding: const EdgeInsets.all(12),
-        minimumSize: const Size(48, 48),
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+    return Obx(() {
+      return IconButton(
+        onPressed: controller.canGoPrev.value
+            ? () => controller.chapterNavigator(false)
+            : null,
+        icon: const Icon(Icons.skip_previous_rounded),
+        style: IconButton.styleFrom(
+          padding: const EdgeInsets.all(12),
+          minimumSize: const Size(48, 48),
+          backgroundColor:
+              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildSliderSection() {
-    return controller.loadingState.value != LoadingState.loaded ||
+    return Obx(() => controller.loadingState.value != LoadingState.loaded ||
             controller.pageList.isEmpty
         ? const SizedBox(height: 32, child: Center(child: Text('Loading...')))
         : Expanded(
@@ -115,26 +115,26 @@ class ReaderBottomControls extends StatelessWidget {
                 controller.navigateToPage(value.toInt() - 1);
               },
             ),
-          );
+          ));
   }
 
   Widget _buildNextButton(BuildContext context) {
-    return IconButton(
-      onPressed:
-          controller.chapterList.indexOf(controller.currentChapter.value!) <
-                      controller.chapterList.length - 1 &&
-                  controller.loadingState.value == LoadingState.loaded
-              ? () => controller.chapterNavigator(true)
-              : null,
-      icon: const Icon(Icons.skip_next_rounded),
-      style: IconButton.styleFrom(
-        padding: const EdgeInsets.all(12),
-        minimumSize: const Size(48, 48),
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+    return Obx(() {
+      return IconButton(
+        onPressed: controller.canGoNext.value
+            ? () => controller.chapterNavigator(true)
+            : null,
+        icon: const Icon(Icons.skip_next_rounded),
+        style: IconButton.styleFrom(
+          padding: const EdgeInsets.all(12),
+          minimumSize: const Size(48, 48),
+          backgroundColor:
+              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
