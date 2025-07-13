@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.6",
-      "versionDate": "2025-07-01T17:51:48Z",
+      "version": "2.9.7",
+      "versionDate": "2025-07-13T18:07:16Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.6-hotfix/AnymeX-iOS-v2.9.6-hotfix.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.7/AnymeX-iOS-v2.9.7.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 39529962,
+      "size": 39520154,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "2.9.7",
+          "date": "2025-07-13T18:07:16Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.7/AnymeX-iOS-v2.9.7.ipa",
+          "size": 39520154
+        },
+        {
           "version": "2.9.6",
           "date": "2025-07-01T17:51:48Z",
-          "localizedDescription": "",
+          "localizedDescription": "\ud83c\udd95 Changelog\r\n\r\n\u2728 Features\r\n\u2022 **New Profile (Anime 4K)**  \r\n  Introduced a new profile layout optimized for Anime 4K display.\r\n\r\n\ud83c\udfa8 UI Enhancements\r\n\u2022 **New Dropdown Menu**  \r\n  Added a smooth and visually appealing dropdown in:\r\n  \u2022 Anime Details Page  \r\n  \u2022 Manga Details Page  \r\n\r\n\ud83d\udee0 Fixes\r\n\u2022 **Reader UI Issues**  \r\n  Resolved layout and display problems in the reader UI.",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.6-hotfix/AnymeX-iOS-v2.9.6-hotfix.ipa",
           "size": 39529962
         },
@@ -203,6 +210,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.6-hotfix"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.7 - 13 Jul",
+      "identifier": "release-2.9.7",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-07-13T18:07:16Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.7"
     }
   ]
 }
