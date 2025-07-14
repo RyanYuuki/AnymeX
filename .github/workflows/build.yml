@@ -185,7 +185,7 @@ jobs:
         run: |
           echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" > .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
           echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
@@ -428,19 +428,30 @@ jobs:
           mkdir -p bucket
           cat <<EOF > bucket/anymex.json
           {
-            "version": "${VERSION#v}",
-            "description": "An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)",
-            "homepage": "https://github.com/RyanYuuki/AnymeX",
-            "license": "MIT",
-            "url": "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip",
-            "hash": "${{ env.HASH }}",
-            "bin": "AnymeX.exe",
-            "checkver": {
-              "github": "https://github.com/RyanYuuki/AnymeX"
-            },
-            "autoupdate": {
-              "url": "https://github.com/RyanYuuki/AnymeX/releases/download/v#$version/AnymeX-Windows.zip"
-            }
+              "version": "${VERSION#v}",
+              "description": "An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)",
+              "homepage": "https://github.com/RyanYuuki/AnymeX",
+              "license": "MIT",
+              "architecture": {
+                  "64bit": {
+                      "url": "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip",
+                      "hash": "${{ env.HASH }}"
+                  }
+              },
+              "bin": "anymex.exe",
+              "shortcuts": [
+                  ["anymex.exe", "AnymeX"]
+              ],
+              "checkver": {
+                  "github": "https://github.com/RyanYuuki/AnymeX"
+              },
+              "autoupdate": {
+                  "architecture": {
+                      "64bit": {
+                          "url": "https://github.com/RyanYuuki/AnymeX/releases/download/v$version/AnymeX-Windows.zip"
+                      }
+                  }
+              }
           }
           EOF
 
@@ -449,18 +460,16 @@ jobs:
           git config user.name "RyanYuuki"
           git config user.email "108048963+RyanYuuki@users.noreply.github.com"
 
-      - name: Commit and Push to Scoop Bucket
+      - name: Create Pull Request to ScoopInstaller/Main
         env:
-          SCOOP_BUCKET_REPO: RyanYuuki/Main
           GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${SCOOP_BUCKET_REPO}.git scoop-bucket
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/scoop-bucket.git
           cd scoop-bucket
+          git checkout -b update-anymex-${VERSION#v}
           mkdir -p bucket
           cp ../bucket/anymex.json bucket/
           git add bucket/anymex.json
-          git commit -m "Update AnymeX to ${VERSION#v}" || echo "No changes to commit"
-          git push origin main
-          gh pr create --repo ScoopInstaller/Main --title "Update AnymeX to ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head RyanYuuki:main || echo "PR creation skipped or failed"
-        env:
-          GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
+          git commit -m "anymex: Update to ${VERSION#v}"
+          git push origin update-anymex-${VERSION#v}
+          gh pr create --repo ScoopInstaller/Main --title "anymex: Update to ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}. Relates to package request (please add issue number)." --base main --head RyanYuuki:update-anymex-${VERSION#v} || echo "PR creation skipped or failed"
