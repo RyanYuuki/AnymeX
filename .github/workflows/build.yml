@@ -56,7 +56,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -114,7 +114,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -187,7 +187,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" > .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -373,7 +373,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
