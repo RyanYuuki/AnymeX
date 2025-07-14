@@ -458,7 +458,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/Main.git scoop-bucket
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/Anymex_Scoop.git scoop-bucket
           cd scoop-bucket
           mkdir -p bucket
           cp ../bucket/anymex.json bucket/
