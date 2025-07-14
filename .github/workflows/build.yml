@@ -332,12 +332,6 @@ jobs:
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
-      - name: Upload Windows Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: build/windows/x64/runner/Release/AnymeX-Windows.zip
-
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
@@ -409,18 +403,18 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+  
       - name: Download Windows Artifact
         uses: actions/download-artifact@v3
         with:
           name: artifacts
           path: artifacts
-
+  
       - name: Calculate SHA256 Hash
         run: |
           sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}' > hash.txt
           echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
-
+  
       - name: Update Scoop Manifest
         env:
           VERSION: ${{ github.ref_name }}
@@ -454,22 +448,21 @@ jobs:
               }
           }
           EOF
-
+  
       - name: Setup Git
         run: |
           git config user.name "RyanYuuki"
           git config user.email "108048963+RyanYuuki@users.noreply.github.com"
-
-      - name: Create Pull Request to ScoopInstaller/Main
+  
+      - name: Commit and Push to Scoop Bucket
         env:
           GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/scoop-bucket.git
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/Main.git scoop-bucket
           cd scoop-bucket
-          git checkout -b update-anymex-${VERSION#v}
           mkdir -p bucket
           cp ../bucket/anymex.json bucket/
           git add bucket/anymex.json
-          git commit -m "anymex: Update to ${VERSION#v}"
-          git push origin update-anymex-${VERSION#v}
-          gh pr create --repo ScoopInstaller/Main --title "anymex: Update to ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}. Relates to package request (please add issue number)." --base main --head RyanYuuki:update-anymex-${VERSION#v} || echo "PR creation skipped or failed"
+          git commit -m "anymex@${VERSION#v}: Update to version ${VERSION#v}" || echo "No changes to commit"
+          git push origin main
+          gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head RyanYuuki:main || echo "PR creation skipped or failed"
