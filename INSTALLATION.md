@@ -16,6 +16,16 @@
 
 
 ✅ **Android Users:** Check your device’s architecture using *CPU-Z* or *Droid Hardware Info*.  
-✅ **Windows & Linux Users:** Choose between installer or portable versions based on your preference.  
+✅ **Windows Users**:
+- **Scoop**: For a portable, auto-updating installation, use the Scoop package manager:
+  ```powershell
+  scoop bucket add Anymex https://github.com/MiraiEnoki/Anymex_Scoop
+  scoop install RyanYuuki/Anymex
+  ```
+  Run `anymex` to launch the app. Updates are handled automatically via Scoop.
+- **ZIP**: Download and extract `AnymeX-Windows.zip` for a portable version.
+- **Installer**: Use `AnymeX-x86_64-<version>-Installer.exe` for a standard Windows setup.
+
+✅ **Linux Users:** Choose between installer or portable versions based on your preference.  
 
 ---
