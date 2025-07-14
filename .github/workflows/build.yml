@@ -458,11 +458,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RyanYuuki/Anymex_Scoop.git scoop-bucket
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/MiraiEnoki/Anymex_Scoop.git scoop-bucket
           cd scoop-bucket
           mkdir -p bucket
           cp ../bucket/anymex.json bucket/
           git add bucket/anymex.json
           git commit -m "anymex@${VERSION#v}: Update to version ${VERSION#v}" || echo "No changes to commit"
           git push origin main
-          gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head RyanYuuki:main || echo "PR creation skipped or failed"
+          gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head MiraiEnoki:main || echo "PR creation skipped or failed"
