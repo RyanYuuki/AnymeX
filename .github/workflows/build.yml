@@ -379,9 +379,11 @@ jobs:
 
       - name: Create DMG file for macOS Build
         run: |
-          mkdir -p build/macos/Release
-          ln -s /Applications build/macos/Build/Products/Release/Applications
-          hdiutil create -volname "AnymeX" -srcfolder build/macos/Build/Products/Release -ov -format UDZO build/macos/Release/AnymeX.dmg
+          mkdir -p temp_dir
+          cp -r build/macos/Build/Products/Release/anymex.app temp_dir/
+          ln -s /Applications temp_dir/Applications
+          hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
+          rm -rf temp_dir
 
       - name: Release macOS Builds
         uses: ncipollo/release-action@v1
