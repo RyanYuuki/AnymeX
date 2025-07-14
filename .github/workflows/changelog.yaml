@@ -7,10 +7,17 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      previous_tag:
+        description: 'Previous tag to compare against (optional, defaults to second most recent distinct tag)'
+        required: false
+      current_tag:
+        description: 'Current tag to generate changelog for (optional, defaults to latest tag)'
+        required: false
 
 jobs:
-  notify:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  generate-changelog:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -22,27 +29,72 @@ jobs:
         run: |
           echo "" > CHANGELOG.md
 
-      - name: Get previous tag
-        id: get_prev_tag
+      - name: Fetch Tags
+        id: fetch_tags
         run: |
-          echo "Getting the previous tag..."
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)
-          echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
+          git fetch --tags
+          TAGS=$(git tag --sort=-creatordate | tr '\n' ' ')
+          echo "All tags: $TAGS"
+          echo "tags=$TAGS" >> $GITHUB_ENV
+
+      - name: Determine Tags for Comparison
+        id: determine_tags
+        run: |
+          # Get current tag (from input or latest tag)
+          if [ -n "${{ inputs.current_tag }}" ]; then
+            CURRENT_TAG="${{ inputs.current_tag }}"
+          else
+            CURRENT_TAG=$(git describe --tags --abbrev=0)
+          fi
+          echo "Current tag: $CURRENT_TAG"
+          echo "current_tag=$CURRENT_TAG" >> $GITHUB_ENV
+
+          # Get all tags sorted by creation date (newest first)
+          ALL_TAGS=(${{ env.tags }})
+          PREV_TAG=""
+          SECOND_PREV_TAG=""
+
+          # Find the previous distinct tag
+          for TAG in "${ALL_TAGS[@]}"; do
+            if [ "$TAG" != "$CURRENT_TAG" ]; then
+              if [ -z "$PREV_TAG" ]; then
+                PREV_TAG="$TAG"
+              elif [ -z "$SECOND_PREV_TAG" ]; then
+                SECOND_PREV_TAG="$TAG"
+                break
+              fi
+            fi
+          done
+
+          # Use input previous tag if provided, otherwise use determined previous tag
+          if [ -n "${{ inputs.previous_tag }}" ]; then
+            PREV_TAG="${{ inputs.previous_tag }}"
+          elif [ "$PREV_TAG" == "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
+            PREV_TAG="$SECOND_PREV_TAG"
+          fi
+
+          # If no previous tag found, use initial commit
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+
           echo "Previous tag: $PREV_TAG"
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
 
-      - name: Debug commit log
+      - name: Debug Commit Log
         run: |
-          echo "Commits: $(git log ${{ env.prev_tag }}..HEAD --pretty=format:'%h %s')"
+          echo "Commits between ${{ env.prev_tag }} and ${{ env.current_tag }}:"
+          git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
 
-      - name: Get commit messages between tags
+      - name: Get Commit Messages Between Tags
         id: get_commits
         run: |
-          echo "Getting commit messages between tags..."
-          COMMITS=$(git log ${{ env.prev_tag }}..HEAD --pretty=format:'%h %s' | tr '\n' '|')
+          echo "Getting commit messages between ${{ env.prev_tag }} and ${{ env.current_tag }}..."
+          COMMITS=$(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s' | tr '\n' '|')
           echo "Commits retrieved: $COMMITS"
           echo "commits=$COMMITS" >> $GITHUB_ENV
 
-      - name: Categorize commits
+      - name: Categorize Commits
         id: categorize
         run: |
           echo "Categorizing commits..."
@@ -104,27 +156,19 @@ jobs:
       - name: Debug CHANGELOG.md
         run: cat CHANGELOG.md
 
-      - name: Commit and push changelog
+      - name: Commit and Push Changelog
         run: |
           echo "Committing and pushing changelog..."
           git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
           git add CHANGELOG.md
-          git commit --allow-empty -m "Update changelog for version ${{ github.ref_name }}"
+          git commit --allow-empty -m "Update changelog for version ${{ env.current_tag }}"
           git push origin HEAD:main
-
-      - name: Get latest tag
-        id: get_tag
-        run: |
-          git fetch --tags
-          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "latest_tag=$TAG" >> $GITHUB_ENV
-          echo "Latest tag: $TAG"
 
       - name: Create or Update Release
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: CHANGELOG.md
-          tag: ${{ env.latest_tag }}
+          tag: ${{ env.current_tag }}
           allowUpdates: true
