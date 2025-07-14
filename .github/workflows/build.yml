@@ -56,7 +56,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -114,7 +114,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -185,9 +185,9 @@ jobs:
         run: |
           echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" > .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -332,6 +332,12 @@ jobs:
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: build/windows/x64/runner/Release/AnymeX-Windows.zip
+
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
@@ -367,7 +373,7 @@ jobs:
           echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
           echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
           echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" > .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
 
@@ -396,3 +402,65 @@ jobs:
   ios-source-build:
     needs: build-ios
     uses: ./.github/workflows/update_sideloading_source.yml
+
+  update-scoop-manifest:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts
+
+      - name: Calculate SHA256 Hash
+        run: |
+          sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}' > hash.txt
+          echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
+
+      - name: Update Scoop Manifest
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p bucket
+          cat <<EOF > bucket/anymex.json
+          {
+            "version": "${VERSION#v}",
+            "description": "An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)",
+            "homepage": "https://github.com/RyanYuuki/AnymeX",
+            "license": "MIT",
+            "url": "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip",
+            "hash": "${{ env.HASH }}",
+            "bin": "AnymeX.exe",
+            "checkver": {
+              "github": "https://github.com/RyanYuuki/AnymeX"
+            },
+            "autoupdate": {
+              "url": "https://github.com/RyanYuuki/AnymeX/releases/download/v#$version/AnymeX-Windows.zip"
+            }
+          }
+          EOF
+
+      - name: Setup Git
+        run: |
+          git config user.name "RyanYuuki"
+          git config user.email "108048963+RyanYuuki@users.noreply.github.com"
+
+      - name: Commit and Push to Scoop Bucket
+        env:
+          SCOOP_BUCKET_REPO: RyanYuuki/Main
+          GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
+        run: |
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${SCOOP_BUCKET_REPO}.git scoop-bucket
+          cd scoop-bucket
+          mkdir -p bucket
+          cp ../bucket/anymex.json bucket/
+          git add bucket/anymex.json
+          git commit -m "Update AnymeX to ${VERSION#v}" || echo "No changes to commit"
+          git push origin main
+          gh pr create --repo ScoopInstaller/Main --title "Update AnymeX to ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head RyanYuuki:main || echo "PR creation skipped or failed"
+        env:
+          GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
