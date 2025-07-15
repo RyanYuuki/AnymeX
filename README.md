@@ -37,7 +37,7 @@
 ### Windows Sideloading Sources
   <p>
     <a href="/INSTALLATION.md">
-  <img src="https://img.shields.io/badge/Scoop-RyanYuuki_AnymeX-white?style=for-the-badge&labelColor=black" alt="Scoop"/></a>
+  <img src="https://img.shields.io/badge/Scoop-AnymeX-white?style=for-the-badge&labelColor=black" alt="Scoop"/></a>
   </p>
 </div>
 
