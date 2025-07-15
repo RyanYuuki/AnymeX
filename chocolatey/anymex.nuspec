@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>anymex</id>
-    <version>1.0.0</version>
+    <id>com.ryan.anymex</id>
+    <version>2.9.7</version>
     <authors>RyanYuuki</authors>
     <description>Cross-platform anime streaming desktop app</description>
     <projectUrl>https://github.com/RyanYuuki/AnymeX</projectUrl>
     <licenseUrl>https://github.com/RyanYuuki/AnymeX/blob/main/LICENSE.md</licenseUrl>
-    <tags>anime anymex</tags>
+    <tags>tracking anymex</tags>
   </metadata>
 </package>
