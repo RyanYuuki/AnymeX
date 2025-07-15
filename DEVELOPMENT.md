@@ -8,7 +8,7 @@ The bread and butter! Flutter is an open source framework for building beautiful
 Follow the installation guide based on your development platform: [Install | Flutter](https://docs.flutter.dev/get-started/install)
 
 > [!NOTE]  
-> This project currently uses Flutter SDK 3.24.0.  
+> This project currently uses Flutter SDK 3.27.0.  
 > If you'd like to use multiple versions on your machine, a suggestion is to use [fvm](https://fvm.app/) to manage your different versions
 
 ## Java JDK
