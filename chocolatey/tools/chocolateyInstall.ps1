@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop';
 
-$packageName = 'anymex'
-$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v1.0.0/AnymeX-Setup.exe' # Replace with latest version URL
-$checksum = 'PUT_CHECKSUM_HERE' # Optional
+$packageName = 'com.ryan.anymex'
+$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.7/AnymeX-Setup.exe'
+$checksum = 'PUT_CHECKSUM_HERE'
 
 Install-ChocolateyPackage $packageName 'exe' '/silent' $url -Checksum $checksum -ChecksumType 'sha256'
