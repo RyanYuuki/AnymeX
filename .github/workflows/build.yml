@@ -253,7 +253,7 @@ jobs:
           %prep
           %setup -q
 
-          “‘install
+          %install
           mkdir -p %{buildroot}/usr/bin
           mkdir -p %{buildroot}/usr/share/applications
           mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
