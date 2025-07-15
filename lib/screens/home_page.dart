@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                     () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: AnymexTextSpans(
-                        fontSize: 30,
+                        fontSize: 27,
                         spans: [
                           const AnymexTextSpan(
                               text: 'Hey ',
