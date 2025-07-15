@@ -3,10 +3,10 @@
   <metadata>
     <id>anymex</id>
     <version>1.0.0</version>
-    <authors>itsmechinmoy</authors>
+    <authors>RyanYuuki</authors>
     <description>Cross-platform anime streaming desktop app</description>
-    <projectUrl>https://github.com/itsmechinmoy/AnymeX</projectUrl>
-    <licenseUrl>https://github.com/itsmechinmoy/AnymeX/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RyanYuuki/AnymeX</projectUrl>
+    <licenseUrl>https://github.com/RyanYuuki/AnymeX/blob/main/LICENSE.md</licenseUrl>
     <tags>anime anymex</tags>
   </metadata>
 </package>
