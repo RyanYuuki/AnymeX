@@ -36,7 +36,7 @@
   
 ### Windows
   <p>
-    <a href="/INSTALLATION.md">
+    <a href="INSTALLATION.md">
   <img src="https://img.shields.io/badge/Scoop-AnymeX-white?style=for-the-badge&labelColor=black" alt="Scoop"/></a>
   </p>
 </div>
