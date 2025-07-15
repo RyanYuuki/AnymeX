@@ -319,8 +319,9 @@ class SourceController extends GetxController implements BaseService {
     final data = await getDetail(
         url: id,
         source: (isAnime ? activeSource.value : activeMangaSource.value)!);
-    if (serviceHandler.serviceType.value != ServicesType.extensions)
+    if (serviceHandler.serviceType.value != ServicesType.extensions) {
       cacheController.addCache(data!.toJson());
+    }
     return Media.fromManga(data!, isAnime ? MediaType.anime : MediaType.manga);
   }
 
