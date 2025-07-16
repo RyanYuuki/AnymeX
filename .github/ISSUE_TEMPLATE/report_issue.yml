@@ -91,11 +91,7 @@ body:
       options:
         - label: I have searched existing issues to confirm this is not a duplicate.
           required: true
-        - label: I have provided a clear and descriptive title.
-          required: true
         - label: I am using the **[latest](https://github.com/RyanYuuki/AnymeX/releases/latest)** version of AnymeX. If not, I have provided a reason for not updating.
           required: true
-        - label: I have updated all relevant extensions or dependencies.
-          required: true
-        - label: I have filled out all the requested information accurately.
-          required: true
+        - label: If this is an issue with an extension, I should be opening an issue in the extension's repository.
+          required: false
