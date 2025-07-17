@@ -39,6 +39,7 @@ class SauceFinder {
     if (_animeData != null) {
       final regex = RegExp(r'\] (.*?) - ');
 
+      final anilist_id = _animeData!['anilist'] ?? 0;
       final title = _animeData!['filename'] ?? 'Unknown';
       final name = regex.firstMatch(title)!.group(1) ?? 'Unknown';
       final episode = _animeData!['episode'] ?? 'N/A';
