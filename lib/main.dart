@@ -149,7 +149,7 @@ void main(List<String> args) async {
     await WindowManager.instance.ensureInitialized();
     try {
       windowManager.setTitle("AnymeX (●'◡'●)");
-    } catch(e) {
+    } catch (e) {
       windowManager.setTitle("AnymeX");
     }
     if (defaultTargetPlatform == TargetPlatform.windows) {

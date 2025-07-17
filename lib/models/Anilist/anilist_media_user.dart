@@ -1,4 +1,3 @@
-
 class TrackedMedia {
   String? id;
   String? title;
@@ -7,6 +6,7 @@ class TrackedMedia {
   String? chapterCount;
   String? rating;
   String? totalEpisodes;
+  String? releasedEpisodes;
   String? watchingStatus;
   String? format;
   String? mediaStatus;
@@ -22,6 +22,7 @@ class TrackedMedia {
     this.chapterCount,
     this.rating,
     this.totalEpisodes,
+    this.releasedEpisodes,
     this.watchingStatus,
     this.format,
     this.mediaStatus,
@@ -40,6 +41,9 @@ class TrackedMedia {
         episodeCount: json['progress']?.toString(),
         chapterCount: json['media']['chapters']?.toString(),
         totalEpisodes: json['media']['episodes']?.toString(),
+        releasedEpisodes: json['media']['nextAiringEpisode'] != null
+            ? (json['media']['nextAiringEpisode']['episode'] - 1).toString()
+            : null,
         rating: (double.tryParse(
                     json['media']['averageScore']?.toString() ?? "0")! /
                 10)
