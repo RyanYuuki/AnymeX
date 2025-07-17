@@ -46,6 +46,7 @@ dependencies:
   hugeicons: ^0.0.7
   iconly: ^1.0.1
   iconsax: ^0.0.8
+  image_picker: ^1.1.2
   install_plugin: ^2.1.0
   intl: ^0.20.1
   isar: ^3.1.0+1
