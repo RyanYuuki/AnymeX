@@ -235,6 +235,10 @@ class AnilistAuth extends GetxController {
             }
             format
             episodes
+            nextAiringEpisode {
+              episode
+              airingAt
+            }
             averageScore
             type
             coverImage {
