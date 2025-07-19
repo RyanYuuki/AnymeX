@@ -186,7 +186,7 @@ class _BigCarouselState extends State<BigCarousel> {
           const SizedBox(height: 16),
           AnimatedSmoothIndicator(
             activeIndex: activeIndex,
-            count: widget.data.length,
+            count: newData.length,
             effect: WormEffect(
               dotHeight: 8,
               dotWidth: 8,
