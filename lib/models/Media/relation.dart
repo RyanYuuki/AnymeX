@@ -29,7 +29,7 @@ class Relation {
       poster: json['node']['coverImage']['large'],
       type: json['node']['type'],
       averageScore: (json['node']['averageScore'] ?? 0).toString(),
-      status: json['node']['status'],
+      status: json['node']['status'] ?? '',
     );
   }
 }
