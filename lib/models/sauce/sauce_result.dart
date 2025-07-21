@@ -17,13 +17,13 @@ class SauceResult {
 
   factory SauceResult.fromJson(Map<String, dynamic> data) {
     final filename = data['filename'] ?? 'Unknown';
-    List<RegExp> regexPatterns = [
+    final List<RegExp> regexPatterns = [
       RegExp(r'\] (.*?) - '),
       RegExp(r'(?:\[[^\]]*\])\s*\[([^\]]+)\]'),
       RegExp(r'^(.*?)\s*-')
     ];
     String? extractAnimeName(String filename) {
-      for (RegExp regex in regexPatterns) {
+      for (final regex in regexPatterns) {
         final match = regex.firstMatch(filename);
         if (match != null && match.group(1) != null) {
           return match.group(1)!;
