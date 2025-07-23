@@ -152,6 +152,7 @@ jobs:
             echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
             echo -e "$CHORES" >> CHANGELOG.md
           fi
+          echo -e "<img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white\"/> <img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white\"/>" >> CHANGELOG.md
 
       - name: Debug CHANGELOG.md
         run: cat CHANGELOG.md
