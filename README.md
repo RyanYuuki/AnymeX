@@ -1,3 +1,35 @@
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=as">অসমীয়া</a>
+      </div>
+    </div>
+  </details>
+</div>
+
+
 <div align="center">
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
   
