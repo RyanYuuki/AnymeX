@@ -1,9 +1,11 @@
+<div align="right">
 <details>
 <summary>🌐</summary>
 
 [English](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=en) | [简体中文](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=zh-CN) | [繁體中文](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=zh-TW) | [日本語](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ja) | [한국어](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ko) | [हिन्दी](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=hi) | [ไทย](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=th) | [Français](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=fr) | [Deutsch](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=de) | [Español](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=es) | [Italiano](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=it) | [Русский](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ru) | [Português](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=pt) | [Nederlands](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=nl) | [Polski](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=pl) | [العربية](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ar) | [فارسی](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=fa) | [Türkçe](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=tr) | [Tiếng Việt](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=vi) | [Bahasa Indonesia](https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=id)
 
 </details>
+</div>
 <div align="center">
 <img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
   
