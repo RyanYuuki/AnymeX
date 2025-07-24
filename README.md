@@ -1,9 +1,10 @@
 <div align="right">
   <details>
-    <summary>🌐</summary>
+    <summary>🌐 Language</summary>
     <div>
       <div align="center">
         <a href="https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=RyanYuuki&project=AnymeX&lang=as">অসমীয়া</a>
         | <a href="https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=id">Bahasa Indonesia</a>
         | <a href="https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=de">Deutsch</a>
         | <a href="https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=en">English</a>
