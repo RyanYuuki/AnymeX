@@ -7,6 +7,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -297,6 +298,8 @@ class AnilistAuth extends GetxController {
               .reversed
               .toList();
 
+          currentlyWatching.value = currentlyWatching.value.removeDupes();
+
           animeList.value = animeListt
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
@@ -548,7 +551,8 @@ class AnilistAuth extends GetxController {
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
-              .toList();
+              .toList()
+              .removeDupes();
 
           mangaList.value = animeListt
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))

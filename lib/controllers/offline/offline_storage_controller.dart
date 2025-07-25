@@ -21,12 +21,14 @@ class OfflineStorageController extends GetxController {
   RxList<CustomListData> mangaCustomListData = <CustomListData>[].obs;
 
   late Box<OfflineStorage> _offlineStorageBox;
+  late Box storage;
 
   @override
   Future<void> onInit() async {
     super.onInit();
     try {
       _offlineStorageBox = await Hive.openBox<OfflineStorage>('offlineStorage');
+      storage = await Hive.openBox('storage');
       _loadLibraries();
     } catch (e) {
       log('Error opening Hive box: $e');

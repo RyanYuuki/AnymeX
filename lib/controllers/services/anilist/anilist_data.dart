@@ -64,8 +64,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .map<String>((entry) => entry.key)
         .toList();
     final isDesktop = Get.width > 600;
-    final recAnimes = popularAnimes + trendingAnimes + latestAnimes;
-    final recMangas = popularMangas + topOngoingMangas + topRatedMangas;
+    final recAnimes =
+        (popularAnimes + trendingAnimes + latestAnimes).removeDupes();
+    final recMangas =
+        (popularMangas + topOngoingMangas + topRatedMangas).removeDupes();
     final ids = [
       animeList.map((e) => e.id).toSet(),
       mangaList.map((e) => e.id).toSet()
