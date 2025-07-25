@@ -144,17 +144,15 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
 
   List<Source> _getRecommendedEntries(List<Source> data) {
     final extens = [
-      'special',
-      ...(widget.mediaType == MediaType.anime
-          ? Extensions().getRecommmendedExtensions()
-          : Extensions().getRecommmendedMangaExtensions()),
+      'anymex',
     ];
 
     return data.where((element) {
       final name = element.name?.toLowerCase() ?? '';
       final lang = element.lang?.toLowerCase() ?? '';
       final matchesExtension = extens.any((ext) => name.contains(ext));
-      return matchesExtension && (lang == 'en' || lang == 'all');
+      return matchesExtension &&
+          (lang == 'en' || lang == 'all' || lang == 'multi');
     }).toList();
   }
 

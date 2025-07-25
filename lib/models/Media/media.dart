@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
 import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
@@ -413,5 +414,19 @@ class Ranking {
       type: json['type'] ?? '?',
       year: json['year'] ?? 0,
     );
+  }
+}
+
+extension RemoveDupes on List<Media> {
+  List<Media> removeDupes() {
+    final seen = <String>{};
+    return where((media) => seen.add(media.id)).toList();
+  }
+}
+
+extension RemoveDupesOnTM on List<TrackedMedia> {
+  List<TrackedMedia> removeDupes() {
+    final seen = <String>{};
+    return where((media) => seen.add(media.id!)).toList();
   }
 }
