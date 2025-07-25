@@ -98,7 +98,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   void _checkMangaPresence() {
-    if(serviceHandler.serviceType.value == ServicesType.extensions) return;
+    if (serviceHandler.serviceType.value == ServicesType.extensions) return;
     fetcher.onlineService
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = fetcher.onlineService.currentMedia;
@@ -399,7 +399,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       color: posterColor,
       child: Scaffold(
           extendBody: true,
-          bottomNavigationBar: _buildMobiledNav(),
+          bottomNavigationBar: sourceController.activeMangaRepo.isNotEmpty
+              ? _buildMobiledNav()
+              : null,
           body: _commonSaikouLayout(context)),
     );
   }
@@ -455,11 +457,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         selectedIcon: Iconsax.info_circle5,
                         unselectedIcon: Iconsax.info_circle,
                         label: "Info"),
-                    NavItem(
-                        onTap: (index) => _onPageSelected(index),
-                        selectedIcon: Iconsax.book,
-                        unselectedIcon: Iconsax.book,
-                        label: "Watch"),
+                    if (sourceController.activeMangaRepo.isNotEmpty)
+                      NavItem(
+                          onTap: (index) => _onPageSelected(index),
+                          selectedIcon: Iconsax.book,
+                          unselectedIcon: Iconsax.book,
+                          label: "Read"),
                   ]),
             ],
           ),

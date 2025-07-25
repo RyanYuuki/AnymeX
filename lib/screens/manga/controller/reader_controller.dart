@@ -12,9 +12,37 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:manga_page_view/manga_page_view.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 enum LoadingState { loading, loaded, error }
+
+enum MangaPageViewMode {
+  continuous,
+  paged,
+}
+
+enum MangaPageViewDirection {
+  up,
+  down,
+  left,
+  right;
+
+  Axis get axis {
+    return switch (this) {
+      MangaPageViewDirection.up => Axis.vertical,
+      MangaPageViewDirection.down => Axis.vertical,
+      MangaPageViewDirection.left => Axis.horizontal,
+      MangaPageViewDirection.right => Axis.horizontal,
+    };
+  }
+
+  bool get reversed => switch (this) {
+        MangaPageViewDirection.up => true,
+        MangaPageViewDirection.down => false,
+        MangaPageViewDirection.left => true,
+        MangaPageViewDirection.right => false,
+      };
+}
 
 class ReaderController extends GetxController {
   late Media media;
@@ -31,9 +59,13 @@ class ReaderController extends GetxController {
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
 
-  final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
-  final Rx<MangaPageViewDirection> readingDirection =
-      MangaPageViewDirection.down.obs;
+  // Scroll Controllers
+  ItemScrollController? itemScrollController;
+  ScrollOffsetController? scrollOffsetController;
+  ItemPositionsListener? itemPositionsListener;
+  ScrollOffsetListener? scrollOffsetListener;
+
+  PageController? pageController;
   final RxBool spacedPages = false.obs;
   final RxBool overscrollToChapter = true.obs;
 
@@ -41,6 +73,10 @@ class ReaderController extends GetxController {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+
+  final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
+  final Rx<MangaPageViewDirection> readingDirection =
+      MangaPageViewDirection.down.obs;
 
   final RxBool showControls = true.obs;
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
@@ -52,10 +88,14 @@ class ReaderController extends GetxController {
   RxBool canGoNext = false.obs;
   RxBool canGoPrev = false.obs;
 
-  MangaPageViewController? pageViewController;
+  bool _isNavigating = false;
 
   void _initializeControllers() {
-    pageViewController = MangaPageViewController();
+    itemScrollController = ItemScrollController();
+    scrollOffsetController = ScrollOffsetController();
+    itemPositionsListener = ItemPositionsListener.create();
+    scrollOffsetListener = ScrollOffsetListener.create();
+    _setupPositionListener();
   }
 
   void _getPreferences() {
@@ -94,6 +134,30 @@ class ReaderController extends GetxController {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+  }
+
+  void _setupPositionListener() {
+    if (itemPositionsListener != null) {
+      itemPositionsListener!.itemPositions.removeListener(_onPositionChanged);
+      itemPositionsListener!.itemPositions.addListener(_onPositionChanged);
+    }
+  }
+
+  void _onPositionChanged() async {
+    if (itemPositionsListener == null) return;
+
+    final positions = itemPositionsListener!.itemPositions.value;
+    if (positions.isEmpty || _isNavigating) return;
+
+    final topItem = currentPageIndex.value >= (pageList.length - 2)
+        ? positions.last
+        : positions.first;
+    final newPageIndex = topItem.index + 1;
+
+    if (newPageIndex != currentPageIndex.value) {
+      currentPageIndex.value = newPageIndex;
+      currentChapter.value?.pageNumber = newPageIndex;
+    }
   }
 
   void onPageChanged(int index) async {
@@ -144,7 +208,7 @@ class ReaderController extends GetxController {
   void toggleControls() {
     showControls.value = !showControls.value;
 
-    if (showControls.value) {
+    if (!showControls.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -171,14 +235,17 @@ class ReaderController extends GetxController {
     _saveTracking();
     currentChapter.value = chapterList[index];
     currentPageIndex.value = 1;
-
     await fetchImages(currentChapter.value!.link!);
   }
 
   void navigateToPage(int index) async {
     if (index < 0 || index > pageList.length) return;
-    currentPageIndex.value = index + 1;
-    pageViewController?.moveToPage(index);
+    currentPageIndex.value = index;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      itemScrollController?.jumpTo(index: currentPageIndex.value);
+    } else {
+      pageController?.jumpToPage(index);
+    }
   }
 
   void chapterNavigator(bool next) async {
@@ -211,6 +278,7 @@ class ReaderController extends GetxController {
   }
 
   Future<void> fetchImages(String url) async {
+    _isNavigating = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
     currentPageIndex.value = 1;
     try {
@@ -244,6 +312,8 @@ class ReaderController extends GetxController {
       log('Error fetching images: ${e.toString()}');
       loadingState.value = LoadingState.error;
       errorMessage.value = e.toString();
+    } finally {
+      _isNavigating = false;
     }
   }
 
@@ -285,7 +355,7 @@ class ReaderController extends GetxController {
       }
     });
 
-    pageViewController?.dispose();
+    pageController?.dispose();
     super.onClose();
   }
 }

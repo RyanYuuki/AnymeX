@@ -5,7 +5,6 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:manga_page_view/manga_page_view.dart';
 
 class ReaderSettings {
   final ReaderController controller;
@@ -157,16 +156,16 @@ class ReaderSettings {
                       onChanged: (val) => controller.toggleSpacedPages(),
                     );
                   }),
-                  Obx(() {
-                    return CustomSwitchTile(
-                      icon: Iconsax.arrow,
-                      title: "Overscroll",
-                      description: "To Prev/Next Chapter",
-                      switchValue: controller.overscrollToChapter.value,
-                      onChanged: (val) =>
-                          controller.toggleOverscrollToChapter(),
-                    );
-                  }),
+                  // Obx(() {
+                  //   return CustomSwitchTile(
+                  //     icon: Iconsax.arrow,
+                  //     title: "Overscroll",
+                  //     description: "To Prev/Next Chapter",
+                  //     switchValue: controller.overscrollToChapter.value,
+                  //     onChanged: (val) =>
+                  //         controller.toggleOverscrollToChapter(),
+                  //   );
+                  // }),
                   Obx(() {
                     return CustomSwitchTile(
                       icon: Iconsax.eye,
