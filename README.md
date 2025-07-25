@@ -1,6 +1,6 @@
 <div align="right">
   <details>
-    <summary>🌐 Language</summary>
+    <summary>🌐</summary>
     <div>
       <div align="center">
         <a href="https://openaitx.github.io/#/view?user=RyanYuuki&project=AnymeX&lang=ar">العربية</a>
@@ -48,14 +48,12 @@
 
 # AnymeX
 
-**AnymeX** is a multiservice tracking client, with [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/) support!
+**AnymeX** is a multiservice tracking client designed exclusively for managing and tracking anime and manga progress across [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/).
 
-> [!NOTE]
-> AnymeX is intended for tracking purposes only.
->
-> It does **not** host, provide, or maintain any streaming content or extensions.
->
-> Users are fully responsible for how they use this app. The developer disclaims all liability for misuse or legal issues. Legal concerns should be addressed to third-party sources, not AnymeX.
+> [!IMPORTANT]
+> **AnymeX is a tracking tool only.** It does **not** host, provide, distribute, or endorse any streaming content, media, or third-party extensions.  
+> The app integrates solely with official APIs of supported services (AniList, MyAnimeList, Simkl) for tracking purposes.  
+> Users are solely responsible for their usage of the app and any third-party services or extensions they choose to interact with. The developer of AnymeX explicitly disclaims all liability for any misuse, legal issues, or violations arising from user actions. Any legal concerns should be directed to the respective third-party services, not AnymeX.
 
 ## Downloads
 
@@ -66,8 +64,8 @@
   
 ### Windows
   <p>
-    <a href="/INSTALLATION.md">
-  <img src="https://img.shields.io/badge/Scoop-AnymeX-white?style=for-the-badge&labelColor=black" alt="Scoop"/></a>
+    <a href="/INSTALLATION.md"><img src="https://img.shields.io/badge/Scoop-AnymeX-white?style=for-the-badge&labelColor=black" alt="Scoop"/></a>
+    <a href="/INSTALLATION.md"><img src="https://img.shields.io/badge/Chocolatey-com.ryan.anymex-white?style=for-the-badge&labelColor=black" alt="Chocolatey"/></a>
   </p>
 </div>
 
