@@ -19,6 +19,7 @@ import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
+import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -215,7 +216,19 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
   }
 
-  void _initPlayer(bool firstTime) {
+  VideoControllerConfiguration getVideoConfig() {
+    if (Platform.isAndroid) {
+      return const VideoControllerConfiguration(
+        hwdec: 'mediacodec-copy',
+      );
+    } else {
+      return const VideoControllerConfiguration(
+        hwdec: 'auto-copy',
+      );
+    }
+  }
+
+  void _initPlayer(bool firstTime) async {
     Episode? savedEpisode = offlineStorage.getWatchedEpisode(
         widget.anilistData.id, currentEpisode.value.number);
     int startTimeMilliseconds =
@@ -223,12 +236,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             ? savedEpisode?.timeStampInMilliseconds ?? 0
             : 0;
     if (firstTime) {
+      final path = await PlayerShaders.getMpvPath();
       player = Player(
-          configuration:
-              const PlayerConfiguration(bufferSize: 1024 * 1024 * 64));
+          configuration: PlayerConfiguration(config: true, configDir: path));
       playerController = VideoController(player,
-          configuration: const VideoControllerConfiguration(
-              androidAttachSurfaceAfterVideoParameters: true));
+          configuration: const VideoControllerConfiguration(hwdec: 'auto'));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
@@ -251,6 +263,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       debugPrint("An error occurred: $error");
       debugPrint("Stack trace: $stackTrace");
     });
+    if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
+      setShaders(settingsController.selectedShader, showMessage: false);
+    }
   }
 
 // Continuous Tracking
@@ -469,7 +484,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Future<void> setVolume(double value) async {
     try {
-      VolumeController().setVolume(value);
+      VolumeController.instance.setVolume(value);
     } catch (_) {}
     _volumeValue.value = value;
     _volumeIndicator.value = true;
@@ -485,7 +500,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Future<void> setBrightness(double value) async {
     try {
-      await ScreenBrightness().setScreenBrightness(value);
+      await ScreenBrightness.instance.setScreenBrightness(value);
     } catch (_) {}
     setState(() {
       _brightnessIndicator.value = true;
@@ -501,9 +516,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void _handleVolumeAndBrightness() {
     Future.microtask(() async {
       try {
-        VolumeController().showSystemUI = false;
-        _volumeValue.value = await VolumeController().getVolume();
-        VolumeController().listener((value) {
+        VolumeController.instance.showSystemUI = false;
+        _volumeValue.value = await VolumeController.instance.getVolume();
+        VolumeController.instance.addListener((value) {
           if (mounted && !_volumeInterceptEventStream) {
             _volumeValue.value = value;
           }
@@ -512,8 +527,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
     Future.microtask(() async {
       try {
-        _brightnessValue.value = await ScreenBrightness().current;
-        ScreenBrightness().onCurrentBrightnessChanged.listen((value) {
+        _brightnessValue.value = await ScreenBrightness.instance.current;
+        ScreenBrightness.instance.onCurrentBrightnessChanged.listen((value) {
           if (mounted) {
             _brightnessValue.value = value;
           }
@@ -661,7 +676,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-      ScreenBrightness().resetScreenBrightness();
+      ScreenBrightness.instance.resetScreenBrightness();
     } else {
       windowManager.setFullScreen(false);
     }
@@ -669,28 +684,74 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void setShaders(String message, {bool showMessage = true}) async {
+    final profile = settingsController.selectedProfile;
+    final shaderBase = await PlayerShaders.getShaderPathForProfile(profile);
+
+    final paths = PlayerShaders.getShaderByProfile(message)
+        .map((f) => '$shaderBase$f')
+        .join(';');
+    (player.platform as dynamic).setProperty('glsl-shaders', paths);
+    settingsController.selectedShader = message;
+    if (showMessage) {
+      snackBar(message == "Default" ? "Cleared Shaders" : 'Applied $message');
+    }
+  }
+
+  Future<void> handlePlayerKeyEvent(
+    KeyEvent e,
+  ) async {
+    if (e is! KeyDownEvent || settings.isTV.value) return;
+
+    final key = e.logicalKey;
+
+    if (key == LogicalKeyboardKey.space) {
+      player.playOrPause();
+    } else if (key == LogicalKeyboardKey.arrowLeft) {
+      _skipSegments(true);
+    } else if (key == LogicalKeyboardKey.arrowRight) {
+      _skipSegments(false);
+    } else if (key == LogicalKeyboardKey.period || e.character == '>') {
+      _megaSkip(false);
+    } else if (key == LogicalKeyboardKey.comma || e.character == '<') {
+      _megaSkip(true);
+    }
+
+    if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
+      final keyLabel = key.keyLabel;
+
+      switch (keyLabel) {
+        case '1':
+          setShaders('Anime4K: Mode A (HQ)');
+          break;
+        case '2':
+          setShaders('Anime4K: Mode B (HQ)');
+          break;
+        case '3':
+          setShaders('Anime4K: Mode C (HQ)');
+          break;
+        case '4':
+          setShaders('Anime4K: Mode A+A (HQ)');
+          break;
+        case '5':
+          setShaders('Anime4K: Mode B+B (HQ)');
+          break;
+        case '6':
+          setShaders('Anime4K: Mode C+A (HQ)');
+          break;
+        case '0':
+          setShaders('Default');
+          break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
       focusNode: _keyboardListenerFocusNode,
       autofocus: !settings.isTV.value,
-      onKeyEvent: (e) {
-        if (e is KeyDownEvent && !settings.isTV.value) {
-          if (e.logicalKey == LogicalKeyboardKey.space) {
-            player.playOrPause();
-          } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            _skipSegments(true);
-          } else if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
-            _skipSegments(false);
-          } else if (e.logicalKey == LogicalKeyboardKey.period ||
-              e.character == '>') {
-            _megaSkip(false);
-          } else if (e.logicalKey == LogicalKeyboardKey.comma ||
-              e.character == '<') {
-            _megaSkip(true);
-          }
-        }
-      },
+      onKeyEvent: handlePlayerKeyEvent,
       child: Scaffold(
         body: Stack(
           alignment: Alignment.center,

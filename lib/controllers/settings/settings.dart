@@ -2,6 +2,7 @@ import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,23 @@ class Settings extends GetxController {
   late Box preferences;
   final canShowUpdate = true.obs;
   RxBool isTV = false.obs;
+  final _selectedShader = ''.obs;
+  final _selectedProfile = 'MID-END'.obs;
+  final mpvPath = ''.obs;
+
+  String get selectedShader => _selectedShader.value;
+
+  set selectedShader(String value) {
+    _selectedShader.value = value;
+    preferences.put('selected_shader', value);
+  }
+
+  String get selectedProfile => _selectedProfile.value;
+
+  set selectedProfile(String value) {
+    _selectedProfile.value = value;
+    preferences.put('selected_profile', value);
+  }
 
   @override
   void onInit() {
@@ -25,8 +43,14 @@ class Settings extends GetxController {
     playerSettings =
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
     preferences = Hive.box('preferences');
+    selectedShader = preferences.get('selected_shader', defaultValue: '');
+    selectedProfile =
+        preferences.get('selected_profile', defaultValue: 'MID-END');
     isTv().then((e) {
       isTV.value = e;
+    });
+    PlayerShaders.getMpvPath().then((e) {
+      mpvPath.value = e;
     });
   }
 

@@ -31,6 +31,8 @@ class SourceController extends GetxController implements BaseService {
   var installedExtensions = <Source>[].obs;
   var activeSource = Rxn<Source>();
 
+  var installedDownloaderExtensions = <Source>[].obs;
+
   var installedMangaExtensions = <Source>[].obs;
   var activeMangaSource = Rxn<Source>();
 
@@ -47,6 +49,8 @@ class SourceController extends GetxController implements BaseService {
   final RxString _activeAnimeRepo = ''.obs;
   final RxString _activeMangaRepo = ''.obs;
   final RxString _activeNovelRepo = ''.obs;
+
+  final RxBool shouldShowExtensions = false.obs;
 
   String get activeAnimeRepo => _activeAnimeRepo.value;
   set activeAnimeRepo(String value) {
@@ -71,13 +75,22 @@ class SourceController extends GetxController implements BaseService {
     box.put("activeAnimeRepo", _activeAnimeRepo.value);
     box.put("activeMangaRepo", _activeMangaRepo.value);
     box.put("activeNovelRepo", _activeNovelRepo.value);
-    log("Anime Repo: $activeAnimeRepo, Manga Repo: $activeMangaRepo, Novel Repo: $activeNovelRepo");
+    if (activeAnimeRepo.isNotEmpty ||
+        activeMangaRepo.isNotEmpty ||
+        activeNovelRepo.isNotEmpty) {
+      shouldShowExtensions.value = true;
+    }
   }
 
   @override
   void onInit() {
     super.onInit();
     initExtensions().then((e) {
+      if (activeAnimeRepo.isNotEmpty ||
+          activeMangaRepo.isNotEmpty ||
+          activeNovelRepo.isNotEmpty) {
+        shouldShowExtensions.value = true;
+      }
       if (Get.find<ServiceHandler>().serviceType.value ==
           ServicesType.extensions) {
         return fetchHomePage();
@@ -95,12 +108,19 @@ class SourceController extends GetxController implements BaseService {
       final novelExtensions = await container
           .read(getExtensionsStreamProvider(MediaType.novel).future);
 
-      installedExtensions.value =
-          extensions.where((e) => e.isAdded ?? false).toList();
+      installedExtensions.value = extensions
+          .where((e) =>
+              (e.isAdded ?? false) &&
+              !e.name!.toLowerCase().contains('downloader'))
+          .toList();
       installedMangaExtensions.value =
           mangaExtensions.where((e) => e.isAdded ?? false).toList();
       installedNovelExtensions.value =
           novelExtensions.where((e) => e.isAdded ?? false).toList();
+
+      installedDownloaderExtensions.value = extensions
+          .where((e) => (e.isAdded ?? false) && e.name!.contains('Downloader'))
+          .toList();
 
       final box = Hive.box('themeData');
       final savedActiveSourceId = box.get('activeSourceId') as int?;

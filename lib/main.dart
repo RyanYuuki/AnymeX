@@ -26,6 +26,7 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/screens/downloader/controller/download_manager.dart';
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
@@ -225,6 +226,7 @@ void _initializeGetxController() {
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.lazyPut(() => CacheController());
+  DownloadManagerBinding.initializeDownloadManager();
 }
 
 class MainApp extends StatelessWidget {
@@ -395,12 +397,13 @@ class _FilterScreenState extends State<FilterScreen> {
                         onTap: _onItemTapped,
                         label: 'Library',
                       ),
-                      NavItem(
-                        unselectedIcon: Icons.extension_outlined,
-                        selectedIcon: Icons.extension_rounded,
-                        onTap: _onItemTapped,
-                        label: "Extensions",
-                      ),
+                      if (sourceController.shouldShowExtensions.value)
+                        NavItem(
+                          unselectedIcon: Icons.extension_outlined,
+                          selectedIcon: Icons.extension_rounded,
+                          onTap: _onItemTapped,
+                          label: "Extensions",
+                        ),
                     ],
                   ),
                 ],

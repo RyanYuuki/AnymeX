@@ -22,7 +22,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/media_mapper.dart';
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -341,7 +341,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       color: posterColor,
       child: Scaffold(
           extendBody: true,
-          bottomNavigationBar: _buildMobiledNav(),
+          bottomNavigationBar: sourceController.activeAnimeRepo.isNotEmpty
+              ? _buildMobiledNav()
+              : null,
           body: _commonSaikouLayout(context)),
     );
   }
@@ -613,11 +615,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         selectedIcon: Iconsax.info_circle5,
                         unselectedIcon: Iconsax.info_circle,
                         label: "Info"),
-                    NavItem(
-                        onTap: _onPageSelected,
-                        selectedIcon: Iconsax.play5,
-                        unselectedIcon: Iconsax.play,
-                        label: "Watch"),
+                    if (sourceController.activeAnimeRepo.isNotEmpty)
+                      NavItem(
+                          onTap: _onPageSelected,
+                          selectedIcon: Iconsax.play5,
+                          unselectedIcon: Iconsax.play,
+                          label: "Watch"),
                   ]),
             ],
           ),
