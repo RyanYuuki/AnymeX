@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:developer';
 
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -5,6 +7,7 @@ import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
@@ -51,11 +54,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   Map<String, dynamic> _activeFilters = {};
   RxBool isAdult = false.obs;
 
-  late AnimationController _searchBarController;
-  late AnimationController _resultsController;
-  late Animation<double> _searchBarAnimation;
-  late Animation<double> _resultsAnimation;
-
   final FocusNode _searchFocusNode = FocusNode();
 
   @override
@@ -66,24 +64,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _initializeAnimations() {
-    _searchBarController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _resultsController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-
-    _searchBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _searchBarController, curve: Curves.easeOutBack),
-    );
-    _resultsAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _resultsController, curve: Curves.easeOutQuart),
-    );
-
-    _searchBarController.forward();
-
     _searchFocusNode.addListener(() {
       setState(() {});
     });
@@ -105,6 +85,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _performSearch();
       });
     }
+  }
+
+  void _saveHistory() {
+    Hive.box('preferences').put(
+      '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
+      _searchedTerms.toList(),
+    );
   }
 
   Future<void> _performSearch({
@@ -140,13 +127,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ))) ??
           [];
 
-      // Update search history
       if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
         _searchedTerms.add(searchQuery);
-        await Hive.box('preferences').put(
-          '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
-          _searchedTerms.toList(),
-        );
+        _saveHistory();
       }
 
       setState(() {
@@ -154,10 +137,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _searchState =
             results.isEmpty ? SearchState.empty : SearchState.success;
       });
-
-      if (results.isNotEmpty) {
-        _resultsController.forward();
-      }
     } catch (e) {
       setState(() {
         _searchState = SearchState.error;
@@ -182,102 +161,83 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _searchBarController.dispose();
-    _resultsController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
   Widget _buildModernSearchBar() {
-    return AnimatedBuilder(
-      animation: _searchBarAnimation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _searchBarAnimation.value,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: _searchFocusNode.hasFocus
-                  ? [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.1),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .withOpacity(.7),
-                hintText: 'Search ${widget.isManga ? 'manga' : 'anime'}...',
-                hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.5),
-                    ),
-                prefixIcon: Icon(
-                  Iconsax.search_normal,
-                  color: _searchFocusNode.hasFocus
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.5),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: _searchFocusNode.hasFocus
+            ? [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _searchState = SearchState.initial;
-                            _searchResults = null;
-                          });
-                        },
-                        icon: Icon(
-                          Iconsax.close_circle,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                        ),
-                      )
-                    : IconButton(
-                        onPressed: _showFilterBottomSheet,
-                        icon: Icon(
-                          Iconsax.setting_4,
-                          color: _activeFilters.isNotEmpty
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.7),
-                        ),
-                      ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              ),
-              onSubmitted: (query) => _performSearch(query: query),
-              onChanged: (value) => setState(() {}),
+              ]
+            : null,
+      ),
+      child: TextField(
+        controller: _searchController,
+        focusNode: _searchFocusNode,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
+        decoration: InputDecoration(
+          filled: true,
+          fillColor:
+              Theme.of(context).colorScheme.surfaceContainer.withOpacity(.3),
+          hintText: 'Search ${widget.isManga ? 'manga' : 'anime'}...',
+          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+          prefixIcon: Icon(
+            Iconsax.search_normal,
+            color: _searchFocusNode.hasFocus
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
           ),
-        );
-      },
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchState = SearchState.initial;
+                      _searchResults = null;
+                    });
+                  },
+                  icon: Icon(
+                    Iconsax.close_circle,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
+                )
+              : serviceHandler.serviceType.value != ServicesType.anilist
+                  ? null
+                  : IconButton(
+                      onPressed: _showFilterBottomSheet,
+                      icon: Icon(
+                        Iconsax.setting_4,
+                        color: _activeFilters.isNotEmpty
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
+                      ),
+                    ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        ),
+        onSubmitted: (query) => _performSearch(query: query),
+        onChanged: (value) => setState(() {}),
+      ),
     );
   }
 
@@ -295,20 +255,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               );
             }),
             const SizedBox(width: 12),
-          ],
-
-          // Filter button
-          _buildActionButton(
-            icon: Iconsax.setting_4,
-            label: 'Filters',
-            isActive: _activeFilters.isNotEmpty,
-            onTap: _showFilterBottomSheet,
-          ),
-
-          const Spacer(),
-
-          if (_searchState == SearchState.success) ...[
-            _buildViewModeToggle(),
+            _buildActionButton(
+              icon: Iconsax.setting_4,
+              label: 'Filters',
+              isActive: _activeFilters.isNotEmpty,
+              onTap: _showFilterBottomSheet,
+            ),
+            const Spacer(),
+            if (_searchState == SearchState.success) ...[
+              _buildViewModeToggle(),
+            ],
           ],
         ],
       ),
@@ -565,6 +521,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           setState(() {
             _searchedTerms.value = updatedTerms;
           });
+          _saveHistory();
         },
       ),
     );
@@ -645,7 +602,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => _performSearch(),
-              icon: const Icon(Iconsax.refresh),
+              icon: Icon(Iconsax.refresh,
+                  color: Theme.of(context).colorScheme.onPrimary),
               label: const Text('Try Again'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -710,18 +668,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildSuccessState() {
     return Expanded(
-      child: AnimatedBuilder(
-        animation: _resultsAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: 0.8 + (0.2 * _resultsAnimation.value),
-            child: Opacity(
-              opacity: _resultsAnimation.value,
-              child: _buildSearchResults(),
-            ),
-          );
-        },
-      ),
+      child: _buildSearchResults(),
     );
   }
 
@@ -762,73 +709,81 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildListItem(Media media) {
-    return GestureDetector(
-      onTap: () => _navigateToDetails(media),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+    return StaggeredAnimatedItemWrapper(
+      index: 1,
+      child: GestureDetector(
+        onTap: () => _navigateToDetails(media),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withOpacity(0.3),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Hero(
-                tag: media.title,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    width: 60,
-                    height: 88,
-                    imageUrl: media.poster,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
-                      child: Icon(
-                        Iconsax.image,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Hero(
+                  tag: media.title,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      width: 60,
+                      height: 88,
+                      imageUrl: media.poster,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        child: Icon(
+                          Iconsax.image,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
-                      child: Icon(
-                        Iconsax.warning_2,
-                        color: Theme.of(context).colorScheme.error,
+                      errorWidget: (context, url, error) => Container(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        child: Icon(
+                          Iconsax.warning_2,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      media.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    if (media.rating != "??") ...[
-                      const SizedBox(height: 8),
-                      _buildRatingChip(media.rating),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        media.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                      ),
+                      if (media.rating != "??") ...[
+                        const SizedBox(height: 8),
+                        _buildRatingChip(media.rating),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              Icon(
-                Iconsax.arrow_right_3,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-              ),
-            ],
+                Icon(
+                  Iconsax.arrow_right_3,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -866,7 +821,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
-  // Helper methods
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
@@ -984,7 +938,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                         color: Theme.of(context)
                             .colorScheme
                             .surface
-                            .withOpacity(0.7),
+                            .withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: Theme.of(context)
@@ -1005,16 +959,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-
-              // Controls section
               _buildControlsSection(),
-
               const SizedBox(height: 16),
-
-              // Active filters
               _buildActiveFilters(),
-
-              // Results header (only show when we have results)
               if (_searchState == SearchState.success &&
                   _searchResults!.isNotEmpty) ...[
                 Container(
@@ -1051,12 +998,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                               ),
                         ),
                       ),
+                      if (_searchState == SearchState.success &&
+                          serviceHandler.serviceType.value !=
+                              ServicesType.anilist) ...[
+                        const Spacer(),
+                        _buildViewModeToggle(),
+                      ],
                     ],
                   ),
                 ),
               ],
-
-              // Main content area
               _buildMainContent(),
             ],
           ),
