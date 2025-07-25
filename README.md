@@ -91,9 +91,7 @@
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_1.png" width="100%" style="margin: 0;" />
     <img src="https://github.com/RyanYuuki/AnymeX/blob/main/github_assets/desktop/preview_2.png" width="100%" style="margin: 0;" />
-</div>
--->
--->
+</div>-->
 
 ## Support Us
 
