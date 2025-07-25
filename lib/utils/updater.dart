@@ -174,18 +174,6 @@ class UpdateManager {
     if (canShowUpdate.value) {
       canShowUpdate.value = false;
 
-      final hasStoragePermission = await _requestStoragePermissions();
-      if (!hasStoragePermission) {
-        snackBar("Storage permission is required to download updates");
-        return;
-      }
-
-      final hasInstallPermission = await _checkInstallPermission();
-      if (!hasInstallPermission) {
-        snackBar("Install permission is required to update the app");
-        return;
-      }
-
       try {
         final currentVersion = await _getCurrentVersion();
         final latestRelease = await _fetchLatestRelease();
@@ -434,7 +422,11 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       _downloadStatus = 'Installing...';
     });
 
-    // Install APK
+    final status = await Permission.requestInstallPackages.request();
+    if (!status.isGranted) {
+      snackBar("Install permission is required to update the app");
+    }
+
     final result =
         await InstallPlugin.installApk(savePath, appId: 'com.ryan.anymex');
     if (result['isSuccess']) {

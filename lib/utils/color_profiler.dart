@@ -2,10 +2,16 @@
 
 import 'dart:developer';
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ColorProfileManager {
   static const Map<String, Map<String, int>> profiles = {
@@ -227,10 +233,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _selectedProfile = widget.currentProfile;
-
-    // Initialize custom settings based on current profile
     if (widget.currentProfile.toLowerCase() == 'custom') {
       _customSettings = Map.from(widget.activeSettings);
     } else {
@@ -334,6 +338,16 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Icon(Iconsax.eye, size: 20),
+                      SizedBox(width: 8),
+                      Text('Shaders'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Icon(Icons.dashboard_customize, size: 20),
                       SizedBox(width: 8),
                       Text('Presets'),
@@ -373,6 +387,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
             child: TabBarView(
               controller: _tabController,
               children: [
+                _buildShadersTab(theme),
                 _buildPresetsTab(theme),
                 _buildCustomTab(theme),
               ],
@@ -381,6 +396,169 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
         ],
       ),
     );
+  }
+
+  Widget _buildShadersTab(ThemeData theme) {
+    bool enableShaders = (settingsController.preferences
+        .get('shaders_enabled', defaultValue: false));
+    return Opacity(
+      opacity: enableShaders ? 1 : 0.3,
+      child: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primaryContainer.withOpacity(0.3),
+                  theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    enableShaders
+                        ? 'Choose a shader that matches your viewing preference'
+                        : 'Shaders are disabled (Enable them from Settings > Experimental)',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          AnymexExpansionTile(
+            title: 'ANIME 4K',
+            initialExpanded: true,
+            content: Column(
+              children:
+                  ["Default", ...PlayerShaders.getShaders()].map((shader) {
+                return Obx(() {
+                  final isSelected = shader == "Default"
+                      ? settingsController.selectedShader.isEmpty ||
+                          settingsController.selectedShader == shader
+                      : settingsController.selectedShader == shader;
+                  return IgnorePointer(
+                    ignoring: !enableShaders,
+                    child: AnymexOnTap(
+                      onTap: () => setShaders(shader),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    colors: [
+                                      theme.colorScheme.primaryContainer,
+                                      theme.colorScheme.primaryContainer
+                                          .withOpacity(0.8),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                : null,
+                            color: isSelected
+                                ? null
+                                : theme.colorScheme.surfaceVariant
+                                    .withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(16),
+                            border: isSelected
+                                ? Border.all(
+                                    color: theme.colorScheme.primary,
+                                    width: 2,
+                                  )
+                                : Border.all(
+                                    color: theme.colorScheme.outline
+                                        .withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: theme.colorScheme.primary
+                                          .withOpacity(0.2),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      shader,
+                                      style:
+                                          theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: isSelected
+                                            ? theme
+                                                .colorScheme.onPrimaryContainer
+                                            : theme.colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: theme.colorScheme.onPrimary,
+                                    size: 16,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                });
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void setShaders(String message, {bool backOut = true}) async {
+    settingsController.selectedShader = message;
+    final profile = settingsController.selectedProfile;
+    final shaderBase = await PlayerShaders.getShaderPathForProfile(profile);
+    var paths = PlayerShaders.getShaderByProfile(message)
+        .map((f) => '$shaderBase$f')
+        .join(';');
+    (widget.player.platform as dynamic).setProperty('glsl-shaders', paths);
+    if (backOut) {
+      Navigator.pop(context);
+    }
   }
 
   Widget _buildPresetsTab(ThemeData theme) {

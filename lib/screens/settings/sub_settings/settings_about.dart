@@ -1,5 +1,4 @@
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
-import 'package:anymex/screens/settings/sub_settings/widgets/easter_avatar.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -7,7 +6,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -41,7 +39,8 @@ class AboutPage extends StatelessWidget {
                       width: double.infinity,
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
+                        color:
+                            theme.colorScheme.surfaceContainer.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -114,7 +113,13 @@ class AboutPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const TripleTapWidget()),
+                        child: CircleAvatar(
+                          backgroundColor: theme.colorScheme.surfaceContainer,
+                          child: Image.asset(
+                            'assets/images/logo_transparent.png',
+                            fit: BoxFit.cover,
+                          ),
+                        )),
                   ),
                 ),
               ],
@@ -123,7 +128,10 @@ class AboutPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainer
+                      .withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12)),
               child: CustomSection(
                 icon: Iconsax.link_circle,

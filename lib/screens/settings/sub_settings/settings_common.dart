@@ -1,10 +1,13 @@
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/repo_dialog.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsCommon extends StatefulWidget {
@@ -42,8 +45,10 @@ class _SettingsCommonState extends State<SettingsCommon> {
                   children: [
                     IconButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withOpacity(0.5),
                       ),
                       onPressed: () {
                         Get.back();
@@ -60,6 +65,37 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'General',
+                        content: Column(
+                          children: [
+                            CustomTile(
+                              icon: HugeIcons.strokeRoundedGithub,
+                              title: 'Anime Github Repo',
+                              description: "Add github repo for anime",
+                              onTap: () =>
+                                  const GitHubRepoDialog(type: MediaType.anime)
+                                      .show(context: context),
+                            ),
+                            CustomTile(
+                              icon: HugeIcons.strokeRoundedGithub,
+                              title: 'Manga Github Repo',
+                              description: "Add github repo for manga",
+                              onTap: () =>
+                                  const GitHubRepoDialog(type: MediaType.manga)
+                                      .show(context: context),
+                            ),
+                            CustomTile(
+                              icon: HugeIcons.strokeRoundedGithub,
+                              title: 'Novel Github Repo',
+                              description: "Add github repo for novel",
+                              onTap: () =>
+                                  const GitHubRepoDialog(type: MediaType.novel)
+                                      .show(context: context),
+                            ),
+                          ],
+                        )),
                     AnymexExpansionTile(
                         initialExpanded: true,
                         title: 'Anilist',

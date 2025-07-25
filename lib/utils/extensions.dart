@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/core/Extensions/fetch_anime_sources.dart';
 import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
@@ -26,34 +24,5 @@ class Extensions {
       await _provider
           .read(FetchNovelSourcesListProvider(id: null, reFresh: true).future);
     }
-  }
-
-  List<String> getRecommmendedExtensions() {
-    const encodedSources = [
-      'QW5pbWVQYWhl',
-      'VnVtZXRv',
-      'QW5pcGxheQ==',
-      'R29qbw==',
-      'QW5pbWVHRw==',
-      'YWxsYW5pbWU='
-    ];
-
-    return encodedSources
-        .map((e) => (utf8.decode(base64Decode(e)).toString().toLowerCase()))
-        .toList();
-  }
-
-  List<String> getRecommmendedMangaExtensions() {
-    const encodedSources = [
-      'TWFuZ2FmaXJl',
-      'Q29taWNr',
-      'QXN1cmEgU2NhbnM=',
-      'TWFuZ2FkZXg=',
-      'TWFuZ2FoZXJl'
-    ];
-
-    return encodedSources
-        .map((e) => (utf8.decode(base64Decode(e)).toString().toLowerCase()))
-        .toList();
   }
 }

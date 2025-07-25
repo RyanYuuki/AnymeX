@@ -48,191 +48,192 @@ class InlineSearchHistory extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      padding: const EdgeInsets.all(20.0),
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
-          width: 0.5,
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          width: 1,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with title and clear button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 20, 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Iconsax.clock,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                    child: Icon(
-                      Iconsax.clock,
-                      size: 18,
+                    const SizedBox(width: 12),
+                    AnymexText(
+                      text: 'Recent Searches',
+                      variant: TextVariant.semiBold,
+                      size: 15,
                       color: Theme.of(context)
                           .colorScheme
-                          .onPrimary
+                          .onSurface
                           .withOpacity(0.9),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  AnymexText(
-                    text: 'Recent Searches',
-                    variant: TextVariant.semiBold,
-                    size: 16,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.9),
-                  ),
-                ],
-              ),
-              GestureDetector(
-                onTap: _clearAllHistory,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .errorContainer
-                        .withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
+                  ],
+                ),
+                GestureDetector(
+                  onTap: _clearAllHistory,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
                       color:
-                          Theme.of(context).colorScheme.error.withOpacity(0.5),
-                      width: 0.5,
+                          Theme.of(context).colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Iconsax.trash,
-                        size: 14,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .error
-                            .withOpacity(0.8),
-                      ),
-                      const SizedBox(width: 6),
-                      AnymexText(
-                        text: "Clear",
-                        size: 12,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .error
-                            .withOpacity(0.8),
-                      ),
-                    ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Iconsax.trash,
+                          size: 12,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withOpacity(0.8),
+                        ),
+                        const SizedBox(width: 4),
+                        AnymexText(
+                          text: "Clear",
+                          size: 11,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withOpacity(0.8),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          const SizedBox(height: 16),
-
-          // Search terms list
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: searchTerms.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final term = searchTerms[index];
-
-              return GestureDetector(
-                onTap: () => onTermSelected(term),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceVariant
-                        .withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .outline
-                          .withOpacity(0.5),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      // Search icon
-                      Container(
-                        padding: const EdgeInsets.all(8),
+          // Search terms
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: ListView.separated(
+                physics: const BouncingScrollPhysics(),
+                itemCount: searchTerms.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final term = searchTerms[index];
+              
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => onTermSelected(term),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
                           color: Theme.of(context)
                               .colorScheme
-                              .primaryContainer
-                              .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Iconsax.search_normal_1,
-                          size: 16,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.8),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Search term text
-                      Expanded(
-                        child: AnymexText(
-                          text: term,
-                          size: 14,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.8),
-                        ),
-                      ),
-
-                      // Delete button
-                      GestureDetector(
-                        onTap: () => _deleteTerm(term),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
+                              .surfaceVariant
+                              .withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
                             color: Theme.of(context)
                                 .colorScheme
-                                .errorContainer
-                                .withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Iconsax.close_circle,
-                            size: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .error
-                                .withOpacity(0.7),
+                                .outline
+                                .withOpacity(0.05),
+                            width: 1,
                           ),
                         ),
+                        child: Row(
+                          children: [
+                            // Search icon
+                            Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Iconsax.search_normal_1,
+                                size: 14,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.7),
+                              ),
+                            ),
+              
+                            const SizedBox(width: 12),
+              
+                            // Search term
+                            Expanded(
+                              child: AnymexText(
+                                text: term,
+                                size: 13,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.8),
+                              ),
+                            ),
+              
+                            // Delete button
+                            GestureDetector(
+                              onTap: () => _deleteTerm(term),
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .error
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Iconsax.close_circle,
+                                  size: 12,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .error
+                                      .withOpacity(0.6),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
