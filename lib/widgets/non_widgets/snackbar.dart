@@ -177,7 +177,6 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final topPadding = MediaQuery.of(context).padding.top;
-    final isMobile = Platform.isAndroid || Platform.isIOS;
 
     return Positioned.fill(
       child: AnimatedBuilder(
@@ -207,7 +206,9 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
                       child: IntrinsicHeight(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: screenWidth * (isMobile ? 0.9 : 0.4),
+                            maxWidth: screenWidth *
+                                (getResponsiveSize(context,
+                                    mobileSize: 0.9, desktopSize: 0.4)),
                             minWidth: 120,
                             maxHeight: screenHeight * 0.3,
                           ),

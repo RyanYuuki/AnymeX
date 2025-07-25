@@ -164,7 +164,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                               4.multiplyRadius()),
                                         ),
                                         child: AnymexText(
-                                          text: media.format,
+                                          text: media.format.toUpperCase(),
                                           size: 10,
                                           color: colorScheme.onSurfaceVariant,
                                         ),

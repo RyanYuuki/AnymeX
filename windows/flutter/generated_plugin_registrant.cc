@@ -18,6 +18,7 @@
 #include <screen_retriever_windows/screen_retriever_windows_plugin_c_api.h>
 #include <uni_links_desktop/uni_links_desktop_plugin.h>
 #include <url_launcher_windows/url_launcher_windows.h>
+#include <volume_controller/volume_controller_plugin_c_api.h>
 #include <window_manager/window_manager_plugin.h>
 #include <window_to_front/window_to_front_plugin.h>
 
@@ -46,6 +47,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("UniLinksDesktopPlugin"));
   UrlLauncherWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
+  VolumeControllerPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("VolumeControllerPluginCApi"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
   WindowToFrontPluginRegisterWithRegistrar(

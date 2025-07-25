@@ -15,6 +15,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   screen_retriever_windows
   uni_links_desktop
   url_launcher_windows
+  volume_controller
   window_manager
   window_to_front
 )

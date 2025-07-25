@@ -1,7 +1,9 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -179,15 +181,19 @@ class SettingsSheet extends StatelessWidget {
                 },
               ),
             ),
-          if (isMobile)
-            ListTile(
-              leading: const Icon(Icons.extension),
-              title: const Text('Extensions'),
-              onTap: () {
-                Get.back();
-                navigate(() => const ExtensionScreen());
-              },
-            ),
+          Obx(() {
+            final shouldShowExts = sourceController.shouldShowExtensions.value;
+            return isMobile && shouldShowExts
+                ? ListTile(
+                    leading: const Icon(Icons.extension),
+                    title: const Text('Extensions'),
+                    onTap: () {
+                      Get.back();
+                      navigate(() => const ExtensionScreen());
+                    },
+                  )
+                : const SizedBox.shrink();
+          }),
           AnymexOnTap(
             child: ListTile(
               leading: const Icon(HugeIcons.strokeRoundedAiSetting),
@@ -201,10 +207,10 @@ class SettingsSheet extends StatelessWidget {
           AnymexOnTap(
             child: ListTile(
               leading: const Icon(Iconsax.document_download),
-              title: const Text('Downloads (WIP)'),
+              title: const Text('Downloads & Local'),
               onTap: () {
-                serviceHandler.simklService.fetchUserMovieList();
                 Get.back();
+                navigate(() => const WatchOffline());
               },
             ),
           ),

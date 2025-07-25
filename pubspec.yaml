@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   algorithmic: ^0.0.11
+  background_downloader: ^9.2.3
   blur: ^4.0.0
   cached_network_image: ^3.4.1
   carousel_slider: ^5.0.0
@@ -57,11 +58,11 @@ dependencies:
   json_path: ^0.7.4
   kenburns_nullsafety: ^1.0.1
   manga_page_view: ^1.0.5
-  
-  # repo => https://github.com/media-kit/media-kit
-  media_kit: ^1.2.0
   media_kit_libs_video: ^1.0.6
-  media_kit_video: ^1.2.5
+  media_kit_video:
+    git:
+      url: https://github.com/Schnitzel5/media-kit.git
+      path: media_kit_video
 
   outlined_text: ^1.0.1
   package_info_plus: any
@@ -71,7 +72,7 @@ dependencies:
   provider: ^6.1.2
   pseudom: ^1.0.1
   riverpod_annotation: ^2.6.1
-  screen_brightness: ^0.2.2+1
+  screen_brightness: 2.1.5 
   scrollable_positioned_list: ^0.3.8
   shimmer: ^3.0.0
   smooth_page_indicator: ^1.2.0+3
@@ -79,7 +80,8 @@ dependencies:
   uni_links: ^0.5.1
   uni_links_desktop: any
   url_launcher: any
-  volume_controller: ^2.0.8
+  video_thumbnail: ^0.5.6
+  volume_controller: 3.4.0
   window_manager: ^0.4.3
   xpath_selector_html_parser: ^3.0.1
 
