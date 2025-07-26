@@ -24,6 +24,13 @@ jobs:
         env:
           JOBS: ${{ toJSON(github.event.workflow_run.jobs) }}
         run: |
+          # Check if JOBS is null or empty
+          if [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
+            echo "Error: No job data available from workflow_run. Ensure the 'Build and Release AnymeX' workflow ran successfully."
+            echo "all_jobs_success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
           # Define the required jobs
           REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
           
@@ -44,6 +51,7 @@ jobs:
           
           # Set output to control the workflow
           echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
+        shell: /usr/bin/bash -e {0}
 
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -123,7 +131,7 @@ jobs:
           echo "Getting commit messages between ${{ env.prev_tag }} and ${{ env.current_tag }}..."
           COMMITS=$(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s' | tr '\n' '|')
           echo "Commits retrieved: $COMMITS"
-          echo "commits=$COMMITS" >> $GITHUB_ENV
+          echo "commits=$COMMITS" >> $GITHUB_OUTPUT
 
       - name: Categorize Commits
         id: categorize
@@ -138,7 +146,7 @@ jobs:
           CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
-          IFS='|' read -ra COMMIT_LIST <<< "${{ env.commits }}"
+          IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
             HASH=$(echo "$LINE" | awk '{print $1}')
             MESSAGE=$(echo "$LINE" | cut -d' ' -f2-)
