@@ -28,8 +28,7 @@ jobs:
           echo "Workflow run event: $WORKFLOW_RUN"
           # Check if JOBS is null or empty
           if [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
-            echo "Warning: No job data available from workflow_run. This may occur if the triggering workflow failed. Attempting to proceed with available data."
-            # Set to false as a fallback, but allow the loop to run if JOBS becomes valid later
+            echo "Warning: No job data available from workflow_run. This may occur if the triggering workflow failed. Assuming failure unless manual trigger."
             ALL_SUCCESS=false
           else
             # Initialize success flag
@@ -51,8 +50,6 @@ jobs:
                 echo "Job $JOB succeeded. Status: $JOB_STATUS"
               fi
             done
-          else
-            echo "Skipping job status check due to missing JOBS data."
           fi
           
           # Set output to control the workflow
@@ -155,13 +152,16 @@ jobs:
           # Split commits and process each line
           IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
-            # Extract hash and message using parameter expansion and sed
-            HASH=$(echo "$LINE" | grep -oE '^[a-z0-9]+' || echo "$LINE" | cut -d' ' -f1)
-            MESSAGE=$(echo "$LINE" | sed 's/^[a-z0-9]\+ //' | sed 's/#[^|]*//g' | sed 's/(.*)//g')
+            # Preprocess line to remove parentheses before hash extraction
+            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g')
+            # Extract hash using grep, fallback to cut if needed
+            HASH=$(echo "$CLEAN_LINE" | grep -oE '^[a-z0-9]+' || echo "$CLEAN_LINE" | cut -d' ' -f1)
+            # Extract message after hash, removing issue numbers
+            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH} *//" | sed 's/#[^|]*//g')
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
-            # Clean MESSAGE for pattern matching by removing special characters
+            # Clean MESSAGE for pattern matching
             CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g')
             if [[ $CLEAN_MESSAGE == feat* ]]; then
               FEATURES+="$FORMATTED_COMMIT\n"
