@@ -262,7 +262,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               isActive: _activeFilters.isNotEmpty,
               onTap: _showFilterBottomSheet,
             ),
-            if (!widget.isManga) ...[
+            if (!widget.isManga &&
+                serviceHandler.serviceType.value == ServicesType.anilist) ...[
               const SizedBox(width: 12),
               _buildActionButton(
                 icon: Iconsax.eye,
