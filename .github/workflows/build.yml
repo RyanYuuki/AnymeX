@@ -377,13 +377,65 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release
 
+      - name: Verify Build Output
+        run: |
+          echo "Checking build output..."
+          ls -la build/macos/Build/Products/Release/ || echo "Release directory not found"
+          find build/macos -name "*.app" -type d || echo "No .app files found"
+
       - name: Create DMG file for macOS Build
         run: |
+          set -e  # Exit on any error
+          
+          # Check if the .app file exists
+          APP_PATH="build/macos/Build/Products/Release/anymex.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Error: anymex.app not found at $APP_PATH"
+            echo "Available files in Release directory:"
+            ls -la build/macos/Build/Products/Release/ || echo "Release directory doesn't exist"
+            exit 1
+          fi
+          
+          # Create necessary directories
+          mkdir -p build/macos/Release
           mkdir -p temp_dir
-          cp -r build/macos/Build/Products/Release/anymex.app temp_dir/
+          
+          # Copy the app bundle
+          echo "Copying app bundle..."
+          cp -r "$APP_PATH" temp_dir/
+          
+          # Create Applications symlink
+          echo "Creating Applications symlink..."
           ln -s /Applications temp_dir/Applications
-          hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
+          
+          # Create DMG
+          echo "Creating DMG file..."
+          hdiutil create \
+            -volname "AnymeX" \
+            -srcfolder temp_dir \
+            -ov \
+            -format UDZO \
+            build/macos/Release/AnymeX.dmg
+          
+          # Cleanup
+          echo "Cleaning up temporary directory..."
           rm -rf temp_dir
+          
+          # Verify DMG was created
+          if [ -f "build/macos/Release/AnymeX.dmg" ]; then
+            echo "DMG created successfully!"
+            ls -lh build/macos/Release/AnymeX.dmg
+          else
+            echo "Error: DMG file was not created"
+            exit 1
+          fi
+
+      - name: Upload DMG as Artifact (for debugging)
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-dmg
+          path: build/macos/Release/AnymeX.dmg
+          if-no-files-found: error
 
       - name: Release macOS Builds
         uses: ncipollo/release-action@v1
