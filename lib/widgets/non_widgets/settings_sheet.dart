@@ -207,7 +207,7 @@ class SettingsSheet extends StatelessWidget {
           AnymexOnTap(
             child: ListTile(
               leading: const Icon(Iconsax.document_download),
-              title: const Text('Downloads & Local'),
+              title: const Text('Local Media'),
               onTap: () {
                 Get.back();
                 navigate(() => const WatchOffline());

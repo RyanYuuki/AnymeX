@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   algorithmic: ^0.0.11
-  background_downloader: ^9.2.3
+  # background_downloader: ^9.2.3
   blur: ^4.0.0
   cached_network_image: ^3.4.1
   carousel_slider: ^5.0.0

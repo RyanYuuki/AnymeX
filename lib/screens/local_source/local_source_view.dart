@@ -127,58 +127,58 @@ class _WatchOfflineState extends State<WatchOffline> {
               ],
             ),
           ),
-          8.width(),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  navigate(() => const DownloadManagerPage());
-                },
-                icon: Icon(
-                  Icons.download,
-                  color: theme.colorScheme.onSurface,
-                ),
-                style: IconButton.styleFrom(
-                  backgroundColor:
-                      theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                  padding: const EdgeInsets.all(12),
-                ),
-              ),
-              // Badge
-              Obx(() {
-                return DownloadManagerController.instance.downloadsList.isEmpty
-                    ? const SizedBox.shrink()
-                    : Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 20,
-                            minHeight: 20,
-                          ),
-                          child: Center(
-                            child: Text(
-                              DownloadManagerController
-                                  .instance.downloadsList.length
-                                  .toString(),
-                              style: TextStyle(
-                                color: theme.colorScheme.onPrimary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-              }),
-            ],
-          )
+          // 8.width(),
+          // Stack(
+          //   alignment: Alignment.center,
+          //   children: [
+          //     IconButton(
+          //       onPressed: () {
+          //         navigate(() => const DownloadManagerPage());
+          //       },
+          //       icon: Icon(
+          //         Icons.download,
+          //         color: theme.colorScheme.onSurface,
+          //       ),
+          //       style: IconButton.styleFrom(
+          //         backgroundColor:
+          //             theme.colorScheme.surfaceVariant.withOpacity(0.3),
+          //         padding: const EdgeInsets.all(12),
+          //       ),
+          //     ),
+          //     // Badge
+          //     Obx(() {
+          //       return DownloadManagerController.instance.downloadsList.isEmpty
+          //           ? const SizedBox.shrink()
+          //           : Positioned(
+          //               right: 0,
+          //               top: 0,
+          //               child: Container(
+          //                 padding: const EdgeInsets.all(4),
+          //                 decoration: BoxDecoration(
+          //                   color: theme.colorScheme.primary,
+          //                   shape: BoxShape.circle,
+          //                 ),
+          //                 constraints: const BoxConstraints(
+          //                   minWidth: 20,
+          //                   minHeight: 20,
+          //                 ),
+          //                 child: Center(
+          //                   child: Text(
+          //                     DownloadManagerController
+          //                         .instance.downloadsList.length
+          //                         .toString(),
+          //                     style: TextStyle(
+          //                       color: theme.colorScheme.onPrimary,
+          //                       fontSize: 12,
+          //                       fontWeight: FontWeight.bold,
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ),
+          //             );
+          //     }),
+          //   ],
+          // )
         ],
       ),
     );
@@ -331,8 +331,8 @@ class _WatchOfflineState extends State<WatchOffline> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: getResponsiveValue(context,
-                mobileValue: 1, desktopValue: 2),
+            crossAxisCount:
+                getResponsiveValue(context, mobileValue: 1, desktopValue: 2),
             mainAxisExtent: 130,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
@@ -369,8 +369,8 @@ class _WatchOfflineState extends State<WatchOffline> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: getResponsiveValue(context,
-                mobileValue: 1, desktopValue: 2),
+            crossAxisCount:
+                getResponsiveValue(context, mobileValue: 1, desktopValue: 2),
             mainAxisExtent: 130,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
@@ -1049,13 +1049,15 @@ class _WatchOfflineState extends State<WatchOffline> {
                   isSelected: controller.viewMode.value == ViewMode.search,
                 )
               : const SizedBox.shrink()),
-          Obx(() => _buildModernTab(
-                controller: controller,
-                icon: Icons.download_rounded,
-                label: 'Download',
-                viewMode: ViewMode.download,
-                isSelected: controller.viewMode.value == ViewMode.download,
-              )),
+          Obx(() => controller.supportsDownloads.value
+              ? _buildModernTab(
+                  controller: controller,
+                  icon: Icons.download_rounded,
+                  label: 'Download',
+                  viewMode: ViewMode.download,
+                  isSelected: controller.viewMode.value == ViewMode.download,
+                )
+              : const SizedBox.shrink()),
           Obx(() => _buildModernTab(
                 controller: controller,
                 icon: Iconsax.folder_open,

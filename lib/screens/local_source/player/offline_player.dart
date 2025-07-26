@@ -1071,8 +1071,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
                                           onTap: () {
                                             showAudioSelector();
                                           },
-                                          icon:
-                                              HugeIcons.strokeRoundedFileAudio),
+                                          icon: Iconsax.music),
                                     ],
                                   ),
                                 ),

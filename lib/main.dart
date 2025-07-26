@@ -226,7 +226,7 @@ void _initializeGetxController() {
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.lazyPut(() => CacheController());
-  DownloadManagerBinding.initializeDownloadManager();
+  // DownloadManagerBinding.initializeDownloadManager();
 }
 
 class MainApp extends StatelessWidget {

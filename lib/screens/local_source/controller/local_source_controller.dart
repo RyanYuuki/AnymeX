@@ -98,8 +98,8 @@ class LocalSourceController extends GetxController
               ? sourceController.installedDownloaderExtensions.first
               : null;
 
-      supportsDownloads.value =
-          sourceController.installedDownloaderExtensions.isNotEmpty;
+      // supportsDownloads.value =
+      //     sourceController.installedDownloaderExtensions.isNotEmpty;
       if (!supportsDownloads.value) {
         viewMode.value = ViewMode.local;
       }
@@ -143,8 +143,8 @@ class LocalSourceController extends GetxController
 
   Future<void> _initializeDownloadPath() async {
     if (downloadPath.isEmpty) {
-      final defaultDownloadPath = await getDownloadPath();
-      downloadPath.value = defaultDownloadPath;
+      // final defaultDownloadPath = await getDownloadPath();
+      // downloadPath.value = defaultDownloadPath;
       await loadDownloadDirectory();
     }
   }
@@ -609,20 +609,20 @@ class LocalSourceController extends GetxController
     }
   }
 
-  Future<String> getDownloadPath() async =>
-      DownloadManagerController.instance.downloadPath;
+  // Future<String> getDownloadPath() async =>
+      // DownloadManagerController.instance.downloadPath;
 
   Future<void> downloadVideo(Video video) async {
-    DownloadManagerController.instance.addDownload(
-        url: video.url,
-        headers: video.headers,
-        displayName: '${selectedEpisode.value?.title} - ${video.quality}',
-        metaData: {
-          'poster': selectedSeason.value!.poster,
-          'season': selectedSeason.value!.title
-        },
-        filename:
-            '${selectedMedia.value!.title}/${selectedSeason.value!.title}/${selectedEpisode.value?.title} - ${video.quality}');
+    // DownloadManagerController.instance.addDownload(
+    //     url: video.url,
+    //     headers: video.headers,
+    //     displayName: '${selectedEpisode.value?.title} - ${video.quality}',
+    //     metaData: {
+    //       'poster': selectedSeason.value!.poster,
+    //       'season': selectedSeason.value!.title
+    //     },
+    //     filename:
+    //         '${selectedMedia.value!.title}/${selectedSeason.value!.title}/${selectedEpisode.value?.title} - ${video.quality}');
     snackBar('Added to downloads');
   }
 }
