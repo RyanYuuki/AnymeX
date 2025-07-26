@@ -17,7 +17,7 @@ on:
 
 jobs:
   generate-changelog:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.event == 'push' && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-windows') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-ios') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-macos') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-android') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-linux') && all(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]').[*] | map(github.event.workflow_run.jobs[?name == .].conclusion) == ["success"])) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
