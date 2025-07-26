@@ -152,10 +152,12 @@ jobs:
           CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
+          # Split commits and process each line
           IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
-            HASH=$(echo "$LINE" | awk '{print $1}')
-            MESSAGE=$(echo "$LINE" | cut -d' ' -f2-)
+            # Extract hash and message using parameter expansion and sed
+            HASH=$(echo "$LINE" | grep -oE '^[a-z0-9]+' || echo "$LINE" | cut -d' ' -f1)
+            MESSAGE=$(echo "$LINE" | sed 's/^[a-z0-9]\+ //' | sed 's/#[^|]*//g')
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
@@ -199,6 +201,7 @@ jobs:
             echo -e "$CHORES" >> CHANGELOG.md
           fi
           echo -e "<img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white\"/> <img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white\"/>" >> CHANGELOG.md
+        shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
