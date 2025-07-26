@@ -136,13 +136,19 @@ jobs:
 
           IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
-            CLEAN_LINE=$(echo "$LINE" | sed 's/([^)]*)//g')
-            HASH=$(echo "$CLEAN_LINE" | awk '{print $1}')
-            MESSAGE=$(echo "$CLEAN_LINE" | cut -d' ' -f2- | sed 's/#[^|]*//g')
+            # Remove parentheses and their contents more robustly
+            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g' | sed 's/[[:space:]]*$//')
+            echo "Cleaned line: $CLEAN_LINE"
+            # Extract hash
+            HASH=$(echo "$CLEAN_LINE" | grep -oE '^[a-f0-9]+' || echo "$CLEAN_LINE" | awk '{print $1}')
+            echo "Extracted hash: $HASH"
+            # Extract message, removing issue numbers
+            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH} *//" | sed 's/#[^|]*//g')
+            echo "Extracted message: $MESSAGE"
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
-
+            # Clean message for pattern matching
             CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]')
             if [[ $CLEAN_MESSAGE == feat* ]]; then
               FEATURES+="$FORMATTED_COMMIT\n"
@@ -184,8 +190,10 @@ jobs:
             echo -e "$CHORES" >> CHANGELOG.md
           fi
 
-          echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-          shell: /usr/bin/bash -e {0}
+          # Ensure current_tag is safely quoted in the badge URL
+          CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
+          echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
+        shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
