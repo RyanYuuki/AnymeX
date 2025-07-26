@@ -118,8 +118,9 @@ jobs:
         id: get_commits
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          COMMITS=$(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s' | tr '\n' '|')
-          echo "commits=$COMMITS" >> $GITHUB_OUTPUT
+          # Use a more robust method to handle special characters
+          git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h|||%s' > commits.tmp
+          echo "commits_file=commits.tmp" >> $GITHUB_OUTPUT
 
       - name: Categorize Commits
         id: categorize
@@ -134,65 +135,86 @@ jobs:
           CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
-          IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
-          for LINE in "${COMMIT_LIST[@]}"; do
-            # Safely remove parentheses and trailing spaces in one step
-            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g; s/[[:space:]]*$//; s/^[[:space:]]*//')
-            echo "Cleaned line: $CLEAN_LINE"
-            # Extract hash
-            HASH=$(echo "$CLEAN_LINE" | grep -oE '^[a-f0-9]+' || echo "$CLEAN_LINE" | awk '{print $1}')
-            echo "Extracted hash: $HASH"
-            # Extract message, removing issue numbers
-            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH}[[:space:]]*//" | sed 's/#[^|]*//g')
-            echo "Extracted message: $MESSAGE"
+          # Read commits from file to handle special characters properly
+          while IFS='|||' read -r HASH MESSAGE; do
+            # Skip empty lines
+            [ -z "$HASH" ] && continue
+            
+            echo "Processing commit: $HASH - $MESSAGE"
+            
+            # Clean up the message by removing issue references for categorization
+            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+            
+            # Create the formatted commit line
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
-            echo "Processing commit: $FORMATTED_COMMIT"
-            # Clean message for pattern matching
-            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]')
+            
+            echo "Clean message for categorization: '$CLEAN_MESSAGE'"
+            
+            # Categorize based on cleaned message
             if [[ "$CLEAN_MESSAGE" == feat* ]]; then
-              FEATURES+="$FORMATTED_COMMIT\n"
+              FEATURES+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to FEATURES"
             elif [[ "$CLEAN_MESSAGE" == fix* || "$CLEAN_MESSAGE" == bug* || "$CLEAN_MESSAGE" == improvement* || "$CLEAN_MESSAGE" == patch* ]]; then
-              BUG_FIXES+="$FORMATTED_COMMIT\n"
+              BUG_FIXES+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to BUG_FIXES"
             elif [[ "$CLEAN_MESSAGE" == refactor* ]]; then
-              REFACTORS+="$FORMATTED_COMMIT\n"
+              REFACTORS+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to REFACTORS"
             elif [[ "$CLEAN_MESSAGE" == style* ]]; then
-              STYLE_CHANGES+="$FORMATTED_COMMIT\n"
+              STYLE_CHANGES+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to STYLE_CHANGES"
             elif [[ "$CLEAN_MESSAGE" == perf* ]]; then
-              PERFORMANCE+="$FORMATTED_COMMIT\n"
+              PERFORMANCE+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to PERFORMANCE"
             elif [[ "$CLEAN_MESSAGE" == chore* || "$CLEAN_MESSAGE" == docs* || "$CLEAN_MESSAGE" == build* || "$CLEAN_MESSAGE" == ci* ]]; then
-              CHORES+="$FORMATTED_COMMIT\n"
+              CHORES+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to CHORES"
+            else
+              # Default uncategorized commits to chores
+              CHORES+="$FORMATTED_COMMIT"$'\n'
+              echo "Added to CHORES (uncategorized)"
             fi
-          done
+          done < commits.tmp
 
+          # Generate changelog sections
           if [ -n "$FEATURES" ]; then
             echo "### 🎉 New Features" >> CHANGELOG.md
             echo -e "$FEATURES" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
           if [ -n "$BUG_FIXES" ]; then
             echo "### 🛠️ Bug Fixes & Improvements" >> CHANGELOG.md
             echo -e "$BUG_FIXES" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
           if [ -n "$REFACTORS" ]; then
             echo "### 🔧 Refactors" >> CHANGELOG.md
             echo -e "$REFACTORS" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
           if [ -n "$STYLE_CHANGES" ]; then
             echo "### 🎨 Style Changes" >> CHANGELOG.md
             echo -e "$STYLE_CHANGES" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
           if [ -n "$PERFORMANCE" ]; then
             echo "### 🚀 Performance Improvements" >> CHANGELOG.md
             echo -e "$PERFORMANCE" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
           if [ -n "$CHORES" ]; then
             echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
             echo -e "$CHORES" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
           fi
 
-          # Ensure current_tag is safely quoted in the badge URL
-          CURRENT_TAG_SAFE=$(echo "v2.9.8" | sed 's/[^a-zA-Z0-9.-]//g')
-          echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
+          # Add download badges
+          CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
+          echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
+          
+          # Clean up temporary file
+          rm -f commits.tmp
         shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
