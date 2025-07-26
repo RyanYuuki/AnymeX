@@ -185,7 +185,7 @@ jobs:
           fi
 
           echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-        shell: /usr/bin/bash -e {0}
+          shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
