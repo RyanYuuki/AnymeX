@@ -12,10 +12,11 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Cloing repository
+      - name: Cloning repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
       - name: Fetch Repository Tags by Date and Time
         id: fetch_tags
         run: |
@@ -55,60 +56,76 @@ jobs:
           RELEASE_NOTES=$(echo "$RELEASE_DATA" | jq -r '.body')
           echo "Release Notes: $RELEASE_NOTES"
 
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo "$RELEASE_NOTES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # Write to file to handle multiline content safely
+          echo "$RELEASE_NOTES" > release_notes.txt
           
       - name: Format Release Notes
         id: format_notes
         run: |
-          features=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | head -n 5)
+          # Initialize the formatted notes file
+          echo "" > formatted_notes.txt
+          
+          # Clean the release notes by removing the || markers that were causing issues
+          sed 's/||//g' release_notes.txt > clean_release_notes.txt
+          
+          # Extract features
+          features=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$features" ]]; then
-            echo "**🚀 Features**" > formatted_notes.txt
+            echo "**🚀 Features**" >> formatted_notes.txt
             echo "$features" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
       
-          fixes=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | head -n 5)
+          # Extract fixes
+          fixes=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$fixes" ]]; then
             echo "**🐛 Fixes**" >> formatted_notes.txt
             echo "$fixes" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
       
-          refactors=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | head -n 5)
+          # Extract refactors
+          refactors=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$refactors" ]]; then
             echo "**🔧 Refactors**" >> formatted_notes.txt
             echo "$refactors" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
       
-          style=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | head -n 5)
+          # Extract style changes
+          style=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$style" ]]; then
             echo "**💅 Style**" >> formatted_notes.txt
             echo "$style" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
       
-          perf=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | head -n 5)
+          # Extract performance improvements
+          perf=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$perf" ]]; then
             echo "**⚡ Performance**" >> formatted_notes.txt
             echo "$perf" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
       
-          chores=$(echo "$RELEASE_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | head -n 5)
+          # Extract chores
+          chores=$(grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$chores" ]]; then
             echo "**🛠 Chores**" >> formatted_notes.txt
             echo "$chores" >> formatted_notes.txt
             echo "" >> formatted_notes.txt
           fi
 
-          cat formatted_notes.txt
-          FORMATTED_NOTES=$(cat formatted_notes.txt) 
-          echo "FORMATTED_NOTES<<EOF" >> $GITHUB_ENV
-          echo "$FORMATTED_NOTES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # Debug output
+          echo "Contents of formatted_notes.txt:"
+          cat formatted_notes.txt || echo "File not found or empty"
+          
+          # Set environment variable using file content
+          {
+            echo "FORMATTED_NOTES<<EOF"
+            cat formatted_notes.txt
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Get and Categorize Assets with Sizes
         id: categorize_assets
@@ -119,9 +136,10 @@ jobs:
            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.LATEST_TAG }}" -o release.json
           
           # Initialize environment variables
-          for VAR in apk_arm64 apk_armeabi apk_universal apk_x86_64 windows linux ios setup macos; do
+          for VAR in apk_arm64 apk_armeabi apk_universal apk_x86_64 windows linux ios setup macos linuximg linuxrmp; do
             echo "${VAR}_message=" >> $GITHUB_ENV
           done
+          
           # Process each asset
           jq -r '.assets[] | "\(.browser_download_url) \(.size)"' release.json | while read -r LINE; do
             ASSET_URL=$(echo "$LINE" | awk '{print $1}')
@@ -132,6 +150,7 @@ jobs:
               printf "%.2f %s", size, unit[i]
             }')
             FILE_NAME=$(basename "$ASSET_URL")
+            
             # Categorize and set variables
             if [[ "$FILE_NAME" == *"-arm64.apk" ]]; then
               echo "apk_arm64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
@@ -161,7 +180,7 @@ jobs:
       - name: Determine Webhook
         id: determine_webhook
         run: |
-          if [[ "${{ env.RELEASE_NAME }}" == *"alpha"* ]]; then
+          if [[ "${{ env.LATEST_TAG }}" == *"alpha"* ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_ALPHA }}" >> $GITHUB_ENV
           else
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
@@ -173,45 +192,60 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_TOPIC: ${{ secrets.TELEGRAM_THREAD_ID }}
         run: |
-
           # Start with release header
           echo "<b>🚀 New Release: ${{ env.LATEST_TAG }}</b>" > header.txt
           
-          # Extract all categories into separate files
+          # Extract categories from formatted notes and clean them
           echo "**🚀 Features**" > TFeatures.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > feat.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > feat.txt || touch feat.txt
 
           echo "**🐛 Fixes**" > TFixes.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > fixes.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > fixes.txt || touch fixes.txt
 
           echo "**🔧 Refactors**" > TRefactors.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > refactors.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > refactors.txt || touch refactors.txt
 
           echo "**💅 Style**" > TStyle.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > style.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > style.txt || touch style.txt
 
           echo "**⚡ Performance**" > TPerformance.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > perf.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > perf.txt || touch perf.txt
 
           echo "**🛠 Chores**" > TChores.txt
-          echo "$(echo "$FORMATTED_NOTES" | grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' | sed -E 's/\): [^:]+:/) :/g' | head -n 5)" > chores.txt
+          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > chores.txt || touch chores.txt
 
-          # Process each file through the parser
-          chmod +x scripts/tel_commit_parser.sed
-          
-          ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt
-          ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt
-          ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt
-          ./scripts/tel_commit_parser.sed style.txt > style_clean.txt
-          ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt
-          ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt
-          
-          ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt
-          ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt
-          ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt
-          ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt
-          ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt
-          ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt
+          # Process each file through the parser if it exists
+          if [ -f scripts/tel_commit_parser.sed ]; then
+            chmod +x scripts/tel_commit_parser.sed
+            
+            ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt || cp feat.txt feat_clean.txt
+            ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt || cp fixes.txt fixes_clean.txt
+            ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt || cp refactors.txt refactors_clean.txt
+            ./scripts/tel_commit_parser.sed style.txt > style_clean.txt || cp style.txt style_clean.txt
+            ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt || cp perf.txt perf_clean.txt
+            ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt || cp chores.txt chores_clean.txt
+            
+            ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt || cp TFeatures.txt TFeaturesT.txt
+            ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt || cp TFixes.txt TFixesT.txt
+            ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt || cp TRefactors.txt TRefactorsT.txt
+            ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt || cp TStyle.txt TStyleT.txt
+            ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt || cp TPerformance.txt TPerformanceT.txt
+            ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt || cp TChores.txt TChoresT.txt
+          else
+            # If no parser script, just copy the files
+            cp feat.txt feat_clean.txt
+            cp fixes.txt fixes_clean.txt
+            cp refactors.txt refactors_clean.txt
+            cp style.txt style_clean.txt
+            cp perf.txt perf_clean.txt
+            cp chores.txt chores_clean.txt
+            cp TFeatures.txt TFeaturesT.txt
+            cp TFixes.txt TFixesT.txt
+            cp TRefactors.txt TRefactorsT.txt
+            cp TStyle.txt TStyleT.txt
+            cp TPerformance.txt TPerformanceT.txt
+            cp TChores.txt TChoresT.txt
+          fi
 
           # Check and remove empty categories
           if [ ! -s feat_clean.txt ] || [ "$(tr -d '[:space:]' < feat_clean.txt)" = "" ]; then
@@ -253,9 +287,11 @@ jobs:
               echo "No commits found. Skipping Telegram message."
               exit 0
           fi
+          
           markdown_info_tel=$(< output.txt)
           echo "Final Telegram Message:"
           echo "$markdown_info_tel"
+          
           curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
               -d "chat_id=$TELEGRAM_CHAT_ID" \
               -d "text=$markdown_info_tel" \
@@ -289,11 +325,12 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
         run: |
-          FORMATTED_NOTES=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
+          FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
+          
           # Mention the role based on the release name
-          if [[ "${RELEASE_NAME}" == *alpha* ]]; then
+          if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
             role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
-          elif [[ "${RELEASE_NAME}" == *beta* ]]; then
+          elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
             role_mention="<@&1313087262539518033>"  # Role ID for beta channel
           else
             role_mention="<@&1313346791479054456>"  # Default role ID
@@ -308,7 +345,7 @@ jobs:
       
           discord_data=$(jq -nc \
                         --arg role_mention "$role_mention" \
-                        --arg field_value "$FORMATTED_NOTES
+                        --arg field_value "$FORMATTED_NOTES_CLEAN
 
             [❓Don't know which version to download? Click here!](https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md)  
             
