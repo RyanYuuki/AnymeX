@@ -136,31 +136,31 @@ jobs:
 
           IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
-            # Remove parentheses and their contents more robustly
-            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g' | sed 's/[[:space:]]*$//')
+            # Safely remove parentheses and trailing spaces in one step
+            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g; s/[[:space:]]*$//; s/^[[:space:]]*//')
             echo "Cleaned line: $CLEAN_LINE"
             # Extract hash
             HASH=$(echo "$CLEAN_LINE" | grep -oE '^[a-f0-9]+' || echo "$CLEAN_LINE" | awk '{print $1}')
             echo "Extracted hash: $HASH"
             # Extract message, removing issue numbers
-            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH} *//" | sed 's/#[^|]*//g')
+            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH}[[:space:]]*//" | sed 's/#[^|]*//g')
             echo "Extracted message: $MESSAGE"
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
             # Clean message for pattern matching
             CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]')
-            if [[ $CLEAN_MESSAGE == feat* ]]; then
+            if [[ "$CLEAN_MESSAGE" == feat* ]]; then
               FEATURES+="$FORMATTED_COMMIT\n"
-            elif [[ $CLEAN_MESSAGE == fix* || $CLEAN_MESSAGE == bug* || $CLEAN_MESSAGE == improvement* || $CLEAN_MESSAGE == patch* ]]; then
+            elif [[ "$CLEAN_MESSAGE" == fix* || "$CLEAN_MESSAGE" == bug* || "$CLEAN_MESSAGE" == improvement* || "$CLEAN_MESSAGE" == patch* ]]; then
               BUG_FIXES+="$FORMATTED_COMMIT\n"
-            elif [[ $CLEAN_MESSAGE == refactor* ]]; then
+            elif [[ "$CLEAN_MESSAGE" == refactor* ]]; then
               REFACTORS+="$FORMATTED_COMMIT\n"
-            elif [[ $CLEAN_MESSAGE == style* ]]; then
+            elif [[ "$CLEAN_MESSAGE" == style* ]]; then
               STYLE_CHANGES+="$FORMATTED_COMMIT\n"
-            elif [[ $CLEAN_MESSAGE == perf* ]]; then
+            elif [[ "$CLEAN_MESSAGE" == perf* ]]; then
               PERFORMANCE+="$FORMATTED_COMMIT\n"
-            elif [[ $CLEAN_MESSAGE == chore* || $CLEAN_MESSAGE == docs* || $CLEAN_MESSAGE == build* || $CLEAN_MESSAGE == ci* ]]; then
+            elif [[ "$CLEAN_MESSAGE" == chore* || "$CLEAN_MESSAGE" == docs* || "$CLEAN_MESSAGE" == build* || "$CLEAN_MESSAGE" == ci* ]]; then
               CHORES+="$FORMATTED_COMMIT\n"
             fi
           done
@@ -191,7 +191,7 @@ jobs:
           fi
 
           # Ensure current_tag is safely quoted in the badge URL
-          CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
+          CURRENT_TAG_SAFE=$(echo "v2.9.8" | sed 's/[^a-zA-Z0-9.-]//g')
           echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
         shell: /usr/bin/bash -e {0}
 
