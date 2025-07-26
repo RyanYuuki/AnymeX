@@ -210,62 +210,62 @@ class UpdateManager {
   }
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
-    currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
-    latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
+    // currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
+    // latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
 
-    final currentSplit = currentVersion.split('-');
-    final latestSplit = latestVersion.split('-');
+    // final currentSplit = currentVersion.split('-');
+    // final latestSplit = latestVersion.split('-');
 
-    final currentNums = currentSplit[0].split('.').map(int.parse).toList();
-    final latestNums = latestSplit[0].split('.').map(int.parse).toList();
+    // final currentNums = currentSplit[0].split('.').map(int.parse).toList();
+    // final latestNums = latestSplit[0].split('.').map(int.parse).toList();
 
-    for (int i = 0; i < 3; i++) {
-      final c = (i < currentNums.length) ? currentNums[i] : 0;
-      final l = (i < latestNums.length) ? latestNums[i] : 0;
-      if (l > c) return true;
-      if (l < c) return false;
-    }
+    // for (int i = 0; i < 3; i++) {
+    //   final c = (i < currentNums.length) ? currentNums[i] : 0;
+    //   final l = (i < latestNums.length) ? latestNums[i] : 0;
+    //   if (l > c) return true;
+    //   if (l < c) return false;
+    // }
 
-    final currentHasTag = currentSplit.length == 2;
-    final latestHasTag = latestSplit.length == 2;
+    // final currentHasTag = currentSplit.length == 2;
+    // final latestHasTag = latestSplit.length == 2;
 
-    if (latestHasTag && latestSplit[1].toLowerCase() == 'hotfix') {
-      if (currentHasTag && currentSplit[1].toLowerCase() == 'hotfix') {
-        return false;
-      }
-      return true;
-    }
+    // if (latestHasTag && latestSplit[1].toLowerCase() == 'hotfix') {
+    //   if (currentHasTag && currentSplit[1].toLowerCase() == 'hotfix') {
+    //     return false;
+    //   }
+    //   return true;
+    // }
 
-    if (currentHasTag &&
-        currentSplit[1].toLowerCase() == 'hotfix' &&
-        !latestHasTag) {
-      return false;
-    }
+    // if (currentHasTag &&
+    //     currentSplit[1].toLowerCase() == 'hotfix' &&
+    //     !latestHasTag) {
+    //   return false;
+    // }
 
-    if (!currentHasTag && latestHasTag) {
-      return false;
-    }
+    // if (!currentHasTag && latestHasTag) {
+    //   return false;
+    // }
 
-    if (currentHasTag &&
-        !latestHasTag &&
-        currentSplit[1].toLowerCase() != 'hotfix') {
-      return true;
-    }
+    // if (currentHasTag &&
+    //     !latestHasTag &&
+    //     currentSplit[1].toLowerCase() != 'hotfix') {
+    //   return true;
+    // }
 
-    if (currentHasTag && latestHasTag) {
-      final priority = ['alpha', 'beta', 'rc'];
-      final currentTag = currentSplit[1].toLowerCase();
-      final latestTag = latestSplit[1].toLowerCase();
+    // if (currentHasTag && latestHasTag) {
+    //   final priority = ['alpha', 'beta', 'rc'];
+    //   final currentTag = currentSplit[1].toLowerCase();
+    //   final latestTag = latestSplit[1].toLowerCase();
 
-      final currentIndex = priority.indexOf(currentTag);
-      final latestIndex = priority.indexOf(latestTag);
+    //   final currentIndex = priority.indexOf(currentTag);
+    //   final latestIndex = priority.indexOf(latestTag);
 
-      if (currentIndex != -1 && latestIndex != -1) {
-        return latestIndex > currentIndex;
-      }
-    }
+    //   if (currentIndex != -1 && latestIndex != -1) {
+    //     return latestIndex > currentIndex;
+    //   }
+    // }
 
-    log('Current version ($currentVersion) is up to date.');
+    // log('Current version ($currentVersion) is up to date.');
     return false;
   }
 
