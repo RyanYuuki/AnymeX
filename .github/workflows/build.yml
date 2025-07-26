@@ -519,13 +519,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/MiraiEnoki/Anymex_Scoop.git scoop-bucket
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "Error: SCOOP_GITHUB_TOKEN secret is not set. Please set it in the repository settings."
+            echo "See https://docs.github.com/en/actions/security-guides/encrypted-secrets for instructions."
+            exit 1
+          fi
+          if ! git clone https://x-access-token:${GITHUB_TOKEN}@github.com/MiraiEnoki/Anymex_Scoop.git scoop-bucket; then
+            echo "Error: Failed to clone MiraiEnoki/Anymex_Scoop. Ensure the repository exists and the SCOOP_GITHUB_TOKEN has access."
+            echo "If the repository is not created, fork or create it at https://github.com/MiraiEnoki/Anymex_Scoop."
+            exit 1
+          fi
           cd scoop-bucket
           mkdir -p bucket
           cp ../bucket/anymex.json bucket/
           git add bucket/anymex.json
           git commit -m "anymex@${VERSION#v}: Update to version ${VERSION#v}" || echo "No changes to commit"
-          git push origin main
+          git push origin main || echo "Push failed, possibly no changes or insufficient permissions"
           gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head MiraiEnoki:main || echo "PR creation skipped or failed"
 
   build-chocolatey:
@@ -557,16 +566,16 @@ jobs:
             $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
             
             Write-Host "Looking for installer asset..."
-            $exe_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-x86_64-([\d.]+)-Installer\.exe' }
+            $exe_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-x86_64-([\d.]+(?:-hotfix)?)-Installer\.exe' }
             
             if (-not $exe_asset) { 
               Write-Host "Available assets:"
               $release.assets | ForEach-Object { Write-Host "  - $($_.name)" }
-              throw "No matching installer found with pattern 'AnymeX-x86_64-(version)-Installer.exe'" 
+              throw "No matching installer found with pattern 'AnymeX-x86_64-(version[-hotfix])-Installer.exe'" 
             }
             
             # Extract version from filename
-            if ($exe_asset.name -match 'AnymeX-x86_64-([\d.]+)-Installer\.exe') {
+            if ($exe_asset.name -match 'AnymeX-x86_64-([\d.]+(?:-hotfix)?)-Installer\.exe') {
               $version = $matches[1]
             } else {
               throw "Could not extract version from filename: $($exe_asset.name)"
