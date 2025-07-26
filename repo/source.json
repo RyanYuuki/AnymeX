@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.7",
-      "versionDate": "2025-07-13T18:07:16Z",
+      "version": "2.9.8",
+      "versionDate": "2025-07-26T07:59:23Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.7/AnymeX-iOS-v2.9.7.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-iOS-v2.9.8.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 39520154,
+      "size": 39956183,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "2.9.8",
+          "date": "2025-07-26T07:59:23Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-iOS-v2.9.8.ipa",
+          "size": 39956183
+        },
+        {
           "version": "2.9.7",
           "date": "2025-07-13T18:07:16Z",
-          "localizedDescription": "",
+          "localizedDescription": "\n\ud83c\udf89 New Features\n* [0a070e1](https://github.com/RyanYuuki/AnymeX/commit/0a070e1): feat: new settings, player and reader related\n* [509409e](https://github.com/RyanYuuki/AnymeX/commit/509409e): feat(reader): New Setting (Preload Pages)\n* [28b8699](https://github.com/RyanYuuki/AnymeX/commit/28b8699): feat(reader): more settings and UI adjustments (132)\n\n\ud83d\udee0\ufe0f Bug Fixes & Improvements\n* [1aa7f57](https://github.com/RyanYuuki/AnymeX/commit/1aa7f57): fix: fixed updater, session cards, reader issues.\n* [cbe6a4f](https://github.com/RyanYuuki/AnymeX/commit/cbe6a4f): fix: fixed reader issues\n* [9ec0572](https://github.com/RyanYuuki/AnymeX/commit/9ec0572): fix: removed annoying popups from everywhere\n* [d084ad4](https://github.com/RyanYuuki/AnymeX/commit/d084ad4): fix: fixed minor error on ext servoce\n* [828d1aa](https://github.com/RyanYuuki/AnymeX/commit/828d1aa): fix: bump manga_page_view to 1.0.5 (131)\n\n\ud83d\udd27 Refactors\n* [7173bf0](https://github.com/RyanYuuki/AnymeX/commit/7173bf0): refactor: improved color profiles\n\n\ud83c\udfa8 Style Changes\n* [0d990de](https://github.com/RyanYuuki/AnymeX/commit/0d990de): style: filtering banner in liquid mode\n\n\ud83e\uddf9 Chores & Documentation\n* [19428d1](https://github.com/RyanYuuki/AnymeX/commit/19428d1): build(windows): bumped version to 2.9.7\n* [f9f7023](https://github.com/RyanYuuki/AnymeX/commit/f9f7023): chore: version bumped to 2.9.7\n* [f3b42b7](https://github.com/RyanYuuki/AnymeX/commit/f3b42b7): chore: removing annoying toasts\n* [8655888](https://github.com/RyanYuuki/AnymeX/commit/8655888): chore: Trying to fix changelog workflow\n\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.7/AnymeX-iOS-v2.9.7.ipa",
           "size": 39520154
         },
@@ -221,6 +228,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.7"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "2.9.8 - 26 Jul",
+      "identifier": "release-2.9.8",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-07-26T07:59:23Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.8"
     }
   ]
 }
