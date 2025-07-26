@@ -520,6 +520,7 @@ jobs:
           gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head MiraiEnoki:main || echo "PR creation skipped or failed"
 
   build-chocolatey:
+    needs: build-windows
     runs-on: windows-latest
     steps:
       - name: Checkout Code
