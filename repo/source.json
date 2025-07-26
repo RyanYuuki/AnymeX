@@ -15,14 +15,14 @@
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
       "version": "2.9.8",
-      "versionDate": "2025-07-26T10:05:30Z",
+      "versionDate": "2025-07-26T10:29:49Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8-hotfix/AnymeX-iOS-v2.9.8-hotfix.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-iOS-v2.9.8.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 39464092,
+      "size": 39685661,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -31,10 +31,10 @@
       "versions": [
         {
           "version": "2.9.8",
-          "date": "2025-07-26T10:05:30Z",
+          "date": "2025-07-26T10:29:49Z",
           "localizedDescription": "",
-          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8-hotfix/AnymeX-iOS-v2.9.8-hotfix.ipa",
-          "size": 39464092
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-iOS-v2.9.8.ipa",
+          "size": 39685661
         },
         {
           "version": "2.9.7",
