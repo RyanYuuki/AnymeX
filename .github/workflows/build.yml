@@ -386,7 +386,7 @@ jobs:
       - name: Create DMG file for macOS Build
         run: |
           set -e  # Exit on any error
-          
+
           # Check if the .app file exists
           APP_PATH="build/macos/Build/Products/Release/anymex.app"
           if [ ! -d "$APP_PATH" ]; then
@@ -395,19 +395,19 @@ jobs:
             ls -la build/macos/Build/Products/Release/ || echo "Release directory doesn't exist"
             exit 1
           fi
-          
+
           # Create necessary directories
           mkdir -p build/macos/Release
           mkdir -p temp_dir
-          
+
           # Copy the app bundle
           echo "Copying app bundle..."
           cp -r "$APP_PATH" temp_dir/
-          
+
           # Create Applications symlink
           echo "Creating Applications symlink..."
           ln -s /Applications temp_dir/Applications
-          
+
           # Create DMG
           echo "Creating DMG file..."
           hdiutil create \
@@ -416,11 +416,11 @@ jobs:
             -ov \
             -format UDZO \
             build/macos/Release/AnymeX.dmg
-          
+
           # Cleanup
           echo "Cleaning up temporary directory..."
           rm -rf temp_dir
-          
+
           # Verify DMG was created
           if [ -f "build/macos/Release/AnymeX.dmg" ]; then
             echo "DMG created successfully!"
@@ -541,45 +541,198 @@ jobs:
       - name: Get Latest Release Info
         id: get_release
         run: |
-          $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
-          $exe_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-x86_64-([\d.]+)-Installer\.exe' }
-          if (-not $exe_asset) { throw "No matching installer found" }
-          $version = $matches[1]
-          $exe_url = $exe_asset.browser_download_url
-          $response = Invoke-WebRequest -Uri $exe_url -Method Get -MaximumRedirection 0 -ErrorAction SilentlyContinue
-          if ($response.StatusCode -eq 302) { $exe_url = $response.Headers.Location }
-          $exe_content = Invoke-WebRequest -Uri $exe_url
-          $exe_hash = (Get-FileHash -InputStream $exe_content.RawContentStream -Algorithm SHA256).Hash
-          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "EXE_URL=$exe_url" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "EXE_HASH=$exe_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
+          try {
+            Write-Host "Fetching latest release info..."
+            $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
+            
+            Write-Host "Looking for installer asset..."
+            $exe_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-x86_64-([\d.]+)-Installer\.exe' }
+            
+            if (-not $exe_asset) { 
+              Write-Host "Available assets:"
+              $release.assets | ForEach-Object { Write-Host "  - $($_.name)" }
+              throw "No matching installer found with pattern 'AnymeX-x86_64-(version)-Installer.exe'" 
+            }
+            
+            # Extract version from filename
+            if ($exe_asset.name -match 'AnymeX-x86_64-([\d.]+)-Installer\.exe') {
+              $version = $matches[1]
+            } else {
+              throw "Could not extract version from filename: $($exe_asset.name)"
+            }
+            
+            $exe_url = $exe_asset.browser_download_url
+            Write-Host "Found installer: $($exe_asset.name)"
+            Write-Host "Version: $version"
+            Write-Host "URL: $exe_url"
+            
+            # Download file and calculate hash (handle redirects automatically)
+            Write-Host "Downloading file to calculate hash..."
+            $tempFile = New-TemporaryFile
+            try {
+              # Use -MaximumRedirection to handle redirects automatically
+              Invoke-WebRequest -Uri $exe_url -OutFile $tempFile.FullName -MaximumRedirection 5
+              $exe_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
+              Write-Host "SHA256 Hash: $exe_hash"
+            } finally {
+              Remove-Item $tempFile.FullName -ErrorAction SilentlyContinue
+            }
+            
+            # Set environment variables
+            echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "EXE_URL=$exe_url" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "EXE_HASH=$exe_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
+            
+            Write-Host "Environment variables set successfully"
+          }
+          catch {
+            Write-Host "Error: $($_.Exception.Message)"
+            Write-Host "Stack trace: $($_.ScriptStackTrace)"
+            throw
+          }
+
+      - name: Verify Chocolatey Package Structure
+        run: |
+          Write-Host "Verifying Chocolatey package structure..."
+
+          # Check if required files exist
+          $requiredFiles = @(
+            "chocolatey/anymex.nuspec",
+            "chocolatey/tools/chocolateyInstall.ps1"
+          )
+
+          foreach ($file in $requiredFiles) {
+            if (-not (Test-Path $file)) {
+              Write-Host "Missing required file: $file"
+              Write-Host "Current directory structure:"
+              Get-ChildItem -Recurse | Select-Object FullName
+              throw "Required Chocolatey package file missing: $file"
+            } else {
+              Write-Host "✓ Found: $file"
+            }
+          }
 
       - name: Update Chocolatey Package Files
         run: |
-          $version = $env:VERSION
-          $exe_url = $env:EXE_URL
-          $exe_hash = $env:EXE_HASH
-          (Get-Content chocolatey/anymex.nuspec) -replace '<version>.*</version>', "<version>$version</version>" | Set-Content chocolatey/anymex.nuspec
-          (Get-Content chocolatey/tools/chocolateyInstall.ps1) -replace '\$packageName = .*$', "\$packageName = 'com.ryan.anymex'" -replace '\$url = .*$', "\$url = '$exe_url'" -replace '\$checksum = .*$', "\$checksum = '$exe_hash'" | Set-Content chocolatey/tools/chocolateyInstall.ps1
+          try {
+            $version = $env:VERSION
+            $exe_url = $env:EXE_URL
+            $exe_hash = $env:EXE_HASH
+            
+            Write-Host "Updating package files with:"
+            Write-Host "  Version: $version"
+            Write-Host "  URL: $exe_url"
+            Write-Host "  Hash: $exe_hash"
+            
+            # Update nuspec file
+            Write-Host "Updating anymex.nuspec..."
+            $nuspecContent = Get-Content chocolatey/anymex.nuspec -Raw
+            $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
+            Set-Content chocolatey/anymex.nuspec -Value $nuspecContent
+            
+            # Update chocolateyInstall.ps1
+            Write-Host "Updating chocolateyInstall.ps1..."
+            $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
+            $installContent = $installContent -replace '\$packageName\s*=\s*[''"].*?[''"]', "`$packageName = 'com.ryan.anymex'"
+            $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$exe_url'"
+            $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$exe_hash'"
+            Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
+            
+            Write-Host "Package files updated successfully"
+            
+            # Show the updated content for verification
+            Write-Host "`n--- Updated nuspec content ---"
+            Get-Content chocolatey/anymex.nuspec | Select-Object -First 20
+            Write-Host "`n--- Updated install script content ---"
+            Get-Content chocolatey/tools/chocolateyInstall.ps1 | Select-Object -First 10
+          }
+          catch {
+            Write-Host "Error updating package files: $($_.Exception.Message)"
+            throw
+          }
 
       - name: Commit Updated Chocolatey Files
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add chocolatey/anymex.nuspec chocolatey/tools/chocolateyInstall.ps1
-          git commit -m "Update Chocolatey package files to version $env:VERSION" || echo "No changes to commit"
-          git push
+          try {
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            
+            # Check if there are changes to commit
+            $changes = git status --porcelain
+            if ($changes) {
+              Write-Host "Changes detected, committing..."
+              git add chocolatey/anymex.nuspec chocolatey/tools/chocolateyInstall.ps1
+              git commit -m "Update Chocolatey package files to version $env:VERSION"
+              git push
+              Write-Host "Changes committed and pushed successfully"
+            } else {
+              Write-Host "No changes to commit"
+            }
+          }
+          catch {
+            Write-Host "Git operation failed: $($_.Exception.Message)"
+            Write-Host "This might be expected if there are no changes to commit"
+          }
 
       - name: Build Chocolatey Package
         run: |
-          choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
+          try {
+            Write-Host "Building Chocolatey package..."
+            
+            # Ensure output directory exists
+            if (-not (Test-Path "chocolatey")) {
+              New-Item -ItemType Directory -Path "chocolatey" -Force
+            }
+            
+            # Build the package
+            choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
+            
+            # Verify package was created
+            $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
+            if (Test-Path $packageFile) {
+              Write-Host "✓ Package created successfully: $packageFile"
+              $fileInfo = Get-Item $packageFile
+              Write-Host "  Size: $([math]::Round($fileInfo.Length / 1KB, 2)) KB"
+            } else {
+              Write-Host "Available files in chocolatey directory:"
+              Get-ChildItem chocolatey/
+              throw "Package file was not created: $packageFile"
+            }
+          }
+          catch {
+            Write-Host "Error building Chocolatey package: $($_.Exception.Message)"
+            throw
+          }
+
+      - name: Upload Package as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: chocolatey-package
+          path: chocolatey/*.nupkg
+          if-no-files-found: error
 
       - name: Push Chocolatey Package
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
         run: |
-          choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
-          choco push chocolatey/com.ryan.anymex.$env:VERSION.nupkg --source https://push.chocolatey.org/
+          try {
+            if (-not $env:CHOCO_API_KEY) {
+              throw "CHOCO_API_KEY secret is not set"
+            }
+            
+            Write-Host "Setting up Chocolatey API key..."
+            choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+            
+            $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
+            Write-Host "Pushing package: $packageFile"
+            
+            choco push $packageFile --source https://push.chocolatey.org/
+            Write-Host "Package pushed successfully to Chocolatey repository"
+          }
+          catch {
+            Write-Host "Error pushing to Chocolatey: $($_.Exception.Message)"
+            throw
+          }
 
       - name: Release Chocolatey Package
         uses: ncipollo/release-action@v1
