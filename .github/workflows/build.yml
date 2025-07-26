@@ -431,7 +431,7 @@ jobs:
           fi
 
       - name: Upload DMG as Artifact (for debugging)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-dmg
           path: build/macos/Release/AnymeX.dmg
@@ -705,7 +705,7 @@ jobs:
           }
 
       - name: Upload Package as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chocolatey-package
           path: chocolatey/*.nupkg
