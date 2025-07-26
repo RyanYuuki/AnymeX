@@ -157,21 +157,23 @@ jobs:
           for LINE in "${COMMIT_LIST[@]}"; do
             # Extract hash and message using parameter expansion and sed
             HASH=$(echo "$LINE" | grep -oE '^[a-z0-9]+' || echo "$LINE" | cut -d' ' -f1)
-            MESSAGE=$(echo "$LINE" | sed 's/^[a-z0-9]\+ //' | sed 's/#[^|]*//g')
+            MESSAGE=$(echo "$LINE" | sed 's/^[a-z0-9]\+ //' | sed 's/#[^|]*//g' | sed 's/(.*)//g')
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
-            if [[ $MESSAGE == feat* ]]; then
+            # Clean MESSAGE for pattern matching by removing special characters
+            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g')
+            if [[ $CLEAN_MESSAGE == feat* ]]; then
               FEATURES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == fix* || $MESSAGE == bug* || $MESSAGE == improvement* || $MESSAGE == patch* ]]; then
+            elif [[ $CLEAN_MESSAGE == fix* || $CLEAN_MESSAGE == bug* || $CLEAN_MESSAGE == improvement* || $CLEAN_MESSAGE == patch* ]]; then
               BUG_FIXES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == refactor* ]]; then
+            elif [[ $CLEAN_MESSAGE == refactor* ]]; then
               REFACTORS+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == style* ]]; then
+            elif [[ $CLEAN_MESSAGE == style* ]]; then
               STYLE_CHANGES+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == perf* ]]; then
+            elif [[ $CLEAN_MESSAGE == perf* ]]; then
               PERFORMANCE+="$FORMATTED_COMMIT\n"
-            elif [[ $MESSAGE == chore* || $MESSAGE == docs* || $MESSAGE == build* || $MESSAGE == ci* ]]; then
+            elif [[ $CLEAN_MESSAGE == chore* || $CLEAN_MESSAGE == docs* || $CLEAN_MESSAGE == build* || $CLEAN_MESSAGE == ci* ]]; then
               CHORES+="$FORMATTED_COMMIT\n"
             fi
           done
