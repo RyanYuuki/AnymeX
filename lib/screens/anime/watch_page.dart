@@ -236,9 +236,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             ? savedEpisode?.timeStampInMilliseconds ?? 0
             : 0;
     if (firstTime) {
-      final path = await PlayerShaders.getMpvPath();
       player = Player(
-          configuration: PlayerConfiguration(config: true, configDir: path));
+          configuration: PlayerConfiguration(
+              config: true, configDir: settings.mpvPath.value));
       playerController = VideoController(player,
           configuration: const VideoControllerConfiguration(hwdec: 'auto'));
     } else {
