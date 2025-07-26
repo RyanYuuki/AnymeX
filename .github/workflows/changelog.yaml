@@ -26,19 +26,15 @@ jobs:
           JOBS: ${{ toJSON(github.event.workflow_run.jobs) }}
         run: |
           echo "Workflow run event: $WORKFLOW_RUN"
-          # Check if JOBS is null or empty
           if [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
             echo "Warning: No job data available from workflow_run. This may occur if the triggering workflow failed. Assuming failure unless manual trigger."
             ALL_SUCCESS=false
           else
-            # Initialize success flag
             ALL_SUCCESS=true
           fi
 
-          # Define the required jobs
           REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
           
-          # Check each job's conclusion only if JOBS is valid
           if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
             for JOB in "${REQUIRED_JOBS[@]}"; do
               JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
@@ -51,8 +47,7 @@ jobs:
               fi
             done
           fi
-          
-          # Set output to control the workflow
+
           echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
         shell: /usr/bin/bash -e {0}
 
@@ -64,8 +59,7 @@ jobs:
 
       - name: Clear CHANGELOG.md
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "" > CHANGELOG.md
+        run: echo "" > CHANGELOG.md
 
       - name: Fetch Tags
         id: fetch_tags
@@ -80,7 +74,6 @@ jobs:
         id: determine_tags
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          # Get current tag (from input or latest tag)
           if [ -n "${{ inputs.current_tag }}" ]; then
             CURRENT_TAG="${{ inputs.current_tag }}"
           else
@@ -89,12 +82,10 @@ jobs:
           echo "Current tag: $CURRENT_TAG"
           echo "current_tag=$CURRENT_TAG" >> $GITHUB_ENV
 
-          # Get all tags sorted by creation date (newest first)
           ALL_TAGS=(${{ env.tags }})
           PREV_TAG=""
           SECOND_PREV_TAG=""
 
-          # Find the previous distinct tag
           for TAG in "${ALL_TAGS[@]}"; do
             if [ "$TAG" != "$CURRENT_TAG" ]; then
               if [ -z "$PREV_TAG" ]; then
@@ -106,14 +97,12 @@ jobs:
             fi
           done
 
-          # Use input previous tag if provided, otherwise use determined previous tag
           if [ -n "${{ inputs.previous_tag }}" ]; then
             PREV_TAG="${{ inputs.previous_tag }}"
           elif [ "$PREV_TAG" == "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
             PREV_TAG="$SECOND_PREV_TAG"
           fi
 
-          # If no previous tag found, use initial commit
           if [ -z "$PREV_TAG" ]; then
             PREV_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
@@ -123,17 +112,13 @@ jobs:
 
       - name: Debug Commit Log
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "Commits between ${{ env.prev_tag }} and ${{ env.current_tag }}:"
-          git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
+        run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
 
       - name: Get Commit Messages Between Tags
         id: get_commits
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          echo "Getting commit messages between ${{ env.prev_tag }} and ${{ env.current_tag }}..."
           COMMITS=$(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s' | tr '\n' '|')
-          echo "Commits retrieved: $COMMITS"
           echo "commits=$COMMITS" >> $GITHUB_OUTPUT
 
       - name: Categorize Commits
@@ -149,20 +134,16 @@ jobs:
           CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
-          # Split commits and process each line
           IFS='|' read -ra COMMIT_LIST <<< "${{ steps.get_commits.outputs.commits }}"
           for LINE in "${COMMIT_LIST[@]}"; do
-            # Preprocess line to remove parentheses before hash extraction
-            CLEAN_LINE=$(echo "$LINE" | sed 's/(.*)//g')
-            # Extract hash using grep, fallback to cut if needed
-            HASH=$(echo "$CLEAN_LINE" | grep -oE '^[a-z0-9]+' || echo "$CLEAN_LINE" | cut -d' ' -f1)
-            # Extract message after hash, removing issue numbers
-            MESSAGE=$(echo "$CLEAN_LINE" | sed "s/^${HASH} *//" | sed 's/#[^|]*//g')
+            CLEAN_LINE=$(echo "$LINE" | sed 's/([^)]*)//g')
+            HASH=$(echo "$CLEAN_LINE" | awk '{print $1}')
+            MESSAGE=$(echo "$CLEAN_LINE" | cut -d' ' -f2- | sed 's/#[^|]*//g')
             LINK="[$HASH]($REPO_URL/commit/$HASH)"
             FORMATTED_COMMIT="* $LINK: $MESSAGE"
             echo "Processing commit: $FORMATTED_COMMIT"
-            # Clean MESSAGE for pattern matching
-            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g')
+
+            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]')
             if [[ $CLEAN_MESSAGE == feat* ]]; then
               FEATURES+="$FORMATTED_COMMIT\n"
             elif [[ $CLEAN_MESSAGE == fix* || $CLEAN_MESSAGE == bug* || $CLEAN_MESSAGE == improvement* || $CLEAN_MESSAGE == patch* ]]; then
@@ -202,7 +183,8 @@ jobs:
             echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
             echo -e "$CHORES" >> CHANGELOG.md
           fi
-          echo -e "<img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white\"/> <img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white\"/>" >> CHANGELOG.md
+
+          echo -e "\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
         shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
@@ -212,7 +194,6 @@ jobs:
       - name: Commit and Push Changelog
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          echo "Committing and pushing changelog..."
           git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
           git add CHANGELOG.md
