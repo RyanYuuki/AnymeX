@@ -17,20 +17,48 @@ on:
 
 jobs:
   generate-changelog:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.event == 'push' && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-windows') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-ios') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-macos') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-android') && contains(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]'), 'build-linux') && all(fromJSON('["build-windows", "build-ios", "build-macos", "build-android", "build-linux"]').[*] | map(github.event.workflow_run.jobs[?name == .].conclusion) == ["success"])) }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check Job Statuses
+        id: check_jobs
+        env:
+          JOBS: ${{ toJSON(github.event.workflow_run.jobs) }}
+        run: |
+          # Define the required jobs
+          REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
+          
+          # Initialize success flag
+          ALL_SUCCESS=true
+          
+          # Check each job's conclusion
+          for JOB in "${REQUIRED_JOBS[@]}"; do
+            JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
+            if [ -z "$JOB_STATUS" ] || [ "$JOB_STATUS" != '"success"' ]; then
+              echo "Job $JOB failed or was not found. Status: $JOB_STATUS"
+              ALL_SUCCESS=false
+              break
+            else
+              echo "Job $JOB succeeded. Status: $JOB_STATUS"
+            fi
+          done
+          
+          # Set output to control the workflow
+          echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
+
       - name: Checkout Code
         uses: actions/checkout@v4
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         with:
           fetch-depth: 0
 
       - name: Clear CHANGELOG.md
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "" > CHANGELOG.md
 
       - name: Fetch Tags
         id: fetch_tags
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           git fetch --tags
           TAGS=$(git tag --sort=-creatordate | tr '\n' ' ')
@@ -39,6 +67,7 @@ jobs:
 
       - name: Determine Tags for Comparison
         id: determine_tags
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           # Get current tag (from input or latest tag)
           if [ -n "${{ inputs.current_tag }}" ]; then
@@ -82,12 +111,14 @@ jobs:
           echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
 
       - name: Debug Commit Log
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Commits between ${{ env.prev_tag }} and ${{ env.current_tag }}:"
           git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
 
       - name: Get Commit Messages Between Tags
         id: get_commits
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Getting commit messages between ${{ env.prev_tag }} and ${{ env.current_tag }}..."
           COMMITS=$(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s' | tr '\n' '|')
@@ -96,6 +127,7 @@ jobs:
 
       - name: Categorize Commits
         id: categorize
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Categorizing commits..."
           FEATURES=""
@@ -155,9 +187,11 @@ jobs:
           echo -e "<img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white\"/> <img src=\"https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${{ env.current_tag }}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white\"/>" >> CHANGELOG.md
 
       - name: Debug CHANGELOG.md
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: cat CHANGELOG.md
 
       - name: Commit and Push Changelog
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Committing and pushing changelog..."
           git config --global user.name "Git Paneer"
@@ -167,6 +201,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Create or Update Release
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
