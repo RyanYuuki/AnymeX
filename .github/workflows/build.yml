@@ -332,6 +332,15 @@ jobs:
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
 
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: |
+            build/windows/x64/runner/Release/AnymeX-Windows.zip
+            build/windows/x64/installer/Release/AnymeX-x86_64-*-Installer.exe
+          if-no-files-found: error
+
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
