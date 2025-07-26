@@ -6,6 +6,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -190,7 +191,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           filled: true,
           fillColor:
-              Theme.of(context).colorScheme.surfaceContainer.withOpacity(.3),
+              Theme.of(context).colorScheme.surfaceContainer.withOpacity(.5),
           hintText: 'Search ${widget.isManga ? 'manga' : 'anime'}...',
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
@@ -261,6 +262,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               isActive: _activeFilters.isNotEmpty,
               onTap: _showFilterBottomSheet,
             ),
+            if (!widget.isManga) ...[
+              const SizedBox(width: 12),
+              _buildActionButton(
+                icon: Iconsax.eye,
+                label: 'Image',
+                isActive: false,
+                onTap: () => navigate(() => const SauceFinderView()),
+              ),
+            ],
             const Spacer(),
             if (_searchState == SearchState.success) ...[
               _buildViewModeToggle(),
@@ -284,7 +294,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: isActive
               ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              : Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive
@@ -350,7 +360,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: isActive
               ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              : Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive

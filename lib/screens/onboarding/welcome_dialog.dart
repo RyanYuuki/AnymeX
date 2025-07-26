@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -7,12 +8,80 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+Future<bool> _requestStoragePermissions() async {
+  if (!Platform.isAndroid) return true;
+
+  try {
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    final sdkInt = androidInfo.version.sdkInt;
+
+    log('Android SDK version: $sdkInt');
+
+    if (sdkInt >= 33) {
+      final permissions = [
+        Permission.photos,
+        Permission.videos,
+      ];
+
+      Map<Permission, PermissionStatus> statuses = await permissions.request();
+
+      if (await Permission.manageExternalStorage.isDenied) {
+        final manageStorageStatus =
+            await Permission.manageExternalStorage.request();
+        if (manageStorageStatus.isPermanentlyDenied) {
+          await openAppSettings();
+          return false;
+        }
+      }
+
+      return statuses.values.every((status) =>
+          status == PermissionStatus.granted ||
+          status == PermissionStatus.limited);
+    } else if (sdkInt >= 30) {
+      final status = await Permission.manageExternalStorage.request();
+
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+        return false;
+      }
+
+      return status.isGranted;
+    } else if (sdkInt >= 23) {
+      final permissions = [
+        Permission.storage,
+      ];
+
+      Map<Permission, PermissionStatus> statuses = await permissions.request();
+
+      bool allGranted = statuses.values.every((status) => status.isGranted);
+
+      if (!allGranted) {
+        bool permanentlyDenied =
+            statuses.values.any((status) => status.isPermanentlyDenied);
+        if (permanentlyDenied) {
+          await openAppSettings();
+          return false;
+        }
+      }
+
+      return allGranted;
+    } else {
+      return true;
+    }
+  } catch (e) {
+    log('Error requesting storage permissions: $e');
+    return false;
+  }
+}
 
 void showWelcomeDialogg(BuildContext context) {
   showGeneralDialog(
@@ -25,9 +94,9 @@ void showWelcomeDialogg(BuildContext context) {
       final RxBool installPermissionGranted = false.obs;
 
       Future<void> requestStoragePermission() async {
-        final status = await Permission.storage.request();
-        storagePermissionGranted.value = status.isGranted;
-        if (!status.isGranted) {
+        final status = await _requestStoragePermissions();
+        storagePermissionGranted.value = status;
+        if (!status) {
           snackBar("Storage permission is required to download updates");
         }
       }

@@ -57,8 +57,12 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
       return 'Please enter a GitHub repository URL';
     }
 
-    if (!url.toLowerCase().contains('github.com')) {
+    if (!url.toLowerCase().contains('github')) {
       return 'Please enter a valid GitHub repository URL';
+    }
+
+    if (!url.toLowerCase().contains('json')) {
+      return 'Please enter a valid Json URL';
     }
 
     if (url.toLowerCase().contains('.min')) {
@@ -193,7 +197,6 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
@@ -204,41 +207,45 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                       ),
                       color: colorScheme.surfaceContainerLowest,
                     ),
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      decoration: InputDecoration(
-                        hintText: 'https://github.com/username/repo.json',
-                        hintStyle: TextStyle(
-                          color: colorScheme.onSurfaceVariant.withOpacity(0.6),
-                          fontSize: 14,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        decoration: InputDecoration(
+                            hintText: 'https://github.com/username/repo.json',
+                            hintStyle: TextStyle(
+                              color:
+                                  colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              fontSize: 14,
+                            ),
+                            prefixIcon: Icon(
+                              HugeIcons.strokeRoundedLink01,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 18,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            focusedErrorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
                         ),
-                        prefixIcon: Icon(
-                          HugeIcons.strokeRoundedLink01,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 18,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        focusedErrorBorder: InputBorder.none,
+                        onSubmitted: (_) => _handleSubmit(),
+                        onChanged: (value) {
+                          if (_errorMessage != null) {
+                            setState(() {
+                              _errorMessage = null;
+                            });
+                          }
+                        },
                       ),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
-                      onSubmitted: (_) => _handleSubmit(),
-                      onChanged: (value) {
-                        if (_errorMessage != null) {
-                          setState(() {
-                            _errorMessage = null;
-                          });
-                        }
-                      },
                     ),
                   ),
                   if (_errorMessage != null) ...[

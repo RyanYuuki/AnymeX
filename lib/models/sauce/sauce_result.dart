@@ -1,4 +1,5 @@
 class SauceResult {
+  final String anilistId;
   final String name;
   final int? episode;
   final double similarity;
@@ -7,6 +8,7 @@ class SauceResult {
   final String originalFilename;
 
   SauceResult({
+    required this.anilistId,
     required this.name,
     required this.episode,
     required this.similarity,
@@ -35,6 +37,7 @@ class SauceResult {
     final animeName = extractAnimeName(filename) ?? filename;
 
     return SauceResult(
+      anilistId: data['anilist']?.toString() ?? '',
       name: animeName,
       episode: data['episode'],
       similarity: (data['similarity'] as num).toDouble(),
