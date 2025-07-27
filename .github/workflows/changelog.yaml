@@ -127,64 +127,64 @@ jobs:
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Categorizing commits..."
+
+          # Initialize section variables
           FEATURES=""
           BUG_FIXES=""
           REFACTORS=""
           STYLE_CHANGES=""
           PERFORMANCE=""
           CHORES=""
+
+          # Get repository URL
           REPO_URL="https://github.com/${{ github.repository }}"
 
-          # Read commits from file to handle special characters properly
-          while IFS='|||' read -r HASH MESSAGE; do
-            # Skip empty lines
+          # Get commits and categorize directly
+          while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
             
-            echo "Processing commit: $HASH - $MESSAGE"
+            # Clean up the message by removing issue references and non-alphanumeric characters
+            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 .,:!-]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
             
-            # Clean up the message by removing issue references for categorization
-            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 ]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+            echo "Processing commit: $HASH - $CLEAN_MESSAGE"
             
-            # Create the formatted commit line
-            LINK="[$HASH]($REPO_URL/commit/$HASH)"
-            FORMATTED_COMMIT="* $LINK: $MESSAGE"
-            
-            echo "Clean message for categorization: '$CLEAN_MESSAGE'"
-            
-            # Categorize based on cleaned message
-            if [[ "$CLEAN_MESSAGE" == feat* ]]; then
-              FEATURES+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to FEATURES"
-            elif [[ "$CLEAN_MESSAGE" == fix* || "$CLEAN_MESSAGE" == bug* || "$CLEAN_MESSAGE" == improvement* || "$CLEAN_MESSAGE" == patch* ]]; then
-              BUG_FIXES+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to BUG_FIXES"
-            elif [[ "$CLEAN_MESSAGE" == refactor* ]]; then
-              REFACTORS+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to REFACTORS"
-            elif [[ "$CLEAN_MESSAGE" == style* ]]; then
-              STYLE_CHANGES+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to STYLE_CHANGES"
-            elif [[ "$CLEAN_MESSAGE" == perf* ]]; then
-              PERFORMANCE+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to PERFORMANCE"
-            elif [[ "$CLEAN_MESSAGE" == chore* || "$CLEAN_MESSAGE" == docs* || "$CLEAN_MESSAGE" == build* || "$CLEAN_MESSAGE" == ci* ]]; then
-              CHORES+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to CHORES"
-            else
-              # Default uncategorized commits to chores
-              CHORES+="$FORMATTED_COMMIT"$'\n'
-              echo "Added to CHORES (uncategorized)"
+            # Remove prefixes and categorize based on original message
+            if [[ "$MESSAGE" =~ ^feat: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^feat://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              FEATURES+="- $COMMIT_LINK $DESCR"$'\n'
+            elif [[ "$MESSAGE" =~ ^fix:|^bug:|^improvement:|^patch: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^fix://' | sed 's/^bug://' | sed 's/^improvement://' | sed 's/^patch://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              BUG_FIXES+="- $COMMIT_LINK $DESCR"$'\n'
+            elif [[ "$MESSAGE" =~ ^refactor: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^refactor://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              REFACTORS+="- $COMMIT_LINK $DESCR"$'\n'
+            elif [[ "$MESSAGE" =~ ^style: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^style://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              STYLE_CHANGES+="- $COMMIT_LINK $DESCR"$'\n'
+            elif [[ "$MESSAGE" =~ ^perf: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^perf://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              PERFORMANCE+="- $COMMIT_LINK $DESCR"$'\n'
+            elif [[ "$MESSAGE" =~ ^chore:|^docs:|^build:|^ci: ]]; then
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^chore://' | sed 's/^docs://' | sed 's/^build://' | sed 's/^ci://')
+              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
+              CHORES+="- $COMMIT_LINK $DESCR"$'\n'
             fi
-          done < commits.tmp
+          done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
 
-          # Generate changelog sections
+          # Generate changelog sections with date
+          echo "### 🆕 Changelog" > CHANGELOG.md
           if [ -n "$FEATURES" ]; then
-            echo "### 🎉 New Features" >> CHANGELOG.md
+            echo "### 🌟 Features" >> CHANGELOG.md
             echo -e "$FEATURES" >> CHANGELOG.md
             echo "" >> CHANGELOG.md
           fi
           if [ -n "$BUG_FIXES" ]; then
-            echo "### 🛠️ Bug Fixes & Improvements" >> CHANGELOG.md
+            echo "### 🔧 Bug Fixes & Improvements" >> CHANGELOG.md
             echo -e "$BUG_FIXES" >> CHANGELOG.md
             echo "" >> CHANGELOG.md
           fi
