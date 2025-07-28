@@ -16,4 +16,4 @@ $targetPath = Join-Path $toolsDir 'anymex.exe'
 
 Install-ChocolateyShortcut -ShortcutFilePath $shortcutPath `
   -TargetPath $targetPath `
-  -Description 'Anymex - Cross-platform anime streaming app'
+  -Description 'An open-source, cross-platform desktop app for streaming and tracking anime, manga, and novels across multiple services (AL, MAL, SIMKL).'
