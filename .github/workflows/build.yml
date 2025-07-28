@@ -545,7 +545,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: main  # Explicitly checkout the main branch
+          ref: main
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -558,6 +558,12 @@ jobs:
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+          path: artifacts
+
       - name: Get Latest Release Info
         id: get_release
         run: |
@@ -565,43 +571,37 @@ jobs:
             Write-Host "Fetching latest release info..."
             $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
             
-            Write-Host "Looking for installer asset..."
-            $exe_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-x86_64-([\d.]+(?:-hotfix)?)-Installer\.exe' }
+            Write-Host "Looking for ZIP asset..."
+            $zip_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-Windows\.zip' }
             
-            if (-not $exe_asset) { 
+            if (-not $zip_asset) { 
               Write-Host "Available assets:"
               $release.assets | ForEach-Object { Write-Host "  - $($_.name)" }
-              throw "No matching installer found with pattern 'AnymeX-x86_64-(version[-hotfix])-Installer.exe'" 
+              throw "No matching ZIP found with pattern 'AnymeX-Windows.zip'"
             }
             
-            # Extract version from filename
-            if ($exe_asset.name -match 'AnymeX-x86_64-([\d.]+(?:-hotfix)?)-Installer\.exe') {
-              $version = $matches[1]
-            } else {
-              throw "Could not extract version from filename: $($exe_asset.name)"
-            }
-            
-            $exe_url = $exe_asset.browser_download_url
-            Write-Host "Found installer: $($exe_asset.name)"
+            # Extract version from release tag
+            $version = $release.tag_name -replace '^v', ''
+            $zip_url = $zip_asset.browser_download_url
+            Write-Host "Found ZIP: $($zip_asset.name)"
             Write-Host "Version: $version"
-            Write-Host "URL: $exe_url"
+            Write-Host "URL: $zip_url"
             
-            # Download file and calculate hash (handle redirects automatically)
+            # Download file and calculate hash
             Write-Host "Downloading file to calculate hash..."
             $tempFile = New-TemporaryFile
             try {
-              # Use -MaximumRedirection to handle redirects automatically
-              Invoke-WebRequest -Uri $exe_url -OutFile $tempFile.FullName -MaximumRedirection 5
-              $exe_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
-              Write-Host "SHA256 Hash: $exe_hash"
+              Invoke-WebRequest -Uri $zip_url -OutFile $tempFile.FullName -MaximumRedirection 5
+              $zip_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
+              Write-Host "SHA256 Hash: $zip_hash"
             } finally {
               Remove-Item $tempFile.FullName -ErrorAction SilentlyContinue
             }
             
             # Set environment variables
             echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo "EXE_URL=$exe_url" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo "EXE_HASH=$exe_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "ZIP_URL=$zip_url" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "ZIP_HASH=$zip_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
             
             Write-Host "Environment variables set successfully"
           }
@@ -614,13 +614,11 @@ jobs:
       - name: Verify Chocolatey Package Structure
         run: |
           Write-Host "Verifying Chocolatey package structure..."
-
-          # Check if required files exist
           $requiredFiles = @(
             "chocolatey/anymex.nuspec",
-            "chocolatey/tools/chocolateyInstall.ps1"
+            "chocolatey/tools/chocolateyInstall.ps1",
+            "chocolatey/tools/chocolateyUninstall.ps1"
           )
-
           foreach ($file in $requiredFiles) {
             if (-not (Test-Path $file)) {
               Write-Host "Missing required file: $file"
@@ -636,13 +634,13 @@ jobs:
         run: |
           try {
             $version = $env:VERSION
-            $exe_url = $env:EXE_URL
-            $exe_hash = $env:EXE_HASH
+            $zip_url = $env:ZIP_URL
+            $zip_hash = $env:ZIP_HASH
             
             Write-Host "Updating package files with:"
             Write-Host "  Version: $version"
-            Write-Host "  URL: $exe_url"
-            Write-Host "  Hash: $exe_hash"
+            Write-Host "  URL: $zip_url"
+            Write-Host "  Hash: $zip_hash"
             
             # Update nuspec file
             Write-Host "Updating anymex.nuspec..."
@@ -654,17 +652,17 @@ jobs:
             Write-Host "Updating chocolateyInstall.ps1..."
             $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
             $installContent = $installContent -replace '\$packageName\s*=\s*[''"].*?[''"]', "`$packageName = 'com.ryan.anymex'"
-            $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$exe_url'"
-            $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$exe_hash'"
+            $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$zip_url'"
+            $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$zip_hash'"
             Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
             
             Write-Host "Package files updated successfully"
             
-            # Show the updated content for verification
+            # Show updated content for verification
             Write-Host "`n--- Updated nuspec content ---"
             Get-Content chocolatey/anymex.nuspec | Select-Object -First 20
             Write-Host "`n--- Updated install script content ---"
-            Get-Content chocolatey/tools/chocolateyInstall.ps1 | Select-Object -First 10
+            Get-Content chocolatey/tools/chocolateyInstall.ps1 | Select-Object -First 20
           }
           catch {
             Write-Host "Error updating package files: $($_.Exception.Message)"
@@ -676,15 +674,11 @@ jobs:
           try {
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
-            
-            # Ensure we're on the main branch
             git checkout main
-            
-            # Check if there are changes to commit
             $changes = git status --porcelain
             if ($changes) {
               Write-Host "Changes detected, committing..."
-              git add chocolatey/anymex.nuspec chocolatey/tools/chocolateyInstall.ps1
+              git add chocolatey/anymex.nuspec chocolatey/tools/chocolateyInstall.ps1 chocolatey/tools/chocolateyUninstall.ps1
               git commit -m "Update Chocolatey package files to version $env:VERSION"
               git push origin main
               Write-Host "Changes committed and pushed successfully"
@@ -701,16 +695,10 @@ jobs:
         run: |
           try {
             Write-Host "Building Chocolatey package..."
-            
-            # Ensure output directory exists
             if (-not (Test-Path "chocolatey")) {
               New-Item -ItemType Directory -Path "chocolatey" -Force
             }
-            
-            # Build the package
             choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
-            
-            # Verify package was created
             $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
             if (Test-Path $packageFile) {
               Write-Host "✓ Package created successfully: $packageFile"
@@ -742,13 +730,10 @@ jobs:
             if (-not $env:CHOCO_API_KEY) {
               throw "CHOCO_API_KEY secret is not set"
             }
-            
             Write-Host "Setting up Chocolatey API key..."
             choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
-            
             $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
             Write-Host "Pushing package: $packageFile"
-            
             choco push $packageFile --source https://push.chocolatey.org/
             Write-Host "Package pushed successfully to Chocolatey repository"
           }
