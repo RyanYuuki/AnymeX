@@ -1,8 +1,19 @@
-$ErrorActionPreference = 'Stop';
+$ErrorActionPreference = 'Stop'
 
 $packageName = 'com.ryan.anymex'
-$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-x86_64-2.9.8-Installer.exe'
-$checksum = '9E4AA9A677B5495F0E33DB4BECFAD5042E53F84112896A173A913C9FA32B9A90'
+$toolsDir = "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)"
+$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.8/AnymeX-Windows.zip'
+$checksum = '823194817636d35452d0fa21aeccd66925e2bb5b9cfcab0fb5506b2cc3fd8143'
 
-Install-ChocolateyPackage $packageName 'exe' '/silent' $url -Checksum $checksum -ChecksumType 'sha256'
+Install-ChocolateyZipPackage -PackageName $packageName `
+  -Url $url -UnzipLocation $toolsDir `
+  -Checksum $checksum -ChecksumType 'sha256'
 
+# Create Start Menu shortcut
+$shortcutName = 'Anymex.lnk'
+$shortcutPath = Join-Path ([System.Environment]::GetFolderPath('Programs')) $shortcutName
+$targetPath = Join-Path $toolsDir 'anymex.exe'
+
+Install-ChocolateyShortcut -ShortcutFilePath $shortcutPath `
+  -TargetPath $targetPath `
+  -Description 'An open-source, cross-platform desktop app for streaming and tracking anime, manga, and novels across multiple services (AL, MAL, SIMKL).'
