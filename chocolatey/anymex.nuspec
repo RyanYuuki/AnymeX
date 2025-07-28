@@ -1,13 +1,24 @@
-<?xml version="1.0"?>
-<package>
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>com.ryan.anymex</id>
     <version>2.9.8</version>
+    <title>AnymeX</title>
     <authors>RyanYuuki</authors>
-    <description>Cross-platform anime streaming desktop app</description>
+    <owners>Ryan_Yuuki</owners>
+    <licenseUrl>https://github.com/RyanYuuki/AnymeX/blob/main/LICENSE</licenseUrl>
     <projectUrl>https://github.com/RyanYuuki/AnymeX</projectUrl>
-    <licenseUrl>https://github.com/RyanYuuki/AnymeX/blob/main/LICENSE.md</licenseUrl>
-    <tags>tracking anymex</tags>
+    <iconUrl>https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/assets/images/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <packageSourceUrl>https://github.com/RyanYuuki/AnymeX/tree/main/chocolatey</packageSourceUrl>
+    <docsUrl>https://github.com/RyanYuuki/AnymeX/wiki</docsUrl>
+    <bugTrackerUrl>https://github.com/RyanYuuki/AnymeX/issues</bugTrackerUrl>
+    <description>An open-source, cross-platform desktop app for streaming and tracking anime, manga, and novels across multiple services (AL, MAL, SIMKL).</description>
+    <summary>Cross-platform anime, manga, novel, movies and series streaming and tracking app.</summary>
+    <releaseNotes>https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.8</releaseNotes>
+    <tags>anime manga novel movie series tvshows streaming tracking cross-platform</tags>
   </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
 </package>
-
