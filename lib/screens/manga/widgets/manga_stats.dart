@@ -6,6 +6,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/manga_adaptation.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,61 @@ class MangaStats extends StatelessWidget {
                   label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
             ],
+          ),
+        ),
+        const SizedBox(height: 30),
+        const AnymexText(
+          text: "Adaptation Details",
+          variant: TextVariant.bold,
+          size: 17,
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: FutureBuilder<AnimeAdaptation>(
+            future: MangaAnimeUtil.getAnimeAdaptation(data.romajiTitle),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary));
+              }
+
+              final adaptation = snapshot.data!;
+
+              if (adaptation.error != null) {
+                return Text('Error: ${adaptation.error}',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary));
+              }
+
+              if (!adaptation.hasAdaptation) {
+                return Text('No anime adaptation found',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary));
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const StateItem(label: "Anime Start", value: ''),
+                  ChapterColumn(
+                    input: adaptation.animeStart ?? 'Unknown',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  const StateItem(label: "Anime End", value: ''),
+                  ChapterColumn(
+                    input: adaptation.animeEnd ?? 'Unknown',
+                  ),
+                ],
+              );
+            },
           ),
         ),
         const SizedBox(height: 30),
@@ -151,6 +207,27 @@ class StateItem extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class ChapterColumn extends StatelessWidget {
+  final String input;
+
+  const ChapterColumn({super.key, required this.input});
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> chapters = input.split(" / ");
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: chapters
+          .map((chapter) => Text(
+                chapter,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ))
+          .toList(),
     );
   }
 }
