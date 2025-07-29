@@ -14,7 +14,6 @@ class AnimeAdaptation {
   @override
   String toString() {
     if (error != null) return 'Error: $error';
-    if (!hasAdaptation) return 'No anime adaptation found';
     return 'Anime: ${animeStart ?? 'Unknown'} - ${animeEnd ?? 'Ongoing'}';
   }
 }
