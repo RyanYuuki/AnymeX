@@ -11,6 +11,7 @@ import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class MangaStats extends StatelessWidget {
   final Media data;
@@ -51,61 +52,6 @@ class MangaStats extends StatelessWidget {
         ),
         const SizedBox(height: 30),
         const AnymexText(
-          text: "Adaptation Details",
-          variant: TextVariant.bold,
-          size: 17,
-        ),
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: FutureBuilder<AnimeAdaptation>(
-            future: MangaAnimeUtil.getAnimeAdaptation(data.romajiTitle),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              }
-
-              if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary));
-              }
-
-              final adaptation = snapshot.data!;
-
-              if (adaptation.error != null) {
-                return Text('Error: ${adaptation.error}',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary));
-              }
-
-              if (!adaptation.hasAdaptation) {
-                return Text('No anime adaptation found',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary));
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const StateItem(label: "Anime Start", value: ''),
-                  AdaptationInfoColumn(
-                    input: adaptation.animeStart ?? 'Unknown',
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  const StateItem(label: "Anime End", value: ''),
-                  AdaptationInfoColumn(
-                    input: adaptation.animeEnd ?? 'Unknown',
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 30),
-        const AnymexText(
           text: "Romaji Title",
           variant: TextVariant.bold,
           size: 17,
@@ -127,15 +73,73 @@ class MangaStats extends StatelessWidget {
           size: 17,
         ),
         Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: AnymexText(
-            text: data.description,
-            variant: TextVariant.semiBold,
-            size: 14,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
-            maxLines: 100,
-          ),
+            padding: const EdgeInsets.all(10.0),
+            // child: AnymexText(
+            //   text: Html(data: data.description).toString(),
+            //   variant: TextVariant.semiBold,
+            //   size: 14,
+            //   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+            //   maxLines: 100,
+            // ),
+            child: Html(
+              data: data.description,
+              style: {
+                "body": Style(
+                  fontSize: FontSize(14.0),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+                ),
+                "b": Style(fontWeight: FontWeight.bold),
+                "i": Style(fontStyle: FontStyle.italic),
+              },
+            )),
+        FutureBuilder<AnimeAdaptation>(
+          future: MangaAnimeUtil.getAnimeAdaptation(data.romajiTitle),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show loading indicator
+            }
+            if (snapshot.hasError) {
+              return SizedBox.shrink(); // Hide entirely on error
+            }
+            final adaptation = snapshot.data!;
+            if (adaptation.error != null || !adaptation.hasAdaptation) {
+              return SizedBox.shrink(); // Hide entirely if no adaptation
+            }
+
+            // Show the adaptation details only if adaptation exists
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                const AnymexText(
+                  text: "Adaptation Details",
+                  variant: TextVariant.bold,
+                  size: 17,
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const StateItem(label: "Anime Start", value: ''),
+                      AdaptationInfoColumn(
+                        input: adaptation.animeStart ?? 'Unknown',
+                      ),
+                      SizedBox(height: 10),
+                      const StateItem(label: "Anime End", value: ''),
+                      AdaptationInfoColumn(
+                        input: adaptation.animeEnd ?? 'Unknown',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
+        const SizedBox(height: 30),
         const SizedBox(height: 10),
         const AnymexText(
           text: "Genres",
