@@ -74,13 +74,6 @@ class MangaStats extends StatelessWidget {
         ),
         Padding(
             padding: const EdgeInsets.all(10.0),
-            // child: AnymexText(
-            //   text: Html(data: data.description).toString(),
-            //   variant: TextVariant.semiBold,
-            //   size: 14,
-            //   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
-            //   maxLines: 100,
-            // ),
             child: Html(
               data: data.description,
               style: {
@@ -223,7 +216,9 @@ class AdaptationInfoColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> chapters = input.split(" / ");
+    List<String> chapters = input
+        .replaceAllMapped(RegExp(r'\s*/\s*'), (match) => ' / ')
+        .split(' / ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
