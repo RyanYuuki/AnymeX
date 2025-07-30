@@ -68,7 +68,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
 
   Future<void> _checkShadersAvailability() async {
     try {
-      final shadersPath = await PlayerShaders.getShaderBasePath();
+      final shadersPath = PlayerShaders.getShaderBasePath();
       final shadersDir = Directory(shadersPath);
 
       if (await shadersDir.exists()) {
