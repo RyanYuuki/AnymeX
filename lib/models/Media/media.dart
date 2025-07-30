@@ -323,14 +323,21 @@ class Media {
 
   factory Media.fromRecs(Map<String, dynamic> json) {
     return Media(
-        id: json['node']['mediaRecommendation']['id'].toString(),
-        title: json['node']['mediaRecommendation']['title']['romaji'] ??
-            json['node']['mediaRecommendation']['title']['english'],
-        poster: json['node']['mediaRecommendation']['coverImage']['large'],
-        rating:
-            ((json['node']['mediaRecommendation']['averageScore'] ?? 0) / 10 ??
-                    0)
-                .toString(),
+        id: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['id'].toString()
+            : '',
+        title: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['title']['romaji'] ??
+                json['node']['mediaRecommendation']['title']['english']
+            : '',
+        poster: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['coverImage']['large']
+            : '',
+        rating: ((json['node']['mediaRecommendation'] != null
+                    ? json['node']['mediaRecommendation']['averageScore'] ?? 0
+                    : 0) /
+                10)
+            .toString(),
         serviceType: ServicesType.anilist);
   }
 

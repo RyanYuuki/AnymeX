@@ -33,3 +33,5 @@ body:
           required: true
         - label: I have provided all relevant details to understand my question fully.
           required: true
+        - label: If this is an issue with an extension, I should be opening an issue in the extension's repository.
+          required: false

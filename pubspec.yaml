@@ -25,6 +25,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.2.1
+  flutter_html: ^3.0.0
   flutter_inappwebview: ^6.1.5
   # flutter_local_notifications: ^18.0.1
   flutter_markdown: ^0.7.6
