@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Model/Manga.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
 
@@ -50,8 +49,8 @@ class CacheController extends GetxController {
         return Media.fromSimkl(parsedMap, true);
       default:
         parsedMap['status'] = parseStatusToInt(parsedMap['status']);
-        return Media.fromManga(
-            MManga.fromJson(parsedMap),
+        return Media.froDMedia(
+            DMedia.fromJson(parsedMap),
             serviceHandler.extensionService.lastUpdatedSource.value == "ANIME"
                 ? MediaType.anime
                 : MediaType.manga);

@@ -23,23 +23,22 @@ import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
-import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
-import 'package:anymex/screens/downloader/controller/download_manager.dart';
-import 'package:anymex/utils/extensions.dart';
+import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:app_links/app_links.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -50,14 +49,13 @@ import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:uni_links/uni_links.dart';
-import 'package:uni_links_desktop/uni_links_desktop.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 late Isar isar;
 WebViewEnvironment? webViewEnvironment;
+final appLinks = AppLinks();
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -77,72 +75,16 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-void initDeepLinkListener() async {
-  try {
-    final initialUri = await getInitialUri();
-    if (initialUri != null) {
-      handleDeepLink(initialUri);
-    }
-  } catch (err) {
-    snackBar('Error getting initial deep link: $err');
-  }
-
-  uriLinkStream.listen((Uri? uri) {
-    if (uri != null) {
-      handleDeepLink(uri);
-    }
-  }, onError: (err) {
-    snackBar('Error Opening link: $err');
-  });
-}
-
-void handleDeepLink(Uri uri) {
-  if (uri.host == "add-repo") {
-    String? repoUrl =
-        (uri.queryParameters["url"] ?? uri.queryParameters['anime_url'])
-            ?.trim();
-    String? mangaUrl = uri.queryParameters["manga_url"]?.trim();
-    String? novelUrl = uri.queryParameters["novel_url"]?.trim();
-
-    final settings = Get.find<SourceController>();
-
-    if (repoUrl != null) {
-      settings.activeAnimeRepo = repoUrl;
-      Extensions().addRepo(MediaType.anime, repoUrl);
-    }
-    if (mangaUrl != null) {
-      settings.activeMangaRepo = mangaUrl;
-      Extensions().addRepo(MediaType.manga, mangaUrl);
-    }
-    if (novelUrl != null) {
-      settings.activeNovelRepo = novelUrl;
-      Extensions().addRepo(MediaType.novel, novelUrl);
-    }
-
-    if (repoUrl != null || mangaUrl != null || novelUrl != null) {
-      snackBar("Added Repo Links Successfully!");
-    } else {
-      snackBar("Missing required parameters in the link.");
-    }
-  }
-}
-
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  // if (Platform.isLinux) {
-  //   runWebViewTitleBarWidget(args);
-  //   return;
-  // }
-  if (Platform.isWindows || Platform.isMacOS) {
-    registerProtocol('anymex');
-    registerProtocol('dar');
-    registerProtocol('sugoireads');
-    registerProtocol('mangayomi');
+  if (Platform.isWindows) {
+    ['dar', 'anymex', 'sugoireads', 'mangayomi']
+        .forEach(registerProtocolHandler);
   }
+  Deeplink.initDeepLinkListener();
   HttpOverrides.global = MyHttpoverrides();
   await dotenv.load(fileName: ".env");
   await initializeHive();
-  isar = await StorageProvider().initDB(null);
   _initializeGetxController();
   initializeDateFormatting();
   MediaKit.ensureInitialized();
@@ -182,22 +124,19 @@ void main(List<String> args) async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
-        statusBarColor: Colors.transparent));
-  }
-  if (!Platform.isLinux) {
-    initDeepLinkListener();
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.dark));
   }
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
-      child: const ProviderScope(child: MainApp()),
+      child: const MainApp(),
     ),
   );
 }
 
 Future<void> initializeHive() async {
-  Hive.init((await StorageProvider().getDatabaseDirectory())!.path);
-  Hive.deleteFromDisk();
+  await Hive.initFlutter();
   Hive.registerAdapter(VideoAdapter());
   Hive.registerAdapter(TrackAdapter());
   Hive.registerAdapter(UISettingsAdapter());
@@ -215,7 +154,7 @@ Future<void> initializeHive() async {
   await Hive.openBox<PlayerSettings>("PlayerSettings");
 }
 
-void _initializeGetxController() {
+void _initializeGetxController() async {
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
   Get.put(AnilistData());

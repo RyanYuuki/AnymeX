@@ -4,8 +4,7 @@ import 'dart:math' show min;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Model/Source.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
@@ -54,7 +53,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Media> trendingMangas = <Media>[].obs;
 
   // Novel Data
-  RxList<MManga> novelData = <MManga>[].obs;
+  RxList<DMedia> novelData = <DMedia>[].obs;
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
