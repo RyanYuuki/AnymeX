@@ -1,3 +1,4 @@
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:hive/hive.dart';
 
 part 'video.g.dart';
@@ -24,6 +25,21 @@ class Video extends HiveObject {
 
   Video(this.url, this.quality, this.originalUrl,
       {this.headers, this.subtitles, this.audios});
+
+  factory Video.fromVideo(d.Video episode) {
+    return Video(
+      episode.url,
+      episode.title ?? episode.quality ?? '',
+      episode.url,
+      headers: episode.headers,
+      subtitles: episode.subtitles?.map((e) {
+        return Track(file: e.file, label: e.label);
+      }).toList(),
+      audios: episode.audios?.map((e) {
+        return Track(file: e.file, label: e.label);
+      }).toList(),
+    );
+  }
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(

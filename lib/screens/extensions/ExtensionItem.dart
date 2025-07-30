@@ -1,73 +1,69 @@
-import 'package:anymex/core/Eval/dart/model/source_preference.dart';
-import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
-import 'package:anymex/core/Model/Source.dart';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:isar/isar.dart';
 
-import '../../core/Extensions/get_sources_list.dart';
-import '../../core/Extensions/fetch_anime_sources.dart';
-import '../../core/Extensions/fetch_manga_sources.dart';
-import '../../core/extension_preferences_providers.dart';
-import '../../core/get_source_preference.dart';
-import '../../main.dart';
-import 'ExtensionSettings/ExtensionSettings.dart';
-
-class ExtensionListTileWidget extends ConsumerStatefulWidget {
+class ExtensionListTileWidget extends StatefulWidget {
   final Source source;
-  final bool isTestSource;
-  final MediaType mediaType;
+  final ItemType mediaType;
 
-  const ExtensionListTileWidget(
-      {super.key,
-      required this.source,
-      this.isTestSource = false,
-      required this.mediaType});
+  const ExtensionListTileWidget({
+    super.key,
+    required this.source,
+    required this.mediaType,
+  });
 
   @override
-  ConsumerState<ExtensionListTileWidget> createState() =>
+  State<ExtensionListTileWidget> createState() =>
       _ExtensionListTileWidgetState();
 }
 
-class _ExtensionListTileWidgetState
-    extends ConsumerState<ExtensionListTileWidget> {
+class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   bool _isLoading = false;
 
   Future<void> _handleSourceAction() async {
     setState(() => _isLoading = true);
-
-    widget.mediaType == MediaType.manga
-        ? await ref.watch(
-            fetchMangaSourcesListProvider(id: widget.source.id, reFresh: true)
-                .future)
-        : widget.mediaType == MediaType.anime
-            ? await ref.watch(fetchAnimeSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
-                .future)
-            : await ref.watch(fetchNovelSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
-                .future);
-
+    try {
+      await widget.source.extensionType
+          ?.getManager()
+          .installSource(widget.source);
+      await sourceController.sortExtensions();
+    } catch (e) {
+      log(e.toString());
+    }
     if (mounted) setState(() => _isLoading = false);
+  }
+
+  List<Source> get _installedExtensions {
+    switch (widget.mediaType) {
+      case ItemType.manga:
+        return sourceController.installedMangaExtensions.value;
+      case ItemType.anime:
+        return sourceController.installedExtensions.value;
+      case ItemType.novel:
+        return sourceController.installedNovelExtensions.value;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-    final updateAvailable = widget.isTestSource
-        ? false
-        : compareVersions(widget.source.version!, widget.source.versionLast!) <
-            0;
-    final sourceNotEmpty = widget.source.sourceCode?.isNotEmpty ?? false;
+    final updateAvailable = widget.source.hasUpdate ?? false;
+    final sourceNotEmpty =
+        _installedExtensions.any((e) => e.id == widget.source.id);
 
     return AnymexCard(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -77,34 +73,40 @@ class _ExtensionListTileWidgetState
           height: 42,
           width: 42,
           decoration: BoxDecoration(
-            color: theme.surfaceContainerHighest,
+            color: (widget.source.extensionType == ExtensionType.mangayomi
+                    ? Colors.red
+                    : Colors.indigoAccent)
+                .withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: theme.shadow.withOpacity(0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: widget.source.iconUrl!.isEmpty
-                ? Icon(Icons.extension_rounded, color: theme.primary)
-                : CachedNetworkImage(
-                    imageUrl: widget.source.iconUrl!,
-                    fit: BoxFit.cover,
-                    width: 42,
-                    height: 42,
-                    placeholder: (context, url) => Icon(
-                      Icons.extension_rounded,
-                      color: theme.primary,
-                    ),
-                    errorWidget: (context, url, error) => Icon(
-                      Icons.extension_rounded,
-                      color: theme.primary,
-                    ),
+          child: Container(
+            margin: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: theme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: _buildMainIcon(),
+                ),
+                // Floating badge
+                Positioned(
+                  top: 1,
+                  right: 1,
+                  child: NetworkSizedImage(
+                    radius: 50,
+                    imageUrl: widget.source.extensionType ==
+                            ExtensionType.mangayomi
+                        ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                        : 'https://aniyomi.org/img/logo-128px.png',
+                    height: 13,
+                    width: 13,
                   ),
+                ),
+              ],
+            ),
           ),
         ),
         title: Text(
@@ -120,7 +122,8 @@ class _ExtensionListTileWidgetState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Row(
+            Wrap(
+              spacing: 6,
               children: [
                 Container(
                   padding:
@@ -139,7 +142,6 @@ class _ExtensionListTileWidgetState
                     ),
                   ),
                 ),
-                const SizedBox(width: 6),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -148,7 +150,7 @@ class _ExtensionListTileWidgetState
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    "v${widget.source.version!}",
+                    widget.source.version ?? 'Unknown',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
@@ -157,7 +159,6 @@ class _ExtensionListTileWidgetState
                     ),
                   ),
                 ),
-                if (widget.source.isNsfw!) const SizedBox(width: 6),
                 if (widget.source.isNsfw!)
                   Container(
                     padding:
@@ -176,26 +177,9 @@ class _ExtensionListTileWidgetState
                       ),
                     ),
                   ),
-                if (widget.source.isObsolete ?? false) const SizedBox(width: 6),
-                if (widget.source.isObsolete ?? false)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: theme.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      "OBSOLETE",
-                      style: TextStyle(
-                        color: theme.error,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10.0,
-                      ),
-                    ),
-                  ),
               ],
             ),
+            10.width(),
           ],
         ),
         trailing: _isLoading
@@ -211,18 +195,40 @@ class _ExtensionListTileWidgetState
     );
   }
 
+  Widget _buildMainIcon() {
+    return widget.source.iconUrl!.isEmpty
+        ? Icon(Icons.extension_rounded,
+            color: Theme.of(context).colorScheme.primary)
+        : widget.source.iconUrl!.startsWith('http')
+            ? CachedNetworkImage(
+                imageUrl: widget.source.iconUrl!,
+                fit: BoxFit.cover,
+                width: 42,
+                height: 42,
+                placeholder: (context, url) => Icon(
+                  Icons.extension_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                errorWidget: (context, url, error) => Icon(
+                  Icons.extension_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              )
+            : Image.file(
+                File(widget.source.iconUrl!),
+                fit: BoxFit.cover,
+                height: 42,
+                width: 42,
+              );
+  }
+
   Widget _buildButtons(
       bool sourceNotEmpty, bool updateAvailable, ColorScheme theme) {
     void onTap() async {
       if (updateAvailable) {
         setState(() => _isLoading = true);
-        widget.mediaType == MediaType.manga
-            ? await ref.watch(fetchMangaSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
-                .future)
-            : await ref.watch(fetchAnimeSourcesListProvider(
-                    id: widget.source.id, reFresh: true)
-                .future);
+        widget.source.extensionType!.getManager().update([widget.source.id!]);
+        await sourceController.sortExtensions();
         if (mounted) {
           setState(() => _isLoading = false);
         }
@@ -231,33 +237,21 @@ class _ExtensionListTileWidgetState
           ..setTitle("Delete Extension")
           ..setMessage("Are you sure you want to delete this extension?")
           ..setPositiveButton("Yes", () async {
-            final sourcePrefsIds = isar.sourcePreferences
-                .filter()
-                .sourceIdEqualTo(widget.source.id!)
-                .findAllSync()
-                .map((e) => e.id!)
-                .toList();
-            final sourcePrefsStringIds = isar.sourcePreferenceStringValues
-                .filter()
-                .sourceIdEqualTo(widget.source.id!)
-                .findAllSync()
-                .map((e) => e.id)
-                .toList();
-            isar.writeTxnSync(() {
-              if (widget.source.isObsolete ?? false) {
-                isar.sources.deleteSync(widget.source.id!);
-              } else {
-                isar.sources.putSync(widget.source
-                  ..sourceCode = ""
-                  ..isAdded = false
-                  ..isPinned = false);
-              }
-              isar.sourcePreferences.deleteAllSync(sourcePrefsIds);
-              isar.sourcePreferenceStringValues
-                  .deleteAllSync(sourcePrefsStringIds);
-            });
+            setState(() => _isLoading = true);
+            try {
+              log("Uninstalling => ${widget.source.id}");
+              await widget.source.extensionType!
+                  .getManager()
+                  .uninstallSource(widget.source);
+              await sourceController.sortExtensions();
+            } catch (e) {
+              log("Uninstall Failed => ${e.toString()}");
+            }
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
           })
-          ..setNegativeButton("No", null)
+          ..setNegativeButton("No", () => Get.back())
           ..show();
       }
     }
@@ -316,19 +310,7 @@ class _ExtensionListTileWidgetState
                   ),
                   child: AnymexOnTap(
                     child: IconButton(
-                      onPressed: () async {
-                        var sourcePreference =
-                            getSourcePreference(source: widget.source)
-                                .map((e) => getSourcePreferenceEntry(
-                                    e.key!, widget.source.id!))
-                                .toList();
-                        navigate(
-                          () => SourcePreferenceWidget(
-                            source: widget.source,
-                            sourcePreference: sourcePreference,
-                          ),
-                        );
-                      },
+                      onPressed: () async {},
                       icon: Icon(
                         Iconsax.setting,
                         size: 18,

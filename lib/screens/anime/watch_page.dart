@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
-import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
@@ -29,6 +28,7 @@ import 'package:anymex/widgets/custom_widgets/custom_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -264,7 +264,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       debugPrint("Stack trace: $stackTrace");
     });
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
-      setShaders(settingsController.selectedShader, showMessage: false);
+      final key = (PlayerShaders.getShaders()
+          .indexWhere((e) => e == settings.selectedShader));
+      setShaders(key, showMessage: false);
     }
   }
 
@@ -464,8 +466,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       return;
     }
     currentEpisode.value = episodeToNav;
-    final video = await getVideo(
-        source: sourceController.activeSource.value!, url: episodeToNav.link!);
+    final resp = await sourceController.activeSource.value!.methods
+        .getVideoList(d.DEpisode(
+            episodeNumber: episodeToNav.number, url: episodeToNav.link));
+    final video = resp.map((e) => model.Video.fromVideo(e)).toList();
     final preferredStream = video.firstWhere(
       (e) => e.quality == episode.value.quality,
       orElse: () {
@@ -684,17 +688,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void setShaders(String message, {bool showMessage = true}) async {
-    final profile = settingsController.selectedProfile;
-    final shaderBase = await PlayerShaders.getShaderPathForProfile(profile);
-
-    final paths = PlayerShaders.getShaderByProfile(message)
-        .map((f) => '$shaderBase$f')
-        .join(';');
-    (player.platform as dynamic).setProperty('glsl-shaders', paths);
-    settingsController.selectedShader = message;
+  void setShaders(int key, {bool showMessage = true}) async {
+    if (key == -1) {
+      PlayerShaders.setShaders(player, '');
+      if (showMessage) {
+        snackBar("Cleared Shaders");
+      }
+      return;
+    }
+    final shaders = PlayerShaders.getShaders();
+    PlayerShaders.setShaders(player, shaders[key]);
     if (showMessage) {
-      snackBar(message == "Default" ? "Cleared Shaders" : 'Applied $message');
+      snackBar('Applied ${shaders[key]}');
     }
   }
 
@@ -719,29 +724,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
       final keyLabel = key.keyLabel;
-
-      switch (keyLabel) {
-        case '1':
-          setShaders('Anime4K: Mode A (HQ)');
-          break;
-        case '2':
-          setShaders('Anime4K: Mode B (HQ)');
-          break;
-        case '3':
-          setShaders('Anime4K: Mode C (HQ)');
-          break;
-        case '4':
-          setShaders('Anime4K: Mode A+A (HQ)');
-          break;
-        case '5':
-          setShaders('Anime4K: Mode B+B (HQ)');
-          break;
-        case '6':
-          setShaders('Anime4K: Mode C+A (HQ)');
-          break;
-        case '0':
-          setShaders('Default');
-          break;
+      final allowedKeys = ["1", "2", "3", "4", "5", "6", "0"];
+      log(keyLabel);
+      if (allowedKeys.contains(keyLabel)) {
+        setShaders(int.parse(keyLabel) - 1);
       }
     }
   }

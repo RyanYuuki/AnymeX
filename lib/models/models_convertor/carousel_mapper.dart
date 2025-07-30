@@ -1,5 +1,4 @@
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Model/Manga.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
@@ -7,17 +6,17 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 
-extension MMangaMapper on MManga {
+extension DMediaMapper on DMedia {
   CarouselData toCarouselData({
     DataVariant variant = DataVariant.extension,
     bool isManga = false,
   }) {
     return CarouselData(
-      id: link,
-      title: name,
-      poster: imageUrl,
+      id: url,
+      title: title,
+      poster: cover,
       extraData: '??',
-      releasing: status == Status.ongoing,
+      releasing: false,
     );
   }
 }

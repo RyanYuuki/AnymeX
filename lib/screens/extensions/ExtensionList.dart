@@ -1,24 +1,15 @@
-import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/utils/extensions.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
-
-import '../../core/Extensions/get_sources_list.dart';
-import '../../core/Extensions/extensions_provider.dart';
-import '../../core/Extensions/fetch_anime_sources.dart';
-import '../../core/Extensions/fetch_manga_sources.dart';
-import '../../core/Model/Source.dart';
 import 'ExtensionItem.dart';
 
-class Extension extends ConsumerStatefulWidget {
+class Extension extends StatefulWidget {
   final bool installed;
-  final MediaType mediaType;
+  final ItemType itemType;
   final String query;
   final String selectedLanguage;
   final bool showRecommended;
@@ -26,59 +17,43 @@ class Extension extends ConsumerStatefulWidget {
   const Extension({
     required this.installed,
     required this.query,
-    required this.mediaType,
+    required this.itemType,
     required this.selectedLanguage,
     this.showRecommended = true,
     super.key,
   });
 
   @override
-  ConsumerState<Extension> createState() => _ExtensionScreenState();
+  State<Extension> createState() => _ExtensionScreenState();
 }
 
-class _ExtensionScreenState extends ConsumerState<Extension> {
+class _ExtensionScreenState extends State<Extension> {
   final controller = ScrollController();
 
   Future<void> _refreshData() async {
-    if (widget.mediaType == MediaType.manga) {
-      return await ref.refresh(
-          fetchMangaSourcesListProvider(id: null, reFresh: true).future);
-    } else if (widget.mediaType == MediaType.anime) {
-      return await ref.refresh(
-          fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
-    } else {
-      return await ref.refresh(
-          fetchNovelSourcesListProvider(id: null, reFresh: true).future);
-    }
+    await sourceController.fetchRepos();
+    setState(() {});
   }
 
-  Future<void> _fetchData() async {
-    if (widget.mediaType == MediaType.manga) {
-      ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
-    } else if (widget.mediaType == MediaType.anime) {
-      ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
-    } else {
-      ref.watch(fetchNovelSourcesListProvider(id: null, reFresh: false));
-    }
-  }
+  List<Source> get _allAvailableExtensions =>
+      sourceController.getAvailableExtensions(widget.itemType);
+
+  List<Source> get _installedExtensions =>
+      sourceController.getInstalledExtensions(widget.itemType);
 
   @override
   Widget build(BuildContext context) {
-    final streamExtensions =
-        ref.watch(getExtensionsStreamProvider(widget.mediaType));
-
     return RefreshIndicator(
       onRefresh: _refreshData,
       child: Padding(
         padding: const EdgeInsets.only(top: 10),
-        child: streamExtensions.when(
-          data: (data) {
-            data = _filterData(data);
-            final installedEntries = _getInstalledEntries(data);
-            final updateEntries = _getUpdateEntries(data);
-            final notInstalledEntries = _getNotInstalledEntries(data);
+        child: Obx(
+          () {
+            final installedEntries = _getInstalledEntries();
+            final updateEntries = _getUpdateEntries();
+            final notInstalledEntries = _getNotInstalledEntries();
             final recommendedEntries = widget.showRecommended
-                ? _getRecommendedEntries(data)
+                ? _getRecommendedEntries()
                 : [].cast<Source>();
 
             return Padding(
@@ -96,13 +71,6 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               ),
             );
           },
-          error: (error, _) => Center(
-            child: AnymexButton(
-              onTap: () => _fetchData(),
-              child: const Text('Refresh'),
-            ),
-          ),
-          loading: () => const Center(child: AnymexProgressIndicator()),
         ),
       ),
     );
@@ -120,40 +88,52 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
         .toList();
   }
 
-  List<Source> _getInstalledEntries(List<Source> data) {
-    return data
-        .where((element) => element.version == element.versionLast!)
-        .where((element) => element.isAdded!)
-        .toList();
+  List<Source> _getNotInstalledEntries() {
+    final availableExtensions = _allAvailableExtensions;
+    final installedExtensions = _installedExtensions;
+
+    final notInstalled = availableExtensions.where((available) {
+      return !installedExtensions.any((installed) =>
+          installed.name == available.name && installed.lang == available.lang);
+    }).toList();
+
+    return _filterData(notInstalled);
   }
 
-  List<Source> _getUpdateEntries(List<Source> data) {
-    return data
-        .where((element) =>
-            compareVersions(element.version!, element.versionLast!) < 0)
-        .where((element) => element.isAdded!)
-        .toList();
+  List<Source> _getInstalledEntries() {
+    final installedExtensions = _installedExtensions;
+    return _filterData(installedExtensions);
   }
 
-  List<Source> _getNotInstalledEntries(List<Source> data) {
-    return data
-        .where((element) => element.version == element.versionLast!)
-        .where((element) => !element.isAdded!)
-        .toList();
+  List<Source> _getUpdateEntries() {
+    final installedExtensions = _installedExtensions;
+
+    final updateAvailable = <Source>[];
+
+    for (final installed in installedExtensions) {
+      if (installed.hasUpdate ?? false) {
+        updateAvailable.add(installed);
+      }
+    }
+
+    return _filterData(updateAvailable);
   }
 
-  List<Source> _getRecommendedEntries(List<Source> data) {
+  List<Source> _getRecommendedEntries() {
     final extens = [
       'anymex',
     ];
 
-    return data.where((element) {
+    final availableExtensions = _allAvailableExtensions;
+    final recommended = availableExtensions.where((element) {
       final name = element.name?.toLowerCase() ?? '';
       final lang = element.lang?.toLowerCase() ?? '';
       final matchesExtension = extens.any((ext) => name.contains(ext));
       return matchesExtension &&
           (lang == 'en' || lang == 'all' || lang == 'multi');
     }).toList();
+
+    return _filterData(recommended);
   }
 
   SliverGroupedListView<Source, String> _buildUpdatePendingList(
@@ -174,14 +154,9 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
               variant: ButtonVariant.outline,
               onTap: () async {
                 for (var source in updateEntries) {
-                  widget.mediaType == MediaType.manga
-                      ? await ref.watch(fetchMangaSourcesListProvider(
-                              id: source.id, reFresh: true)
-                          .future)
-                      : await ref.watch(fetchAnimeSourcesListProvider(
-                              id: source.id, reFresh: true)
-                          .future);
+                  await source.extensionType!.getManager().updateSource(source);
                 }
+                setState(() {});
               },
               child: const Text(
                 'Update All',
@@ -193,7 +168,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        mediaType: widget.mediaType,
+        mediaType: widget.itemType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -212,7 +187,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        mediaType: widget.mediaType,
+        mediaType: widget.itemType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -239,7 +214,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        mediaType: widget.mediaType,
+        mediaType: widget.itemType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -265,7 +240,7 @@ class _ExtensionScreenState extends ConsumerState<Extension> {
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
-        mediaType: widget.mediaType,
+        mediaType: widget.itemType,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),

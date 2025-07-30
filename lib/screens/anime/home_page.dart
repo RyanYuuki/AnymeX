@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/unified_header.dart';
 
 class AnimeHomePage extends StatefulWidget {
   const AnimeHomePage({
@@ -73,7 +72,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(isHomePage: false),
+            headerContent: const Header(type: PageType.anime),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light

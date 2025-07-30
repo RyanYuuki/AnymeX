@@ -1,13 +1,12 @@
 import 'dart:developer';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
 enum MediaType { manga, anime, novel }
 
@@ -31,7 +30,7 @@ class Media {
   String format;
   String aired;
   MediaType mediaType;
-  List<MChapter>? mediaContent;
+  List<DEpisode>? mediaContent;
   String? totalChapters;
   List<String> genres;
   List<String>? studios;
@@ -220,19 +219,19 @@ class Media {
         aired: json['year']?.toString() ?? 'Unknown air date');
   }
 
-  factory Media.fromManga(MManga manga, MediaType type) {
+  factory Media.froDMedia(DMedia manga, MediaType type) {
     return Media(
-      id: manga.link ?? '',
-      title: manga.name ?? "Unknown Title",
-      romajiTitle: manga.name ?? "Unknown Title",
+      id: manga.url ?? '',
+      title: manga.title ?? "Unknown Title",
+      romajiTitle: manga.title ?? "Unknown Title",
       description: manga.description ?? "No description available.",
-      poster: manga.imageUrl ?? "",
-      cover: manga.imageUrl,
-      totalEpisodes: manga.chapters?.length.toString() ?? '??',
-      status: manga.status?.name.toUpperCase() ?? 'Ongoing',
+      poster: manga.cover ?? "",
+      cover: manga.cover,
+      totalEpisodes: manga.episodes?.length.toString() ?? '??',
+      status: '??',
       mediaType: type,
-      aired: manga.status?.name.toUpperCase() ?? 'Unknown',
-      totalChapters: manga.chapters?.length.toString(),
+      aired: 'Unknown',
+      totalChapters: manga.episodes?.length.toString(),
       genres: manga.genre ?? [],
       studios: null,
       characters: [],
@@ -240,7 +239,7 @@ class Media {
       recommendations: [],
       nextAiringEpisode: null,
       rankings: [],
-      mediaContent: manga.chapters,
+      mediaContent: manga.episodes,
       serviceType: ServicesType.extensions,
     );
   }

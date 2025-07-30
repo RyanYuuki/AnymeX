@@ -5,10 +5,9 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Eval/dart/model/page.dart';
-import 'package:anymex/core/Search/get_pages.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -152,16 +151,22 @@ class ReaderController extends GetxController {
     final topItem = currentPageIndex.value >= (pageList.length - 2)
         ? positions.last
         : positions.first;
-    final newPageIndex = topItem.index + 1;
+    final number = topItem.index + 1;
+    if (number < 0 && number > pageList.length) return;
 
-    if (newPageIndex != currentPageIndex.value) {
-      currentPageIndex.value = newPageIndex;
-      currentChapter.value?.pageNumber = newPageIndex;
+    if (number != currentPageIndex.value) {
+      currentPageIndex.value = number;
+      currentChapter.value?.pageNumber = number;
+    }
+
+    if (number == currentChapter.value?.totalPages) {
+      _saveTracking();
     }
   }
 
   void onPageChanged(int index) async {
     final number = index + 1;
+    if (number < 0 && number > pageList.length) return;
     currentPageIndex.value = number;
     currentChapter.value?.pageNumber = number;
     currentChapter.value?.totalPages = pageList.length;
@@ -286,21 +291,20 @@ class ReaderController extends GetxController {
       pageList.clear();
       errorMessage.value = '';
 
-      final data = await getPagesList(
-          source: sourceController.activeMangaSource.value!, mangaId: url);
+      final data = await sourceController.activeMangaSource.value!.methods
+          .getPageList(DEpisode(episodeNumber: '1', url: url));
 
-      if (data != null && data.isNotEmpty) {
+      if (data.isNotEmpty) {
         pageList.value = data;
         loadingState.value = LoadingState.loaded;
-
-        if (savedChapter.value?.pageNumber != null &&
-            savedChapter.value!.pageNumber! <= pageList.length) {
-          currentPageIndex.value = savedChapter.value?.pageNumber ?? 1;
-          currentChapter.value?.totalPages = pageList.length;
+        currentPageIndex.value = 1;
+        currentChapter.value?.totalPages = pageList.length;
+        if (savedChapter.value!.pageNumber! <= pageList.length) {
           _syncAvailability();
-
+          currentChapter.value?.totalPages = pageList.length;
           if (savedChapter.value?.pageNumber != null &&
               savedChapter.value!.pageNumber! > 1) {
+            currentPageIndex.value = savedChapter.value!.pageNumber!;
             await Future.delayed(const Duration(milliseconds: 100));
             navigateToPage(savedChapter.value!.pageNumber! - 1);
           }

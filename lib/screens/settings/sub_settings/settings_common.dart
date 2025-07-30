@@ -67,37 +67,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                   children: [
                     AnymexExpansionTile(
                         initialExpanded: true,
-                        title: 'General',
-                        content: Column(
-                          children: [
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Anime Github Repo',
-                              description: "Add github repo for anime",
-                              onTap: () =>
-                                  const GitHubRepoDialog(type: MediaType.anime)
-                                      .show(context: context),
-                            ),
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Manga Github Repo',
-                              description: "Add github repo for manga",
-                              onTap: () =>
-                                  const GitHubRepoDialog(type: MediaType.manga)
-                                      .show(context: context),
-                            ),
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Novel Github Repo',
-                              description: "Add github repo for novel",
-                              onTap: () =>
-                                  const GitHubRepoDialog(type: MediaType.novel)
-                                      .show(context: context),
-                            ),
-                          ],
-                        )),
-                    AnymexExpansionTile(
-                        initialExpanded: true,
                         title: 'Anilist',
                         content: CustomTile(
                           icon: Icons.format_list_bulleted_sharp,

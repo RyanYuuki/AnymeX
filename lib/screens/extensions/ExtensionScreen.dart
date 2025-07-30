@@ -1,43 +1,37 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Extensions/extensions_provider.dart';
-import 'package:anymex/core/Extensions/fetch_anime_sources.dart';
-import 'package:anymex/core/Extensions/fetch_manga_sources.dart';
-import 'package:anymex/core/Extensions/fetch_novel_sources.dart';
-import 'package:anymex/core/Model/Source.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
-import 'package:anymex/utils/StorageProvider.dart';
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/utils/storage_provider.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
+    hide Extension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:isar/isar.dart';
-import '../../main.dart';
 
-class ExtensionScreen extends ConsumerStatefulWidget {
+class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({super.key});
 
   @override
-  ConsumerState<ExtensionScreen> createState() => _BrowseScreenState();
+  State<ExtensionScreen> createState() => _BrowseScreenState();
 }
 
-class _BrowseScreenState extends ConsumerState<ExtensionScreen>
+class _BrowseScreenState extends State<ExtensionScreen>
     with TickerProviderStateMixin {
   late TabController _tabBarController;
 
   @override
   void initState() {
     super.initState();
+    _fetchData();
     _checkPermission();
     _tabBarController = TabController(length: 6, vsync: this);
     _tabBarController.animateTo(0);
@@ -51,29 +45,15 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
 
   @override
   void dispose() {
-    sourceController.initExtensions();
+    sourceController.sortExtensions();
     super.dispose();
   }
 
-  Future<void> removeOldData() async {
-    await isar.writeTxn(() async {
-      await isar.sources.filter().isAddedEqualTo(false).deleteAll();
-    });
-  }
+  Future<void> removeOldData() async {}
 
   Future<void> _fetchData() async {
-    ref.watch(fetchMangaSourcesListProvider(id: null, reFresh: false));
-    ref.watch(fetchAnimeSourcesListProvider(id: null, reFresh: false));
-    ref.watch(fetchNovelSourcesListProvider(id: null, reFresh: false));
-  }
-
-  Future<void> _refreshData() async {
-    await ref
-        .refresh(fetchMangaSourcesListProvider(id: null, reFresh: true).future);
-    await ref
-        .refresh(fetchAnimeSourcesListProvider(id: null, reFresh: true).future);
-    await ref
-        .refresh(fetchNovelSourcesListProvider(id: null, reFresh: true).future);
+    await sourceController.fetchRepos();
+    setState(() {});
   }
 
   _checkPermission() async {
@@ -85,112 +65,210 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
 
   void repoSheet() {
     final controller = Get.find<SourceController>();
-    final animeRepoController = TextEditingController(
-      text: controller.activeAnimeRepo,
-    );
-    final mangaRepoController = TextEditingController(
-      text: controller.activeMangaRepo,
-    );
-    final novelRepoController = TextEditingController(
-      text: controller.activeNovelRepo,
-    );
+    final selectedTab = 0.obs;
+    final isAndroid = Platform.isAndroid;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
+        return Obx(
+          () {
+            final type = isAndroid
+                ? selectedTab.value == 0
+                    ? ExtensionType.aniyomi
+                    : ExtensionType.mangayomi
+                : ExtensionType.mangayomi;
+            // Update controllers based on current tab selection
+            final animeRepoController = TextEditingController(
+              text: sourceController.getAnimeRepo(type),
+            );
+            final mangaRepoController = TextEditingController(
+              text: sourceController.getMangaRepo(type),
+            );
+            final novelRepoController = TextEditingController(
+              text: controller.activeNovelRepo,
+            );
+
+            void onTabChanged(int index) {
+              selectedTab.value = index;
+            }
+
             return Container(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Handle bar
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant
-                                .withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
+                      Container(
+                        width: 32,
+                        height: 3,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
 
-                      // Title and warning
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.storage_rounded,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              "Repository Settings",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ],
+                      // Title
+                      Text(
+                        "Repository Settings",
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
 
+                      if (isAndroid)
+                        Container(
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => onTabChanged(0),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: selectedTab.value == 0
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .surface
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: selectedTab.value == 0
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Text(
+                                      "Aniyomi",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: selectedTab.value == 0
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: selectedTab.value == 0
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => onTabChanged(1),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: selectedTab.value == 1
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .surface
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: selectedTab.value == 1
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Text(
+                                      "Mangayomi",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: selectedTab.value == 1
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        color: selectedTab.value == 1
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      const SizedBox(height: 24),
+
+                      // Warning
                       Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Theme.of(context).colorScheme.errorContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .errorContainer
+                              .withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .error
+                                .withOpacity(0.2),
+                          ),
                         ),
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(12),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
-                              Icons.warning_amber_rounded,
+                              Icons.info_outline,
                               color: Theme.of(context).colorScheme.error,
-                              size: 22,
+                              size: 18,
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                "Adding third-party repositories is not encouraged by the developer. Ensure you add links for both anime and manga, as using only one won't work.",
+                                "Third-party repositories are not officially supported",
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onErrorContainer,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -200,130 +278,91 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
 
                       const SizedBox(height: 24),
 
-                      Text(
-                        "Anime Repository",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      // Content based on selected tab
+                      if (selectedTab == 0) ...[
+                        // Aniyomi Tab - Only Anime and Manga
+                        _buildRepoField(
+                          context,
+                          "Anime Repository",
+                          animeRepoController,
+                          Icons.play_circle_outline,
+                          "Enter anime repository URL",
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomSearchBar(
-                        border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.5),
-                          width: 1.5,
+                        const SizedBox(height: 16),
+                        _buildRepoField(
+                          context,
+                          "Manga Repository",
+                          mangaRepoController,
+                          Icons.book_outlined,
+                          "Enter manga repository URL",
                         ),
-                        prefixIcon: Icons.movie_filter_outlined,
-                        controller: animeRepoController,
-                        onSubmitted: (value) {},
-                        hintText: "Enter anime repository URL...",
-                        disableIcons: true,
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Text(
-                        "Manga Repository",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      ] else ...[
+                        // Mangayomi Tab - Anime, Manga, and Novel
+                        _buildRepoField(
+                          context,
+                          "Anime Repository",
+                          animeRepoController,
+                          Icons.play_circle_outline,
+                          "Enter anime repository URL",
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomSearchBar(
-                        prefixIcon: Iconsax.book,
-                        border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.5),
-                          width: 1.5,
+                        const SizedBox(height: 16),
+                        _buildRepoField(
+                          context,
+                          "Manga Repository",
+                          mangaRepoController,
+                          Icons.book_outlined,
+                          "Enter manga repository URL",
                         ),
-                        controller: mangaRepoController,
-                        onSubmitted: (value) {},
-                        hintText: "Enter manga repository URL...",
-                        disableIcons: true,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 4),
-                      ),
-                      const SizedBox(height: 20),
-
-                      Text(
-                        "Novel Repository",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                        const SizedBox(height: 16),
+                        _buildRepoField(
+                          context,
+                          "Novel Repository",
+                          novelRepoController,
+                          Icons.menu_book_outlined,
+                          "Enter novel repository URL",
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomSearchBar(
-                        prefixIcon: Iconsax.book,
-                        border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.5),
-                          width: 1.5,
-                        ),
-                        controller: novelRepoController,
-                        onSubmitted: (value) {},
-                        hintText: "Enter novel repository URL...",
-                        disableIcons: true,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 4),
-                      ),
+                      ],
 
                       const SizedBox(height: 32),
 
+                      // Action Buttons
                       Row(
                         children: [
                           Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest,
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.onSurface,
-                                elevation: 0,
+                            child: TextButton(
+                              onPressed: () => Get.back(),
+                              style: TextButton.styleFrom(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                               child: Text(
                                 "Cancel",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () async {
-                                controller.activeAnimeRepo =
-                                    animeRepoController.text;
-                                controller.activeMangaRepo =
-                                    mangaRepoController.text;
-                                await removeOldData();
+                                controller.setAnimeRepo(
+                                    animeRepoController.text, type);
+                                controller.setMangaRepo(
+                                    mangaRepoController.text, type);
+                                if (selectedTab.value == 1) {
+                                  controller.activeNovelRepo =
+                                      novelRepoController.text;
+                                }
                                 _fetchData();
-                                _refreshData();
                                 Get.back();
                               },
                               style: ElevatedButton.styleFrom(
@@ -333,18 +372,16 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                                     Theme.of(context).colorScheme.onPrimary,
                                 elevation: 0,
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: Text(
-                                "Save Changes",
+                              child: const Text(
+                                "Save",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                             ),
@@ -362,51 +399,61 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
     );
   }
 
-  Future<void> _fixSources() async {
-    AlertDialogBuilder(context)
-      ..setTitle("Fix Sources")
-      ..setMessage("Are you sure you want to fix sources?")
-      ..setNegativeButton('No', () {})
-      ..setPositiveButton("Yes", () async {
-        await _fetchData();
-        final allExtensions = await ref
-            .watch(getExtensionsStreamProvider(MediaType.manga).future);
-
-        List<int> currentInstalledAnimeExtensions = [];
-        List<int> currentInstalledMangaExtensions = [];
-
-        for (var e in allExtensions) {
-          if (e.isAdded!) {
-            if (e.isManga == true) {
-              currentInstalledMangaExtensions.add(e.id!);
-              print('Manga Extension ID: ${e.name} - ${e.id}');
-            } else {
-              currentInstalledAnimeExtensions.add(e.id!);
-              print('Anime Extension ID: ${e.name} - ${e.id}');
-            }
-          }
-        }
-
-        for (int e in currentInstalledAnimeExtensions) {
-          log('installing $e');
-          await ref.watch(
-              fetchAnimeSourcesListProvider(id: e, reFresh: true).future);
-        }
-
-        for (int e in currentInstalledMangaExtensions) {
-          log('installing $e');
-          await ref.watch(
-              fetchMangaSourcesListProvider(id: e, reFresh: true).future);
-        }
-        removeOldData();
-        await _fetchData();
-      })
-      ..show();
+  Widget _buildRepoField(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    IconData icon,
+    String hint,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, size: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 1.5,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    _fetchData();
     var theme = Theme.of(context).colorScheme;
     return Glow(
       child: DefaultTabController(
@@ -443,11 +490,6 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
             ),
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
-              AnymexOnTap(
-                  onTap: _fixSources,
-                  child: IconButton(
-                      onPressed: _fixSources,
-                      icon: const Icon(Icons.bug_report))),
               AnymexOnTap(
                 onTap: () {
                   repoSheet();
@@ -492,12 +534,12 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                 tabAlignment: TabAlignment.start,
                 dragStartBehavior: DragStartBehavior.start,
                 tabs: [
-                  _buildTab(context, MediaType.anime, "Installed Anime", true),
-                  _buildTab(context, MediaType.anime, "Available Anime", false),
-                  _buildTab(context, MediaType.manga, "Installed Manga", true),
-                  _buildTab(context, MediaType.manga, "Available Manga", false),
-                  _buildTab(context, MediaType.novel, "Installed Novel", true),
-                  _buildTab(context, MediaType.novel, "Available Novel", false),
+                  _buildTab(context, ItemType.anime, "Installed Anime", true),
+                  _buildTab(context, ItemType.anime, "Available Anime", false),
+                  _buildTab(context, ItemType.manga, "Installed Manga", true),
+                  _buildTab(context, ItemType.manga, "Available Manga", false),
+                  _buildTab(context, ItemType.novel, "Installed Novel", true),
+                  _buildTab(context, ItemType.novel, "Available Novel", false),
                 ],
               ),
               const SizedBox(height: 8.0),
@@ -514,40 +556,40 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
                     Extension(
                       installed: true,
                       query: _textEditingController.text,
-                      mediaType: MediaType.anime,
+                      itemType: ItemType.anime,
                       selectedLanguage: _selectedLanguage,
                       showRecommended: false,
                     ),
                     Extension(
                       installed: false,
                       query: _textEditingController.text,
-                      mediaType: MediaType.anime,
+                      itemType: ItemType.anime,
                       selectedLanguage: _selectedLanguage,
                     ),
                     Extension(
                       installed: true,
                       query: _textEditingController.text,
-                      mediaType: MediaType.manga,
+                      itemType: ItemType.manga,
                       selectedLanguage: _selectedLanguage,
                       showRecommended: false,
                     ),
                     Extension(
                       installed: false,
                       query: _textEditingController.text,
-                      mediaType: MediaType.manga,
+                      itemType: ItemType.manga,
                       selectedLanguage: _selectedLanguage,
                     ),
                     Extension(
                       installed: true,
                       query: _textEditingController.text,
-                      mediaType: MediaType.novel,
+                      itemType: ItemType.novel,
                       selectedLanguage: _selectedLanguage,
                       showRecommended: false,
                     ),
                     Extension(
                       installed: false,
                       query: _textEditingController.text,
-                      mediaType: MediaType.novel,
+                      itemType: ItemType.novel,
                       selectedLanguage: _selectedLanguage,
                     ),
                   ],
@@ -561,7 +603,7 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
   }
 
   Widget _buildTab(
-      BuildContext context, MediaType mediaType, String label, bool installed) {
+      BuildContext context, ItemType itemType, String label, bool installed) {
     return Tab(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -576,24 +618,27 @@ class _BrowseScreenState extends ConsumerState<ExtensionScreen>
           ),
           const SizedBox(width: 8),
           _extensionUpdateNumbers(
-              context, mediaType, installed, _selectedLanguage),
+              context, itemType, installed, _selectedLanguage),
         ],
       ),
     );
   }
 }
 
-Widget _extensionUpdateNumbers(BuildContext context, MediaType mediaType,
+Widget _extensionUpdateNumbers(BuildContext context, ItemType itemType,
     bool installed, String selectedLanguage) {
-  return StreamBuilder(
-    stream: isar.sources
-        .filter()
-        .idIsNotNull()
-        .and()
-        .isAddedEqualTo(installed)
-        .isActiveEqualTo(true)
-        .itemTypeEqualTo(mediaType)
-        .watch(fireImmediately: true),
+  List<Source> getExtensionsList() {
+    if (installed) {
+      return sourceController.getInstalledExtensions(itemType);
+    } else {
+      return sourceController.getAvailableExtensions(itemType);
+    }
+  }
+
+  return StreamBuilder<List<Source>>(
+    stream:
+        Stream.periodic(const Duration(seconds: 1), (_) => getExtensionsList()),
+    initialData: getExtensionsList(),
     builder: (context, snapshot) {
       if (snapshot.hasData && snapshot.data!.isNotEmpty) {
         final entries = snapshot.data!

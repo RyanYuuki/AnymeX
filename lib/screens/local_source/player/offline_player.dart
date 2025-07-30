@@ -15,6 +15,7 @@ import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -70,7 +71,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
   final currentPosition = const Duration(milliseconds: 0).obs;
   final episodeDuration = const Duration(minutes: 24).obs;
   final formattedTime = "00:00".obs;
-  final formattedDuration = "24:00".obs;
+  final formattedDuration = "00:00".obs;
   final showControls = true.obs;
   final playbackSpeed = 1.0.obs;
   final isFullscreen = false.obs;
@@ -182,7 +183,9 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
         start: Duration(milliseconds: startTimeMilliseconds)));
     player.setRate(prevRate.value);
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
-      setShaders(settingsController.selectedShader, showMessage: false);
+      final key = (PlayerShaders.getShaders()
+          .indexWhere((e) => e == settings.selectedShader));
+      setShaders(key, showMessage: false);
     }
   }
 
@@ -471,17 +474,18 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
     super.dispose();
   }
 
-  void setShaders(String message, {bool showMessage = true}) async {
-    final profile = settingsController.selectedProfile;
-    final shaderBase = await PlayerShaders.getShaderPathForProfile(profile);
-
-    final paths = PlayerShaders.getShaderByProfile(message)
-        .map((f) => '$shaderBase$f')
-        .join(';');
-    (player.platform as dynamic).setProperty('glsl-shaders', paths);
-    settingsController.selectedShader = message;
+  void setShaders(int key, {bool showMessage = true}) async {
+    if (key == -1) {
+      PlayerShaders.setShaders(player, '');
+      if (showMessage) {
+        snackBar("Cleared Shaders");
+      }
+      return;
+    }
+    final shaders = PlayerShaders.getShaders();
+    PlayerShaders.setShaders(player, shaders[key]);
     if (showMessage) {
-      snackBar(message == "Default" ? "Cleared Shaders" : 'Applied $message');
+      snackBar('Applied ${shaders[key]}');
     }
   }
 
@@ -506,29 +510,10 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
 
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
       final keyLabel = key.keyLabel;
-
-      switch (keyLabel) {
-        case '1':
-          setShaders('Anime4K: Mode A (HQ)');
-          break;
-        case '2':
-          setShaders('Anime4K: Mode B (HQ)');
-          break;
-        case '3':
-          setShaders('Anime4K: Mode C (HQ)');
-          break;
-        case '4':
-          setShaders('Anime4K: Mode A+A (HQ)');
-          break;
-        case '5':
-          setShaders('Anime4K: Mode B+B (HQ)');
-          break;
-        case '6':
-          setShaders('Anime4K: Mode C+A (HQ)');
-          break;
-        case '0':
-          setShaders('Default');
-          break;
+      final allowedKeys = ["1", "2", "3", "4", "5", "6", "0"];
+      log(keyLabel);
+      if (allowedKeys.contains(keyLabel)) {
+        setShaders(int.parse(keyLabel) - 1);
       }
     }
   }
@@ -1546,7 +1531,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
           contentPadding:
               const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
           title: AnymexText(
-            text: track.language?.toUpperCase() ?? track.title ?? 'None',
+            text: completeLanguageName(track.language ?? 'None').toUpperCase(),
             variant: TextVariant.bold,
             size: 16,
             color: isSelected

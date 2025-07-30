@@ -6,6 +6,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
+import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -48,51 +49,109 @@ class ChapterSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 2),
-                    width: Get.width * 0.6,
-                    child: AnymexTextSpans(
-                      spans: [
-                        if (!searchedTitle.value.contains('Searching'))
-                          const AnymexTextSpan(
-                            text: "Found: ",
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .shadow
+                          .withOpacity(0.08),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AnymexTextSpans(
+                        spans: [
+                          if (!searchedTitle.value.contains('Searching') &&
+                              !searchedTitle.value.contains('No Match Found'))
+                            AnymexTextSpan(
+                              text: "Found: ",
+                              size: 14,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.6),
+                            ),
+                          AnymexTextSpan(
+                            text: searchedTitle.value,
                             variant: TextVariant.semiBold,
-                            size: 16,
+                            size: 14,
+                            color:
+                                searchedTitle.value.contains('No Match Found')
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context).colorScheme.primary,
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    AnymexOnTap(
+                      onTap: () {
+                        showWrongTitleModal(
+                          context,
+                          anilistData.title,
+                          (manga) async {
+                            chapterList.value = [];
+                            await getDetailsFromSource(
+                                Media.froDMedia(manga, MediaType.manga));
+                          },
+                          isManga: true,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.3),
+                            width: 1,
                           ),
-                        AnymexTextSpan(
-                          text: searchedTitle.value,
-                          variant: TextVariant.semiBold,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                      ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.swap_horiz_rounded,
+                              size: 14,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            AnymexText(
+                              text: "Wrong Title?",
+                              size: 12,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  AnymexOnTap(
-                    onTap: () {
-                      showWrongTitleModal(
-                        context,
-                        anilistData.title,
-                        (manga) async {
-                          chapterList.value = [];
-                          await getDetailsFromSource(
-                              Media.fromManga(manga, MediaType.manga));
-                        },
-                        isManga: true,
-                      );
-                    },
-                    child: AnymexText(
-                      text: "Wrong Title?",
-                      variant: TextVariant.semiBold,
-                      size: 16,
-                      maxLines: 1,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               Obx(() => buildMangaSourceDropdown()),
@@ -140,7 +199,6 @@ class ChapterSection extends StatelessWidget {
                   '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
             );
           }).toList();
-
     DropdownItem? selectedItem;
     if (sourceController.installedMangaExtensions.isEmpty) {
       selectedItem = items.first;

@@ -89,11 +89,12 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
       await _updateStatus('Connecting to server...', 0.05);
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final shadersPath = await PlayerShaders.getShaderBasePath();
-      final shadersDir = Directory(shadersPath);
+      final shadersPath = await PlayerShaders.getMpvPath();
+      final mpvPath = Directory(shadersPath).parent.path;
+      final mpvDir = Directory(mpvPath);
 
-      if (!await shadersDir.exists()) {
-        await shadersDir.create(recursive: true);
+      if (!await mpvDir.exists()) {
+        await mpvDir.create(recursive: true);
       }
 
       final tempDir = await getTemporaryDirectory();
@@ -120,11 +121,12 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
       final bytes = await tempFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
 
-      await _updateStatus('Extracting all shader files...', 0.8);
+      await _updateStatus('Extracting shader files...', 0.8);
 
       for (final file in archive) {
         if (file.isFile) {
-          final outFile = File('$shadersPath/${file.name}');
+          final outFile = File('$mpvPath/${file.name}');
+
           await outFile.parent.create(recursive: true);
           await outFile.writeAsBytes(file.content as List<int>);
         }

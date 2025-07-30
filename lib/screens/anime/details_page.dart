@@ -3,9 +3,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Search/get_detail.dart';
-import 'package:anymex/core/get_source_preference.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -33,6 +31,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -193,7 +192,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _mapToService() async {
     final mappedData =
-        await mapMedia(formatTitles(anilistData!) ?? [], searchedTitle);
+        await mapMedia(formatTitles(widget.media) ?? [], searchedTitle);
     if (mappedData != null) {
       await _fetchSourceDetails(mappedData);
     }
@@ -210,19 +209,17 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _fetchSourceDetails(Media media) async {
     try {
       episodeError.value = false;
-      final episodeFuture = await getDetail(
-        url: media.id,
-        source: sourceController.activeSource.value!,
-      );
+      final episodeFuture = await sourceController.activeSource.value!.methods
+          .getDetail(DMedia.withUrl(media.id));
 
-      if (episodeFuture == null) {
-        episodeError.value = true;
-        return;
-      }
+      // if (episodeFuture == null) {
+      //   episodeError.value = true;
+      //   return;
+      // }
 
       final episodes = _convertEpisodes(
-        episodeFuture.chapters!.reversed.toList(),
-        episodeFuture.name ?? '',
+        episodeFuture.episodes!.reversed.toList(),
+        episodeFuture.title ?? '',
       );
 
       rawEpisodes.value = _createRawEpisodes(episodes);
@@ -266,9 +263,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<Episode> _convertEpisodes(List<dynamic> episodes, String title) {
-    return episodes
-        .map((ep) => mChapterToEpisode(ep, MManga(name: title)))
-        .toList();
+    return episodes.map((ep) => DEpisodeToEpisode(ep)).toList();
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
@@ -341,7 +336,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       color: posterColor,
       child: Scaffold(
           extendBody: true,
-          bottomNavigationBar: sourceController.activeAnimeRepo.isNotEmpty
+          bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()
               : null,
           body: _commonSaikouLayout(context)),
@@ -521,7 +516,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeError: episodeError,
         mapToAnilist: _mapToService,
         getDetailsFromSource: _fetchSourceDetails,
-        getSourcePreference: getSourcePreference,
+
+        // getSourcePreference: getSourcePreference,
         isAnify: isAnify,
         showAnify: showAnify,
       );
@@ -615,7 +611,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         selectedIcon: Iconsax.info_circle5,
                         unselectedIcon: Iconsax.info_circle,
                         label: "Info"),
-                    if (sourceController.activeAnimeRepo.isNotEmpty)
+                    if (sourceController.shouldShowExtensions.value)
                       NavItem(
                           onTap: _onPageSelected,
                           selectedIcon: Iconsax.play5,
@@ -683,4 +679,3 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     );
   }
 }
-// Mobile Navigation bar: END

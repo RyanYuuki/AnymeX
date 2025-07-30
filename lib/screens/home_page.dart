@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> {
               CustomAnimatedAppBar(
                 isVisible: _isAppBarVisibleExternally,
                 scrollController: _scrollController,
-                headerContent: const Header(isHomePage: true),
+                headerContent: const Header(type: PageType.home),
                 visibleStatusBarStyle: SystemUiOverlayStyle(
                   statusBarIconBrightness:
                       Theme.of(context).brightness == Brightness.light

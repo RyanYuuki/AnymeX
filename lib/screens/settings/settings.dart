@@ -5,6 +5,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
@@ -92,12 +93,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () {
                       navigate(() => const SettingsTheme());
                     }),
+                const SizedBox(height: 10),
                 CustomTile(
-                    icon: Iconsax.trash,
-                    title: "Clear Cache",
-                    description: "Clear all the settings.",
+                    icon: Icons.extension_rounded,
+                    title: "Extensions",
+                    description: "Extensions that tends to your needs",
                     onTap: () {
-                      showClearCacheDialog(context);
+                      navigate(() => const SettingsExtensions());
                     }),
                 const SizedBox(height: 10),
                 CustomTile(
@@ -145,42 +147,4 @@ class CustomBackButton extends StatelessWidget {
         },
         icon: const Icon(Icons.arrow_back_ios_new_rounded));
   }
-}
-
-Future<void> showClearCacheDialog(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        content: const Text(
-            'Are you sure you want to clear the cache? (You gon lose your settings and library)'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                backgroundColor: Theme.of(context).colorScheme.primaryFixed),
-            onPressed: () async {
-              Get.find<OfflineStorageController>().clearCache();
-              Provider.of<ThemeProvider>(context, listen: false).clearCache();
-              isar.writeTxn(() => isar.clear());
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              'Confirm',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
-      );
-    },
-  );
 }

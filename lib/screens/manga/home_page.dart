@@ -73,7 +73,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(isHomePage: false),
+            headerContent: const Header(type: PageType.manga),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light

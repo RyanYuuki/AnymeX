@@ -3,16 +3,11 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Eval/dart/model/source_preference.dart';
-import 'package:anymex/core/Model/Source.dart';
-import 'package:anymex/core/extension_preferences_providers.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
-import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -32,8 +27,8 @@ class EpisodeSection extends StatefulWidget {
   final Rx<bool> showAnify;
   final Future<void> Function() mapToAnilist;
   final Future<void> Function(Media) getDetailsFromSource;
-  final List<SourcePreference> Function({required Source source})
-      getSourcePreference;
+  // final List<SourcePreference> Function({required Source source})
+  //     getSourcePreference;
 
   const EpisodeSection({
     super.key,
@@ -43,7 +38,7 @@ class EpisodeSection extends StatefulWidget {
     required this.episodeError,
     required this.mapToAnilist,
     required this.getDetailsFromSource,
-    required this.getSourcePreference,
+    // required this.getSourcePreference,
     required this.isAnify,
     required this.showAnify,
   });
@@ -103,19 +98,19 @@ class _EpisodeSectionState extends State<EpisodeSection> {
   }
 
   void openSourcePreferences(BuildContext context) {
-    final sourceController = Get.find<ServiceHandler>().extensionService;
-    List<SourcePreference> sourcePreference = widget
-        .getSourcePreference(source: sourceController.activeSource.value!)
-        .map((e) => getSourcePreferenceEntry(
-            e.key!, sourceController.activeSource.value!.id!))
-        .toList();
+    // final sourceController = Get.find<ServiceHandler>().extensionService;
+    // List<SourcePreference> sourcePreference = widget
+    //     .getSourcePreference(source: sourceController.activeSource.value!)
+    //     .map((e) => getSourcePreferenceEntry(
+    //         e.key!, sourceController.activeSource.value!.id!))
+    //     .toList();
 
-    navigate(
-      () => SourcePreferenceWidget(
-        source: sourceController.activeSource.value!,
-        sourcePreference: sourcePreference,
-      ),
-    );
+    // navigate(
+    //   () => SourcePreferenceWidget(
+    //     source: sourceController.activeSource.value!,
+    //     sourcePreference: sourcePreference,
+    //   ),
+    // );
   }
 
   Widget buildSourceDropdown() {
@@ -223,57 +218,113 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         children: [
           if (serviceHandler.serviceType.value != ServicesType.extensions) ...[
             // Title Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 2),
-                  width: Get.width * 0.6,
-                  child: Obx(() => AnymexTextSpans(
-                        spans: [
-                          if (!widget.searchedTitle.value.contains('Searching'))
-                            const AnymexTextSpan(
-                              text: "Found: ",
-                              variant: TextVariant.semiBold,
-                              size: 16,
-                            ),
-                          AnymexTextSpan(
-                            text: widget.searchedTitle.value,
-                            variant: TextVariant.semiBold,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                        ],
-                      )),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant
+                    .withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  width: 1.5,
                 ),
-                AnymexOnTap(
-                  onTap: () {
-                    showWrongTitleModal(
-                      context,
-                      widget.anilistData.title,
-                      (manga) async {
-                        widget.episodeList?.clear();
-                        _requestCounter.value++;
-                        int currentRequestId = _requestCounter.value;
-                        _episodeFuture.value = Future(() async {
-                          await widget.getDetailsFromSource(
-                              Media.fromManga(manga, MediaType.anime));
-                          if (_requestCounter.value != currentRequestId) {
-                            throw Exception('Request cancelled');
-                          }
-                          return widget.episodeList?.value ?? [];
-                        });
-                      },
-                    );
-                  },
-                  child: AnymexText(
-                    text: "Wrong Title?",
-                    variant: TextVariant.semiBold,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.primary,
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AnymexTextSpans(
+                      spans: [
+                        if (!widget.searchedTitle.value.contains('Searching') &&
+                            !widget.searchedTitle.value
+                                .contains('No Match Found'))
+                          AnymexTextSpan(
+                            text: "Found: ",
+                            size: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
+                        AnymexTextSpan(
+                          text: widget.searchedTitle.value,
+                          variant: TextVariant.semiBold,
+                          size: 14,
+                          color: widget.searchedTitle.value
+                                  .contains('No Match Found')
+                              ? Theme.of(context).colorScheme.error
+                              : Theme.of(context).colorScheme.primary,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  AnymexOnTap(
+                    onTap: () {
+                      showWrongTitleModal(
+                        context,
+                        widget.anilistData.title,
+                        (manga) async {
+                          widget.episodeList?.clear();
+                          _requestCounter.value++;
+                          int currentRequestId = _requestCounter.value;
+                          _episodeFuture.value = Future(() async {
+                            await widget.getDetailsFromSource(
+                                Media.froDMedia(manga, MediaType.anime));
+                            if (_requestCounter.value != currentRequestId) {
+                              throw Exception('Request cancelled');
+                            }
+                            return widget.episodeList?.value ?? [];
+                          });
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.swap_horiz_rounded,
+                            size: 14,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 6),
+                          AnymexText(
+                            text: "Wrong Title?",
+                            size: 12,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             // Source Selector

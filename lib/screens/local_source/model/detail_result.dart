@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
 class DetailResult {
   final String title;
@@ -46,13 +46,13 @@ class DetailResult {
     );
   }
 
-  factory DetailResult.fromManga(MManga m) {
-    final manga = m..chapters = m.chapters!.reversed.toList();
-    final Map<String, List<MChapter>> seasonMap = {};
+  factory DetailResult.froDMedia(DMedia m) {
+    final manga = m..episodes = m.episodes!.reversed.toList();
+    final Map<String, List<DEpisode>> seasonMap = {};
 
     final regex = RegExp(r'S(\d+)\s*·\s*E(\d+)', caseSensitive: false);
 
-    for (final chapter in manga.chapters ?? []) {
+    for (final chapter in manga.episodes ?? []) {
       final match = regex.firstMatch(chapter.name ?? '');
       if (match != null) {
         final seasonNumber = match.group(1)!.padLeft(2, '0');
@@ -84,7 +84,7 @@ class DetailResult {
     seasons.sort((a, b) => a.id.compareTo(b.id));
 
     return DetailResult(
-      title: manga.name ?? '',
+      title: manga.title ?? '',
       seasons: seasons,
     );
   }

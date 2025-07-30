@@ -3,8 +3,7 @@ import 'dart:developer';
 
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
-import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
-import 'package:anymex/core/Search/get_detail.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -150,7 +149,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       }
       log(e.toString());
       log(stackTrace.toString());
-      snackBar("Retrying Fetch AnilistData!, $e", duration: 2000);
     }
   }
 
@@ -173,18 +171,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Future<void> _fetchSourceDetails(Media media) async {
     try {
-      final episodeFuture = await getDetail(
-        url: media.id,
-        source: sourceController.activeMangaSource.value!,
-      );
-
-      if (episodeFuture == null) {
-        return;
-      }
+      final episodeFuture = await sourceController
+          .activeMangaSource.value!.methods
+          .getDetail(DMedia.withUrl(media.id));
 
       final episodes = _convertChapters(
-        episodeFuture.chapters!.reversed.toList(),
-        episodeFuture.name ?? '',
+        episodeFuture.episodes!.reversed.toList(),
+        episodeFuture.title ?? '',
       );
       chapterList?.value = episodes;
       searchedTitle.value = media.title;
@@ -194,7 +187,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       if (e.toString().contains("dynamic")) {
         _fetchSourceDetails(media);
       }
-      snackBar("Retrying Fetch SourceData!, $e", duration: 2000);
       log(e.toString());
     }
   }
@@ -203,8 +195,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return ['${media.title}*MANGA', media.romajiTitle];
   }
 
-  List<Chapter> _convertChapters(List<MChapter> chapters, String title) {
-    return mChapterToChapter(chapters, title);
+  List<Chapter> _convertChapters(List<DEpisode> chapters, String title) {
+    return DEpisodeToChapter(chapters, title);
   }
 
   @override
@@ -399,7 +391,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       color: posterColor,
       child: Scaffold(
           extendBody: true,
-          bottomNavigationBar: sourceController.activeMangaRepo.isNotEmpty
+          bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()
               : null,
           body: _commonSaikouLayout(context)),
@@ -457,7 +449,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         selectedIcon: Iconsax.info_circle5,
                         unselectedIcon: Iconsax.info_circle,
                         label: "Info"),
-                    if (sourceController.activeMangaRepo.isNotEmpty)
+                    if (sourceController.shouldShowExtensions.value)
                       NavItem(
                           onTap: (index) => _onPageSelected(index),
                           selectedIcon: Iconsax.book,

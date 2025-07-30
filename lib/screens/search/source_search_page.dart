@@ -1,7 +1,5 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/core/Model/Source.dart';
-import 'package:anymex/core/Search/search.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -9,8 +7,10 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart';
 
 class SourceSearchPage extends StatefulWidget {
   final dynamic source;
@@ -60,14 +60,9 @@ class _SourceSearchPageState extends State<SourceSearchPage> {
   Future<void> _search() async {
     if (wasAllSelected) {
       searchCarousels.clear();
-      for (var e in widget.source) {
-        final data = await search(
-          source: e,
-          query: textController.text,
-          page: 1,
-          filterList: [],
-        );
-        if (data != null && data.isNotEmpty) {
+      for (Source e in widget.source) {
+        final data = (await e.methods.search(textController.text, 1, [])).list;
+        if (data.isNotEmpty) {
           searchCarousels.add(
             ReusableCarousel(
               data: data,

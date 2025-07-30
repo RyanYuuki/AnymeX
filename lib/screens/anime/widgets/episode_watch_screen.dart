@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors
 import 'dart:ui';
 import 'package:anymex/models/Offline/Hive/video.dart';
-import 'package:anymex/core/Search/getVideo.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -15,6 +14,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -177,15 +177,15 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   // 5. OPTIMIZE TAP HANDLING
   void _handleEpisodeTap(Episode episode, bool isSelected) {
     if (isSelected) {
-      _fetchServers(episode.link!);
+      _fetchServers(episode);
     } else {
       chosenEpisode.value = episode;
       streamList.clear(); // More efficient than setting to empty list
-      _fetchServers(episode.link!);
+      _fetchServers(episode);
     }
   }
 
-  Future<void> _fetchServers(String url) async {
+  Future<void> _fetchServers(Episode ep) async {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -197,8 +197,11 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         return SizedBox(
           width: double.infinity,
           child: FutureBuilder<List<Video>>(
-            future: getVideo(
-                source: sourceController.activeSource.value!, url: url),
+            future: sourceController.activeSource.value!.methods.getVideoList(
+                    d.DEpisode(episodeNumber: ep.number, url: ep.link))
+                as Future<List<Video>>?,
+            // future: getVideo(
+            // source: sourceController.activeSource.value!, url: url),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return _buildScrapingLoadingState(true);

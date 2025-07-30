@@ -1,8 +1,8 @@
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Eval/dart/model/page.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -141,8 +141,9 @@ class ReaderView extends StatelessWidget {
                   imageUrl: page.url,
                   httpHeaders: (page.headers?.isEmpty ?? true)
                       ? {
-                          'Referer':
-                              sourceController.activeMangaSource.value!.baseUrl!
+                          'Referer': sourceController
+                                  .activeMangaSource.value?.baseUrl ??
+                              ''
                         }
                       : page.headers,
                   fit: BoxFit.contain,

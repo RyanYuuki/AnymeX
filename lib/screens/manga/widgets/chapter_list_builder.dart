@@ -264,7 +264,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       child: ContinueChapterButton(
         onPressed: () => _chapterService.navigateToReading(
           widget.anilistData,
-          filteredFullChapters,
+          widget.chapters!,
           continueChapter,
         ),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
@@ -372,7 +372,10 @@ class ChapterListItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).colorScheme.secondary.withAlpha(100)
-                : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.4),
+                : Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withOpacity(0.4),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -448,29 +451,8 @@ class ChapterListItem extends StatelessWidget {
               value: progress,
               strokeWidth: 4,
               backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary,
-              ),
             ),
           ),
-          // // Progress text
-          // Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     AnymexText(
-          //       text: '$progressPercentage%',
-          //       variant: TextVariant.bold,
-          //       size: 10,
-          //       color: Theme.of(context).colorScheme.onSurface,
-          //     ),
-          //     AnymexText(
-          //       text: '$currentPage/$totalPages',
-          //       variant: TextVariant.regular,
-          //       size: 8,
-          //       color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );

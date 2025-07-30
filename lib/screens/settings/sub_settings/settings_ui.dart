@@ -45,7 +45,7 @@ class _SettingsUiState extends State<SettingsUi> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
+              padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

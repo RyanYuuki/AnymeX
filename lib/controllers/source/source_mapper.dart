@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Search/search.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:get/get.dart';
 
 class AnimeMatchResult {
@@ -367,20 +367,13 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
   List searchResults = [];
   dynamic bestMatchResult;
 
-  // Function to search and compare titles
   Future<void> searchAndCompare(String query) async {
-    final results = await search(
-          source: activeSource,
-          query: query,
-          page: 1,
-          filterList: [],
-        ) ??
-        [];
+    final results = (await activeSource.methods.search(query, 1, [])).list;
 
     if (results.isEmpty) return;
 
     for (final result in results) {
-      final resultTitle = normalize((result?.name ?? '').trim());
+      final resultTitle = normalize((result.title ?? '').trim());
       searchedTitle.value = "Searching: $resultTitle";
       print("Matching '$resultTitle' with query '$query'");
 
@@ -434,7 +427,7 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
     searchedTitle.value = bestMatch!.toUpperCase();
     print(
         "Final match selected: $bestMatch with score ${highestSimilarity.toStringAsFixed(3)}");
-    return Media.fromManga(bestMatchResult, type);
+    return Media.froDMedia(bestMatchResult, type);
   }
 
   // If no good match was found, return the first result or an empty Media object
@@ -443,6 +436,6 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
   searchedTitle.value =
       searchResults.isNotEmpty ? searchResults.first.name : "No match found";
   return searchResults.isNotEmpty
-      ? Media.fromManga(searchResults.first, type)
+      ? Media.froDMedia(searchResults.first, type)
       : Media();
 }

@@ -4,11 +4,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Model/Source.dart';
-import 'package:anymex/core/Search/getVideo.dart';
-import 'package:anymex/core/Search/get_detail.dart';
-import 'package:anymex/core/Search/search.dart' as m;
+import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:dartotsu_extension_bridge/Models/DEpisode.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
@@ -45,7 +43,7 @@ class LocalSourceController extends GetxController
   final RxBool hasSelectedDirectory = false.obs;
   final RxMap<String, Uint8List?> thumbnailCache = <String, Uint8List?>{}.obs;
   final Rx<ViewMode> viewMode = ViewMode.local.obs;
-  final Rxn<Source> selectedSource = Rxn();
+  final Rxn<d.Source> selectedSource = Rxn();
 
   final supportsDownloads = false.obs;
 
@@ -543,17 +541,17 @@ class LocalSourceController extends GetxController
   }
 
   RxBool isSearching = false.obs;
-  RxList<MManga?> searchResults = <MManga?>[].obs;
+  RxList<d.DMedia?> searchResults = <d.DMedia?>[].obs;
 
   Future<void> search(String query) async {
     selectedVideos.value = [];
     selectedMedia.value = null;
     selectedSeason.value = null;
     isSearching.value = true;
-    final results = await m.search(
-        source: selectedSource.value!, query: query, page: 1, filterList: []);
-    if (results?.isNotEmpty ?? false) {
-      searchResults.value = results!;
+    final results =
+        (await selectedSource.value!.methods.search(query, 1, [])).list;
+    if (results.isNotEmpty) {
+      searchResults.value = results;
     } else {
       searchResults.value = [];
       errorSnackBar('No results found for "$query"');
@@ -561,11 +559,11 @@ class LocalSourceController extends GetxController
     isSearching.value = false;
   }
 
-  Future<void> onSearchResultTap(MManga? searchResult) async {
+  Future<void> onSearchResultTap(d.DMedia? searchResult) async {
     isLoadingMedia.value = true;
-    final supportsTmdb = searchResult!.link!.contains('tmdb');
+    final supportsTmdb = searchResult!.url!.contains('tmdb');
     if (supportsTmdb) {
-      final data = await TmdbApi.getDetails(searchResult.link!);
+      final data = await TmdbApi.getDetails(searchResult.url!);
       if (data != null) {
         if (data.seasons[0].title == 'Movie') {
           selectedSeason.value = data.seasons[0];
@@ -576,13 +574,8 @@ class LocalSourceController extends GetxController
         errorSnackBar('Failed to fetch details');
       }
     } else {
-      final data = await getDetail(
-          url: searchResult.link!, source: selectedSource.value!);
-      if (data != null) {
-        selectedMedia.value = DetailResult.fromManga(data);
-      } else {
-        errorSnackBar('Failed to fetch details');
-      }
+      final data = await selectedSource.value!.methods.getDetail(searchResult);
+      selectedMedia.value = DetailResult.froDMedia(data);
     }
 
     isLoadingMedia.value = false;
@@ -595,12 +588,12 @@ class LocalSourceController extends GetxController
     isLoadingServers.value = true;
 
     try {
-      final data =
-          await getVideo(source: selectedSource.value!, url: episode.id);
+      final data = await selectedSource.value!.methods.getVideoList(
+          DEpisode(episodeNumber: episode.title, url: episode.id));
 
       log(data.length.toString());
       if (data.isNotEmpty) {
-        selectedVideos.value = data;
+        selectedVideos.value = data.map((e) => Video.fromVideo(e)).toList();
       }
     } catch (e) {
       log(e.toString());
@@ -610,7 +603,7 @@ class LocalSourceController extends GetxController
   }
 
   // Future<String> getDownloadPath() async =>
-      // DownloadManagerController.instance.downloadPath;
+  // DownloadManagerController.instance.downloadPath;
 
   Future<void> downloadVideo(Video video) async {
     // DownloadManagerController.instance.addDownload(

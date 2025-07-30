@@ -24,7 +24,7 @@
 // }
 
 // class _NovelSearchPageState extends State<NovelSearchPage> {
-//   RxMap<Source, List<MManga>?> searchData = <Source, List<MManga>?>{}.obs;
+//   RxMap<Source, List<DMedia>?> searchData = <Source, List<DMedia>?>{}.obs;
 
 //   @override
 //   void initState() {
@@ -36,10 +36,10 @@
 //     await Future.wait(
 //       sources.map((source) async {
 //         try {
-//           // List<MManga>? data = (await search(
+//           // List<DMedia>? data = (await search(
 //           //         source: source, query: searchTerm, page: 1, filterList: []))
 //           //     ?.list;
-//           List<MManga>? data = (await getPopular(
+//           List<DMedia>? data = (await getPopular(
 //             source: source,
 //           ));
 //           searchData[source] = data;

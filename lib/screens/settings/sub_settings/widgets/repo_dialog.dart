@@ -1,14 +1,17 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
   final MediaType type;
+  final ExtensionType extType;
 
   const GitHubRepoDialog({
     super.key,
     required this.type,
+    required this.extType,
   });
 
   @override
@@ -19,7 +22,7 @@ class GitHubRepoDialog extends StatefulWidget {
   }) {
     showDialog(
       context: context,
-      builder: (context) => GitHubRepoDialog(type: type),
+      builder: (context) => GitHubRepoDialog(type: type, extType: extType),
     );
   }
 }
@@ -65,10 +68,6 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
       return 'Please enter a valid Json URL';
     }
 
-    if (url.toLowerCase().contains('.min')) {
-      return 'Invalid URL: Cannot contain .min';
-    }
-
     return null;
   }
 
@@ -89,11 +88,11 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
 
       switch (widget.type) {
         case MediaType.anime:
-          sourceController.activeAnimeRepo = url;
+          sourceController.setAnimeRepo(url, widget.extType);
           break;
 
         case MediaType.manga:
-          sourceController.activeMangaRepo = url;
+          sourceController.setMangaRepo(url, widget.extType);
           break;
 
         case MediaType.novel:

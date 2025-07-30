@@ -108,9 +108,6 @@ class ReaderTopControls extends StatelessWidget {
                         controller.pageList.length),
                 strokeWidth: 2,
                 backgroundColor: Colors.white.withOpacity(0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.primary,
-                ),
               ),
             ),
             const SizedBox(width: 8),

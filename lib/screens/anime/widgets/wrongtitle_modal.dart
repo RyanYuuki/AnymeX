@@ -1,5 +1,4 @@
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/core/Search/search.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/header.dart';
@@ -16,7 +15,7 @@ class WrongTitleModal extends StatefulWidget {
       required this.onTap,
       required this.isManga});
   final String initialText;
-  final Function(MManga) onTap;
+  final Function(DMedia) onTap;
   final bool isManga;
 
   @override
@@ -24,7 +23,7 @@ class WrongTitleModal extends StatefulWidget {
 }
 
 class _WrongTitleModalState extends State<WrongTitleModal> {
-  late Future<List<MManga?>?> searchFuture;
+  late Future<List<DMedia?>?> searchFuture;
   final sourceController = Get.find<SourceController>();
   late TextEditingController controller;
 
@@ -35,16 +34,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
     searchFuture = performSearch();
   }
 
-  Future<List<MManga?>?> performSearch() async {
+  Future<List<DMedia?>?> performSearch() async {
     final source = widget.isManga
         ? sourceController.activeMangaSource.value
         : sourceController.activeSource.value;
-    return await search(
-      source: source!,
-      query: controller.text,
-      page: 1,
-      filterList: [],
-    );
+    return (await source!.methods.search(controller.text, 1, [])).list;
   }
 
   @override
@@ -73,7 +67,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder<List<MManga?>?>(
+              child: FutureBuilder<List<DMedia?>?>(
                 future: searchFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,7 +110,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                               children: [
                                 Center(
                                   child: NetworkSizedImage(
-                                    imageUrl: item!.imageUrl ?? "",
+                                    imageUrl: item!.cover ?? "",
                                     height: 140,
                                     radius: 12,
                                     width: double.infinity,
@@ -124,7 +118,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  item.name ?? '??',
+                                  item.title ?? '??',
                                   maxLines: 3,
                                 )
                               ],
@@ -149,7 +143,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 }
 
 Future<void> showWrongTitleModal(
-    BuildContext context, String initialText, Function(MManga) onTap,
+    BuildContext context, String initialText, Function(DMedia) onTap,
     {bool isManga = false}) {
   return showModalBottomSheet(
     context: context,

@@ -3,8 +3,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Offline/Hive/video.dart';
-import 'package:anymex/core/Search/getVideo.dart';
+import 'package:anymex/models/Offline/Hive/video.dart' as hive;
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -21,6 +20,8 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
@@ -43,7 +44,7 @@ class EpisodeListBuilder extends StatefulWidget {
 
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
-  final RxList<Video> streamList = <Video>[].obs;
+  final RxList<hive.Video> streamList = <hive.Video>[].obs;
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
@@ -110,7 +111,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   void _handleEpisodeSelection(Episode episode) {
     selectedEpisode.value = episode;
     streamList.clear();
-    fetchServers(episode.link!);
+    fetchServers(episode);
   }
 
   Widget _buildContinueButton() {
@@ -207,7 +208,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   HeadlessInAppWebView? headlessWebView;
   Timer? scrapingTimer;
 
-  Future<void> fetchServers(String url) async {
+  Future<void> fetchServers(Episode ep) async {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -220,10 +221,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           width: double.infinity,
           child: settingsController.preferences
                   .get('universal_scrapper', defaultValue: false)
-              ? _buildUniversalScraper(url)
+              ? _buildUniversalScraper(ep.link!)
               : FutureBuilder<List<Video>>(
-                  future: getVideo(
-                      source: sourceController.activeSource.value!, url: url),
+                  future: sourceController.activeSource.value!.methods
+                      .getVideoList(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return _buildScrapingLoadingState(true);
@@ -232,7 +234,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return _buildEmptyState();
                     } else {
-                      streamList.value = snapshot.data ?? [];
+                      streamList.value = snapshot.data
+                              ?.map((e) => hive.Video.fromVideo(e))
+                              .toList() ??
+                          [];
                       return _buildServerList();
                     }
                   },
@@ -253,7 +258,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _buildEmptyState();
         } else {
-          streamList.value = snapshot.data ?? [];
+          streamList.value = streamList.value =
+              snapshot.data?.map((e) => hive.Video.fromVideo(e)).toList() ?? [];
           return _buildServerList();
         }
       },
@@ -686,7 +692,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
             : isFiller
                 ? Colors.orangeAccent.withAlpha(120)
-                : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+                : Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

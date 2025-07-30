@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
-import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex/models/Offline/Hive/video.dart' as h;
 import 'package:anymex/screens/downloader/downloader_view.dart';
 import 'package:anymex/screens/local_source/controller/local_source_controller.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
@@ -491,9 +491,9 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildSearchResultTile(ThemeData theme, MManga? searchResult) {
-    String title = searchResult?.name ?? 'Unknown Title';
-    String poster = searchResult?.imageUrl ?? '';
+  Widget _buildSearchResultTile(ThemeData theme, DMedia? searchResult) {
+    String title = searchResult?.title ?? 'Unknown Title';
+    String poster = searchResult?.cover ?? '';
     Map<String, dynamic> otherData = jsonDecode(searchResult?.author ?? '');
 
     return GestureDetector(
@@ -715,7 +715,7 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildServerTile(ThemeData theme, Video? video) {
+  Widget _buildServerTile(ThemeData theme, h.Video? video) {
     return GestureDetector(
       onTap: () async => await controller.downloadVideo(video!),
       child: Container(
