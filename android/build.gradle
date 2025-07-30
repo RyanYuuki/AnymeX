@@ -6,26 +6,43 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
-  afterEvaluate { project ->
-    if (project.plugins.hasPlugin("com.android.application") ||
-      project.plugins.hasPlugin("com.android.library")) {
-      project.android {
-        compileSdkVersion 34
-        buildToolsVersion "34.0.0"
-      }
-    }
-    if (project.hasProperty("android")) {
-      project.android {
-        if (namespace == null) {
-          namespace project.group
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") ||
+            project.plugins.hasPlugin("com.android.library")) {
+
+            project.android {
+                compileSdkVersion 35
+                buildToolsVersion "36.0.0"
+
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_11
+                    targetCompatibility JavaVersion.VERSION_11
+                }
+            }
         }
-      }
+
+        if (project.hasProperty("android")) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
+        }
     }
-  }
-  // ============
-  project.buildDir = "${rootProject.buildDir}/${project.name}"
-  project.evaluationDependsOn(":app")
+
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {

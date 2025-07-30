@@ -7,8 +7,9 @@ plugins {
 
 android {
     namespace = "com.ryan.anymex"
-    compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 36
+    // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
      dependenciesInfo {
         includeInApk = false
