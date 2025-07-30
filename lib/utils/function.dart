@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:anymex/core/Eval/dart/model/m_chapter.dart';
-import 'package:anymex/core/Eval/dart/model/m_manga.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/relation.dart';
@@ -174,11 +174,11 @@ class ChapterRecognition {
   }
 }
 
-Episode mChapterToEpisode(MChapter chapter, MManga? selectedMedia) {
-  var episodeNumber = ChapterRecognition.parseChapterNumber(
-      selectedMedia?.name ?? '', chapter.name ?? '');
+Episode DEpisodeToEpisode(DEpisode chapter) {
+  // var episodeNumber = ChapterRecognition.parseChapterNumber(
+  //     selectedMedia?.title ?? '', chapter.name ?? '');
   return Episode(
-    number: episodeNumber != -1 ? episodeNumber.toString() : chapter.name ?? '',
+    number: chapter.episodeNumber,
     link: chapter.url,
     title: chapter.name,
     thumbnail: null,
@@ -210,7 +210,7 @@ String dateFormatHour(String timestamp) {
   return DateFormat.Hm().format(dateTime);
 }
 
-List<Chapter> mChapterToChapter(List<MChapter> chapters, String title) {
+List<Chapter> DEpisodeToChapter(List<DEpisode> chapters, String title) {
   return chapters.map((e) {
     return Chapter(
         title: e.name,
@@ -309,7 +309,7 @@ List<CarouselData> convertData(List<dynamic> data,
   return data.map<CarouselData>((e) {
     switch (variant) {
       case DataVariant.extension:
-        return (e as MManga).toCarouselData(variant: variant, isManga: isManga);
+        return (e as DMedia).toCarouselData(variant: variant, isManga: isManga);
       case DataVariant.offline:
         return (e as OfflineMedia)
             .toCarouselData(variant: variant, isManga: isManga);

@@ -549,13 +549,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   void setShaders(String message, {bool backOut = true}) async {
-    settingsController.selectedShader = message;
-    final profile = settingsController.selectedProfile;
-    final shaderBase = await PlayerShaders.getShaderPathForProfile(profile);
-    var paths = PlayerShaders.getShaderByProfile(message)
-        .map((f) => '$shaderBase$f')
-        .join(';');
-    (widget.player.platform as dynamic).setProperty('glsl-shaders', paths);
+    PlayerShaders.setShaders(widget.player, message);
     if (backOut) {
       Navigator.pop(context);
     }

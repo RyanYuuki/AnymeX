@@ -1,65 +1,114 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlayerShaders {
   static final shaderProfiles = {
-    'Anime4K: Mode A (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Restore_CNN_VL.glsl',
-      'Anime4K_Upscale_CNN_x2_VL.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
-    'Anime4K: Mode B (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Restore_CNN_Soft_VL.glsl',
-      'Anime4K_Upscale_CNN_x2_VL.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
-    'Anime4K: Mode C (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Upscale_Denoise_CNN_x2_VL.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
-    'Anime4K: Mode A+A (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Restore_CNN_VL.glsl',
-      'Anime4K_Upscale_CNN_x2_VL.glsl',
-      'Anime4K_Restore_CNN_M.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
-    'Anime4K: Mode B+B (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Restore_CNN_Soft_VL.glsl',
-      'Anime4K_Upscale_CNN_x2_VL.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Restore_CNN_Soft_M.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
-    'Anime4K: Mode C+A (HQ)': [
-      'Anime4K_Clamp_Highlights.glsl',
-      'Anime4K_Upscale_Denoise_CNN_x2_VL.glsl',
-      'Anime4K_AutoDownscalePre_x2.glsl',
-      'Anime4K_AutoDownscalePre_x4.glsl',
-      'Anime4K_Restore_CNN_M.glsl',
-      'Anime4K_Upscale_CNN_x2_M.glsl',
-    ],
+    "MID-END": {
+      'Anime4K: Mode A (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode B (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_Soft_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode C (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Upscale_Denoise_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode A+A (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_Restore_CNN_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode B+B (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_Soft_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_Restore_CNN_Soft_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode C+A (Fast)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Upscale_Denoise_CNN_x2_VL.glsl',
+        'Anime4K_Restore_CNN_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+    },
+    "HIGH-END": {
+      'Anime4K: Mode A (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode B (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_Soft_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode C (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Upscale_Denoise_CNN_x2_VL.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode A+A (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_Restore_CNN_M.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode B+B (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Restore_CNN_Soft_VL.glsl',
+        'Anime4K_Upscale_CNN_x2_VL.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Restore_CNN_Soft_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+      'Anime4K: Mode C+A (HQ)': [
+        'Anime4K_Clamp_Highlights.glsl',
+        'Anime4K_Upscale_Denoise_CNN_x2_VL.glsl',
+        'Anime4K_AutoDownscalePre_x2.glsl',
+        'Anime4K_AutoDownscalePre_x4.glsl',
+        'Anime4K_Restore_CNN_M.glsl',
+        'Anime4K_Upscale_CNN_x2_M.glsl',
+      ],
+    }
   };
 
-  static List<String> getShaders() => shaderProfiles.keys.toList();
+  static List<String> getShaderProfiles() => shaderProfiles.keys.toList();
 
-  static List<String> getShaderByProfile(String profile) {
-    return shaderProfiles[profile] ?? [''];
+  static List<String> getShaders() {
+    final selectedProfile = settingsController.selectedProfile;
+    return shaderProfiles[selectedProfile]?.keys.toList() ?? [];
+  }
+
+  static List<String> getShaderByName(String configName) {
+    final selectedProfile = settingsController.selectedProfile;
+    final shaders = shaderProfiles[selectedProfile]?[configName] ?? <String>[];
+
+    log('Profile: $selectedProfile, Config: $configName, Shaders: $shaders');
+    return shaders;
   }
 
   static Future<Directory> _getAppDirectory() async {
@@ -76,32 +125,35 @@ class PlayerShaders {
     return '${dir.path}/mpv/';
   }
 
-  static Future<String> getShaderBasePath() async {
-    final dir = await _getAppDirectory();
-    return '${dir.path}/mpv/Shaders/';
-  }
-
-  static Future<String> getShaderPathForProfile(String shaderProfile) async {
-    final basePath = await getShaderBasePath();
-
-    return '$basePath$shaderProfile/';
+  static String getShaderBasePath() {
+    final path = settingsController.mpvPath.value;
+    return '${path}Shaders/';
   }
 
   static Future<List<String>> getShaderPathsForProfile(
-      String profile, String shaderProfile) async {
-    final shaderFiles = getShaderByProfile(profile);
-    final shaderFolderPath = await getShaderPathForProfile(shaderProfile);
+      String configName) async {
+    final shaderFiles = getShaderByName(configName);
+    final shaderFolderPath = PlayerShaders.getShaderBasePath();
 
     return shaderFiles.map((file) => '$shaderFolderPath$file').toList();
   }
 
+  static void setShaders(dynamic player, String shader) async {
+    settingsController.selectedShader = shader;
+    var paths =
+        (await PlayerShaders.getShaderPathsForProfile(shader)).join(';');
+    (player.platform as dynamic).setProperty('glsl-shaders', paths);
+  }
+
   static Future<bool> areShadersDownloaded() async {
     try {
-      final basePath = await getShaderBasePath();
-      final midEndDir = Directory('${basePath}MID-END');
-      final highEndDir = Directory('${basePath}HIGH-END');
+      final basePath = getShaderBasePath();
+      final dir = Directory(basePath);
 
-      return await midEndDir.exists() && await highEndDir.exists();
+      if (!await dir.exists()) return false;
+
+      final items = await dir.list().toList();
+      return items.isNotEmpty;
     } catch (e) {
       debugPrint('Error checking shader directories: $e');
       return false;
