@@ -39,7 +39,7 @@ class ReaderTopControls extends StatelessWidget {
                 : topControlsHiddenPosition,
             left: 10,
             right: 10,
-            child: Container(
+            child: SizedBox(
               height: topControlsHeight,
               child: Row(
                 children: [
