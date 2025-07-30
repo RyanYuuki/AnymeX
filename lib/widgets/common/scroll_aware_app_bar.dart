@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:anymex/mixins/scroll_aware_app_bar_mixin.dart';
 import 'package:anymex/widgets/common/animated_app_bar.dart';
 
+
 class CustomAnimatedAppBar extends StatefulWidget {
   final ValueNotifier<bool> isVisible;
   final Duration animationDuration;
@@ -14,7 +15,7 @@ class CustomAnimatedAppBar extends StatefulWidget {
   final SystemUiOverlayStyle? visibleStatusBarStyle;
   final SystemUiOverlayStyle? hiddenStatusBarStyle;
   static const double kAppBarOffset = 20.0;
-  final double scrollThreshold; // Threshold for blur effect
+  final double scrollThreshold;
 
   const CustomAnimatedAppBar({
     super.key,

@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
@@ -12,6 +11,7 @@ import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
@@ -183,7 +183,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   bool _determineIfManga(CarouselData itemData) {
     return (widget.variant == DataVariant.relation &&
             itemData.source == "MANGA") ||
-        (widget.source?.isManga ?? false) ||
+        (widget.source?.itemType == ItemType.manga) ||
         widget.isManga;
   }
 

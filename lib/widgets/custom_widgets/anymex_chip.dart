@@ -1,10 +1,9 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class AnymexChip extends ConsumerWidget {
+class AnymexChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final Function(bool e) onSelected;
@@ -35,7 +34,7 @@ class AnymexChip extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -65,7 +64,7 @@ class AnymexChip extends ConsumerWidget {
   }
 }
 
-class AnymexIconChip extends ConsumerWidget {
+class AnymexIconChip extends StatelessWidget {
   final Widget icon;
   final bool isSelected;
   final Function(bool e) onSelected;
@@ -79,7 +78,7 @@ class AnymexIconChip extends ConsumerWidget {
       this.showCheck = true});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return FilterChip(
       selected: isSelected,
       onSelected: onSelected,

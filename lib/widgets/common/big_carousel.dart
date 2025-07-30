@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names, unused_field, library_private_types_in_public_api
-
 import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
@@ -143,19 +141,57 @@ class _BigCarouselState extends State<BigCarousel> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: AnymexText(
-                            text: anime.description.isNotEmpty
-                                ? anime.description
-                                : 'Description Not Available',
-                            size: 12,
-                            color: ColorScheme.inverseSurface.withOpacity(0.7),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                            stripHtml: true,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surface
+                                .withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
+                          child: GestureDetector(
+                            onTap: () => _showDescriptionModal(
+                                context, anime.description),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: AnymexText(
+                                    text: anime.description
+                                            .replaceAll(RegExp(r'<[^>]*>'), '')
+                                            .replaceAll(RegExp(r'\s+'), ' ')
+                                            .trim()
+                                            .isNotEmpty
+                                        ? anime.description
+                                            .replaceAll(RegExp(r'<[^>]*>'), '')
+                                            .replaceAll(RegExp(r'\s+'), ' ')
+                                            .trim()
+                                        : 'Tap to read description',
+                                    size: 12,
+                                    maxLines: 2,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                    overflow: TextOverflow.ellipsis,
+                                    stripHtml: true,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 16,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.7),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ],
@@ -196,6 +232,274 @@ class _BigCarouselState extends State<BigCarousel> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showDescriptionModal(BuildContext context, String description) {
+    final cleanDescription = description
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll(RegExp(r'\n\s*\n'), '\n')
+        .trim();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.15),
+                blurRadius: 32,
+                offset: const Offset(0, -8),
+                spreadRadius: 0,
+              ),
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                blurRadius: 64,
+                offset: const Offset(0, -4),
+                spreadRadius: -8,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 16, bottom: 8),
+                child: Container(
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.1),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withOpacity(0.08),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Description',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.5,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          height: 2,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.3),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.1),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .shadow
+                                .withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                          size: 20,
+                        ),
+                        splashRadius: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: const BoxDecoration(
+                    borderRadius:
+                        BorderRadius.vertical(bottom: Radius.circular(24)),
+                  ),
+                  child: Scrollbar(
+                    controller: scrollController,
+                    thumbVisibility: true,
+                    radius: const Radius.circular(8),
+                    thickness: 6,
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surface
+                              .withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.06),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.02),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (cleanDescription.isEmpty) ...[
+                              Center(
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.description_outlined,
+                                      size: 48,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.3),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No Description Available',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.6),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Description not provided for this item',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.4),
+                                          ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ] else ...[
+                              Text(
+                                cleanDescription,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      height: 1.8,
+                                      letterSpacing: 0.2,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.85),
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

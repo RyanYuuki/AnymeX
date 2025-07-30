@@ -1,15 +1,12 @@
 import 'dart:io';
 
-import 'package:anymex/core/Model/settings.dart';
+import 'package:dartotsu_extension_bridge/Mangayomi/Eval/dart/model/source_preference.dart';
+import 'package:dartotsu_extension_bridge/Mangayomi/Models/Source.dart';
+import 'package:dartotsu_extension_bridge/Settings/Settings.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../core/Eval/dart/model/source_preference.dart';
-import '../core/Model/Manga.dart';
-import '../core/Model/Source.dart';
-import '../core/Model/chapter.dart';
 
 class StorageProvider {
   Future<bool> requestPermission() async {
@@ -48,21 +45,11 @@ class StorageProvider {
     }
 
     final isar = Isar.openSync([
-      MangaSchema,
-      SourceSchema,
-      ChapterSchema,
-      SettingsSchema,
+      MSourceSchema,
       SourcePreferenceSchema,
       SourcePreferenceStringValueSchema,
+      BridgeSettingsSchema
     ], directory: dir!.path, name: "AnymeX", inspector: inspector);
-
-    if (isar.settings.filter().idEqualTo(227).isEmptySync()) {
-      isar.writeTxnSync(
-        () {
-          isar.settings.putSync(Settings());
-        },
-      );
-    }
 
     return isar;
   }

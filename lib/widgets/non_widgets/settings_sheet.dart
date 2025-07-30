@@ -103,128 +103,130 @@ class SettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(children: [
-            const SizedBox(width: 5),
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-              child: serviceHandler.isLoggedIn.value
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) =>
-                              const Icon(IconlyBold.profile),
-                          imageUrl:
-                              serviceHandler.profileData.value.avatar ?? ''),
-                    )
-                  : Icon(
-                      Icons.person,
-                      color: Theme.of(context).colorScheme.inverseSurface,
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(children: [
+              const SizedBox(width: 5),
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                child: serviceHandler.isLoggedIn.value
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) =>
+                                const Icon(IconlyBold.profile),
+                            imageUrl:
+                                serviceHandler.profileData.value.avatar ?? ''),
+                      )
+                    : Icon(
+                        Icons.person,
+                        color: Theme.of(context).colorScheme.inverseSurface,
+                      ),
+              ),
+              const SizedBox(width: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(serviceHandler.profileData.value.name ?? 'Guest'),
+                  if (serviceHandler.serviceType.value != ServicesType.extensions)
+                    AnymexOnTap(
+                      onTap: () {
+                        if (serviceHandler.isLoggedIn.value) {
+                          serviceHandler.logout();
+                        } else {
+                          serviceHandler.login();
+                        }
+                        Get.back();
+                      },
+                      child: Text(
+                        serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-            ),
-            const SizedBox(width: 15),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(serviceHandler.profileData.value.name ?? 'Guest'),
-                if (serviceHandler.serviceType.value != ServicesType.extensions)
-                  AnymexOnTap(
-                    onTap: () {
-                      if (serviceHandler.isLoggedIn.value) {
-                        serviceHandler.logout();
-                      } else {
-                        serviceHandler.login();
-                      }
-                      Get.back();
+                ],
+              ),
+              const Expanded(
+                child: SizedBox.shrink(),
+              ),
+              AnymexOnTap(
+                child: IconButton(
+                    onPressed: () {
+                      snackBar('This feature is not available yet.');
                     },
-                    child: Text(
-                      serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-              ],
-            ),
-            const Expanded(
-              child: SizedBox.shrink(),
-            ),
-            AnymexOnTap(
-              child: IconButton(
-                  onPressed: () {
-                    snackBar('This feature is not available yet.');
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceContainerHighest,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    icon: const Icon(Iconsax.notification)),
+              )
+            ]),
+            const SizedBox(height: 10),
+            if (serviceHandler.isLoggedIn.value &&
+                serviceHandler.serviceType.value == ServicesType.anilist)
+              AnymexOnTap(
+                child: ListTile(
+                  leading: const Icon(Iconsax.user),
+                  title: const Text('View Profile'),
+                  onTap: () {
+                    Get.back();
+                    navigate(() => const ProfilePage());
                   },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  icon: const Icon(Iconsax.notification)),
-            )
-          ]),
-          const SizedBox(height: 10),
-          if (serviceHandler.isLoggedIn.value &&
-              serviceHandler.serviceType.value == ServicesType.anilist)
+                ),
+              ),
+            Obx(() {
+              final shouldShowExts = sourceController.shouldShowExtensions.value;
+              return isMobile && shouldShowExts
+                  ? ListTile(
+                      leading: const Icon(Icons.extension),
+                      title: const Text('Extensions'),
+                      onTap: () {
+                        Get.back();
+                        navigate(() => const ExtensionScreen());
+                      },
+                    )
+                  : const SizedBox.shrink();
+            }),
             AnymexOnTap(
               child: ListTile(
-                leading: const Icon(Iconsax.user),
-                title: const Text('View Profile'),
+                leading: const Icon(HugeIcons.strokeRoundedAiSetting),
+                title: const Text('Change Service'),
                 onTap: () {
                   Get.back();
-                  navigate(() => const ProfilePage());
+                  showServiceSelector(context);
                 },
               ),
             ),
-          Obx(() {
-            final shouldShowExts = sourceController.shouldShowExtensions.value;
-            return isMobile && shouldShowExts
-                ? ListTile(
-                    leading: const Icon(Icons.extension),
-                    title: const Text('Extensions'),
-                    onTap: () {
-                      Get.back();
-                      navigate(() => const ExtensionScreen());
-                    },
-                  )
-                : const SizedBox.shrink();
-          }),
-          AnymexOnTap(
-            child: ListTile(
-              leading: const Icon(HugeIcons.strokeRoundedAiSetting),
-              title: const Text('Change Service'),
-              onTap: () {
-                Get.back();
-                showServiceSelector(context);
-              },
+            AnymexOnTap(
+              child: ListTile(
+                leading: const Icon(Iconsax.document_download),
+                title: const Text('Local Media'),
+                onTap: () {
+                  Get.back();
+                  navigate(() => const WatchOffline());
+                },
+              ),
             ),
-          ),
-          AnymexOnTap(
-            child: ListTile(
-              leading: const Icon(Iconsax.document_download),
-              title: const Text('Local Media'),
-              onTap: () {
-                Get.back();
-                navigate(() => const WatchOffline());
-              },
+            AnymexOnTap(
+              child: ListTile(
+                leading: const Icon(Iconsax.setting),
+                title: const Text('Settings'),
+                onTap: () {
+                  Get.back();
+                  navigate(() => const SettingsPage());
+                },
+              ),
             ),
-          ),
-          AnymexOnTap(
-            child: ListTile(
-              leading: const Icon(Iconsax.setting),
-              title: const Text('Settings'),
-              onTap: () {
-                Get.back();
-                navigate(() => const SettingsPage());
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

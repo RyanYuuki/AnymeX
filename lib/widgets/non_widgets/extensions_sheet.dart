@@ -1,6 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/core/Model/Source.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
@@ -8,6 +7,7 @@ import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -38,7 +38,7 @@ extensionSheet(String query, List<Source> sources) {
                   navigate(() => SourceSearchPage(
                         source: sources,
                         initialTerm: query,
-                        isManga: sources[0].isManga ?? false,
+                        isManga: sources[0].itemType == ItemType.manga,
                       ));
                 },
                 child: Container(
@@ -72,7 +72,7 @@ InkWell _buildExtensionTitle(BuildContext context, Source e, String q) {
   return InkWell(
     onTap: () {
       Get.back();
-      if (e.isManga ?? false) {
+      if (e.itemType == ItemType.manga) {
         Get.find<SourceController>().getMangaExtensionByName(e.name ?? '');
       } else {
         Get.find<SourceController>().getExtensionByName(e.name ?? '');
@@ -80,7 +80,7 @@ InkWell _buildExtensionTitle(BuildContext context, Source e, String q) {
       navigate(() => SourceSearchPage(
             source: e,
             initialTerm: q,
-            isManga: e.isManga ?? false,
+            isManga: e.itemType == ItemType.manga,
           ));
     },
     child: SlideAndScaleAnimation(

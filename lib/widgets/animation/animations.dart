@@ -93,7 +93,7 @@ class StaggeredAnimatedItemWrapper extends StatelessWidget {
   const StaggeredAnimatedItemWrapper({
     super.key,
     required this.child,
-    required this.index,
+    this.index = 0,
     this.baseDuration = const Duration(milliseconds: 600),
     this.staggerDelay = const Duration(milliseconds: 100),
     this.slideDistance = 30.0,

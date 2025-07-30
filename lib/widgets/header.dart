@@ -2,6 +2,8 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
+import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -16,16 +18,18 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
+enum PageType { manga, anime, home }
+
 class Header extends StatelessWidget {
-  final bool isHomePage;
-  const Header({super.key, this.isHomePage = false});
+  final PageType type;
+  const Header({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
     final profileData = Get.find<ServiceHandler>();
     final greetingController = Get.find<GreetingController>();
     return Obx(() {
-      if (!isHomePage) {
+      if (type != PageType.home) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
@@ -80,7 +84,10 @@ class Header extends StatelessWidget {
                               icon: const Icon(IconlyLight.search))),
                     ), desktopValue: TappableSearchBar(
                   onSubmitted: () {
-                    searchTypeSheet(context);
+                    navigate(() => SearchPage(
+                          searchTerm: '',
+                          isManga: type == PageType.manga,
+                        ));
                   },
                 )),
               ]
