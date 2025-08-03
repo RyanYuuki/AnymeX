@@ -27,7 +27,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   # flutter_local_notifications: ^18.0.1
   flutter_markdown: ^0.7.6
-  # flutter_native_splash: ^2.4.4
+  flutter_native_splash: ^2.4.4
   flutter_qjs:
     git:
       url: https://github.com/kodjodevf/flutter_qjs.git
@@ -102,13 +102,13 @@ flutter_launcher_icons:
     generate: false
     image_path: "assets/images/logo.png"
 
-# flutter_native_splash:
-#   fullscreen: true
-#   color: "#000000"
-#   image: assets/images/logo.png
-#   android_12:
-#     color: "#000000"
-#     image: assets/images/logo.png
+flutter_native_splash:
+  fullscreen: true
+  color: "#000000"
+  image: assets/images/logo.png
+  android_12:
+    color: "#000000"
+    image: assets/images/logo.png
 
 flutter:
   uses-material-design: true
