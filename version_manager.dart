@@ -35,24 +35,32 @@ class VersionManager {
       final choice = stdin.readLineSync()?.trim();
 
       String? newVersion;
+      String versionType = '';
+
       switch (choice) {
         case '1':
           newVersion = incrementVersion(currentVersion, 'patch');
+          versionType = 'patch';
           break;
         case '2':
           newVersion = incrementVersion(currentVersion, 'minor');
+          versionType = 'minor';
           break;
         case '3':
           newVersion = incrementVersion(currentVersion, 'major');
+          versionType = 'major';
           break;
         case '4':
           newVersion = addHotfix(currentVersion);
+          versionType = 'hotfix';
           break;
         case '5':
           newVersion = await handlePreRelease(currentVersion);
+          versionType = 'pre-release';
           break;
         case '6':
           newVersion = await getCustomVersion();
+          versionType = 'custom';
           break;
         case '7':
           print('👋 Goodbye!');
@@ -79,7 +87,7 @@ class VersionManager {
 
       await updateVersions(newVersion, currentBuildNumber + 1);
 
-      await handleGitOperations(newVersion);
+      await handleGitOperations(newVersion, currentVersion, versionType);
 
       print('\n🎉 Version updated successfully!');
     } catch (e) {
@@ -213,27 +221,78 @@ class VersionManager {
     print('✅ Updated pubspec.yaml (main version and inno_bundle)');
   }
 
-  Future<void> handleGitOperations(String newVersion) async {
-    print('\n🔄 Git Operations:');
-    print('   1. Create git tag and push');
-    print('   2. Only create git tag');
-    print('   3. Skip git operations');
+  String generateCommitMessage(
+      String newVersion, String oldVersion, String versionType) {
+    final messages = {
+      'major': 'build: bump version to v$newVersion (major release)',
+      'minor': 'build: bump version to v$newVersion (minor release)',
+      'patch': 'build: bump version to v$newVersion (patch release)',
+      'hotfix': 'build: bump version to v$newVersion (hotfix)',
+      'pre-release': 'build: bump version to v$newVersion (pre-release)',
+      'custom': 'build: bump version to v$newVersion',
+    };
 
-    stdout.write('Choose option (1-3): ');
+    return messages[versionType] ?? 'build: bump version to v$newVersion';
+  }
+
+  Future<void> handleGitOperations(
+      String newVersion, String oldVersion, String versionType) async {
+    print('\n🔄 Git Operations:');
+    print('   1. Commit changes, create tag, and push');
+    print('   2. Commit changes and create tag only');
+    print('   3. Commit changes only');
+    print('   4. Create tag only (no commit)');
+    print('   5. Skip all git operations');
+
+    stdout.write('Choose option (1-5): ');
     final choice = stdin.readLineSync()?.trim();
 
     switch (choice) {
       case '1':
-        await createAndPushTag(newVersion);
+        await commitChanges(newVersion, oldVersion, versionType);
+        await createTag(newVersion);
+        await pushChanges();
+        await pushTag(newVersion);
         break;
       case '2':
+        await commitChanges(newVersion, oldVersion, versionType);
         await createTag(newVersion);
         break;
       case '3':
-        print('⏭️  Skipped git operations');
+        await commitChanges(newVersion, oldVersion, versionType);
+        break;
+      case '4':
+        await createTag(newVersion);
+        break;
+      case '5':
+        print('⏭️  Skipped all git operations');
         break;
       default:
         print('❌ Invalid choice, skipping git operations');
+    }
+  }
+
+  Future<void> commitChanges(
+      String newVersion, String oldVersion, String versionType) async {
+    try {
+      final addResult = await Process.run('git', ['add', pubspecPath]);
+      if (addResult.exitCode != 0) {
+        print('❌ Failed to stage pubspec.yaml: ${addResult.stderr}');
+        return;
+      }
+
+      final commitMessage =
+          generateCommitMessage(newVersion, oldVersion, versionType);
+
+      final commitResult =
+          await Process.run('git', ['commit', '-m', commitMessage]);
+      if (commitResult.exitCode == 0) {
+        print('✅ Committed changes: $commitMessage');
+      } else {
+        print('❌ Failed to commit changes: ${commitResult.stderr}');
+      }
+    } catch (e) {
+      print('❌ Git commit failed: $e');
     }
   }
 
@@ -250,9 +309,20 @@ class VersionManager {
     }
   }
 
-  Future<void> createAndPushTag(String version) async {
-    await createTag(version);
+  Future<void> pushChanges() async {
+    try {
+      final result = await Process.run('git', ['push']);
+      if (result.exitCode == 0) {
+        print('✅ Pushed commits to remote');
+      } else {
+        print('❌ Failed to push commits: ${result.stderr}');
+      }
+    } catch (e) {
+      print('❌ Git push failed: $e');
+    }
+  }
 
+  Future<void> pushTag(String version) async {
     try {
       final result = await Process.run('git', ['push', 'origin', 'v$version']);
       if (result.exitCode == 0) {
@@ -261,7 +331,7 @@ class VersionManager {
         print('❌ Failed to push git tag: ${result.stderr}');
       }
     } catch (e) {
-      print('❌ Git push failed: $e');
+      print('❌ Git tag push failed: $e');
     }
   }
 }
