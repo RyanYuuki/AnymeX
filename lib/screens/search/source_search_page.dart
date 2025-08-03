@@ -10,7 +10,6 @@ import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
 
 class SourceSearchPage extends StatefulWidget {
   final dynamic source;

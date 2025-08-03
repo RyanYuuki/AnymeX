@@ -1,6 +1,3 @@
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/main.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -14,11 +11,8 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsPage extends StatefulWidget {

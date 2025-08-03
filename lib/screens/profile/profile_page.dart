@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
@@ -8,7 +7,6 @@ import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
-import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

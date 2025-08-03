@@ -1,13 +1,10 @@
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/settings/sub_settings/widgets/repo_dialog.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsCommon extends StatefulWidget {

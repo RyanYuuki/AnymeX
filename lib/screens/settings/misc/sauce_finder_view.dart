@@ -117,7 +117,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
             style: IconButton.styleFrom(
               backgroundColor:
-                  theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
               padding: const EdgeInsets.all(12),
             ),
           ),
