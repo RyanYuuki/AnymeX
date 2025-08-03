@@ -173,8 +173,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
               config: true, configDir: settingsController.mpvPath.value));
       playerController = VideoController(player,
           configuration: const VideoControllerConfiguration(
-            hwdec: 'auto',
-          ));
+              androidAttachSurfaceAfterVideoParameters: true));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
@@ -235,14 +234,32 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
     });
 
     player.stream.tracks.listen((e) {
-      if (audioTracks.isEmpty) {
-        selectedAudioTrack.value = e.audio.first;
-      }
-      if (subtitleTracks.isEmpty) {
-        selectedSubTrack.value = e.subtitle.first;
-      }
-      audioTracks.value = e.audio;
-      subtitleTracks.value = e.subtitle;
+      audioTracks.value = e.audio
+          .where((e) {
+            final title = (e.language != null
+                    ? completeSubtitleLanguageName(e.language!)
+                    : (e.title ?? e.id))
+                .toLowerCase();
+            return title != 'no' && title != 'auto' && title != 'none';
+          })
+          .toSet()
+          .toList();
+      subtitleTracks.value = e.subtitle
+          .where((e) {
+            final title = (e.language != null
+                    ? completeSubtitleLanguageName(e.language!)
+                    : (e.title ?? e.id))
+                .toLowerCase();
+            return title != 'no' && title != 'auto' && title != 'none';
+          })
+          .toSet()
+          .toList();
+
+      selectedAudioTrack.value = audioTracks.first;
+      selectedSubTrack.value = subtitleTracks.first;
+
+      log("Audio tracks: ${e.audio.length}");
+      log("Subtitle tracks: ${e.subtitle.length}");
     });
 
     player.stream.rate.listen((e) {
@@ -1500,11 +1517,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
                       },
                       child: audioTile(AudioTrack.no()),
                     ),
-                    ...audioTracks
-                        .where((e) => e.title != null)
-                        .toSet()
-                        .toList()
-                        .map((audio) {
+                    ...audioTracks.map((audio) {
                       return AnymexOnTap(
                         onTap: () {
                           selectedAudioTrack.value = audio;
@@ -1531,7 +1544,9 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
           contentPadding:
               const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
           title: AnymexText(
-            text: completeLanguageName(track.language ?? 'None').toUpperCase(),
+            text: track.title ??
+                completeSubtitleLanguageName(track.language ?? 'None')
+                    .toUpperCase(),
             variant: TextVariant.bold,
             size: 16,
             color: isSelected
@@ -1578,13 +1593,10 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
                         Get.back();
                         player.setSubtitleTrack(SubtitleTrack.no());
                       },
-                      child: subtitleTile(SubtitleTrack.no()),
+                      child: subtitleTile(
+                          const SubtitleTrack('NULL', 'NONE', 'NONE')),
                     ),
-                    ...subtitleTracks
-                        .where((e) => e.title != null)
-                        .toSet()
-                        .toList()
-                        .map((subtitle) {
+                    ...subtitleTracks.map((subtitle) {
                       return AnymexOnTap(
                         onTap: () {
                           selectedSubTrack.value = subtitle;
@@ -1646,13 +1658,16 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
   Widget subtitleTile(SubtitleTrack track) {
     return Obx(() {
       final isSelected = selectedSubTrack.value == track;
+      final title = track.language != null
+          ? completeSubtitleLanguageName(track.language!)
+          : track.title;
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
           title: AnymexText(
-            text: track.language?.toUpperCase() ?? track.title ?? 'None',
+            text: title?.toUpperCase() ?? track.id,
             variant: TextVariant.bold,
             size: 16,
             color: isSelected

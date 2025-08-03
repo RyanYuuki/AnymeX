@@ -10,7 +10,6 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
-import 'package:anymex/screens/downloader/controller/download_manager.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -275,6 +274,7 @@ class LocalSourceController extends GetxController
       }
     } catch (e) {
       log('Error selecting directory: $e');
+      errorSnackBar(e.toString()); 
       await _setDefaultDirectory();
     }
   }

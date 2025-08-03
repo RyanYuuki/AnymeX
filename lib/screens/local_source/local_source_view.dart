@@ -5,11 +5,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as h;
-import 'package:anymex/screens/downloader/downloader_view.dart';
 import 'package:anymex/screens/local_source/controller/local_source_controller.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
-import 'package:anymex/screens/downloader/controller/download_manager.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -340,7 +338,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           itemCount: controller.selectedVideos.value.length,
           itemBuilder: (context, index) {
             return _buildServerTile(
-                theme, controller.selectedVideos.value![index]);
+                theme, controller.selectedVideos.value[index]);
           },
         );
       }
