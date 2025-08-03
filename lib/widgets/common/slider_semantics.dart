@@ -49,66 +49,35 @@ class CustomSlider extends StatefulWidget {
 class CustomSliderState extends State<CustomSlider> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
           boxShadow:
               widget.glowBlurMultiplier == 0 || widget.glowSpreadMultiplier == 0
                   ? []
                   : [glowingShadow(context)]),
-      padding: widget.padding ??
-          (widget.enableComfortPadding
-              ? const EdgeInsets.all(10)
-              : EdgeInsets.zero),
-      child: SliderTheme(
-        data: SliderThemeData(
-            thumbColor: colorScheme.primary,
-            activeTrackColor: widget.activeColor ?? colorScheme.primary,
-            inactiveTrackColor:
-                widget.inactiveColor ?? colorScheme.secondaryContainer,
-            valueIndicatorShape: widget.customValueIndicatorSize ??
-                RoundedSliderValueIndicator(colorScheme,
-                    width: 35, height: 30, radius: 50),
-            trackShape: const MarginedTrack(),
-            valueIndicatorTextStyle: TextStyle(
-              color: colorScheme.surface,
-              fontFamily: "Poppins",
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+      child: widget.disableMinMax
+          ? Slider(
+              focusNode: widget.focusNode,
+              onChanged: widget.onChanged,
+              onChangeStart: widget.onDragStart,
+              onChangeEnd: widget.onDragEnd,
+              divisions: widget.divisions,
+              value: widget.value,
+              label: widget.label ?? widget.value.toString(),
+              year2023: false,
+            )
+          : Slider(
+              focusNode: widget.focusNode,
+              min: widget.min ?? 0,
+              max: widget.max ?? 100,
+              onChanged: widget.onChanged,
+              onChangeStart: widget.onDragStart,
+              onChangeEnd: widget.onDragEnd,
+              divisions: widget.divisions,
+              value: widget.value,
+              label: widget.label ?? widget.value.toString(),
+              year2023: false,
             ),
-            showValueIndicator: ShowValueIndicator.always,
-            valueIndicatorColor: colorScheme.primary,
-            trackHeight: 15,
-            thumbShape: RoundedRectangularThumbShape(
-                width: 2, height: 40, radius: 50, colorScheme),
-            overlayColor: Colors.white,
-            overlayShape: RoundedRectangularThumbShape(
-                width: 0, radius: 0, height: 30, colorScheme),
-            tickMarkShape: const SmallTickMarkShape(),
-            activeTickMarkColor: colorScheme.secondaryContainer,
-            inactiveTickMarkColor: colorScheme.inverseSurface),
-        child: widget.disableMinMax
-            ? Slider(
-                focusNode: widget.focusNode,
-                onChanged: widget.onChanged,
-                onChangeStart: widget.onDragStart,
-                onChangeEnd: widget.onDragEnd,
-                divisions: widget.divisions,
-                value: widget.value,
-                label: widget.label ?? widget.value.toString(),
-              )
-            : Slider(
-                focusNode: widget.focusNode,
-                min: widget.min ?? 0,
-                max: widget.max ?? 100,
-                onChanged: widget.onChanged,
-                onChangeStart: widget.onDragStart,
-                onChangeEnd: widget.onDragEnd,
-                divisions: widget.divisions,
-                value: widget.value,
-                label: widget.label ?? widget.value.toString(),
-              ),
-      ),
     );
   }
 }

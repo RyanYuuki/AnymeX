@@ -1,8 +1,5 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 class AnymexDropdown extends StatefulWidget {
   final List<DropdownItem> items;
@@ -136,7 +133,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                 color: Theme.of(context).colorScheme.surface,
                 shadowColor: Theme.of(context).shadowColor.withOpacity(0.1),
                 child: Container(
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxHeight: 300,
                   ),
                   decoration: BoxDecoration(
@@ -172,21 +169,29 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    item.text,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      color: isSelected
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        item.text,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w400,
+                                          color: isSelected
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                        ),
+                                      ),
+                                      if (item.extra != null) ...[
+                                        8.width(),
+                                        item.extra!,
+                                      ],
+                                    ],
                                   ),
                                 ),
                                 if (isSelected)
@@ -221,8 +226,10 @@ class _AnymexDropdownState extends State<AnymexDropdown>
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withOpacity(0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _isOpen
@@ -268,25 +275,33 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
-                      widget.selectedItem?.text ?? "No item selected",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: widget.selectedItem != null
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.6),
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          widget.selectedItem?.text ?? "No item selected",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: widget.selectedItem != null
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.6),
+                          ),
+                        ),
+                        if (widget.selectedItem?.extra != null) ...[
+                          8.width(),
+                          widget.selectedItem!.extra!,
+                        ],
+                      ],
                     ),
                   ),
                   if (widget.actionIcon != null &&
                       widget.onActionPressed != null &&
                       widget.selectedItem != null)
                     Padding(
-                      padding: const EdgeInsets.only(right:  1.0),
+                      padding: const EdgeInsets.only(right: 1.0),
                       child: Material(
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(20),
@@ -317,9 +332,11 @@ class _AnymexDropdownState extends State<AnymexDropdown>
 class DropdownItem {
   final String value;
   final String text;
+  final Widget? extra;
 
   const DropdownItem({
     required this.value,
     required this.text,
+    this.extra,
   });
 }

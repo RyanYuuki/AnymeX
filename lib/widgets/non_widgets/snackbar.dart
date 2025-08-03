@@ -1,7 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:io';
-
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +21,11 @@ void snackBar(
 }) {
   final context = Get.context!;
   final theme = Theme.of(context);
+
+  if (_currentSnackBar != null) {
+    _currentSnackBar?.remove();
+    _currentSnackBar = null;
+  }
 
   _currentSnackBar = OverlayEntry(
     builder: (context) => _BubbleSnackBar(
