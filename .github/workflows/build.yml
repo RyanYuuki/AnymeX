@@ -10,110 +10,110 @@ env:
   ZSIGN_VERSION: "0.7"
 
 jobs:
-build-android:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-    
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: "adopt"
-        java-version: "17"
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "3.32.8"
-    
-    - name: Download and Install CMake 3.18.1
-      run: |
-        # Create cmake directory
-        mkdir -p $HOME/cmake
-        cd $HOME/cmake
-        
-        # Download CMake 3.18.1 for Linux x86_64
-        wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
-        
-        # Extract the archive
-        tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
-        
-        # Create symlink for easier access
-        ln -s $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake $HOME/cmake/cmake
-        
-        # Verify installation
-        $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake --version
-    
-    - name: Setup CMake path in local.properties
-      run: |
-        CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
-        echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
-        echo "CMake directory set to: $CMAKE_DIR"
-        cat android/local.properties
-    
-    - name: Download keystore
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/anymex.jks
-    
-    - name: Set up signing variables
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS}}
-      run: |
-        echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
-        echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
-        echo "keyAlias=$KEY_ALIAS" >> android/key.properties
-        echo "storeFile=anymex.jks" >> android/key.properties
-    
-    - name: Setup .env File
-      env:
-        AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-        AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-        SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-        SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-        MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-        MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-        CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-      run: |
-        echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-        echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-        echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-        echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-        echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-        echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-        echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
-    
-    - name: Get Dependencies
-      run: flutter pub get
-    
-    - name: Generate Splash Screens
-      run: dart run flutter_native_splash:create
-    
-    - name: Build Android with Split ABI
-      run: flutter build apk --split-per-abi
-    
-    - name: Rename APKs
-      run: |
-        mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
-        mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
-        mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
-    
-    - name: Build Universal APK
-      run: flutter build apk --release
-    
-    - name: Rename Universal APK
-      run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
-    
-    - name: Release Android APKs
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        allowUpdates: true
-        tag: ${{ github.ref_name }}
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.8"
+
+      - name: Download and Install CMake 3.18.1
+        run: |
+          # Create cmake directory
+          mkdir -p $HOME/cmake
+          cd $HOME/cmake
+
+          # Download CMake 3.18.1 for Linux x86_64
+          wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
+
+          # Extract the archive
+          tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+
+          # Create symlink for easier access
+          ln -s $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake $HOME/cmake/cmake
+
+          # Verify installation
+          $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake --version
+
+      - name: Setup CMake path in local.properties
+        run: |
+          CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
+          echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
+          echo "CMake directory set to: $CMAKE_DIR"
+          cat android/local.properties
+
+      - name: Download keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/anymex.jks
+
+      - name: Set up signing variables
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS}}
+        run: |
+          echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+          echo "storeFile=anymex.jks" >> android/key.properties
+
+      - name: Setup .env File
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
+        run: |
+          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
+          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
+          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
+          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
+          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
+          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
+          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Generate Splash Screens
+        run: dart run flutter_native_splash:create
+
+      - name: Build Android with Split ABI
+        run: flutter build apk --split-per-abi
+
+      - name: Rename APKs
+        run: |
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
+
+      - name: Build Universal APK
+        run: flutter build apk --release
+
+      - name: Rename Universal APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+
+      - name: Release Android APKs
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
   build-ios:
     runs-on: macos-latest

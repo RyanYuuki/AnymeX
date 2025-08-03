@@ -167,3 +167,4 @@ keystore.b64
 
 # Flutter Version Management (fvm)
 .fvm/
+.vscode/settings.json
