@@ -87,7 +87,7 @@ class CustomSwitchTile extends StatelessWidget {
     }
     return AnymexOnTap(
       onTap: () {
-        onChanged?.call(!switchValue);
+        onChanged.call(!switchValue);
       },
       child: Padding(
         padding: padding,
