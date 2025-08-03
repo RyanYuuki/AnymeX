@@ -44,9 +44,10 @@
 <a href="https://github.com/RyanYuuki/AnymeX/stargazers">
       <img src="https://img.shields.io/github/stars/RyanYuuki/AnymeX?color=white&labelColor=black&style=for-the-badge" alt="Stars" /></a>
 </p>
+<a href="https://trendshift.io/repositories/12529" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12529" alt="RyanYuuki%2FAnymeX | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-# AnymeX
+# AnymeX: Multiservice Tracking Client
 
 **AnymeX** is a multiservice tracking client designed exclusively for managing and tracking anime and manga progress across [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/).
 
