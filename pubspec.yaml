@@ -14,13 +14,11 @@ dependencies:
   cached_network_image: ^3.4.1
   carousel_slider: ^5.0.0
   checkmark: ^0.0.2+1
-  crypto: any
   device_info_plus: ^11.2.2
   dio: ^5.8.0+1
   dynamic_color: ^1.7.0
-  encrypt: ^5.0.3
   expandable_page_view: ^1.0.17
-  extended_image: ^9.1.0
+  extended_image: ^10.0.1
   file_picker: ^8.1.7
   flutter:
     sdk: flutter
@@ -29,7 +27,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   # flutter_local_notifications: ^18.0.1
   flutter_markdown: ^0.7.6
-  flutter_native_splash: ^2.4.4
+  # flutter_native_splash: ^2.4.4
   flutter_qjs:
     git:
       url: https://github.com/kodjodevf/flutter_qjs.git
@@ -76,7 +74,10 @@ dependencies:
   isar: 3.1.0+1
   isar_flutter_libs: 3.1.0+1
   app_links: ^6.4.0
+  preload_page_view: ^0.2.0
 
+  archive: any
+  image: any
 dev_dependencies:
   build_runner: ^2.4.11
   change_app_package_name: ^1.4.0
@@ -101,13 +102,13 @@ flutter_launcher_icons:
     generate: false
     image_path: "assets/images/logo.png"
 
-flutter_native_splash:
-  fullscreen: true
-  color: "#000000"
-  image: assets/images/logo.png
-  android_12:
-    color: "#000000"
-    image: assets/images/logo.png
+# flutter_native_splash:
+#   fullscreen: true
+#   color: "#000000"
+#   image: assets/images/logo.png
+#   android_12:
+#     color: "#000000"
+#     image: assets/images/logo.png
 
 flutter:
   uses-material-design: true
