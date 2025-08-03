@@ -1,6 +1,5 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
-import 'package:anymex/widgets/common/animated_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,7 +38,7 @@ class ReaderTopControls extends StatelessWidget {
                 : topControlsHiddenPosition,
             left: 10,
             right: 10,
-            child: Container(
+            child: SizedBox(
               height: topControlsHeight,
               child: Row(
                 children: [

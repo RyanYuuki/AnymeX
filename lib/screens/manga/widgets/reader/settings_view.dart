@@ -176,53 +176,62 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
-                    return CustomSliderTile(
-                      title: 'Preload Page',
-                      sliderValue: controller.preloadPages.value.toDouble(),
-                      onChanged: (double value) {
-                        controller.preloadPages.value = value.toInt();
-                      },
-                      onChangedEnd: (e) => controller.savePreferences(),
-                      description:
-                          'Preload Pages ahead of time for faster loading (Consumes more network and ram)',
-                      icon: Icons.image_aspect_ratio_rounded,
-                      min: 1.0,
-                      max: 15.0,
-                      label: controller.preloadPages.value.toString(),
-                      divisions: 15,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: CustomSliderTile(
+                        title: 'Preload Page',
+                        sliderValue: controller.preloadPages.value.toDouble(),
+                        onChanged: (double value) {
+                          controller.preloadPages.value = value.toInt();
+                        },
+                        onChangedEnd: (e) => controller.savePreferences(),
+                        description:
+                            'Preload Pages ahead of time for faster loading (Consumes more network and ram)',
+                        icon: Icons.image_aspect_ratio_rounded,
+                        min: 1.0,
+                        max: 15.0,
+                        label: controller.preloadPages.value.toString(),
+                        divisions: 15,
+                      ),
                     );
                   }),
                   if (!Platform.isAndroid && !Platform.isIOS)
                     Obx(() {
-                      return CustomSliderTile(
-                        title: 'Image Width',
-                        sliderValue: controller.pageWidthMultiplier.value,
-                        onChanged: (double value) {
-                          controller.pageWidthMultiplier.value = value;
-                        },
-                        onChangedEnd: (e) => controller.savePreferences(),
-                        description: 'Continuous Mode only',
-                        icon: Icons.image_aspect_ratio_rounded,
-                        min: 1.0,
-                        max: 4.0,
-                        divisions: 39,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: CustomSliderTile(
+                          title: 'Image Width',
+                          sliderValue: controller.pageWidthMultiplier.value,
+                          onChanged: (double value) {
+                            controller.pageWidthMultiplier.value = value;
+                          },
+                          onChangedEnd: (e) => controller.savePreferences(),
+                          description: 'Continuous Mode only',
+                          icon: Icons.image_aspect_ratio_rounded,
+                          min: 1.0,
+                          max: 2.5,
+                          divisions: 15,
+                        ),
                       );
                     }),
                   if (!Platform.isAndroid && !Platform.isIOS)
                     Obx(() {
-                      return CustomSliderTile(
-                        title: 'Scroll Multiplier',
-                        sliderValue: controller.scrollSpeedMultiplier.value,
-                        onChanged: (double value) {
-                          controller.scrollSpeedMultiplier.value = value;
-                        },
-                        onChangedEnd: (e) => controller.savePreferences(),
-                        description:
-                            'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
-                        icon: Icons.speed,
-                        min: 1.0,
-                        max: 5.0,
-                        divisions: 9,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: CustomSliderTile(
+                          title: 'Scroll Multiplier',
+                          sliderValue: controller.scrollSpeedMultiplier.value,
+                          onChanged: (double value) {
+                            controller.scrollSpeedMultiplier.value = value;
+                          },
+                          onChangedEnd: (e) => controller.savePreferences(),
+                          description:
+                              'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                          icon: Icons.speed,
+                          min: 1.0,
+                          max: 5.0,
+                          divisions: 9,
+                        ),
                       );
                     }),
                   20.height()
