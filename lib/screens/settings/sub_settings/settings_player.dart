@@ -221,9 +221,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     Theme.of(context).colorScheme.primary,
                                 isDescBold: true,
                                 icon: HugeIcons.strokeRoundedPlaySquare,
-                                onTap: () {
-                                  showPlayerStyleDialog();
-                                },
+                                onTap: () => showPlayerStyleDialog(),
                                 title: "Player Theme",
                                 description:
                                     numToPlayerStyle(settings.playerStyle),
@@ -315,7 +313,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 divisions: 24,
                                 label: settings.skipDuration.toString(),
                                 onChanged: (double value) {
-                                  settings.skipDuration = value.toInt();
+                                  setState(() {
+                                    settings.skipDuration = value.toInt();
+                                  });
                                 },
                                 title: 'MegaSkip Duration',
                                 description: 'Adjust MegaSkip Duration',
@@ -328,7 +328,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 divisions: 20,
                                 label: settings.markAsCompleted.toString(),
                                 onChanged: (double value) {
-                                  settings.markAsCompleted = value.toInt();
+                                  setState(() {
+                                    settings.markAsCompleted = value.toInt();
+                                  });
                                 },
                                 title: 'Mark As Watched',
                                 description:
