@@ -8,9 +8,9 @@ class Extensions {
 
   Future<void> addRepo(MediaType type, String repo, ExtensionType ext) async {
     if (type == MediaType.manga) {
-      settings.setAnimeRepo(repo, ext);
-    } else if (type == MediaType.anime) {
       settings.setMangaRepo(repo, ext);
+    } else if (type == MediaType.anime) {
+      settings.setAnimeRepo(repo, ext);
     } else {
       settings.activeNovelRepo = repo;
     }

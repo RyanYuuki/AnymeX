@@ -60,14 +60,6 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
       return 'Please enter a GitHub repository URL';
     }
 
-    if (!url.toLowerCase().contains('github')) {
-      return 'Please enter a valid GitHub repository URL';
-    }
-
-    if (!url.toLowerCase().contains('json')) {
-      return 'Please enter a valid Json URL';
-    }
-
     return null;
   }
 

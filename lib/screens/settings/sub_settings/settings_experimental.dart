@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/shaders.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
@@ -29,6 +30,8 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
   final _currentStatus = ''.obs;
   final _enableShaders = false.obs;
 
+  final _cacheDays = 7.obs;
+
   late AnimationController _pulseController;
   late AnimationController _progressController;
   late Animation<double> _pulseAnimation;
@@ -44,10 +47,12 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
   void getSavedSettings() {
     _enableShaders.value =
         settings.preferences.get('shaders_enabled', defaultValue: false);
+    _cacheDays.value = settings.preferences.get('cache_days', defaultValue: 7);
   }
 
   void saveSettings() {
     settings.preferences.put('shaders_enabled', _enableShaders.value);
+    settings.preferences.put('cache_days', _cacheDays.value);
   }
 
   void _initializeAnimations() {
@@ -68,7 +73,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
 
   Future<void> _checkShadersAvailability() async {
     try {
-      final shadersPath = await PlayerShaders.getShaderBasePath();
+      final shadersPath = PlayerShaders.getShaderBasePath();
       final shadersDir = Directory(shadersPath);
 
       if (await shadersDir.exists()) {
@@ -262,6 +267,27 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
                 ],
               ),
               const SizedBox(height: 30),
+              Obx(() => AnymexExpansionTile(
+                    title: "Reader",
+                    initialExpanded: true,
+                    content: Column(
+                      children: [
+                        CustomSliderTile(
+                            icon: Icons.extension,
+                            title: "Cache Duration",
+                            label: "${_cacheDays.value} days",
+                            description:
+                                "When should the image cache be cleared?",
+                            sliderValue: _cacheDays.value.toDouble(),
+                            divisions: 30,
+                            onChanged: (double value) {
+                              _cacheDays.value = value.toInt();
+                              saveSettings();
+                            },
+                            max: 30)
+                      ],
+                    ),
+                  )),
               Obx(() {
                 settings.animationDuration;
                 return AnymexExpansionTile(
