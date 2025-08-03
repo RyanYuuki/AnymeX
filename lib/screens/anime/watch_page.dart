@@ -216,19 +216,18 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
   }
 
-  VideoControllerConfiguration getVideoConfig() {
-    if (Platform.isAndroid) {
-      return const VideoControllerConfiguration(
-        hwdec: 'mediacodec-copy',
-      );
-    } else {
-      return const VideoControllerConfiguration(
-        hwdec: 'auto-copy',
-      );
+  PlayerConfiguration getPlayerConfig(bool shadersEnabled) {
+    if (shadersEnabled) {
+      return PlayerConfiguration(
+          config: true, configDir: settings.mpvPath.value);
     }
+
+    return const PlayerConfiguration(config: false);
   }
 
   void _initPlayer(bool firstTime) async {
+    final areShadersEnabled =
+        settings.preferences.get('shaders_enabled', defaultValue: false);
     Episode? savedEpisode = offlineStorage.getWatchedEpisode(
         widget.anilistData.id, currentEpisode.value.number);
     int startTimeMilliseconds =
@@ -237,10 +236,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             : 0;
     if (firstTime) {
       player = Player(
-          configuration: PlayerConfiguration(
-              config: true, configDir: settings.mpvPath.value));
+        configuration: getPlayerConfig(areShadersEnabled),
+      );
       playerController = VideoController(player,
-          configuration: const VideoControllerConfiguration(hwdec: 'auto'));
+          configuration: const VideoControllerConfiguration(
+              androidAttachSurfaceAfterVideoParameters: true));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
@@ -263,7 +263,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       debugPrint("An error occurred: $error");
       debugPrint("Stack trace: $stackTrace");
     });
-    if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
+    if (areShadersEnabled) {
       final key = (PlayerShaders.getShaders()
           .indexWhere((e) => e == settings.selectedShader));
       setShaders(key, showMessage: false);

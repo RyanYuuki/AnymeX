@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
 
-import 'dart:developer';
 
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -20,7 +19,6 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/widgets/unified_header.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({

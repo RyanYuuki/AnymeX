@@ -10,9 +10,11 @@ import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
@@ -126,6 +128,14 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               value: '${source.name} (${source.lang?.toUpperCase()})',
               text:
                   '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
+              extra: NetworkSizedImage(
+                radius: 50,
+                imageUrl: source.extensionType == ExtensionType.mangayomi
+                    ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                    : 'https://aniyomi.org/img/logo-128px.png',
+                height: 20,
+                width: 20,
+              ),
             );
           }).toList();
 
@@ -139,6 +149,14 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
           text:
               '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
+          extra: NetworkSizedImage(
+            radius: 50,
+            imageUrl: activeSource.extensionType == ExtensionType.mangayomi
+                ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                : 'https://aniyomi.org/img/logo-128px.png',
+            height: 20,
+            width: 20,
+          ),
         );
       }
     }
@@ -223,7 +241,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .colorScheme
-                    .surfaceVariant
+                    .surfaceContainerHighest
                     .withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
