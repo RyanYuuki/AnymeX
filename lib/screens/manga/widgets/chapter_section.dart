@@ -6,13 +6,14 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
-import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -55,7 +56,7 @@ class ChapterSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
-                      .surfaceVariant
+                      .surfaceContainerHighest
                       .withOpacity(0.3),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
@@ -197,6 +198,14 @@ class ChapterSection extends StatelessWidget {
               value: '${source.name} (${source.lang?.toUpperCase()})',
               text:
                   '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
+              extra: NetworkSizedImage(
+                radius: 50,
+                imageUrl: source.extensionType == ExtensionType.mangayomi
+                    ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                    : 'https://aniyomi.org/img/logo-128px.png',
+                height: 20,
+                width: 20,
+              ),
             );
           }).toList();
     DropdownItem? selectedItem;
@@ -209,6 +218,14 @@ class ChapterSection extends StatelessWidget {
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
           text:
               '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
+          extra: NetworkSizedImage(
+            radius: 50,
+            imageUrl: activeSource.extensionType == ExtensionType.mangayomi
+                ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                : 'https://aniyomi.org/img/logo-128px.png',
+            height: 20,
+            width: 20,
+          ),
         );
       } else if (items.isNotEmpty) {
         selectedItem = null;

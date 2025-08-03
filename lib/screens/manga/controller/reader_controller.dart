@@ -7,10 +7,12 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 enum LoadingState { loading, loaded, error }
@@ -43,7 +45,7 @@ enum MangaPageViewDirection {
       };
 }
 
-class ReaderController extends GetxController {
+class ReaderController extends GetxController with WidgetsBindingObserver {
   late Media media;
   late List<Chapter> chapterList;
   final Rxn<Chapter> currentChapter = Rxn();
@@ -58,13 +60,12 @@ class ReaderController extends GetxController {
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
 
-  // Scroll Controllers
   ItemScrollController? itemScrollController;
   ScrollOffsetController? scrollOffsetController;
   ItemPositionsListener? itemPositionsListener;
   ScrollOffsetListener? scrollOffsetListener;
 
-  PageController? pageController;
+  PreloadPageController? pageController;
   final RxBool spacedPages = false.obs;
   final RxBool overscrollToChapter = true.obs;
 
@@ -89,21 +90,146 @@ class ReaderController extends GetxController {
 
   bool _isNavigating = false;
 
+  // Removed auto-save timer related variables since we don't need periodic saves
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    // Save when page opens
+    _performSave(reason: 'Page opened');
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    // Save when user leaves the page
+    Future.microtask(() {
+      _performFinalSave();
+    });
+
+    pageController?.dispose();
+    super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.paused:
+        log('App paused - saving reading progress');
+        _performSave(reason: 'App paused');
+        break;
+      case AppLifecycleState.detached:
+        log('App detached - performing final save');
+        _performFinalSave();
+        break;
+      case AppLifecycleState.resumed:
+        log('App resumed');
+        // No save needed on resume
+        break;
+      case AppLifecycleState.inactive:
+        log('App inactive');
+        // No save needed on inactive
+        break;
+      case AppLifecycleState.hidden:
+        log('App hidden - saving progress');
+        _performSave(reason: 'App hidden');
+        break;
+    }
+  }
+
+  void _performSave({required String reason}) {
+    try {
+      if (!_canSaveProgress()) {
+        log('Cannot save progress - invalid state ($reason)');
+        return;
+      }
+
+      log('Saving reading progress - reason: $reason');
+      _saveTracking();
+    } catch (e) {
+      log('Error during save ($reason): ${e.toString()}');
+    }
+  }
+
+  void _performFinalSave() {
+    try {
+      if (!_canSaveProgress()) {
+        log('Cannot perform final save - invalid state');
+        return;
+      }
+
+      log('Performing final save');
+      _saveTracking();
+
+      final chapter = currentChapter.value;
+      if (chapter != null &&
+          chapter.pageNumber != null &&
+          chapter.totalPages != null &&
+          chapter.number != null &&
+          chapter.pageNumber == chapter.totalPages &&
+          chapterList.isNotEmpty &&
+          chapterList.last.number != null &&
+          chapterList.last.number! < chapter.number!) {
+        serviceHandler.updateListEntry(UpdateListEntryParams(
+            listId: media.id,
+            status: "CURRENT",
+            progress: chapter.number!.toInt() + 1,
+            syncIds: [media.idMal],
+            isAnime: false));
+      }
+    } catch (e) {
+      log('Error during final save: ${e.toString()}');
+    }
+  }
+
+  bool _canSaveProgress() {
+    final chapter = currentChapter.value;
+    return chapter != null &&
+        _isValidPageNumber(currentPageIndex.value) &&
+        pageList.isNotEmpty;
+  }
+
+  void forceSave() {
+    _performSave(reason: 'Manual save');
+  }
+
+  bool _isValidPageNumber(int pageNumber) {
+    return pageNumber > 0 && pageNumber <= pageList.length;
+  }
+
+  void _safelyUpdateChapterPageNumber(int pageNumber) {
+    final chapter = currentChapter.value;
+    if (chapter != null && _isValidPageNumber(pageNumber)) {
+      chapter.pageNumber = pageNumber;
+    }
+  }
+
+  void _safelyUpdateTotalPages(int totalPages) {
+    final chapter = currentChapter.value;
+    if (chapter != null && totalPages > 0) {
+      chapter.totalPages = totalPages;
+    }
+  }
+
   void _initializeControllers() {
     itemScrollController = ItemScrollController();
     scrollOffsetController = ScrollOffsetController();
     itemPositionsListener = ItemPositionsListener.create();
     scrollOffsetListener = ScrollOffsetListener.create();
+    pageController = PreloadPageController(initialPage: 0);
     _setupPositionListener();
   }
 
   void _getPreferences() {
-    readingLayout.value = MangaPageViewMode.values[settingsController
-        .preferences
-        .get('reading_layout', defaultValue: 0 /* continuous */)];
+    readingLayout.value = MangaPageViewMode.values[
+        settingsController.preferences.get('reading_layout', defaultValue: 0)];
     readingDirection.value = MangaPageViewDirection.values[settingsController
         .preferences
-        .get('reading_direction', defaultValue: 1 /* down */)];
+        .get('reading_direction', defaultValue: 1)];
     pageWidthMultiplier.value =
         settingsController.preferences.get('image_width') ?? 1;
     scrollSpeedMultiplier.value =
@@ -143,7 +269,7 @@ class ReaderController extends GetxController {
   }
 
   void _onPositionChanged() async {
-    if (itemPositionsListener == null) return;
+    if (itemPositionsListener == null || pageList.isEmpty) return;
 
     final positions = itemPositionsListener!.itemPositions.value;
     if (positions.isEmpty || _isNavigating) return;
@@ -152,27 +278,24 @@ class ReaderController extends GetxController {
         ? positions.last
         : positions.first;
     final number = topItem.index + 1;
-    if (number < 0 && number > pageList.length) return;
+
+    if (!_isValidPageNumber(number)) return;
 
     if (number != currentPageIndex.value) {
       currentPageIndex.value = number;
-      currentChapter.value?.pageNumber = number;
-    }
-
-    if (number == currentChapter.value?.totalPages) {
-      _saveTracking();
+      _safelyUpdateChapterPageNumber(number);
+      // Removed save call - only update in memory
     }
   }
 
   void onPageChanged(int index) async {
     final number = index + 1;
-    if (number < 0 && number > pageList.length) return;
+    if (!_isValidPageNumber(number)) return;
+
     currentPageIndex.value = number;
-    currentChapter.value?.pageNumber = number;
-    currentChapter.value?.totalPages = pageList.length;
-    if (number == currentChapter.value?.totalPages) {
-      _saveTracking();
-    }
+    _safelyUpdateChapterPageNumber(number);
+    _safelyUpdateTotalPages(pageList.length);
+    // Removed save call - only update in memory
   }
 
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
@@ -183,31 +306,43 @@ class ReaderController extends GetxController {
     _initializeControllers();
     _getPreferences();
 
-    fetchImages(currentChapter.value!.link!);
+    if (curCh.link != null) {
+      fetchImages(curCh.link!);
+    }
   }
 
   void _initTracking() {
-    savedChapter.value = offlineStorageController.getReadChapter(
-        media.id, currentChapter.value!.number!);
+    final chapter = currentChapter.value;
+    if (chapter == null || chapter.number == null) return;
+
+    savedChapter.value =
+        offlineStorageController.getReadChapter(media.id, chapter.number!);
+
     if (savedChapter.value == null) {
-      offlineStorageController.addOrUpdateManga(
-          media, chapterList, currentChapter.value);
+      offlineStorageController.addOrUpdateManga(media, chapterList, chapter);
     }
 
-    serviceHandler.updateListEntry(UpdateListEntryParams(
-        listId: media.id,
-        status: "CURRENT",
-        progress: currentChapter.value!.number!.toInt(),
-        syncIds: [media.idMal],
-        isAnime: false));
+    final chapterNumber = chapter.number?.toInt();
+    if (chapterNumber != null) {
+      serviceHandler.updateListEntry(UpdateListEntryParams(
+          listId: media.id,
+          status: "CURRENT",
+          progress: chapterNumber,
+          syncIds: [media.idMal],
+          isAnime: false));
+    }
   }
 
   void _saveTracking() {
-    currentChapter.value!.pageNumber = currentPageIndex.value;
-    offlineStorageController.addOrUpdateManga(
-        media, chapterList, currentChapter.value);
-    offlineStorageController.addOrUpdateReadChapter(
-        media.id, currentChapter.value!);
+    final chapter = currentChapter.value;
+    if (chapter == null) return;
+
+    if (_isValidPageNumber(currentPageIndex.value)) {
+      chapter.pageNumber = currentPageIndex.value;
+    }
+
+    offlineStorageController.addOrUpdateManga(media, chapterList, chapter);
+    offlineStorageController.addOrUpdateReadChapter(media.id, chapter);
   }
 
   void toggleControls() {
@@ -237,25 +372,39 @@ class ReaderController extends GetxController {
 
   void navigateToChapter(int index) async {
     if (index < 0 || index >= chapterList.length) return;
-    _saveTracking();
+
+    // Save when navigating to chapter
+    _performSave(reason: 'Chapter navigation');
+
     currentChapter.value = chapterList[index];
     currentPageIndex.value = 1;
-    await fetchImages(currentChapter.value!.link!);
+
+    final chapter = currentChapter.value;
+    if (chapter?.link != null) {
+      await fetchImages(chapter!.link!);
+    }
   }
 
   void navigateToPage(int index) async {
-    if (index < 0 || index > pageList.length) return;
-    currentPageIndex.value = index;
+    if (index < 0 || index >= pageList.length) return;
+
+    final pageNumber = index + 1;
+    if (!_isValidPageNumber(pageNumber)) return;
+
+    currentPageIndex.value = pageNumber;
+
     if (readingLayout.value == MangaPageViewMode.continuous) {
-      itemScrollController?.jumpTo(index: currentPageIndex.value);
+      itemScrollController?.jumpTo(index: index);
     } else {
+      log('[PAGE CONTROLLER] Navigating to page $index');
       pageController?.jumpToPage(index);
     }
+    // No save on page navigation - only update in memory
   }
 
   void chapterNavigator(bool next) async {
     final current = currentChapter.value;
-    if (current == null) return;
+    if (current == null || current.number == null) return;
 
     final targetNumber = next ? current.number! + 1 : current.number! - 1;
 
@@ -277,7 +426,14 @@ class ReaderController extends GetxController {
   }
 
   void _syncAvailability() {
-    final index = chapterList.indexOf(currentChapter.value!);
+    final chapter = currentChapter.value;
+    if (chapter == null) {
+      canGoPrev.value = false;
+      canGoNext.value = false;
+      return;
+    }
+
+    final index = chapterList.indexOf(chapter);
     canGoPrev.value = index > 0;
     canGoNext.value = index < chapterList.length - 1;
   }
@@ -286,6 +442,8 @@ class ReaderController extends GetxController {
     _isNavigating = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
     currentPageIndex.value = 1;
+    _syncAvailability();
+
     try {
       loadingState.value = LoadingState.loading;
       pageList.clear();
@@ -298,15 +456,22 @@ class ReaderController extends GetxController {
         pageList.value = data;
         loadingState.value = LoadingState.loaded;
         currentPageIndex.value = 1;
-        currentChapter.value?.totalPages = pageList.length;
-        if (savedChapter.value!.pageNumber! <= pageList.length) {
-          _syncAvailability();
-          currentChapter.value?.totalPages = pageList.length;
-          if (savedChapter.value?.pageNumber != null &&
-              savedChapter.value!.pageNumber! > 1) {
-            currentPageIndex.value = savedChapter.value!.pageNumber!;
+        _safelyUpdateTotalPages(pageList.length);
+
+        for (PageUrl page in pageList) {
+          log('Page URL: ${page.url}');
+        }
+
+        final saved = savedChapter.value;
+        if (saved != null &&
+            saved.pageNumber != null &&
+            _isValidPageNumber(saved.pageNumber!)) {
+          _safelyUpdateTotalPages(pageList.length);
+
+          if (saved.pageNumber! > 1) {
+            currentPageIndex.value = saved.pageNumber!;
             await Future.delayed(const Duration(milliseconds: 100));
-            navigateToPage(savedChapter.value!.pageNumber! - 1);
+            navigateToPage(saved.pageNumber! - 1);
           }
         }
       } else {
@@ -318,17 +483,23 @@ class ReaderController extends GetxController {
       errorMessage.value = e.toString();
     } finally {
       _isNavigating = false;
+      _syncAvailability();
     }
   }
 
   void retryFetchImages() {
-    if (currentChapter.value?.link != null) {
-      fetchImages(currentChapter.value!.link!);
+    final chapter = currentChapter.value;
+    if (chapter?.link != null) {
+      fetchImages(chapter!.link!);
     }
   }
 
   void changeReadingLayout(MangaPageViewMode mode) async {
     readingLayout.value = mode;
+
+    await Future.delayed(const Duration(milliseconds: 300), () {
+      navigateToPage(currentPageIndex.value - 1);
+    });
     savePreferences();
   }
 
@@ -338,28 +509,4 @@ class ReaderController extends GetxController {
   }
 
   void savePreferences() => _savePreferences();
-
-  @override
-  void onClose() {
-    Future.microtask(() {
-      _saveTracking();
-      if (currentChapter.value!.pageNumber ==
-              currentChapter.value!.totalPages &&
-          chapterList.last.number! < currentChapter.value!.number!) {
-        try {
-          serviceHandler.updateListEntry(UpdateListEntryParams(
-              listId: media.id,
-              status: "CURRENT",
-              progress: currentChapter.value!.number!.toInt() + 1,
-              syncIds: [media.idMal],
-              isAnime: false));
-        } catch (e) {
-          log('Error saving tracking on close: ${e.toString()}');
-        }
-      }
-    });
-
-    pageController?.dispose();
-    super.onClose();
-  }
 }

@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -52,10 +50,24 @@ class ChapterService {
     return scanlators.toList();
   }
 
-  ChapterState buildChapterState(List<Chapter> chapters, Media anilistData) {
-    final scanlators = extractScanlators(chapters);
-    final chunkedChapters =
-        chunkChapter(chapters, calculateChapterChunkSize(chapters));
+  ChapterState buildChapterState(
+    List<Chapter> chapters,
+    Media anilistData, {
+    List<String>? scanlators,
+    int? selectedScanIndex,
+  }) {
+    final extractedScanlators = scanlators ?? extractScanlators(chapters);
+
+    final chaptersForChunking =
+        (selectedScanIndex != null && selectedScanIndex > 0)
+            ? filterChaptersByScanlator(
+                chapters, extractedScanlators, selectedScanIndex)
+            : chapters;
+
+    final chunkedChapters = chaptersForChunking.isNotEmpty
+        ? chunkChapter(
+            chaptersForChunking, calculateChapterChunkSize(chaptersForChunking))
+        : <List<Chapter>>[];
 
     final userProgress = _getUserProgress(anilistData);
     final readChapter =
@@ -67,7 +79,7 @@ class ChapterService {
       userProgress: userProgress,
       readChapter: readChapter,
       continueChapter: continueChapter,
-      scanlators: scanlators,
+      scanlators: extractedScanlators,
       chunkedChapters: chunkedChapters,
     );
   }
@@ -86,6 +98,25 @@ class ChapterService {
               ?.toInt() ??
           1;
     }
+  }
+
+  List<List<Chapter>> buildFilteredChunks(
+    List<Chapter> chapters,
+    List<String> scanlators,
+    int selectedScanIndex,
+  ) {
+    final filteredChapters = filterChaptersByScanlator(
+      chapters,
+      scanlators,
+      selectedScanIndex,
+    );
+
+    if (filteredChapters.isEmpty) {
+      return [];
+    }
+
+    return chunkChapter(
+        filteredChapters, calculateChapterChunkSize(filteredChapters));
   }
 
   Chapter? _findContinueChapter(
@@ -171,27 +202,34 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     });
   }
 
+  void _onScanIndex() {
+    _selectedChunkIndex.value = 1;
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   void _setInitialSelectedIndices() {
-    final chapterState =
-        _chapterService.buildChapterState(widget.chapters!, widget.anilistData);
+    final chapterState = _chapterService.buildChapterState(
+      widget.chapters!,
+      widget.anilistData,
+      selectedScanIndex: _selectedScanIndex.value,
+    );
 
-    // Set initial scanlator selection (commented out in original)
-    // final scanIndex = chapterState.scanlators
-    //     .indexWhere((e) => e.toLowerCase() == 'official');
-    // if (scanIndex != -1) {
-    //   _selectedScanIndex.value = scanIndex + 1;
-    // }
-
-    // Set initial chunk selection based on continue chapter
     final progress = chapterState.continueChapter?.number;
-    if (progress != null) {
+    if (progress != null && chapterState.chunkedChapters.isNotEmpty) {
       List<List<int>> ranges = [];
       final newList =
           chapterState.chunkedChapters.map((e) => e.toList()).toList();
-      newList.removeAt(0);
+      if (newList.isNotEmpty) {
+        newList.removeAt(0);
+      }
 
       for (var e in newList) {
-        ranges.add([e.first.number!.toInt(), e.last.number!.toInt()]);
+        if (e.isNotEmpty && e.first.number != null && e.last.number != null) {
+          ranges.add([e.first.number!.toInt(), e.last.number!.toInt()]);
+        }
       }
 
       final chunkIndex =
@@ -220,15 +258,13 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   }
 
   Widget _buildChapterList() {
-    final chapterState =
-        _chapterService.buildChapterState(widget.chapters!, widget.anilistData);
+    final chapterState = _chapterService.buildChapterState(
+      widget.chapters!,
+      widget.anilistData,
+      selectedScanIndex: _selectedScanIndex.value,
+    );
 
     final selectedChapters = _getSelectedChapters(chapterState);
-    final filteredChapters = _chapterService.filterChaptersByScanlator(
-      selectedChapters,
-      chapterState.scanlators,
-      _selectedScanIndex.value,
-    );
     final filteredFullChapters = _chapterService.filterChaptersByScanlator(
       widget.chapters!,
       chapterState.scanlators,
@@ -241,15 +277,36 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         _buildContinueButton(filteredFullChapters, chapterState),
         _buildScanlatorsFilter(chapterState),
         _buildChapterRanges(chapterState),
-        _buildChapterGrid(filteredChapters, filteredFullChapters, chapterState),
+        _buildChapterGrid(selectedChapters, filteredFullChapters, chapterState),
       ],
+    );
+  }
+
+  Widget _buildScanlatorsFilter(ChapterState chapterState) {
+    if (chapterState.scanlators.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ScanlatorsRanges(
+      selectedScanIndex: _selectedScanIndex,
+      scanlators: chapterState.scanlators,
+      onScanIndexChanged: _onScanIndex,
     );
   }
 
   List<Chapter> _getSelectedChapters(ChapterState chapterState) {
     if (chapterState.chunkedChapters.isEmpty) return [];
+
     final index = _selectedChunkIndex.value
         .clamp(0, chapterState.chunkedChapters.length - 1);
+
+    if (index >= chapterState.chunkedChapters.length) {
+      _selectedChunkIndex.value = 1;
+      return chapterState.chunkedChapters.isNotEmpty
+          ? chapterState.chunkedChapters[0]
+          : [];
+    }
+
     return chapterState.chunkedChapters[index];
   }
 
@@ -271,17 +328,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
         chapter: continueChapter,
       ),
-    );
-  }
-
-  Widget _buildScanlatorsFilter(ChapterState chapterState) {
-    if (chapterState.scanlators.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return ScanlatorsRanges(
-      selectedScanIndex: _selectedScanIndex,
-      scanlators: chapterState.scanlators,
     );
   }
 
@@ -443,14 +489,13 @@ class ChapterListItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
-          // Progress indicator
           SizedBox(
             width: 40,
             height: 40,
             child: AnymexProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
         ],

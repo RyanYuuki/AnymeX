@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/unified_header.dart';
 
 class MangaHomePage extends StatefulWidget {
   const MangaHomePage({
