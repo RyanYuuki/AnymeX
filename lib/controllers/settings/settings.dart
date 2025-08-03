@@ -49,6 +49,7 @@ class Settings extends GetxController {
     isTv().then((e) {
       isTV.value = e;
     });
+    PlayerShaders.createMpvConfigFolder();
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
