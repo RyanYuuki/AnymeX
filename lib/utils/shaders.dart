@@ -159,4 +159,44 @@ class PlayerShaders {
       return false;
     }
   }
+
+  static Future<bool> createMpvConfigFolder() async {
+    try {
+      final mpvPath = await getMpvPath();
+      final configDir = Directory(mpvPath);
+
+      if (!await configDir.exists()) {
+        await configDir.create(recursive: true);
+        debugPrint('Created MPV directory: ${configDir.path}');
+      }
+
+      final configFile = File('${configDir.path}mpv.conf');
+
+      if (!await configFile.exists()) {
+        await configFile.writeAsString('');
+        debugPrint('Created empty MPV config file: ${configFile.path}');
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('Error creating MPV config folder/file: $e');
+      return false;
+    }
+  }
+
+  static Future<String> getMpvConfigPath() async {
+    final mpvPath = await getMpvPath();
+    return '${mpvPath}mpv.conf';
+  }
+
+  static Future<bool> doesMpvConfigExist() async {
+    try {
+      final configPath = await getMpvConfigPath();
+      final configFile = File(configPath);
+      return await configFile.exists();
+    } catch (e) {
+      debugPrint('Error checking MPV config existence: $e');
+      return false;
+    }
+  }
 }

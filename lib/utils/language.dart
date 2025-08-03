@@ -131,3 +131,48 @@ final sortedLanguagesMap = {
   "Chinese (Traditional)": "zh-tw",
   "isiZulu": "zu",
 };
+
+final subtitleLangMap = {
+  "English": "eng",
+  "German": "ger",
+  "French": "fre",
+  "Spanish": "spa",
+  "Italian": "ita",
+  "Japanese": "jpn",
+  "Chinese": "chi",
+  "Korean": "kor",
+  "Portuguese": "por",
+  "Russian": "rus",
+  "Arabic": "ara",
+  "Hindi": "hin",
+  "Bengali": "ben",
+  "Polish": "pol",
+  "Turkish": "tur",
+  "Vietnamese": "vie",
+  "Thai": "tha",
+  "Czech": "cze",
+  "Dutch": "dut",
+  "Greek": "gre",
+  "Hebrew": "heb",
+  "Hungarian": "hun",
+  "Indonesian": "ind",
+  "Malay": "may",
+  "Romanian": "rum",
+  "Slovak": "slo",
+  "Swedish": "swe",
+  "Tamil": "tam",
+  "Telugu": "tel",
+  "Ukrainian": "ukr",
+  "Urdu": "urd",
+  "Unknown": "und", // fallback
+};
+
+String completeSubtitleLanguageName(String code) {
+  code = code.toLowerCase();
+  for (var entry in subtitleLangMap.entries) {
+    if (entry.value.toLowerCase() == code) {
+      return entry.key;
+    }
+  }
+  return code.toUpperCase(); // fallback
+}
