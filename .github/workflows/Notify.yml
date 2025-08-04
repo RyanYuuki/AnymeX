@@ -69,7 +69,7 @@ jobs:
           sed 's/||//g' release_notes.txt > clean_release_notes.txt
           
           # Extract features
-          features=$(grep -iE '^\*\s\[֍\]\(.*\).*feat' clean_release_notes.txt | head -n 5 || true)
+          features=$(grep -iE '^\*\s\[֍\]\(.*\):\sfeat' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$features" ]]; then
             echo "**🚀 Features**" >> formatted_notes.txt
             echo "$features" >> formatted_notes.txt
@@ -77,7 +77,7 @@ jobs:
           fi
       
           # Extract fixes
-          fixes=$(grep -iE '^\*\s\[֍\]\(.*\).*fix|^\*\s\[֍\]\(.*\).*bug|^\*\s\[֍\]\(.*\).*improvement|^\*\s\[֍\]\(.*\).*patch' clean_release_notes.txt | head -n 5 || true)
+          fixes=$(grep -iE '^\*\s\[֍\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$fixes" ]]; then
             echo "**🐛 Fixes**" >> formatted_notes.txt
             echo "$fixes" >> formatted_notes.txt
@@ -85,7 +85,7 @@ jobs:
           fi
       
           # Extract refactors
-          refactors=$(grep -iE '^\*\s\[֍\]\(.*\).*refactor' clean_release_notes.txt | head -n 5 || true)
+          refactors=$(grep -iE '^\*\s\[֍\]\(.*\):\srefactor' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$refactors" ]]; then
             echo "**🔧 Refactors**" >> formatted_notes.txt
             echo "$refactors" >> formatted_notes.txt
@@ -93,7 +93,7 @@ jobs:
           fi
       
           # Extract style changes
-          style=$(grep -iE '^\*\s\[֍\]\(.*\).*style' clean_release_notes.txt | head -n 5 || true)
+          style=$(grep -iE '^\*\s\[֍\]\(.*\):\sstyle' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$style" ]]; then
             echo "**💅 Style**" >> formatted_notes.txt
             echo "$style" >> formatted_notes.txt
@@ -101,7 +101,7 @@ jobs:
           fi
       
           # Extract performance improvements
-          perf=$(grep -iE '^\*\s\[֍\]\(.*\).*perf' clean_release_notes.txt | head -n 5 || true)
+          perf=$(grep -iE '^\*\s\[֍\]\(.*\):\sperf' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$perf" ]]; then
             echo "**⚡ Performance**" >> formatted_notes.txt
             echo "$perf" >> formatted_notes.txt
@@ -109,7 +109,7 @@ jobs:
           fi
       
           # Extract chores
-          chores=$(grep -iE '^\*\s\[֍\]\(.*\).*chore|^\*\s\[֍\]\(.*\).*docs|^\*\s\[֍\]\(.*\).*build|^\*\s\[֍\]\(.*\).*ci' clean_release_notes.txt | head -n 5 || true)
+          chores=$(grep -iE '^\*\s\[֍\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$chores" ]]; then
             echo "**🛠 Chores**" >> formatted_notes.txt
             echo "$chores" >> formatted_notes.txt
@@ -197,22 +197,22 @@ jobs:
           
           # Extract categories from formatted notes and clean them
           echo "**🚀 Features**" > TFeatures.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sfeat' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > feat.txt || touch feat.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\sfeat' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > feat.txt || touch feat.txt
 
           echo "**🐛 Fixes**" > TFixes.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > fixes.txt || touch fixes.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > fixes.txt || touch fixes.txt
 
           echo "**🔧 Refactors**" > TRefactors.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\srefactor' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > refactors.txt || touch refactors.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\srefactor' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > refactors.txt || touch refactors.txt
 
           echo "**💅 Style**" > TStyle.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sstyle' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > style.txt || touch style.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\sstyle' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > style.txt || touch style.txt
 
           echo "**⚡ Performance**" > TPerformance.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\sperf' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > perf.txt || touch perf.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\sperf' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > perf.txt || touch perf.txt
 
           echo "**🛠 Chores**" > TChores.txt
-          grep -iE '^\*\s\[[a-f0-9]+\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > chores.txt || touch chores.txt
+          grep -iE '^\*\s\[֍\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > chores.txt || touch chores.txt
 
           # Process each file through the parser if it exists
           if [ -f scripts/tel_commit_parser.sed ]; then
@@ -327,13 +327,13 @@ jobs:
         run: |
           FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
           
-          # Mention the role based on the release name
+          # Mention the role based on the release name (removed <@&ping> for testing)
           if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
-            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
+            role_mention=""
           elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
-            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
+            role_mention=""
           else
-            role_mention="<@&1313346791479054456>"  # Default role ID
+            role_mention=""
           fi
         
           default_color="#1ac4c5"
