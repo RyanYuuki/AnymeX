@@ -69,7 +69,7 @@ jobs:
           sed 's/||//g' release_notes.txt > clean_release_notes.txt
           
           # Extract features
-          features=$(grep -iE '^\*\s\[֍\]\(.*\):\sfeat' clean_release_notes.txt | head -n 5 || true)
+          features=$(grep -iE '^\*\s\[֍\]\(.*\).*feat' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$features" ]]; then
             echo "**🚀 Features**" >> formatted_notes.txt
             echo "$features" >> formatted_notes.txt
@@ -77,7 +77,7 @@ jobs:
           fi
       
           # Extract fixes
-          fixes=$(grep -iE '^\*\s\[֍\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | head -n 5 || true)
+          fixes=$(grep -iE '^\*\s\[֍\]\(.*\).*fix|^\*\s\[֍\]\(.*\).*bug|^\*\s\[֍\]\(.*\).*improvement|^\*\s\[֍\]\(.*\).*patch' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$fixes" ]]; then
             echo "**🐛 Fixes**" >> formatted_notes.txt
             echo "$fixes" >> formatted_notes.txt
@@ -85,7 +85,7 @@ jobs:
           fi
       
           # Extract refactors
-          refactors=$(grep -iE '^\*\s\[֍\]\(.*\):\srefactor' clean_release_notes.txt | head -n 5 || true)
+          refactors=$(grep -iE '^\*\s\[֍\]\(.*\).*refactor' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$refactors" ]]; then
             echo "**🔧 Refactors**" >> formatted_notes.txt
             echo "$refactors" >> formatted_notes.txt
@@ -93,7 +93,7 @@ jobs:
           fi
       
           # Extract style changes
-          style=$(grep -iE '^\*\s\[֍\]\(.*\):\sstyle' clean_release_notes.txt | head -n 5 || true)
+          style=$(grep -iE '^\*\s\[֍\]\(.*\).*style' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$style" ]]; then
             echo "**💅 Style**" >> formatted_notes.txt
             echo "$style" >> formatted_notes.txt
@@ -101,7 +101,7 @@ jobs:
           fi
       
           # Extract performance improvements
-          perf=$(grep -iE '^\*\s\[֍\]\(.*\):\sperf' clean_release_notes.txt | head -n 5 || true)
+          perf=$(grep -iE '^\*\s\[֍\]\(.*\).*perf' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$perf" ]]; then
             echo "**⚡ Performance**" >> formatted_notes.txt
             echo "$perf" >> formatted_notes.txt
@@ -109,7 +109,7 @@ jobs:
           fi
       
           # Extract chores
-          chores=$(grep -iE '^\*\s\[֍\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | head -n 5 || true)
+          chores=$(grep -iE '^\*\s\[֍\]\(.*\).*chore|^\*\s\[֍\]\(.*\).*docs|^\*\s\[֍\]\(.*\).*build|^\*\s\[֍\]\(.*\).*ci' clean_release_notes.txt | head -n 5 || true)
           if [[ -n "$chores" ]]; then
             echo "**🛠 Chores**" >> formatted_notes.txt
             echo "$chores" >> formatted_notes.txt
