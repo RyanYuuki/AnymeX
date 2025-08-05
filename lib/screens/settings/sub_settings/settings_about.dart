@@ -152,6 +152,13 @@ class AboutPage extends StatelessWidget {
                     leading: const Icon(HugeIcons.strokeRoundedDiscord),
                     title: "Discord",
                   ),
+                  CustomListTile(
+                    onTap: () async {
+                      await launchUrlHelper('https://www.reddit.com/r/AnymeX_/');
+                    },
+                    leading: const Icon(HugeIcons.strokeRoundedReddit),
+                    title: "Discord",
+                  ),
                 ],
               ),
             ),
