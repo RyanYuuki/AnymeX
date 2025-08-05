@@ -58,69 +58,39 @@ jobs:
 
           # Write to file to handle multiline content safely
           echo "$RELEASE_NOTES" > release_notes.txt
-          
+                      
       - name: Format Release Notes
         id: format_notes
         run: |
-          # Initialize the formatted notes file
           echo "" > formatted_notes.txt
-          
-          # Clean the release notes by removing the || markers that were causing issues
+      
+          # Clean the raw release notes of ||
           sed 's/||//g' release_notes.txt > clean_release_notes.txt
-          
-          # Extract features
-          features=$(grep -iE '^\*\s\[֍\]\(.*\):\sfeat' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$features" ]]; then
-            echo "**🚀 Features**" >> formatted_notes.txt
-            echo "$features" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
       
-          # Extract fixes
-          fixes=$(grep -iE '^\*\s\[֍\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$fixes" ]]; then
-            echo "**🐛 Fixes**" >> formatted_notes.txt
-            echo "$fixes" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
+          # Function to extract section and top 5 bullet lines
+          extract_section() {
+            section_title="$1"
+            grep -A 20 "^$section_title" clean_release_notes.txt | grep '^•' | head -n 5 > temp_section.txt
+            if [ -s temp_section.txt ]; then
+              echo "$section_title" >> formatted_notes.txt
+              cat temp_section.txt >> formatted_notes.txt
+              echo "" >> formatted_notes.txt
+            fi
+          }
       
-          # Extract refactors
-          refactors=$(grep -iE '^\*\s\[֍\]\(.*\):\srefactor' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$refactors" ]]; then
-            echo "**🔧 Refactors**" >> formatted_notes.txt
-            echo "$refactors" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
+          # Process each section title in your notes
+          extract_section "### 🚀 Features"
+          extract_section "### 🐛 Fixes"
+          extract_section "### 🔧 Refactors"
+          extract_section "### 💅 Style"
+          extract_section "### ⚡ Performance"
+          extract_section "### 🛠 Chores"
       
-          # Extract style changes
-          style=$(grep -iE '^\*\s\[֍\]\(.*\):\sstyle' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$style" ]]; then
-            echo "**💅 Style**" >> formatted_notes.txt
-            echo "$style" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
-      
-          # Extract performance improvements
-          perf=$(grep -iE '^\*\s\[֍\]\(.*\):\sperf' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$perf" ]]; then
-            echo "**⚡ Performance**" >> formatted_notes.txt
-            echo "$perf" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
-      
-          # Extract chores
-          chores=$(grep -iE '^\*\s\[֍\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | head -n 5 || true)
-          if [[ -n "$chores" ]]; then
-            echo "**🛠 Chores**" >> formatted_notes.txt
-            echo "$chores" >> formatted_notes.txt
-            echo "" >> formatted_notes.txt
-          fi
-
           # Debug output
           echo "Contents of formatted_notes.txt:"
-          cat formatted_notes.txt || echo "File not found or empty"
-          
-          # Set environment variable using file content
+          cat formatted_notes.txt || echo "No content extracted"
+      
+          # Save for later Telegram/Discord steps
           {
             echo "FORMATTED_NOTES<<EOF"
             cat formatted_notes.txt
