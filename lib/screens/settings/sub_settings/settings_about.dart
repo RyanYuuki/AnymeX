@@ -157,7 +157,7 @@ class AboutPage extends StatelessWidget {
                       await launchUrlHelper('https://www.reddit.com/r/AnymeX_/');
                     },
                     leading: const Icon(HugeIcons.strokeRoundedReddit),
-                    title: "Discord",
+                    title: "Reddit",
                   ),
                 ],
               ),
