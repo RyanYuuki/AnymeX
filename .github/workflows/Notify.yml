@@ -59,43 +59,80 @@ jobs:
           # Write to file to handle multiline content safely
           echo "$RELEASE_NOTES" > release_notes.txt
                       
+name: Notify Release
+
+on:
+  workflow_run:
+    workflows:
+      - "changelog"
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release_notes
+          path: .
+
       - name: Format Release Notes
         id: format_notes
         run: |
-          echo "" > formatted_notes.txt
-      
-          # Clean the raw release notes of ||
+          # Clean || markers
           sed 's/||//g' release_notes.txt > clean_release_notes.txt
-      
-          # Function to extract section and top 5 bullet lines
+
+          echo "" > formatted_notes.txt
+
           extract_section() {
-            section_title="$1"
-            grep -A 20 "^$section_title" clean_release_notes.txt | grep '^•' | head -n 5 > temp_section.txt
-            if [ -s temp_section.txt ]; then
-              echo "$section_title" >> formatted_notes.txt
-              cat temp_section.txt >> formatted_notes.txt
+            local title="$1"
+            local icon="$2"
+
+            # Get line number of section
+            local start=$(grep -n "^### $icon $title" clean_release_notes.txt | cut -d: -f1)
+            if [ -z "$start" ]; then return; fi
+
+            # Get next header line
+            local next=$(tail -n +$((start + 1)) clean_release_notes.txt | grep -n '^### ' | head -n1 | cut -d: -f1)
+            if [ -z "$next" ]; then
+              # Until end of file
+              content=$(tail -n +$((start + 1)) clean_release_notes.txt | grep '^•' | head -n 5)
+            else
+              end=$((start + next - 1))
+              content=$(sed -n "$((start + 1)),$((end - 1))p" clean_release_notes.txt | grep '^•' | head -n 5)
+            fi
+
+            if [ -n "$content" ]; then
+              echo "### $icon $title" >> formatted_notes.txt
+              echo "$content" >> formatted_notes.txt
               echo "" >> formatted_notes.txt
             fi
           }
-      
-          # Process each section title in your notes
-          extract_section "### 🚀 Features"
-          extract_section "### 🐛 Fixes"
-          extract_section "### 🔧 Refactors"
-          extract_section "### 💅 Style"
-          extract_section "### ⚡ Performance"
-          extract_section "### 🛠 Chores"
-      
-          # Debug output
-          echo "Contents of formatted_notes.txt:"
-          cat formatted_notes.txt || echo "No content extracted"
-      
-          # Save for later Telegram/Discord steps
-          {
-            echo "FORMATTED_NOTES<<EOF"
-            cat formatted_notes.txt
-            echo "EOF"
-          } >> $GITHUB_ENV
+
+          extract_section "Features" "🚀"
+          extract_section "Fixes" "🐛"
+          extract_section "Refactors" "🔧"
+          extract_section "Style" "💅"
+          extract_section "Performance" "⚡"
+          extract_section "Chores" "🛠"
+
+          echo "FORMATTED_NOTES<<EOF" >> $GITHUB_ENV
+          cat formatted_notes.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "Preview of formatted notes:"
+          cat formatted_notes.txt
+
+      # You can now use ${{ env.FORMATTED_NOTES }} in your next Telegram/Discord steps
 
       - name: Get and Categorize Assets with Sizes
         id: categorize_assets
