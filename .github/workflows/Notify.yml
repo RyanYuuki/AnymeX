@@ -58,32 +58,6 @@ jobs:
 
           # Write to file to handle multiline content safely
           echo "$RELEASE_NOTES" > release_notes.txt
-                      
-name: Notify Release
-
-on:
-  workflow_run:
-    workflows:
-      - "changelog"
-    types:
-      - completed
-  workflow_dispatch:
-
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release_notes
-          path: .
 
       - name: Format Release Notes
         id: format_notes
@@ -95,35 +69,32 @@ jobs:
 
           extract_section() {
             local title="$1"
-            local icon="$2"
+            local emoji="$2"
 
-            # Get line number of section
-            local start=$(grep -n "^### $icon $title" clean_release_notes.txt | cut -d: -f1)
+            local start=$(grep -n "^### $emoji $title" clean_release_notes.txt | cut -d: -f1)
             if [ -z "$start" ]; then return; fi
 
-            # Get next header line
             local next=$(tail -n +$((start + 1)) clean_release_notes.txt | grep -n '^### ' | head -n1 | cut -d: -f1)
             if [ -z "$next" ]; then
-              # Until end of file
-              content=$(tail -n +$((start + 1)) clean_release_notes.txt | grep '^•' | head -n 5)
+              content=$(tail -n +$((start + 1)) clean_release_notes.txt | grep '^-' | head -n 5)
             else
               end=$((start + next - 1))
-              content=$(sed -n "$((start + 1)),$((end - 1))p" clean_release_notes.txt | grep '^•' | head -n 5)
+              content=$(sed -n "$((start + 1)),$((end - 1))p" clean_release_notes.txt | grep '^-' | head -n 5)
             fi
 
             if [ -n "$content" ]; then
-              echo "### $icon $title" >> formatted_notes.txt
+              echo "### $emoji $title" >> formatted_notes.txt
               echo "$content" >> formatted_notes.txt
               echo "" >> formatted_notes.txt
             fi
           }
 
-          extract_section "Features" "🚀"
-          extract_section "Fixes" "🐛"
+          extract_section "Features" "🌟"
+          extract_section "Bug Fixes & Improvements" "🔧"
           extract_section "Refactors" "🔧"
-          extract_section "Style" "💅"
-          extract_section "Performance" "⚡"
-          extract_section "Chores" "🛠"
+          extract_section "Style Changes" "🎨"
+          extract_section "Performance Improvements" "🚀"
+          extract_section "Chores & Documentation" "🧹"
 
           echo "FORMATTED_NOTES<<EOF" >> $GITHUB_ENV
           cat formatted_notes.txt >> $GITHUB_ENV
@@ -202,29 +173,43 @@ jobs:
           # Start with release header
           echo "<b>🚀 New Release: ${{ env.LATEST_TAG }}</b>" > header.txt
           
-          # Extract categories from formatted notes and clean them
-          echo "**🚀 Features**" > TFeatures.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\sfeat' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > feat.txt || touch feat.txt
-
-          echo "**🐛 Fixes**" > TFixes.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\s(fix|bug|improvement|patch)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > fixes.txt || touch fixes.txt
-
-          echo "**🔧 Refactors**" > TRefactors.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\srefactor' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > refactors.txt || touch refactors.txt
-
-          echo "**💅 Style**" > TStyle.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\sstyle' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > style.txt || touch style.txt
-
-          echo "**⚡ Performance**" > TPerformance.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\sperf' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > perf.txt || touch perf.txt
-
-          echo "**🛠 Chores**" > TChores.txt
-          grep -iE '^\*\s\[֍\]\(.*\):\s(chore|docs|build|ci)' clean_release_notes.txt | sed -E 's/\): [^:]+:/) :/g' | head -n 5 > chores.txt || touch chores.txt
+          # Clean release notes
+          sed 's/||//g' release_notes.txt > clean_release_notes.txt
+          
+          # Function to extract section content
+          extract_section_content() {
+            local section_name="$1"
+            local output_file="$2"
+            local title_file="$3"
+            local limit="${4:-5}"
+            
+            # Create title file
+            echo "$title_file" > "T${section_name}.txt"
+            
+            # Find the section and extract content until next section or end
+            awk -v section="$section_name" -v limit="$limit" '
+              BEGIN { found=0; count=0 }
+              $0 ~ "^### .*" section { found=1; next }
+              found && /^### / && $0 !~ section { found=0 }
+              found && /^- \[/ && count < limit { 
+                print $0; count++ 
+              }
+            ' clean_release_notes.txt > "$output_file"
+          }
+          
+          # Extract each section with titles
+          extract_section_content "Features" "feat.txt" "**🚀 Features**" 5
+          extract_section_content "Bug Fixes & Improvements" "fixes.txt" "**🐛 Fixes**" 5
+          extract_section_content "Refactors" "refactors.txt" "**🔧 Refactors**" 3
+          extract_section_content "Style Changes" "style.txt" "**💅 Style**" 3
+          extract_section_content "Performance Improvements" "perf.txt" "**⚡ Performance**" 3
+          extract_section_content "Chores & Documentation" "chores.txt" "**🛠 Chores**" 3
 
           # Process each file through the parser if it exists
           if [ -f scripts/tel_commit_parser.sed ]; then
             chmod +x scripts/tel_commit_parser.sed
             
+            # Process files directly through your parser (preserving original format)
             ./scripts/tel_commit_parser.sed feat.txt > feat_clean.txt || cp feat.txt feat_clean.txt
             ./scripts/tel_commit_parser.sed fixes.txt > fixes_clean.txt || cp fixes.txt fixes_clean.txt
             ./scripts/tel_commit_parser.sed refactors.txt > refactors_clean.txt || cp refactors.txt refactors_clean.txt
@@ -232,26 +217,27 @@ jobs:
             ./scripts/tel_commit_parser.sed perf.txt > perf_clean.txt || cp perf.txt perf_clean.txt
             ./scripts/tel_commit_parser.sed chores.txt > chores_clean.txt || cp chores.txt chores_clean.txt
             
-            ./scripts/tel_commit_parser.sed TFeatures.txt > TFeaturesT.txt || cp TFeatures.txt TFeaturesT.txt
-            ./scripts/tel_commit_parser.sed TFixes.txt > TFixesT.txt || cp TFixes.txt TFixesT.txt
-            ./scripts/tel_commit_parser.sed TRefactors.txt > TRefactorsT.txt || cp TRefactors.txt TRefactorsT.txt
-            ./scripts/tel_commit_parser.sed TStyle.txt > TStyleT.txt || cp TStyle.txt TStyleT.txt
-            ./scripts/tel_commit_parser.sed TPerformance.txt > TPerformanceT.txt || cp TPerformance.txt TPerformanceT.txt
-            ./scripts/tel_commit_parser.sed TChores.txt > TChoresT.txt || cp TChores.txt TChoresT.txt
+            echo "**🚀 Features**" | ./scripts/tel_commit_parser.sed > TFeaturesT.txt
+            echo "**🐛 Fixes**" | ./scripts/tel_commit_parser.sed > TFixesT.txt
+            echo "**🔧 Refactors**" | ./scripts/tel_commit_parser.sed > TRefactorsT.txt
+            echo "**💅 Style**" | ./scripts/tel_commit_parser.sed > TStyleT.txt
+            echo "**⚡ Performance**" | ./scripts/tel_commit_parser.sed > TPerformanceT.txt
+            echo "**🛠 Chores**" | ./scripts/tel_commit_parser.sed > TChoresT.txt
           else
-            # If no parser script, just copy the files
-            cp feat.txt feat_clean.txt
-            cp fixes.txt fixes_clean.txt
-            cp refactors.txt refactors_clean.txt
-            cp style.txt style_clean.txt
-            cp perf.txt perf_clean.txt
-            cp chores.txt chores_clean.txt
-            cp TFeatures.txt TFeaturesT.txt
-            cp TFixes.txt TFixesT.txt
-            cp TRefactors.txt TRefactorsT.txt
-            cp TStyle.txt TStyleT.txt
-            cp TPerformance.txt TPerformanceT.txt
-            cp TChores.txt TChoresT.txt
+            # If no parser script, just convert format manually
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' feat.txt > feat_clean.txt
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' fixes.txt > fixes_clean.txt
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' refactors.txt > refactors_clean.txt
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' style.txt > style_clean.txt
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' perf.txt > perf_clean.txt
+            sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' chores.txt > chores_clean.txt
+            
+            echo "<strong>🚀 Features</strong>" > TFeaturesT.txt
+            echo "<strong>🐛 Fixes</strong>" > TFixesT.txt
+            echo "<strong>🔧 Refactors</strong>" > TRefactorsT.txt
+            echo "<strong>💅 Style</strong>" > TStyleT.txt
+            echo "<strong>⚡ Performance</strong>" > TPerformanceT.txt
+            echo "<strong>🛠 Chores</strong>" > TChoresT.txt
           fi
 
           # Check and remove empty categories
@@ -304,7 +290,7 @@ jobs:
               -d "text=$markdown_info_tel" \
               -d "parse_mode=HTML" \
               -d "disable_web_page_preview=true"
-
+              
       - name: Send Assets to Telegram
         run: |
           MESSAGE="🎉 *${{ env.LATEST_TAG }} Released* 🎉
