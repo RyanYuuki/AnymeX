@@ -5,7 +5,10 @@
 s/%0A/\n/g
 s/^[-*] /● /
 s/[<>]//g
-s/\[ *([[:alnum:] \&\;\?!,\)\+]*.{0,10}[[:alnum:] \&\;\?!,\)\+]+) *\] *\( *([^ ]+) *\)/<a href='\2'>\1<\/a>/g
+# Handle [֍](url) format specifically
+s/\[֍\] *\( *([^ ]+) *\)/<a href='\1'>֍<\/a>/g
+# Handle regular markdown links [text](url)
+s/\[ *([^]]+) *\] *\( *([^ ]+) *\)/<a href='\2'>\1<\/a>/g
 # **text** and **text**
 s/\*\*([^*]+)\*\*/<strong>\1<\/strong>/g
 s/__([^_]+)__/<strong>\1<\/strong>/g
