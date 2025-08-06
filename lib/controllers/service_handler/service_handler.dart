@@ -131,8 +131,9 @@ class ServiceHandler extends GetxController {
   Future<void> fetchHomePage() => service.fetchHomePage();
 
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    if (serviceType.value == ServicesType.extensions)
+    if (serviceType.value == ServicesType.extensions) {
       return service.fetchDetails(params);
+    }
     Media? data = cacheController.getCacheById(params.id);
     return data ?? service.fetchDetails(params);
   }
