@@ -278,9 +278,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
 
                       const SizedBox(height: 24),
 
-                      // Content based on selected tab
-                      if (selectedTab == 0) ...[
-                        // Aniyomi Tab - Only Anime and Manga
+                      if (selectedTab.value == 0) ...[
                         _buildRepoField(
                           context,
                           "Anime Repository",
@@ -297,7 +295,6 @@ class _BrowseScreenState extends State<ExtensionScreen>
                           "Enter manga repository URL",
                         ),
                       ] else ...[
-                        // Mangayomi Tab - Anime, Manga, and Novel
                         _buildRepoField(
                           context,
                           "Anime Repository",
