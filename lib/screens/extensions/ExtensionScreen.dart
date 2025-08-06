@@ -43,12 +43,6 @@ class _BrowseScreenState extends State<ExtensionScreen>
     });
   }
 
-  @override
-  void dispose() {
-    sourceController.sortExtensions();
-    super.dispose();
-  }
-
   Future<void> removeOldData() async {}
 
   Future<void> _fetchData() async {

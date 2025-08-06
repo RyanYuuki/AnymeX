@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -33,13 +35,27 @@ class ExtensionListTileWidget extends StatefulWidget {
 class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   bool _isLoading = false;
 
+  Future<void> sortExtensions() async {
+    switch (widget.mediaType) {
+      case ItemType.manga:
+        await sourceController.sortMangaExtensions();
+        break;
+      case ItemType.anime:
+        await sourceController.sortAnimeExtensions();
+        break;
+      case ItemType.novel:
+        await sourceController.sortNovelExtensions();
+        break;
+    }
+  }
+
   Future<void> _handleSourceAction() async {
     setState(() => _isLoading = true);
     try {
       await widget.source.extensionType
           ?.getManager()
           .installSource(widget.source);
-      await sourceController.sortExtensions();
+      await sortExtensions();
     } catch (e) {
       log(e.toString());
     }
@@ -227,7 +243,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
       if (updateAvailable) {
         setState(() => _isLoading = true);
         widget.source.extensionType!.getManager().update([widget.source.id!]);
-        await sourceController.sortExtensions();
+        await sortExtensions();
         if (mounted) {
           setState(() => _isLoading = false);
         }
@@ -242,7 +258,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
               await widget.source.extensionType!
                   .getManager()
                   .uninstallSource(widget.source);
-              await sourceController.sortExtensions();
+              await sortExtensions();
             } catch (e) {
               log("Uninstall Failed => ${e.toString()}");
             }
