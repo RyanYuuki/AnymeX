@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -52,7 +53,8 @@ class SeasonsGrid extends StatelessWidget {
                                     media: Media(
                                         id: relation.id.toString(),
                                         title: relation.title,
-                                        poster: relation.poster),
+                                        poster: relation.poster,
+                                        serviceType: ServicesType.anilist),
                                     tag: relation.id.toString()),
                               );
                             },

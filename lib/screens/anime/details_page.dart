@@ -53,7 +53,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Media? anilistData;
   Rx<TrackedMedia?> currentAnime = TrackedMedia().obs;
   final anilist = Get.find<AnilistAuth>();
-  final fetcher = Get.find<ServiceHandler>();
   // Tracker for Avail Anime
   RxBool isListedAnime = false.obs;
 
@@ -134,8 +133,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void _checkAnimePresence() {
-    fetcher.onlineService.setCurrentMedia(widget.media.id.toString());
-    var data = fetcher.onlineService.currentMedia;
+    final service = widget.media.serviceType.onlineService;
+    service.setCurrentMedia(widget.media.id.toString());
+    var data = service.currentMedia;
 
     if (data.value.id != null || data.value.id != '') {
       isListedAnime.value = true;
@@ -151,9 +151,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     try {
       log("Fetch Initiated for Media => ${widget.media.id}");
 
-      final tempData = await fetcher
+      final service = widget.media.serviceType.service;
+
+      final tempData = await service
           .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
-      final isExtensions = fetcher.serviceType.value == ServicesType.extensions;
+      final isExtensions = widget.media.serviceType == ServicesType.extensions;
 
       setState(() {
         if (isExtensions) {
@@ -376,13 +378,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 children: [
                   Row(
                     children: [
-                      if (fetcher.serviceType.value !=
-                              ServicesType.extensions &&
-                          fetcher.isLoggedIn.value) ...[
+                      if (widget.media.serviceType != ServicesType.extensions &&
+                          widget.media.serviceType.onlineService.isLoggedIn
+                              .value) ...[
                         Expanded(
                           child: AnymeXButton(
                             onTap: () {
-                              if (fetcher.isLoggedIn.value) {
+                              if (widget.media.serviceType.onlineService
+                                  .isLoggedIn.value) {
                                 showListEditorModal(context);
                               } else {
                                 snackBar("You aren't logged in Genius.",
@@ -657,6 +660,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
           onUpdate: (id, score, status, progress) async {
+            final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
                 listId: id ?? widget.media.id,
@@ -668,6 +672,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             setState(() {});
           },
           onDelete: (s) async {
+            final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.mediaListId ??
                 widget.media.id;
             await fetcher.onlineService.deleteListEntry(id, isAnime: true);

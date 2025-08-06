@@ -39,7 +39,7 @@ class Media {
   List<Media> recommendations;
   NextAiringEpisode? nextAiringEpisode;
   List<Ranking> rankings;
-  ServicesType? serviceType;
+  ServicesType serviceType;
   DateTime? createdAt;
   bool? isAdult;
 
@@ -73,7 +73,7 @@ class Media {
       this.nextAiringEpisode,
       this.rankings = const [],
       this.mediaContent,
-      this.serviceType,
+      required this.serviceType,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -318,7 +318,7 @@ class Media {
         poster: data.poster ?? '?',
         rating: data.extraData ?? '0.0',
         mediaType: type,
-        serviceType: data.servicesType);
+        serviceType: data.servicesType!);
   }
 
   factory Media.fromRecs(Map<String, dynamic> json) {
@@ -370,7 +370,7 @@ class Media {
       mediaType: type,
       serviceType: offline.serviceIndex != null
           ? ServicesType.values[offline.serviceIndex!]
-          : null,
+          : ServicesType.anilist,
     );
   }
 

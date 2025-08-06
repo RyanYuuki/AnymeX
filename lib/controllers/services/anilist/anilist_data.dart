@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math' show min;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -771,7 +772,7 @@ averageScore
     } catch (e) {
       log('Error occurred while fetching details: $e');
     }
-    return Media();
+    return Media(serviceType: ServicesType.simkl);
   }
 
   @override

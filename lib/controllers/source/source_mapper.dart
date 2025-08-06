@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -437,5 +438,5 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
       searchResults.isNotEmpty ? searchResults.first.name : "No match found";
   return searchResults.isNotEmpty
       ? Media.froDMedia(searchResults.first, type)
-      : Media();
+      : Media(serviceType: ServicesType.anilist);
 }

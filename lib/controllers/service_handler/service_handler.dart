@@ -13,7 +13,38 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
-enum ServicesType { anilist, mal, simkl, extensions }
+enum ServicesType {
+  anilist,
+  mal,
+  simkl,
+  extensions;
+
+  BaseService get service {
+    switch (this) {
+      case ServicesType.anilist:
+        return Get.find<AnilistData>();
+      case ServicesType.mal:
+        return Get.find<MalService>();
+      case ServicesType.simkl:
+        return Get.find<SimklService>();
+      case ServicesType.extensions:
+        return Get.find<SourceController>();
+    }
+  }
+
+  OnlineService get onlineService {
+    switch (this) {
+      case ServicesType.anilist:
+        return Get.find<AnilistData>();
+      case ServicesType.mal:
+        return Get.find<MalService>();
+      case ServicesType.simkl:
+        return Get.find<SimklService>();
+      default:
+        return Get.find<AnilistData>();
+    }
+  }
+}
 
 final serviceHandler = Get.find<ServiceHandler>();
 
@@ -100,7 +131,8 @@ class ServiceHandler extends GetxController {
   Future<void> fetchHomePage() => service.fetchHomePage();
 
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    if(serviceType.value == ServicesType.extensions) return service.fetchDetails(params);
+    if (serviceType.value == ServicesType.extensions)
+      return service.fetchDetails(params);
     Media? data = cacheController.getCacheById(params.id);
     return data ?? service.fetchDetails(params);
   }

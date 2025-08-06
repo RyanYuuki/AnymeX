@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -29,7 +30,9 @@ class SimklService extends GetxController
     implements BaseService, OnlineService {
   RxList<Media> trendingMovies = <Media>[].obs;
   RxList<Media> trendingSeries = <Media>[].obs;
-  Rx<Media> detailsData = Media().obs;
+  Rx<Media> detailsData = Media(
+    serviceType: ServicesType.simkl,
+  ).obs;
   final storage = Hive.box('auth');
 
   RxList<TrackedMedia> continueWatchingMovies = <TrackedMedia>[].obs;
@@ -135,7 +138,8 @@ class SimklService extends GetxController
               backgroundImage: trendingMovies
                       .firstWhere(
                         (e) => e.cover != null,
-                        orElse: () => Media(cover: ''),
+                        orElse: () =>
+                            Media(cover: '', serviceType: ServicesType.simkl),
                       )
                       .cover ??
                   '',
@@ -156,7 +160,8 @@ class SimklService extends GetxController
               backgroundImage: trendingSeries
                       .firstWhere(
                         (e) => e.cover != null,
-                        orElse: () => Media(cover: ''),
+                        orElse: () =>
+                            Media(cover: '', serviceType: ServicesType.simkl),
                       )
                       .cover ??
                   '',

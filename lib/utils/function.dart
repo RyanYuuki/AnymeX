@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -345,31 +346,31 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
 
 Media convertOfflineToMedia(OfflineMedia offlineMedia) {
   return Media(
-    id: offlineMedia.id ?? '0',
-    romajiTitle: offlineMedia.jname ?? '',
-    title: offlineMedia.english ?? offlineMedia.name ?? '',
-    description: offlineMedia.description ?? '',
-    poster: offlineMedia.poster ?? '',
-    cover: offlineMedia.cover,
-    totalEpisodes: offlineMedia.totalEpisodes ?? '',
-    type: offlineMedia.type ?? '',
-    season: offlineMedia.season ?? '',
-    premiered: offlineMedia.premiered ?? '',
-    duration: offlineMedia.duration ?? '',
-    status: offlineMedia.status ?? '',
-    rating: offlineMedia.rating ?? '',
-    popularity: offlineMedia.popularity ?? '',
-    format: offlineMedia.format ?? '',
-    aired: offlineMedia.aired ?? '',
-    totalChapters: offlineMedia.totalChapters ?? '',
-    genres: offlineMedia.genres ?? [],
-    studios: offlineMedia.studios ?? [],
-    characters: [],
-    relations: [],
-    recommendations: [],
-    nextAiringEpisode: null,
-    rankings: [],
-  );
+      id: offlineMedia.id ?? '0',
+      romajiTitle: offlineMedia.jname ?? '',
+      title: offlineMedia.english ?? offlineMedia.name ?? '',
+      description: offlineMedia.description ?? '',
+      poster: offlineMedia.poster ?? '',
+      cover: offlineMedia.cover,
+      totalEpisodes: offlineMedia.totalEpisodes ?? '',
+      type: offlineMedia.type ?? '',
+      season: offlineMedia.season ?? '',
+      premiered: offlineMedia.premiered ?? '',
+      duration: offlineMedia.duration ?? '',
+      status: offlineMedia.status ?? '',
+      rating: offlineMedia.rating ?? '',
+      popularity: offlineMedia.popularity ?? '',
+      format: offlineMedia.format ?? '',
+      aired: offlineMedia.aired ?? '',
+      totalChapters: offlineMedia.totalChapters ?? '',
+      genres: offlineMedia.genres ?? [],
+      studios: offlineMedia.studios ?? [],
+      characters: [],
+      relations: [],
+      recommendations: [],
+      nextAiringEpisode: null,
+      rankings: [],
+      serviceType: ServicesType.values[offlineMedia.serviceIndex ?? 0]);
 }
 
 List<TrackedMedia> filterListByStatus(

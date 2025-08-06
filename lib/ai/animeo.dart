@@ -40,6 +40,7 @@ Future<List<Media>> getAiRecommendations(
             title: title,
             poster: imageUrl,
             description: synopsis,
+            serviceType: ServicesType.anilist,
             genres: (item['genres'] as List)
                 .map((genre) => genre.toString().trim().toUpperCase())
                 .toList(),

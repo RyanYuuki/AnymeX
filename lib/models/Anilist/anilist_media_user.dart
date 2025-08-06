@@ -1,3 +1,5 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+
 class TrackedMedia {
   String? id;
   String? title;
@@ -13,23 +15,24 @@ class TrackedMedia {
   String? score;
   String? type;
   String? mediaListId;
+  ServicesType servicesType;
 
-  TrackedMedia({
-    this.id,
-    this.title,
-    this.poster,
-    this.episodeCount,
-    this.chapterCount,
-    this.rating,
-    this.totalEpisodes,
-    this.releasedEpisodes,
-    this.watchingStatus,
-    this.format,
-    this.mediaStatus,
-    this.score,
-    this.type,
-    this.mediaListId,
-  });
+  TrackedMedia(
+      {this.id,
+      this.title,
+      this.poster,
+      this.episodeCount,
+      this.chapterCount,
+      this.rating,
+      this.totalEpisodes,
+      this.releasedEpisodes,
+      this.watchingStatus,
+      this.format,
+      this.mediaStatus,
+      this.score,
+      this.type,
+      this.mediaListId,
+      this.servicesType = ServicesType.anilist});
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     return TrackedMedia(
@@ -53,6 +56,7 @@ class TrackedMedia {
         mediaStatus: json['media']['status'],
         score: json['score']?.toString(),
         type: json['media']['type']?.toString(),
+        servicesType: ServicesType.anilist,
         mediaListId:
             (json['media']['mediaListEntry']['id'] ?? json['media']['id'])
                 .toString());
@@ -72,6 +76,7 @@ class TrackedMedia {
       totalEpisodes: json['total_episodes_count']?.toString(),
       watchingStatus: Simkl.simklShowToAL(json['status']),
       type: "show",
+      servicesType: ServicesType.simkl,
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "completed" : "airing",
       rating: null,
@@ -87,6 +92,7 @@ class TrackedMedia {
     return TrackedMedia(
       id: '${ids['simkl']}*MOVIE',
       title: show['title'],
+      servicesType: ServicesType.simkl,
       poster: show['poster'] != null
           ? "https://wsrv.nl/?url=https://simkl.in/posters/${show['poster']}_m.jpg"
           : '?',
@@ -108,6 +114,7 @@ class TrackedMedia {
     return TrackedMedia(
       id: json['node']['id']?.toString(),
       title: json['node']['title'],
+      servicesType: ServicesType.mal,
       poster: json['node']['main_picture']['large'],
       chapterCount:
           json['node']?['list_status']?['num_chapters_read']?.toString() ?? '?',

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/sauce/sauce_result.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -375,12 +376,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           width: double.infinity,
           height: 48,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: colorScheme.outline.withValues(alpha: 0.5)
-            )
-          ),
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.5))),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -720,7 +719,9 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                       onTap: () {
                         navigate(() => AnimeDetailsPage(
                             media: Media(
-                                id: _result!.anilistId, title: _result!.name),
+                                id: _result!.anilistId,
+                                title: _result!.name,
+                                serviceType: ServicesType.anilist),
                             tag: ''));
                       },
                       borderRadius: BorderRadius.circular(16),

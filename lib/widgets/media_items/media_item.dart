@@ -54,7 +54,10 @@ class CardData {
       score: data.score,
       type: data.type,
       data: Media(
-          id: data.id!, title: data.title ?? '??', poster: data.poster ?? ''),
+          id: data.id!,
+          title: data.title ?? '??',
+          poster: data.poster ?? '',
+          serviceType: data.servicesType),
     );
   }
 
