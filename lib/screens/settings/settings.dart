@@ -48,8 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     .colorScheme
                     .surfaceContainer
                     .withOpacity(0.3)),
-            child: ListView(
-              shrinkWrap: true,
+            child: Column(
               children: [
                 CustomTile(
                     icon: IconlyLight.profile,
@@ -114,6 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     navigate(() => const AboutPage());
                   },
                 ),
+                50.height()
               ],
             ),
           )
