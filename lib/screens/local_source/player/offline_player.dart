@@ -234,16 +234,19 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
     });
 
     player.stream.tracks.listen((e) {
-      audioTracks.value = e.audio
-          .where((e) {
-            final title = (e.language != null
-                    ? completeSubtitleLanguageName(e.language!)
-                    : (e.title ?? e.id))
-                .toLowerCase();
-            return title != 'no' && title != 'auto' && title != 'none';
-          })
-          .toSet()
-          .toList();
+      if (e.audio.isEmpty) {
+        audioTracks.value = e.audio
+            .where((e) {
+              final title = (e.language != null
+                      ? completeSubtitleLanguageName(e.language!)
+                      : (e.title ?? e.id))
+                  .toLowerCase();
+              return title != 'no' && title != 'auto' && title != 'none';
+            })
+            .toSet()
+            .toList();
+      }
+
       subtitleTracks.value = e.subtitle
           .where((e) {
             final title = (e.language != null
@@ -255,8 +258,13 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
           .toSet()
           .toList();
 
-      selectedAudioTrack.value = audioTracks.first;
-      selectedSubTrack.value = subtitleTracks.first;
+      if (audioTracks.isNotEmpty) {
+        selectedAudioTrack.value = audioTracks.first;
+      }
+
+      if (subtitleTracks.isNotEmpty) {
+        selectedSubTrack.value = subtitleTracks.first;
+      }
 
       log("Audio tracks: ${e.audio.length}");
       log("Subtitle tracks: ${e.subtitle.length}");
@@ -882,6 +890,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
   Widget _buildControls() {
     return Obx(() {
       final themeFgColor = _getFgColor().obs;
+      final width = MediaQuery.of(context).size.width;
 
       return AnimatedPositioned(
         duration: const Duration(milliseconds: 300),
@@ -923,8 +932,8 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
                             const SizedBox(width: 8),
                             SizedBox(
                               width: getResponsiveSize(context,
-                                  mobileSize: Get.width * 0.3,
-                                  desktopSize: (Get.width * 0.6)),
+                                  mobileSize: width * 0.3,
+                                  desktopSize: (width * 0.6)),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

@@ -7,6 +7,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
@@ -70,40 +71,31 @@ class _MyLibraryState extends State<MyLibrary> {
   void initState() {
     super.initState();
     _initLibraryData();
-    ever(serviceHandler.serviceType, (i) => _initLibraryData(index: i.index));
     _getPreferences();
+    ever(offlineStorage.animeCustomLists, (_) => _initLibraryData());
+    ever(offlineStorage.mangaCustomLists, (_) => _initLibraryData());
   }
 
-  void _initLibraryData({int? index}) {
-    final handler = index ?? Get.find<ServiceHandler>().serviceType.value.index;
-    selectedService.value = ServicesType.values[handler];
-
-    customListData.value = offlineStorage.animeCustomListData
+  void _initLibraryData() {
+    customListData.value = offlineStorage.animeCustomListData.value
         .map((e) => CustomListData(
               listName: e.listName,
-              listData: e.listData
-                  .where((item) => item.serviceIndex == handler)
-                  .toList(),
+              listData: e.listData.toList(),
             ))
         .toList();
 
     historyData.value = offlineStorage.animeLibrary
-        .where((e) =>
-            e.currentEpisode?.currentTrack != null && e.serviceIndex == handler)
+        .where((e) => e.currentEpisode?.currentTrack != null)
         .toList();
 
-    customListDataManga.value = offlineStorage.mangaCustomListData
+    customListDataManga.value = offlineStorage.mangaCustomListData.value
         .map((e) => CustomListData(
               listName: e.listName,
-              listData: e.listData
-                  .where((item) => item.serviceIndex == handler)
-                  .toList(),
+              listData: e.listData.toList(),
             ))
         .toList();
 
-    historyDataManga.value = offlineStorage.mangaLibrary
-        .where((e) => e.serviceIndex == handler)
-        .toList();
+    historyDataManga.value = offlineStorage.mangaLibrary.toList();
 
     initialCustomListData.value = customListData;
     initialCustomListMangaData.value = customListDataManga;
@@ -389,6 +381,24 @@ class _MyLibraryState extends State<MyLibrary> {
                     }
                   },
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: AnymexIconChip(
+                icon: Row(
+                  children: [
+                    Icon(Iconsax.edit,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    5.width(),
+                    const AnymexText(text: 'Edit')
+                  ],
+                ),
+                isSelected: false,
+                onSelected: (selected) {
+                  navigate(
+                      () => CustomListsEditor(isManga: !isAnimeSelected.value));
+                },
               ),
             ),
           ]);

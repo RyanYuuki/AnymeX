@@ -73,6 +73,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   // Library
   final offlineStorage = Get.find<OfflineStorageController>();
+  late ServicesType mediaService;
 
   // Player Related Stuff
   late Player player;
@@ -120,7 +121,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   // Service Related Handlers and Variables
   final sourceController = Get.find<SourceController>();
-  final serviceHandler = Get.find<ServiceHandler>();
   final isEpisodeDialogOpen = false.obs;
   late bool isLoggedIn;
   final leftOriented = true.obs;
@@ -136,6 +136,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    mediaService = widget.anilistData.serviceType;
     if (!settings.isTV.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       if (settings.defaultPortraitMode) {
@@ -197,7 +198,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
   Future<void> trackAnilistAndLocal(int epNum, Episode currentEpisode,
       {bool updateAL = true}) async {
-    final temp = serviceHandler.onlineService.animeList
+    final temp = mediaService.onlineService.animeList
         .firstWhereOrNull((e) => e.id == anilistData.value.id);
     offlineStorage.addOrUpdateAnime(
         widget.anilistData, widget.episodeList, currentEpisode);
@@ -205,12 +206,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         widget.anilistData.id, currentEpisode);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
       if (updateAL) {
-        await serviceHandler.updateListEntry(UpdateListEntryParams(
+        await mediaService.onlineService.updateListEntry(UpdateListEntryParams(
             listId: anilistData.value.id,
             progress: epNum,
             isAnime: true,
             syncIds: [widget.anilistData.idMal]));
-        serviceHandler.onlineService
+        mediaService.onlineService
             .setCurrentMedia(anilistData.value.id.toString());
       }
     }
@@ -403,7 +404,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void _initHiveVariables() {
     playerSettings = settings.playerSettings.value;
     resizeMode.value = settings.resizeMode;
-    isLoggedIn = serviceHandler.isLoggedIn.value;
+    isLoggedIn = mediaService.onlineService.isLoggedIn.value;
     skipDuration.value = settings.seekDuration;
     prevRate.value = playerSettings.speed;
     currentVisualProfile.value = settings.preferences

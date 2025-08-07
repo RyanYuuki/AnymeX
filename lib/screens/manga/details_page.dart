@@ -275,7 +275,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                       AnymeXButton(
                           onTap: () {
                             showCustomListDialog(context, anilistData!,
-                                offlineStorage.mangaCustomLists, true);
+                                offlineStorage.mangaCustomLists.value, true);
                           },
                           height: 50,
                           borderRadius:

@@ -365,7 +365,7 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
 
   double highestSimilarity = 0;
   String? bestMatch;
-  List searchResults = [];
+  List<DMedia> searchResults = [];
   dynamic bestMatchResult;
 
   Future<void> searchAndCompare(String query) async {
@@ -431,11 +431,11 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
     return Media.froDMedia(bestMatchResult, type);
   }
 
-  // If no good match was found, return the first result or an empty Media object
   print(
       "No good match found. Highest similarity: ${highestSimilarity.toStringAsFixed(3)}");
-  searchedTitle.value =
-      searchResults.isNotEmpty ? searchResults.first.name : "No match found";
+  searchedTitle.value = searchResults.isNotEmpty
+      ? searchResults.first.title ?? 'Unknown Title'
+      : "No match found";
   return searchResults.isNotEmpty
       ? Media.froDMedia(searchResults.first, type)
       : Media(serviceType: ServicesType.anilist);

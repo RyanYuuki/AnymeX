@@ -7,7 +7,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +50,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final Rxn<Chapter> currentChapter = Rxn();
   final Rxn<Chapter> savedChapter = Rxn();
   final RxList<PageUrl> pageList = RxList();
+  late ServicesType serviceHandler;
 
   final SourceController sourceController = Get.find<SourceController>();
   final OfflineStorageController offlineStorageController =
@@ -90,13 +90,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   bool _isNavigating = false;
 
-  // Removed auto-save timer related variables since we don't need periodic saves
-
   @override
   void onInit() {
     super.onInit();
+
     WidgetsBinding.instance.addObserver(this);
-    // Save when page opens
     _performSave(reason: 'Page opened');
   }
 
@@ -104,7 +102,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    // Save when user leaves the page
     Future.microtask(() {
       _performFinalSave();
     });
@@ -128,11 +125,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         log('App resumed');
-        // No save needed on resume
         break;
       case AppLifecycleState.inactive:
         log('App inactive');
-        // No save needed on inactive
         break;
       case AppLifecycleState.hidden:
         log('App hidden - saving progress');
@@ -174,7 +169,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           chapterList.isNotEmpty &&
           chapterList.last.number != null &&
           chapterList.last.number! < chapter.number!) {
-        serviceHandler.updateListEntry(UpdateListEntryParams(
+        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
             listId: media.id,
             status: "CURRENT",
             progress: chapter.number!.toInt() + 1,
@@ -302,7 +297,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     media = data;
     chapterList = chList;
     currentChapter.value = curCh;
-
+    serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
 
@@ -324,7 +319,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
-      serviceHandler.updateListEntry(UpdateListEntryParams(
+      serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
           listId: media.id,
           status: "CURRENT",
           progress: chapterNumber,

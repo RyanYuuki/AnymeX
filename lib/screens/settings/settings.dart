@@ -113,10 +113,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     navigate(() => const AboutPage());
                   },
                 ),
-                50.height()
+                // const SizedBox(height: 10),
+                // CustomTile(
+                //   icon: HugeIcons.strokeRoundedInformationCircle,
+                //   title: "Stats",
+                //   description: "Stats of Lists",
+                //   onTap: () async {
+                //     navigate(() => const StatisticsPage());
+                //   },
+                // ),
               ],
             ),
-          )
+          ),
+          30.height(),
         ],
       )),
     );

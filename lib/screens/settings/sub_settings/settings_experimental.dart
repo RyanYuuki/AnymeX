@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -94,13 +96,8 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
       await _updateStatus('Connecting to server...', 0.05);
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final shadersPath = await PlayerShaders.getMpvPath();
-      final mpvPath = Directory(shadersPath).parent.path;
-      final mpvDir = Directory(mpvPath);
-
-      if (!await mpvDir.exists()) {
-        await mpvDir.create(recursive: true);
-      }
+      final shadersPath = PlayerShaders.getShaderBasePath();
+      final mpvPath = Directory(shadersPath).path;
 
       final tempDir = await getTemporaryDirectory();
       final tempFilePath = '${tempDir.path}/anime4k_shaders.zip';
@@ -110,7 +107,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
 
       final dio = Dio();
       await dio.download(
-        'https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/shaders/shaders.zip',
+        'https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/shaders/shaders_new.zip',
         tempFilePath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
@@ -130,7 +127,8 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
 
       for (final file in archive) {
         if (file.isFile) {
-          final outFile = File('$mpvPath/${file.name}');
+          final outFile = File('$mpvPath${file.name}');
+          log('Path is: ${outFile.path}');
 
           await outFile.parent.create(recursive: true);
           await outFile.writeAsBytes(file.content as List<int>);

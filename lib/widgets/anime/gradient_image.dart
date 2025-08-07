@@ -33,7 +33,7 @@ class GradientPoster extends StatelessWidget {
           child: KenBurns(
             maxScale: 1.5,
             minAnimationDuration: const Duration(milliseconds: 6000),
-            maxAnimationDuration: const Duration(milliseconds: 20000),
+            maxAnimationDuration: const Duration(milliseconds: 10000),
             child: Obx(() {
               return NetworkSizedImage(
                 imageUrl: data?.cover ?? posterUrl,

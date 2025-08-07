@@ -411,7 +411,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         AnymeXButton(
                             onTap: () {
                               showCustomListDialog(context, anilistData!,
-                                  offlineStorage.animeCustomLists, false);
+                                  offlineStorage.animeCustomLists.value, false);
                             },
                             height: 50,
                             borderRadius:
@@ -424,8 +424,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         Expanded(
                           child: AnymeXButton(
                               onTap: () {
-                                showCustomListDialog(context, anilistData!,
-                                    offlineStorage.animeCustomLists, false);
+                                showCustomListDialog(
+                                    context,
+                                    anilistData!,
+                                    offlineStorage.animeCustomLists.value,
+                                    false);
                               },
                               height: 50,
                               width: double.infinity,

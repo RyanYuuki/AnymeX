@@ -142,6 +142,7 @@ class PlayerShaders {
     settingsController.selectedShader = shader;
     var paths =
         (await PlayerShaders.getShaderPathsForProfile(shader)).join(';');
+    log('Paths: $paths');
     (player.platform as dynamic).setProperty('glsl-shaders', paths);
   }
 

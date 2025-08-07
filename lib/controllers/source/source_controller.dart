@@ -127,13 +127,16 @@ class SourceController extends GetxController implements BaseService {
     box.put("activeNovelRepo", _activeNovelRepo.value);
     box.put("activeAniyomiAnimeRepo", _activeAniyomiAnimeRepo.value);
     box.put("activeAniyomiMangaRepo", _activeAniyomiMangaRepo.value);
-    if (activeAnimeRepo.isNotEmpty ||
-        activeAniyomiAnimeRepo.isNotEmpty ||
-        activeMangaRepo.isNotEmpty ||
-        activeAniyomiMangaRepo.isNotEmpty ||
-        activeNovelRepo.isNotEmpty) {
-      shouldShowExtensions.value = true;
-    }
+    shouldShowExtensions.value = [
+      _activeAnimeRepo.value,
+      _activeAniyomiAnimeRepo.value,
+      _activeMangaRepo.value,
+      _activeAniyomiMangaRepo.value,
+      _activeNovelRepo.value,
+      installedExtensions,
+      installedMangaExtensions,
+      installedNovelExtensions,
+    ].any((e) => (e as dynamic).isNotEmpty);
   }
 
   @override
@@ -155,49 +158,93 @@ class SourceController extends GetxController implements BaseService {
     }
   }
 
-  Future<void> sortExtensions() async {
-    final extenionTypes = ExtensionType.values.where((e) {
+  Future<List<Source>> _getInstalledExtensions(
+      Future<List<Source>> Function() fetchFn) async {
+    return await fetchFn();
+  }
+
+  List<Source> _getAvailableExtensions(List<Source> Function() fetchFn) {
+    return fetchFn();
+  }
+
+  Future<void> sortAnimeExtensions() async {
+    final types = ExtensionType.values.where((e) {
       if (!Platform.isAndroid && e == ExtensionType.aniyomi) return false;
       return true;
-    }).toList();
+    });
 
-    final newInstalledExtensions = <Source>[];
-    final newInstalledMangaExtensions = <Source>[];
-    final newInstalledNovelExtensions = <Source>[];
-    final newAvailableExtensions = <Source>[];
-    final newAvailableMangaExtensions = <Source>[];
-    final newAvailableNovelExtensions = <Source>[];
+    final installed = <Source>[];
+    final available = <Source>[];
 
-    for (final type in extenionTypes) {
+    for (final type in types) {
       final manager = type.getManager();
-      newInstalledExtensions
-          .addAll(await manager.getInstalledAnimeExtensions());
-      newInstalledMangaExtensions
-          .addAll(await manager.getInstalledMangaExtensions());
-      newInstalledNovelExtensions
-          .addAll(await manager.getInstalledNovelExtensions());
-      newAvailableExtensions.addAll(manager.availableAnimeExtensions.value);
-      newAvailableMangaExtensions
-          .addAll(manager.availableMangaExtensions.value);
-      newAvailableNovelExtensions
-          .addAll(manager.availableNovelExtensions.value);
+      installed.addAll(await _getInstalledExtensions(
+          () => manager.getInstalledAnimeExtensions()));
+      available.addAll(_getAvailableExtensions(
+          () => manager.availableAnimeExtensions.value));
     }
 
-    installedExtensions.value = newInstalledExtensions;
-    installedMangaExtensions.value = newInstalledMangaExtensions;
-    installedNovelExtensions.value = newInstalledNovelExtensions;
-    availableExtensions.value = newAvailableExtensions;
-    availableMangaExtensions.value = newAvailableMangaExtensions;
-    availableNovelExtensions.value = newAvailableNovelExtensions;
+    installedExtensions.value = installed;
+    availableExtensions.value = available;
 
-    installedDownloaderExtensions.value = newInstalledExtensions
+    installedDownloaderExtensions.value = installed
         .where((e) => e.name?.contains('Downloader') ?? false)
         .toList();
   }
 
+  Future<void> sortMangaExtensions() async {
+    final types = ExtensionType.values.where((e) {
+      if (!Platform.isAndroid && e == ExtensionType.aniyomi) return false;
+      return true;
+    });
+
+    final installed = <Source>[];
+    final available = <Source>[];
+
+    for (final type in types) {
+      final manager = type.getManager();
+      installed.addAll(await _getInstalledExtensions(
+          () => manager.getInstalledMangaExtensions()));
+      available.addAll(_getAvailableExtensions(
+          () => manager.availableMangaExtensions.value));
+    }
+
+    installedMangaExtensions.value = installed;
+    availableMangaExtensions.value = available;
+  }
+
+  Future<void> sortNovelExtensions() async {
+    final types = ExtensionType.values.where((e) {
+      if (!Platform.isAndroid && e == ExtensionType.aniyomi) return false;
+      return true;
+    });
+
+    final installed = <Source>[];
+    final available = <Source>[];
+
+    for (final type in types) {
+      final manager = type.getManager();
+      installed.addAll(await _getInstalledExtensions(
+          () => manager.getInstalledNovelExtensions()));
+      available.addAll(_getAvailableExtensions(
+          () => manager.availableNovelExtensions.value));
+    }
+
+    installedNovelExtensions.value = installed;
+    availableNovelExtensions.value = available;
+  }
+
+  Future<void> sortAllExtensions() async {
+    await Future.wait([
+      sortAnimeExtensions(),
+      sortMangaExtensions(),
+      sortNovelExtensions(),
+    ]);
+  }
+
   Future<void> initExtensions({bool refresh = true}) async {
     try {
-      await sortExtensions();
+      await sortAllExtensions();
       final box = Hive.box('themeData');
       final savedActiveSourceId =
           box.get('activeSourceId', defaultValue: '') as String?;
@@ -227,19 +274,24 @@ class SourceController extends GetxController implements BaseService {
       _activeAniyomiMangaRepo.value =
           box.get("activeAniyomiMangaRepo", defaultValue: '');
 
-      if (_activeAnimeRepo.value.isNotEmpty ||
-          _activeAniyomiAnimeRepo.value.isNotEmpty ||
-          _activeMangaRepo.value.isNotEmpty ||
-          _activeAniyomiMangaRepo.value.isNotEmpty ||
-          _activeNovelRepo.value.isNotEmpty) {
-        shouldShowExtensions.value = true;
-      }
+      shouldShowExtensions.value = [
+        _activeAnimeRepo.value,
+        _activeAniyomiAnimeRepo.value,
+        _activeMangaRepo.value,
+        _activeAniyomiMangaRepo.value,
+        _activeNovelRepo.value,
+        installedExtensions,
+        installedMangaExtensions,
+        installedNovelExtensions,
+      ].any((e) => (e as dynamic).isNotEmpty);
 
       log('Extensions initialized.');
     } catch (e) {
       log('Error initializing extensions: $e');
     }
   }
+
+  bool isEmpty(dynamic val) => val.isEmpty;
 
   void setActiveSource(Source source) {
     if (source.itemType == ItemType.manga) {
