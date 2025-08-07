@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -17,13 +18,37 @@ class CacheController extends GetxController {
   RxList<String> get currentPool => getCacheContainer();
 
   void addCache(Map<String, dynamic> data) {
+    if (!data.containsKey('id') ||
+        data['id'] == null ||
+        data['id'].toString().isEmpty) {
+      log('Error: Invalid or missing ID in data');
+      return;
+    }
+
+    final String id = data['id'].toString();
+    final String encodedData = jsonEncode(data);
+
+    detailsData.value = encodedData;
+
     final storedData = getStoredAnime();
-    final index = storedData.indexWhere((e) => e.id == data['id']);
-    detailsData.value = jsonEncode(data);
+
+    final index = storedData.indexWhere((e) => e.id == id);
+
     if (index == -1) {
-      currentPool.add(jsonEncode(data));
+      if (!currentPool.any((item) => jsonDecode(item)['id'] == id)) {
+        currentPool.add(encodedData);
+        log('Added new entry to cache: ID $id');
+      } else {
+        log('Duplicate entry in currentPool skipped: ID $id');
+      }
     } else {
-      currentPool[index] = jsonEncode(data);
+      if (index < currentPool.length) {
+        currentPool[index] = encodedData;
+        log('Updated existing entry in cache: ID $id');
+      } else {
+        log('Warning: currentPool index out of sync for ID $id, adding as new');
+        currentPool.add(encodedData);
+      }
     }
   }
 
