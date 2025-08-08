@@ -40,7 +40,7 @@ dependencies:
   html: any
   http: ^1.2.2
   http_interceptor: ^2.0.0
-  hugeicons: ^0.0.7
+  hugeicons: ^0.0.9
   iconly: ^1.0.1
   iconsax: ^0.0.8
   install_plugin: ^2.1.0
