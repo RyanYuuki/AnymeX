@@ -320,13 +320,13 @@ jobs:
         run: |
           FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
           
-          # Mention the role based on the release name (removed <@&ping> for testing)
+          # Mention the role based on the release name
           if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
-            role_mention=""
+            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
           elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
-            role_mention=""
+            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
           else
-            role_mention=""
+            role_mention="<@&1313346791479054456>"  # Default role ID
           fi
         
           default_color="#1ac4c5"
