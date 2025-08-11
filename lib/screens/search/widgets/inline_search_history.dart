@@ -143,7 +143,7 @@ class InlineSearchHistory extends StatelessWidget {
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final term = searchTerms[index];
-              
+
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -188,9 +188,9 @@ class InlineSearchHistory extends StatelessWidget {
                                     .withOpacity(0.7),
                               ),
                             ),
-              
+
                             const SizedBox(width: 12),
-              
+
                             // Search term
                             Expanded(
                               child: AnymexText(
@@ -202,7 +202,7 @@ class InlineSearchHistory extends StatelessWidget {
                                     .withOpacity(0.8),
                               ),
                             ),
-              
+
                             // Delete button
                             GestureDetector(
                               onTap: () => _deleteTerm(term),

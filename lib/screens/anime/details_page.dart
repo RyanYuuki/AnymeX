@@ -410,8 +410,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         const SizedBox(width: 7),
                         AnymeXButton(
                             onTap: () {
-                              showCustomListDialog(context, anilistData!,
-                                  offlineStorage.animeCustomLists.value, false);
+                              showCustomListDialog(
+                                  context,
+                                  anilistData!,
+                                  offlineStorage.animeCustomLists.value,
+                                  ItemType.anime);
                             },
                             height: 50,
                             borderRadius:
@@ -428,7 +431,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                     context,
                                     anilistData!,
                                     offlineStorage.animeCustomLists.value,
-                                    false);
+                                    ItemType.anime);
                               },
                               height: 50,
                               width: double.infinity,
@@ -445,45 +448,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      const SizedBox(width: 10),
-                      Obx(() {
-                        return AnymexTextSpans(
-                          fontSize: 16,
-                          spans: [
-                            const AnymexTextSpan(text: "Watched "),
-                            AnymexTextSpan(
-                                text: currentAnime.value?.episodeCount ?? '?',
-                                variant: TextVariant.bold,
-                                color: Theme.of(context).colorScheme.primary),
-                            const AnymexTextSpan(text: ' Out of '),
-                            if (anilistData?.nextAiringEpisode?.episode != null)
-                              AnymexTextSpan(
-                                  text:
-                                      '${anilistData!.nextAiringEpisode!.episode - 1} | ',
-                                  variant: TextVariant.bold,
-                                  color: Theme.of(context).colorScheme.primary),
-                            AnymexTextSpan(
-                                text: anilistData?.totalEpisodes ?? '?',
-                                variant: TextVariant.bold,
-                                color: Theme.of(context).colorScheme.primary),
-                          ],
-                        );
-                      }),
-                      const Spacer(),
-                      IconButton(
-                          onPressed: () {
-                            snackBar("WIP");
-                          },
-                          icon: const Icon(Iconsax.heart)),
-                      IconButton(
-                          onPressed: () {
-                            snackBar("WIP");
-                          },
-                          icon: const Icon(Icons.share)),
-                    ],
-                  ),
+                  _buildProgressContainer(context)
                 ],
               ),
             ),
@@ -507,6 +472,95 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               _buildEpisodeSection(context),
             ],
           )
+        ],
+      ),
+    );
+  }
+
+  String formatProgress({
+    required dynamic currentChapter,
+    required dynamic totalChapters,
+    required dynamic altLength,
+  }) {
+    num parseNum(dynamic value) {
+      if (value == null) return 1;
+      if (value is num) return value;
+      if (value is String) return num.tryParse(value) ?? 1;
+      return 1;
+    }
+
+    final num current = parseNum(currentChapter);
+    final num total = parseNum(totalChapters) != 1
+        ? parseNum(totalChapters)
+        : parseNum(altLength);
+
+    final num safeTotal = total.clamp(1, double.infinity);
+    final progress = (current / safeTotal);
+    if (progress.toString().length > 5) return progress.toStringAsFixed(3);
+    return progress.toStringAsFixed(2);
+  }
+
+  Widget _buildProgressContainer(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.movie_filter_rounded,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: AnymexTextSpans(
+              fontSize: 14,
+              spans: [
+                AnymexTextSpan(
+                  text: "Episode ",
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
+                AnymexTextSpan(
+                  text: currentAnime.value?.chapterCount?.toString() ??
+                      currentAnime.value?.episodeCount?.toString() ??
+                      '0',
+                  variant: TextVariant.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                AnymexTextSpan(
+                  text: ' of ',
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
+                AnymexTextSpan(
+                  text: anilistData?.totalChapters.toString() ??
+                      anilistData?.totalChapters.toString() ??
+                      '??',
+                  variant: TextVariant.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            ),
+            child: Text(
+              '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes, altLength: episodeList.value.length)}%',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );

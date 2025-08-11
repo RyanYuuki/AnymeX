@@ -77,8 +77,8 @@ class CacheController extends GetxController {
         return Media.froDMedia(
             DMedia.fromJson(parsedMap),
             serviceHandler.extensionService.lastUpdatedSource.value == "ANIME"
-                ? MediaType.anime
-                : MediaType.manga);
+                ? ItemType.anime
+                : ItemType.manga);
     }
   }
 

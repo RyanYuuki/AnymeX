@@ -685,16 +685,19 @@ class AnilistAuth extends GetxController {
   void setCurrentMedia(String id, {bool isManga = false}) {
     if (isManga) {
       final savedManga = offlineStorage.getMangaById(id);
+      final number = savedManga?.currentChapter?.number?.toInt() ?? 0;
       currentMedia.value = mangaList.value.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
-              episodeCount: savedManga?.currentChapter?.number?.toString() ??
-                  savedManga?.currentEpisode?.number ??
-                  '0'));
+                episodeCount: number.toString(),
+                chapterCount: number.toString(),
+              ));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
-          orElse: () =>
-              TrackedMedia(episodeCount: savedAnime?.currentEpisode?.number));
+          orElse: () => TrackedMedia(
+              episodeCount: number.toString(),
+              chapterCount: number.toString()));
     }
   }
 
