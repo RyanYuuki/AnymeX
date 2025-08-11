@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, deprecated_member_use
 
-
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';

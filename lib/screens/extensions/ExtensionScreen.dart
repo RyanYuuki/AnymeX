@@ -59,8 +59,9 @@ class _BrowseScreenState extends State<ExtensionScreen>
 
   void repoSheet() {
     final controller = Get.find<SourceController>();
-    final selectedTab = 0.obs;
     final isAndroid = Platform.isAndroid;
+
+    final selectedTab = isAndroid ? 0.obs : 1.obs;
 
     showModalBottomSheet(
       context: context,

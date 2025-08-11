@@ -49,8 +49,10 @@ class SettingsAccounts extends StatelessWidget {
               children: [
                 IconButton(
                   style: IconButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),

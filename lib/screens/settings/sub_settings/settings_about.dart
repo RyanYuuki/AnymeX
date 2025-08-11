@@ -154,7 +154,8 @@ class AboutPage extends StatelessWidget {
                   ),
                   CustomListTile(
                     onTap: () async {
-                      await launchUrlHelper('https://www.reddit.com/r/AnymeX_/');
+                      await launchUrlHelper(
+                          'https://www.reddit.com/r/AnymeX_/');
                     },
                     leading: const Icon(HugeIcons.strokeRoundedReddit),
                     title: "Reddit",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
@@ -116,10 +117,10 @@ class MediaCard extends StatelessWidget {
   void navGate(tag) {
     if (isManga) {
       navigate(() => MangaDetailsPage(
-          media: Media.fromOfflineMedia(data, MediaType.manga), tag: tag));
+          media: Media.fromOfflineMedia(data, ItemType.manga), tag: tag));
     } else {
       navigate(() => AnimeDetailsPage(
-          media: Media.fromOfflineMedia(data, MediaType.anime), tag: tag));
+          media: Media.fromOfflineMedia(data, ItemType.anime), tag: tag));
     }
   }
 

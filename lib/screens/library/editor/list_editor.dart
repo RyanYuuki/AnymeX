@@ -1,12 +1,11 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -31,7 +30,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
   void initState() {
     super.initState();
     _lists = offlineStorage.getEditableCustomListData(
-        mediaType: widget.isManga ? MediaType.manga : MediaType.anime);
+        mediaType: widget.isManga ? ItemType.manga : ItemType.anime);
   }
 
   @override
@@ -40,7 +39,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
   }
 
   void _saveListData() => offlineStorage.applyCustomListChanges(_lists,
-      mediaType: widget.isManga ? MediaType.manga : MediaType.anime);
+      mediaType: widget.isManga ? ItemType.manga : ItemType.anime);
 
   @override
   Widget build(BuildContext context) {

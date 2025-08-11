@@ -25,6 +25,7 @@ import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -267,12 +268,12 @@ class _MyLibraryState extends State<MyLibrary> {
                           if (isAnimeSelected.value) {
                             navigate(() => AnimeDetailsPage(
                                 media: Media.fromOfflineMedia(
-                                    items[i], MediaType.anime),
+                                    items[i], ItemType.anime),
                                 tag: tag));
                           } else {
                             navigate(() => MangaDetailsPage(
                                 media: Media.fromOfflineMedia(
-                                    items[i], MediaType.manga),
+                                    items[i], ItemType.manga),
                                 tag: tag));
                           }
                         },
@@ -280,7 +281,9 @@ class _MyLibraryState extends State<MyLibrary> {
                             itemData: items[i],
                             tag: '${getRandomTag()}-$i',
                             variant: DataVariant.library,
-                            isManga: !isAnimeSelected.value,
+                            type: !isAnimeSelected.value
+                                ? ItemType.manga
+                                : ItemType.anime,
                             cardStyle:
                                 CardStyle.values[settingsController.cardStyle]),
                       );

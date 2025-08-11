@@ -495,7 +495,8 @@ class ChapterListItem extends StatelessWidget {
             child: AnymexProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
         ],

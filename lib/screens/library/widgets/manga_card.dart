@@ -180,7 +180,8 @@ class MangaHistoryCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 child: LinearProgressIndicator(
                                   value: calculateProgress(),
-                                  backgroundColor: colorScheme.surfaceContainerHighest,
+                                  backgroundColor:
+                                      colorScheme.surfaceContainerHighest,
                                   color: colorScheme.primary,
                                   minHeight: 5,
                                 ),

@@ -14,6 +14,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -111,7 +112,7 @@ class ChapterSection extends StatelessWidget {
                           (manga) async {
                             chapterList.value = [];
                             await getDetailsFromSource(
-                                Media.froDMedia(manga, MediaType.manga));
+                                Media.froDMedia(manga, ItemType.manga));
                           },
                           isManga: true,
                         );
@@ -190,37 +191,49 @@ class ChapterSection extends StatelessWidget {
         ? [
             const DropdownItem(
               value: "No Sources Installed",
-              text: "No Sources Installed",
+              text: "No Manga Sources Available",
+              subtitle: "Install manga extensions to get started",
+              leadingIcon: Icon(
+                Icons.menu_book_outlined,
+                size: 24,
+                color: Colors.grey,
+              ),
             ),
           ]
         : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
+            final isMangayomi = source.extensionType == ExtensionType.mangayomi;
+
             return DropdownItem(
               value: '${source.name} (${source.lang?.toUpperCase()})',
-              text:
-                  '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
-              extra: NetworkSizedImage(
-                radius: 50,
-                imageUrl: source.extensionType == ExtensionType.mangayomi
+              text: source.name?.toUpperCase() ?? 'Unknown Source',
+              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
+              leadingIcon: NetworkSizedImage(
+                radius: 16,
+                imageUrl: isMangayomi
                     ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
                     : 'https://aniyomi.org/img/logo-128px.png',
-                height: 20,
-                width: 20,
+                height: 24,
+                width: 24,
               ),
             );
           }).toList();
+
     DropdownItem? selectedItem;
     if (sourceController.installedMangaExtensions.isEmpty) {
       selectedItem = items.first;
     } else {
       final activeSource = sourceController.activeMangaSource.value;
       if (activeSource != null) {
+        final isMangayomi =
+            activeSource.extensionType == ExtensionType.mangayomi;
+
         selectedItem = DropdownItem(
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
-          text:
-              '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
-          extra: NetworkSizedImage(
-            radius: 50,
-            imageUrl: activeSource.extensionType == ExtensionType.mangayomi
+          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
+          subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
+          leadingIcon: NetworkSizedImage(
+            radius: 12,
+            imageUrl: isMangayomi
                 ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
                 : 'https://aniyomi.org/img/logo-128px.png',
             height: 20,
@@ -236,7 +249,7 @@ class ChapterSection extends StatelessWidget {
       items: items,
       selectedItem: selectedItem,
       label: "SELECT SOURCE",
-      icon: Iconsax.folder5,
+      icon: Icons.extension_rounded,
       onChanged: (DropdownItem item) async {
         chapterList.value = [];
         try {

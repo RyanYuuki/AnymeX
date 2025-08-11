@@ -16,6 +16,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -120,21 +121,29 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         ? [
             const DropdownItem(
               value: "No Sources Installed",
-              text: "No Sources Installed",
+              text: "No Sources Available",
+              subtitle: "Install extensions to get started",
+              leadingIcon: Icon(
+                Icons.extension_off,
+                size: 24,
+                color: Colors.grey,
+              ),
             ),
           ]
         : sourceController.installedExtensions.map<DropdownItem>((source) {
+            final isMangayomi = source.extensionType == ExtensionType.mangayomi;
+
             return DropdownItem(
               value: '${source.name} (${source.lang?.toUpperCase()})',
-              text:
-                  '${source.name?.toUpperCase()} (${source.lang?.toUpperCase()})',
-              extra: NetworkSizedImage(
-                radius: 50,
-                imageUrl: source.extensionType == ExtensionType.mangayomi
+              text: source.name?.toUpperCase() ?? 'Unknown Source',
+              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
+              leadingIcon: NetworkSizedImage(
+                radius: 16,
+                imageUrl: isMangayomi
                     ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
                     : 'https://aniyomi.org/img/logo-128px.png',
-                height: 20,
-                width: 20,
+                height: 24,
+                width: 24,
               ),
             );
           }).toList();
@@ -145,13 +154,16 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     } else {
       final activeSource = sourceController.activeSource.value;
       if (activeSource != null) {
+        final isMangayomi =
+            activeSource.extensionType == ExtensionType.mangayomi;
+
         selectedItem = DropdownItem(
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
-          text:
-              '${activeSource.name?.toUpperCase()} (${activeSource.lang?.toUpperCase()})',
-          extra: NetworkSizedImage(
-            radius: 50,
-            imageUrl: activeSource.extensionType == ExtensionType.mangayomi
+          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
+          subtitle: activeSource.lang?.toUpperCase() ?? 'Unknown',
+          leadingIcon: NetworkSizedImage(
+            radius: 12,
+            imageUrl: isMangayomi
                 ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
                 : 'https://aniyomi.org/img/logo-128px.png',
             height: 20,
@@ -165,7 +177,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       items: items,
       selectedItem: selectedItem,
       label: "SELECT SOURCE",
-      icon: Iconsax.folder5,
+      icon: Icons.extension_rounded,
       onChanged: (DropdownItem item) => handleSourceChange(item.value),
       actionIcon: Icons.settings_outlined,
       onActionPressed: () => openSourcePreferences(context),
@@ -183,7 +195,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       return FutureBuilder<List<Episode>>(
         future: _episodeFuture.value,
         builder: (context, snapshot) {
-          // Case 1: Error occurred
           if (widget.episodeError.value &&
               (widget.episodeList?.value.isEmpty ?? true)) {
             return const SizedBox(
@@ -297,7 +308,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                           int currentRequestId = _requestCounter.value;
                           _episodeFuture.value = Future(() async {
                             await widget.getDetailsFromSource(
-                                Media.froDMedia(manga, MediaType.anime));
+                                Media.froDMedia(manga, ItemType.anime));
                             if (_requestCounter.value != currentRequestId) {
                               throw Exception('Request cancelled');
                             }

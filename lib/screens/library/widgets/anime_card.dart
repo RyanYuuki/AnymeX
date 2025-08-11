@@ -7,6 +7,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -22,7 +23,7 @@ class AnimeCard extends StatelessWidget {
       scale: 1,
       onTap: () {
         navigate(() => AnimeDetailsPage(
-            media: Media.fromOfflineMedia(data, MediaType.anime),
+            media: Media.fromOfflineMedia(data, ItemType.anime),
             tag: '${data.id!}${UniqueKey().toString()}'));
       },
       child: Container(

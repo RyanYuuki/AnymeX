@@ -274,7 +274,7 @@ class LocalSourceController extends GetxController
       }
     } catch (e) {
       log('Error selecting directory: $e');
-      errorSnackBar(e.toString()); 
+      errorSnackBar(e.toString());
       await _setDefaultDirectory();
     }
   }
