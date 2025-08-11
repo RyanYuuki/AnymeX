@@ -39,7 +39,7 @@ dependencies:
   html: any
   http: ^1.2.2
   http_interceptor: ^2.0.0
-  hugeicons: ^0.0.9
+  hugeicons: ^0.0.7
   iconly: ^1.0.1
   iconsax: ^0.0.8
   install_plugin: ^2.1.0
@@ -77,6 +77,7 @@ dependencies:
 
   archive: any
   image: any
+  flutter_widget_from_html: ^0.17.0
 dev_dependencies:
   build_runner: ^2.4.11
   change_app_package_name: ^1.4.0

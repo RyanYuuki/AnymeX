@@ -4,6 +4,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -11,13 +12,13 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 class CustomListDialog extends StatefulWidget {
   final Media original;
   final List<CustomList> customLists;
-  final bool isManga;
+  final ItemType type;
 
   const CustomListDialog({
     super.key,
     required this.original,
     required this.customLists,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -147,8 +148,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
     if (newListName != null && newListName.isNotEmpty) {
       setState(() {
-        storage.addCustomList(newListName,
-            mediaType: widget.isManga ? MediaType.manga : MediaType.anime);
+        storage.addCustomList(newListName, mediaType: widget.type);
         initialState[newListName] = false;
         modifiedLists = widget.customLists
             .map((list) => CustomList(
@@ -168,9 +168,9 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
       if (wasChecked != isCheckedNow) {
         if (isCheckedNow) {
-          storage.addMedia(listName, widget.original, widget.isManga);
+          storage.addMedia(listName, widget.original, widget.type);
         } else {
-          storage.removeMedia(listName, widget.original.id, widget.isManga);
+          storage.removeMedia(listName, widget.original.id, widget.type);
         }
       }
     }
@@ -405,7 +405,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                 children: [
                   OutlinedButton.icon(
                     onPressed: _showCreateListDialog,
-                    icon: Icon(Icons.add, size: 18),
+                    icon: const Icon(Icons.add, size: 18),
                     label: const Text('New Collection'),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
@@ -459,13 +459,13 @@ class _CustomListDialogState extends State<CustomListDialog> {
 }
 
 void showCustomListDialog(
-    BuildContext context, Media media, List<CustomList> lists, bool isManga) {
+    BuildContext context, Media media, List<CustomList> lists, ItemType type) {
   showDialog(
     context: context,
     builder: (context) => CustomListDialog(
       original: media,
       customLists: lists,
-      isManga: isManga,
+      type: type,
     ),
   );
 }
