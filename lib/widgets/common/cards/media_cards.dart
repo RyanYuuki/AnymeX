@@ -4,19 +4,20 @@ import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:blur/blur.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SaikouCard extends CarouselCard {
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
 
   const SaikouCard({
     super.key,
     required super.itemData,
     required super.tag,
     required this.variant,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -52,17 +53,15 @@ class SaikouCard extends CarouselCard {
                 width: double.infinity,
               ),
             ),
-            buildCardBadge(context, variant, isManga),
-            if (variant == DataVariant.library)
-              buildProgress(context, variant, isManga)
+            buildCardBadge(context, variant, type),
+            if (variant == DataVariant.library) buildProgress(context, variant)
           ],
         ),
       ),
     );
   }
 
-  Widget buildProgress(
-      BuildContext context, DataVariant variant, bool isManga) {
+  Widget buildProgress(BuildContext context, DataVariant variant) {
     final theme = Theme.of(context);
 
     return Positioned(
@@ -101,14 +100,14 @@ class SaikouCard extends CarouselCard {
 
 class ModernCard extends CarouselCard {
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
 
   const ModernCard({
     super.key,
     required super.itemData,
     required super.tag,
     required this.variant,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -157,7 +156,7 @@ class ModernCard extends CarouselCard {
                   ),
                 ),
               ),
-            buildCardBadgeV2(context, variant, isManga),
+            buildCardBadgeV2(context, variant, type),
           ],
         ),
       ),
@@ -167,14 +166,14 @@ class ModernCard extends CarouselCard {
 
 class ExoticCard extends CarouselCard {
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
 
   const ExoticCard({
     super.key,
     required super.itemData,
     required super.tag,
     required this.variant,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -220,7 +219,7 @@ class ExoticCard extends CarouselCard {
                       ),
                     ),
                     if (variant == DataVariant.library)
-                      buildCardBadgeV2(context, variant, isManga)
+                      buildCardBadgeV2(context, variant, type)
                   ],
                 ),
               ),
@@ -253,7 +252,7 @@ class ExoticCard extends CarouselCard {
                 children: [
                   if (variant == DataVariant.library) ...[
                     AnymexText(
-                      text: isManga ? 'Chapter ' : 'Episode ',
+                      text: type == ItemType.manga ? 'Chapter ' : 'Episode ',
                       size: 12,
                       color: Theme.of(context).colorScheme.onPrimary,
                       variant: TextVariant.bold,
@@ -268,7 +267,7 @@ class ExoticCard extends CarouselCard {
                   ] else ...[
                     Icon(
                       getIconForVariant(
-                          itemData.extraData ?? '', variant, isManga),
+                          itemData.extraData ?? '', variant, type),
                       size: 16,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
@@ -292,14 +291,14 @@ class ExoticCard extends CarouselCard {
 
 class MinimalExoticCard extends CarouselCard {
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
 
   const MinimalExoticCard({
     super.key,
     required super.itemData,
     required super.tag,
     required this.variant,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -345,7 +344,7 @@ class MinimalExoticCard extends CarouselCard {
                       ),
                     ),
                     if (variant == DataVariant.library)
-                      buildCardBadgeV2(context, variant, isManga),
+                      buildCardBadgeV2(context, variant, type),
                     if (shouldShowTitle())
                       Positioned(
                         left: 0,
@@ -395,7 +394,7 @@ class MinimalExoticCard extends CarouselCard {
                 children: [
                   if (variant == DataVariant.library) ...[
                     AnymexText(
-                      text: isManga ? 'Chapter ' : 'Episode ',
+                      text: type == ItemType.manga ? 'Chapter ' : 'Episode ',
                       size: 12,
                       color: Theme.of(context).colorScheme.onPrimary,
                       variant: TextVariant.bold,
@@ -414,7 +413,7 @@ class MinimalExoticCard extends CarouselCard {
                               ? itemData.args!
                               : itemData.extraData ?? '',
                           variant,
-                          isManga),
+                          type),
                       size: 16,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
@@ -438,14 +437,14 @@ class MinimalExoticCard extends CarouselCard {
 
 class BlurCard extends CarouselCard {
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
 
   const BlurCard({
     super.key,
     required super.itemData,
     required super.tag,
     required this.variant,
-    required this.isManga,
+    required this.type,
   });
 
   @override
@@ -496,7 +495,7 @@ class BlurCard extends CarouselCard {
                 ),
               ),
             ],
-            buildCardBadge(context, variant, isManga),
+            buildCardBadge(context, variant, type),
           ],
         ),
       ),
@@ -505,7 +504,7 @@ class BlurCard extends CarouselCard {
 
   @override
   Widget buildCardBadge(
-      BuildContext context, DataVariant variant, bool isManga) {
+      BuildContext context, DataVariant variant, ItemType type) {
     final theme = Theme.of(context);
 
     return Positioned(
@@ -532,7 +531,7 @@ class BlurCard extends CarouselCard {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  getIconForVariant(itemData.extraData ?? '', variant, isManga),
+                  getIconForVariant(itemData.extraData ?? '', variant, type),
                   size: 16,
                   color: theme.colorScheme.primary,
                 ),

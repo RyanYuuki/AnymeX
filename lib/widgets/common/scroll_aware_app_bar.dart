@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:anymex/mixins/scroll_aware_app_bar_mixin.dart';
 import 'package:anymex/widgets/common/animated_app_bar.dart';
 
-
 class CustomAnimatedAppBar extends StatefulWidget {
   final ValueNotifier<bool> isVisible;
   final Duration animationDuration;

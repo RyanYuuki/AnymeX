@@ -145,8 +145,10 @@ class HeaderSection extends StatelessWidget {
       children: [
         IconButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5)),
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.5)),
             onPressed: () {
               Navigator.pop(context);
             },

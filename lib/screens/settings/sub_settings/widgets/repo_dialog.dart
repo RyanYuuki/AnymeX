@@ -1,11 +1,11 @@
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
-  final MediaType type;
+  final ItemType type;
   final ExtensionType extType;
 
   const GitHubRepoDialog({
@@ -39,9 +39,9 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
       setState(() {
-        _controller.text = widget.type == MediaType.anime
+        _controller.text = widget.type == ItemType.anime
             ? sourceController.activeAnimeRepo
-            : widget.type == MediaType.manga
+            : widget.type == ItemType.manga
                 ? sourceController.activeMangaRepo
                 : sourceController.activeNovelRepo;
       });
@@ -79,15 +79,15 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       switch (widget.type) {
-        case MediaType.anime:
+        case ItemType.anime:
           sourceController.setAnimeRepo(url, widget.extType);
           break;
 
-        case MediaType.manga:
+        case ItemType.manga:
           sourceController.setMangaRepo(url, widget.extType);
           break;
 
-        case MediaType.novel:
+        case ItemType.novel:
           sourceController.activeNovelRepo = url;
           break;
       }

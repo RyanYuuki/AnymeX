@@ -58,7 +58,10 @@ class GradientPoster extends StatelessWidget {
                     .colorScheme
                     .secondaryContainer
                     .withOpacity(0.5),
-                Theme.of(context).colorScheme.surfaceContainer,
+                Theme.of(context)
+                    .colorScheme
+                    .surfaceContainer
+                    .withValues(alpha: 0.9),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -135,25 +138,24 @@ class GradientPoster extends StatelessWidget {
             ],
           ),
         ),
-        if (Platform.isAndroid || Platform.isIOS)
-          Positioned(
-              top: 30,
-              right: 20,
-              child: AnymexOnTap(
-                onTap: () {
-                  Get.back();
-                },
-                margin: 0,
-                child: IconButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer,
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: const Icon(Icons.close)),
-              )),
+        Positioned(
+            top: 30,
+            right: 20,
+            child: AnymexOnTap(
+              onTap: () {
+                Get.back();
+              },
+              margin: 0,
+              child: IconButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  icon: const Icon(Icons.close)),
+            )),
       ],
     );
   }

@@ -243,12 +243,12 @@ class _NavBarItemState extends State<NavBarItem>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    bool isDesktop = MediaQuery.of(context).size.width > 500;
 
     return Container(
-      padding: isDesktop ? const EdgeInsets.symmetric(vertical: 5) : null,
+      padding:
+          widget.isVertical ? const EdgeInsets.symmetric(vertical: 5) : null,
       constraints: const BoxConstraints(minWidth: 30),
-      child: isDesktop
+      child: widget.isVertical
           ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [

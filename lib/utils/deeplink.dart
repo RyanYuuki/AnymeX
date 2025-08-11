@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 
 class Deeplink {
   static void initDeepLinkListener() async {
@@ -57,15 +58,15 @@ class Deeplink {
     }
 
     if (repoUrl != null) {
-      Extensions().addRepo(MediaType.anime, repoUrl, extType);
+      Extensions().addRepo(ItemType.anime, repoUrl, extType);
     }
 
     if (mangaUrl != null) {
-      Extensions().addRepo(MediaType.manga, mangaUrl, extType);
+      Extensions().addRepo(ItemType.manga, mangaUrl, extType);
     }
 
     if (novelUrl != null) {
-      Extensions().addRepo(MediaType.novel, novelUrl, extType);
+      Extensions().addRepo(ItemType.novel, novelUrl, extType);
     }
 
     if (repoUrl != null || mangaUrl != null || novelUrl != null) {

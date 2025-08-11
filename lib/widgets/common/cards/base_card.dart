@@ -1,6 +1,7 @@
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -38,7 +39,7 @@ abstract class CarouselCard extends StatelessWidget {
   }
 
   Widget buildCardBadgeV2(
-      BuildContext context, DataVariant variant, bool isManga) {
+      BuildContext context, DataVariant variant, ItemType type) {
     final theme = Theme.of(context);
 
     return Positioned(
@@ -54,7 +55,7 @@ abstract class CarouselCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              getIconForVariant(itemData.extraData ?? '', variant, isManga),
+              getIconForVariant(itemData.extraData ?? '', variant, type),
               size: 16,
               color: theme.colorScheme.onPrimary,
             ),
@@ -72,7 +73,7 @@ abstract class CarouselCard extends StatelessWidget {
   }
 
   Widget buildCardBadge(
-      BuildContext context, DataVariant variant, bool isManga) {
+      BuildContext context, DataVariant variant, ItemType type) {
     final theme = Theme.of(context);
 
     return Positioned(
@@ -91,7 +92,7 @@ abstract class CarouselCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              getIconForVariant(itemData.extraData ?? '', variant, isManga),
+              getIconForVariant(itemData.extraData ?? '', variant, type),
               size: 16,
               color: theme.colorScheme.onPrimary,
             ),
@@ -109,18 +110,18 @@ abstract class CarouselCard extends StatelessWidget {
   }
 
   IconData getIconForVariant(
-      String extraData, DataVariant variant, bool isManga) {
+      String extraData, DataVariant variant, ItemType type) {
     switch (variant) {
       case DataVariant.anilist:
       case DataVariant.offline:
-        return isManga ? Iconsax.book : Iconsax.play5;
+        return type == ItemType.manga ? Iconsax.book : Iconsax.play5;
       case DataVariant.library:
         return Iconsax.star5;
       case DataVariant.relation:
         if (extraData == "MANGA" || extraData == "ANIME") {
           return extraData == "MANGA" ? Iconsax.book : Iconsax.play5;
         }
-        return isManga ? Iconsax.book5 : Iconsax.play5;
+        return type == ItemType.manga ? Iconsax.book5 : Iconsax.play5;
       case DataVariant.extension:
         return Iconsax.status;
       default:

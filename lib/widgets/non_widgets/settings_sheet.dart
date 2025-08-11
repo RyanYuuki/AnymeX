@@ -134,7 +134,8 @@ class SettingsSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(serviceHandler.profileData.value.name ?? 'Guest'),
-                  if (serviceHandler.serviceType.value != ServicesType.extensions)
+                  if (serviceHandler.serviceType.value !=
+                      ServicesType.extensions)
                     AnymexOnTap(
                       onTap: () {
                         if (serviceHandler.isLoggedIn.value) {
@@ -162,8 +163,9 @@ class SettingsSheet extends StatelessWidget {
                       snackBar('This feature is not available yet.');
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainerHighest,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),
                     icon: const Icon(Iconsax.notification)),
@@ -183,7 +185,8 @@ class SettingsSheet extends StatelessWidget {
                 ),
               ),
             Obx(() {
-              final shouldShowExts = sourceController.shouldShowExtensions.value;
+              final shouldShowExts =
+                  sourceController.shouldShowExtensions.value;
               return isMobile && shouldShowExts
                   ? ListTile(
                       leading: const Icon(Icons.extension),

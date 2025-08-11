@@ -4,6 +4,7 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 
 double getCardHeight(CardStyle style, bool isDesktop) {
@@ -25,7 +26,7 @@ class MediaCardGate extends StatelessWidget {
   final dynamic itemData;
   final String tag;
   final DataVariant variant;
-  final bool isManga;
+  final ItemType type;
   final CardStyle cardStyle;
 
   const MediaCardGate({
@@ -33,8 +34,8 @@ class MediaCardGate extends StatelessWidget {
     required this.itemData,
     required this.tag,
     required this.variant,
-    required this.isManga,
     required this.cardStyle,
+    required this.type,
   });
 
   @override
@@ -50,28 +51,27 @@ class MediaCardGate extends StatelessWidget {
           itemData: data,
           tag: tag,
           variant: variant,
-          isManga: isManga,
+          type: type,
         );
       case CardStyle.exotic:
         return ExoticCard(
           itemData: data,
           tag: tag,
           variant: variant,
-          isManga: isManga,
+          type: type,
         );
       case CardStyle.modern:
         return ModernCard(
           itemData: data,
           tag: tag,
           variant: variant,
-          isManga: isManga,
+          type: type,
         );
       case CardStyle.blur:
-        return BlurCard(
-            itemData: data, tag: tag, variant: variant, isManga: isManga);
+        return BlurCard(itemData: data, tag: tag, variant: variant, type: type);
       case CardStyle.minimalExotic:
         return MinimalExoticCard(
-            itemData: data, tag: tag, variant: variant, isManga: isManga);
+            itemData: data, tag: tag, variant: variant, type: type);
     }
   }
 
