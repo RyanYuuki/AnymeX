@@ -18,9 +18,17 @@ class OfflineStorage extends HiveObject {
   @HiveField(3)
   List<CustomList>? mangaCustomList;
 
+  @HiveField(4)
+  List<OfflineMedia>? novelLibrary;
+
+  @HiveField(5)
+  List<CustomList>? novelCustomList;
+
   OfflineStorage(
       {this.animeLibrary = const <OfflineMedia>[],
       this.mangaLibrary = const <OfflineMedia>[],
+      this.novelLibrary = const <OfflineMedia>[],
       this.animeCustomList,
-      this.mangaCustomList});
+      this.mangaCustomList,
+      this.novelCustomList});
 }

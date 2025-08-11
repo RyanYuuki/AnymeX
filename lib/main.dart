@@ -136,7 +136,7 @@ void main(List<String> args) async {
 }
 
 Future<void> initializeHive() async {
-  await Hive.initFlutter();
+  await Hive.initFlutter('AnymeX');
   Hive.registerAdapter(VideoAdapter());
   Hive.registerAdapter(TrackAdapter());
   Hive.registerAdapter(UISettingsAdapter());
@@ -281,7 +281,6 @@ class _FilterScreenState extends State<FilterScreen> {
               child: SuperListView(
                 children: [
                   ResponsiveNavBar(
-                    fit: true,
                     isDesktop: true,
                     currentIndex: _selectedIndex,
                     margin: const EdgeInsets.fromLTRB(20, 30, 15, 10),
@@ -359,7 +358,6 @@ class _FilterScreenState extends State<FilterScreen> {
         extendBody: true,
         bottomNavigationBar: ResponsiveNavBar(
           isDesktop: false,
-          fit: true,
           currentIndex: _mobileSelectedIndex,
           margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
           items: [

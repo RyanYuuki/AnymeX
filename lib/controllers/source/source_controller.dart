@@ -44,6 +44,7 @@ class SourceController extends GetxController implements BaseService {
   final _animeSections = <Widget>[].obs;
   final _homeSections = <Widget>[].obs;
   final _mangaSections = <Widget>[].obs;
+  final novelSections = <Widget>[].obs;
 
   final isExtensionsServiceAllowed = false.obs;
   final RxString _activeAnimeRepo = ''.obs;
@@ -349,6 +350,9 @@ class SourceController extends GetxController implements BaseService {
       await type
           .getManager()
           .fetchAvailableMangaExtensions([getMangaRepo(type)]);
+      await type.getManager().fetchAvailableNovelExtensions([
+        activeNovelRepo,
+      ]);
     }
     await initExtensions();
   }
@@ -401,6 +405,7 @@ class SourceController extends GetxController implements BaseService {
     final offlineStorage = Get.find<OfflineStorageController>();
     _animeSections.value = [const Center(child: AnymexProgressIndicator())];
     _mangaSections.value = [const Center(child: AnymexProgressIndicator())];
+    novelSections.value = [const Center(child: AnymexProgressIndicator())];
     _homeSections.value = [
       Obx(
         () => buildSection(
@@ -417,7 +422,16 @@ class SourceController extends GetxController implements BaseService {
                 .where((e) => e.serviceIndex == ServicesType.extensions.index)
                 .toList(),
             variant: DataVariant.offline,
-            isManga: true);
+            type: ItemType.manga);
+      }),
+      Obx(() {
+        return buildSection(
+            "Continue Reading",
+            offlineStorage.mangaLibrary
+                .where((e) => e.serviceIndex == ServicesType.extensions.index)
+                .toList(),
+            variant: DataVariant.offline,
+            type: ItemType.manga);
       }),
     ];
   }
@@ -444,10 +458,21 @@ class SourceController extends GetxController implements BaseService {
   RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() {
           return Column(
-            children: _mangaSections.value,
+            children: [..._mangaSections.value, ...novelSections.value],
           );
         })
       ].obs;
+
+  Future<void> initNovelExtensions() async {
+    if (novelSections.isNotEmpty) return;
+    novelSections.value = [
+      const SizedBox(),
+    ];
+    for (final source in installedNovelExtensions) {
+      _fetchSourceData(source,
+          targetSections: novelSections, type: ItemType.novel);
+    }
+  }
 
   @override
   Future<void> fetchHomePage() async {
@@ -456,12 +481,15 @@ class SourceController extends GetxController implements BaseService {
 
       for (final source in installedExtensions) {
         _fetchSourceData(source,
-            targetSections: _animeSections, isManga: false);
+            targetSections: _animeSections, type: ItemType.anime);
       }
 
       for (final source in installedMangaExtensions) {
-        _fetchSourceData(source, targetSections: _mangaSections, isManga: true);
+        _fetchSourceData(source,
+            targetSections: _mangaSections, type: ItemType.manga);
       }
+
+      initNovelExtensions();
 
       log('Fetched home page data.');
     } catch (error) {
@@ -473,7 +501,7 @@ class SourceController extends GetxController implements BaseService {
   Future<void> _fetchSourceData(
     Source source, {
     required RxList<Widget> targetSections,
-    required bool isManga,
+    required ItemType type,
   }) async {
     try {
       final data = (await source.methods.getPopular(1)).list;
@@ -486,18 +514,18 @@ class SourceController extends GetxController implements BaseService {
       final newSection = buildSection(
         source.name ?? '??',
         data,
-        isManga: isManga,
+        type: type,
         variant: DataVariant.extension,
         source: source,
       );
+      log(data.first.title ?? 'Unknown Title');
 
-      if (targetSections.first is Center) {
+      if (targetSections.first is Center && type != ItemType.novel) {
         targetSections.value = [];
         targetSections.add(CustomSearchBar(
           disableIcons: true,
           onSubmitted: (v) {
-            extensionSheet(
-                v, isManga ? installedMangaExtensions : installedExtensions);
+            extensionSheet(v, getInstalledExtensions(type));
           },
         ));
       }
@@ -522,7 +550,7 @@ class SourceController extends GetxController implements BaseService {
     if (serviceHandler.serviceType.value != ServicesType.extensions) {
       cacheController.addCache(data.toJson());
     }
-    return Media.froDMedia(data, isAnime ? MediaType.anime : MediaType.manga);
+    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga);
   }
 
   @override
@@ -532,7 +560,7 @@ class SourceController extends GetxController implements BaseService {
     final data = (await source!.methods.search(params.query, 1, [])).list;
     return data
         .map((e) => Media.froDMedia(
-            e, params.isManga ? MediaType.manga : MediaType.anime))
+            e, params.isManga ? ItemType.manga : ItemType.anime))
         .toList();
   }
 }

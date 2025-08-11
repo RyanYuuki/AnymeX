@@ -5,6 +5,7 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
@@ -113,7 +114,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                       e),
                   title: e,
                   variant: DataVariant.anilist,
-                  isManga: e.contains("Manga") || e.contains("Reading"),
+                  type: e.contains("Manga") || e.contains("Reading")
+                      ? ItemType.manga
+                      : ItemType.anime,
                 );
               }).toList(),
             )),
@@ -125,13 +128,14 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
             data: isLoggedIn.value
                 ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
                 : recAnimes,
+            type: ItemType.anime,
           ),
           ReusableCarousel(
             title: "Recommended Mangas",
             data: isLoggedIn.value
                 ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
                 : recMangas,
-            isManga: true,
+            type: ItemType.manga,
           )
         ],
       )
@@ -214,6 +218,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
       // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
+      ...sourceController.novelSections.value
     ].obs;
   }
 

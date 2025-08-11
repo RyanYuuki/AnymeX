@@ -4,11 +4,11 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
+import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
-
-enum MediaType { manga, anime, novel }
 
 class Media {
   String id;
@@ -29,8 +29,9 @@ class Media {
   String popularity;
   String format;
   String aired;
-  MediaType mediaType;
+  ItemType mediaType;
   List<DEpisode>? mediaContent;
+  List<Chapter>? altMediaContent;
   String? totalChapters;
   List<String> genres;
   List<String>? studios;
@@ -47,7 +48,7 @@ class Media {
       {this.id = '0',
       this.idMal = '0',
       this.isAdult,
-      this.mediaType = MediaType.anime,
+      this.mediaType = ItemType.anime,
       this.title = '?',
       this.color = '',
       this.romajiTitle = '?',
@@ -59,7 +60,7 @@ class Media {
       this.season = '?',
       this.premiered = '?',
       this.duration = '?',
-      this.status = '?',
+      this.status = 'ONGOING.. probably?',
       this.rating = '?',
       this.popularity = '?',
       this.format = '?',
@@ -68,6 +69,7 @@ class Media {
       this.genres = const [],
       this.studios,
       this.characters,
+      this.altMediaContent,
       this.relations,
       this.recommendations = const [],
       this.nextAiringEpisode,
@@ -111,7 +113,7 @@ class Media {
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? MediaType.anime : MediaType.manga,
+      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
       serviceType: ServicesType.mal,
     );
   }
@@ -151,13 +153,13 @@ class Media {
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? MediaType.anime : MediaType.manga,
+      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
       serviceType: ServicesType.mal,
     );
   }
 
   factory Media.fromSimkl(Map<String?, dynamic> json, bool isMovie) {
-    MediaType type = MediaType.anime;
+    ItemType type = ItemType.anime;
 
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
@@ -204,7 +206,7 @@ class Media {
   }
 
   factory Media.fromSmallSimkl(Map<String?, dynamic> json, bool isMovie) {
-    MediaType type = MediaType.anime;
+    ItemType type = ItemType.anime;
     return Media(
         id:
             '${json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
@@ -219,7 +221,7 @@ class Media {
         aired: json['year']?.toString() ?? 'Unknown air date');
   }
 
-  factory Media.froDMedia(DMedia manga, MediaType type) {
+  factory Media.froDMedia(DMedia manga, ItemType type) {
     return Media(
       id: manga.url ?? '',
       title: manga.title ?? "Unknown Title",
@@ -244,12 +246,38 @@ class Media {
     );
   }
 
+  factory Media.fromDManga(DMedia manga, ItemType type) {
+    return Media(
+      id: manga.url ?? '',
+      title: manga.title ?? "Unknown Title",
+      romajiTitle: manga.title ?? "Unknown Title",
+      description: manga.description ?? "No description available.",
+      poster: manga.cover ?? "",
+      cover: manga.cover,
+      totalEpisodes: manga.episodes?.length.toString() ?? '??',
+      status: '??',
+      mediaType: type,
+      aired: 'Unknown',
+      totalChapters: manga.episodes?.length.toString(),
+      genres: manga.genre ?? [],
+      studios: null,
+      characters: [],
+      relations: [],
+      recommendations: [],
+      nextAiringEpisode: null,
+      rankings: [],
+      altMediaContent:
+          manga.episodes?.map((e) => e.toChapter()).toList().reversed.toList(),
+      serviceType: ServicesType.extensions,
+    );
+  }
+
   factory Media.fromJson(Map<String, dynamic> json) {
-    MediaType type = json['type'] == "ANIME"
-        ? MediaType.anime
+    ItemType type = json['type'] == "ANIME"
+        ? ItemType.anime
         : json['type'] == "MANGA"
-            ? MediaType.manga
-            : MediaType.novel;
+            ? ItemType.manga
+            : ItemType.novel;
     return Media(
       id: json['id'].toString(),
       idMal: json['idMal'].toString(),
@@ -306,11 +334,11 @@ class Media {
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       type: isManga ? 'MANGA' : 'ANIME',
-      mediaType: isManga ? MediaType.manga : MediaType.anime,
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.anilist,
     );
   }
-  factory Media.fromCarouselData(CarouselData data, MediaType type) {
+  factory Media.fromCarouselData(CarouselData data, ItemType type) {
     return Media(
         id: data.id!.toString(),
         romajiTitle: data.title ?? '?',
@@ -318,7 +346,7 @@ class Media {
         poster: data.poster ?? '?',
         rating: data.extraData ?? '0.0',
         mediaType: type,
-        serviceType: data.servicesType!);
+        serviceType: data.servicesType);
   }
 
   factory Media.fromRecs(Map<String, dynamic> json) {
@@ -341,7 +369,7 @@ class Media {
         serviceType: ServicesType.anilist);
   }
 
-  factory Media.fromOfflineMedia(OfflineMedia offline, MediaType type) {
+  factory Media.fromOfflineMedia(OfflineMedia offline, ItemType type) {
     return Media(
       id: offline.id?.toString() ?? '0',
       title: offline.name ?? offline.english ?? offline.jname ?? '?',

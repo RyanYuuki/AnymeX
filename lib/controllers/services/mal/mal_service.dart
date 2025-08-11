@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -20,9 +22,11 @@ import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -65,7 +69,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
       {bool isManga = false}) {
     return list.isEmpty
         ? const AnymexProgressIndicator()
-        : buildSection(title, list, isManga: isManga);
+        : buildSection(title, list,
+            type: isManga ? ItemType.manga : ItemType.anime);
   }
 
   @override
@@ -176,6 +181,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
+                  ...sourceController.novelSections.value
                 ],
               )),
       ].obs;
@@ -299,7 +305,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                             e),
                         title: e,
                         variant: DataVariant.anilist,
-                        isManga: e.contains("Manga") || e.contains("Reading"),
+                        type: e.contains("Manga") || e.contains("Reading")
+                            ? ItemType.manga
+                            : ItemType.anime,
                       );
                     }).toList(),
                   )),
@@ -631,12 +639,22 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   void setCurrentMedia(String id, {bool isManga = false}) {
+    final offlineStorage = Get.find<OfflineStorageController>();
     if (isManga) {
+      final savedManga = offlineStorage.getMangaById(id);
+      final number = savedManga?.currentChapter?.number?.toInt() ?? 0;
       currentMedia.value = mangaList.firstWhere((el) => el.id == id,
-          orElse: () => TrackedMedia());
+          orElse: () => TrackedMedia(
+              episodeCount: number.toString(),
+              chapterCount: number.toString(),
+              totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
+      final savedAnime = offlineStorage.getAnimeById(id);
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
-          orElse: () => TrackedMedia());
+          orElse: () => TrackedMedia(
+              episodeCount: number.toString(),
+              chapterCount: number.toString()));
     }
   }
 

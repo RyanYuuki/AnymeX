@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:hive/hive.dart';
@@ -13,10 +14,13 @@ import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 class OfflineStorageController extends GetxController {
   var animeLibrary = <OfflineMedia>[].obs;
   var mangaLibrary = <OfflineMedia>[].obs;
+  var novelLibrary = <OfflineMedia>[].obs;
   Rx<List<CustomList>> animeCustomLists = Rx([]);
   Rx<List<CustomList>> mangaCustomLists = Rx([]);
+  Rx<List<CustomList>> novelCustomLists = Rx([]);
   Rx<List<CustomListData>> animeCustomListData = Rx([]);
   Rx<List<CustomListData>> mangaCustomListData = Rx([]);
+  Rx<List<CustomListData>> novelCustomListData = Rx([]);
 
   late Box<OfflineStorage> _offlineStorageBox;
   late Box storage;
@@ -43,10 +47,13 @@ class OfflineStorageController extends GetxController {
 
     animeLibrary.assignAll(offlineStorage.animeLibrary ?? []);
     mangaLibrary.assignAll(offlineStorage.mangaLibrary ?? []);
+    novelLibrary.assignAll(offlineStorage.novelLibrary ?? []);
     animeCustomLists.value
         .assignAll(offlineStorage.animeCustomList ?? [CustomList()]);
     mangaCustomLists.value
         .assignAll(offlineStorage.mangaCustomList ?? [CustomList()]);
+    novelCustomLists.value
+        .assignAll(offlineStorage.novelCustomList ?? [CustomList()]);
 
     _refreshListData();
   }
@@ -115,11 +122,11 @@ class OfflineStorageController extends GetxController {
     }
   }
 
-  void addCustomList(String listName, {MediaType mediaType = MediaType.anime}) {
+  void addCustomList(String listName, {ItemType mediaType = ItemType.anime}) {
     if (listName.isEmpty) return;
 
     final targetLists =
-        mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+        mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
 
     if (targetLists.value.any((list) => list.listName == listName)) {
       log('List with name "$listName" already exists');
@@ -132,11 +139,11 @@ class OfflineStorageController extends GetxController {
   }
 
   void removeCustomList(String listName,
-      {MediaType mediaType = MediaType.anime}) {
+      {ItemType mediaType = ItemType.anime}) {
     if (listName.isEmpty) return;
 
     final targetLists =
-        mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+        mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
     final beforeLength = targetLists.value.length;
     targetLists.value.removeWhere((e) => e.listName == listName);
     final afterLength = targetLists.value.length;
@@ -148,11 +155,11 @@ class OfflineStorageController extends GetxController {
   }
 
   void renameCustomList(String oldName, String newName,
-      {MediaType mediaType = MediaType.anime}) {
+      {ItemType mediaType = ItemType.anime}) {
     if (oldName.isEmpty || newName.isEmpty || oldName == newName) return;
 
     final targetLists =
-        mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+        mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
 
     if (targetLists.value.any((list) => list.listName == newName)) {
       log('List with name "$newName" already exists');
@@ -169,11 +176,11 @@ class OfflineStorageController extends GetxController {
   }
 
   void addMediaToList(String listName, String mediaId,
-      {MediaType mediaType = MediaType.anime}) {
+      {ItemType mediaType = ItemType.anime}) {
     if (listName.isEmpty || mediaId.isEmpty) return;
 
     final targetLists =
-        mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+        mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
     final targetList =
         targetLists.value.firstWhereOrNull((list) => list.listName == listName);
 
@@ -187,11 +194,11 @@ class OfflineStorageController extends GetxController {
   }
 
   void removeMediaFromList(String listName, String mediaId,
-      {MediaType mediaType = MediaType.anime}) {
+      {ItemType mediaType = ItemType.anime}) {
     if (listName.isEmpty || mediaId.isEmpty) return;
 
     final targetLists =
-        mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+        mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
     final targetList =
         targetLists.value.firstWhereOrNull((list) => list.listName == listName);
 
@@ -200,10 +207,12 @@ class OfflineStorageController extends GetxController {
       targetList.mediaIds!.removeWhere((id) => id == mediaId);
       final afterLength = targetList.mediaIds!.length;
 
-      if (mediaType == MediaType.anime) {
+      if (mediaType == ItemType.anime) {
         animeLibrary.removeWhere((media) => media.id == mediaId);
-      } else {
+      } else if (mediaType == ItemType.manga) {
         mangaLibrary.removeWhere((media) => media.id == mediaId);
+      } else {
+        novelLibrary.removeWhere((media) => media.id == mediaId);
       }
 
       if (beforeLength != afterLength) {
@@ -217,14 +226,14 @@ class OfflineStorageController extends GetxController {
       {required String listName,
       String? newListName,
       List<String>? mediaIds,
-      MediaType mediaType = MediaType.anime}) {
+      ItemType mediaType = ItemType.anime}) {
     if (listName.isEmpty) return;
 
     _isUpdating = true;
 
     try {
       final targetLists =
-          mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
+          mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
       final targetList = targetLists.value
           .firstWhereOrNull((list) => list.listName == listName);
 
@@ -253,8 +262,8 @@ class OfflineStorageController extends GetxController {
   }
 
   List<CustomListData> getEditableCustomListData(
-      {MediaType mediaType = MediaType.anime}) {
-    final sourceData = mediaType == MediaType.anime
+      {ItemType mediaType = ItemType.anime}) {
+    final sourceData = mediaType == ItemType.anime
         ? animeCustomListData.value
         : mangaCustomListData.value;
 
@@ -266,15 +275,15 @@ class OfflineStorageController extends GetxController {
   }
 
   void applyCustomListChanges(List<CustomListData> editedData,
-      {MediaType mediaType = MediaType.anime}) {
+      {ItemType mediaType = ItemType.anime}) {
     if (editedData.isEmpty) return;
 
     _isUpdating = true;
 
     try {
       final targetList =
-          mediaType == MediaType.anime ? animeCustomLists : mangaCustomLists;
-      final targetData = mediaType == MediaType.anime
+          mediaType == ItemType.anime ? animeCustomLists : mangaCustomLists;
+      final targetData = mediaType == ItemType.anime
           ? animeCustomListData
           : mangaCustomListData;
 
@@ -300,12 +309,28 @@ class OfflineStorageController extends GetxController {
     }
   }
 
-  void addMedia(String listName, Media original, bool isManga) {
-    final mediaType = isManga ? MediaType.manga : MediaType.anime;
-    final library = isManga ? mangaLibrary : animeLibrary;
+  List<OfflineMedia> getLibraryFromType(ItemType mediaType) {
+    return (mediaType == ItemType.anime
+        ? animeLibrary
+        : mediaType == ItemType.manga
+            ? mangaLibrary
+            : novelLibrary);
+  }
+
+  List<CustomList> getListFromType(ItemType mediaType) {
+    return (mediaType == ItemType.anime
+            ? animeCustomLists
+            : mediaType == ItemType.manga
+                ? mangaCustomLists
+                : novelCustomLists)
+        .value;
+  }
+
+  void addMedia(String listName, Media original, ItemType type) {
+    final library = getLibraryFromType(type);
 
     if (library.firstWhereOrNull((e) => e.id == original.id) == null) {
-      if (isManga) {
+      if (type == ItemType.manga) {
         final chapter = Chapter(number: 1);
         library.insert(
             0, _createOfflineMedia(original, null, null, chapter, null));
@@ -316,12 +341,11 @@ class OfflineStorageController extends GetxController {
       }
     }
 
-    addMediaToList(listName, original.id, mediaType: mediaType);
+    addMediaToList(listName, original.id, mediaType: type);
   }
 
-  void removeMedia(String listName, String id, bool isManga) {
-    final mediaType = isManga ? MediaType.manga : MediaType.anime;
-    removeMediaFromList(listName, id, mediaType: mediaType);
+  void removeMedia(String listName, String id, ItemType type) {
+    removeMediaFromList(listName, id, mediaType: type);
   }
 
   void addOrUpdateAnime(
@@ -355,7 +379,8 @@ class OfflineStorageController extends GetxController {
 
     if (existingManga != null) {
       existingManga.chapters = chapters;
-      currentChapter?.sourceName = sourceController.activeSource.value?.name;
+      currentChapter?.sourceName =
+          sourceController.activeMangaSource.value?.name;
       existingManga.currentChapter = currentChapter;
       log('Updated manga: ${existingManga.name}');
       mangaLibrary.remove(existingManga);
@@ -364,6 +389,31 @@ class OfflineStorageController extends GetxController {
       mangaLibrary.insert(0,
           _createOfflineMedia(original, chapters, null, currentChapter, null));
       log('Added new manga: ${original.title}');
+    }
+
+    _saveLibraries();
+
+    if (!_isUpdating) {
+      _refreshListData();
+    }
+  }
+
+  void addOrUpdateNovel(
+      Media original, List<Chapter>? chapters, Chapter? currentChapter) {
+    OfflineMedia? existingNovel = getNovelById(original.id);
+
+    if (existingNovel != null) {
+      existingNovel.chapters = chapters;
+      currentChapter?.sourceName =
+          sourceController.activeNovelSource.value?.name;
+      existingNovel.currentChapter = currentChapter;
+      log('Updated novel: ${existingNovel.name}');
+      novelLibrary.remove(existingNovel);
+      novelLibrary.insert(0, existingNovel);
+    } else {
+      novelLibrary.insert(0,
+          _createOfflineMedia(original, chapters, null, currentChapter, null));
+      log('Added new novel: ${original.title}');
     }
 
     _saveLibraries();
@@ -393,6 +443,28 @@ class OfflineStorageController extends GetxController {
       }
     } else {
       log('Manga with ID: $mangaId not found. Unable to add/update chapter.');
+    }
+    _saveLibraries();
+  }
+
+  void addOrUpdateNovelChapter(String novelId, Chapter chapter) {
+    OfflineMedia? existingNovel = getNovelById(novelId);
+    if (existingNovel != null) {
+      existingNovel.readChapters ??= [];
+      chapter.sourceName = sourceController.activeMangaSource.value?.name;
+      int index = existingNovel.readChapters!
+          .indexWhere((c) => c.number == chapter.number);
+
+      if (index != -1) {
+        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
+        existingNovel.readChapters![index] = chapter;
+        log('Page number => ${chapter.pageNumber} / ${chapter.totalPages}');
+      } else {
+        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
+        existingNovel.readChapters!.add(chapter);
+      }
+    } else {
+      log('Novel with ID: $novelId not found. Unable to add/update chapter.');
     }
     _saveLibraries();
   }
@@ -464,8 +536,10 @@ class OfflineStorageController extends GetxController {
     final updatedStorage = OfflineStorage(
         animeLibrary: animeLibrary.toList(),
         mangaLibrary: mangaLibrary.toList(),
+        novelLibrary: novelLibrary.toList(),
         animeCustomList: animeCustomLists.value,
-        mangaCustomList: mangaCustomLists.value);
+        mangaCustomList: mangaCustomLists.value,
+        novelCustomList: novelCustomLists.value);
 
     try {
       _offlineStorageBox.put('storage', updatedStorage);
@@ -481,6 +555,10 @@ class OfflineStorageController extends GetxController {
 
   OfflineMedia? getMangaById(String id) {
     return mangaLibrary.firstWhereOrNull((manga) => manga.id == id);
+  }
+
+  OfflineMedia? getNovelById(String id) {
+    return novelLibrary.firstWhereOrNull((novel) => novel.id == id);
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeOrChapterNumber) {
@@ -514,14 +592,31 @@ class OfflineStorageController extends GetxController {
     return null;
   }
 
+  Chapter? getReadNovelChapter(String anilistId, double number) {
+    OfflineMedia? manga = getMangaById(anilistId);
+    if (manga != null) {
+      Chapter? chapter =
+          manga.readChapters?.firstWhereOrNull((c) => c.number == number);
+      if (chapter != null) {
+        return chapter;
+      } else {
+        log('No read chapter with number $number found for manga with ID: $anilistId');
+      }
+    }
+    return null;
+  }
+
   void clearCache() {
     _offlineStorageBox.clear();
     animeLibrary.clear();
     mangaLibrary.clear();
+    novelLibrary.clear();
     animeCustomLists.value.clear();
     mangaCustomLists.value.clear();
     animeCustomListData.value.clear();
     mangaCustomListData.value.clear();
+    novelCustomLists.value.clear();
+    novelCustomListData.value.clear();
   }
 }
 

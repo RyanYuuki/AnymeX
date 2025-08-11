@@ -335,7 +335,7 @@ AnimeMatchResult matchAnimeTitle(
 Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
   final sourceController = Get.find<SourceController>();
   final isManga = animeId[0].split("*").last == "MANGA";
-  final type = isManga ? MediaType.manga : MediaType.anime;
+  final type = isManga ? ItemType.manga : ItemType.anime;
   String romajiTitle = animeId[1];
   String englishTitle = animeId[0].split("*").first;
 
