@@ -85,4 +85,31 @@ Use [CPU-Z](https://play.google.com/store/apps/details?id=com.cpuid.cpu_z) or [D
   ./AnymeX.AppImage
   ```
 - **RPM/ZIP**: Choose based on your distro or install style.
+
+#### 🔧 AppImage Troubleshooting
+
+If you encounter issues running the AppImage on your Linux distribution, try these solutions:
+
+**For FUSE-related errors** (common on Arch-based distros like CachyOS):
+```bash
+# Install FUSE if not available
+sudo pacman -S fuse2  # On Arch/CachyOS
+sudo apt install fuse  # On Debian/Ubuntu
+
+# Load the FUSE module
+sudo modprobe fuse
+
+# If still having issues, extract and run manually
+./AnymeX.AppImage --appimage-extract
+./squashfs-root/AppRun
+```
+
+**For "Bad address" or "No such file or directory" errors**:
+1. Try extracting the AppImage: `./AnymeX.AppImage --appimage-extract`
+2. Run the extracted version: `./squashfs-root/AppRun`
+3. If that works, the issue is with FUSE - consider using the ZIP version instead
+
+**Alternative installation methods**:
+- **AUR (Arch Linux/CachyOS users)**: `yay -S anymex-bin`
+- **ZIP version**: Download and extract the ZIP file for manual installation
 ---
