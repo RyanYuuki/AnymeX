@@ -270,12 +270,14 @@ jobs:
           if [ -d "\${HERE}/usr/share/anymex/data" ]; then
             export FLUTTER_DATA_DIR="\${HERE}/usr/share/anymex/data"
           fi
+          # Ensure FUSE2 compatibility for newer distributions
+          export APPIMAGE_EXTRACT_AND_RUN=1
           exec "\${HERE}/usr/bin/anymex" "\$@"
           EOF
           chmod +x AppDir/AppRun
           
           # Make AppImage
-          /usr/local/bin/appimagetool AppDir
+          /usr/local/bin/appimagetool --no-appstream AppDir
           mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
 
       - name: Create RPM Package
