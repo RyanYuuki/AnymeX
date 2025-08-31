@@ -18,14 +18,14 @@ class ThemeProvider extends ChangeNotifier {
   List<String> availThemeModes = ["default", "material", "custom"];
 
   ThemeProvider()
-      : _seedColor = Colors.deepPurple,
+      : _seedColor = Colors.red,
         isLightMode =
             Hive.box("themeData").get("isLightMode", defaultValue: false),
         isSystemMode =
             Hive.box("themeData").get("isSystemMode", defaultValue: false),
         isOled = Hive.box("themeData").get("isOled", defaultValue: false),
         selectedVariantIndex =
-            Hive.box("themeData").get("selectedVariantIndex", defaultValue: 0),
+            Hive.box("themeData").get("selectedVariantIndex", defaultValue: 4),
         currentThemeMode =
             Hive.box("themeData").get("themeMode", defaultValue: "default") {
     _determineSeedColor();
@@ -37,7 +37,7 @@ class ThemeProvider extends ChangeNotifier {
 
   void _determineSeedColor() {
     if (currentThemeMode == "default") {
-      _seedColor = Colors.deepPurple;
+      _seedColor = Colors.red;
     } else if (currentThemeMode == "material") {
       loadDynamicTheme();
     } else {
@@ -51,9 +51,8 @@ class ThemeProvider extends ChangeNotifier {
     currentThemeMode = "material";
     Hive.box("themeData").put("themeMode", "material");
     final corePalette = await DynamicColorPlugin.getCorePalette();
-    _seedColor = corePalette != null
-        ? Color(corePalette.primary.get(40))
-        : Colors.deepPurple;
+    _seedColor =
+        corePalette != null ? Color(corePalette.primary.get(40)) : Colors.red;
     _updateTheme();
   }
 
@@ -94,7 +93,7 @@ class ThemeProvider extends ChangeNotifier {
   void setDefaultTheme() {
     currentThemeMode = "default";
     Hive.box("themeData").put("themeMode", "default");
-    _seedColor = Colors.deepPurple;
+    _seedColor = Colors.red;
     _updateTheme();
   }
 
@@ -131,7 +130,7 @@ class ThemeProvider extends ChangeNotifier {
     isOled = false;
     selectedVariantIndex = 0;
     currentThemeMode = "default";
-    _seedColor = Colors.deepPurple;
+    _seedColor = Colors.red;
 
     _updateTheme();
     notifyListeners();

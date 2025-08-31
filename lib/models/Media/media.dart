@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -43,6 +43,7 @@ class Media {
   ServicesType serviceType;
   DateTime? createdAt;
   bool? isAdult;
+  String? sourceName;
 
   Media(
       {this.id = '0',
@@ -76,6 +77,7 @@ class Media {
       this.rankings = const [],
       this.mediaContent,
       required this.serviceType,
+      this.sourceName,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -193,7 +195,7 @@ class Media {
                 try {
                   return Media.fromSmallSimkl(e, isMovie);
                 } catch (error) {
-                  log('Error parsing recommendation: $error');
+                  Logger.i('Error parsing recommendation: $error');
                   return null;
                 }
               })

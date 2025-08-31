@@ -1,6 +1,7 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -65,5 +66,25 @@ Widget buildMangaSection(String title, List<Media> data,
     title: title,
     type: ItemType.manga,
     variant: isAnilist ? DataVariant.anilist : DataVariant.regular,
+  );
+}
+
+Widget buildFutureSection(
+  String title,
+  Future<List<dynamic>> future, {
+  DataVariant variant = DataVariant.regular,
+  ItemType type = ItemType.anime,
+  Source? source,
+  Widget? errorWidget,
+  Widget? emptyWidget,
+}) {
+  return FutureReusableCarousel(
+    future: future,
+    title: title,
+    variant: variant,
+    type: type,
+    source: source,
+    errorWidget: errorWidget,
+    emptyWidget: emptyWidget,
   );
 }

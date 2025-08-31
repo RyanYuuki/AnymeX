@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -25,8 +26,10 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
+import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -55,7 +58,6 @@ import 'package:path/path.dart' as p;
 
 late Isar isar;
 WebViewEnvironment? webViewEnvironment;
-final appLinks = AppLinks();
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -76,62 +78,103 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 void main(List<String> args) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows) {
-    ['dar', 'anymex', 'sugoireads', 'mangayomi']
-        .forEach(registerProtocolHandler);
-  }
-  Deeplink.initDeepLinkListener();
-  HttpOverrides.global = MyHttpoverrides();
-  await dotenv.load(fileName: ".env");
-  await initializeHive();
-  _initializeGetxController();
-  initializeDateFormatting();
-  MediaKit.ensureInitialized();
-  if (!Platform.isAndroid && !Platform.isIOS) {
-    await WindowManager.instance.ensureInitialized();
-    try {
-      windowManager.setTitle("AnymeX (●'◡'●)");
-    } catch (e) {
-      windowManager.setTitle("AnymeX");
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Logger.init();
+    await dotenv.load(fileName: ".env");
+    // TODO: For all the contributors just make a supabase account and then change this
+    // await Supabase.initialize(
+    //     url: dotenv.env['SUPABASE_URL']!,
+    //     anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
+
+    if (Platform.isWindows) {
+      ['dar', 'anymex', 'sugoireads', 'mangayomi']
+          .forEach(registerProtocolHandler);
     }
-    if (defaultTargetPlatform == TargetPlatform.windows) {
+    initDeepLinkListener();
+    HttpOverrides.global = MyHttpoverrides();
+    await initializeHive();
+    _initializeGetxController();
+    initializeDateFormatting();
+    MediaKit.ensureInitialized();
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      await WindowManager.instance.ensureInitialized();
       try {
-        final availableVersion = await WebViewEnvironment.getAvailableVersion();
-        if (availableVersion == null) {
+        windowManager.setTitle("AnymeX (●'◡'●)");
+      } catch (e) {
+        windowManager.setTitle("AnymeX");
+      }
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        try {
+          final availableVersion =
+              await WebViewEnvironment.getAvailableVersion();
+          if (availableVersion == null) {
+            snackBar(
+              "Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.\n\n"
+              "Try installing WebView2 runtime from:\n"
+              "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section",
+            );
+          } else {
+            final document = await getApplicationDocumentsDirectory();
+            webViewEnvironment = await WebViewEnvironment.create(
+              settings: WebViewEnvironmentSettings(
+                userDataFolder: p.join(document.path, 'flutter_inappwebview'),
+              ),
+            );
+          }
+        } catch (e) {
           snackBar(
-            "Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.\n\n"
-            "Try installing WebView2 runtime from:\n"
+            "Error initializing WebView2: ${e.toString()}\n\n"
+            "Try reinstalling WebView2 runtime from:\n"
             "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section",
           );
-        } else {
-          final document = await getApplicationDocumentsDirectory();
-          webViewEnvironment = await WebViewEnvironment.create(
-            settings: WebViewEnvironmentSettings(
-              userDataFolder: p.join(document.path, 'flutter_inappwebview'),
-            ),
-          );
         }
-      } catch (e) {
-        snackBar(
-          "Error initializing WebView2: ${e.toString()}\n\n"
-          "Try reinstalling WebView2 runtime from:\n"
-          "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section",
-        );
       }
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          systemNavigationBarColor: Colors.transparent,
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.dark));
     }
-  } else {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.transparent,
-        statusBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.dark));
+
+    FlutterError.onError = (FlutterErrorDetails details) async {
+      FlutterError.presentError(details);
+      Logger.e("FLUTTER ERROR: ${details.exceptionAsString()}");
+      Logger.e("STACK: ${details.stack}");
+    };
+
+    runApp(
+      ChangeNotifierProvider(
+        create: (context) => ThemeProvider(),
+        child: const MyAdaptiveWrapper(child: MainApp()),
+      ),
+    );
+  }, (error, stackTrace) async {
+    Logger.e("CRASH: $error");
+    Logger.e("STACK: $stackTrace");
+  }, zoneSpecification: ZoneSpecification(
+    print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+      Logger.i(line);
+      parent.print(zone, line);
+    },
+  ));
+}
+
+void initDeepLinkListener() async {
+  final appLinks = AppLinks();
+  if (Platform.isLinux) return;
+
+  try {
+    final initialUri = await appLinks.getInitialLink();
+    if (initialUri != null) Deeplink.handleDeepLink(initialUri);
+  } catch (err) {
+    errorSnackBar('Error getting initial deep link: $err');
   }
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      child: const MyAdaptiveWrapper(child: MainApp()),
-    ),
+
+  appLinks.uriLinkStream.listen(
+    (uri) => Deeplink.handleDeepLink(uri),
+    onError: (err) => errorSnackBar('Error Opening link: $err'),
   );
 }
 
@@ -208,6 +251,10 @@ class MainApp extends StatelessWidget {
                 ? ThemeMode.light
                 : ThemeMode.dark,
         home: const FilterScreen(),
+        enableLog: true,
+        logWriterCallback: (text, {isError = false}) async {
+          Logger.d(text);
+        },
       ),
     );
   }
@@ -251,6 +298,12 @@ class _FilterScreenState extends State<FilterScreen> {
     const MangaHomePage(),
     const MyLibrary()
   ];
+
+  @override
+  void dispose() {
+    Logger.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +399,11 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ],
               ))),
-          Expanded(child: routes[_selectedIndex]),
+          Expanded(
+              child: SmoothPageEntrance(
+                  style: PageEntranceStyle.slideUpGentle,
+                  key: Key(_selectedIndex.toString()),
+                  child: routes[_selectedIndex])),
         ],
       ),
     );
@@ -354,7 +411,10 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildAndroidLayout(bool isSimkl) {
     return Scaffold(
-        body: mobileRoutes[_mobileSelectedIndex],
+        body: SmoothPageEntrance(
+            style: PageEntranceStyle.slideUpGentle,
+            key: Key(_mobileSelectedIndex.toString()),
+            child: mobileRoutes[_mobileSelectedIndex]),
         extendBody: true,
         bottomNavigationBar: ResponsiveNavBar(
           isDesktop: false,

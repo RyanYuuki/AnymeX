@@ -1,8 +1,12 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
+import 'package:anymex/database/comments_db.dart';
+import 'package:anymex/database/model/comment.dart';
+import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -26,7 +30,6 @@ import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/custom_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -70,6 +73,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   RxDouble animeScore = 0.0.obs;
   RxInt animeProgress = 0.obs;
   RxString animeStatus = "CURRENT".obs;
+
+  Rxn<List<Comment>> comments = Rxn();
 
   // Page View Tracker
   RxInt selectedPage = 0.obs;
@@ -115,7 +120,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         });
       }
     } catch (e) {
-      log("Media Syncer Failed => $e");
+      Logger.i("Media Syncer Failed => $e");
     }
   }
 
@@ -149,7 +154,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
-      log("Fetch Initiated for Media => ${widget.media.id}");
+      Logger.i("Fetch Initiated for Media => ${widget.media.id}");
 
       final service = widget.media.serviceType.service;
 
@@ -175,7 +180,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         showAnify.value = false;
       }
-      log("Data Loaded for media => ${widget.media.title}");
+      Logger.i("Data Loaded for media => ${widget.media.title}");
 
       if (isExtensions) {
         _processExtensionData(tempData);
@@ -184,10 +189,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       }
     } catch (e) {
       if (e.toString().contains('author')) {
-        log("Hianime Error Handling");
+        Logger.i("Hianime Error Handling");
         await _mapToService();
       }
-      log("Media Details Fetch Failed => $e");
+      Logger.i("Media Details Fetch Failed => $e");
+    } finally {
+      if (widget.media.serviceType == ServicesType.anilist) {
+        final data =
+            await CommentsDatabase().fetchComments(widget.media.id.toString());
+        comments.value = data;
+      }
     }
   }
 
@@ -232,7 +243,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       applyAnifyCovers();
     } catch (e) {
       episodeError.value = true;
-      log(e.toString());
+      Logger.i(e.toString());
     }
   }
 
@@ -382,33 +393,85 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                           widget.media.serviceType.onlineService.isLoggedIn
                               .value) ...[
                         Expanded(
-                          child: AnymeXButton(
-                            onTap: () {
-                              if (widget.media.serviceType.onlineService
-                                  .isLoggedIn.value) {
-                                showListEditorModal(context);
-                              } else {
-                                snackBar("You aren't logged in Genius.",
-                                    duration: 1000);
-                              }
-                            },
+                          child: Container(
                             height: 50,
-                            width: double.infinity,
-                            borderRadius: BorderRadius.circular(20),
-                            variant: ButtonVariant.outline,
-                            borderColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            child: Text(
-                                convertAniListStatus(
-                                    currentAnime.value?.watchingStatus),
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontFamily: "Poppins-Bold")),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outline
+                                    .withOpacity(0.2),
+                              ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer
+                                  .withOpacity(0.5),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  if (widget.media.serviceType.onlineService
+                                      .isLoggedIn.value) {
+                                    showListEditorModal(context);
+                                  } else {
+                                    snackBar("You aren't logged in Genius.",
+                                        duration: 1000);
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    AnymexText(
+                                      text: convertAniListStatus(
+                                          currentAnime.value?.watchingStatus),
+                                      variant: TextVariant.bold,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 7),
-                        AnymeXButton(
+                        Container(
+                          height: 50,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withOpacity(0.2),
+                            ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainer
+                                .withOpacity(0.5),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                                onTap: () {
+                                  showCustomListDialog(
+                                      context,
+                                      anilistData!,
+                                      offlineStorage.animeCustomLists.value,
+                                      ItemType.anime);
+                                },
+                                borderRadius: BorderRadius.circular(16),
+                                child:
+                                    const Icon(HugeIcons.strokeRoundedLibrary)),
+                          ),
+                        ),
+                      ] else ...[
+                        Expanded(
+                          child: AnymexButton2(
                             onTap: () {
                               showCustomListDialog(
                                   context,
@@ -416,33 +479,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                   offlineStorage.animeCustomLists.value,
                                   ItemType.anime);
                             },
-                            height: 50,
-                            borderRadius:
-                                BorderRadius.circular(12.multiplyRadius()),
-                            variant: ButtonVariant.outline,
-                            borderColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            child: const Icon(HugeIcons.strokeRoundedLibrary))
-                      ] else ...[
-                        Expanded(
-                          child: AnymeXButton(
-                              onTap: () {
-                                showCustomListDialog(
-                                    context,
-                                    anilistData!,
-                                    offlineStorage.animeCustomLists.value,
-                                    ItemType.anime);
-                              },
-                              height: 50,
-                              width: double.infinity,
-                              borderRadius:
-                                  BorderRadius.circular(12.multiplyRadius()),
-                              variant: ButtonVariant.outline,
-                              borderColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
-                              child:
-                                  const Icon(HugeIcons.strokeRoundedLibrary)),
+                            label: 'Add to Library',
+                            icon: HugeIcons.strokeRoundedLibrary,
+                          ),
                         )
                       ]
                     ],
@@ -470,6 +509,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               else
                 const SizedBox.shrink(),
               _buildEpisodeSection(context),
+              _buildCommentsSection(context)
             ],
           )
         ],
@@ -495,8 +535,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         : parseNum(altLength);
 
     final num safeTotal = total.clamp(1, double.infinity);
-    final progress = (current / safeTotal);
-    if (progress.toString().length > 5) return progress.toStringAsFixed(3);
+    if (safeTotal < current) return '??';
+    final progress = (current / safeTotal) * 100;
     return progress.toStringAsFixed(2);
   }
 
@@ -525,9 +565,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 ),
                 AnymexTextSpan(
-                  text: currentAnime.value?.chapterCount?.toString() ??
-                      currentAnime.value?.episodeCount?.toString() ??
-                      '0',
+                  text: currentAnime.value?.episodeCount?.toString() ?? '0',
                   variant: TextVariant.bold,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -537,8 +575,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 ),
                 AnymexTextSpan(
-                  text: anilistData?.totalChapters.toString() ??
-                      anilistData?.totalChapters.toString() ??
+                  text: anilistData?.totalEpisodes.toString() ??
+                      anilistData?.totalEpisodes.toString() ??
                       '??',
                   variant: TextVariant.bold,
                   color: Theme.of(context).colorScheme.primary,
@@ -553,7 +591,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
             ),
             child: Text(
-              '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes, altLength: episodeList.value.length)}%',
+              '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 12,
@@ -581,6 +619,17 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         showAnify: showAnify,
       );
     });
+  }
+
+  Widget _buildCommentsSection(BuildContext context) {
+    return
+        // comments.value != null
+        //     ? CommentSection(
+        //         mediaId: widget.media.id,
+        //         currentTag: ('Episode ${currentAnime.value?.episodeCount ?? '0'}'),
+        //       )
+        //     :
+        const SizedBox.shrink();
   }
 
   // Common Info Section
@@ -676,6 +725,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                           selectedIcon: Iconsax.play5,
                           unselectedIcon: Iconsax.play,
                           label: "Watch"),
+                    // NavItem(
+                    //     onTap: _onPageSelected,
+                    //     selectedIcon: HugeIcons.strokeRoundedComment01,
+                    //     unselectedIcon: HugeIcons.strokeRoundedComment02,
+                    //     label: "Comments"),
                   ]),
             ],
           ),

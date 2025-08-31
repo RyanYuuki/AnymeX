@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -359,7 +359,7 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
       : sourceController.activeSource.value;
 
   if (activeSource == null) {
-    log("No active source found!");
+    Logger.i("No active source found!");
     return null;
   }
 

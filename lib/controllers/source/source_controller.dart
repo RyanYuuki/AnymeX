@@ -1,6 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison, invalid_use_of_protected_member
 
-import 'dart:developer';
+import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/utils/extension_utils.dart';
+import 'package:anymex/utils/logger.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -13,7 +15,6 @@ import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/storage_provider.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/non_widgets/extensions_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -87,10 +88,10 @@ class SourceController extends GetxController implements BaseService {
 
   void setAnimeRepo(String val, ExtensionType type) {
     if (type == ExtensionType.aniyomi) {
-      log('Settings Aniyomi repo: $val');
+      Logger.i('Settings Aniyomi repo: $val');
       activeAniyomiAnimeRepo = val;
     } else {
-      log('Settings Mangayomi repo: $val');
+      Logger.i('Settings Mangayomi repo: $val');
       activeAnimeRepo = val;
     }
   }
@@ -105,10 +106,10 @@ class SourceController extends GetxController implements BaseService {
 
   String getAnimeRepo(ExtensionType type) {
     if (type == ExtensionType.aniyomi) {
-      log('Getting Aniyomi repo');
+      Logger.i('Getting Aniyomi repo');
       return activeAniyomiAnimeRepo;
     } else {
-      log('Getting Mangayomi repo');
+      Logger.i('Getting Mangayomi repo');
       return activeAnimeRepo;
     }
   }
@@ -286,9 +287,9 @@ class SourceController extends GetxController implements BaseService {
         installedNovelExtensions,
       ].any((e) => (e as dynamic).isNotEmpty);
 
-      log('Extensions initialized.');
+      Logger.i('Extensions initialized.');
     } catch (e) {
-      log('Error initializing extensions: $e');
+      Logger.i('Error initializing extensions: $e');
     }
   }
 
@@ -304,7 +305,7 @@ class SourceController extends GetxController implements BaseService {
       Hive.box('themeData').put('activeSourceId', source.id);
       lastUpdatedSource.value = 'ANIME';
     } else {
-      activeSource.value = source;
+      activeNovelSource.value = source;
       Hive.box('themeData').put('activeNovelSourceId', source.id);
       lastUpdatedSource.value = 'NOVEL';
     }
@@ -341,7 +342,7 @@ class SourceController extends GetxController implements BaseService {
       }
       return true;
     }).toList();
-    log(extenionTypes.length.toString());
+    Logger.i(extenionTypes.length.toString());
 
     for (var type in extenionTypes) {
       await type
@@ -491,9 +492,9 @@ class SourceController extends GetxController implements BaseService {
 
       initNovelExtensions();
 
-      log('Fetched home page data.');
+      Logger.i('Fetched home page data.');
     } catch (error) {
-      log('Error in fetchHomePage: $error');
+      Logger.i('Error in fetchHomePage: $error');
       errorSnackBar('Failed to fetch data from sources.');
     }
   }
@@ -504,36 +505,30 @@ class SourceController extends GetxController implements BaseService {
     required ItemType type,
   }) async {
     try {
-      final data = (await source.methods.getPopular(1)).list;
+      final future = source.methods.getPopular(1).then((result) => result.list);
 
-      if (data == null || data.isEmpty) {
-        log('No data fetched from ${source.name}');
-        return;
-      }
-
-      final newSection = buildSection(
+      final newSection = buildFutureSection(
         source.name ?? '??',
-        data,
+        future,
         type: type,
         variant: DataVariant.extension,
         source: source,
       );
-      log(data.first.title ?? 'Unknown Title');
 
       if (targetSections.first is Center && type != ItemType.novel) {
         targetSections.value = [];
         targetSections.add(CustomSearchBar(
           disableIcons: true,
           onSubmitted: (v) {
-            extensionSheet(v, getInstalledExtensions(type));
+            SourceSearchPage(initialTerm: v, type: type).go();
           },
         ));
       }
       targetSections.add(newSection);
 
-      log('Data fetched and updated for ${source.name}');
+      Logger.i('Data fetched and updated for ${source.name}');
     } catch (e) {
-      log('Error fetching data from ${source.name}: $e');
+      Logger.i('Error fetching data from ${source.name}: $e');
     }
   }
 

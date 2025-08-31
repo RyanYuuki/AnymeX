@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:math' show min;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -29,10 +29,15 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+
+Map<String, dynamic> _parseJson(String body) {
+  return jsonDecode(body) as Map<String, dynamic>;
+}
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
   final anilistAuth = Get.find<AnilistAuth>();
@@ -151,7 +156,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
             top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
             bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
         child: Wrap(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ImageButton(
                 width: getResponsiveSize(context,
@@ -218,7 +222,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
       // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
-      ...sourceController.novelSections.value
+      ...sourceController.novelSections
     ].obs;
   }
 
@@ -568,54 +572,46 @@ averageScore
 
   static Future<List<Episode>> fetchEpisodesFromAnify(
       String animeId, List<Episode> episodeList) async {
-    log("Fetching Anify metadata for animeId: $animeId");
+    Logger.i("Fetching Anify metadata for animeId: $animeId");
 
     try {
-      final resp = await get(
-          Uri.parse("https://anify.eltik.cc/content-metadata/$animeId"));
+      final resp = await get(Uri.parse(
+          "https://api.ani.zip/mappings?${serviceHandler.serviceType.value == ServicesType.anilist ? 'anilist_id' : 'mal_id'}=$animeId"));
 
       if (resp.statusCode != 200 || resp.body.isEmpty) {
-        log("Failed to fetch Anify data, trying Kitsu...");
+        Logger.i("Failed to fetch Anify data, trying Kitsu...");
         return await Kitsu.fetchKitsuEpisodes(animeId, episodeList)
             .catchError((_) => episodeList);
       }
 
-      final List<dynamic> data = jsonDecode(resp.body);
+      final Map<String, dynamic> data = await compute(_parseJson, resp.body);
 
-      if (data.isEmpty) {
-        log("No valid data found.");
+      if (data['episodes'].isEmpty) {
+        Logger.i("No valid data found.");
         return episodeList;
       }
 
-      int selectedIndex =
-          data.indexWhere((entry) => entry['providerId'] != 'tvdb');
+      final Map<String, dynamic> episodesData = data['episodes'];
 
-      if (selectedIndex == -1) {
-        log("No data with providerId != 'tvdb' found. Defaulting to first entry.");
-        selectedIndex = 0;
-      }
-
-      final episodesData = data[selectedIndex]['data'];
-
-      if (episodesData == null || episodesData.isEmpty) {
-        log("No episodes found for animeId: $animeId");
+      if (episodesData.isEmpty) {
+        Logger.i("No episodes found for animeId: $animeId");
         return episodeList;
       }
 
       for (int i = 0; i < min(episodeList.length, episodesData.length); i++) {
-        final episodeData = episodesData[i];
+        final episodeData = episodesData.entries.toList()[i];
         episodeList[i]
-          ..title = episodeData?['title']?.toString() ?? episodeList[i].title
-          ..thumbnail =
-              episodeData?['img']?.toString() ?? episodeList[i].thumbnail
+          ..title = episodeData.value?['title']['en']?.toString() ??
+              episodeList[i].title
+          ..thumbnail = episodeData.value?['image']?.toString() ??
+              episodeList[i].thumbnail
           ..desc =
-              episodeData?['description']?.toString() ?? episodeList[i].desc
-          ..filler = episodeData?['isFiller'] ?? episodeList[i].filler;
+              episodeData.value?['overview']?.toString() ?? episodeList[i].desc;
       }
 
       return episodeList;
     } catch (e, stack) {
-      log("Error fetching Anify data: $e\n$stack");
+      Logger.i("Error fetching Anify data: $e\n$stack");
 
       return await Kitsu.fetchKitsuEpisodes(animeId, episodeList)
           .catchError((_) => episodeList);
@@ -732,17 +728,23 @@ averageScore
         }).toList();
         return mappedData;
       } else {
-        log('Failed to fetch ${isManga ? "manga" : "anime"} data. Status code: ${response.statusCode} \n response body: ${response.body}');
+        Logger.i(
+            'Failed to fetch ${isManga ? "manga" : "anime"} data. Status code: ${response.statusCode} \n response body: ${response.body}');
         return [];
       }
     } catch (e) {
-      log('Error occurred while fetching ${isManga ? "manga" : "anime"} data: $e');
+      Logger.i(
+          'Error occurred while fetching ${isManga ? "manga" : "anime"} data: $e');
       return [];
     }
   }
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
+    Media? data = cacheController.getCacheById(params.id);
+
+    if (data != null) return data;
+
     const String url = 'https://graphql.anilist.co/';
     final Map<String, dynamic> variables = {
       'id': int.parse(params.id),
@@ -775,7 +777,7 @@ averageScore
         throw Exception(response.body);
       }
     } catch (e) {
-      log('Error occurred while fetching details: $e');
+      Logger.i('Error occurred while fetching details: $e');
     }
     return Media(serviceType: ServicesType.simkl);
   }

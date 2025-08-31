@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -43,7 +43,7 @@ class SimklService extends GetxController
     final id = params.id;
     final newId = id.split('*').first;
     final isSeries = id.split('*').last == "SERIES";
-    log(isSeries.toString());
+    Logger.i(isSeries.toString());
     final resp = await get(Uri.parse(
         "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
     if (resp.statusCode == 200) {
@@ -67,8 +67,8 @@ class SimklService extends GetxController
       }).toList();
       trendingMovies.value = list;
     } else {
-      log(url);
-      log("Error Ocurred: ${resp.body}");
+      Logger.i(url);
+      Logger.i("Error Ocurred: ${resp.body}");
       throw Exception('Failed to fetch trending movies: ${resp.statusCode}');
     }
   }
@@ -277,7 +277,7 @@ class SimklService extends GetxController
       final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
 
       if (token == null || apiKey == null) {
-        log('Authentication token or API key missing');
+        Logger.i('Authentication token or API key missing');
         return;
       }
 
@@ -318,14 +318,14 @@ class SimklService extends GetxController
         },
         body: jsonEncode(body),
       );
-      log(response.body);
+      Logger.i(response.body);
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
       // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
-      log('Exception: $e\n$stack');
+      Logger.i('Exception: $e\n$stack');
       errorSnackBar('An unexpected error occurred');
     }
   }
@@ -358,7 +358,7 @@ class SimklService extends GetxController
                   }
                 ]
               }));
-    log(response.body);
+    Logger.i(response.body);
 
     snackBar('${isMovie ? "Movie" : "Series"} Deleted Successfully');
     currentMedia.value = TrackedMedia();
@@ -380,7 +380,7 @@ class SimklService extends GetxController
           mangaList.firstWhere((e) => e.id == id, orElse: () => TrackedMedia());
     } else {
       currentMedia.value = animeList.firstWhere((e) {
-        log('Searching: $id ${e.id}');
+        Logger.i('Searching: $id ${e.id}');
         return e.id == id;
       }, orElse: () => TrackedMedia());
     }
@@ -408,7 +408,7 @@ class SimklService extends GetxController
         await _exchangeCodeForToken(code);
       }
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
     }
   }
 
@@ -440,7 +440,7 @@ class SimklService extends GetxController
       await fetchUserInfo();
       snackBar("Simkl Logined Successfully!");
     } else {
-      log('${req.statusCode}: ${req.body}');
+      Logger.i('${req.statusCode}: ${req.body}');
       snackBar("Yep, Failed");
     }
   }
@@ -503,7 +503,7 @@ class SimklService extends GetxController
           .where((e) => e.watchingStatus != "COMPLETED")
           .toList();
     } else {
-      log(response.body);
+      Logger.i(response.body);
     }
   }
 
@@ -524,7 +524,7 @@ class SimklService extends GetxController
       continueWatchingSeries.value =
           mangaList.where((e) => e.watchingStatus == "CURRENT").toList();
     } else {
-      log(response.body);
+      Logger.i(response.body);
     }
   }
 

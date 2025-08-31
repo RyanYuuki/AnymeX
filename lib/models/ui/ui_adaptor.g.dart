@@ -57,7 +57,7 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)

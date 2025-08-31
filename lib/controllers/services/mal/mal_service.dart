@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -207,7 +207,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       topManhua.value = await fetchDataFromApi(
           'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15');
     } catch (e) {
-      log('Error fetching home page data: $e', error: e);
+      Logger.i('Error fetching home page data: $e');
     }
   }
 
@@ -262,6 +262,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             children: [
               isLoggedIn.value
                   ? Wrap(
+                      spacing: 8,
                       // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ImageButton(
@@ -371,7 +372,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (token != null) {
         final isValid = await _validateToken(token);
         if (isValid) {
-          log("Auto-login successful with existing token.");
+          Logger.i("Auto-login successful with existing token.");
           await fetchUserInfo(token: token);
           return;
         }
@@ -380,10 +381,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (refreshToken != null) {
         await _refreshTokenWithMAL(refreshToken);
       } else {
-        log("No valid tokens found. User needs to log in again.");
+        Logger.i("No valid tokens found. User needs to log in again.");
       }
     } catch (e) {
-      log("Auto-login failed: $e");
+      Logger.i("Auto-login failed: $e");
     }
   }
 
@@ -398,7 +399,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       return response.statusCode == 200;
     } catch (e) {
-      log("Token validation failed: $e");
+      Logger.i("Token validation failed: $e");
       return false;
     }
   }
@@ -430,7 +431,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         await storage.put('mal_refresh_token', newRefreshToken);
       }
 
-      log("Token refreshed successfully.");
+      Logger.i("Token refreshed successfully.");
       await fetchUserInfo(token: newToken);
     } else {
       throw Exception('Failed to refresh token: ${response.body}');
@@ -461,11 +462,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
-        log("Authorization code: $code");
+        Logger.i("Authorization code: $code");
         await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
       }
     } catch (e) {
-      log('Error during MyAnimeList login: $e');
+      Logger.i('Error during MyAnimeList login: $e');
     }
   }
 
@@ -492,9 +493,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
         await storage.put('mal_refresh_token', refreshToken);
       }
 
-      log("MAL Access token: $token");
+      Logger.i("MAL Access token: $token");
       await fetchUserInfo();
-      log("Login Succesfull!");
+      Logger.i("Login Succesfull!");
     } else {
       throw Exception(
           'Failed to exchange code for token: ${response.body}, ${response.statusCode}');
@@ -527,12 +528,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
         }
         return data;
       } else {
-        log('Failed to fetch data from $url: ${response.statusCode}');
+        Logger.i('Failed to fetch data from $url: ${response.statusCode}');
         throw Exception(
             'Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
-      log('Error fetching data from API: $e', error: e);
+      Logger.i('Error fetching data from API: $e');
       return [];
     }
   }
@@ -586,15 +587,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
         ..watchingStatus = status
         ..score = score.toString();
       currentMedia.value = newMedia;
-      log('$isAnime: $body');
+      Logger.i('$isAnime: $body');
       if (isAnime) {
         fetchUserAnimeList();
       } else {
         fetchUserMangaList();
       }
     } else {
-      log('Error: ${req.body}');
-      log('$isAnime: $body');
+      Logger.i('Error: ${req.body}');
+      Logger.i('$isAnime: $body');
     }
   }
 
@@ -624,7 +625,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         fetchUserMangaList();
       }
     } else {
-      log('Error deleting entry: ${req.body}');
+      Logger.i('Error deleting entry: ${req.body}');
       snackBar(
           "Failed to delete ${isAnime ? "anime" : "manga"} from your list.");
     }

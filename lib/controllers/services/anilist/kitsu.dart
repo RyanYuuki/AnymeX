@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,7 @@ class Kitsu {
 
     final result = (await fetchFromKitsu(query));
     if (result == null) {
-      log("Yeah so it didnt really go well, not found on kitsu as well");
+      Logger.i("Yeah so it didnt really go well, not found on kitsu as well");
       return episodes;
     }
     final kitsuEpisodes = result['data']['episodes']['nodes'];

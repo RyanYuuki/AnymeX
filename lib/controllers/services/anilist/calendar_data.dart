@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
@@ -74,13 +74,13 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
 
     callbackData.addAll(newMediaList);
 
-    log('Fetched ${callbackData.length} total airing schedules so far.');
+    Logger.i('Fetched ${callbackData.length} total airing schedules so far.');
 
     if (pageInfo['hasNextPage']) {
       await fetchCalendarData(callbackData, page: page + 1);
     }
   } else {
-    log('Error: ${response.body}');
+    Logger.i('Error: ${response.body}');
     throw Exception('Failed to load AniList data: ${response.statusCode}');
   }
 }
