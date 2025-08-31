@@ -1,10 +1,11 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -56,11 +57,11 @@ class AnilistAuth extends GetxController {
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
-        log("token found: $code");
+        Logger.i("token found: $code");
         await _exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
       }
     } catch (e) {
-      log('Error during login: $e');
+      Logger.i('Error during login: $e');
     }
   }
 
@@ -96,7 +97,7 @@ class AnilistAuth extends GetxController {
     final token = await storage.get('auth_token');
 
     if (token == null) {
-      log('No token found');
+      Logger.i('No token found');
       return;
     }
 
@@ -146,15 +147,17 @@ class AnilistAuth extends GetxController {
         profileData.value = userProfile;
         isLoggedIn.value = true;
 
-        log('User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
+        Logger.i(
+            'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
         // fetchFollowersAndFollowing(userProfile.id ?? '');
+        CommentsDatabase().login();
       } else {
-        log('Failed to load user profile: ${response.statusCode}');
+        Logger.i('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');
       }
     } catch (e) {
-      log('Error fetching user profile: $e');
+      Logger.i('Error fetching user profile: $e');
     }
   }
 
@@ -162,7 +165,7 @@ class AnilistAuth extends GetxController {
     final token = await storage.get('auth_token');
 
     if (token == null) {
-      log('No token found');
+      Logger.i('No token found');
       return;
     }
 
@@ -193,7 +196,7 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        log(data.toString());
+        Logger.i(data.toString());
 
         final followersList = data['data']['followers'] as List<dynamic>;
         final followingList = data['data']['following'] as List<dynamic>;
@@ -204,11 +207,11 @@ class AnilistAuth extends GetxController {
 
         profileData.value = updatedProfile;
       } else {
-        log('Failed to load followers/following: ${response.statusCode}');
+        Logger.i('Failed to load followers/following: ${response.statusCode}');
         throw Exception('Failed to load followers/following ${response.body}');
       }
     } catch (e) {
-      log('Error fetching followers/following: $e');
+      Logger.i('Error fetching followers/following: $e');
     }
   }
 
@@ -257,7 +260,7 @@ class AnilistAuth extends GetxController {
 
     try {
       if (profileData.value.id == null) {
-        log('User ID is not available. Fetching user profile first.');
+        Logger.i('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
@@ -305,16 +308,16 @@ class AnilistAuth extends GetxController {
               .toList()
               .reversed
               .toList();
-          log("Anime List Fetched Successfully!");
+          Logger.i("Anime List Fetched Successfully!");
         } else {
-          log('Unexpected response structure: ${response.body}');
+          Logger.i('Unexpected response structure: ${response.body}');
         }
       } else {
-        log('Fetch failed with status code: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        Logger.i('Fetch failed with status code: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
-      log('Failed to load anime list: $e');
+      Logger.i('Failed to load anime list: $e');
     }
   }
 
@@ -334,7 +337,7 @@ class AnilistAuth extends GetxController {
 
     try {
       if (profileData.value.id == null) {
-        log('User ID is not available. Fetching user profile first.');
+        Logger.i('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
@@ -368,11 +371,11 @@ class AnilistAuth extends GetxController {
           fetchUserMangaList();
         }
       } else {
-        log('Failed to delete media with list ID $listId');
-        log('${response.statusCode}: ${response.body}');
+        Logger.i('Failed to delete media with list ID $listId');
+        Logger.i('${response.statusCode}: ${response.body}');
       }
     } catch (e) {
-      log('Failed to delete media: $e');
+      Logger.i('Failed to delete media: $e');
     }
   }
 
@@ -402,7 +405,7 @@ class AnilistAuth extends GetxController {
 
     try {
       if (profileData.value.id == null) {
-        log('User ID is not available. Fetching user profile first.');
+        Logger.i('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
@@ -460,11 +463,11 @@ class AnilistAuth extends GetxController {
         }
         setCurrentMedia(listId, isManga: !isAnime);
       } else {
-        log('Update failed with status code: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        Logger.i('Update failed with status code: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
-      log('Failed to update media: $e');
+      Logger.i('Failed to update media: $e');
     }
   }
 
@@ -510,7 +513,7 @@ class AnilistAuth extends GetxController {
 
     try {
       if (profileData.value.id == null) {
-        log('User ID is not available. Fetching user profile first.');
+        Logger.i('User ID is not available. Fetching user profile first.');
         await fetchUserProfile();
       }
 
@@ -560,14 +563,14 @@ class AnilistAuth extends GetxController {
               .reversed
               .toList();
         } else {
-          log('Unexpected response structure: ${response.body}');
+          Logger.i('Unexpected response structure: ${response.body}');
         }
       } else {
-        log('Fetch failed with status code: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        Logger.i('Fetch failed with status code: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
-      log('Failed to load manga list: $e');
+      Logger.i('Failed to load manga list: $e');
     }
   }
 
@@ -579,7 +582,7 @@ class AnilistAuth extends GetxController {
   }) async {
     final token = await storage.get('auth_token');
     if (token == null) {
-      log('Auth token is not available.');
+      Logger.i('Auth token is not available.');
       return;
     }
 
@@ -614,13 +617,13 @@ class AnilistAuth extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        log('Anime status updated successfully: ${response.body}');
+        Logger.i('Anime status updated successfully: ${response.body}');
       } else {
-        log('Failed to update anime status: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        Logger.i('Failed to update anime status: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
-      log('Error while updating anime status: $e');
+      Logger.i('Error while updating anime status: $e');
     }
   }
 
@@ -632,7 +635,7 @@ class AnilistAuth extends GetxController {
   }) async {
     final token = await storage.get('auth_token');
     if (token == null) {
-      log('Auth token is not available.');
+      Logger.i('Auth token is not available.');
       return;
     }
 
@@ -667,13 +670,13 @@ class AnilistAuth extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        log('Manga status updated successfully: ${response.body}');
+        Logger.i('Manga status updated successfully: ${response.body}');
       } else {
-        log('Failed to update manga status: ${response.statusCode}');
-        log('Response body: ${response.body}');
+        Logger.i('Failed to update manga status: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
-      log('Error while updating manga status: $e');
+      Logger.i('Error while updating manga status: $e');
     }
   }
 

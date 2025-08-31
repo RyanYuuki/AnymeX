@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -21,7 +21,7 @@ class CacheController extends GetxController {
     if (!data.containsKey('id') ||
         data['id'] == null ||
         data['id'].toString().isEmpty) {
-      log('Error: Invalid or missing ID in data');
+      Logger.i('Error: Invalid or missing ID in data');
       return;
     }
 
@@ -37,16 +37,17 @@ class CacheController extends GetxController {
     if (index == -1) {
       if (!currentPool.any((item) => jsonDecode(item)['id'] == id)) {
         currentPool.add(encodedData);
-        log('Added new entry to cache: ID $id');
+        Logger.i('Added new entry to cache: ID $id');
       } else {
-        log('Duplicate entry in currentPool skipped: ID $id');
+        Logger.i('Duplicate entry in currentPool skipped: ID $id');
       }
     } else {
       if (index < currentPool.length) {
         currentPool[index] = encodedData;
-        log('Updated existing entry in cache: ID $id');
+        Logger.i('Updated existing entry in cache: ID $id');
       } else {
-        log('Warning: currentPool index out of sync for ID $id, adding as new');
+        Logger.i(
+            'Warning: currentPool index out of sync for ID $id, adding as new');
         currentPool.add(encodedData);
       }
     }

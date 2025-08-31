@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -47,10 +47,11 @@ Future<List<Media>> getAiRecommendations(
           );
         }).toList();
       } else {
-        log('Recommendation API failed: ${resp.statusCode} - ${resp.body}');
+        Logger.i(
+            'Recommendation API failed: ${resp.statusCode} - ${resp.body}');
       }
     } catch (e) {
-      log('Recommendation fetch error: $e');
+      Logger.i('Recommendation fetch error: $e');
     }
     return [];
   }
@@ -87,7 +88,7 @@ Future<List<Media>> syncAndFetchRecommendations(String username, bool isAL,
       return recommendations;
     }
   } catch (e) {
-    log('Sync and fetch error: $e');
+    Logger.i('Sync and fetch error: $e');
     snackBar('Sync Failed!');
   }
 
@@ -102,13 +103,14 @@ Future<void> getUserList(String username, bool isAL) async {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      log('User list fetched successfully: ${response.body.toString()}');
+      Logger.i('User list fetched successfully: ${response.body.toString()}');
     } else {
-      log('Failed to fetch user list: ${response.statusCode} - ${response.body}');
+      Logger.i(
+          'Failed to fetch user list: ${response.statusCode} - ${response.body}');
       throw Exception('Failed to fetch user list');
     }
   } catch (e) {
-    log('Get user list error: $e');
+    Logger.i('Get user list error: $e');
     rethrow;
   }
 }
@@ -121,13 +123,14 @@ Future<void> syncUserList(String username, bool isAL) async {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      log('User list synced successfully: ${response.body.toString()}');
+      Logger.i('User list synced successfully: ${response.body.toString()}');
     } else {
-      log('Failed to sync user list: ${response.statusCode} - ${response.body}');
+      Logger.i(
+          'Failed to sync user list: ${response.statusCode} - ${response.body}');
       throw Exception('Failed to sync user list');
     }
   } catch (e) {
-    log('Sync user list error: $e');
+    Logger.i('Sync user list error: $e');
     rethrow;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:flutter/material.dart';
 
-const Color seedColor = Colors.deepPurple;
+const Color seedColor = Colors.red;
 
 ThemeData lightMode = ThemeData(
   useMaterial3: true,
@@ -14,12 +14,15 @@ ThemeData lightMode = ThemeData(
     seedColor: seedColor,
     brightness: Brightness.light,
   ),
-  pageTransitionsTheme: PageTransitionsTheme(
-    builders: {
-      for (var platform in TargetPlatform.values)
-        platform: const AnymexPageTransition(),
-    },
-  ),
+  // pageTransitionsTheme: PageTransitionsTheme(
+  //   builders: {
+  //     for (var platform in TargetPlatform.values)
+  //       platform: AnymexPageTransition(
+  //           backgroundColor: ColorScheme.fromSeed(
+  //                   brightness: Brightness.light, seedColor: seedColor)
+  //               .surface),
+  //   },
+  // ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
     bodyMedium: TextStyle(color: Colors.black),
@@ -79,12 +82,15 @@ ThemeData darkMode = ThemeData(
     bodySmall: TextStyle(
         color: Colors.grey, fontSize: 12), // Updated to a lighter color
   ),
-  pageTransitionsTheme: PageTransitionsTheme(
-    builders: {
-      for (var platform in TargetPlatform.values)
-        platform: const FadeForwardsPageTransitionsBuilder(),
-    },
-  ),
+  // pageTransitionsTheme: PageTransitionsTheme(
+  //   builders: {
+  //     for (var platform in TargetPlatform.values)
+  //       platform: AnymexPageTransition(
+  //           backgroundColor: ColorScheme.fromSeed(
+  //                   brightness: Brightness.dark, seedColor: seedColor)
+  //               .surface),
+  //   },
+  // ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.grey.shade900,

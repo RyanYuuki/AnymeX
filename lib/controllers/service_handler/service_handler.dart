@@ -1,3 +1,5 @@
+import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -131,11 +133,16 @@ class ServiceHandler extends GetxController {
   Future<void> fetchHomePage() => service.fetchHomePage();
 
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    if (serviceType.value == ServicesType.extensions) {
+    try {
+      if (serviceType.value == ServicesType.extensions) {
+        return service.fetchDetails(params);
+      }
+      Media? data = cacheController.getCacheById(params.id);
+      return data ?? service.fetchDetails(params);
+    } catch (e) {
+      Logger.i("Cache Error => $e");
       return service.fetchDetails(params);
     }
-    Media? data = cacheController.getCacheById(params.id);
-    return data ?? service.fetchDetails(params);
   }
 
   Future<List<Media>?> search(SearchParams params) async =>
