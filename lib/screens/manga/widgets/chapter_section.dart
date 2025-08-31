@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -17,7 +17,6 @@ import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 class ChapterSection extends StatelessWidget {
   final RxString searchedTitle;
@@ -256,7 +255,7 @@ class ChapterSection extends StatelessWidget {
           sourceController.getMangaExtensionByName(item.value);
           await mapToAnilist();
         } catch (e) {
-          log(e.toString());
+          Logger.i(e.toString());
         }
       },
     );

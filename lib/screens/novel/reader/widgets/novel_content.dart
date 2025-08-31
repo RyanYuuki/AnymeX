@@ -1,6 +1,5 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

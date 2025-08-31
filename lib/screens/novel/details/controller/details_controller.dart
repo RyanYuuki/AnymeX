@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -9,7 +7,6 @@ import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NovelDetailsController extends GetxController {
@@ -43,6 +40,9 @@ class NovelDetailsController extends GetxController {
     try {
       final data = await source.methods.getDetail(DMedia(url: initialMedia.id));
       media.value = Media.fromDManga(data, ItemType.novel);
+      media.value.title = initialMedia.title;
+      media.value.poster = initialMedia.poster;
+      media.value.season = source.name ?? '';
       chapters.value = media.value.altMediaContent ?? [];
       isLoading.value = false;
     } catch (e) {

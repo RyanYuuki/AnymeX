@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -81,8 +81,15 @@ class NovelReaderController extends GetxController {
     if (offset > maxScrollExtent) return;
 
     progress.value = offset / maxScrollExtent;
+
+    int totalPages = (maxScrollExtent / Get.height).ceil() + 1;
+    int currentPage = (offset / Get.height).floor() + 1;
+
     currentChapter.value.currentOffset = offset;
     currentChapter.value.maxOffset = maxScrollExtent;
+    currentChapter.value.lastReadTime = DateTime.now().millisecondsSinceEpoch;
+    currentChapter.value.pageNumber = currentPage;
+    currentChapter.value.totalPages = totalPages;
   }
 
   Future<void> _waitForScrollAndJump() async {
@@ -120,7 +127,7 @@ class NovelReaderController extends GetxController {
 
       await _waitForScrollAndJump();
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
       loadingState.value = LoadingState.error;
     }
   }
@@ -135,9 +142,10 @@ class NovelReaderController extends GetxController {
     if (consecutiveReads.value > 1) {
       Future.microtask(() {
         offlineStorageController.addOrUpdateNovel(
-            media, chapters, currentChapter.value);
+            media, chapters, currentChapter.value, source);
         offlineStorageController.addOrUpdateReadChapter(
-            media.id, currentChapter.value);
+            media.id, currentChapter.value,
+            source: source);
       });
     }
   }

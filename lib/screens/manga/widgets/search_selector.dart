@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/screens/novel/search/search_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -47,10 +48,8 @@ void searchTypeSheet(BuildContext context) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildSearchTile(context, isSimkl ? "MOVIES" : "ANIME",
-                      button1Cover, false),
-                  _buildSearchTile(context, isSimkl ? "SERIES" : "MANGA",
-                      button2Cover, isSimkl ? false : true),
+                  _buildSearchTile(context, "MANGA", button1Cover, false),
+                  _buildSearchTile(context, "NOVEL", button2Cover, true),
                 ],
               ),
               20.height()
@@ -61,7 +60,7 @@ void searchTypeSheet(BuildContext context) {
 }
 
 ImageButton _buildSearchTile(
-    BuildContext context, String buttonText, String imageUrl, bool isManga) {
+    BuildContext context, String buttonText, String imageUrl, bool isNovel) {
   final isDesktop = MediaQuery.of(context).size.width > 600;
 
   return ImageButton(
@@ -72,11 +71,14 @@ ImageButton _buildSearchTile(
     borderRadius: 16.multiplyRadius(),
     onPressed: () {
       Get.back();
-
-      navigate(() => SearchPage(
-            searchTerm: '',
-            isManga: isManga,
-          ));
+      if (isNovel) {
+        navigate(() => const NovelSearchPage());
+      } else {
+        navigate(() => const SearchPage(
+              searchTerm: '',
+              isManga: true,
+            ));
+      }
     },
   );
 }

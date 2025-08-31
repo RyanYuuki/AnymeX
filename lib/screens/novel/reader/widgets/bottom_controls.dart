@@ -69,7 +69,7 @@ class NovelBottomControls extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
             borderRadius: BorderRadius.circular(isDesktop ? 16 : 12),
             border: Border.all(
               color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -159,7 +159,7 @@ class NovelBottomControls extends StatelessWidget {
         vertical: isDesktop ? 12 : 8,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),

@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
@@ -45,8 +45,8 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
           controller.offlineStorage.getNovelById(controller.initialMedia.id);
       if (novel != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          log('Called Updater');
           controller.offlineMedia.value = novel;
+          controller.offlineMedia.refresh();
         });
       }
     });
@@ -188,7 +188,6 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     required dynamic totalChapters,
     required dynamic altLength,
   }) {
-    // Convert values to num safely
     num parseNum(dynamic value) {
       if (value == null) return 1;
       if (value is num) return value;
@@ -202,7 +201,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
         : parseNum(altLength);
 
     final num safeTotal = total.clamp(1, double.infinity);
-    final progress = (current / safeTotal);
+    final progress = (current / safeTotal) * 100;
     if (progress.toString().length > 5) return progress.toStringAsFixed(3);
     return progress.toStringAsFixed(2);
   }

@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
