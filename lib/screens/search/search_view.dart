@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
@@ -12,6 +12,7 @@ import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive/hive.dart';
@@ -143,7 +144,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _searchState = SearchState.error;
         _errorMessage = _getErrorMessage(e);
       });
-      log('Search failed: $e');
+      Logger.i('Search failed: $e');
     }
   }
 
@@ -271,10 +272,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 isActive: false,
                 onTap: () => navigate(() => const SauceFinderView()),
               ),
-            ],
-            const Spacer(),
-            if (_searchState == SearchState.success) ...[
-              _buildViewModeToggle(),
             ],
           ],
         ],
@@ -709,92 +706,94 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       itemCount: _searchResults!.length,
       itemBuilder: (context, index) {
         final media = _searchResults![index];
-        return _currentViewMode == ViewMode.list
-            ? _buildListItem(media)
-            : GridAnimeCard(
-                data: media,
-                isManga: widget.isManga,
-                variant: CardVariant.search);
+        return AnimationConfiguration.staggeredGrid(
+          position: index,
+          columnCount: _currentViewMode == ViewMode.list ? 1 : 3,
+          child: ScaleAnimation(
+            duration: const Duration(milliseconds: 100),
+            child: _currentViewMode == ViewMode.list
+                ? _buildListItem(media)
+                : GridAnimeCard(
+                    data: media,
+                    isManga: widget.isManga,
+                    variant: CardVariant.search),
+          ),
+        );
       },
     );
   }
 
   Widget _buildListItem(Media media) {
-    return StaggeredAnimatedItemWrapper(
-      index: 1,
-      child: GestureDetector(
-        onTap: () => _navigateToDetails(media),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Theme.of(context)
-                .colorScheme
-                .surfaceContainerHighest
-                .withOpacity(0.3),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-            ),
+    return GestureDetector(
+      onTap: () => _navigateToDetails(media),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withOpacity(0.3),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Hero(
-                  tag: media.title,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      width: 60,
-                      height: 88,
-                      imageUrl: media.poster,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        child: Icon(
-                          Iconsax.image,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Hero(
+                tag: media.title,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    width: 60,
+                    height: 88,
+                    imageUrl: media.poster,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      child: Icon(
+                        Iconsax.image,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        child: Icon(
-                          Iconsax.warning_2,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      child: Icon(
+                        Iconsax.warning_2,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        media.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                      ),
-                      if (media.rating != "??") ...[
-                        const SizedBox(height: 8),
-                        _buildRatingChip(media.rating),
-                      ],
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      media.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    if (media.rating != "??") ...[
+                      const SizedBox(height: 8),
+                      _buildRatingChip(media.rating),
                     ],
-                  ),
+                  ],
                 ),
-                Icon(
-                  Iconsax.arrow_right_3,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
-              ],
-            ),
+              ),
+              Icon(
+                Iconsax.arrow_right_3,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+            ],
           ),
         ),
       ),
@@ -1009,9 +1008,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                               ),
                         ),
                       ),
-                      if (_searchState == SearchState.success &&
-                          serviceHandler.serviceType.value !=
-                              ServicesType.anilist) ...[
+                      if (_searchState == SearchState.success) ...[
                         const Spacer(),
                         _buildViewModeToggle(),
                       ],

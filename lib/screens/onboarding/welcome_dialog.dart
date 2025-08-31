@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -24,7 +24,7 @@ Future<bool> _requestStoragePermissions() async {
     final androidInfo = await deviceInfo.androidInfo;
     final sdkInt = androidInfo.version.sdkInt;
 
-    log('Android SDK version: $sdkInt');
+    Logger.i('Android SDK version: $sdkInt');
 
     if (sdkInt >= 33) {
       final permissions = [
@@ -78,7 +78,7 @@ Future<bool> _requestStoragePermissions() async {
       return true;
     }
   } catch (e) {
-    log('Error requesting storage permissions: $e');
+    Logger.i('Error requesting storage permissions: $e');
     return false;
   }
 }
