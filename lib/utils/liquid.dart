@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
 
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:isolate';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -113,7 +113,7 @@ class Liquid {
         await _showImagePreviewDialog(context, pickedFile!.files.first.path!);
       }
     } catch (e) {
-      log('Error picking image: $e');
+      Logger.i('Error picking image: $e');
       _showErrorSnackbar(context, 'Failed to pick image');
     }
   }
@@ -198,7 +198,7 @@ class Liquid {
       await _processAndSaveBlurredImageFast(
           imagePath, progressController, blurStrength);
     } catch (e) {
-      log('Error processing image: $e');
+      Logger.i('Error processing image: $e');
       progressController.updateProgress('Error: Failed to process image', 0.0);
       await Future.delayed(const Duration(seconds: 2));
     } finally {
@@ -409,18 +409,18 @@ class Liquid {
       if (result != null) {
         progressController.updateProgress('Applying new background...', 0.98);
         settings.liquidBackgroundPath = result;
-        log('Liquid background saved successfully: $result');
+        Logger.i('Liquid background saved successfully: $result');
 
         progressController.updateProgress(
             'Background applied successfully! ✓', 1.0);
         await Future.delayed(const Duration(milliseconds: 800));
       } else {
         progressController.updateProgress('Failed to process image', 0.0);
-        log('Failed to process image');
+        Logger.i('Failed to process image');
         await Future.delayed(const Duration(seconds: 2));
       }
     } catch (e) {
-      log('Error processing image: $e');
+      Logger.i('Error processing image: $e');
       progressController.updateProgress('Error: ${e.toString()}', 0.0);
       await Future.delayed(const Duration(seconds: 2));
     }
@@ -436,7 +436,7 @@ class Liquid {
         }
       }
     } catch (e) {
-      log('Error clearing liquid background: $e');
+      Logger.i('Error clearing liquid background: $e');
     }
   }
 

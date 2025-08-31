@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/models/sauce/sauce_result.dart';
@@ -20,7 +20,7 @@ class SauceFinder {
       if (response.statusCode == 200) {
         final respStr = await response.stream.bytesToString();
         final jsonData = json.decode(respStr);
-        log(respStr.toString());
+        Logger.i(respStr.toString());
 
         if (jsonData['result'] != null && jsonData['result'].isNotEmpty) {
           return SauceResult.fromJson(jsonData['result'][0]);

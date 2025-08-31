@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -107,7 +107,8 @@ class PlayerShaders {
     final selectedProfile = settingsController.selectedProfile;
     final shaders = shaderProfiles[selectedProfile]?[configName] ?? <String>[];
 
-    log('Profile: $selectedProfile, Config: $configName, Shaders: $shaders');
+    Logger.i(
+        'Profile: $selectedProfile, Config: $configName, Shaders: $shaders');
     return shaders;
   }
 
@@ -142,7 +143,7 @@ class PlayerShaders {
     settingsController.selectedShader = shader;
     var paths =
         (await PlayerShaders.getShaderPathsForProfile(shader)).join(';');
-    log('Paths: $paths');
+    Logger.i('Paths: $paths');
     (player.platform as dynamic).setProperty('glsl-shaders', paths);
   }
 

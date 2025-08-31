@@ -1,29 +1,12 @@
 import 'dart:io';
 
 import 'package:anymex/main.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 
 class Deeplink {
-  static void initDeepLinkListener() async {
-    if (Platform.isLinux) return;
-
-    try {
-      final initialUri = await appLinks.getInitialLink();
-      if (initialUri != null) handleDeepLink(initialUri);
-    } catch (err) {
-      errorSnackBar('Error getting initial deep link: $err');
-    }
-
-    appLinks.uriLinkStream.listen(
-      (uri) => handleDeepLink(uri),
-      onError: (err) => errorSnackBar('Error Opening link: $err'),
-    );
-  }
-
   static void handleDeepLink(Uri uri) {
     if (uri.host != 'add-repo') return;
     ExtensionType extType;

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:http/http.dart';
@@ -33,8 +33,8 @@ class MediaSyncer {
         return data['aniId'].toString();
       }
     } else {
-      log("URL => $url");
-      log('Error While Mapping Id => ${resp.body}');
+      Logger.i("URL => $url");
+      Logger.i('Error While Mapping Id => ${resp.body}');
     }
     return null;
   }
@@ -50,7 +50,7 @@ class MediaSyncer {
         return data['aniId'].toString();
       }
     } else {
-      log('Error While Mapping Id => ${resp.body}');
+      Logger.i('Error While Mapping Id => ${resp.body}');
     }
     return null;
   }

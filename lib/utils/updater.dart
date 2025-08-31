@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 import 'package:anymex/utils/abi_checker.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -13,7 +13,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 
 class UpdateManager {
   static const String _repoUrl =
@@ -26,147 +25,6 @@ class UpdateManager {
       }
     }
     return '';
-  }
-
-  Future<bool> _requestStoragePermissions() async {
-    if (!Platform.isAndroid) return true;
-
-    try {
-      final deviceInfo = DeviceInfoPlugin();
-      final androidInfo = await deviceInfo.androidInfo;
-      final sdkInt = androidInfo.version.sdkInt;
-
-      log('Android SDK version: $sdkInt');
-
-      if (sdkInt >= 33) {
-        final permissions = [
-          Permission.photos,
-          Permission.videos,
-        ];
-
-        Map<Permission, PermissionStatus> statuses =
-            await permissions.request();
-
-        if (await Permission.manageExternalStorage.isDenied) {
-          final manageStorageStatus =
-              await Permission.manageExternalStorage.request();
-          if (manageStorageStatus.isPermanentlyDenied) {
-            await openAppSettings();
-            return false;
-          }
-        }
-
-        return statuses.values.every((status) =>
-            status == PermissionStatus.granted ||
-            status == PermissionStatus.limited);
-      } else if (sdkInt >= 30) {
-        final status = await Permission.manageExternalStorage.request();
-
-        if (status.isPermanentlyDenied) {
-          await _showPermissionDialog();
-          await openAppSettings();
-          return false;
-        }
-
-        return status.isGranted;
-      } else if (sdkInt >= 23) {
-        final permissions = [
-          Permission.storage,
-        ];
-
-        Map<Permission, PermissionStatus> statuses =
-            await permissions.request();
-
-        bool allGranted = statuses.values.every((status) => status.isGranted);
-
-        if (!allGranted) {
-          bool permanentlyDenied =
-              statuses.values.any((status) => status.isPermanentlyDenied);
-          if (permanentlyDenied) {
-            await _showPermissionDialog();
-            await openAppSettings();
-            return false;
-          }
-        }
-
-        return allGranted;
-      } else {
-        return true;
-      }
-    } catch (e) {
-      log('Error requesting storage permissions: $e');
-      return false;
-    }
-  }
-
-  Future<void> _showPermissionDialog() async {
-    await Get.dialog(
-      AlertDialog(
-        title: const Text('Storage Permission Required'),
-        content: const Text(
-          'AnymeX needs storage permission to download and install updates. '
-          'Please grant the permission in the app settings.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              openAppSettings();
-            },
-            child: const Text('Open Settings'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<bool> _checkInstallPermission() async {
-    if (!Platform.isAndroid) return true;
-
-    try {
-      final status = await Permission.requestInstallPackages.status;
-
-      if (status.isDenied) {
-        final result = await Permission.requestInstallPackages.request();
-
-        if (result.isPermanentlyDenied) {
-          await Get.dialog(
-            AlertDialog(
-              title: const Text('Install Permission Required'),
-              content: const Text(
-                'AnymeX needs permission to install packages to update the app. '
-                'Please enable "Install unknown apps" in the app settings.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Get.back(),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Get.back();
-                    openAppSettings();
-                  },
-                  child: const Text('Open Settings'),
-                ),
-              ],
-            ),
-          );
-          return false;
-        }
-
-        return result.isGranted;
-      }
-
-      return status.isGranted;
-    } catch (e) {
-      log('Error checking install permission: $e');
-      return false;
-    }
   }
 
   Future<void> checkForUpdates(
@@ -257,7 +115,7 @@ class UpdateManager {
       }
     }
 
-    log('Current version ($currentVersion) is up to date.');
+    Logger.i('Current version ($currentVersion) is up to date.');
     return false;
   }
 
@@ -276,7 +134,7 @@ class UpdateManager {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        log('Failed to fetch latest release: ${response.statusCode}');
+        Logger.i('Failed to fetch latest release: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching latest release: $e');
