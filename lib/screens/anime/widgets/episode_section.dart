@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 class EpisodeSection extends StatefulWidget {
   final dynamic searchedTitle;
@@ -95,7 +94,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
       _episodeFuture.value = _fetchEpisodes(currentRequestId);
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
       widget.episodeError.value = true;
     }
   }

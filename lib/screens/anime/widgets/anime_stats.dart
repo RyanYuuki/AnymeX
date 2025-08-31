@@ -182,28 +182,31 @@ class StateItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AnymexText(
-          text: label,
-          variant: TextVariant.semiBold,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: AnymexText(
-            text: value,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymexText(
+            text: label,
             variant: TextVariant.semiBold,
-            color: Theme.of(context).colorScheme.primary,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.right,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Expanded(
+            child: AnymexText(
+              text: value,
+              variant: TextVariant.semiBold,
+              color: Theme.of(context).colorScheme.primary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
