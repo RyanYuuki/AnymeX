@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -57,7 +57,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           .installSource(widget.source);
       await sortExtensions();
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
     }
     if (mounted) setState(() => _isLoading = false);
   }
@@ -254,13 +254,13 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           ..setPositiveButton("Yes", () async {
             setState(() => _isLoading = true);
             try {
-              log("Uninstalling => ${widget.source.id}");
+              Logger.i("Uninstalling => ${widget.source.id}");
               await widget.source.extensionType!
                   .getManager()
                   .uninstallSource(widget.source);
               await sortExtensions();
             } catch (e) {
-              log("Uninstall Failed => ${e.toString()}");
+              Logger.i("Uninstall Failed => ${e.toString()}");
             }
             if (mounted) {
               setState(() => _isLoading = false);

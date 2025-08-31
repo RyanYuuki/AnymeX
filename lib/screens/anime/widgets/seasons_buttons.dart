@@ -19,6 +19,7 @@ class SeasonsGrid extends StatelessWidget {
         .where((element) =>
             element.relationType == 'SEQUEL' ||
             element.relationType == 'PREQUEL')
+        .take(2)
         .toList();
 
     return filteredRelations.isEmpty

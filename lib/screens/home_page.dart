@@ -143,34 +143,42 @@ class _HomePageState extends State<HomePage> {
                         if (data.isNotEmpty && children.length > 2) {
                           children.insert(
                             2,
-                            SizedBox(
-                              height: 100,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount:
-                                    cacheController.getStoredAnime().length,
-                                itemBuilder: (context, i) {
-                                  final media =
-                                      cacheController.getStoredAnime()[i];
-                                  return RecentlyOpenedAnimeCard(media: media);
-                                },
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: SizedBox(
+                                height: 100,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      cacheController.getStoredAnime().length,
+                                  itemBuilder: (context, i) {
+                                    final media =
+                                        cacheController.getStoredAnime()[i];
+                                    return RecentlyOpenedAnimeCard(
+                                        media: media);
+                                  },
+                                ),
                               ),
                             ),
                           );
                         } else if (data.isNotEmpty) {
                           children.insert(
                             0,
-                            SizedBox(
-                              height: 100,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount:
-                                    cacheController.getStoredAnime().length,
-                                itemBuilder: (context, i) {
-                                  final media =
-                                      cacheController.getStoredAnime()[i];
-                                  return RecentlyOpenedAnimeCard(media: media);
-                                },
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: SizedBox(
+                                height: 100,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      cacheController.getStoredAnime().length,
+                                  itemBuilder: (context, i) {
+                                    final media =
+                                        cacheController.getStoredAnime()[i];
+                                    return RecentlyOpenedAnimeCard(
+                                        media: media);
+                                  },
+                                ),
                               ),
                             ),
                           );

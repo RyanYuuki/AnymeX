@@ -451,6 +451,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
       child: DefaultTabController(
         length: 4,
         child: Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
