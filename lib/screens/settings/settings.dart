@@ -7,6 +7,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -106,6 +107,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const SizedBox(height: 10),
                 CustomTile(
+                  icon: HugeIcons.strokeRoundedFile01,
+                  title: "Share Logs",
+                  description: "Share Logs of the App",
+                  onTap: () async => await Logger.share(),
+                ),
+                const SizedBox(height: 10),
+                CustomTile(
                   icon: HugeIcons.strokeRoundedInformationCircle,
                   title: "About",
                   description: "About the App",
@@ -143,7 +151,7 @@ class CustomBackButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context)
                 .colorScheme
-                .primaryContainer
+                .surfaceContainer
                 .withOpacity(0.5)),
         onPressed: () {
           Navigator.pop(context);

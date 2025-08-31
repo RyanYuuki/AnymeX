@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/shaders.dart';
@@ -128,7 +128,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
       for (final file in archive) {
         if (file.isFile) {
           final outFile = File('$mpvPath${file.name}');
-          log('Path is: ${outFile.path}');
+          Logger.i('Path is: ${outFile.path}');
 
           await outFile.parent.create(recursive: true);
           await outFile.writeAsBytes(file.content as List<int>);
@@ -250,7 +250,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context)
                           .colorScheme
-                          .primaryContainer
+                          .surfaceContainer
                           .withValues(alpha: 0.5),
                     ),
                     onPressed: () {

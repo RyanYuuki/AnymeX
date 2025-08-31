@@ -51,7 +51,7 @@ class SettingsAccounts extends StatelessWidget {
                   style: IconButton.styleFrom(
                     backgroundColor: Theme.of(context)
                         .colorScheme
-                        .primaryContainer
+                        .surfaceContainer
                         .withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),

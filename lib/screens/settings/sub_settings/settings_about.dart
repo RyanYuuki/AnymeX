@@ -1,6 +1,10 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
+import 'package:anymex/utils/updater.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
@@ -220,8 +224,8 @@ class AboutPage extends StatelessWidget {
                 items: [
                   CustomListTile(
                     onTap: () async {
-                      await launchUrlHelper(
-                          'https://github.com/RyanYuuki/AnymeX/releases');
+                      snackBar('Checking for updates!');
+                      Get.find<Settings>().checkForUpdates(context);
                     },
                     leading: const Icon(Icons.system_update),
                     title: "Check for Updates",

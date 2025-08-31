@@ -44,7 +44,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context)
                             .colorScheme
-                            .primaryContainer
+                            .surfaceContainer
                             .withOpacity(0.5),
                       ),
                       onPressed: () {
