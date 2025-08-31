@@ -100,103 +100,99 @@ class GridAnimeCard extends StatelessWidget {
     final media = data is Media
         ? CardData.fromMedia(data)
         : CardData.fromTrackedMedia(data);
-    return StaggeredAnimatedItemWrapper(
-      index: 2,
-      child: SizedBox(
-        width: cardWidth,
-        height: cardHeight,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                AnymexOnTap(
-                  margin: 0,
-                  onTap: () {
-                    navigate(() => isManga
-                        ? MangaDetailsPage(media: media.data, tag: media.title)
-                        : AnimeDetailsPage(
-                            media: media.data, tag: media.title));
-                  },
-                  child: Hero(
-                    tag: media.title,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: NetworkSizedImage(
-                        radius: 12,
-                        imageUrl: media.poster,
-                        width: cardWidth,
-                        height: 160,
-                        errorImage:
-                            'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
-                      ),
+    return SizedBox(
+      width: cardWidth,
+      height: cardHeight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              AnymexOnTap(
+                margin: 0,
+                onTap: () {
+                  navigate(() => isManga
+                      ? MangaDetailsPage(media: media.data, tag: media.title)
+                      : AnimeDetailsPage(media: media.data, tag: media.title));
+                },
+                child: Hero(
+                  tag: media.title,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: NetworkSizedImage(
+                      radius: 12,
+                      imageUrl: media.poster,
+                      width: cardWidth,
+                      height: 160,
+                      errorImage:
+                          'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                     ),
                   ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: _buildEpisodeChip(context, media),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: _buildEpisodeChip(context, media),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          if (data is Media &&
+              ((variant ?? CardVariant.onlinelist) != CardVariant.search))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded,
+                    color: Colors.grey, size: 16),
+                const SizedBox(width: 2),
+                AnymexText(
+                  text: isManga ? "MANGA" : 'ANIME',
+                  maxLines: 1,
+                  variant: TextVariant.regular,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey,
+                  size: 12,
                 ),
               ],
             ),
-            const SizedBox(height: 5),
-            if (data is Media &&
-                ((variant ?? CardVariant.onlinelist) != CardVariant.search))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded,
-                      color: Colors.grey, size: 16),
-                  const SizedBox(width: 2),
-                  AnymexText(
-                    text: isManga ? "MANGA" : 'ANIME',
-                    maxLines: 1,
-                    variant: TextVariant.regular,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey,
-                    size: 12,
-                  ),
-                ],
-              ),
-            const SizedBox(height: 5),
+          const SizedBox(height: 5),
+          SizedBox(
+            width: cardWidth,
+            child: AnymexText(
+              text: media.title,
+              maxLines: 2,
+              size: 14,
+              variant: TextVariant.semiBold,
+            ),
+          ),
+          const SizedBox(height: 3),
+          if (media.episodeCount != 'N/A')
             SizedBox(
               width: cardWidth,
-              child: AnymexText(
-                text: media.title,
-                maxLines: 2,
-                size: 14,
-                variant: TextVariant.semiBold,
-              ),
-            ),
-            const SizedBox(height: 3),
-            if (media.episodeCount != 'N/A')
-              SizedBox(
-                width: cardWidth,
-                child: AnymexTextSpans(
-                  text: '  |  ~',
-                  maxLines: 1,
-                  fontSize: 14,
-                  spans: [
+              child: AnymexTextSpans(
+                text: '  |  ~',
+                maxLines: 1,
+                fontSize: 14,
+                spans: [
+                  AnymexTextSpan(
+                      text: "${media.episodeCount} ",
+                      color: Theme.of(context).colorScheme.primary,
+                      variant: TextVariant.semiBold),
+                  if (media.nextEpisode != null)
                     AnymexTextSpan(
-                        text: "${media.episodeCount} ",
-                        color: Theme.of(context).colorScheme.primary,
-                        variant: TextVariant.semiBold),
-                    if (media.nextEpisode != null)
-                      AnymexTextSpan(
-                          text: "| ${media.nextEpisode} ",
-                          color: Colors.grey,
-                          variant: TextVariant.semiBold),
-                    AnymexTextSpan(
-                        text:
-                            "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
+                        text: "| ${media.nextEpisode} ",
                         color: Colors.grey,
                         variant: TextVariant.semiBold),
-                  ],
-                ),
+                  AnymexTextSpan(
+                      text:
+                          "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
+                      color: Colors.grey,
+                      variant: TextVariant.semiBold),
+                ],
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

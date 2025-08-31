@@ -5,6 +5,9 @@ import 'package:get/get.dart';
 
 class AnymexOnTap extends StatelessWidget {
   final VoidCallback? onTap;
+  final GestureTapUpCallback? onTapUp;
+  final GestureTapDownCallback? onTapDown;
+  final GestureTapCancelCallback? onTapCancel;
   final Widget child;
   final double scale;
   final Duration animationDuration;
@@ -25,6 +28,9 @@ class AnymexOnTap extends StatelessWidget {
     this.margin,
     this.bgColor,
     this.inkWell,
+    this.onTapUp,
+    this.onTapDown,
+    this.onTapCancel,
   });
 
   @override
@@ -42,6 +48,9 @@ class AnymexOnTap extends StatelessWidget {
             final bool isFocused = Focus.of(context).hasFocus;
             return GestureDetector(
               onTap: onTap,
+              onTapUp: onTapUp,
+              onTapDown: onTapDown,
+              onTapCancel: onTapCancel,
               child: AnimatedContainer(
                 duration: animationDuration,
                 transform: Matrix4.identity()..scale(isFocused ? scale : 1.0),

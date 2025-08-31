@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
@@ -79,15 +80,35 @@ class Header extends StatelessWidget {
                               .withOpacity(0.50),
                           child: IconButton(
                               onPressed: () {
-                                searchTypeSheet(context);
+                                final hasNovelExts = sourceController
+                                    .installedNovelExtensions.isNotEmpty;
+                                if (type == PageType.manga) {
+                                  if (!hasNovelExts) {
+                                    navigate(() => const SearchPage(
+                                          searchTerm: '',
+                                          isManga: true,
+                                        ));
+                                    return;
+                                  }
+                                  searchTypeSheet(context);
+                                } else {
+                                  navigate(() => const SearchPage(
+                                        searchTerm: '',
+                                        isManga: false,
+                                      ));
+                                }
                               },
                               icon: const Icon(IconlyLight.search))),
                     ), desktopValue: TappableSearchBar(
                   onSubmitted: () {
-                    navigate(() => SearchPage(
-                          searchTerm: '',
-                          isManga: type == PageType.manga,
-                        ));
+                    if (type == PageType.manga) {
+                      searchTypeSheet(context);
+                    } else {
+                      navigate(() => const SearchPage(
+                            searchTerm: '',
+                            isManga: false,
+                          ));
+                    }
                   },
                 )),
               ]
