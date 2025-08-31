@@ -86,7 +86,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _seekDebounce;
 
   Timer? _autoHideTimer;
-  static const Duration _autoHideDuration = Duration(seconds: 4);
+  static const Duration _autoHideDuration = Duration(seconds: 7);
 
   final RxBool isMouseHovering = false.obs;
 

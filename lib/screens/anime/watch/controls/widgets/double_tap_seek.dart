@@ -17,15 +17,18 @@ class DoubleTapSeekWidget extends StatefulWidget {
 }
 
 class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
-  int _leftSeekSeconds = 0;
-  int _rightSeekSeconds = 0;
+  int _leftTapCount = 0;
+  int _rightTapCount = 0;
   Timer? _leftHideTimer;
   Timer? _rightHideTimer;
   Timer? _seekModeTimer;
+  Timer? _seekDebounceTimer; // New timer for debounced seeking
 
   bool _isInSeekMode = false;
   static const Duration _seekModeTimeout = Duration(milliseconds: 1500);
   static const Duration _indicatorTimeout = Duration(milliseconds: 1000);
+  static const Duration _seekDebounceTimeout =
+      Duration(milliseconds: 500); // Debounce delay
 
   void _handleLeftSeek() {
     HapticFeedback.lightImpact();
@@ -38,28 +41,25 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
   }
 
   void _performSeek({required bool isLeft}) {
-    const seekAmount = Duration(seconds: 10);
-    final currentPos = widget.controller.currentPosition.value;
-    final newPosition =
-        isLeft ? currentPos - seekAmount : currentPos + seekAmount;
-    final clampedPosition = Duration(
-      milliseconds: newPosition.inMilliseconds
-          .clamp(0, widget.controller.episodeDuration.value.inMilliseconds),
-    );
-    widget.controller.seekTo(clampedPosition);
-
     setState(() {
       _isInSeekMode = true;
       if (isLeft) {
-        _leftSeekSeconds += 10; // Increment seek seconds for indicator
-        _rightSeekSeconds = 0; // Reset opposite side
+        _leftTapCount += 1;
+        _rightTapCount = 0;
       } else {
-        _rightSeekSeconds += 10; // Increment seek seconds for indicator
-        _leftSeekSeconds = 0; // Reset opposite side
+        _rightTapCount += 1;
+        _leftTapCount = 0;
       }
     });
 
-    // Cancel existing timers
+    // Cancel existing seek timer to debounce
+    _seekDebounceTimer?.cancel();
+
+    // Start new debounce timer - only seek when this completes
+    _seekDebounceTimer = Timer(_seekDebounceTimeout, () {
+      _executeSeek(isLeft: isLeft);
+    });
+
     _seekModeTimer?.cancel();
     if (isLeft) {
       _leftHideTimer?.cancel();
@@ -67,12 +67,11 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
       _rightHideTimer?.cancel();
     }
 
-    // Set timer to hide indicator
     if (isLeft) {
       _leftHideTimer = Timer(_indicatorTimeout, () {
         if (mounted) {
           setState(() {
-            _leftSeekSeconds = 0;
+            _leftTapCount = 0;
           });
         }
       });
@@ -80,36 +79,56 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
       _rightHideTimer = Timer(_indicatorTimeout, () {
         if (mounted) {
           setState(() {
-            _rightSeekSeconds = 0;
+            _rightTapCount = 0;
           });
         }
       });
     }
 
-    // Set timer to exit seek mode
     _seekModeTimer = Timer(_seekModeTimeout, () {
       if (mounted) {
         setState(() {
           _isInSeekMode = false;
-          _leftSeekSeconds = 0;
-          _rightSeekSeconds = 0;
+          _leftTapCount = 0;
+          _rightTapCount = 0;
         });
       }
     });
   }
 
+  void _executeSeek({required bool isLeft}) {
+    if (!mounted) return;
+
+    final tapCount = isLeft ? _leftTapCount : _rightTapCount;
+    if (tapCount == 0) return; // No taps to process
+
+    final seekAmount =
+        Duration(seconds: widget.controller.seekDuration.value * tapCount);
+    final currentPos = widget.controller.currentPosition.value;
+    final newPosition =
+        isLeft ? currentPos - seekAmount : currentPos + seekAmount;
+    final clampedPosition = Duration(
+      milliseconds: newPosition.inMilliseconds
+          .clamp(0, widget.controller.episodeDuration.value.inMilliseconds),
+    );
+
+    widget.controller.seekTo(clampedPosition);
+  }
+
   Widget _buildSeekIndicator({
     required bool isLeft,
-    required int seekSeconds,
+    required int tapCount,
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    if (seekSeconds == 0) return const SizedBox.shrink();
+    if (tapCount == 0) return const SizedBox.shrink();
+
+    final totalSeekSeconds = 10 * tapCount;
 
     return AnimatedItemWrapper(
         slideDistance: 5,
-        key: Key(seekSeconds.toString()),
+        key: Key(tapCount.toString()),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.25,
           height: double.infinity,
@@ -184,7 +203,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '$seekSeconds s',
+                          '${totalSeekSeconds}s',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
@@ -246,6 +265,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
     _leftHideTimer?.cancel();
     _rightHideTimer?.cancel();
     _seekModeTimer?.cancel();
+    _seekDebounceTimer?.cancel(); // Cancel debounce timer
     super.dispose();
   }
 
@@ -268,7 +288,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
                   bottom: 0,
                   child: _buildSeekIndicator(
                     isLeft: true,
-                    seekSeconds: _leftSeekSeconds,
+                    tapCount: _leftTapCount,
                   ),
                 ),
                 Positioned(
@@ -277,7 +297,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget> {
                   bottom: 0,
                   child: _buildSeekIndicator(
                     isLeft: false,
-                    seekSeconds: _rightSeekSeconds,
+                    tapCount: _rightTapCount,
                   ),
                 ),
               ],
