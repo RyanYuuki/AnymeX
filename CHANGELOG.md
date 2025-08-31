@@ -1,44 +1,46 @@
 ### 🆕 Changelog
 ### 🌟 Features
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/7e24778)  cache setting for cached images
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/c7fd435)  proper language name and subtitle name for local videos
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/e995f11)  unified extension support for android aniyomi, mangayomi
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1c8f5e6)  online subtitle support
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5bfc4f8)  novel library partial support
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d1f10aa)  source search page
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1a25a54)  logger added
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/487a528)  novel support home, details, reader, settings  etc
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0777c9a)  custom list editor, unified library for all services.
 
 
 ### 🔧 Bug Fixes & Improvements
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/55d68e6)  fixed grey screens on watch page
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8816f59)  fixed presets not applying properly
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/bcac304)  fixed preload page not working properly
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/06716f4)  fixed slider not adjusting properly
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/653262c)  fixed chap ranges not changing according to scanlator
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/49490a5)  fix jittery page transition
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/4364fe3)  fixed shaders being same on all profile
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/cbfe4e9)  fixed a minor error causing build issues
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2f15d2e)  fixed session cache not working
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/38af53a)  fixed too many prequel sequel
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0fe7a62)  fixed wrong progress percentages
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/f35920e)  fixed some layout issues on search page
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4e67c82)  fixed check for updates redirecting to github
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e0f592d)  fixed deeplink not working properly
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/6899801)  fixed crashes on macs and player glitches on other platforms
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/cf2c56b)  fixed not saving issue on repo dialog
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4acf699)  fixed settings unable to scroll on smaller phones
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/df2247f)  fixed dupes in session history
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/40bc30f)  fixed unscrollable settings page
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d2c708b)  fixed an issue where repo was not saving
 
 
 ### 🔧 Refactors
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/094251d)  error handling on local media page
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/afd72e0)  switched to extended image
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9dca360)  switched to dartotsuextensionbridge plugin for source implementation
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6cadc08)  migrated to applinks from unilinks
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e16780a)  made service media dependent instead of service handler dependent
 
 
 ### 🎨 Style Changes
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6302462)  fallback to m3 slider from custom slider
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8e4a5e4)  some minor ui changes
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1dea0d4)  revamped double tap to seek
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3d3735b)  few styling changes
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/db8752c)  some ui changes
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c6b8d11)  some ui changes
 
 
 ### 🚀 Performance Improvements
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/942d1b1)  optimized the manga reader and fixed most issues
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a4647a9)  improve ext page performance
 
 
 ### 🧹 Chores & Documentation
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/cc598d6)  should fix the cmake issue
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/0796ab5)  installed the missing dep
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/639f203)  bumped flutter version to 3.32.8  bumped app version
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9bc08ac)  deeplinks related setup
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d92f278)  upgraded gradle, kotlin etc etc
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/a6092ac)  auto-translate readme and wiki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/3c80cb9)  formatted release note
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3d6c547)  bump version to v3.0.0 major release
 
 
-![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v2.9.9/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
+![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.0/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
