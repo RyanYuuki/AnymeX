@@ -96,3 +96,73 @@ class AnymexButton extends StatelessWidget {
     });
   }
 }
+
+enum ButtonType { ticon, child }
+
+class AnymexButton2 extends StatelessWidget {
+  final Widget? child;
+  final VoidCallback onTap;
+  final ButtonType type;
+  final String? label;
+  final IconData? icon;
+
+  const AnymexButton2({
+    super.key,
+    this.child,
+    required this.onTap,
+    this.type = ButtonType.child,
+    this.label,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null)
+                Icon(
+                  icon,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 20,
+                ),
+              const SizedBox(width: 8),
+              if (label != null)
+                Text(
+                  label!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SoftContainer extends StatelessWidget {
+  const SoftContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}

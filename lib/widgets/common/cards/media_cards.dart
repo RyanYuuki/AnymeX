@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -252,7 +253,7 @@ class ExoticCard extends CarouselCard {
                 children: [
                   if (variant == DataVariant.library) ...[
                     AnymexText(
-                      text: type == ItemType.manga ? 'Chapter ' : 'Episode ',
+                      text: !type.isAnime ? 'Chapter ' : 'Episode ',
                       size: 12,
                       color: Theme.of(context).colorScheme.onPrimary,
                       variant: TextVariant.bold,
@@ -394,7 +395,7 @@ class MinimalExoticCard extends CarouselCard {
                 children: [
                   if (variant == DataVariant.library) ...[
                     AnymexText(
-                      text: type == ItemType.manga ? 'Chapter ' : 'Episode ',
+                      text: !type.isAnime ? 'Chapter ' : 'Episode ',
                       size: 12,
                       color: Theme.of(context).colorScheme.onPrimary,
                       variant: TextVariant.bold,

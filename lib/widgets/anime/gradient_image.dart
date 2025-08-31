@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -54,14 +53,7 @@ class GradientPoster extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                Theme.of(context)
-                    .colorScheme
-                    .secondaryContainer
-                    .withOpacity(0.5),
-                Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .withValues(alpha: 0.9),
+                Theme.of(context).colorScheme.surface,
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

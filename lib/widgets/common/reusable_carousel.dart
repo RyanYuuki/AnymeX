@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -9,6 +11,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
+import 'package:anymex/widgets/common/hover_wrapper.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -33,7 +36,7 @@ class ReusableCarousel extends StatefulWidget {
     super.key,
     required this.data,
     required this.title,
-    this.type = ItemType.manga,
+    this.type = ItemType.anime,
     this.variant = DataVariant.regular,
     this.isLoading = false,
     this.source,
@@ -143,12 +146,15 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildCarouselItem(CarouselData itemData, int index) {
     final String tag = '$index-${getRandomTag()}-${itemData.id}';
 
-    return Obx(() => AnymexOnTap(
-          onTap: () => _navigateToDetailsPage(itemData, tag),
-          child: settingsController.enableAnimation
-              ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
-              : _buildCard(itemData, tag),
-        ));
+    return Obx(() {
+      final child = AnymexOnTap(
+        onTap: () => _navigateToDetailsPage(itemData, tag),
+        child: settingsController.enableAnimation
+            ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
+            : _buildCard(itemData, tag),
+      );
+      return child;
+    });
   }
 
   MediaCardGate _buildCard(CarouselData itemData, String tag) {
