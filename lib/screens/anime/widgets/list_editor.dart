@@ -153,9 +153,6 @@ class ListEditorModal extends StatelessWidget {
                       fontFamily: 'Poppins-Bold',
                     ),
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
                   onChanged: (String value) {
                     int? newProgress = int.tryParse(value);
                     if (newProgress != null && newProgress >= 0) {

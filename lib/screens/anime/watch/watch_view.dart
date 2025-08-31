@@ -116,6 +116,7 @@ class _WatchScreenState extends State<WatchScreen> {
               isVolumeIndicator: true,
               controller: controller,
             ),
+            SubtitleText(controller: controller),
           ],
         ),
       ),
