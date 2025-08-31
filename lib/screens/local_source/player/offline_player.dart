@@ -168,9 +168,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
     int startTimeMilliseconds = offlineStorage.storage
         .get('${widget.episodePath.path}-progress', defaultValue: 0);
     if (firstTime) {
-      player = Player(
-          configuration: PlayerConfiguration(
-              config: true, configDir: settingsController.mpvPath.value));
+      player = Player();
       playerController = VideoController(player,
           configuration: const VideoControllerConfiguration(
               androidAttachSurfaceAfterVideoParameters: true));
