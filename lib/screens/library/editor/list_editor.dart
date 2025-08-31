@@ -11,8 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class CustomListsEditor extends StatefulWidget {
-  final bool isManga;
-  const CustomListsEditor({super.key, required this.isManga});
+  final ItemType type;
+  const CustomListsEditor({super.key, required this.type});
 
   @override
   State<CustomListsEditor> createState() => _CustomListsEditorState();
@@ -29,8 +29,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
   @override
   void initState() {
     super.initState();
-    _lists = offlineStorage.getEditableCustomListData(
-        mediaType: widget.isManga ? ItemType.manga : ItemType.anime);
+    _lists = offlineStorage.getEditableCustomListData(mediaType: widget.type);
   }
 
   @override
@@ -38,8 +37,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     super.dispose();
   }
 
-  void _saveListData() => offlineStorage.applyCustomListChanges(_lists,
-      mediaType: widget.isManga ? ItemType.manga : ItemType.anime);
+  void _saveListData() =>
+      offlineStorage.applyCustomListChanges(_lists, mediaType: widget.type);
 
   @override
   Widget build(BuildContext context) {
@@ -291,11 +290,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        _buildActionButton(
-                          icon: Icons.delete_outline_rounded,
-                          onTap: () => _showDeleteDialog(index),
-                          color: theme.colorScheme.error,
-                        ),
+                        if (listData.listName != 'Default')
+                          _buildActionButton(
+                            icon: Icons.delete_outline_rounded,
+                            onTap: () => _showDeleteDialog(index),
+                            color: theme.colorScheme.error,
+                          ),
                         const SizedBox(width: 8),
                       ],
                       AnimatedRotation(

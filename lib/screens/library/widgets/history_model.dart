@@ -1,9 +1,14 @@
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
+import 'package:anymex/screens/novel/reader/novel_reader.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,8 +44,8 @@ class HistoryModel {
       this.progressText,
       this.date});
 
-  factory HistoryModel.fromOfflineMedia(OfflineMedia media, bool isManga) {
-    final onTap = isManga
+  factory HistoryModel.fromOfflineMedia(OfflineMedia media, ItemType type) {
+    final onTap = type.isManga
         ? () {
             if (media.currentChapter == null) {
               snackBar(
@@ -64,36 +69,65 @@ class HistoryModel {
               }
             }
           }
-        : () {
-            if (media.currentEpisode == null ||
-                media.currentEpisode?.currentTrack == null ||
-                media.episodes == null ||
-                media.currentEpisode?.videoTracks == null) {
-              snackBar(
-                "Error: Missing required media. It seems you closed the app directly after watching the episode!",
-                duration: 2000,
-                maxLines: 3,
-              );
-            } else {
-              if (media.currentEpisode?.source == null) {
-                snackBar("Cant Play since user closed the app abruptly");
+        : type.isAnime
+            ? () {
+                if (media.currentEpisode == null ||
+                    media.currentEpisode?.currentTrack == null ||
+                    media.episodes == null ||
+                    media.currentEpisode?.videoTracks == null) {
+                  snackBar(
+                    "Error: Missing required media. It seems you closed the app directly after watching the episode!",
+                    duration: 2000,
+                    maxLines: 3,
+                  );
+                } else {
+                  if (media.currentEpisode?.source == null) {
+                    snackBar("Cant Play since user closed the app abruptly");
+                  }
+                  final source = Get.find<SourceController>()
+                      .getExtensionByName(media.currentEpisode!.source!);
+                  if (source == null) {
+                    snackBar(
+                        "Install ${media.currentEpisode?.source} First, Then Click");
+                  } else {
+                    navigate(() => WatchScreen(
+                          episodeSrc: media.currentEpisode!.currentTrack!,
+                          episodeList: media.episodes!,
+                          anilistData: convertOfflineToMedia(media),
+                          currentEpisode: media.currentEpisode!,
+                          episodeTracks: media.currentEpisode!.videoTracks!,
+                        ));
+                  }
+                }
               }
-              final source = Get.find<SourceController>()
-                  .getExtensionByName(media.currentEpisode!.source!);
-              if (source == null) {
-                snackBar(
-                    "Install ${media.currentEpisode?.source} First, Then Click");
-              } else {
-                navigate(() => WatchPage(
-                      episodeSrc: media.currentEpisode!.currentTrack!,
-                      episodeList: media.episodes!,
-                      anilistData: convertOfflineToMedia(media),
-                      currentEpisode: media.currentEpisode!,
-                      episodeTracks: media.currentEpisode!.videoTracks!,
-                    ));
-              }
-            }
-          };
+            : () {
+                if (media.currentChapter == null || media.chapters == null) {
+                  snackBar(
+                      "Error: Missing required media. It seems you closed the app directly after reading the chapter!",
+                      maxLines: 3);
+                } else {
+                  if (media.currentChapter?.sourceName == null) {
+                    snackBar("Cant Read since user closed the app abruptly");
+                  }
+                  final source = Get.find<SourceController>()
+                      .getNovelExtensionByName(
+                          media.currentChapter!.sourceName!);
+                  if (source == null) {
+                    snackBar(
+                        "Install ${media.currentChapter?.sourceName} First, Then Click");
+                  } else {
+                    navigate(() => NovelReader(
+                          chapter: media.currentChapter!,
+                          chapters: media.chapters ?? [],
+                          media: convertOfflineToMedia(media),
+                          source: source,
+                        ));
+                  }
+                }
+              };
+
+    final isManga = !type.isAnime;
+    print('isManga: $isManga, media: ${media.name}');
     return HistoryModel(
         media: media,
         title: media.name,

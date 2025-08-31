@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 
@@ -10,7 +10,7 @@ import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/screens/anime/widgets/media_indicator_old.dart';
 import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
@@ -214,7 +214,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
         _lastUIUpdate = now;
         currentPosition.value = e;
         formattedTime.value = formatDuration(e);
-        log('UI Updated with accurate stream position: ${e.inSeconds}s');
+        Logger.i('UI Updated with accurate stream position: ${e.inSeconds}s');
       }
     });
 
@@ -266,8 +266,8 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
         selectedSubTrack.value = subtitleTracks.first;
       }
 
-      log("Audio tracks: ${e.audio.length}");
-      log("Subtitle tracks: ${e.subtitle.length}");
+      Logger.i("Audio tracks: ${e.audio.length}");
+      Logger.i("Subtitle tracks: ${e.subtitle.length}");
     });
 
     player.stream.rate.listen((e) {
@@ -536,7 +536,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage>
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
       final keyLabel = key.keyLabel;
       final allowedKeys = ["1", "2", "3", "4", "5", "6", "0"];
-      log(keyLabel);
+      Logger.i(keyLabel);
       if (allowedKeys.contains(keyLabel)) {
         setShaders(int.parse(keyLabel) - 1);
       }

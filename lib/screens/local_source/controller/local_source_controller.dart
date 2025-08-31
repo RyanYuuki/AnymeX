@@ -1,5 +1,5 @@
 // controllers/watch_offline_controller.dart
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -198,7 +198,7 @@ class LocalSourceController extends GetxController
         final androidInfo = await deviceInfo.androidInfo;
         final sdkInt = androidInfo.version.sdkInt;
 
-        log('Android SDK version: $sdkInt');
+        Logger.i('Android SDK version: $sdkInt');
 
         if (sdkInt >= 33) {
           final permissions = [
@@ -254,7 +254,7 @@ class LocalSourceController extends GetxController
           return true;
         }
       } catch (e) {
-        log('Error requesting storage permissions: $e');
+        Logger.i('Error requesting storage permissions: $e');
         return false;
       }
     }
@@ -273,7 +273,7 @@ class LocalSourceController extends GetxController
         await loadCurrentDirectory();
       }
     } catch (e) {
-      log('Error selecting directory: $e');
+      Logger.i('Error selecting directory: $e');
       errorSnackBar(e.toString());
       await _setDefaultDirectory();
     }
@@ -295,7 +295,8 @@ class LocalSourceController extends GetxController
             await downloadsDir.create(recursive: true);
             directory = downloadsDir;
           } catch (e) {
-            log('Could not create Downloads directory, using Documents: $e');
+            Logger.i(
+                'Could not create Downloads directory, using Documents: $e');
           }
         } else {
           directory = downloadsDir;
@@ -310,7 +311,7 @@ class LocalSourceController extends GetxController
 
       await loadCurrentDirectory();
     } catch (e) {
-      log('Error setting default directory: $e');
+      Logger.i('Error setting default directory: $e');
     }
   }
 
@@ -350,7 +351,7 @@ class LocalSourceController extends GetxController
         paths.add(videosDir.path);
       }
     } catch (e) {
-      log('Error getting iOS default paths: $e');
+      Logger.i('Error getting iOS default paths: $e');
     }
 
     return paths;
@@ -382,7 +383,7 @@ class LocalSourceController extends GetxController
         });
       }
     } catch (e) {
-      log('Error loading directory: $e');
+      Logger.i('Error loading directory: $e');
       currentItems.clear();
     }
 
@@ -415,7 +416,7 @@ class LocalSourceController extends GetxController
         });
       }
     } catch (e) {
-      log('Error loading download directory: $e');
+      Logger.i('Error loading download directory: $e');
       downloadItems.clear();
     }
 
@@ -591,12 +592,12 @@ class LocalSourceController extends GetxController
       final data = await selectedSource.value!.methods.getVideoList(
           DEpisode(episodeNumber: episode.title, url: episode.id));
 
-      log(data.length.toString());
+      Logger.i(data.length.toString());
       if (data.isNotEmpty) {
         selectedVideos.value = data.map((e) => Video.fromVideo(e)).toList();
       }
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
     } finally {
       isLoadingServers.value = false;
     }

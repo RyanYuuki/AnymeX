@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:dio/dio.dart';
 
@@ -26,7 +26,7 @@ class TmdbApi {
       final resp = await Dio().get(url);
       return DetailResult.fromJson(resp.data);
     } catch (e) {
-      log(e.toString());
+      Logger.i(e.toString());
       return null;
     }
   }

@@ -1,17 +1,19 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
+import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
@@ -25,6 +27,7 @@ import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +42,20 @@ enum SortType {
   rating,
 }
 
+dynamic typeBuilder(ItemType type,
+    {required dynamic animeValue,
+    required dynamic mangaValue,
+    required dynamic novelValue}) {
+  switch (type) {
+    case ItemType.anime:
+      return animeValue;
+    case ItemType.manga:
+      return mangaValue;
+    case ItemType.novel:
+      return novelValue;
+  }
+}
+
 class MyLibrary extends StatefulWidget {
   const MyLibrary({super.key});
 
@@ -51,22 +68,24 @@ class _MyLibraryState extends State<MyLibrary> {
   final offlineStorage = Get.find<OfflineStorageController>();
   final gridCount = 0.obs;
 
-  // Anime data
   RxList<CustomListData> customListData = <CustomListData>[].obs;
   RxList<CustomListData> initialCustomListData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredData = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyData = <OfflineMedia>[].obs;
 
-  // Manga data
   RxList<CustomListData> customListDataManga = <CustomListData>[].obs;
   RxList<CustomListData> initialCustomListMangaData = <CustomListData>[].obs;
   RxList<OfflineMedia> filteredDataManga = <OfflineMedia>[].obs;
   RxList<OfflineMedia> historyDataManga = <OfflineMedia>[].obs;
 
+  RxList<CustomListData> customListNovelData = <CustomListData>[].obs;
+  RxList<CustomListData> initialCustomListNovelData = <CustomListData>[].obs;
+  RxList<OfflineMedia> filteredDataNovel = <OfflineMedia>[].obs;
+  RxList<OfflineMedia> historyDataNovel = <OfflineMedia>[].obs;
+
   RxString searchQuery = ''.obs;
   RxInt selectedListIndex = 0.obs;
-  RxBool isAnimeSelected = true.obs;
-  Rxn<ServicesType> selectedService = Rxn();
+  Rx<ItemType> type = ItemType.anime.obs;
 
   @override
   void initState() {
@@ -75,6 +94,7 @@ class _MyLibraryState extends State<MyLibrary> {
     _getPreferences();
     ever(offlineStorage.animeCustomLists, (_) => _initLibraryData());
     ever(offlineStorage.mangaCustomLists, (_) => _initLibraryData());
+    ever(offlineStorage.novelCustomLists, (_) => _initLibraryData());
   }
 
   void _initLibraryData() {
@@ -85,10 +105,6 @@ class _MyLibraryState extends State<MyLibrary> {
             ))
         .toList();
 
-    historyData.value = offlineStorage.animeLibrary
-        .where((e) => e.currentEpisode?.currentTrack != null)
-        .toList();
-
     customListDataManga.value = offlineStorage.mangaCustomListData.value
         .map((e) => CustomListData(
               listName: e.listName,
@@ -96,64 +112,76 @@ class _MyLibraryState extends State<MyLibrary> {
             ))
         .toList();
 
+    customListNovelData.value = offlineStorage.novelCustomListData.value
+        .map((e) => CustomListData(
+              listName: e.listName,
+              listData: e.listData.toList(),
+            ))
+        .toList();
+
+    historyData.value = offlineStorage.animeLibrary
+        .where((e) => e.currentEpisode?.currentTrack != null)
+        .toList();
     historyDataManga.value = offlineStorage.mangaLibrary.toList();
+    historyDataNovel.value = offlineStorage.novelLibrary.toList();
 
     initialCustomListData.value = customListData;
     initialCustomListMangaData.value = customListDataManga;
+    initialCustomListNovelData.value = customListNovelData;
   }
 
   void _getPreferences() {
     currentSort = SortType.values[settingsController.preferences.get(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_type',
+        '${type.value.name}_sort_type',
         defaultValue: SortType.lastRead.index)];
-    isAscending = settingsController.preferences.get(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_order',
-        defaultValue: true);
-    gridCount.value = settingsController.preferences.get(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_grid_size',
-        defaultValue: 0);
+    isAscending = settingsController.preferences
+        .get('${type.value.name}_sort_order', defaultValue: true);
+    gridCount.value = settingsController.preferences
+        .get('${type.value.name}_grid_size', defaultValue: 0);
   }
 
   void _savePreferences() {
-    settingsController.preferences.put(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_type',
-        currentSort.index);
-    settingsController.preferences.put(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_sort_order', isAscending);
-    settingsController.preferences.put(
-        '${isAnimeSelected.value ? 'anime' : 'manga'}_grid_size',
-        gridCount.value);
+    settingsController.preferences
+        .put('${type.value.name}_sort_type', currentSort.index);
+    settingsController.preferences
+        .put('${type.value.name}_sort_order', isAscending);
+    settingsController.preferences
+        .put('${type.value.name}_grid_size', gridCount.value);
   }
 
   void _search(String val) {
     searchQuery.value = val;
     final currentIndex = selectedListIndex.value;
 
-    if (isAnimeSelected.value) {
+    if (type.value.isAnime) {
       final initialData = customListData[currentIndex].listData;
       filteredData.value = initialData
           .where(
               (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
           .toList();
-    } else {
+    } else if (type.value.isManga) {
       final initialData = customListDataManga[currentIndex].listData;
       filteredDataManga.value = initialData
+          .where(
+              (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
+          .toList();
+    } else if (type.value.isNovel) {
+      final initialData = customListNovelData[currentIndex].listData;
+      filteredDataNovel.value = initialData
           .where(
               (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
           .toList();
     }
   }
 
-  void _switchCategory(bool isAnime) {
-    if (isAnimeSelected.value != isAnime) {
-      isAnimeSelected.value = isAnime;
-      selectedListIndex.value = 0;
-
-      if (searchQuery.isNotEmpty) {
-        controller.clear();
-        searchQuery.value = '';
-      }
+  void _switchCategory(ItemType typ) {
+    type.value = typ;
+    selectedListIndex.value = 0;
+    if (searchQuery.isNotEmpty) {
+      controller.clear();
+      searchQuery.value = '';
     }
+    _getPreferences();
   }
 
   @override
@@ -171,7 +199,6 @@ class _MyLibraryState extends State<MyLibrary> {
             SliverToBoxAdapter(
               child: _buildChipTabs(),
             ),
-            // Dynamic content
             _buildSliverTabsBody(),
           ],
         ),
@@ -245,12 +272,18 @@ class _MyLibraryState extends State<MyLibrary> {
     return Obx(() {
       if (selectedListIndex.value != -1) {
         final currentIndex = selectedListIndex.value;
-        final lists =
-            isAnimeSelected.value ? customListData : customListDataManga;
+        final lists = typeBuilder(type.value,
+            animeValue: customListData,
+            mangaValue: customListDataManga,
+            novelValue: customListNovelData);
         final isEmpty = lists.isEmpty || lists[currentIndex].listData.isEmpty;
         final items = searchQuery.isNotEmpty
-            ? (isAnimeSelected.value ? filteredData : filteredDataManga)
-            : (lists.isEmpty ? [] : lists[currentIndex].listData);
+            ? typeBuilder(type.value,
+                animeValue: filteredData,
+                mangaValue: filteredDataManga,
+                novelValue: filteredDataNovel)
+            : (lists.isEmpty ? [] : lists[currentIndex].listData)
+                as List<OfflineMedia>;
 
         return isEmpty
             ? const SliverToBoxAdapter(child: EmptyLibrary())
@@ -261,19 +294,33 @@ class _MyLibraryState extends State<MyLibrary> {
                   delegate: SliverChildBuilderDelegate(
                     (context, i) {
                       final tag = getRandomTag(addition: i.toString());
+                      OfflineMedia item = items[i];
                       return AnymexOnTap(
                         margin: 0,
                         scale: 1,
                         onTap: () {
-                          if (isAnimeSelected.value) {
+                          if (type.value.isAnime) {
                             navigate(() => AnimeDetailsPage(
                                 media: Media.fromOfflineMedia(
-                                    items[i], ItemType.anime),
+                                    item, ItemType.anime),
                                 tag: tag));
-                          } else {
+                          } else if (type.value.isManga) {
                             navigate(() => MangaDetailsPage(
                                 media: Media.fromOfflineMedia(
-                                    items[i], ItemType.manga),
+                                    item, ItemType.manga),
+                                tag: tag));
+                          } else {
+                            final source = sourceController
+                                .getNovelExtensionByName(item.season ?? '');
+                            if (source == null) {
+                              errorSnackBar('Install ${item.season} extension');
+                              return;
+                            }
+
+                            navigate(() => NovelDetailsPage(
+                                source: source,
+                                media: Media.fromOfflineMedia(
+                                    items[i], ItemType.novel),
                                 tag: tag));
                           }
                         },
@@ -281,9 +328,7 @@ class _MyLibraryState extends State<MyLibrary> {
                             itemData: items[i],
                             tag: '${getRandomTag()}-$i',
                             variant: DataVariant.library,
-                            type: !isAnimeSelected.value
-                                ? ItemType.manga
-                                : ItemType.anime,
+                            type: type.value,
                             cardStyle:
                                 CardStyle.values[settingsController.cardStyle]),
                       );
@@ -293,7 +338,10 @@ class _MyLibraryState extends State<MyLibrary> {
                 ),
               );
       } else {
-        final data = isAnimeSelected.value ? historyData : historyDataManga;
+        final data = typeBuilder(type.value,
+            animeValue: historyData,
+            mangaValue: historyDataManga,
+            novelValue: historyDataNovel);
 
         return SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
@@ -310,10 +358,10 @@ class _MyLibraryState extends State<MyLibrary> {
                     context)),
             delegate: SliverChildBuilderDelegate(
               (context, i) {
-                final animeData = HistoryModel.fromOfflineMedia(
-                    data[i], !isAnimeSelected.value);
+                final historyModel =
+                    HistoryModel.fromOfflineMedia(data[i], type.value);
                 return HistoryCardGate(
-                  data: animeData,
+                  data: historyModel,
                   cardStyle: HistoryCardStyle
                       .values[settingsController.historyCardStyle],
                 );
@@ -332,8 +380,14 @@ class _MyLibraryState extends State<MyLibrary> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Obx(() {
-          final lists =
-              isAnimeSelected.value ? customListData : customListDataManga;
+          final lists = typeBuilder(type.value,
+              animeValue: customListData,
+              mangaValue: customListDataManga,
+              novelValue: customListNovelData);
+          final historyCount = typeBuilder(type.value,
+              animeValue: historyData.length,
+              mangaValue: historyDataManga.length,
+              novelValue: historyDataNovel.length);
 
           return Row(children: [
             Padding(
@@ -349,9 +403,7 @@ class _MyLibraryState extends State<MyLibrary> {
                             ? Theme.of(context).colorScheme.onPrimary
                             : Theme.of(context).colorScheme.onSurfaceVariant),
                     5.width(),
-                    AnymexText(
-                        text:
-                            '(${isAnimeSelected.value ? historyData.length : historyDataManga.length})')
+                    AnymexText(text: '($historyCount)')
                   ],
                 ),
                 isSelected: selectedListIndex.value == -1,
@@ -399,8 +451,7 @@ class _MyLibraryState extends State<MyLibrary> {
                 ),
                 isSelected: false,
                 onSelected: (selected) {
-                  navigate(
-                      () => CustomListsEditor(isManga: !isAnimeSelected.value));
+                  navigate(() => CustomListsEditor(type: type.value));
                 },
               ),
             ),
@@ -411,6 +462,131 @@ class _MyLibraryState extends State<MyLibrary> {
   }
 
   final RxBool isSearchActive = false.obs;
+
+  String _getTypeLabel(ItemType itemType) {
+    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+      switch (itemType) {
+        case ItemType.anime:
+          return 'Movies & Series';
+        case ItemType.manga:
+          return 'Series';
+        case ItemType.novel:
+          return 'Books';
+      }
+    } else {
+      switch (itemType) {
+        case ItemType.anime:
+          return 'Anime';
+        case ItemType.manga:
+          return 'Manga';
+        case ItemType.novel:
+          return 'Novels';
+      }
+    }
+  }
+
+  IconData _getTypeIcon(ItemType itemType) {
+    switch (itemType) {
+      case ItemType.anime:
+        return Icons.movie_filter_rounded;
+      case ItemType.manga:
+        return serviceHandler.serviceType.value == ServicesType.simkl
+            ? Iconsax.monitor
+            : Icons.menu_book_outlined;
+      case ItemType.novel:
+        return serviceHandler.serviceType.value == ServicesType.simkl
+            ? Icons.library_books
+            : Iconsax.book;
+    }
+  }
+
+  Widget _buildSegmentedControl() {
+    final availableTypes =
+        serviceHandler.serviceType.value == ServicesType.simkl
+            ? [ItemType.anime]
+            : [ItemType.anime, ItemType.manga, ItemType.novel];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 0),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: availableTypes.map((itemType) {
+          final isSelected = type.value == itemType;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => _switchCategory(itemType),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOutCubic,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        _getTypeIcon(itemType),
+                        key: ValueKey('${itemType.name}_icon'),
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontFamily: "Poppins-Bold",
+                          fontSize: 14,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        child: Text(
+                          _getTypeLabel(itemType),
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
 
   Widget _buildHeader() {
     return Obx(() => Container(
@@ -524,9 +700,7 @@ class _MyLibraryState extends State<MyLibrary> {
                                   child: CustomSearchBar(
                                     controller: controller,
                                     onChanged: _search,
-                                    hintText: isAnimeSelected.value
-                                        ? 'Search ${selectedService.value == ServicesType.simkl ? 'Movies/Series' : 'Anime'}...'
-                                        : 'Search ${selectedService.value == ServicesType.simkl ? 'Series' : 'Manga'}...',
+                                    hintText: _getSearchHint(),
                                   ),
                                 ),
                               ),
@@ -620,8 +794,7 @@ class _MyLibraryState extends State<MyLibrary> {
                           ),
                           child: IconButton(
                             onPressed: () {
-                              showSortingSettings(
-                                  isManga: !isAnimeSelected.value);
+                              showSortingSettings();
                             },
                             icon: Icon(Icons.sort,
                                 color: Theme.of(context).colorScheme.onPrimary),
@@ -633,125 +806,17 @@ class _MyLibraryState extends State<MyLibrary> {
                 ],
               ),
               const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _switchCategory(true),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: isAnimeSelected.value
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .secondaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: isAnimeSelected.value
-                                ? [glowingShadow(context)]
-                                : [],
-                            border: Border.all(
-                              color: isAnimeSelected.value
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey.withOpacity(0.5),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.movie_filter_rounded,
-                                color: isAnimeSelected.value
-                                    ? Theme.of(context).colorScheme.onPrimary
-                                    : Colors.grey,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                selectedService.value == ServicesType.simkl
-                                    ? 'Movies & Series'
-                                    : 'Anime',
-                                style: TextStyle(
-                                  fontFamily: "Poppins-Bold",
-                                  fontSize: 16,
-                                  color: isAnimeSelected.value
-                                      ? Theme.of(context).colorScheme.onPrimary
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (serviceHandler.serviceType.value !=
-                        ServicesType.simkl) ...[
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => _switchCategory(false),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              boxShadow: !isAnimeSelected.value
-                                  ? [glowingShadow(context)]
-                                  : [],
-                              color: !isAnimeSelected.value
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .secondaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: !isAnimeSelected.value
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.grey.withOpacity(0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  selectedService.value == ServicesType.simkl
-                                      ? Iconsax.monitor
-                                      : Icons.menu_book_outlined,
-                                  color: !isAnimeSelected.value
-                                      ? Theme.of(context).colorScheme.onPrimary
-                                      : Colors.grey,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  selectedService.value == ServicesType.simkl
-                                      ? 'Series'
-                                      : 'Manga',
-                                  style: TextStyle(
-                                    fontFamily: "Poppins-Bold",
-                                    fontSize: 16,
-                                    color: !isAnimeSelected.value
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
-                  ],
-                ),
-              ),
+              _buildSegmentedControl(),
             ],
           ),
         ));
   }
 
-  void showSortingSettings({required bool isManga}) => AnymexSheet(
+  String _getSearchHint() {
+    return 'Search ${_getTypeLabel(type.value)}...';
+  }
+
+  void showSortingSettings() => AnymexSheet(
         title: 'Settings',
         contentWidget: StatefulBuilder(
           builder: (context, setState) {
@@ -790,15 +855,13 @@ class _MyLibraryState extends State<MyLibrary> {
                           Row(
                             children: [
                               _buildSortBox(
-                                title: isManga ? 'Last Read' : 'Last Watched',
+                                title: _getLastReadTitle(),
                                 currentSort: currentSort,
                                 sortType: SortType.lastRead,
                                 isAscending: isAscending,
                                 onTap: () => _handleSortChange(
                                     SortType.lastRead, setState),
-                                icon: isManga
-                                    ? Icons.menu_book
-                                    : Icons.visibility,
+                                icon: _getLastReadIcon(),
                               ),
                               _buildSortBox(
                                 title: 'Rating',
@@ -838,6 +901,28 @@ class _MyLibraryState extends State<MyLibrary> {
           },
         ),
       ).show(context);
+
+  String _getLastReadTitle() {
+    switch (type.value) {
+      case ItemType.anime:
+        return 'Last Watched';
+      case ItemType.manga:
+        return 'Last Read';
+      case ItemType.novel:
+        return 'Last Read';
+    }
+  }
+
+  IconData _getLastReadIcon() {
+    switch (type.value) {
+      case ItemType.anime:
+        return Icons.visibility;
+      case ItemType.manga:
+        return Icons.menu_book;
+      case ItemType.novel:
+        return Iconsax.book;
+    }
+  }
 
   SortType currentSort = SortType.lastAdded;
   bool isAscending = false;
@@ -978,37 +1063,43 @@ class _MyLibraryState extends State<MyLibrary> {
     }
 
     _savePreferences();
-
     _applySorting();
   }
 
   void _applySorting() {
-    final lists = isAnimeSelected.value ? customListData : customListDataManga;
+    final lists = typeBuilder(type.value,
+        animeValue: customListData,
+        mangaValue: customListDataManga,
+        novelValue: customListNovelData);
+
+    if (lists.isEmpty || selectedListIndex.value >= lists.length) return;
+
     final currentList = lists[selectedListIndex.value];
-    final initialList = isAnimeSelected.value
-        ? initialCustomListData[selectedListIndex.value]
-        : initialCustomListMangaData[selectedListIndex.value];
+    final initialList = typeBuilder(type.value,
+        animeValue: initialCustomListData[selectedListIndex.value],
+        mangaValue: initialCustomListMangaData[selectedListIndex.value],
+        novelValue: initialCustomListNovelData[selectedListIndex.value]);
 
     currentList.listData.sort((a, b) {
       int comparison = 0;
 
       switch (currentSort) {
         case SortType.title:
-          comparison = a.name!.compareTo(b.name!);
+          comparison = a.name.compareTo(b.name);
           break;
         case SortType.lastRead:
-          final content = isAnimeSelected.value
+          final aTime = type.value.isAnime
               ? (a.currentEpisode?.lastWatchedTime ?? 0)
               : (a.currentChapter?.lastReadTime ?? 0);
-          final tbc = isAnimeSelected.value
+          final bTime = type.value.isAnime
               ? (b.currentEpisode?.lastWatchedTime ?? 0)
               : (b.currentChapter?.lastReadTime ?? 0);
-          comparison = content.compareTo(tbc);
+          comparison = aTime.compareTo(bTime);
           break;
         case SortType.rating:
-          final rating = double.tryParse(a.rating ?? '0.0') ?? 0.0;
-          final tbcRating = double.tryParse(b.rating ?? '0.0') ?? 0.0;
-          comparison = rating.compareTo(tbcRating);
+          final aRating = double.tryParse(a.rating ?? '0.0') ?? 0.0;
+          final bRating = double.tryParse(b.rating ?? '0.0') ?? 0.0;
+          comparison = aRating.compareTo(bRating);
           break;
         case SortType.lastAdded:
           break;
@@ -1025,231 +1116,12 @@ class _MyLibraryState extends State<MyLibrary> {
       }
     }
 
-    if (isAnimeSelected.value) {
+    if (type.value.isAnime) {
       customListData.refresh();
-    } else {
+    } else if (type.value.isManga) {
       customListDataManga.refresh();
+    } else if (type.value.isNovel) {
+      customListNovelData.refresh();
     }
-  }
-}
-
-class CustomSearchBar extends StatefulWidget {
-  final TextEditingController? controller;
-  final Function(String)? onChanged;
-  final String hintText;
-
-  const CustomSearchBar({
-    super.key,
-    this.controller,
-    this.onChanged,
-    required this.hintText,
-  });
-
-  @override
-  State<CustomSearchBar> createState() => _CustomSearchBarState();
-}
-
-class _CustomSearchBarState extends State<CustomSearchBar> {
-  late FocusNode _focusNode;
-  final settings = Get.find<Settings>();
-
-  @override
-  void initState() {
-    super.initState();
-    if (settings.isTV.value) {
-      _focusNode = FocusNode(
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-              _focusNode.focusInDirection(TraversalDirection.left);
-              return KeyEventResult.skipRemainingHandlers;
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-              _focusNode.focusInDirection(TraversalDirection.right);
-              return KeyEventResult.skipRemainingHandlers;
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              _focusNode.focusInDirection(TraversalDirection.up);
-              return KeyEventResult.skipRemainingHandlers;
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              _focusNode.focusInDirection(TraversalDirection.down);
-              return KeyEventResult.skipRemainingHandlers;
-            }
-          }
-          return KeyEventResult.ignored;
-        },
-      );
-    } else {
-      _focusNode = FocusNode();
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      focusNode: _focusNode,
-      controller: widget.controller,
-      onChanged: widget.onChanged,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        filled: true,
-        fillColor:
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
-        prefixIcon: const Icon(IconlyLight.search),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.multiplyRadius()),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            width: 1,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.multiplyRadius()),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            width: 1,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CustomSliderTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final double sliderValue;
-  final double max;
-  final double min;
-  final double? divisions;
-  final String? label;
-  final Function(double value) onChanged;
-  final Function(double value)? onChangedEnd;
-
-  const CustomSliderTile({
-    super.key,
-    required this.icon,
-    this.label,
-    required this.title,
-    required this.description,
-    required this.sliderValue,
-    required this.onChanged,
-    this.onChangedEnd,
-    required this.max,
-    this.divisions,
-    this.min = 0.0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnymexOnTapAdv(
-      onKeyEvent: (p0, e) {
-        if (e is KeyDownEvent) {
-          double step = (max - min) / (divisions ?? (max - min));
-
-          if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
-            double newValue = (sliderValue + step).clamp(min, max);
-            onChanged(newValue);
-            return KeyEventResult.handled;
-          } else if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            double newValue = (sliderValue - step).clamp(min, max);
-            onChanged(newValue);
-            return KeyEventResult.handled;
-          }
-        } else if (e is KeyUpEvent) {
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                AnymexIcon(icon,
-                    size: 30, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: [
-                  AnymexText(
-                    text: sliderValue.toInt() == 0
-                        ? 'Auto'
-                        : (sliderValue % 1 == 0
-                            ? sliderValue.toInt().toString()
-                            : sliderValue.toStringAsFixed(1)),
-                    variant: TextVariant.semiBold,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: CustomSlider(
-                      focusNode: FocusNode(
-                          canRequestFocus: false, skipTraversal: true),
-                      value: double.parse(sliderValue.toStringAsFixed(1)),
-                      onChanged: onChanged,
-                      max: max,
-                      min: min,
-                      label: label ?? sliderValue.toInt().toString(),
-                      onDragEnd: onChangedEnd,
-                      glowBlurMultiplier: 1,
-                      glowSpreadMultiplier: 1,
-                      divisions: divisions?.toInt() ?? (max * 10).toInt(),
-                      customValueIndicatorSize: RoundedSliderValueIndicator(
-                          Theme.of(context).colorScheme,
-                          width: 40,
-                          height: 40,
-                          radius: 50),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  AnymexText(
-                    text: max % 1 == 0
-                        ? max.toInt().toString()
-                        : max.toStringAsFixed(1),
-                    variant: TextVariant.semiBold,
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

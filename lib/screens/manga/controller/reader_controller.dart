@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -116,21 +116,21 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     switch (state) {
       case AppLifecycleState.paused:
-        log('App paused - saving reading progress');
+        Logger.i('App paused - saving reading progress');
         _performSave(reason: 'App paused');
         break;
       case AppLifecycleState.detached:
-        log('App detached - performing final save');
+        Logger.i('App detached - performing final save');
         _performFinalSave();
         break;
       case AppLifecycleState.resumed:
-        log('App resumed');
+        Logger.i('App resumed');
         break;
       case AppLifecycleState.inactive:
-        log('App inactive');
+        Logger.i('App inactive');
         break;
       case AppLifecycleState.hidden:
-        log('App hidden - saving progress');
+        Logger.i('App hidden - saving progress');
         _performSave(reason: 'App hidden');
         break;
     }
@@ -139,25 +139,25 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _performSave({required String reason}) {
     try {
       if (!_canSaveProgress()) {
-        log('Cannot save progress - invalid state ($reason)');
+        Logger.i('Cannot save progress - invalid state ($reason)');
         return;
       }
 
-      log('Saving reading progress - reason: $reason');
+      Logger.i('Saving reading progress - reason: $reason');
       _saveTracking();
     } catch (e) {
-      log('Error during save ($reason): ${e.toString()}');
+      Logger.i('Error during save ($reason): ${e.toString()}');
     }
   }
 
   void _performFinalSave() {
     try {
       if (!_canSaveProgress()) {
-        log('Cannot perform final save - invalid state');
+        Logger.i('Cannot perform final save - invalid state');
         return;
       }
 
-      log('Performing final save');
+      Logger.i('Performing final save');
       _saveTracking();
 
       final chapter = currentChapter.value;
@@ -177,7 +177,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             isAnime: false));
       }
     } catch (e) {
-      log('Error during final save: ${e.toString()}');
+      Logger.i('Error during final save: ${e.toString()}');
     }
   }
 
@@ -279,7 +279,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (number != currentPageIndex.value) {
       currentPageIndex.value = number;
       _safelyUpdateChapterPageNumber(number);
-      // Removed save call - only update in memory
     }
   }
 
@@ -290,7 +289,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     currentPageIndex.value = number;
     _safelyUpdateChapterPageNumber(number);
     _safelyUpdateTotalPages(pageList.length);
-    // Removed save call - only update in memory
   }
 
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
@@ -368,7 +366,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void navigateToChapter(int index) async {
     if (index < 0 || index >= chapterList.length) return;
 
-    // Save when navigating to chapter
     _performSave(reason: 'Chapter navigation');
 
     currentChapter.value = chapterList[index];
@@ -391,10 +388,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (readingLayout.value == MangaPageViewMode.continuous) {
       itemScrollController?.jumpTo(index: index);
     } else {
-      log('[PAGE CONTROLLER] Navigating to page $index');
+      Logger.i('[PAGE CONTROLLER] Navigating to page $index');
       pageController?.jumpToPage(index);
     }
-    // No save on page navigation - only update in memory
   }
 
   void chapterNavigator(bool next) async {
@@ -453,10 +449,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         currentPageIndex.value = 1;
         _safelyUpdateTotalPages(pageList.length);
 
-        for (PageUrl page in pageList) {
-          log('Page URL: ${page.url}');
-        }
-
         final saved = savedChapter.value;
         if (saved != null &&
             saved.pageNumber != null &&
@@ -473,7 +465,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         throw Exception('No pages found for this chapter');
       }
     } catch (e) {
-      log('Error fetching images: ${e.toString()}');
+      Logger.i('Error fetching images: ${e.toString()}');
       loadingState.value = LoadingState.error;
       errorMessage.value = e.toString();
     } finally {
