@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "2.9.9",
-      "versionDate": "2025-08-03T20:34:16Z",
+      "version": "3.0.0",
+      "versionDate": "2025-08-31T19:17:28Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.9/AnymeX-iOS-v2.9.9.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.0/AnymeX-iOS-v3.0.0.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 39280545,
+      "size": 40353839,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "3.0.0",
+          "date": "2025-08-31T19:17:28Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.0/AnymeX-iOS-v3.0.0.ipa",
+          "size": 40353839
+        },
+        {
           "version": "2.9.9",
           "date": "2025-08-03T20:34:16Z",
-          "localizedDescription": "",
+          "localizedDescription": "\ud83c\udd95 Changelog\n\ud83c\udf1f Features\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/7e24778)  cache setting for cached images\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/c7fd435)  proper language name and subtitle name for local videos\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/e995f11)  unified extension support for android aniyomi, mangayomi\n\n\n\ud83d\udd27 Bug Fixes & Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/55d68e6)  fixed grey screens on watch page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/8816f59)  fixed presets not applying properly\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/bcac304)  fixed preload page not working properly\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/06716f4)  fixed slider not adjusting properly\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/653262c)  fixed chap ranges not changing according to scanlator\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/49490a5)  fix jittery page transition\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/4364fe3)  fixed shaders being same on all profile\n\n\n\ud83d\udd27 Refactors\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/094251d)  error handling on local media page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/afd72e0)  switched to extended image\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/9dca360)  switched to dartotsuextensionbridge plugin for source implementation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6cadc08)  migrated to applinks from unilinks\n\n\n\ud83c\udfa8 Style Changes\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6302462)  fallback to m3 slider from custom slider\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/8e4a5e4)  some minor ui changes\n\n\n\ud83d\ude80 Performance Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/942d1b1)  optimized the manga reader and fixed most issues\n\n\n\ud83e\uddf9 Chores & Documentation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/cc598d6)  should fix the cmake issue\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/0796ab5)  installed the missing dep\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/639f203)  bumped flutter version to 3.32.8  bumped app version\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/9bc08ac)  deeplinks related setup\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/d92f278)  upgraded gradle, kotlin etc etc\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/a6092ac)  auto\u2022translate readme and wiki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/3c80cb9)  formatted release note\n\n\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for\u2022the\u2022badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v2.9.9/total?style=for\u2022the\u2022badge&label=CURRENT%20RELEASE&labelColor=black&color=white)\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v2.9.9/AnymeX-iOS-v2.9.9.ipa",
           "size": 39280545
         },
@@ -268,6 +275,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v2.9.9"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "3.0.0 - 31 Aug",
+      "identifier": "release-3.0.0",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-08-31T19:17:28Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.0"
     }
   ]
 }
