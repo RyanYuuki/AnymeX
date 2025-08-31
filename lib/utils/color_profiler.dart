@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:developer';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/shaders.dart';
@@ -212,6 +213,28 @@ class ColorProfileBottomSheet extends StatefulWidget {
     required this.player,
   });
 
+  static void showColorProfileSheet(
+      BuildContext context, PlayerController controller, dynamic player) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ColorProfileBottomSheet(
+        activeSettings: controller.customSettings,
+        currentProfile: controller.currentVisualProfile.value,
+        player: player,
+        onProfileSelected: (profile) {
+          controller.currentVisualProfile.value = profile;
+          controller.settings.preferences.put('currentVisualProfile', profile);
+        },
+        onCustomSettingsChanged: (sett) {
+          controller.customSettings.value = sett;
+          controller.settings.preferences.put('currentVisualSettings', sett);
+        },
+      ),
+    );
+  }
+
   @override
   State<ColorProfileBottomSheet> createState() =>
       _ColorProfileBottomSheetState();
@@ -249,7 +272,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
 
   void _showProfileAppliedFeedback(String profileName) {
     HapticFeedback.lightImpact();
-    log('Applied ${profileName.toUpperCase()} profile');
+    Logger.i('Applied ${profileName.toUpperCase()} profile');
   }
 
   void _applyCustomSettings() async {

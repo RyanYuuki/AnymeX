@@ -168,7 +168,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context)
                                 .colorScheme
-                                .primaryContainer
+                                .surfaceContainer
                                 .withOpacity(0.5)),
                         onPressed: () {
                           Navigator.pop(context);

@@ -55,7 +55,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context)
                               .colorScheme
-                              .primaryContainer
+                              .surfaceContainer
                               .withOpacity(0.5),
                         ),
                         onPressed: () {

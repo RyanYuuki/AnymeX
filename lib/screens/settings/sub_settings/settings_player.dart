@@ -191,7 +191,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context)
                             .colorScheme
-                            .primaryContainer
+                            .surfaceContainer
                             .withOpacity(0.5),
                       ),
                       onPressed: () {
@@ -215,26 +215,26 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           title: 'Common',
                           content: Column(
                             children: [
-                              CustomTile(
-                                padding: 10,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                isDescBold: true,
-                                icon: HugeIcons.strokeRoundedPlaySquare,
-                                onTap: () => showPlayerStyleDialog(),
-                                title: "Player Theme",
-                                description:
-                                    numToPlayerStyle(settings.playerStyle),
-                              ),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.stay_current_portrait,
-                                  title: "Default Portrait",
-                                  description:
-                                      "For psychopath who watch in portrait",
-                                  switchValue: settings.defaultPortraitMode,
-                                  onChanged: (val) =>
-                                      settings.defaultPortraitMode = val),
+                              // CustomTile(
+                              //   padding: 10,
+                              //   descColor:
+                              //       Theme.of(context).colorScheme.primary,
+                              //   isDescBold: true,
+                              //   icon: HugeIcons.strokeRoundedPlaySquare,
+                              //   onTap: () => showPlayerStyleDialog(),
+                              //   title: "Player Theme",
+                              //   description:
+                              //       numToPlayerStyle(settings.playerStyle),
+                              // ),
+                              // CustomSwitchTile(
+                              //     padding: const EdgeInsets.all(10),
+                              //     icon: Icons.stay_current_portrait,
+                              //     title: "Default Portrait",
+                              //     description:
+                              //         "For psychopath who watch in portrait",
+                              //     switchValue: settings.defaultPortraitMode,
+                              //     onChanged: (val) =>
+                              //         settings.defaultPortraitMode = val),
                               CustomTile(
                                 padding: 10,
                                 isDescBold: true,
@@ -259,30 +259,30 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   _showResizeModeDialog();
                                 },
                               ),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.fast_forward,
-                                  title: "Auto Skip OP",
-                                  description: "Auto skip the opening song",
-                                  switchValue: settings.autoSkipOP,
-                                  onChanged: (val) =>
-                                      settings.autoSkipOP = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.fast_forward_outlined,
-                                  title: "Auto Skip ED",
-                                  description: "Auto skip the ending song",
-                                  switchValue: settings.autoSkipED,
-                                  onChanged: (val) =>
-                                      settings.autoSkipED = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.all_inclusive,
-                                  title: "Auto Skip Once Only",
-                                  description: "Auto skip only once per watch",
-                                  switchValue: settings.autoSkipOnce,
-                                  onChanged: (val) =>
-                                      settings.autoSkipOnce = val),
+                              // CustomSwitchTile(
+                              //     padding: const EdgeInsets.all(10),
+                              //     icon: Icons.fast_forward,
+                              //     title: "Auto Skip OP",
+                              //     description: "Auto skip the opening song",
+                              //     switchValue: settings.autoSkipOP,
+                              //     onChanged: (val) =>
+                              //         settings.autoSkipOP = val),
+                              // CustomSwitchTile(
+                              //     padding: const EdgeInsets.all(10),
+                              //     icon: Icons.fast_forward_outlined,
+                              //     title: "Auto Skip ED",
+                              //     description: "Auto skip the ending song",
+                              //     switchValue: settings.autoSkipED,
+                              //     onChanged: (val) =>
+                              //         settings.autoSkipED = val),
+                              // CustomSwitchTile(
+                              //     padding: const EdgeInsets.all(10),
+                              //     icon: Icons.all_inclusive,
+                              //     title: "Auto Skip Once Only",
+                              //     description: "Auto skip only once per watch",
+                              //     switchValue: settings.autoSkipOnce,
+                              //     onChanged: (val) =>
+                              //         settings.autoSkipOnce = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.play_disabled_rounded,
