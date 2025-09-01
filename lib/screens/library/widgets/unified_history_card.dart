@@ -310,7 +310,6 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return AnymexCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(

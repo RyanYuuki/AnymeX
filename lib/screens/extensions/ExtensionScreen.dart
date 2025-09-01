@@ -38,7 +38,6 @@ class _BrowseScreenState extends State<ExtensionScreen>
     _tabBarController.addListener(() {
       setState(() {
         _textEditingController.clear();
-        //_isSearch = false;
       });
     });
   }
@@ -61,7 +60,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
     final controller = Get.find<SourceController>();
     final isAndroid = Platform.isAndroid;
 
-    final selectedTab = isAndroid ? 0.obs : 1.obs;
+    final selectedTab = 0.obs;
 
     showModalBottomSheet(
       context: context,
@@ -70,12 +69,9 @@ class _BrowseScreenState extends State<ExtensionScreen>
       builder: (context) {
         return Obx(
           () {
-            final type = isAndroid
-                ? selectedTab.value == 0
-                    ? ExtensionType.aniyomi
-                    : ExtensionType.mangayomi
+            final type = isAndroid && selectedTab.value == 1
+                ? ExtensionType.aniyomi
                 : ExtensionType.mangayomi;
-            // Update controllers based on current tab selection
             final animeRepoController = TextEditingController(
               text: sourceController.getAnimeRepo(type),
             );
@@ -105,7 +101,6 @@ class _BrowseScreenState extends State<ExtensionScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Handle bar
                       Container(
                         width: 32,
                         height: 3,
@@ -118,8 +113,6 @@ class _BrowseScreenState extends State<ExtensionScreen>
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-
-                      // Title
                       Text(
                         "Repository Settings",
                         style:
@@ -127,9 +120,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
                                   fontWeight: FontWeight.w600,
                                 ),
                       ),
-
                       const SizedBox(height: 24),
-
                       if (isAndroid)
                         Container(
                           decoration: BoxDecoration(
@@ -165,7 +156,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
                                           : null,
                                     ),
                                     child: Text(
-                                      "Aniyomi",
+                                      "Mangayomi",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontWeight: selectedTab.value == 0
@@ -208,7 +199,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
                                           : null,
                                     ),
                                     child: Text(
-                                      "Mangayomi",
+                                      "Aniyomi",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontWeight: selectedTab.value == 1
@@ -229,10 +220,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
                             ],
                           ),
                         ),
-
                       const SizedBox(height: 24),
-
-                      // Warning
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context)
@@ -270,26 +258,8 @@ class _BrowseScreenState extends State<ExtensionScreen>
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 24),
-
                       if (selectedTab.value == 0) ...[
-                        _buildRepoField(
-                          context,
-                          "Anime Repository",
-                          animeRepoController,
-                          Icons.play_circle_outline,
-                          "Enter anime repository URL",
-                        ),
-                        const SizedBox(height: 16),
-                        _buildRepoField(
-                          context,
-                          "Manga Repository",
-                          mangaRepoController,
-                          Icons.book_outlined,
-                          "Enter manga repository URL",
-                        ),
-                      ] else ...[
                         _buildRepoField(
                           context,
                           "Anime Repository",
@@ -313,11 +283,24 @@ class _BrowseScreenState extends State<ExtensionScreen>
                           Icons.menu_book_outlined,
                           "Enter novel repository URL",
                         ),
+                      ] else ...[
+                        _buildRepoField(
+                          context,
+                          "Anime Repository",
+                          animeRepoController,
+                          Icons.play_circle_outline,
+                          "Enter anime repository URL",
+                        ),
+                        const SizedBox(height: 16),
+                        _buildRepoField(
+                          context,
+                          "Manga Repository",
+                          mangaRepoController,
+                          Icons.book_outlined,
+                          "Enter manga repository URL",
+                        ),
                       ],
-
                       const SizedBox(height: 32),
-
-                      // Action Buttons
                       Row(
                         children: [
                           Expanded(
@@ -346,11 +329,13 @@ class _BrowseScreenState extends State<ExtensionScreen>
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () async {
+                                print(
+                                    '${type.name} - ${animeRepoController.text}');
                                 controller.setAnimeRepo(
                                     animeRepoController.text, type);
                                 controller.setMangaRepo(
                                     mangaRepoController.text, type);
-                                if (selectedTab.value == 1) {
+                                if (selectedTab.value == 0) {
                                   controller.activeNovelRepo =
                                       novelRepoController.text;
                                 }

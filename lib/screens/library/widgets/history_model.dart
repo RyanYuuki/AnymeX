@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
@@ -90,13 +91,22 @@ class HistoryModel {
                     snackBar(
                         "Install ${media.currentEpisode?.source} First, Then Click");
                   } else {
-                    navigate(() => WatchScreen(
-                          episodeSrc: media.currentEpisode!.currentTrack!,
-                          episodeList: media.episodes!,
-                          anilistData: convertOfflineToMedia(media),
-                          currentEpisode: media.currentEpisode!,
-                          episodeTracks: media.currentEpisode!.videoTracks!,
-                        ));
+                    navigate(() => settingsController.preferences
+                            .get('useOldPlayer', defaultValue: false)
+                        ? WatchPage(
+                            episodeSrc: media.currentEpisode!.currentTrack!,
+                            episodeList: media.episodes!,
+                            anilistData: convertOfflineToMedia(media),
+                            currentEpisode: media.currentEpisode!,
+                            episodeTracks: media.currentEpisode!.videoTracks!,
+                          )
+                        : WatchScreen(
+                            episodeSrc: media.currentEpisode!.currentTrack!,
+                            episodeList: media.episodes!,
+                            anilistData: convertOfflineToMedia(media),
+                            currentEpisode: media.currentEpisode!,
+                            episodeTracks: media.currentEpisode!.videoTracks!,
+                          ));
                   }
                 }
               }
@@ -127,7 +137,8 @@ class HistoryModel {
               };
 
     final isManga = !type.isAnime;
-    print('isManga: $isManga, media: ${media.name}');
+    print(
+        'timestamp: ${media.currentEpisode?.timeStampInMilliseconds} duration: ${media.currentEpisode?.durationInMilliseconds}');
     return HistoryModel(
         media: media,
         title: media.name,
@@ -218,6 +229,9 @@ String formatProgressText(OfflineMedia data, bool isManga) {
 
     final minutes = twoDigits(timeLeft.inMinutes.remainder(60));
     final seconds = twoDigits(timeLeft.inSeconds.remainder(60));
+    final hours = (timeLeft.inHours);
+
+    if (hours > 0) return '${twoDigits(hours)}:$minutes:$seconds left';
 
     return '$minutes:$seconds left';
   }
