@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "3.0.0",
-      "versionDate": "2025-08-31T20:15:50Z",
+      "version": "3.0.1",
+      "versionDate": "2025-09-01T18:46:10Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.0/AnymeX-iOS-v3.0.0.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1/AnymeX-iOS-v3.0.1.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 40348818,
+      "size": 40411227,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "3.0.1",
+          "date": "2025-09-01T18:46:10Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1/AnymeX-iOS-v3.0.1.ipa",
+          "size": 40411227
+        },
+        {
           "version": "3.0.0",
           "date": "2025-08-31T20:15:50Z",
-          "localizedDescription": "",
+          "localizedDescription": "\ud83c\udd95 Changelog\n\ud83c\udf1f Features\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/1c8f5e6)  online subtitle support\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/5bfc4f8)  novel library partial support\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/d1f10aa)  source search page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/1a25a54)  logger added\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/487a528)  novel support home, details, reader, settings  etc\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/0777c9a)  custom list editor, unified library for all services.\n\n\n\ud83d\udd27 Bug Fixes & Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/24a46ad)  fixed double tap not using duration from settings\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/830b2fc)  fixed subtitle not appearing\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/cbfe4e9)  fixed a minor error causing build issues\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/2f15d2e)  fixed session cache not working\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/38af53a)  fixed too many prequel sequel\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/0fe7a62)  fixed wrong progress percentages\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/f35920e)  fixed some layout issues on search page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/4e67c82)  fixed check for updates redirecting to github\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/e0f592d)  fixed deeplink not working properly\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6899801)  fixed crashes on macs and player glitches on other platforms\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/cf2c56b)  fixed not saving issue on repo dialog\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/4acf699)  fixed settings unable to scroll on smaller phones\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/df2247f)  fixed dupes in session history\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/40bc30f)  fixed unscrollable settings page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/d2c708b)  fixed an issue where repo was not saving\n\n\n\ud83d\udd27 Refactors\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/e16780a)  made service media dependent instead of service handler dependent\n\n\n\ud83c\udfa8 Style Changes\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/1dea0d4)  revamped double tap to seek\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/3d3735b)  few styling changes\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/db8752c)  some ui changes\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/c6b8d11)  some ui changes\n\n\n\ud83d\ude80 Performance Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/a4647a9)  improve ext page performance\n\n\n\ud83e\uddf9 Chores & Documentation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/08a2384)  bump version code\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/3d6c547)  bump version to v3.0.0 major release\n\n\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for\u2022the\u2022badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.0/total?style=for\u2022the\u2022badge&label=CURRENT%20RELEASE&labelColor=black&color=white)\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.0/AnymeX-iOS-v3.0.0.ipa",
           "size": 40348818
         },
@@ -286,6 +293,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.0"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "3.0.1 - 01 Sep",
+      "identifier": "release-3.0.1",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-09-01T18:46:10Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.1"
     }
   ]
 }
