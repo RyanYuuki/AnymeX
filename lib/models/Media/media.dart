@@ -357,8 +357,8 @@ class Media {
             ? json['node']['mediaRecommendation']['id'].toString()
             : '',
         title: json['node']['mediaRecommendation'] != null
-            ? json['node']['mediaRecommendation']['title']['romaji'] ??
-                json['node']['mediaRecommendation']['title']['english']
+            ? json['node']['mediaRecommendation']['title']['english'] ??
+                json['node']['mediaRecommendation']['title']['romaji']
             : '',
         poster: json['node']['mediaRecommendation'] != null
             ? json['node']['mediaRecommendation']['coverImage']['large']
