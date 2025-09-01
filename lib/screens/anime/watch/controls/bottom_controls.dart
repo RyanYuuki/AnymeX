@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -65,6 +67,37 @@ class BottomControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Material(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () =>
+                    controller.megaSeek(controller.playerSettings.skipDuration),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer
+                        .withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.colorScheme.outline,
+                      width: 0.5,
+                    ),
+                  ),
+                  child: AnymexText(
+                    text: '+${controller.playerSettings.skipDuration}',
+                    variant: TextVariant.semiBold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: const ProgressSlider(),

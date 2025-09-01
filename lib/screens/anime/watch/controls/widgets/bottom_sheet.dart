@@ -595,7 +595,17 @@ class PlayerBottomSheets {
 
   static Future<double?> showPlaybackSpeed(
       BuildContext context, PlayerController controller) {
-    final speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+    final speeds = [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      for (var i = 2.5; i < 20; i += 0.5) i
+    ];
     final selectedSpeed = controller.playbackSpeed.value;
 
     return show<double>(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -90,15 +91,39 @@ class TopControls extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  controller.currentEpisode.value.title ?? 'Unknown Title',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Text(
+                      controller.currentEpisode.value.title ?? 'Unknown Title',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    10.width(),
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Episode ${controller.currentEpisode.value.number}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Container(
@@ -109,7 +134,7 @@ class TopControls extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Episode ${controller.currentEpisode.value.number}',
+                    controller.anilistData.title,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -124,7 +149,22 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.settings_rounded,
             onPressed: () {
-              Get.bottomSheet(const SettingsPlayer(isModal: true));
+              showModalBottomSheet(
+                  context: Get.context!,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => Container(
+                        height: MediaQuery.of(context).size.height,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(28)),
+                        ),
+                        child: const SettingsPlayer(
+                          isModal: true,
+                        ),
+                      ));
             },
             tooltip: 'Settings',
             compact: true,
@@ -156,15 +196,41 @@ class TopControls extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        controller.anilistData.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontFamily: 'Poppins-SemiBold',
-                          letterSpacing: 0.2,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Text(
+                            controller.currentEpisode.value.title ??
+                                'Unknown Title',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontFamily: 'Poppins-SemiBold',
+                              letterSpacing: 0.2,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          10.width(),
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color:
+                                    theme.colorScheme.primary.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Episode ${controller.currentEpisode.value.number}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 6),
                       Container(
@@ -175,13 +241,14 @@ class TopControls extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          'Episode ${controller.currentEpisode.value.number}',
+                          controller.anilistData.title,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
+                          maxLines: 1,
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -213,12 +280,21 @@ class TopControls extends StatelessWidget {
                 icon: Icons.settings_rounded,
                 onPressed: () {
                   showModalBottomSheet(
-                    context: Get.context!,
-                    isScrollControlled: true,
-                    builder: (_) => ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: const SettingsPlayer(isModal: true)),
-                  );
+                      context: Get.context!,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => Container(
+                            height: MediaQuery.of(context).size.height,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(28)),
+                            ),
+                            child: const SettingsPlayer(
+                              isModal: true,
+                            ),
+                          ));
                 },
                 tooltip: 'Settings',
                 compact: true,

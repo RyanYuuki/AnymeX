@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -7,11 +8,14 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
+import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart';
+import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
@@ -64,6 +68,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       anilistData.id, currentEpisode.value.number);
 
   final offlineStorage = Get.find<OfflineStorageController>();
+
+  PlayerSettings get playerSettings => settings.playerSettings.value;
 
   final Rx<Duration> currentPosition = Rx<Duration>(Duration.zero);
   String get formattedCurrentPosition =>
@@ -125,6 +131,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
 
+  // AniSkip
+  aniskip.EpisodeSkipTimes? skipTimes;
+  final isOPSkippedOnce = false.obs;
+  final isEDSkippedOnce = false.obs;
+
   void applySavedProfile() => ColorProfileManager()
       .applyColorProfile(currentVisualProfile.value, player);
 
@@ -145,6 +156,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _initDatabaseVars();
     _initOrientations();
     _initializePlayer();
+    _initializeAniSkip();
     _initializeListeners();
     _extractSubtitles();
     _initializeSwipeStuffs();
@@ -197,6 +209,37 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
 
+  void _handleAutoSkip() {
+    if (skipTimes?.op != null && playerSettings.autoSkipOP) {
+      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) {
+        return;
+      }
+      if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+          currentPosition.value.inSeconds < skipTimes!.op!.end) {
+        final skipNeeded = skipTimes!.op!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isOPSkippedOnce.value = true;
+      }
+    }
+    if (skipTimes?.ed != null && playerSettings.autoSkipED) {
+      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) {
+        return;
+      }
+      if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+          currentPosition.value.inSeconds < skipTimes!.ed!.end) {
+        final skipNeeded = skipTimes!.ed!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isEDSkippedOnce.value = true;
+      }
+    }
+  }
+
   void _initializeSwipeStuffs() {
     Future.microtask(() async {
       try {
@@ -218,9 +261,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _initializePlayer() {
-    player = Player();
+    player = Player(
+        configuration: PlayerConfiguration(
+            bufferSize: 1024 * 1024 * 64,
+            config: true,
+            configDir: settings.mpvPath.value));
     playerController = VideoController(player,
-        configuration: const VideoControllerConfiguration(
+        configuration: VideoControllerConfiguration(
+            hwdec: 'auto',
+            enableHardwareAcceleration: Platform.isMacOS ? false : true,
+            vo: Platform.isAndroid ? "gpu" : "libmpv",
             androidAttachSurfaceAfterVideoParameters: true));
     player.open(Media(selectedVideo.value!.url,
         httpHeaders: selectedVideo.value!.headers,
@@ -229,6 +279,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _performInitialTracking();
     applySavedProfile();
+  }
+
+  void _initializeAniSkip() {
+    isOPSkippedOnce.value = false;
+    isEDSkippedOnce.value = false;
+    final skipQuery = aniskip.SkipSearchQuery(
+        idMAL: anilistData.idMal, episodeNumber: currentEpisode.value.number);
+    aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
+      skipTimes = skipTimeResult;
+    }).onError((error, stackTrace) {
+      debugPrint("An error occurred: $error");
+      debugPrint("Stack trace: $stackTrace");
+    });
   }
 
   void _performInitialTracking() {
@@ -263,9 +326,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (isSeeking.value) return;
       currentPosition.value = pos;
       currentEpisode.value.timeStampInMilliseconds = pos.inMilliseconds;
+      currentEpisode.value.durationInMilliseconds =
+          episodeDuration.value.inMilliseconds;
 
       if (_shouldMarkAsCompleted) {
         _trackOnline(true);
+      }
+
+      if (isPlaying.value && skipTimes != null) {
+        _handleAutoSkip();
       }
     });
 
@@ -455,10 +524,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void delete() {
-    _trackLocally();
-    _trackOnline((currentPosition.value).inMilliseconds /
-            episodeDuration.value.inMilliseconds >=
-        settings.markAsCompleted);
+    Future.microtask(() async {
+      _trackLocally();
+      _trackOnline((currentPosition.value).inMilliseconds /
+              episodeDuration.value.inMilliseconds >=
+          settings.markAsCompleted);
+    });
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -484,7 +555,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void seekTo(Duration pos) {
     currentPosition.value = pos;
-    onUserInteraction();
 
     _seekDebounce?.cancel();
     _seekDebounce = Timer(const Duration(milliseconds: 100), () {
@@ -505,23 +575,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setRate(double rate) {
+    playbackSpeed.value = rate;
     player.setRate(rate);
-    onUserInteraction();
+  }
+
+  void megaSeek(int seconds) {
+    seekTo(currentPosition.value + Duration(seconds: seconds));
   }
 
   void setVideoTrack(VideoTrack track) {
     player.setVideoTrack(track);
-    onUserInteraction();
   }
 
   void setAudioTrack(AudioTrack track) {
     player.setAudioTrack(track);
-    onUserInteraction();
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
     player.setSubtitleTrack(track);
-    onUserInteraction();
   }
 
   void toggleControls({bool? val}) {
@@ -552,8 +623,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _cancelAutoHideTimer();
 
       _wasControlsVisible = showControls.value;
-      if (_wasControlsVisible) {
-        toggleControls();
+
+      if (showControls.value) {
+        toggleControls(val: false);
       }
     }
   }
@@ -570,12 +642,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         if (position.dx <= MediaQuery.of(context).size.width / 2) {
           final bright = brightness.value - delta / 500;
-          final result = bright.clamp(0.0, 1.0);
-          setBrightness(result.toDouble());
+          setBrightness(bright.clamp(0.0, 1.0).toDouble());
         } else {
           final vol = volume.value - delta / 500;
-          final result = vol.clamp(0.0, 1.0);
-          setVolume(result.toDouble());
+          setVolume(vol.clamp(0.0, 1.0).toDouble());
         }
       }
     }
@@ -585,13 +655,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
 
-      _controlsTimer = Timer(const Duration(milliseconds: 300), () {
-        if (_wasControlsVisible && !showControls.value) {
-          toggleControls();
-        }
-        _controlsTimer = null;
-        _resetAutoHideTimer();
-      });
+      if (_wasControlsVisible && !showControls.value) {
+        toggleControls(val: true);
+      }
+
+      _resetAutoHideTimer();
     }
   }
 
@@ -605,7 +673,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _volumeTimer = Timer(const Duration(milliseconds: 200), () {
       volumeIndicator.value = false;
     });
-    onUserInteraction();
   }
 
   Future<void> setBrightness(double value) async {
@@ -617,7 +684,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _brightnessTimer = Timer(const Duration(milliseconds: 200), () {
       brightnessIndicator.value = false;
     });
-    onUserInteraction();
     refresh();
   }
 
@@ -633,7 +699,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     selectedExternalSub.value = track;
     setSubtitleTrack(SubtitleTrack.uri(track.file!, title: track.label));
-    onUserInteraction();
   }
 
   void setServerTrack(model.Video track) async {
@@ -645,7 +710,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     selectedVideo.value = track;
     await _switchMedia(track.url, track.headers,
         startPosition: player.state.position);
-    onUserInteraction();
   }
 
   void setExternalAudio(model.Track track) {
@@ -655,7 +719,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     selectedExternalAudio.value = track;
     setAudioTrack(AudioTrack.uri(track.file!));
-    onUserInteraction();
   }
 
   void toggleSubtitlePane() {
@@ -674,7 +737,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           label: '${sub.label} (Online)',
           file: sub.url,
         ));
-    onUserInteraction();
   }
 
   void navigator(bool forward) {
@@ -716,13 +778,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     ColorProfileBottomSheet.showColorProfileSheet(context, this, player);
-    onUserInteraction();
   }
 
   void toggleVideoFit() {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
-    onUserInteraction();
   }
 
   Future<void> _trackLocally() async {
@@ -741,7 +801,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         currentEpisode.value.videoTracks = episodeTracks;
 
         Logger.i(
-            'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms');
+            'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
       } else {
         final episodeToSave = currentEpisode.value;
         episodeToSave.timeStampInMilliseconds = 0;
@@ -753,7 +813,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         episodeToSave.videoTracks = episodeTracks;
 
         Logger.i(
-            'Local tracking completed for episode ${currentEpisode.value.number} with reset timestamp (invalid: ${currentTimestamp}ms, duration: ${totalDuration}ms)');
+            'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
       }
     } catch (e) {
       Logger.i('Failed to track locally: $e');
@@ -768,6 +828,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           listId: anilistData.id,
           progress: hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1,
           isAnime: true,
+          status: hasCrossedLimit &&
+                  anilistData.status == 'COMPLETED' &&
+                  hasNextEpisode
+              ? 'COMPLETED'
+              : 'CURRENT',
           syncIds: [anilistData.idMal]));
       service.setCurrentMedia(anilistData.id.toString());
       Logger.i(
