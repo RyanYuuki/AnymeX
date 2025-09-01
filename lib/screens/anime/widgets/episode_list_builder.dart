@@ -521,13 +521,22 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             return InkWell(
               onTap: () {
                 Get.back();
-                navigate(() => WatchScreen(
-                      episodeSrc: e,
-                      episodeList: widget.episodeList,
-                      anilistData: widget.anilistData!,
-                      currentEpisode: selectedEpisode.value,
-                      episodeTracks: streamList,
-                    ));
+                navigate(() => settingsController.preferences
+                        .get('useOldPlayer', defaultValue: false)
+                    ? WatchPage(
+                        episodeSrc: e,
+                        episodeList: widget.episodeList,
+                        anilistData: widget.anilistData!,
+                        currentEpisode: selectedEpisode.value,
+                        episodeTracks: streamList,
+                      )
+                    : WatchScreen(
+                        episodeSrc: e,
+                        episodeList: widget.episodeList,
+                        anilistData: widget.anilistData!,
+                        currentEpisode: selectedEpisode.value,
+                        episodeTracks: streamList,
+                      ));
               },
               child: Padding(
                 padding:

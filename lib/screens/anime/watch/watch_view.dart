@@ -57,69 +57,57 @@ class _WatchScreenState extends State<WatchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: MouseRegion(
-      onHover: (e) => controller.toggleControls(val: true),
-      child: GestureDetector(
-        onTap: () => controller.toggleControls(),
-        onVerticalDragStart: (details) =>
-            controller.onVerticalDragStart(context, details),
-        onVerticalDragEnd: (details) =>
-            controller.onVerticalDragEnd(context, details),
-        onVerticalDragUpdate: (e) =>
-            controller.onVerticalDragUpdate(context, e),
-        child: Stack(
-          children: [
-            Obx(() {
-              return Video(
-                  controller: controller.playerController,
-                  fit: controller.videoFit.value,
-                  filterQuality: FilterQuality.none,
-                  subtitleViewConfiguration:
-                      const SubtitleViewConfiguration(visible: false),
-                  controls: (state) => const SizedBox.shrink());
-            }),
-            PlayerOverlay(controller: controller),
-            DoubleTapSeekWidget(
-              controller: controller,
-            ),
-            const Align(
-              alignment: Alignment.topCenter,
-              child: TopControls(),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomControls(),
-            ),
-            const Align(
-              alignment: Alignment.center,
-              child: CenterControls(),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: 0,
-              child: SubtitleSearchBottomSheet(controller: controller),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: 0,
-              child: EpisodesPane(controller: controller),
-            ),
-            MediaIndicatorBuilder(
-              isVolumeIndicator: false,
-              controller: controller,
-            ),
-            MediaIndicatorBuilder(
-              isVolumeIndicator: true,
-              controller: controller,
-            ),
-            SubtitleText(controller: controller),
-          ],
+        body: Stack(
+      children: [
+        Obx(() {
+          return Video(
+              controller: controller.playerController,
+              fit: controller.videoFit.value,
+              filterQuality: FilterQuality.none,
+              subtitleViewConfiguration:
+                  const SubtitleViewConfiguration(visible: false),
+              controls: (state) => const SizedBox.shrink());
+        }),
+        PlayerOverlay(controller: controller),
+        SubtitleText(controller: controller),
+        DoubleTapSeekWidget(
+          controller: controller,
         ),
-      ),
+        const Align(
+          alignment: Alignment.center,
+          child: CenterControls(),
+        ),
+        const Align(
+          alignment: Alignment.topCenter,
+          child: TopControls(),
+        ),
+        const Align(
+          alignment: Alignment.bottomCenter,
+          child: BottomControls(),
+        ),
+        MediaIndicatorBuilder(
+          isVolumeIndicator: false,
+          controller: controller,
+        ),
+        MediaIndicatorBuilder(
+          isVolumeIndicator: true,
+          controller: controller,
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: SubtitleSearchBottomSheet(controller: controller),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: EpisodesPane(controller: controller),
+        ),
+      ],
     ));
   }
 }
