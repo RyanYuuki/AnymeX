@@ -137,8 +137,6 @@ class HistoryModel {
               };
 
     final isManga = !type.isAnime;
-    print(
-        'timestamp: ${media.currentEpisode?.timeStampInMilliseconds} duration: ${media.currentEpisode?.durationInMilliseconds}');
     return HistoryModel(
         media: media,
         title: media.name,
