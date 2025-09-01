@@ -9,6 +9,8 @@
 
 
 ### 🔧 Bug Fixes & Improvements
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/24a46ad)  fixed double tap not using duration from settings
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/830b2fc)  fixed subtitle not appearing
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/cbfe4e9)  fixed a minor error causing build issues
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/2f15d2e)  fixed session cache not working
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/38af53a)  fixed too many prequel sequel
@@ -40,6 +42,7 @@
 
 
 ### 🧹 Chores & Documentation
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/08a2384)  bump version code
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/3d6c547)  bump version to v3.0.0 major release
 
 
