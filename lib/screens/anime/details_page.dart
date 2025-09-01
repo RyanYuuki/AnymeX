@@ -766,6 +766,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       builder: (BuildContext context) {
         return ListEditorModal(
           animeStatus: animeStatus,
+          isManga: false,
           animeScore: animeScore,
           animeProgress: animeProgress,
           currentAnime: currentAnime,

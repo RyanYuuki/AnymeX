@@ -14,6 +14,7 @@ class ListEditorModal extends StatelessWidget {
   final Media media;
   final Function(String, double, String, int) onUpdate;
   final Function(String) onDelete;
+  final bool isManga;
 
   const ListEditorModal({
     super.key,
@@ -24,6 +25,7 @@ class ListEditorModal extends StatelessWidget {
     required this.media,
     required this.onUpdate,
     required this.onDelete,
+    required this.isManga,
   });
 
   @override
@@ -117,84 +119,182 @@ class ListEditorModal extends StatelessWidget {
   }
 
   Widget _buildProgressField(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(() {
-          controller.text = animeProgress.value.toString();
-          return Expanded(
+    return Obx(() {
+      final TextEditingController controller = TextEditingController(
+        text: animeProgress.value.toString(),
+      );
+
+      final bool isForManga = isManga;
+
+      bool isUnknownTotal() {
+        final String? total =
+            isForManga ? media.totalChapters : media.totalEpisodes;
+        return total == '?' || total == '??' || total == null || total.isEmpty;
+      }
+
+      int? getMaxTotal() {
+        if (isUnknownTotal()) return null;
+        final String total = media.totalEpisodes;
+        return int.tryParse(total);
+      }
+
+      final int? maxTotal = getMaxTotal();
+      final bool hasKnownLimit = maxTotal != null;
+      final String unitNamePlural = isForManga ? 'chapters' : 'episodes';
+
+      String getDisplayTotal() {
+        if (isForManga) {
+          return media.totalChapters ?? '??';
+        }
+        return media.totalEpisodes;
+      }
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
             child: SizedBox(
-                height: 55,
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: controller,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.add),
-                    suffixText: '${animeProgress.value}/${media.totalEpisodes}',
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    labelText: 'Progress',
-                    labelStyle: const TextStyle(
-                      fontFamily: 'Poppins-Bold',
-                    ),
+              height: isUnknownTotal() ? 80 : 55,
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                controller: controller,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(6),
+                ],
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    isForManga
+                        ? Icons.menu_book_outlined
+                        : Icons.play_circle_outline,
                   ),
-                  onChanged: (String value) {
-                    int? newProgress = int.tryParse(value);
-                    if (newProgress != null && newProgress >= 0) {
-                      if (media.totalEpisodes == '?') {
-                        animeProgress.value = newProgress;
-                      } else {
-                        int totalEp = int.tryParse(media.totalEpisodes) ?? 9999;
-                        animeProgress.value =
-                            newProgress <= totalEp ? newProgress : totalEp;
-                      }
-                    }
-                  },
-                )),
-          );
-        }),
-        const SizedBox(width: 10),
-        InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            if (animeProgress.value <
-                (int.tryParse(media.totalEpisodes ?? '9999') ?? 9999)) {
-              animeProgress.value++;
-            }
-          },
-          child: Container(
-            width: 55,
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                  suffixText: hasKnownLimit
+                      ? '${animeProgress.value}/$maxTotal'
+                      : '${animeProgress.value}/${getDisplayTotal()}',
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  labelText: isForManga ? 'Chapters Read' : 'Episodes Watched',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                  ),
+                  helperText: hasKnownLimit
+                      ? null
+                      : '${isForManga ? 'Chapters' : 'Episodes'} unknown - enter any value',
+                  helperStyle: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Enter ${isForManga ? 'chapters read' : 'episodes watched'}';
+                  }
+
+                  final int? progress = int.tryParse(value);
+                  if (progress == null) return 'Enter a valid number';
+                  if (progress < 0) return 'Progress cannot be negative';
+
+                  if (hasKnownLimit && progress > maxTotal) {
+                    return 'Cannot exceed $maxTotal $unitNamePlural';
+                  }
+
+                  return null;
+                },
+                onChanged: (String value) {
+                  final int? newProgress = int.tryParse(value);
+
+                  if (newProgress == null || newProgress < 0) {
+                    return;
+                  }
+
+                  if (hasKnownLimit) {
+                    animeProgress.value =
+                        newProgress <= maxTotal ? newProgress : maxTotal;
+                  } else {
+                    animeProgress.value = newProgress;
+                  }
+
+                  if (animeProgress.value != newProgress) {
+                    controller.text = animeProgress.value.toString();
+                    controller.selection = TextSelection.fromPosition(
+                      TextPosition(offset: controller.text.length),
+                    );
+                  }
+                },
+                onEditingComplete: () {
+                  controller.text = animeProgress.value.toString();
+                },
               ),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            alignment: Alignment.center,
-            child: const AnymexText(
-              text: "+1",
-              variant: TextVariant.semiBold,
             ),
           ),
-        )
-      ],
-    );
+          const SizedBox(width: 10),
+          InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () {
+              if (hasKnownLimit) {
+                if (animeProgress.value < maxTotal) {
+                  animeProgress.value++;
+                }
+              } else {
+                animeProgress.value++;
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 55,
+              height: 50,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: (hasKnownLimit && animeProgress.value >= maxTotal)
+                      ? Theme.of(context).colorScheme.onSurface.withOpacity(0.3)
+                      : Theme.of(context).colorScheme.secondaryContainer,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                color: (hasKnownLimit && animeProgress.value >= maxTotal)
+                    ? Theme.of(context).colorScheme.surface.withOpacity(0.5)
+                    : null,
+              ),
+              alignment: Alignment.center,
+              child: AnymexText(
+                text: "+1",
+                variant: TextVariant.semiBold,
+                color: (hasKnownLimit && animeProgress.value >= maxTotal)
+                    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                    : null,
+              ),
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildScoreSlider(BuildContext context) {
