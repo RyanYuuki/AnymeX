@@ -22,63 +22,65 @@ class SubtitleText extends StatelessWidget {
             bottom: controller.showControls.value
                 ? 100
                 : (30 + controller.settings.bottomMargin),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: AnimatedOpacity(
-                opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: controller.subtitleText[0].isEmpty
-                        ? Colors.transparent
-                        : colorOptions[
-                            controller.settings.subtitleBackgroundColor],
-                    borderRadius: BorderRadius.circular(12.multiplyRadius()),
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    switchInCurve: Curves.easeInOut,
-                    switchOutCurve: Curves.easeInOut,
-                    transitionBuilder: (child, animation) {
-                      // Fade + slight upward slide
-                      final fade =
-                          FadeTransition(opacity: animation, child: child);
-                      final slide = SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.2), // start a little lower
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: fade,
-                      );
-                      return slide;
-                    },
-                    child: OutlinedText(
-                      key: ValueKey(controller.subtitleText
-                          .join()), // important for switching
-                      text: Text(
-                        [
-                          for (final line in controller.subtitleText)
-                            if (line.trim().isNotEmpty) line.trim(),
-                        ].join('\n'),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: fontColorOptions[
-                              controller.settings.subtitleColor],
-                          fontSize: controller.settings.subtitleSize.toDouble(),
-                          fontFamily: "Poppins-Bold",
+            child: IgnorePointer(
+              ignoring: true,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: AnimatedOpacity(
+                  opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: controller.subtitleText[0].isEmpty
+                          ? Colors.transparent
+                          : colorOptions[
+                              controller.settings.subtitleBackgroundColor],
+                      borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                    ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      switchInCurve: Curves.easeInOut,
+                      switchOutCurve: Curves.easeInOut,
+                      transitionBuilder: (child, animation) {
+                        final fade =
+                            FadeTransition(opacity: animation, child: child);
+                        final slide = SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.2),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: fade,
+                        );
+                        return slide;
+                      },
+                      child: OutlinedText(
+                        key: ValueKey(controller.subtitleText.join()),
+                        text: Text(
+                          [
+                            for (final line in controller.subtitleText)
+                              if (line.trim().isNotEmpty) line.trim(),
+                          ].join('\n'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: fontColorOptions[
+                                controller.settings.subtitleColor],
+                            fontSize:
+                                controller.settings.subtitleSize.toDouble(),
+                            fontFamily: "Poppins-Bold",
+                          ),
                         ),
+                        strokes: [
+                          OutlinedTextStroke(
+                            color: fontColorOptions[
+                                controller.settings.subtitleOutlineColor]!,
+                            width: controller.settings.subtitleOutlineWidth
+                                .toDouble(),
+                          )
+                        ],
                       ),
-                      strokes: [
-                        OutlinedTextStroke(
-                          color: fontColorOptions[
-                              controller.settings.subtitleOutlineColor]!,
-                          width: controller.settings.subtitleOutlineWidth
-                              .toDouble(),
-                        )
-                      ],
                     ),
                   ),
                 ),
