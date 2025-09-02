@@ -133,7 +133,7 @@ class ReaderView extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTap: () => controller.toggleControls(),
+      onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
       child: Obx(() {
         return Container(
           padding: EdgeInsets.symmetric(
@@ -145,7 +145,9 @@ class ReaderView extends StatelessWidget {
                 cacheMaxAge: Duration(
                     days: settingsController.preferences
                         .get('cache_days', defaultValue: 7)),
-                mode: ExtendedImageMode.none,
+                mode: controller.enableZoom.value 
+                    ? ExtendedImageMode.gesture 
+                    : ExtendedImageMode.none,
                 gaplessPlayback: true,
                 cache: true,
                 headers: (page.headers?.isEmpty ?? true)
@@ -162,6 +164,26 @@ class ReaderView extends StatelessWidget {
                 ),
                 filterQuality: FilterQuality.medium,
                 enableLoadState: true,
+                initGestureConfigHandler: controller.enableZoom.value 
+                    ? (ExtendedImageState state) {
+                        return GestureConfig(
+                          minScale: 0.8,
+                          animationMinScale: 0.7,
+                          maxScale: 5.0,
+                          animationMaxScale: 5.5,
+                          speed: 1.0,
+                          inertialSpeed: 100.0,
+                          initialScale: 1.0,
+                          inPageView: false,
+                          initialAlignment: InitialAlignment.center,
+                        );
+                      }
+                    : null,
+                onDoubleTap: controller.enableZoom.value 
+                    ? (ExtendedImageGestureState state) {
+                        controller.toggleControls();
+                      }
+                    : null,
                 loadStateChanged: (ExtendedImageState state) {
                   switch (state.extendedImageLoadState) {
                     case LoadState.loading:
@@ -238,7 +260,7 @@ class ReaderView extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      onTap: () => controller.toggleControls(),
+      onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
       child: Obx(() {
         return Padding(
           padding: EdgeInsets.symmetric(
@@ -250,7 +272,9 @@ class ReaderView extends StatelessWidget {
               cacheMaxAge: Duration(
                   days: settingsController.preferences
                       .get('cache_days', defaultValue: 7)),
-              mode: ExtendedImageMode.none,
+              mode: controller.enableZoom.value 
+                  ? ExtendedImageMode.gesture 
+                  : ExtendedImageMode.none,
               gaplessPlayback: true,
               headers: (page.headers?.isEmpty ?? true)
                   ? {
@@ -264,6 +288,26 @@ class ReaderView extends StatelessWidget {
               alignment: Alignment.center,
               filterQuality: FilterQuality.medium,
               enableLoadState: true,
+              initGestureConfigHandler: controller.enableZoom.value 
+                  ? (ExtendedImageState state) {
+                      return GestureConfig(
+                        minScale: 0.8,
+                        animationMinScale: 0.7,
+                        maxScale: 5.0,
+                        animationMaxScale: 5.5,
+                        speed: 1.0,
+                        inertialSpeed: 100.0,
+                        initialScale: 1.0,
+                        inPageView: true, // This is in PageView
+                        initialAlignment: InitialAlignment.center,
+                      );
+                    }
+                  : null,
+              onDoubleTap: controller.enableZoom.value 
+                  ? (ExtendedImageGestureState state) {
+                      controller.toggleControls();
+                    }
+                  : null,
               loadStateChanged: (ExtendedImageState state) {
                 switch (state.extendedImageLoadState) {
                   case LoadState.loading:

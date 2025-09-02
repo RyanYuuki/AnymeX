@@ -156,6 +156,15 @@ class ReaderSettings {
                       onChanged: (val) => controller.toggleSpacedPages(),
                     );
                   }),
+                  Obx(() {
+                    return CustomSwitchTile(
+                      icon: Iconsax.maximize_4,
+                      title: "Page Zoom",
+                      description: "Enable pinch-to-zoom on pages",
+                      switchValue: controller.enableZoom.value,
+                      onChanged: (val) => controller.toggleZoom(),
+                    );
+                  }),
                   // Obx(() {
                   //   return CustomSwitchTile(
                   //     icon: Iconsax.arrow,

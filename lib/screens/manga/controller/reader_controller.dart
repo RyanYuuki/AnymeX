@@ -73,6 +73,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+  
+  // Zoom functionality
+  RxBool enableZoom = false.obs;
+  RxDouble zoomLevel = 1.0.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
@@ -237,6 +241,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
+    enableZoom.value = settingsController.preferences
+        .get('enable_zoom', defaultValue: false);
   }
 
   void _savePreferences() {
@@ -254,6 +260,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+    settingsController.preferences
+        .put('enable_zoom', enableZoom.value);
   }
 
   void _setupPositionListener() {
@@ -361,6 +369,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void toggleOverscrollToChapter() {
     overscrollToChapter.value = !overscrollToChapter.value;
     savePreferences();
+  }
+
+  void toggleZoom() {
+    enableZoom.value = !enableZoom.value;
+    // Reset zoom level when toggling off
+    if (!enableZoom.value) {
+      zoomLevel.value = 1.0;
+    }
+    savePreferences();
+  }
+
+  void resetZoom() {
+    zoomLevel.value = 1.0;
   }
 
   void navigateToChapter(int index) async {
