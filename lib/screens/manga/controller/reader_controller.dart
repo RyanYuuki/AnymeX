@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -376,6 +377,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     // Reset zoom level when toggling off
     if (!enableZoom.value) {
       zoomLevel.value = 1.0;
+      snackString('Zoom disabled - Tap to toggle controls');
+    } else {
+      snackString('Zoom enabled - Pinch to zoom, double-tap for controls');
     }
     savePreferences();
   }

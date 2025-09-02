@@ -132,10 +132,10 @@ class ReaderView extends StatelessWidget {
   Widget _buildNewImage(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
 
-    return GestureDetector(
-      onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
-      child: Obx(() {
-        return Container(
+    return Obx(() {
+      return GestureDetector(
+        onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
+        child: Container(
           padding: EdgeInsets.symmetric(
               vertical: controller.spacedPages.value ? 8.0 : 0),
           child: Column(
@@ -181,7 +181,18 @@ class ReaderView extends StatelessWidget {
                     : null,
                 onDoubleTap: controller.enableZoom.value 
                     ? (ExtendedImageGestureState state) {
-                        controller.toggleControls();
+                        final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                        if (currentScale != 1.0) {
+                          // Reset zoom if currently zoomed
+                          controller.resetZoom();
+                          state.handleDoubleTap(
+                            scale: 1.0, 
+                            doubleTapPosition: state.pointerDownPosition,
+                          );
+                        } else {
+                          // Toggle controls if not zoomed
+                          controller.toggleControls();
+                        }
                       }
                     : null,
                 loadStateChanged: (ExtendedImageState state) {
@@ -252,17 +263,17 @@ class ReaderView extends StatelessWidget {
             ],
           ),
         );
-      }),
-    );
+      });
+    }
   }
 
   Widget _buildNewImageForPaged(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
 
-    return GestureDetector(
-      onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
-      child: Obx(() {
-        return Padding(
+    return Obx(() {
+      return GestureDetector(
+        onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
+        child: Padding(
           padding: EdgeInsets.symmetric(
               vertical: controller.spacedPages.value ? 8.0 : 0),
           child: Center(
@@ -305,7 +316,18 @@ class ReaderView extends StatelessWidget {
                   : null,
               onDoubleTap: controller.enableZoom.value 
                   ? (ExtendedImageGestureState state) {
-                      controller.toggleControls();
+                      final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                      if (currentScale != 1.0) {
+                        // Reset zoom if currently zoomed
+                        controller.resetZoom();
+                        state.handleDoubleTap(
+                          scale: 1.0, 
+                          doubleTapPosition: state.pointerDownPosition,
+                        );
+                      } else {
+                        // Toggle controls if not zoomed
+                        controller.toggleControls();
+                      }
                     }
                   : null,
               loadStateChanged: (ExtendedImageState state) {
@@ -373,7 +395,7 @@ class ReaderView extends StatelessWidget {
             ),
           ),
         );
-      }),
-    );
+      });
+    }
   }
 }
