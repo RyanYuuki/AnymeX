@@ -9,12 +9,14 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/screens/anime/captcha_webview_screen.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/cookie_manager.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
@@ -49,6 +51,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
+  final cookieManager = CookieManagerService.instance;
 
   final RxBool isLogged = false.obs;
   final RxInt userProgress = 0.obs;
@@ -238,7 +241,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     } else if (snapshot.hasError) {
                       return _buildErrorState(snapshot.error.toString());
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return _buildEmptyState();
+                      // For empty results from non-universal scraper, show standard empty state
+                      // unless the error might be captcha-related
+                      return _buildEmptyStateWithContext('No servers found for this episode');
                     } else {
                       streamList.value = snapshot.data
                               ?.map((e) => hive.Video.fromVideo(e))
@@ -262,7 +267,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         } else if (snapshot.hasError) {
           return _buildErrorState(snapshot.error.toString());
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyStateWithContext('No video streams found');
         } else {
           streamList.value = streamList.value =
               snapshot.data?.map((e) => hive.Video.fromVideo(e)).toList() ?? [];
@@ -287,12 +292,25 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     });
 
     try {
+      // Get saved cookies for this URL
+      final cookieHeader = cookieManager.getCookieHeaderForDomain(url);
+      final additionalHeaders = <String, String>{};
+      if (cookieHeader != null) {
+        additionalHeaders['Cookie'] = cookieHeader;
+        print('Using saved cookies for $url: $cookieHeader');
+      }
+      
       headlessWebView = HeadlessInAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(url)),
+        initialUrlRequest: URLRequest(
+          url: WebUri(url),
+          headers: additionalHeaders,
+        ),
         initialSettings: InAppWebViewSettings(
           userAgent:
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
           javaScriptEnabled: true,
+          domStorageEnabled: true,
+          databaseEnabled: true,
         ),
         onLoadStop: (controller, loadedUrl) async {
           await Future.delayed(Duration(seconds: 8));
@@ -451,19 +469,209 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     super.dispose();
   }
 
+  bool _isCaptchaOrHttpError(String errorMessage) {
+    final lowercaseError = errorMessage.toLowerCase();
+    return lowercaseError.contains('403') ||
+           lowercaseError.contains('captcha') ||
+           lowercaseError.contains('challenge') ||
+           lowercaseError.contains('blocked') ||
+           lowercaseError.contains('verification') ||
+           lowercaseError.contains('cloudflare') ||
+           lowercaseError.contains('ddos protection') ||
+           lowercaseError.contains('access denied') ||
+           lowercaseError.contains('forbidden');
+  }
+
+  void _handleRetry() {
+    setState(() {
+      // Trigger a rebuild which will retry the FutureBuilder
+    });
+    // Close the modal and reopen it to retry
+    Get.back();
+    fetchServers(selectedEpisode.value);
+  }
+
+  void _openCaptchaWebView() async {
+    final episode = selectedEpisode.value;
+    if (episode.link == null) return;
+
+    // Show informative message about what will happen
+    final shouldProceed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('WebView Captcha Solver'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('This will open a web browser to solve the captcha challenge.'),
+            const SizedBox(height: 12),
+            const Text('What to expect:'),
+            const SizedBox(height: 8),
+            const Text('• Complete any verification or captcha challenges'),
+            const Text('• Cookies will be saved to bypass future captchas'),
+            const Text('• Episode loading will automatically retry after completion'),
+            const SizedBox(height: 12),
+            Text(
+              'Domain: ${Uri.parse(episode.link!).host}',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!shouldProceed) return;
+
+    final result = await Get.to(
+      () => CaptchaWebViewScreen(
+        initialUrl: episode.link!,
+        title: 'Solve Captcha - Episode ${episode.number}',
+        onCaptchaComplete: (success) {
+          if (success) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+              const SnackBar(
+                content: Text('Captcha completed! Cookies saved. Retrying episode loading...'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            // Refresh the episode list after successful captcha completion
+            _handleRetry();
+          }
+        },
+      ),
+    );
+
+    // If user successfully completed captcha, retry loading
+    if (result == true) {
+      _handleRetry();
+    }
+  }
+
+  void _showHelpDialog() {
+    final episode = selectedEpisode.value;
+    final domain = episode.link != null ? Uri.parse(episode.link!).host : 'unknown';
+    final hasCookies = episode.link != null ? cookieManager.hasCookiesForDomain(episode.link!) : false;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Captcha Help'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This error usually occurs when the website requires captcha verification or detects automated access.',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Solutions:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text('• Use "Open in WebView" to solve the captcha manually'),
+            const Text('• Complete any verification challenges'),
+            const Text('• Cookies will be saved to bypass future captchas'),
+            const Text('• Wait a few minutes and try again'),
+            const Text('• Check if the source website is accessible'),
+            const SizedBox(height: 16),
+            const Text(
+              'Current Status:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text('Domain: $domain'),
+            Text(
+              hasCookies ? 'Saved cookies: ✓ Available' : 'Saved cookies: ✗ None found',
+              style: TextStyle(
+                color: hasCookies ? Colors.green : Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (hasCookies) ...[
+              const SizedBox(height: 8),
+              const Text(
+                'You have saved cookies for this domain. Try the normal retry first.',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          if (hasCookies)
+            TextButton(
+              onPressed: () {
+                Get.back();
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Clear Saved Cookies'),
+                    content: Text('Clear saved cookies for $domain?\n\nThis will remove stored captcha completion data.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          if (episode.link != null) {
+                            await cookieManager.clearCookiesForDomain(episode.link!);
+                            Get.back();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Cleared cookies for $domain')),
+                            );
+                          }
+                        },
+                        child: const Text('Clear'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Clear Cookies'),
+            ),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildErrorState(String errorMessage) {
+    final bool isCaptchaError = _isCaptchaOrHttpError(errorMessage);
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
         AnymexText(
-          text: "Error Occured",
+          text: isCaptchaError ? "Captcha Required" : "Error Occured",
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
         AnymexText(
-          text: "Server-chan is taking a nap!",
+          text: isCaptchaError 
+              ? "Please solve the captcha to continue" 
+              : "Server-chan is taking a nap!",
           variant: TextVariant.semiBold,
           size: 18,
         ),
@@ -471,7 +679,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: (isCaptchaError ? Colors.orange : Colors.red).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: AnymexText(
@@ -479,23 +687,121 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.withOpacity(0.8),
+            color: (isCaptchaError ? Colors.orange : Colors.red).withOpacity(0.8),
           ),
         ),
+        if (isCaptchaError) ...[
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: AnymexButton(
+                  onTap: () => _handleRetry(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Iconsax.refresh, size: 18),
+                      const SizedBox(width: 8),
+                      const Text('Retry'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AnymexButton(
+                  onTap: () => _openCaptchaWebView(),
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Iconsax.global, size: 18),
+                      const SizedBox(width: 8),
+                      const Text('Open in WebView'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnymexButton(
+            onTap: () => _showHelpDialog(),
+            color: Colors.transparent,
+            border: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Iconsax.info_circle, size: 18),
+                const SizedBox(width: 8),
+                const Text('Help'),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox(
-      height: 200,
-      child: Center(
-        child: AnymexText(
-          text: "No servers available",
+    return _buildEmptyStateWithContext("No episodes found");
+  }
+
+  Widget _buildEmptyStateWithContext(String message) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 20),
+        AnymexText(
+          text: message,
           variant: TextVariant.bold,
           size: 16,
         ),
-      ),
+        const SizedBox(height: 8),
+        const AnymexText(
+          text: "This might be due to captcha or access restrictions",
+          variant: TextVariant.regular,
+          size: 14,
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: AnymexButton(
+                onTap: () => _handleRetry(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.refresh, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Retry'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AnymexButton(
+                onTap: () => _openCaptchaWebView(),
+                color: Theme.of(context).colorScheme.primary,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.global, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Open in WebView'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 

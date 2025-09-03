@@ -28,6 +28,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
+import 'package:anymex/utils/cookie_manager.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -207,6 +208,7 @@ void _initializeGetxController() async {
   Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
+  Get.put(CookieManagerService()); // Initialize cookie manager
   Get.lazyPut(() => CacheController());
   // DownloadManagerBinding.initializeDownloadManager();
 }
