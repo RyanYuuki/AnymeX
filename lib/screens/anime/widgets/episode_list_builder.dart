@@ -9,6 +9,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/screens/anime/captcha_webview_screen.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
@@ -451,19 +452,103 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     super.dispose();
   }
 
+  bool _isCaptchaOrHttpError(String errorMessage) {
+    final lowercaseError = errorMessage.toLowerCase();
+    return lowercaseError.contains('403') ||
+           lowercaseError.contains('captcha') ||
+           lowercaseError.contains('challenge') ||
+           lowercaseError.contains('blocked') ||
+           lowercaseError.contains('verification') ||
+           lowercaseError.contains('cloudflare') ||
+           lowercaseError.contains('ddos protection') ||
+           lowercaseError.contains('access denied') ||
+           lowercaseError.contains('forbidden');
+  }
+
+  void _handleRetry() {
+    setState(() {
+      // Trigger a rebuild which will retry the FutureBuilder
+    });
+    // Close the modal and reopen it to retry
+    Get.back();
+    fetchServers(selectedEpisode.value);
+  }
+
+  void _openCaptchaWebView() async {
+    final episode = selectedEpisode.value;
+    if (episode.link == null) return;
+
+    final result = await Get.to(
+      () => CaptchaWebViewScreen(
+        initialUrl: episode.link!,
+        title: 'Solve Captcha - Episode ${episode.number}',
+        onCaptchaComplete: (success) {
+          if (success) {
+            // Refresh the episode list after successful captcha completion
+            _handleRetry();
+          }
+        },
+      ),
+    );
+
+    // If user successfully completed captcha, retry loading
+    if (result == true) {
+      _handleRetry();
+    }
+  }
+
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Captcha Help'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This error usually occurs when the website requires captcha verification or detects automated access.',
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Solutions:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text('• Use "Open in WebView" to solve the captcha manually'),
+            Text('• Complete any verification challenges'),
+            Text('• Wait a few minutes and try again'),
+            Text('• Check if the source website is accessible'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildErrorState(String errorMessage) {
+    final bool isCaptchaError = _isCaptchaOrHttpError(errorMessage);
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
         AnymexText(
-          text: "Error Occured",
+          text: isCaptchaError ? "Captcha Required" : "Error Occured",
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
         AnymexText(
-          text: "Server-chan is taking a nap!",
+          text: isCaptchaError 
+              ? "Please solve the captcha to continue" 
+              : "Server-chan is taking a nap!",
           variant: TextVariant.semiBold,
           size: 18,
         ),
@@ -471,7 +556,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: (isCaptchaError ? Colors.orange : Colors.red).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: AnymexText(
@@ -479,23 +564,117 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.withOpacity(0.8),
+            color: (isCaptchaError ? Colors.orange : Colors.red).withOpacity(0.8),
           ),
         ),
+        if (isCaptchaError) ...[
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: AnymexButton(
+                  onTap: () => _handleRetry(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Iconsax.refresh, size: 18),
+                      const SizedBox(width: 8),
+                      const Text('Retry'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AnymexButton(
+                  onTap: () => _openCaptchaWebView(),
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Iconsax.global, size: 18),
+                      const SizedBox(width: 8),
+                      const Text('Open in WebView'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnymexButton(
+            onTap: () => _showHelpDialog(),
+            color: Colors.transparent,
+            border: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Iconsax.info_circle, size: 18),
+                const SizedBox(width: 8),
+                const Text('Help'),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox(
-      height: 200,
-      child: Center(
-        child: AnymexText(
-          text: "No servers available",
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 20),
+        const AnymexText(
+          text: "No episodes found",
           variant: TextVariant.bold,
           size: 16,
         ),
-      ),
+        const SizedBox(height: 8),
+        const AnymexText(
+          text: "This might be due to captcha or access restrictions",
+          variant: TextVariant.regular,
+          size: 14,
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: AnymexButton(
+                onTap: () => _handleRetry(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.refresh, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Retry'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AnymexButton(
+                onTap: () => _openCaptchaWebView(),
+                color: Theme.of(context).colorScheme.primary,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.global, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Open in WebView'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 
