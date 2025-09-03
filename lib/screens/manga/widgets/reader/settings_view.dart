@@ -160,7 +160,7 @@ class ReaderSettings {
                     return CustomSwitchTile(
                       icon: Iconsax.maximize_4,
                       title: "Page Zoom",
-                      description: "Enable pinch-to-zoom on pages",
+                      description: "Enable pinch-to-zoom and panning on pages",
                       switchValue: controller.enableZoom.value,
                       onChanged: (val) => controller.toggleZoom(),
                     );

@@ -379,13 +379,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       zoomLevel.value = 1.0;
       snackString('Zoom disabled - Tap to toggle controls');
     } else {
-      snackString('Zoom enabled - Pinch to zoom, double-tap for controls');
+      snackString('Zoom enabled - Pinch to zoom, drag to scroll when zoomed, double-tap for controls');
     }
     savePreferences();
   }
 
   void resetZoom() {
     zoomLevel.value = 1.0;
+  }
+
+  bool get isZoomed => zoomLevel.value != 1.0;
+
+  void updateZoomLevel(double scale) {
+    zoomLevel.value = scale;
   }
 
   void navigateToChapter(int index) async {

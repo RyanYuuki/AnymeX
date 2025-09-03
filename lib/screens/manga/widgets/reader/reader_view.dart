@@ -117,7 +117,9 @@ class ReaderView extends StatelessWidget {
         itemCount: controller.pageList.length,
         controller: controller.pageController,
         preloadPagesCount: controller.preloadPages.value,
-        physics: const BouncingScrollPhysics(),
+        physics: controller.enableZoom.value 
+            ? const ClampingScrollPhysics() // Less bouncy when zoom is enabled for better gesture handling
+            : const BouncingScrollPhysics(),
         scrollDirection: controller.readingDirection.value.axis,
         reverse: controller.readingDirection.value.reversed,
         onPageChanged: controller.onPageChanged,
@@ -176,12 +178,15 @@ class ReaderView extends StatelessWidget {
                           initialScale: 1.0,
                           inPageView: false,
                           initialAlignment: InitialAlignment.center,
+                          // Enable panning when zoomed
+                          cacheGesture: false,
                         );
                       }
                     : null,
                 onDoubleTap: controller.enableZoom.value 
                     ? (ExtendedImageGestureState state) {
                         final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                        controller.updateZoomLevel(currentScale);
                         if (currentScale != 1.0) {
                           // Reset zoom if currently zoomed
                           controller.resetZoom();
@@ -309,14 +314,23 @@ class ReaderView extends StatelessWidget {
                         speed: 1.0,
                         inertialSpeed: 100.0,
                         initialScale: 1.0,
-                        inPageView: true, // This is in PageView
+                        inPageView: false, // Changed from true to false to allow better panning
                         initialAlignment: InitialAlignment.center,
+                        // Enable panning when zoomed
+                        cacheGesture: false,
                       );
                     }
                   : null,
+                onScaleEnd: controller.enableZoom.value 
+                    ? (ScaleEndDetails details, ExtendedImageGestureState state) {
+                        final scale = state.gestureDetails?.totalScale ?? 1.0;
+                        controller.updateZoomLevel(scale);
+                      }
+                    : null,
               onDoubleTap: controller.enableZoom.value 
                   ? (ExtendedImageGestureState state) {
                       final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                      controller.updateZoomLevel(currentScale);
                       if (currentScale != 1.0) {
                         // Reset zoom if currently zoomed
                         controller.resetZoom();
