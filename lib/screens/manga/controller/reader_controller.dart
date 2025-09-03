@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -73,6 +74,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+  
+  // Zoom functionality
+  RxBool enableZoom = false.obs;
+  RxDouble zoomLevel = 1.0.obs;
+  
+  // Image edge state for page navigation when zoomed
+  RxBool atLeftEdge = false.obs;
+  RxBool atRightEdge = false.obs;
+  RxBool atTopEdge = false.obs;
+  RxBool atBottomEdge = false.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
@@ -237,6 +248,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
+    enableZoom.value = settingsController.preferences
+        .get('enable_zoom', defaultValue: false);
   }
 
   void _savePreferences() {
@@ -254,6 +267,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+    settingsController.preferences
+        .put('enable_zoom', enableZoom.value);
   }
 
   void _setupPositionListener() {
@@ -361,6 +376,40 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void toggleOverscrollToChapter() {
     overscrollToChapter.value = !overscrollToChapter.value;
     savePreferences();
+  }
+
+  void toggleZoom() {
+    enableZoom.value = !enableZoom.value;
+    // Reset zoom level when toggling off
+    if (!enableZoom.value) {
+      zoomLevel.value = 1.0;
+      snackString('Zoom disabled - Tap to toggle controls');
+    } else {
+      snackString('Zoom enabled - Pinch to zoom, drag to pan, swipe at edges to change pages');
+    }
+    savePreferences();
+  }
+
+  void resetZoom() {
+    zoomLevel.value = 1.0;
+  }
+
+  bool get isZoomed => zoomLevel.value != 1.0;
+
+  void updateZoomLevel(double scale) {
+    zoomLevel.value = scale;
+  }
+
+  void updateImageEdgeState({
+    required bool atLeftEdge,
+    required bool atRightEdge,
+    required bool atTopEdge,
+    required bool atBottomEdge,
+  }) {
+    this.atLeftEdge.value = atLeftEdge;
+    this.atRightEdge.value = atRightEdge;
+    this.atTopEdge.value = atTopEdge;
+    this.atBottomEdge.value = atBottomEdge;
   }
 
   void navigateToChapter(int index) async {
