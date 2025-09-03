@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/utils/cookie_manager.dart';
 
 class CaptchaWebViewScreen extends StatefulWidget {
   final String initialUrl;
@@ -25,6 +26,7 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
   String currentUrl = '';
   double progress = 0;
   bool captchaSolved = false;
+  final cookieManager = CookieManagerService.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,15 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
           ),
           IconButton(
             icon: const Icon(Iconsax.tick_circle),
-            onPressed: () {
+            onPressed: () async {
+              // Save cookies from WebView before completing
+              if (webViewController != null) {
+                final currentUri = await webViewController!.getUrl();
+                if (currentUri != null) {
+                  await cookieManager.saveCookiesFromWebView(currentUri);
+                }
+              }
+              
               setState(() {
                 captchaSolved = true;
               });
@@ -80,8 +90,12 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
                 iframeAllow: "camera; microphone",
                 iframeAllowFullscreen: true,
               ),
-              onWebViewCreated: (controller) {
+              onWebViewCreated: (controller) async {
                 webViewController = controller;
+                
+                // Apply any saved cookies for this domain
+                final initialUri = WebUri(widget.initialUrl);
+                await cookieManager.applyCookiesToWebView(initialUri);
               },
               onLoadStart: (controller, url) {
                 setState(() {
@@ -215,6 +229,13 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
           if ((data['hasVideo'] == true || data['hasSuccess'] == true) && 
               data['hasCaptcha'] == false && 
               data['hasError'] == false) {
+            
+            // Save cookies when captcha appears to be solved
+            final currentUri = await controller.getUrl();
+            if (currentUri != null) {
+              await cookieManager.saveCookiesFromWebView(currentUri);
+            }
+            
             setState(() {
               captchaSolved = true;
             });
@@ -222,7 +243,7 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Captcha appears to be solved! Tap the check mark to continue.'),
+                content: Text('Captcha appears to be solved! Cookies saved. Tap the check mark to continue.'),
                 backgroundColor: Colors.green,
                 duration: Duration(seconds: 3),
               ),

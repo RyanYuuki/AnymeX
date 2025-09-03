@@ -16,6 +16,7 @@ import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/cookie_manager.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
@@ -50,6 +51,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
+  final cookieManager = CookieManagerService.instance;
 
   final RxBool isLogged = false.obs;
   final RxInt userProgress = 0.obs;
@@ -290,12 +292,25 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     });
 
     try {
+      // Get saved cookies for this URL
+      final cookieHeader = cookieManager.getCookieHeaderForDomain(url);
+      final additionalHeaders = <String, String>{};
+      if (cookieHeader != null) {
+        additionalHeaders['Cookie'] = cookieHeader;
+        print('Using saved cookies for $url: $cookieHeader');
+      }
+      
       headlessWebView = HeadlessInAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(url)),
+        initialUrlRequest: URLRequest(
+          url: WebUri(url),
+          headers: additionalHeaders,
+        ),
         initialSettings: InAppWebViewSettings(
           userAgent:
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
           javaScriptEnabled: true,
+          domStorageEnabled: true,
+          databaseEnabled: true,
         ),
         onLoadStop: (controller, loadedUrl) async {
           await Future.delayed(Duration(seconds: 8));
@@ -480,12 +495,60 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final episode = selectedEpisode.value;
     if (episode.link == null) return;
 
+    // Show informative message about what will happen
+    final shouldProceed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('WebView Captcha Solver'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('This will open a web browser to solve the captcha challenge.'),
+            const SizedBox(height: 12),
+            const Text('What to expect:'),
+            const SizedBox(height: 8),
+            const Text('• Complete any verification or captcha challenges'),
+            const Text('• Cookies will be saved to bypass future captchas'),
+            const Text('• Episode loading will automatically retry after completion'),
+            const SizedBox(height: 12),
+            Text(
+              'Domain: ${Uri.parse(episode.link!).host}',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!shouldProceed) return;
+
     final result = await Get.to(
       () => CaptchaWebViewScreen(
         initialUrl: episode.link!,
         title: 'Solve Captcha - Episode ${episode.number}',
         onCaptchaComplete: (success) {
           if (success) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+              const SnackBar(
+                content: Text('Captcha completed! Cookies saved. Retrying episode loading...'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
             // Refresh the episode list after successful captcha completion
             _handleRetry();
           }
@@ -500,31 +563,89 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   void _showHelpDialog() {
+    final episode = selectedEpisode.value;
+    final domain = episode.link != null ? Uri.parse(episode.link!).host : 'unknown';
+    final hasCookies = episode.link != null ? cookieManager.hasCookiesForDomain(episode.link!) : false;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Captcha Help'),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'This error usually occurs when the website requires captcha verification or detects automated access.',
               style: TextStyle(fontSize: 14),
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               'Solutions:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
-            Text('• Use "Open in WebView" to solve the captcha manually'),
-            Text('• Complete any verification challenges'),
-            Text('• Wait a few minutes and try again'),
-            Text('• Check if the source website is accessible'),
+            const SizedBox(height: 8),
+            const Text('• Use "Open in WebView" to solve the captcha manually'),
+            const Text('• Complete any verification challenges'),
+            const Text('• Cookies will be saved to bypass future captchas'),
+            const Text('• Wait a few minutes and try again'),
+            const Text('• Check if the source website is accessible'),
+            const SizedBox(height: 16),
+            const Text(
+              'Current Status:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text('Domain: $domain'),
+            Text(
+              hasCookies ? 'Saved cookies: ✓ Available' : 'Saved cookies: ✗ None found',
+              style: TextStyle(
+                color: hasCookies ? Colors.green : Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (hasCookies) ...[
+              const SizedBox(height: 8),
+              const Text(
+                'You have saved cookies for this domain. Try the normal retry first.',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
           ],
         ),
         actions: [
+          if (hasCookies)
+            TextButton(
+              onPressed: () {
+                Get.back();
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Clear Saved Cookies'),
+                    content: Text('Clear saved cookies for $domain?\n\nThis will remove stored captcha completion data.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          if (episode.link != null) {
+                            await cookieManager.clearCookiesForDomain(episode.link!);
+                            Get.back();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Cleared cookies for $domain')),
+                            );
+                          }
+                        },
+                        child: const Text('Clear'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Clear Cookies'),
+            ),
           TextButton(
             onPressed: () => Get.back(),
             child: const Text('OK'),
