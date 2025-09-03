@@ -78,6 +78,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   // Zoom functionality
   RxBool enableZoom = false.obs;
   RxDouble zoomLevel = 1.0.obs;
+  
+  // Image edge state for page navigation when zoomed
+  RxBool atLeftEdge = false.obs;
+  RxBool atRightEdge = false.obs;
+  RxBool atTopEdge = false.obs;
+  RxBool atBottomEdge = false.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
@@ -379,7 +385,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       zoomLevel.value = 1.0;
       snackString('Zoom disabled - Tap to toggle controls');
     } else {
-      snackString('Zoom enabled - Pinch to zoom, drag to scroll when zoomed, double-tap for controls');
+      snackString('Zoom enabled - Pinch to zoom, drag to pan, swipe at edges to change pages');
     }
     savePreferences();
   }
@@ -392,6 +398,18 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void updateZoomLevel(double scale) {
     zoomLevel.value = scale;
+  }
+
+  void updateImageEdgeState({
+    required bool atLeftEdge,
+    required bool atRightEdge,
+    required bool atTopEdge,
+    required bool atBottomEdge,
+  }) {
+    this.atLeftEdge.value = atLeftEdge;
+    this.atRightEdge.value = atRightEdge;
+    this.atTopEdge.value = atTopEdge;
+    this.atBottomEdge.value = atBottomEdge;
   }
 
   void navigateToChapter(int index) async {

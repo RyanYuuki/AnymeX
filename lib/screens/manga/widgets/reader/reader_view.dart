@@ -314,9 +314,9 @@ class ReaderView extends StatelessWidget {
                         speed: 1.0,
                         inertialSpeed: 100.0,
                         initialScale: 1.0,
-                        inPageView: false, // Changed from true to false to allow better panning
+                        inPageView: true, // Allow page navigation while still enabling zoom and pan
                         initialAlignment: InitialAlignment.center,
-                        // Enable panning when zoomed
+                        // Enable panning when zoomed with better page navigation support
                         cacheGesture: false,
                       );
                     }
