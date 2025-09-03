@@ -239,7 +239,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     } else if (snapshot.hasError) {
                       return _buildErrorState(snapshot.error.toString());
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return _buildEmptyState();
+                      // For empty results from non-universal scraper, show standard empty state
+                      // unless the error might be captcha-related
+                      return _buildEmptyStateWithContext('No servers found for this episode');
                     } else {
                       streamList.value = snapshot.data
                               ?.map((e) => hive.Video.fromVideo(e))
@@ -263,7 +265,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         } else if (snapshot.hasError) {
           return _buildErrorState(snapshot.error.toString());
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyStateWithContext('No video streams found');
         } else {
           streamList.value = streamList.value =
               snapshot.data?.map((e) => hive.Video.fromVideo(e)).toList() ?? [];
@@ -624,12 +626,16 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   Widget _buildEmptyState() {
+    return _buildEmptyStateWithContext("No episodes found");
+  }
+
+  Widget _buildEmptyStateWithContext(String message) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 20),
-        const AnymexText(
-          text: "No episodes found",
+        AnymexText(
+          text: message,
           variant: TextVariant.bold,
           size: 16,
         ),

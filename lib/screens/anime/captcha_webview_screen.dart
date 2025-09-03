@@ -107,11 +107,33 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
                 setState(() {
                   isLoading = false;
                 });
+                
+                // Show error message to user
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to load page: ${error.description}'),
+                    backgroundColor: Colors.red,
+                    action: SnackBarAction(
+                      label: 'Retry',
+                      onPressed: () => webViewController?.reload(),
+                    ),
+                  ),
+                );
               },
               onReceivedHttpError: (controller, request, errorResponse) {
                 setState(() {
                   isLoading = false;
                 });
+                
+                // Show HTTP error message
+                if (errorResponse.statusCode == 403) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Access forbidden - captcha may be required'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                }
               },
             ),
           ),
@@ -196,6 +218,15 @@ class _CaptchaWebViewScreenState extends State<CaptchaWebViewScreen> {
             setState(() {
               captchaSolved = true;
             });
+            
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Captcha appears to be solved! Tap the check mark to continue.'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 3),
+              ),
+            );
           }
         }
       }
