@@ -125,15 +125,6 @@ Our development environment setup guide is available [here](./DEVELOPMENT.md).
 For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion).  
 Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
 
-### 🌐 Translations
-
-AnymeX now supports internationalization through Weblate! Help us translate the app into your language.
-
-- **Translation files**: Located in `lib/l10n/`
-- **Main translation file**: `lib/l10n/app_en.arb` (English template)
-- **Weblate integration**: Ready for hosted.weblate.org setup
-- **Get involved**: Translations will be available through Weblate once configured
-
 <!--<details>
 <summary>Weblate Translation Graph</summary>
 <a href="https://hosted.weblate.org/projects/anymex/#languages"><img src="https://hosted.weblate.org/widget/anymex/app/multi-auto.svg" alt="Translation status" /></a>
