@@ -90,7 +90,27 @@ Use [CPU-Z](https://play.google.com/store/apps/details?id=com.cpuid.cpu_z) or [D
 
 If you encounter issues running the AppImage on your Linux distribution, try these solutions:
 
-**For FUSE-related errors** (common on Arch-based distros like CachyOS):
+**⚠️ Common Issue: AppImageLauncher Compatibility**
+
+If you get errors like `"Can't open squashfs image: Bad address"` or `"execv error: No such file or directory"`, the issue is likely with AppImageLauncher:
+
+```bash
+# Check if AppImageLauncher is installed
+which appimagelauncherd
+
+# Solution 1: Update AppImageLauncher to latest alpha (recommended)
+# Visit: https://github.com/TheAssassin/AppImageLauncher/releases
+
+# Solution 2: Remove AppImageLauncher temporarily
+sudo pacman -R appimagelauncher  # Arch/CachyOS/Manjaro
+sudo apt remove appimagelauncher # Debian/Ubuntu
+sudo dnf remove appimagelauncher # Fedora
+
+# After removal, reboot your system
+sudo reboot
+```
+
+**For FUSE-related errors** (if not AppImageLauncher-related):
 ```bash
 # Install FUSE if not available
 sudo pacman -S fuse2  # On Arch/CachyOS/Manjaro
@@ -106,17 +126,24 @@ sudo modprobe fuse
 ```
 
 **For "Bad address" or "No such file or directory" errors**:
-1. Try extracting the AppImage: `./AnymeX.AppImage --appimage-extract`
-2. Run the extracted version: `./squashfs-root/AppRun`
-3. If that works, the issue is with FUSE - consider using the ZIP version instead
+1. **First, check if AppImageLauncher is installed** (see above)
+2. Try extracting the AppImage: `./AnymeX.AppImage --appimage-extract`
+3. Run the extracted version: `./squashfs-root/AppRun`
+4. If that works, the issue is with FUSE or AppImageLauncher - consider using the ZIP version instead
 
 **Distribution-specific notes**:
-- **CachyOS/Arch Linux**: The `fuse2` package provides the required FUSE2 support for AppImages
+- **CachyOS/Arch Linux**: 
+  - If you have AppImageLauncher installed, update it or remove it temporarily
+  - The `fuse2` package provides FUSE2 support: `sudo pacman -S fuse2`
 - **Ubuntu 22.04+**: May need `libfuse2` package: `sudo apt install libfuse2`
 - **Fedora**: Ensure `fuse` package is installed and the service is enabled
 
-**Alternative installation methods**:
+**Alternative installation methods** (recommended if AppImage issues persist):
 - **AUR (Arch Linux/CachyOS users)**: `yay -S anymex-bin`
 - **ZIP version**: Download and extract the ZIP file for manual installation
 - **RPM version**: For RPM-based distributions (Fedora, CentOS, openSUSE)
+
+**Additional Resources**:
+- [AppImageLauncher compatibility issue](https://github.com/TheAssassin/AppImageLauncher/discussions/687)
+- [FUSE setup guide](https://github.com/AppImage/AppImageKit/wiki/FUSE)
 ---
