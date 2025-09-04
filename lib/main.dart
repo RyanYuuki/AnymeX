@@ -42,6 +42,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -250,6 +252,15 @@ class MainApp extends StatelessWidget {
             : theme.isLightMode
                 ? ThemeMode.light
                 : ThemeMode.dark,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''), // English
+        ],
         home: const FilterScreen(),
         enableLog: true,
         logWriterCallback: (text, {isError = false}) async {
@@ -344,7 +355,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           onTap: (index) {
                             return SettingsSheet.show(context);
                           },
-                          label: 'Profile',
+                          label: AppLocalizations.of(context)?.profile ?? 'Profile',
                           altIcon: CircleAvatar(
                               radius: 24,
                               backgroundColor: Theme.of(context)
@@ -367,33 +378,33 @@ class _FilterScreenState extends State<FilterScreen> {
                         unselectedIcon: IconlyLight.home,
                         selectedIcon: IconlyBold.home,
                         onTap: _onItemTapped,
-                        label: 'Home',
+                        label: AppLocalizations.of(context)?.home ?? 'Home',
                       ),
                       NavItem(
                         unselectedIcon: Icons.movie_filter_outlined,
                         selectedIcon: Icons.movie_filter_rounded,
                         onTap: _onItemTapped,
-                        label: 'Anime',
+                        label: AppLocalizations.of(context)?.anime ?? 'Anime',
                       ),
                       NavItem(
                         unselectedIcon:
                             isSimkl ? Iconsax.monitor : Iconsax.book,
                         selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
                         onTap: _onItemTapped,
-                        label: 'Manga',
+                        label: AppLocalizations.of(context)?.manga ?? 'Manga',
                       ),
                       NavItem(
                         unselectedIcon: HugeIcons.strokeRoundedLibrary,
                         selectedIcon: HugeIcons.strokeRoundedLibrary,
                         onTap: _onItemTapped,
-                        label: 'Library',
+                        label: AppLocalizations.of(context)?.library ?? 'Library',
                       ),
                       if (sourceController.shouldShowExtensions.value)
                         NavItem(
                           unselectedIcon: Icons.extension_outlined,
                           selectedIcon: Icons.extension_rounded,
                           onTap: _onItemTapped,
-                          label: "Extensions",
+                          label: AppLocalizations.of(context)?.extensions ?? "Extensions",
                         ),
                     ],
                   ),
@@ -425,25 +436,25 @@ class _FilterScreenState extends State<FilterScreen> {
               unselectedIcon: IconlyBold.home,
               selectedIcon: IconlyBold.home,
               onTap: _onMobileItemTapped,
-              label: 'Home',
+              label: AppLocalizations.of(context)?.home ?? 'Home',
             ),
             NavItem(
               unselectedIcon: Icons.movie_filter_rounded,
               selectedIcon: Icons.movie_filter_rounded,
               onTap: _onMobileItemTapped,
-              label: 'Anime',
+              label: AppLocalizations.of(context)?.anime ?? 'Anime',
             ),
             NavItem(
               unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
               selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
               onTap: _onMobileItemTapped,
-              label: 'Manga',
+              label: AppLocalizations.of(context)?.manga ?? 'Manga',
             ),
             NavItem(
               unselectedIcon: HugeIcons.strokeRoundedLibrary,
               selectedIcon: HugeIcons.strokeRoundedLibrary,
               onTap: _onMobileItemTapped,
-              label: 'Library',
+              label: AppLocalizations.of(context)?.library ?? 'Library',
             ),
           ],
         ));

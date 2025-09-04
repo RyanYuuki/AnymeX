@@ -21,6 +21,8 @@ dependencies:
   file_picker: ^8.1.7
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_dotenv: ^5.2.1
   flutter_html: ^3.0.0
   flutter_inappwebview: ^6.1.5
@@ -122,6 +124,7 @@ flutter_native_splash:
 
 flutter:
   uses-material-design: true
+  generate: true
 
   assets:
     - assets/images/

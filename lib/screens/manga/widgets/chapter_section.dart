@@ -16,6 +16,7 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 class ChapterSection extends StatelessWidget {
@@ -155,7 +156,7 @@ class ChapterSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Obx(() => buildMangaSourceDropdown()),
+              Obx(() => buildMangaSourceDropdown(context)),
               const SizedBox(height: 20),
               const Row(
                 children: [
@@ -185,7 +186,8 @@ class ChapterSection extends StatelessWidget {
         ));
   }
 
-  Widget buildMangaSourceDropdown() {
+  Widget buildMangaSourceDropdown(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     List<DropdownItem> items = sourceController.installedMangaExtensions.isEmpty
         ? [
             const DropdownItem(
@@ -204,8 +206,8 @@ class ChapterSection extends StatelessWidget {
 
             return DropdownItem(
               value: '${source.name} (${source.lang?.toUpperCase()})',
-              text: source.name?.toUpperCase() ?? 'Unknown Source',
-              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
+              text: source.name?.toUpperCase() ?? l10n?.unknownSource ?? 'Unknown Source',
+              subtitle: source.lang?.toUpperCase() ?? l10n?.unknown ?? 'Unknown',
               leadingIcon: NetworkSizedImage(
                 radius: 16,
                 imageUrl: isMangayomi
@@ -228,8 +230,8 @@ class ChapterSection extends StatelessWidget {
 
         selectedItem = DropdownItem(
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
-          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
-          subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
+          text: activeSource.name?.toUpperCase() ?? l10n?.unknownSource ?? 'Unknown Source',
+          subtitle: '${l10n?.manga ?? 'Manga'} • ${activeSource.lang?.toUpperCase() ?? l10n?.unknown ?? 'Unknown'}',
           leadingIcon: NetworkSizedImage(
             radius: 12,
             imageUrl: isMangayomi
@@ -247,7 +249,7 @@ class ChapterSection extends StatelessWidget {
     return AnymexDropdown(
       items: items,
       selectedItem: selectedItem,
-      label: "SELECT SOURCE",
+      label: l10n?.selectSource ?? "SELECT SOURCE",
       icon: Icons.extension_rounded,
       onChanged: (DropdownItem item) async {
         chapterList.value = [];

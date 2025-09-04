@@ -1,0 +1,138 @@
+{
+  "appName": "AnymeX",
+  "@appName": {
+    "description": "The name of the application"
+  },
+  
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  "anime": "Anime",
+  "@anime": {
+    "description": "Anime navigation label"
+  },
+  "manga": "Manga",
+  "@manga": {
+    "description": "Manga navigation label"
+  },
+  "library": "Library",
+  "@library": {
+    "description": "Library navigation label"
+  },
+  "extensions": "Extensions",
+  "@extensions": {
+    "description": "Extensions navigation label"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile navigation label"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  "accounts": "Accounts",
+  "@accounts": {
+    "description": "Accounts settings section"
+  },
+  "accountsDescription": "Manage your MyAnimeList, Anilist, Simkl Accounts!",
+  "@accountsDescription": {
+    "description": "Description for accounts settings"
+  },
+  "common": "Common",
+  "@common": {
+    "description": "Common settings section"
+  },
+  "commonDescription": "Tweak Settings",
+  "@commonDescription": {
+    "description": "Description for common settings"
+  },
+  "ui": "UI",
+  "@ui": {
+    "description": "UI settings section"
+  },
+  "uiDescription": "Play around with App UI",
+  "@uiDescription": {
+    "description": "Description for UI settings"
+  },
+  "player": "Player",
+  "@player": {
+    "description": "Player settings section"
+  },
+  "playerDescription": "Play around with Player",
+  "@playerDescription": {
+    "description": "Description for player settings"
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme settings section"
+  },
+  "themeDescription": "Play around with App theme",
+  "@themeDescription": {
+    "description": "Description for theme settings"
+  },
+  "extensionsDescription": "Extensions that tends to your needs",
+  "@extensionsDescription": {
+    "description": "Description for extensions settings"
+  },
+  "experimental": "Experimental",
+  "@experimental": {
+    "description": "Experimental settings section"
+  },
+  "experimentalDescription": "Experimental Settings that are still being tested.",
+  "@experimentalDescription": {
+    "description": "Description for experimental settings"
+  },
+  "shareLogs": "Share Logs",
+  "@shareLogs": {
+    "description": "Share logs option"
+  },
+  "shareLogsDescription": "Share Logs of the App",
+  "@shareLogsDescription": {
+    "description": "Description for share logs option"
+  },
+  "about": "About",
+  "@about": {
+    "description": "About section"
+  },
+  "aboutDescription": "About the App",
+  "@aboutDescription": {
+    "description": "Description for about section"
+  },
+
+  "search": "Search",
+  "@search": {
+    "description": "Search label"
+  },
+  "searchStuffToDownload": "Search stuff you wanna download",
+  "@searchStuffToDownload": {
+    "description": "Search placeholder text in local source"
+  },
+  "anymexDownloads": "AnymeX Downloads",
+  "@anymexDownloads": {
+    "description": "Downloads section title"
+  },
+  "download": "Download",
+  "@download": {
+    "description": "Download label"
+  },
+  "local": "Local",
+  "@local": {
+    "description": "Local files label"
+  },
+
+  "selectSource": "SELECT SOURCE",
+  "@selectSource": {
+    "description": "Source selection dropdown label"
+  },
+  "unknownSource": "Unknown Source",
+  "@unknownSource": {
+    "description": "Fallback text for unknown source"
+  },
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Fallback text for unknown values"
+  }
+}
