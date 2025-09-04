@@ -9,10 +9,10 @@ import 'package:anymex/screens/local_source/controller/local_source_controller.d
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/get_string.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:path/path.dart' as path;
@@ -38,8 +38,8 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   @override
   Widget build(BuildContext context) {
+    GetString.init(context);
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
 
     return PopScope(
       canPop: false,
@@ -60,9 +60,9 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             child: Column(
               children: [
-                _buildAppBar(theme, controller, l10n),
+                _buildAppBar(theme, controller),
                 Expanded(
-                  child: _buildContent(theme, controller, l10n),
+                  child: _buildContent(theme, controller),
                 ),
               ],
             ),
@@ -72,7 +72,7 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildAppBar(ThemeData theme, LocalSourceController controller, AppLocalizations? l10n) {
+  Widget _buildAppBar(ThemeData theme, LocalSourceController controller) {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
       decoration: BoxDecoration(
@@ -104,7 +104,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n?.localLibrary ?? 'Local Library',
+                  GetString.localLibrary,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -114,9 +114,9 @@ class _WatchOfflineState extends State<WatchOffline> {
                 const SizedBox(height: 4),
                 Obx(() => Text(
                       controller.viewMode.value == ViewMode.search
-                          ? l10n?.searchStuffToDownload ?? 'Search stuff you wanna download'
+                          ? GetString.searchStuffToDownload
                           : controller.viewMode.value == ViewMode.download
-                              ? l10n?.anymexDownloads ?? "AnymeX Downloads"
+                              ? GetString.anymexDownloads
                               : controller.currentDirectoryName,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
@@ -184,14 +184,14 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildContent(ThemeData theme, LocalSourceController controller, AppLocalizations? l10n) {
+  Widget _buildContent(ThemeData theme, LocalSourceController controller) {
     return Obx(() {
       if (controller.viewMode.value == ViewMode.search) {
-        return _buildSearchContent(theme, controller, l10n);
+        return _buildSearchContent(theme, controller);
       }
 
       if (controller.viewMode.value == ViewMode.download) {
-        return _buildItemGrid(theme, controller, l10n, isDownloads: true);
+        return _buildItemGrid(theme, controller, isDownloads: true);
       }
 
       if (controller.isLoading.value) {
@@ -206,12 +206,12 @@ class _WatchOfflineState extends State<WatchOffline> {
         return _buildNoDirectorySelectedState(theme, controller);
       }
 
-      return _buildItemGrid(theme, controller, l10n);
+      return _buildItemGrid(theme, controller);
     });
   }
 
   Widget _buildSearchContent(
-      ThemeData theme, LocalSourceController controller, AppLocalizations? l10n) {
+      ThemeData theme, LocalSourceController controller) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -219,7 +219,7 @@ class _WatchOfflineState extends State<WatchOffline> {
         children: [
           Column(
             children: [
-              _buildModernViewSwitcher(controller, l10n),
+              _buildModernViewSwitcher(controller),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -985,14 +985,14 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildItemGrid(ThemeData theme, LocalSourceController controller, AppLocalizations? l10n,
+  Widget _buildItemGrid(ThemeData theme, LocalSourceController controller,
       {bool isDownloads = false}) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildModernViewSwitcher(controller, l10n),
+          _buildModernViewSwitcher(controller),
           const SizedBox(height: 16),
           Obx(() {
             final items = isDownloads
@@ -1025,7 +1025,7 @@ class _WatchOfflineState extends State<WatchOffline> {
     );
   }
 
-  Widget _buildModernViewSwitcher(LocalSourceController controller, AppLocalizations? l10n) {
+  Widget _buildModernViewSwitcher(LocalSourceController controller) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -1044,7 +1044,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Iconsax.search_normal,
-                  label: l10n?.search ?? 'Search',
+                  label: GetString.search,
                   viewMode: ViewMode.search,
                   isSelected: controller.viewMode.value == ViewMode.search,
                 )
@@ -1053,7 +1053,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Icons.download_rounded,
-                  label: l10n?.download ?? 'Download',
+                  label: GetString.download,
                   viewMode: ViewMode.download,
                   isSelected: controller.viewMode.value == ViewMode.download,
                 )
@@ -1061,7 +1061,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           Obx(() => _buildModernTab(
                 controller: controller,
                 icon: Iconsax.folder_open,
-                label: l10n?.local ?? 'Local',
+                label: GetString.local,
                 viewMode: ViewMode.local,
                 isSelected: controller.viewMode.value == ViewMode.local,
               )),
