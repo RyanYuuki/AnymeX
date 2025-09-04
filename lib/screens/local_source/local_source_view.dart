@@ -104,7 +104,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Local Library',
+                  l10n?.localLibrary ?? 'Local Library',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w600,

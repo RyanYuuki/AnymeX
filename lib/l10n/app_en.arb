@@ -134,5 +134,57 @@
   "unknown": "Unknown",
   "@unknown": {
     "description": "Fallback text for unknown values"
+  },
+
+  "addGithubRepo": "Add github repo for {type}",
+  "@addGithubRepo": {
+    "description": "Add GitHub repository option",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "examples": ["anime", "manga", "novel"]
+      }
+    }
+  },
+  "animeGithubRepo": "Anime Github Repo",
+  "@animeGithubRepo": {
+    "description": "Anime GitHub repository option"
+  },
+  "mangaGithubRepo": "Manga Github Repo", 
+  "@mangaGithubRepo": {
+    "description": "Manga GitHub repository option"
+  },
+  "novelGithubRepo": "Novel Github Repo",
+  "@novelGithubRepo": {
+    "description": "Novel GitHub repository option"
+  },
+
+  "localLibrary": "Local Library",
+  "@localLibrary": {
+    "description": "Local library section title"
+  },
+  "noSourcesInstalled": "No Sources Installed",
+  "@noSourcesInstalled": {
+    "description": "Message when no sources are available"
+  },
+  "noSourcesAvailable": "No {type} Sources Available",
+  "@noSourcesAvailable": {
+    "description": "Message when no sources of specific type are available",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "examples": ["Anime", "Manga", "Novel"]
+      }
+    }
+  },
+  "installExtensionsToStart": "Install {type} extensions to get started",
+  "@installExtensionsToStart": {
+    "description": "Instruction to install extensions",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "examples": ["anime", "manga", "novel"]
+      }
+    }
   }
 }
