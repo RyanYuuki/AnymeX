@@ -56,11 +56,11 @@
 >  
 > **User Responsibility:** Users are solely responsible for how they use the app and any third-party services or extensions they choose to interact with. Users must comply with all applicable laws, copyright, and intellectual property rights.  
 >  
-> **No Liability:** The developers of AnymeX disclaim all liability for misuse, legal issues, or violations arising from user actions. Legal concerns should be directed to the respective third-party services, not AnymeX. The app is provided "as-is" without warranties.  
+> **No Liability:** The developers of AnymeX disclaim all liability for misuse, legal issues, or violations arising from user actions. Legal concerns, including DMCA claims, should be directed to the respective third-party services, not AnymeX. The app is provided "as-is" without warranties.  
 >  
 > **Services:** AnymeX integrates only with the official APIs of supported services (AniList, MyAnimeList, Simkl). Third-party extensions are the responsibility of their creators, not the AnymeX developers.  
 >  
-> **By using this app, you agree to comply with our [Terms of Service](./TOS.md).**
+> **By using AnymeX, you agree to comply with our [Terms of Service](./TOS.md). Please review the ToS to understand our DMCA-compliant, tracking functionality and our non-involvement with any content or services beyond AniList, MyAnimeList, and Simkl.**
 
 ## Downloads
 
