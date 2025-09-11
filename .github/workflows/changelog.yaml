@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
     inputs:
       previous_tag:
-        description: 'Previous tag to compare against (optional, defaults to second most recent distinct tag)'
+        description: "Previous tag to compare against (optional, defaults to second most recent distinct tag)"
         required: false
       current_tag:
-        description: 'Current tag to generate changelog for (optional, defaults to latest tag)'
+        description: "Current tag to generate changelog for (optional, defaults to latest tag)"
         required: false
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
           fi
 
           REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
-          
+
           if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
             for JOB in "${REQUIRED_JOBS[@]}"; do
               JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
@@ -208,7 +208,7 @@ jobs:
 
           CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
           echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-          
+
           rm -f commits.tmp
         shell: /usr/bin/bash -e {0}
 
@@ -219,7 +219,7 @@ jobs:
       - name: Commit and Push Changelog
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          git config --global user.name "Action Bot"
+          git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
           git add CHANGELOG.md
           git commit --allow-empty -m "Update changelog for version ${{ env.current_tag }}"
