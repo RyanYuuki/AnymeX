@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
     inputs:
       previous_tag:
-        description: 'Previous tag to compare against (optional, defaults to second most recent distinct tag)'
+        description: "Previous tag to compare against (optional, defaults to second most recent distinct tag)"
         required: false
       current_tag:
-        description: 'Current tag to generate changelog for (optional, defaults to latest tag)'
+        description: "Current tag to generate changelog for (optional, defaults to latest tag)"
         required: false
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
           fi
 
           REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
-          
+
           if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
             for JOB in "${REQUIRED_JOBS[@]}"; do
               JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
@@ -143,12 +143,10 @@ jobs:
           while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
             
-            # Clean up the message by removing issue references and non-alphanumeric characters
             CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 .,:!-]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
             
             echo "Processing commit: $HASH - $CLEAN_MESSAGE"
             
-            # Remove prefixes and categorize based on original message
             if [[ "$MESSAGE" =~ ^feat: ]]; then
               DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^feat://')
               COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
@@ -176,7 +174,6 @@ jobs:
             fi
           done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
 
-          # Generate changelog sections with date
           echo "### 🆕 Changelog" > CHANGELOG.md
           if [ -n "$FEATURES" ]; then
             echo "### 🌟 Features" >> CHANGELOG.md
@@ -209,11 +206,9 @@ jobs:
             echo "" >> CHANGELOG.md
           fi
 
-          # Add download badges
           CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
           echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-          
-          # Clean up temporary file
+
           rm -f commits.tmp
         shell: /usr/bin/bash -e {0}
 
@@ -228,6 +223,29 @@ jobs:
           git config --global user.email "actions@github.com"
           git add CHANGELOG.md
           git commit --allow-empty -m "Update changelog for version ${{ env.current_tag }}"
+          git push origin HEAD:main
+
+      - name: Generate Plaintext Changelog for F-Droid/Izzy
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          mkdir -p fastlane/metadata/android/en-US/changelogs
+          awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
+            | sed -E 's/^###* //g; s/!\[[^]]*\]\([^)]*\)//g; s/\[[^]]*\]\([^)]*\)//g; s/^[[:space:]]*//g' \
+            | sed 's/^֍[[:space:]]*/- /' \
+            | sed '/^$/N;/^\n$/D' \
+            > fastlane/metadata/android/en-US/changelogs/default.txt
+
+      - name: Debug default.txt
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        run: cat fastlane/metadata/android/en-US/changelogs/default.txt
+
+      - name: Commit and Push default.txt
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          git config --global user.name "Git Paneer"
+          git config --global user.email "actions@github.com"
+          git add fastlane/metadata/android/en-US/changelogs/default.txt
+          git commit --allow-empty -m "Update default.txt for version ${{ env.current_tag }}"
           git push origin HEAD:main
 
       - name: Create or Update Release
