@@ -1,240 +1,53 @@
-name: changelog
+name: Update Changelog
 
 on:
-  workflow_run:
-    workflows:
-      - "Build and Release AnymeX"
-    types:
-      - completed
   workflow_dispatch:
-    inputs:
-      previous_tag:
-        description: 'Previous tag to compare against (optional, defaults to second most recent distinct tag)'
-        required: false
-      current_tag:
-        description: 'Current tag to generate changelog for (optional, defaults to latest tag)'
-        required: false
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  generate-changelog:
+  changelog:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Job Statuses
-        id: check_jobs
-        env:
-          WORKFLOW_RUN: ${{ toJSON(github.event.workflow_run) }}
-          JOBS: ${{ toJSON(github.event.workflow_run.jobs) }}
-        run: |
-          echo "Workflow run event: $WORKFLOW_RUN"
-          if [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
-            echo "Warning: No job data available from workflow_run. This may occur if the triggering workflow failed. Assuming failure unless manual trigger."
-            ALL_SUCCESS=false
-          else
-            ALL_SUCCESS=true
-          fi
-
-          REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
-          
-          if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
-            for JOB in "${REQUIRED_JOBS[@]}"; do
-              JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
-              if [ -z "$JOB_STATUS" ] || [ "$JOB_STATUS" != '"success"' ]; then
-                echo "Job $JOB failed or was not found. Status: $JOB_STATUS"
-                ALL_SUCCESS=false
-                break
-              else
-                echo "Job $JOB succeeded. Status: $JOB_STATUS"
-              fi
-            done
-          fi
-
-          echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
-        shell: /usr/bin/bash -e {0}
-
-      - name: Checkout Code
+      - name: Checkout repo
         uses: actions/checkout@v4
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         with:
           fetch-depth: 0
 
-      - name: Clear CHANGELOG.md
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: echo "" > CHANGELOG.md
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      - name: Fetch Tags
-        id: fetch_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+      - name: Install dependencies
+        run: npm install -g conventional-changelog-cli
+
+      - name: Generate CHANGELOG.md
         run: |
-          git fetch --tags
-          TAGS=$(git tag --sort=-creatordate | tr '\n' ' ')
-          echo "All tags: $TAGS"
-          echo "tags=$TAGS" >> $GITHUB_ENV
+          conventional-changelog -p angular -i CHANGELOG.md -s -r 0
 
-      - name: Determine Tags for Comparison
-        id: determine_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+      - name: Generate Plaintext Changelog for F-Droid/Izzy
         run: |
-          if [ -n "${{ inputs.current_tag }}" ]; then
-            CURRENT_TAG="${{ inputs.current_tag }}"
-          else
-            CURRENT_TAG=$(git describe --tags --abbrev=0)
-          fi
-          echo "Current tag: $CURRENT_TAG"
-          echo "current_tag=$CURRENT_TAG" >> $GITHUB_ENV
+          mkdir -p fastlane/metadata/android/en-US/changelogs
+          # Extract latest release notes only from CHANGELOG.md
+          awk '/^## /{if (c++) exit} {print}' CHANGELOG.md \
+            | sed -E 's/^###* //g; s/!\[[^]]*\]\([^)]*\)//g; s/\[[^]]*\]\([^)]*\)//g; s/^[[:space:]]*//g' \
+            | grep -v "TOTAL DOWNLOADS" \
+            | grep -v "CURRENT RELEASE" \
+            | sed 's/^֍[[:space:]]*/- /' \
+            | sed '/^$/N;/^\n$/D' \
+            > fastlane/metadata/android/en-US/changelogs/default.txt
 
-          ALL_TAGS=(${{ env.tags }})
-          PREV_TAG=""
-          SECOND_PREV_TAG=""
-
-          for TAG in "${ALL_TAGS[@]}"; do
-            if [ "$TAG" != "$CURRENT_TAG" ]; then
-              if [ -z "$PREV_TAG" ]; then
-                PREV_TAG="$TAG"
-              elif [ -z "$SECOND_PREV_TAG" ]; then
-                SECOND_PREV_TAG="$TAG"
-                break
-              fi
-            fi
-          done
-
-          if [ -n "${{ inputs.previous_tag }}" ]; then
-            PREV_TAG="${{ inputs.previous_tag }}"
-          elif [ "$PREV_TAG" == "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
-            PREV_TAG="$SECOND_PREV_TAG"
-          fi
-
-          if [ -z "$PREV_TAG" ]; then
-            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-
-          echo "Previous tag: $PREV_TAG"
-          echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
-
-      - name: Debug Commit Log
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
-
-      - name: Get Commit Messages Between Tags
-        id: get_commits
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          # Use a more robust method to handle special characters
-          git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h|||%s' > commits.tmp
-          echo "commits_file=commits.tmp" >> $GITHUB_OUTPUT
-
-      - name: Categorize Commits
-        id: categorize
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "Categorizing commits..."
-
-          # Initialize section variables
-          FEATURES=""
-          BUG_FIXES=""
-          REFACTORS=""
-          STYLE_CHANGES=""
-          PERFORMANCE=""
-          CHORES=""
-
-          # Get repository URL
-          REPO_URL="https://github.com/${{ github.repository }}"
-
-          # Get commits and categorize directly
-          while read -r HASH MESSAGE; do
-            [ -z "$HASH" ] && continue
-            
-            # Clean up the message by removing issue references and non-alphanumeric characters
-            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 .,:!-]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-            
-            echo "Processing commit: $HASH - $CLEAN_MESSAGE"
-            
-            # Remove prefixes and categorize based on original message
-            if [[ "$MESSAGE" =~ ^feat: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^feat://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              FEATURES+="- $COMMIT_LINK $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^fix:|^bug:|^improvement:|^patch: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^fix://' | sed 's/^bug://' | sed 's/^improvement://' | sed 's/^patch://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              BUG_FIXES+="- $COMMIT_LINK $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^refactor: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^refactor://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              REFACTORS+="- $COMMIT_LINK $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^style: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^style://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              STYLE_CHANGES+="- $COMMIT_LINK $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^perf: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^perf://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              PERFORMANCE+="- $COMMIT_LINK $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^chore:|^docs:|^build:|^ci: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^chore://' | sed 's/^docs://' | sed 's/^build://' | sed 's/^ci://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              CHORES+="- $COMMIT_LINK $DESCR"$'\n'
-            fi
-          done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
-
-          # Generate changelog sections with date
-          echo "### 🆕 Changelog" > CHANGELOG.md
-          if [ -n "$FEATURES" ]; then
-            echo "### 🌟 Features" >> CHANGELOG.md
-            echo -e "$FEATURES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$BUG_FIXES" ]; then
-            echo "### 🔧 Bug Fixes & Improvements" >> CHANGELOG.md
-            echo -e "$BUG_FIXES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$REFACTORS" ]; then
-            echo "### 🔧 Refactors" >> CHANGELOG.md
-            echo -e "$REFACTORS" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$STYLE_CHANGES" ]; then
-            echo "### 🎨 Style Changes" >> CHANGELOG.md
-            echo -e "$STYLE_CHANGES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$PERFORMANCE" ]; then
-            echo "### 🚀 Performance Improvements" >> CHANGELOG.md
-            echo -e "$PERFORMANCE" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$CHORES" ]; then
-            echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
-            echo -e "$CHORES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-
-          # Add download badges
-          CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
-          echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-          
-          # Clean up temporary file
-          rm -f commits.tmp
-        shell: /usr/bin/bash -e {0}
-
-      - name: Debug CHANGELOG.md
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: cat CHANGELOG.md
+      - name: Debug default.txt
+        run: cat fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Commit and Push Changelog
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        env:
+          current_tag: ${{ github.ref_name }}
         run: |
           git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
-          git add CHANGELOG.md
-          git commit --allow-empty -m "Update changelog for version ${{ env.current_tag }}"
+          git add CHANGELOG.md fastlane/metadata/android/en-US/changelogs/default.txt
+          git commit --allow-empty -m "Update changelogs for version $current_tag"
           git push origin HEAD:main
-
-      - name: Create or Update Release
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          bodyFile: CHANGELOG.md
-          tag: ${{ env.current_tag }}
-          allowUpdates: true
