@@ -181,15 +181,15 @@ jobs:
           git commit --allow-empty -m "Update changelog for version ${{ env.current_tag }}"
           git push origin HEAD:main
 
-      - name: Generate Markdown Lite Changelog for F-Droid/Izzy
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+      - name: Generate Plaintext Changelog for F-Droid/Izzy
         run: |
-          mkdir -p fastlane/metadata/android/en-US/changelogs
-          awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
-            | sed -E 's/!\[[^]]*\]\([^)]*\)//g' \   # remove images/badges
-            | sed 's/^֍[[:space:]]*/- /' \         # normalize bullets
-            | sed '/^$/N;/^\n$/D' \                # clean duplicate empty lines
-            > fastlane/metadata/android/en-US/changelogs/default.txt
+         mkdir -p fastlane/metadata/android/en-US/changelogs
+         awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
+         | sed -E 's/!\[[^]]*\]\([^)]*\)//g' \
+         | sed -E 's/\[[^]]*\]\([^)]*\)//g' \
+         | sed 's/^֍[[:space:]]*/- /' \
+         | sed '/^$/N;/^\n$/D' \
+         > fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Debug default.txt
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
