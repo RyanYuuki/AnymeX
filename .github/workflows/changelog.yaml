@@ -118,7 +118,6 @@ jobs:
         id: get_commits
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          # Use a more robust method to handle special characters
           git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h|||%s' > commits.tmp
           echo "commits_file=commits.tmp" >> $GITHUB_OUTPUT
 
@@ -127,88 +126,45 @@ jobs:
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Categorizing commits..."
-
-          # Initialize section variables
-          FEATURES=""
-          BUG_FIXES=""
-          REFACTORS=""
-          STYLE_CHANGES=""
-          PERFORMANCE=""
-          CHORES=""
-
-          # Get repository URL
+          FEATURES=""; BUG_FIXES=""; REFACTORS=""; STYLE_CHANGES=""; PERFORMANCE=""; CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
-          # Get commits and categorize directly
           while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
-            
             CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 .,:!-]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-            
             echo "Processing commit: $HASH - $CLEAN_MESSAGE"
-            
+
             if [[ "$MESSAGE" =~ ^feat: ]]; then
               DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^feat://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              FEATURES+="- $COMMIT_LINK $DESCR"$'\n'
+              FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             elif [[ "$MESSAGE" =~ ^fix:|^bug:|^improvement:|^patch: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^fix://' | sed 's/^bug://' | sed 's/^improvement://' | sed 's/^patch://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              BUG_FIXES+="- $COMMIT_LINK $DESCR"$'\n'
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^fix://; s/^bug://; s/^improvement://; s/^patch://')
+              BUG_FIXES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             elif [[ "$MESSAGE" =~ ^refactor: ]]; then
               DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^refactor://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              REFACTORS+="- $COMMIT_LINK $DESCR"$'\n'
+              REFACTORS+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             elif [[ "$MESSAGE" =~ ^style: ]]; then
               DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^style://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              STYLE_CHANGES+="- $COMMIT_LINK $DESCR"$'\n'
+              STYLE_CHANGES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             elif [[ "$MESSAGE" =~ ^perf: ]]; then
               DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^perf://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              PERFORMANCE+="- $COMMIT_LINK $DESCR"$'\n'
+              PERFORMANCE+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             elif [[ "$MESSAGE" =~ ^chore:|^docs:|^build:|^ci: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^chore://' | sed 's/^docs://' | sed 's/^build://' | sed 's/^ci://')
-              COMMIT_LINK="[֍]($REPO_URL/commit/$HASH)"
-              CHORES+="- $COMMIT_LINK $DESCR"$'\n'
+              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^chore://; s/^docs://; s/^build://; s/^ci://')
+              CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
             fi
           done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
 
           echo "### 🆕 Changelog" > CHANGELOG.md
-          if [ -n "$FEATURES" ]; then
-            echo "### 🌟 Features" >> CHANGELOG.md
-            echo -e "$FEATURES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$BUG_FIXES" ]; then
-            echo "### 🔧 Bug Fixes & Improvements" >> CHANGELOG.md
-            echo -e "$BUG_FIXES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$REFACTORS" ]; then
-            echo "### 🔧 Refactors" >> CHANGELOG.md
-            echo -e "$REFACTORS" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$STYLE_CHANGES" ]; then
-            echo "### 🎨 Style Changes" >> CHANGELOG.md
-            echo -e "$STYLE_CHANGES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$PERFORMANCE" ]; then
-            echo "### 🚀 Performance Improvements" >> CHANGELOG.md
-            echo -e "$PERFORMANCE" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
-          if [ -n "$CHORES" ]; then
-            echo "### 🧹 Chores & Documentation" >> CHANGELOG.md
-            echo -e "$CHORES" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-          fi
+          [ -n "$FEATURES" ] && echo -e "### 🌟 Features\n$FEATURES\n" >> CHANGELOG.md
+          [ -n "$BUG_FIXES" ] && echo -e "### 🔧 Bug Fixes & Improvements\n$BUG_FIXES\n" >> CHANGELOG.md
+          [ -n "$REFACTORS" ] && echo -e "### 🔧 Refactors\n$REFACTORS\n" >> CHANGELOG.md
+          [ -n "$STYLE_CHANGES" ] && echo -e "### 🎨 Style Changes\n$STYLE_CHANGES\n" >> CHANGELOG.md
+          [ -n "$PERFORMANCE" ] && echo -e "### 🚀 Performance Improvements\n$PERFORMANCE\n" >> CHANGELOG.md
+          [ -n "$CHORES" ] && echo -e "### 🧹 Chores & Documentation\n$CHORES\n" >> CHANGELOG.md
 
           CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
           echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-
           rm -f commits.tmp
         shell: /usr/bin/bash -e {0}
 
@@ -226,14 +182,14 @@ jobs:
           git push origin HEAD:main
 
       - name: Generate Plaintext Changelog for F-Droid/Izzy
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
-          mkdir -p fastlane/metadata/android/en-US/changelogs
-          awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
-            | sed -E 's/^###* //g; s/!\[[^]]*\]\([^)]*\)//g; s/\[[^]]*\]\([^)]*\)//g; s/^[[:space:]]*//g' \
-            | sed 's/^֍[[:space:]]*/- /' \
-            | sed '/^$/N;/^\n$/D' \
-            > fastlane/metadata/android/en-US/changelogs/default.txt
+         mkdir -p fastlane/metadata/android/en-US/changelogs
+         awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
+         | sed -E 's/!\[[^]]*\]\([^)]*\)//g' \
+         | sed -E 's/\[[^]]*\]\([^)]*\)//g' \
+         | sed 's/^֍[[:space:]]*/- /' \
+         | sed '/^$/N;/^\n$/D' \
+         > fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Debug default.txt
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
