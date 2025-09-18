@@ -117,7 +117,9 @@ class ReaderView extends StatelessWidget {
         itemCount: controller.pageList.length,
         controller: controller.pageController,
         preloadPagesCount: controller.preloadPages.value,
-        physics: const BouncingScrollPhysics(),
+        physics: controller.enableZoom.value 
+            ? const ClampingScrollPhysics() // Less bouncy when zoom is enabled for better gesture handling
+            : const BouncingScrollPhysics(),
         scrollDirection: controller.readingDirection.value.axis,
         reverse: controller.readingDirection.value.reversed,
         onPageChanged: controller.onPageChanged,
@@ -132,10 +134,10 @@ class ReaderView extends StatelessWidget {
   Widget _buildNewImage(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
 
-    return GestureDetector(
-      onTap: () => controller.toggleControls(),
-      child: Obx(() {
-        return Container(
+    return Obx(() {
+      return GestureDetector(
+        onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
+        child: Container(
           padding: EdgeInsets.symmetric(
               vertical: controller.spacedPages.value ? 8.0 : 0),
           child: Column(
@@ -145,7 +147,9 @@ class ReaderView extends StatelessWidget {
                 cacheMaxAge: Duration(
                     days: settingsController.preferences
                         .get('cache_days', defaultValue: 7)),
-                mode: ExtendedImageMode.none,
+                mode: controller.enableZoom.value 
+                    ? ExtendedImageMode.gesture 
+                    : ExtendedImageMode.none,
                 gaplessPlayback: true,
                 cache: true,
                 headers: (page.headers?.isEmpty ?? true)
@@ -162,6 +166,40 @@ class ReaderView extends StatelessWidget {
                 ),
                 filterQuality: FilterQuality.medium,
                 enableLoadState: true,
+                initGestureConfigHandler: controller.enableZoom.value 
+                    ? (ExtendedImageState state) {
+                        return GestureConfig(
+                          minScale: 0.8,
+                          animationMinScale: 0.7,
+                          maxScale: 5.0,
+                          animationMaxScale: 5.5,
+                          speed: 1.0,
+                          inertialSpeed: 100.0,
+                          initialScale: 1.0,
+                          inPageView: false,
+                          initialAlignment: InitialAlignment.center,
+                          // Enable panning when zoomed
+                          cacheGesture: false,
+                        );
+                      }
+                    : null,
+                onDoubleTap: controller.enableZoom.value 
+                    ? (ExtendedImageGestureState state) {
+                        final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                        controller.updateZoomLevel(currentScale);
+                        if (currentScale != 1.0) {
+                          // Reset zoom if currently zoomed
+                          controller.resetZoom();
+                          state.handleDoubleTap(
+                            scale: 1.0, 
+                            doubleTapPosition: state.pointerDownPosition,
+                          );
+                        } else {
+                          // Toggle controls if not zoomed
+                          controller.toggleControls();
+                        }
+                      }
+                    : null,
                 loadStateChanged: (ExtendedImageState state) {
                   switch (state.extendedImageLoadState) {
                     case LoadState.loading:
@@ -230,17 +268,17 @@ class ReaderView extends StatelessWidget {
             ],
           ),
         );
-      }),
-    );
+      });
+    }
   }
 
   Widget _buildNewImageForPaged(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
 
-    return GestureDetector(
-      onTap: () => controller.toggleControls(),
-      child: Obx(() {
-        return Padding(
+    return Obx(() {
+      return GestureDetector(
+        onTap: controller.enableZoom.value ? null : () => controller.toggleControls(),
+        child: Padding(
           padding: EdgeInsets.symmetric(
               vertical: controller.spacedPages.value ? 8.0 : 0),
           child: Center(
@@ -250,7 +288,9 @@ class ReaderView extends StatelessWidget {
               cacheMaxAge: Duration(
                   days: settingsController.preferences
                       .get('cache_days', defaultValue: 7)),
-              mode: ExtendedImageMode.none,
+              mode: controller.enableZoom.value 
+                  ? ExtendedImageMode.gesture 
+                  : ExtendedImageMode.none,
               gaplessPlayback: true,
               headers: (page.headers?.isEmpty ?? true)
                   ? {
@@ -264,6 +304,46 @@ class ReaderView extends StatelessWidget {
               alignment: Alignment.center,
               filterQuality: FilterQuality.medium,
               enableLoadState: true,
+              initGestureConfigHandler: controller.enableZoom.value 
+                  ? (ExtendedImageState state) {
+                      return GestureConfig(
+                        minScale: 0.8,
+                        animationMinScale: 0.7,
+                        maxScale: 5.0,
+                        animationMaxScale: 5.5,
+                        speed: 1.0,
+                        inertialSpeed: 100.0,
+                        initialScale: 1.0,
+                        inPageView: true, // Allow page navigation while still enabling zoom and pan
+                        initialAlignment: InitialAlignment.center,
+                        // Enable panning when zoomed with better page navigation support
+                        cacheGesture: false,
+                      );
+                    }
+                  : null,
+                onScaleEnd: controller.enableZoom.value 
+                    ? (ScaleEndDetails details, ExtendedImageGestureState state) {
+                        final scale = state.gestureDetails?.totalScale ?? 1.0;
+                        controller.updateZoomLevel(scale);
+                      }
+                    : null,
+              onDoubleTap: controller.enableZoom.value 
+                  ? (ExtendedImageGestureState state) {
+                      final currentScale = state.gestureDetails?.totalScale ?? 1.0;
+                      controller.updateZoomLevel(currentScale);
+                      if (currentScale != 1.0) {
+                        // Reset zoom if currently zoomed
+                        controller.resetZoom();
+                        state.handleDoubleTap(
+                          scale: 1.0, 
+                          doubleTapPosition: state.pointerDownPosition,
+                        );
+                      } else {
+                        // Toggle controls if not zoomed
+                        controller.toggleControls();
+                      }
+                    }
+                  : null,
               loadStateChanged: (ExtendedImageState state) {
                 switch (state.extendedImageLoadState) {
                   case LoadState.loading:
@@ -329,7 +409,7 @@ class ReaderView extends StatelessWidget {
             ),
           ),
         );
-      }),
-    );
+      });
+    }
   }
 }
