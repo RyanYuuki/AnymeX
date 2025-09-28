@@ -1,1 +1,17 @@
+### 🌟 Features
+-   implemented auto database delete on crash related to database
 
+### 🔧 Bug Fixes & Improvements
+-   removed dupe entries
+-   fixed few player issues and improved media indicators
+-   fixed media indicator on old player
+-   fixed wrong title not remembering last selected title
+-   fixed some stuff and improved list editor
+-   fixed moving to current1 chapter instead of next chapter
+-   fixed status progress not immediately updating
+-   fixed non scrollable nav bar on small landscape displays
+
+### 🧹 Chores & Documentation
+-   bump version to v3.0.1-hotfix hotfix
+
+ 
