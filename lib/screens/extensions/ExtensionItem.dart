@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
@@ -11,6 +12,7 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dartotsu_extension_bridge/Mangayomi/get_source_preference.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -47,6 +49,8 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
         await sourceController.sortNovelExtensions();
         break;
     }
+
+    Logger.d('Sorted Extensions for ${widget.mediaType}');
   }
 
   Future<void> _handleSourceAction() async {
@@ -242,7 +246,9 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     void onTap() async {
       if (updateAvailable) {
         setState(() => _isLoading = true);
-        widget.source.extensionType!.getManager().update([widget.source.id!]);
+        await widget.source.extensionType!
+            .getManager()
+            .updateSource(widget.source);
         await sortExtensions();
         if (mounted) {
           setState(() => _isLoading = false);
@@ -325,7 +331,10 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                   ),
                   child: AnymexOnTap(
                     child: IconButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        Get.to(() =>
+                            SourcePreferenceScreen(source: widget.source));
+                      },
                       icon: Icon(
                         Iconsax.setting,
                         size: 18,

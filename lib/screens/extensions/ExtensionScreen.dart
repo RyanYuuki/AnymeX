@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -25,8 +26,17 @@ class ExtensionScreen extends StatefulWidget {
 }
 
 class _BrowseScreenState extends State<ExtensionScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabBarController;
+  final _textEditingController = TextEditingController();
+  late String _selectedLanguage = 'all';
+
+  final Map<String, int> _extensionCounts = {};
+
+  Timer? _updateTimer;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -35,26 +45,78 @@ class _BrowseScreenState extends State<ExtensionScreen>
     _checkPermission();
     _tabBarController = TabController(length: 6, vsync: this);
     _tabBarController.animateTo(0);
-    _tabBarController.addListener(() {
+    _tabBarController.addListener(_onTabChanged);
+
+    _startPeriodicUpdates();
+  }
+
+  @override
+  void dispose() {
+    _tabBarController.removeListener(_onTabChanged);
+    _tabBarController.dispose();
+    _textEditingController.dispose();
+    _updateTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (mounted) {
       setState(() {
         _textEditingController.clear();
       });
+    }
+  }
+
+  void _startPeriodicUpdates() {
+    _updateTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (mounted) {
+        _updateExtensionCounts();
+      }
     });
+  }
+
+  void _updateExtensionCounts() {
+    final newCounts = <String, int>{};
+
+    for (final itemType in [ItemType.anime, ItemType.manga, ItemType.novel]) {
+      for (final installed in [true, false]) {
+        final key = '${itemType.toString()}_$installed';
+        final extensions = installed
+            ? sourceController.getInstalledExtensions(itemType)
+            : sourceController.getAvailableExtensions(itemType);
+
+        final filteredCount = extensions
+            .where((element) => _selectedLanguage != 'all'
+                ? element.lang!.toLowerCase() ==
+                    completeLanguageCode(_selectedLanguage)
+                : true)
+            .length;
+
+        newCounts[key] = filteredCount;
+      }
+    }
+
+    if (_extensionCounts.toString() != newCounts.toString()) {
+      setState(() {
+        _extensionCounts.clear();
+        _extensionCounts.addAll(newCounts);
+      });
+    }
   }
 
   Future<void> removeOldData() async {}
 
   Future<void> _fetchData() async {
     await sourceController.fetchRepos();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+      _updateExtensionCounts();
+    }
   }
 
   _checkPermission() async {
     await StorageProvider().requestPermission();
   }
-
-  final _textEditingController = TextEditingController();
-  late var _selectedLanguage = 'all';
 
   void repoSheet() {
     final controller = Get.find<SourceController>();
@@ -62,23 +124,30 @@ class _BrowseScreenState extends State<ExtensionScreen>
 
     final selectedTab = 0.obs;
 
+    late final TextEditingController animeRepoController;
+    late final TextEditingController mangaRepoController;
+    late final TextEditingController novelRepoController;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      isDismissible: true,
+      enableDrag: true,
       builder: (context) {
         return Obx(
           () {
             final type = isAndroid && selectedTab.value == 1
                 ? ExtensionType.aniyomi
                 : ExtensionType.mangayomi;
-            final animeRepoController = TextEditingController(
+
+            animeRepoController = TextEditingController(
               text: sourceController.getAnimeRepo(type),
             );
-            final mangaRepoController = TextEditingController(
+            mangaRepoController = TextEditingController(
               text: sourceController.getMangaRepo(type),
             );
-            final novelRepoController = TextEditingController(
+            novelRepoController = TextEditingController(
               text: controller.activeNovelRepo,
             );
 
@@ -305,7 +374,12 @@ class _BrowseScreenState extends State<ExtensionScreen>
                         children: [
                           Expanded(
                             child: TextButton(
-                              onPressed: () => Get.back(),
+                              onPressed: () {
+                                animeRepoController.dispose();
+                                mangaRepoController.dispose();
+                                novelRepoController.dispose();
+                                Get.back();
+                              },
                               style: TextButton.styleFrom(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 14),
@@ -339,7 +413,12 @@ class _BrowseScreenState extends State<ExtensionScreen>
                                   controller.activeNovelRepo =
                                       novelRepoController.text;
                                 }
-                                _fetchData();
+
+                                animeRepoController.dispose();
+                                mangaRepoController.dispose();
+                                novelRepoController.dispose();
+
+                                await _fetchData();
                                 Get.back();
                               },
                               style: ElevatedButton.styleFrom(
@@ -431,6 +510,7 @@ class _BrowseScreenState extends State<ExtensionScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var theme = Theme.of(context).colorScheme;
     return Glow(
       child: DefaultTabController(
@@ -469,15 +549,11 @@ class _BrowseScreenState extends State<ExtensionScreen>
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
               AnymexOnTap(
-                onTap: () {
-                  repoSheet();
-                },
+                onTap: repoSheet,
                 child: IconButton(
                   icon:
                       Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
-                  onPressed: () {
-                    repoSheet();
-                  },
+                  onPressed: repoSheet,
                 ),
               ),
               AnymexOnTap(
@@ -492,8 +568,12 @@ class _BrowseScreenState extends State<ExtensionScreen>
                             .toList()
                             .indexOf(_selectedLanguage),
                         (index) {
-                          setState(() => _selectedLanguage =
-                              sortedLanguagesMap.keys.elementAt(index));
+                          final newLanguage =
+                              sortedLanguagesMap.keys.elementAt(index);
+                          if (_selectedLanguage != newLanguage) {
+                            setState(() => _selectedLanguage = newLanguage);
+                            _updateExtensionCounts();
+                          }
                         },
                       )
                       ..show();
@@ -595,50 +675,25 @@ class _BrowseScreenState extends State<ExtensionScreen>
             ),
           ),
           const SizedBox(width: 8),
-          _extensionUpdateNumbers(
-              context, itemType, installed, _selectedLanguage),
+          _buildExtensionCount(itemType, installed),
         ],
       ),
     );
   }
-}
 
-Widget _extensionUpdateNumbers(BuildContext context, ItemType itemType,
-    bool installed, String selectedLanguage) {
-  List<Source> getExtensionsList() {
-    if (installed) {
-      return sourceController.getInstalledExtensions(itemType);
-    } else {
-      return sourceController.getAvailableExtensions(itemType);
-    }
+  Widget _buildExtensionCount(ItemType itemType, bool installed) {
+    final key = '${itemType.toString()}_$installed';
+    final count = _extensionCounts[key] ?? 0;
+
+    return count > 0
+        ? Text(
+            "($count)",
+            style: const TextStyle(
+              fontSize: 12,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        : const SizedBox.shrink();
   }
-
-  return StreamBuilder<List<Source>>(
-    stream:
-        Stream.periodic(const Duration(seconds: 1), (_) => getExtensionsList()),
-    initialData: getExtensionsList(),
-    builder: (context, snapshot) {
-      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-        final entries = snapshot.data!
-            .where(
-              (element) => selectedLanguage != 'all'
-                  ? element.lang!.toLowerCase() ==
-                      completeLanguageCode(selectedLanguage)
-                  : true,
-            )
-            .toList();
-        return entries.isEmpty
-            ? Container()
-            : Text(
-                "(${entries.length.toString()})",
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-      }
-      return Container();
-    },
-  );
 }

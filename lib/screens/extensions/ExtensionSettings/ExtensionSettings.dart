@@ -1,400 +1,224 @@
-// import 'package:anymex/widgets/common/glow.dart';
-// import 'package:flutter/material.dart';
-// import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/widgets/AlertDialogBuilder.dart';
+import 'package:anymex/widgets/common/glow.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-// import '../../../core/Eval/dart/model/source_preference.dart';
-// import '../../../core/Model/Source.dart';
-// import '../../../core/extension_preferences_providers.dart';
-// import 'ListTileChapterFilter.dart';
+class SourcePreferenceScreen extends StatefulWidget {
+  final Source source;
+  const SourcePreferenceScreen({super.key, required this.source});
 
-// class SourcePreferenceWidget extends StatefulWidget {
-//   final List<SourcePreference> sourcePreference;
-//   final Source source;
+  @override
+  State<SourcePreferenceScreen> createState() => _SourcePreferenceScreenState();
+}
 
-//   const SourcePreferenceWidget(
-//       {super.key, required this.sourcePreference, required this.source});
+class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
+  Rx<List<SourcePreference>?> preference = Rx(null);
+  @override
+  void initState() {
+    super.initState();
+    loadPreferences();
+  }
 
-//   @override
-//   State<SourcePreferenceWidget> createState() => _SourcePreferenceWidgetState();
-// }
+  Future<void> loadPreferences() async {
+    preference.value = await widget.source.methods.getPreference();
+  }
 
-// class _SourcePreferenceWidgetState extends State<SourcePreferenceWidget> {
-//   @override
-//   Widget build(BuildContext context) {
-//     var theme = Theme.of(context).colorScheme;
-//     return Glow(
-//       child: Scaffold(
-//           appBar: AppBar(
-//             elevation: 0,
-//             backgroundColor: Colors.transparent,
-//             title: Text(
-//               '${widget.source.name} Settings',
-//               style: TextStyle(
-//                 fontFamily: 'Poppins',
-//                 fontWeight: FontWeight.bold,
-//                 fontSize: 16.0,
-//                 color: theme.primary,
-//               ),
-//             ),
-//             iconTheme: IconThemeData(color: theme.primary),
-//           ),
-//           body: widget.sourcePreference.isEmpty
-//               ? const Center(
-//                   child: Text("No Settings Available"),
-//                 )
-//               : SuperListView.builder(
-//                   shrinkWrap: true,
-//                   itemCount: widget.sourcePreference.length,
-//                   itemBuilder: (context, index) {
-//                     final preference = widget.sourcePreference[index];
-//                     return _buildPreferenceWidget(preference, theme);
-//                   },
-//                 )),
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context).colorScheme;
+    return Glow(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Text(
+            "${widget.source.name} Settings (Not Working)",
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 16.0,
+              color: theme.primary,
+            ),
+          ),
+          iconTheme: IconThemeData(color: theme.primary),
+        ),
+        body: Obx(
+          () {
+            if (preference.value == null) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (preference.value!.isEmpty) {
+              return const Center(
+                child: Text("Source doesn't have any settings"),
+              );
+            }
+            Text TitleText(String text) {
+              return Text(
+                text,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                  color: theme.primary,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              );
+            }
 
-//   Widget _buildPreferenceWidget(
-//       SourcePreference preference, ColorScheme theme) {
-//     if (preference.editTextPreference != null) {
-//       return _buildEditTextPreference(
-//           preference, preference.editTextPreference!, theme);
-//     } else if (preference.checkBoxPreference != null) {
-//       return _buildCheckBoxPreference(
-//           preference, preference.checkBoxPreference!, theme);
-//     } else if (preference.switchPreferenceCompat != null) {
-//       return _buildSwitchPreference(
-//           preference, preference.switchPreferenceCompat!, theme);
-//     } else if (preference.listPreference != null) {
-//       return _buildListPreference(
-//           preference, preference.listPreference!, theme);
-//     } else if (preference.multiSelectListPreference != null) {
-//       return _buildMultiSelectPreference(
-//           preference, preference.multiSelectListPreference!, theme);
-//     }
-//     return const SizedBox.shrink();
-//   }
+            Text SubtitleText(String text) {
+              return Text(
+                text,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14.0,
+                  color: theme.onSurfaceVariant,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              );
+            }
 
-//   Widget _buildEditTextPreference(
-//       preference, EditTextPreference pref, ColorScheme theme) {
-//     return ListTile(
-//       title: Text(
-//         pref.title!,
-//         style: const TextStyle(
-//           fontFamily: 'Poppins',
-//           fontSize: 16.0,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       subtitle: Text(
-//         pref.summary!,
-//         style: TextStyle(
-//           fontSize: 10,
-//           color: theme.secondary,
-//           fontFamily: 'Poppins',
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//       onTap: () {
-//         _showEditTextDialog(preference, pref);
-//       },
-//     );
-//   }
+            return ListView.builder(
+              itemCount: preference.value!.length,
+              itemBuilder: (context, index) {
+                final pref = preference.value![index];
+                switch (pref.type) {
+                  case 'checkBox':
+                    final p = pref.checkBoxPreference!;
+                    return CheckboxListTile(
+                      title: TitleText(p.title ?? ''),
+                      subtitle:
+                          p.summary != null ? SubtitleText(p.summary!) : null,
+                      value: p.value ?? false,
+                      onChanged: (val) {
+                        p.value = val;
+                        setState(() {});
+                      },
+                    );
+                  case 'switch':
+                    final p = pref.switchPreferenceCompat!;
+                    return SwitchListTile(
+                      title: TitleText(p.title ?? ''),
+                      value: p.value ?? false,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 0),
+                      onChanged: (val) {
+                        p.value = val;
+                        setState(() {});
+                      },
+                    );
+                  case 'list':
+                    final p = pref.listPreference!;
+                    return ListTile(
+                      title: TitleText(p.title ?? ''),
+                      subtitle: SubtitleText(
+                        p.summary != null && p.summary!.isNotEmpty
+                            ? p.summary!
+                            : p.entries?[p.valueIndex ?? 0] ?? '',
+                      ),
+                      onTap: () {
+                        AlertDialogBuilder(context)
+                          ..setTitle(p.title ?? '')
+                          ..singleChoiceItems(
+                            (p.entries ?? []),
+                            p.valueIndex ?? 0,
+                            (int index) {
+                              p.valueIndex = index;
+                              setState(() {});
+                            },
+                          )
+                          ..show();
+                      },
+                    );
+                  case 'multi_select':
+                    final p = pref.multiSelectListPreference!;
+                    var subtitle = (p.entries ?? [])
+                        .asMap()
+                        .entries
+                        .where((e) =>
+                            p.values?.contains(p.entryValues?[e.key]) ?? false)
+                        .map((e) => e.value)
+                        .toList()
+                        .join(", ");
+                    return ListTile(
+                      title: TitleText(p.title ?? ''),
+                      subtitle: SubtitleText(
+                        p.summary != null && p.summary!.isNotEmpty
+                            ? p.summary!
+                            : subtitle,
+                      ),
+                      onTap: () async {
+                        final newValues = <String>[];
+                        AlertDialogBuilder(context)
+                          ..setTitle(p.title ?? '')
+                          ..multiChoiceItems(
+                            p.entries ?? [],
+                            p.entryValues
+                                ?.map((pv) => p.values?.contains(pv) ?? false)
+                                .toList(),
+                            (List<bool> checked) {
+                              newValues.clear();
+                              for (var i = 0; i < checked.length; i++) {
+                                if (checked[i]) {
+                                  final value = p.entryValues?[i];
+                                  if (value != null) newValues.add(value);
+                                }
+                              }
+                            },
+                          )
+                          ..setPositiveButton(
+                            'OK',
+                            () => setState(() {
+                              p.values = newValues.toList();
+                            }),
+                          )
+                          ..setNegativeButton("Cancel", () {})
+                          ..show();
+                      },
+                    );
+                  case 'text':
+                    final p = pref.editTextPreference!;
+                    return ListTile(
+                      title: TitleText(p.title ?? ''),
+                      subtitle: SubtitleText(p.value ?? p.text ?? ''),
+                      onTap: () {
+                        var value = p.value ?? p.text ?? '';
+                        AlertDialogBuilder(context)
+                          ..setTitle(p.dialogTitle ?? '')
+                          ..setMessage(p.dialogMessage ?? '')
+                          ..setCustomView(
+                            TextFormField(
+                              initialValue: p.value ?? p.text,
+                              onChanged: (val) => value = val,
+                            ),
+                          )
+                          ..setPositiveButton(
+                            'OK',
+                            () => setState(() {
+                              p.value = value;
+                            }),
+                          )
+                          ..setNegativeButton("Cancel", () {})
+                          ..show();
+                      },
+                    );
 
-//   Widget _buildCheckBoxPreference(
-//       SourcePreference preference, CheckBoxPreference pref, ColorScheme theme) {
-//     return CheckboxListTile(
-//       title: Text(
-//         pref.title!,
-//         style: const TextStyle(
-//           fontFamily: 'Poppins',
-//           fontSize: 16.0,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       subtitle: Text(
-//         pref.summary!,
-//         style: TextStyle(
-//           fontSize: 10,
-//           color: theme.secondary,
-//           fontFamily: 'Poppins',
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//       value: pref.value,
-//       onChanged: (value) {
-//         setState(() {
-//           pref.value = value;
-//         });
-//         setPreferenceSetting(preference, widget.source);
-//       },
-//       controlAffinity: ListTileControlAffinity.trailing,
-//     );
-//   }
-
-//   Widget _buildSwitchPreference(SourcePreference preference,
-//       SwitchPreferenceCompat pref, ColorScheme theme) {
-//     return SwitchListTile(
-//       title: Text(
-//         pref.title!,
-//         style: const TextStyle(
-//           fontFamily: 'Poppins',
-//           fontSize: 16.0,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       subtitle: Text(
-//         pref.summary!,
-//         style: TextStyle(
-//           fontSize: 10,
-//           color: theme.secondary,
-//           fontFamily: 'Poppins',
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//       value: pref.value!,
-//       onChanged: (value) {
-//         setState(() {
-//           pref.value = value;
-//         });
-//         setPreferenceSetting(preference, widget.source);
-//       },
-//       controlAffinity: ListTileControlAffinity.trailing,
-//     );
-//   }
-
-//   Widget _buildListPreference(
-//       SourcePreference preference, ListPreference pref, ColorScheme theme) {
-//     return ListTile(
-//       title: Text(
-//         pref.title!,
-//         style: const TextStyle(
-//           fontFamily: 'Poppins',
-//           fontSize: 16.0,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       subtitle: Text(
-//         pref.entries![pref.valueIndex!],
-//         style: TextStyle(
-//           fontSize: 10,
-//           color: theme.secondary,
-//           fontFamily: 'Poppins',
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//       onTap: () async {
-//         final res = await _showListDialog(pref);
-//         if (res != null) {
-//           setState(() {
-//             pref.valueIndex = res;
-//           });
-//           setPreferenceSetting(preference, widget.source);
-//         }
-//       },
-//     );
-//   }
-
-//   Widget _buildMultiSelectPreference(SourcePreference preference,
-//       MultiSelectListPreference pref, ColorScheme theme) {
-//     return ListTile(
-//       title: Text(
-//         pref.title!,
-//         style: const TextStyle(
-//           fontFamily: 'Poppins',
-//           fontSize: 16.0,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       subtitle: Text(
-//         pref.summary!,
-//         style: TextStyle(
-//           fontSize: 10,
-//           color: theme.secondary,
-//           fontFamily: 'Poppins',
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//       onTap: () {
-//         _showMultiSelectDialog(preference, pref);
-//       },
-//     );
-//   }
-
-//   Future<void> _showEditTextDialog(
-//       SourcePreference preference, EditTextPreference pref) async {
-//     await showDialog(
-//       context: context,
-//       builder: (context) => EditTextDialogWidget(
-//         text: pref.value!,
-//         onChanged: (value) {
-//           setState(() {
-//             pref.value = value;
-//           });
-//           setPreferenceSetting(preference, widget.source);
-//         },
-//         dialogTitle: pref.dialogTitle!,
-//         dialogMessage: pref.dialogMessage!,
-//       ),
-//     );
-//   }
-
-//   Future<int?> _showListDialog(ListPreference pref) async {
-//     return await showDialog<int>(
-//       context: context,
-//       builder: (context) => AlertDialog(
-//         title: Text(pref.title!),
-//         content: SizedBox(
-//           width: MediaQuery.of(context).size.width * 0.8,
-//           child: SuperListView.builder(
-//             shrinkWrap: true,
-//             itemCount: pref.entries!.length,
-//             itemBuilder: (context, index) {
-//               return RadioListTile(
-//                 dense: true,
-//                 contentPadding: const EdgeInsets.all(0),
-//                 value: index,
-//                 groupValue: pref.valueIndex,
-//                 onChanged: (value) {
-//                   Navigator.pop(context, index);
-//                 },
-//                 title: Text(pref.entries![index]),
-//               );
-//             },
-//           ),
-//         ),
-//         actions: _buildDialogActions(context),
-//       ),
-//     );
-//   }
-
-//   void _showMultiSelectDialog(
-//       SourcePreference preference, MultiSelectListPreference pref) {
-//     List<String> indexList = List.from(pref.values!);
-//     showDialog(
-//       context: context,
-//       builder: (context) {
-//         return StatefulBuilder(
-//           builder: (context, setState) {
-//             return AlertDialog(
-//               title: Text(pref.title!),
-//               content: SizedBox(
-//                 width: MediaQuery.of(context).size.width * 0.8,
-//                 child: SuperListView.builder(
-//                   shrinkWrap: true,
-//                   itemCount: pref.entries!.length,
-//                   itemBuilder: (context, index) {
-//                     if (index > 1) return const SizedBox.shrink();
-//                     return ListTileChapterFilter(
-//                       label: pref.entries![index],
-//                       type:
-//                           indexList.contains(pref.entryValues?[index]) ? 1 : 0,
-//                       onTap: () {
-//                         setState(() {
-//                           if (indexList.contains(pref.entryValues![index])) {
-//                             indexList.remove(pref.entryValues![index]);
-//                           } else {
-//                             indexList.add(pref.entryValues![index]);
-//                           }
-//                           pref.values = indexList;
-//                         });
-//                         setPreferenceSetting(preference, widget.source);
-//                       },
-//                     );
-//                   },
-//                 ),
-//               ),
-//               actions: _buildDialogActions(context),
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-
-//   List<Widget> _buildDialogActions(BuildContext context) {
-//     return [
-//       TextButton(
-//         onPressed: () => Navigator.pop(context),
-//         child: const Text('Cancel'),
-//       ),
-//       TextButton(
-//         onPressed: () => Navigator.pop(context),
-//         child: const Text('Ok'),
-//       ),
-//     ];
-//   }
-// }
-
-// class EditTextDialogWidget extends StatefulWidget {
-//   final String text;
-//   final String dialogTitle;
-//   final String dialogMessage;
-//   final Function(String) onChanged;
-
-//   const EditTextDialogWidget({
-//     super.key,
-//     required this.text,
-//     required this.onChanged,
-//     required this.dialogTitle,
-//     required this.dialogMessage,
-//   });
-
-//   @override
-//   State<EditTextDialogWidget> createState() => _EditTextDialogWidgetState();
-// }
-
-// class _EditTextDialogWidgetState extends State<EditTextDialogWidget> {
-//   late final TextEditingController _controller =
-//       TextEditingController(text: widget.text);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var theme = Theme.of(context).colorScheme;
-//     return AlertDialog(
-//       title: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(widget.dialogTitle),
-//           Text(widget.dialogMessage, style: const TextStyle(fontSize: 13)),
-//         ],
-//       ),
-//       content: Padding(
-//         padding: const EdgeInsets.only(top: 20),
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: TextField(
-//             controller: _controller,
-//             decoration: InputDecoration(
-//               isDense: true,
-//               filled: false,
-//               enabledBorder: OutlineInputBorder(
-//                 borderSide: BorderSide(color: theme.primary),
-//               ),
-//               focusedBorder: OutlineInputBorder(
-//                 borderSide: BorderSide(color: theme.primary),
-//               ),
-//               border: const OutlineInputBorder(borderSide: BorderSide()),
-//             ),
-//           ),
-//         ),
-//       ),
-//       actions: _buildDialogActions(context),
-//     );
-//   }
-
-//   List<Widget> _buildDialogActions(BuildContext context) {
-//     return [
-//       TextButton(
-//         onPressed: () => Navigator.pop(context),
-//         child: const Text('Cancel'),
-//       ),
-//       TextButton(
-//         onPressed: () {
-//           widget.onChanged(_controller.text);
-//           Navigator.pop(context);
-//         },
-//         child: const Text('Ok'),
-//       ),
-//     ];
-//   }
-// }
+                  default:
+                    return ListTile(
+                      title: Text(pref.key ?? 'Unknown Preference'),
+                      subtitle: Text(
+                        'Unsupported preference type ${pref.type}',
+                      ),
+                    );
+                }
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

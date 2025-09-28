@@ -1,4 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, unused_element
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -114,7 +115,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   void _initListVars() {
-    Logger.i(currentManga.value?.episodeCount.toString() ?? 'null');
+    Logger.i('[_initListVars] ${currentManga.value?.episodeCount}');
     mangaProgress.value = currentManga.value?.episodeCount?.toInt() ?? 0;
     mangaScore.value = currentManga.value?.score?.toDouble() ?? 0.0;
     mangaStatus.value = currentManga.value?.watchingStatus ?? "CURRENT";
@@ -154,8 +155,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Future<void> _mapToService() async {
-    final mappedData =
-        await mapMedia(formatTitles(anilistData!), searchedTitle);
+    final key =
+        '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
+    final savedTitle =
+        settingsController.preferences.get(key, defaultValue: null);
+    final mappedData = await mapMedia(formatTitles(anilistData!), searchedTitle,
+        savedTitle: savedTitle);
     if (mappedData != null) {
       await _fetchSourceDetails(mappedData);
     }
@@ -241,14 +246,64 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      if (widget.media.serviceType != ServicesType.extensions &&
-                          widget.media.serviceType.onlineService.isLoggedIn
-                              .value) ...[
-                        Expanded(
-                          child: Container(
+                  Obx(() {
+                    return Row(
+                      children: [
+                        if (widget.media.serviceType !=
+                                ServicesType.extensions &&
+                            widget.media.serviceType.onlineService.isLoggedIn
+                                .value) ...[
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .outline
+                                      .withOpacity(0.2),
+                                ),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer
+                                    .withOpacity(0.5),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    if (widget.media.serviceType.onlineService
+                                        .isLoggedIn.value) {
+                                      showListEditorModal(context);
+                                    } else {
+                                      snackBar("You aren't logged in Genius.",
+                                          duration: 1000);
+                                    }
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      AnymexText(
+                                        text: convertAniListStatus(
+                                            mangaStatus.value,
+                                            isManga: true),
+                                        variant: TextVariant.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 7),
+                          Container(
                             height: 50,
+                            width: 60,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
@@ -265,82 +320,36 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                onTap: () {
-                                  if (widget.media.serviceType.onlineService
-                                      .isLoggedIn.value) {
-                                    showListEditorModal(context);
-                                  } else {
-                                    snackBar("You aren't logged in Genius.",
-                                        duration: 1000);
-                                  }
-                                },
-                                borderRadius: BorderRadius.circular(16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AnymexText(
-                                      text: convertAniListStatus(
-                                          currentManga.value?.watchingStatus,
-                                          isManga: true),
-                                      variant: TextVariant.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                  onTap: () {
+                                    showCustomListDialog(
+                                        context,
+                                        anilistData!,
+                                        offlineStorage.mangaCustomLists.value,
+                                        ItemType.manga);
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: const Icon(
+                                      HugeIcons.strokeRoundedLibrary)),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 7),
-                        Container(
-                          height: 50,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .withOpacity(0.2),
+                        ] else ...[
+                          Expanded(
+                            child: AnymexButton2(
+                              onTap: () {
+                                showCustomListDialog(
+                                    context,
+                                    anilistData!,
+                                    offlineStorage.animeCustomLists.value,
+                                    ItemType.anime);
+                              },
+                              label: 'Add to Library',
+                              icon: HugeIcons.strokeRoundedLibrary,
                             ),
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainer
-                                .withOpacity(0.5),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                                onTap: () {
-                                  showCustomListDialog(
-                                      context,
-                                      anilistData!,
-                                      offlineStorage.mangaCustomLists.value,
-                                      ItemType.manga);
-                                },
-                                borderRadius: BorderRadius.circular(16),
-                                child:
-                                    const Icon(HugeIcons.strokeRoundedLibrary)),
-                          ),
-                        ),
-                      ] else ...[
-                        Expanded(
-                          child: AnymexButton2(
-                            onTap: () {
-                              showCustomListDialog(
-                                  context,
-                                  anilistData!,
-                                  offlineStorage.animeCustomLists.value,
-                                  ItemType.anime);
-                            },
-                            label: 'Add to Library',
-                            icon: HugeIcons.strokeRoundedLibrary,
-                          ),
-                        )
-                      ]
-                    ],
-                  ),
+                          )
+                        ]
+                      ],
+                    );
+                  }),
                   const SizedBox(height: 10),
                   _buildProgressContainer(context)
                 ],
@@ -395,67 +404,74 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Widget _buildProgressContainer(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Iconsax.book_1,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: AnymexTextSpans(
-              fontSize: 14,
-              spans: [
-                AnymexTextSpan(
-                  text: "Chapter ",
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-                AnymexTextSpan(
-                  text: mangaProgress.value.toString(),
-                  variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                AnymexTextSpan(
-                  text: ' of ',
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-                AnymexTextSpan(
-                  text: anilistData?.totalChapters.toString() ??
-                      anilistData?.totalChapters.toString() ??
-                      '??',
-                  variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
+    return Obx(() {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color:
+              Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Iconsax.book_1,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              size: 16,
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            ),
-            child: Text(
-              '${formatProgress(currentChapter: mangaProgress.value, totalChapters: anilistData?.totalChapters ?? 1, altLength: chapterList?.length ?? 1)}%',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            const SizedBox(width: 8),
+            Expanded(
+              child: AnymexTextSpans(
+                fontSize: 14,
+                spans: [
+                  AnymexTextSpan(
+                    text: "Chapter ",
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
+                  AnymexTextSpan(
+                    text: mangaProgress.value.toString(),
+                    variant: TextVariant.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  AnymexTextSpan(
+                    text: ' of ',
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
+                  ),
+                  AnymexTextSpan(
+                    text: anilistData?.totalChapters.toString() ??
+                        anilistData?.totalChapters.toString() ??
+                        '??',
+                    variant: TextVariant.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              ),
+              child: Text(
+                '${formatProgress(currentChapter: mangaProgress.value, totalChapters: anilistData?.totalChapters ?? 1, altLength: chapterList?.length ?? 1)}%',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildChapterSection(BuildContext context) {
