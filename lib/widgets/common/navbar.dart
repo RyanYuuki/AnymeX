@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
@@ -131,11 +133,19 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                               const Key('normalItems'),
                             ),
                           )),
-                desktopValue: _buildFlex(
-                  widget.items,
-                  widget.isDesktop,
-                  const Key('normalItems'),
-                )),
+                desktopValue: !Platform.isIOS && !Platform.isAndroid
+                    ? _buildFlex(
+                        widget.items,
+                        widget.isDesktop,
+                        const Key('normalItems'),
+                      )
+                    : SingleChildScrollView(
+                        child: _buildFlex(
+                          widget.items,
+                          widget.isDesktop,
+                          const Key('normalItems'),
+                        ),
+                      )),
           ],
         ),
       ),

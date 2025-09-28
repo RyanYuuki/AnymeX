@@ -366,7 +366,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "17373f422bd528ab95641a6b247f7051f39340ec"
+      resolved-ref: "3d0fda59764752a4ff5e905ec1c49d6b4dc909bc"
       url: "https://github.com/RyanYuuki/DartotsuExtensionBridge.git"
     source: git
     version: "0.0.4"
@@ -463,10 +463,10 @@ packages:
     dependency: transitive
     description:
       name: expressions
-      sha256: "308a621b602923dd8a0cf3072793b24850d06453eb49c6b698cbda41a282e904"
+      sha256: f3b0e99563a9a1bde1138e728eb722f292cc7d2aec55d28136c49b1a370306c5
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.5+2"
+    version: "0.2.5+3"
   extended_image:
     dependency: "direct main"
     description:
