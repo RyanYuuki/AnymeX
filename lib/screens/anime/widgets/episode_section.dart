@@ -1,6 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
+import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -313,6 +315,9 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                             }
                             return widget.episodeList?.value ?? [];
                           });
+                          final key =
+                              '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
+                          settingsController.preferences.put(key, manga.title);
                         },
                       );
                     },

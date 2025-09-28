@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
@@ -202,7 +200,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               child: Row(
@@ -225,8 +222,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
                 ],
               ),
             ),
-
-            // Search
             if (modifiedLists.length > 3)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -238,8 +233,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
                   focusNode: _searchFocus,
                 ),
               ),
-
-            // Lists
             Flexible(
               child: Container(
                 constraints: BoxConstraints(
@@ -308,7 +301,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                   padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
-                                      // Checkbox
                                       Container(
                                         width: 20,
                                         height: 20,
@@ -333,10 +325,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                               )
                                             : null,
                                       ),
-
                                       const SizedBox(width: 16),
-
-                                      // List info
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -364,8 +353,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                           ],
                                         ),
                                       ),
-
-                                      // Status indicator
                                       if (isChecked)
                                         Container(
                                           padding: const EdgeInsets.symmetric(
@@ -397,8 +384,6 @@ class _CustomListDialogState extends State<CustomListDialog> {
                       ),
               ),
             ),
-
-            // Create new collection button
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -417,10 +402,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Action buttons
                   Row(
                     children: [
                       Expanded(
