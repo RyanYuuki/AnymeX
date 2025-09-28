@@ -397,15 +397,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final current = currentChapter.value;
     if (current == null || current.number == null) return;
 
-    final targetNumber = next ? current.number! + 1 : current.number! - 1;
+    // final targetNumber = next ? current.number! + 1 : current.number! - 1;
 
-    final numberMatchIndex =
-        chapterList.indexWhere((chapter) => chapter.number == targetNumber);
+    // final numberMatchIndex =
+    //     chapterList.indexWhere((chapter) => chapter.number == targetNumber);
 
-    if (numberMatchIndex != -1) {
-      navigateToChapter(numberMatchIndex);
-      return;
-    }
+    // if (numberMatchIndex != -1) {
+    //   navigateToChapter(numberMatchIndex);
+    //   return;
+    // }
 
     final index = chapterList.indexOf(current);
     if (index == -1) return;
