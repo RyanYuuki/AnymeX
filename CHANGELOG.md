@@ -1,20 +1,21 @@
 ### 🆕 Changelog
 ### 🌟 Features
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d5a6359)  hold and swipe to increase speed 2.0
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/cc6bc83)  option for switching back to old player
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/5bc2a9b)  brought back auto skip, skip button, hold to seek
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4495c7b)  implemented auto database delete on crash related to database
 
 
 ### 🔧 Bug Fixes & Improvements
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8a6e438)  fixed list editor issue with progress and library issue
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/64923ca)  fix wrong chapter numbers no novel library
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/e76b47f)  lots of improvement for offline saving
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8cdf375)  fixed source link not working from ext page
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/15592e7)  fix romaji title on recom
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/cea9b2b)  removed dupe entries
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a88564a)  fixed few player issues and improved media indicators
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/f8aafec)  fixed media indicator on old player
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3d5a913)  fixed wrong title not remembering last selected title
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/78ed39b)  fixed some stuff and improved list editor
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a870c85)  fixed moving to current1 chapter instead of next chapter
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9a651db)  fixed status progress not immediately updating
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/77140b0)  fixed non scrollable nav bar on small landscape displays
 
 
 ### 🧹 Chores & Documentation
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/36f11f9)  bump version 3.0.0 to 3.0.1
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a82ca25)  bump version to v3.0.1-hotfix hotfix
 
 
-![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.1/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
+![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.1-hotfix/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
