@@ -262,6 +262,9 @@ class SimklService extends GetxController
 
   @override
   Future<void> updateListEntry(UpdateListEntryParams params) async {
+    if (!isLoggedIn.value) {
+      return;
+    }
     final listId = params.listId;
     final status = params.status;
     final progress = params.progress;

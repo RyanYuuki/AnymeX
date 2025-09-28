@@ -299,7 +299,8 @@ class AnilistAuth extends GetxController {
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
-              .toList();
+              .toList()
+              .removeDupes();
 
           currentlyWatching.value = currentlyWatching.value.removeDupes();
 
@@ -307,7 +308,8 @@ class AnilistAuth extends GetxController {
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
-              .toList();
+              .toList()
+              .removeDupes();
           Logger.i("Anime List Fetched Successfully!");
         } else {
           Logger.i('Unexpected response structure: ${response.body}');
@@ -388,7 +390,7 @@ class AnilistAuth extends GetxController {
     bool isAnime = true,
   }) async {
     final token = await storage.get('auth_token');
-    if (token == null) {
+    if (token == null || !isLoggedIn.value) {
       return;
     }
 
@@ -561,7 +563,8 @@ class AnilistAuth extends GetxController {
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
-              .toList();
+              .toList()
+              .removeDupes();
         } else {
           Logger.i('Unexpected response structure: ${response.body}');
         }

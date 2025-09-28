@@ -565,9 +565,12 @@ averageScore
   }
 
   List<Media> parseMediaList(List<dynamic> mediaList) {
-    return mediaList.map((media) {
-      return Media.fromSmallJson(media, media['type'] == 'MANGA');
-    }).toList();
+    return mediaList
+        .map((media) {
+          return Media.fromSmallJson(media, media['type'] == 'MANGA');
+        })
+        .toList()
+        .removeDupes();
   }
 
   static Future<List<Episode>> fetchEpisodesFromAnify(

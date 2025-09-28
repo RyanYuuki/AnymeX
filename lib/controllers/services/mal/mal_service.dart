@@ -540,6 +540,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> updateListEntry(UpdateListEntryParams params) async {
+    if (!isLoggedIn.value) return;
     final listId = params.listId;
     final score = params.score;
     final status = params.status;
