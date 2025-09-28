@@ -1,0 +1,8 @@
+<i>AnymeX</i> is a multiservice tracking client designed exclusively for managing and tracking anime and manga progress across AniList, MyAnimeList, and Simkl.
+
+**Important:**
+
+* <b>AnymeX is a tracking tool only.</b> It does not host, provide, distribute, or endorse any streaming content, media, or third-party extensions.
+* <b>User Responsibility:</b> Users are solely responsible for how they use the app and any third-party services or extensions they choose to interact with. Users must comply with all applicable laws, copyright, and intellectual property rights.
+* <b>No Liability:</b> The developers of AnymeX disclaim all liability for misuse, legal issues, or violations arising from user actions. Legal concerns, including DMCA claims, should be directed to the respective third-party services, not AnymeX. The app is provided "as-is" without warranties.
+* <b>Services:</b> AnymeX integrates only with the official APIs of supported services (AniList, MyAnimeList, Simkl). Third-party extensions are the responsibility of their creators, not the AnymeX developers.

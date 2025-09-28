@@ -52,11 +52,15 @@
 **AnymeX** is a multiservice tracking client designed exclusively for managing and tracking anime and manga progress across [**AniList**](https://anilist.co/), [**MyAnimeList**](https://myanimelist.net/), and [**Simkl**](https://simkl.com/).
 
 > [!IMPORTANT]  
-> **AnymeX is a tracking tool only.** It does **not** host, provide, distribute, or endorse any streaming content, media, or third-party extensions.  
-> The app integrates solely with official APIs of supported services (AniList, MyAnimeList, Simkl) for tracking purposes.  
-> Users are solely responsible for their usage of the app and any third-party services or extensions they choose to interact with. The developer of AnymeX explicitly disclaims all liability for any misuse, legal issues, or violations arising from user actions. Any legal concerns should be directed to the respective third-party services, not AnymeX.  
+> **AnymeX is a tracking tool only.** It does not host, provide, distribute, or endorse any streaming content, media, or third-party extensions.  
 >  
-> **By using this app, you agree to comply with our [Terms of Service](./TOS.md).**
+> **User Responsibility:** Users are solely responsible for how they use the app and any third-party services or extensions they choose to interact with. Users must comply with all applicable laws, copyright, and intellectual property rights.  
+>  
+> **No Liability:** The developers of AnymeX disclaim all liability for misuse, legal issues, or violations arising from user actions. Legal concerns, including DMCA claims, should be directed to the respective third-party services, not AnymeX. The app is provided "as-is" without warranties.  
+>  
+> **Services:** AnymeX integrates only with the official APIs of supported services (AniList, MyAnimeList, Simkl). Third-party extensions are the responsibility of their creators, not the AnymeX developers.  
+>  
+> **By using AnymeX, you agree to comply with our [Terms of Service](./TOS.md). Please review the ToS to understand our DMCA-compliant, tracking functionality and our non-involvement with any content or services beyond AniList, MyAnimeList, and Simkl.**
 
 ## Downloads
 
