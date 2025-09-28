@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'package:anymex/screens/anime/widgets/media_indicator_old.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -14,7 +15,6 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_watch_screen.dart';
-import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/widgets/video_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
@@ -248,7 +248,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
     player.open(Media(episode.value.url,
         httpHeaders: episode.value.headers ??
-            {'Referer': sourceController.activeSource.value!.baseUrl!},
+            {'Referer': sourceController.activeSource.value?.baseUrl ?? ''},
         start: Duration(milliseconds: startTimeMilliseconds)));
     _initSubs();
     player.setRate(prevRate.value);
@@ -682,7 +682,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
       ScreenBrightness.instance.resetScreenBrightness();
     } else {
-      windowManager.setFullScreen(false);
+      if (!isMobile) {
+        windowManager.setFullScreen(false);
+      }
     }
     _keyboardListenerFocusNode.dispose();
     super.dispose();
@@ -924,29 +926,27 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildVolumeSlider() {
-    // return Obx(() => AnimatedOpacity(
-    //       curve: Curves.easeInOut,
-    //       opacity: _volumeIndicator.value ? 1.0 : 0.0,
-    //       duration: const Duration(milliseconds: 300),
-    //       child: MediaIndicatorBuilder(
-    //         value: _volumeValue.value,
-    //         isVolumeIndicator: true,
-    //       ),
-    //     ));
-    return SizedBox.shrink();
+    return Obx(() => AnimatedOpacity(
+          curve: Curves.easeInOut,
+          opacity: _volumeIndicator.value ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child: MediaIndicatorBuilder(
+            value: _volumeValue.value,
+            isVolumeIndicator: true,
+          ),
+        ));
   }
 
   Widget _buildBrightnessSlider() {
-    // return Obx(() => AnimatedOpacity(
-    //       curve: Curves.easeInOut,
-    //       opacity: _brightnessIndicator.value ? 1.0 : 0.0,
-    //       duration: const Duration(milliseconds: 300),
-    //       child: MediaIndicatorBuilder(
-    //         value: _brightnessValue.value,
-    //         isVolumeIndicator: false,
-    //       ),
-    //     ));
-    return SizedBox.shrink();
+    return Obx(() => AnimatedOpacity(
+          curve: Curves.easeInOut,
+          opacity: _brightnessIndicator.value ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child: MediaIndicatorBuilder(
+            value: _brightnessValue.value,
+            isVolumeIndicator: false,
+          ),
+        ));
   }
 
   Obx _buildSubtitle() {
