@@ -82,6 +82,7 @@ void main(List<String> args) async {
     WidgetsFlutterBinding.ensureInitialized();
     await Logger.init();
     await dotenv.load(fileName: ".env");
+
     // TODO: For all the contributors just make a supabase account and then change this
     // await Supabase.initialize(
     //     url: dotenv.env['SUPABASE_URL']!,
@@ -152,6 +153,11 @@ void main(List<String> args) async {
     );
   }, (error, stackTrace) async {
     Logger.e("CRASH: $error");
+    if (error.toString().contains('PathAccessException: lock failed')) {
+      Hive.deleteFromDisk();
+      await Hive.initFlutter('AnymeX');
+      Hive.deleteFromDisk();
+    }
     Logger.e("STACK: $stackTrace");
   }, zoneSpecification: ZoneSpecification(
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
