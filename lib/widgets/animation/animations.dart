@@ -1,5 +1,103 @@
 import 'package:flutter/material.dart';
 
+class PageAnimation extends StatefulWidget {
+  final Widget child;
+  final Duration duration;
+  final Duration delay;
+  final double slideDistance;
+  final double bounceHeight;
+  final Curve curve;
+
+  const PageAnimation({
+    super.key,
+    required this.child,
+    this.duration = const Duration(milliseconds: 800),
+    this.delay = Duration.zero,
+    this.slideDistance = 50.0,
+    this.bounceHeight = 20.0,
+    this.curve = Curves.elasticOut,
+  });
+
+  @override
+  State<PageAnimation> createState() => _PageAnimationState();
+}
+
+class _PageAnimationState extends State<PageAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+  late Animation<Offset> _bounceAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+
+    // Opacity animation
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+    ));
+
+    // Bouncy slide animation
+    _bounceAnimation = Tween<Offset>(
+      begin: Offset(0.0, widget.slideDistance / 100),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve,
+    ));
+
+    // Scale animation for extra bounce effect
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve,
+    ));
+
+    // Start animation after delay
+    if (widget.delay == Duration.zero) {
+      _controller.forward();
+    } else {
+      Future.delayed(widget.delay, () {
+        if (mounted) {
+          _controller.forward();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _bounceAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: FadeTransition(
+          opacity: _opacityAnimation,
+          child: widget.child,
+        ),
+      ),
+    );
+  }
+}
+
 class BouncyAnimatedItemWrapper extends StatefulWidget {
   final Widget child;
   final Duration duration;

@@ -25,7 +25,7 @@ class Relation {
       id: json['node']['id'],
       cover: json['node']['bannerImage'] ?? '',
       title:
-          json['node']['title']['romaji'] ?? json['node']['title']['english'],
+          json['node']['title']['english'] ?? json['node']['title']['romaji'],
       poster: json['node']['coverImage']['large'],
       type: json['node']['type'],
       averageScore: (json['node']['averageScore'] ?? 0).toString(),

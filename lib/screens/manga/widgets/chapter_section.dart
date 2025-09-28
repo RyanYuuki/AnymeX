@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -112,6 +113,10 @@ class ChapterSection extends StatelessWidget {
                             chapterList.value = [];
                             await getDetailsFromSource(
                                 Media.froDMedia(manga, ItemType.manga));
+                            final key =
+                                '${sourceController.activeMangaSource.value?.id}-${anilistData.id}-${anilistData.serviceType.index}';
+                            settingsController.preferences
+                                .put(key, manga.title);
                           },
                           isManga: true,
                         );

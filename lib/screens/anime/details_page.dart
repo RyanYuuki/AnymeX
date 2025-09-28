@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
@@ -203,11 +204,20 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Future<void> _mapToService() async {
-    final mappedData =
-        await mapMedia(formatTitles(widget.media) ?? [], searchedTitle);
+    final key =
+        '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
+    final savedTitle =
+        settingsController.preferences.get(key, defaultValue: null);
+    final mappedData = await mapMedia(
+        formatTitles(widget.media) ?? [], searchedTitle,
+        savedTitle: savedTitle);
     if (mappedData != null) {
       await _fetchSourceDetails(mappedData);
     }
+  }
+
+  List<String>? formatTitles(Media media) {
+    return ['${media.title}*ANIME', media.romajiTitle];
   }
 
   void _processExtensionData(Media tempData) async {
@@ -268,10 +278,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         .map((e) => Episode(title: e.title, number: e.number, link: e.link))
         .toList();
     return newEps;
-  }
-
-  List<String>? formatTitles(Media media) {
-    return ['${media.title}*ANIME', media.romajiTitle];
   }
 
   List<Episode> _convertEpisodes(List<dynamic> episodes, String title) {
@@ -387,14 +393,63 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      if (widget.media.serviceType != ServicesType.extensions &&
-                          widget.media.serviceType.onlineService.isLoggedIn
-                              .value) ...[
-                        Expanded(
-                          child: Container(
+                  Obx(() {
+                    return Row(
+                      children: [
+                        if (widget.media.serviceType !=
+                                ServicesType.extensions &&
+                            widget.media.serviceType.onlineService.isLoggedIn
+                                .value) ...[
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .outline
+                                      .withOpacity(0.2),
+                                ),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer
+                                    .withOpacity(0.5),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    if (widget.media.serviceType.onlineService
+                                        .isLoggedIn.value) {
+                                      showListEditorModal(context);
+                                    } else {
+                                      snackBar("You aren't logged in Genius.",
+                                          duration: 1000);
+                                    }
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      AnymexText(
+                                        text: convertAniListStatus(
+                                            animeStatus.value),
+                                        variant: TextVariant.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 7),
+                          Container(
                             height: 50,
+                            width: 60,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
@@ -411,81 +466,36 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                onTap: () {
-                                  if (widget.media.serviceType.onlineService
-                                      .isLoggedIn.value) {
-                                    showListEditorModal(context);
-                                  } else {
-                                    snackBar("You aren't logged in Genius.",
-                                        duration: 1000);
-                                  }
-                                },
-                                borderRadius: BorderRadius.circular(16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AnymexText(
-                                      text: convertAniListStatus(
-                                          currentAnime.value?.watchingStatus),
-                                      variant: TextVariant.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                  onTap: () {
+                                    showCustomListDialog(
+                                        context,
+                                        anilistData!,
+                                        offlineStorage.animeCustomLists.value,
+                                        ItemType.anime);
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: const Icon(
+                                      HugeIcons.strokeRoundedLibrary)),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 7),
-                        Container(
-                          height: 50,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .withOpacity(0.2),
+                        ] else ...[
+                          Expanded(
+                            child: AnymexButton2(
+                              onTap: () {
+                                showCustomListDialog(
+                                    context,
+                                    anilistData!,
+                                    offlineStorage.animeCustomLists.value,
+                                    ItemType.anime);
+                              },
+                              label: 'Add to Library',
+                              icon: HugeIcons.strokeRoundedLibrary,
                             ),
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainer
-                                .withOpacity(0.5),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                                onTap: () {
-                                  showCustomListDialog(
-                                      context,
-                                      anilistData!,
-                                      offlineStorage.animeCustomLists.value,
-                                      ItemType.anime);
-                                },
-                                borderRadius: BorderRadius.circular(16),
-                                child:
-                                    const Icon(HugeIcons.strokeRoundedLibrary)),
-                          ),
-                        ),
-                      ] else ...[
-                        Expanded(
-                          child: AnymexButton2(
-                            onTap: () {
-                              showCustomListDialog(
-                                  context,
-                                  anilistData!,
-                                  offlineStorage.animeCustomLists.value,
-                                  ItemType.anime);
-                            },
-                            label: 'Add to Library',
-                            icon: HugeIcons.strokeRoundedLibrary,
-                          ),
-                        )
-                      ]
-                    ],
-                  ),
+                          )
+                        ]
+                      ],
+                    );
+                  }),
                   const SizedBox(height: 10),
                   _buildProgressContainer(context)
                 ],
@@ -509,7 +519,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               else
                 const SizedBox.shrink(),
               _buildEpisodeSection(context),
-              _buildCommentsSection(context)
+              // _buildCommentsSection(context)
             ],
           )
         ],
@@ -774,13 +784,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           onUpdate: (id, score, status, progress) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
-            await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
+            fetcher.onlineService.updateListEntry(UpdateListEntryParams(
                 listId: id ?? widget.media.id,
                 syncIds: anilistData?.idMal != null ? [anilistData!.idMal] : [],
                 isAnime: true,
                 score: score,
                 status: status,
                 progress: progress));
+            currentAnime.value?.score = score.toString();
+            currentAnime.value?.watchingStatus = status;
+            currentAnime.value?.episodeCount = progress.toString();
             setState(() {});
           },
           onDelete: (s) async {

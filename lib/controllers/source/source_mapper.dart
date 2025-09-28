@@ -69,19 +69,14 @@ AnimeMatchResult matchAnimeTitle(
   String targetTitle, {
   double threshold = 0.9,
 }) {
-  // Normalize strings
   String normalize(String str) {
-    return str
-        .toLowerCase()
-        .replaceAll(RegExp(r'[^\w\s]'), '') // Remove special chars
-        .trim();
+    return str.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').trim();
   }
 
   final String normalizedEnglish = normalize(sourceEnglishTitle ?? '');
   final String normalizedRomaji = normalize(sourceRomajiTitle ?? '');
   final String normalizedTarget = normalize(targetTitle);
 
-  // Check for exact matches first
   if (normalizedEnglish == normalizedTarget ||
       normalizedRomaji == normalizedTarget) {
     return AnimeMatchResult(
@@ -100,7 +95,6 @@ AnimeMatchResult matchAnimeTitle(
     );
   }
 
-  // Extract season numbers from titles using regular expressions
   int? extractSeasonInfo(String title) {
     final List<RegExp> seasonPatterns = [
       RegExp(r'\b(\d+)(?:th|st|nd|rd)?\s*season\b', caseSensitive: false),
@@ -123,7 +117,6 @@ AnimeMatchResult matchAnimeTitle(
   final int? englishSeasonNumber = extractSeasonInfo(normalizedEnglish);
   final int? romajiSeasonNumber = extractSeasonInfo(normalizedRomaji);
 
-  // Levenshtein distance implementation
   int levenshtein(String a, String b) {
     if (a.isEmpty) return b.length;
     if (b.isEmpty) return a.length;
@@ -145,9 +138,9 @@ AnimeMatchResult matchAnimeTitle(
       for (int j = 1; j <= a.length; j++) {
         final int cost = a[j - 1] == b[i - 1] ? 0 : 1;
         matrix[i][j] = [
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + cost, // substitution
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost,
         ].reduce((a, b) => a < b ? a : b);
       }
     }
@@ -155,7 +148,6 @@ AnimeMatchResult matchAnimeTitle(
     return matrix[b.length][a.length];
   }
 
-  // Jaro-Winkler distance implementation
   double jaroWinkler(String s1, String s2) {
     if (s1.isEmpty && s2.isEmpty) return 1.0;
     if (s1.isEmpty || s2.isEmpty) return 0.0;
@@ -169,7 +161,6 @@ AnimeMatchResult matchAnimeTitle(
 
     int matches = 0;
 
-    // Find matches
     for (int i = 0; i < s1.length; i++) {
       final int start = i - matchDistance > 0 ? i - matchDistance : 0;
       final int end =
@@ -187,7 +178,6 @@ AnimeMatchResult matchAnimeTitle(
 
     if (matches == 0) return 0.0;
 
-    // Calculate transpositions
     int transpositions = 0;
     int j = 0;
 
@@ -206,9 +196,8 @@ AnimeMatchResult matchAnimeTitle(
             matches / s2.length +
             (matches - transpositions / 2) / matches);
 
-    // Winkler modification: boost score for strings that share a prefix
-    const double p = 0.1; // scaling factor
-    int l = 0; // length of common prefix up to 4 chars
+    const double p = 0.1;
+    int l = 0;
 
     final int minLength = s1.length < s2.length ? s1.length : s2.length;
     final int prefixLength = minLength < 4 ? minLength : 4;
@@ -224,7 +213,6 @@ AnimeMatchResult matchAnimeTitle(
     return jaro + l * p * (1 - jaro);
   }
 
-  // Calculate similarity metrics for a single title
   _SimilarityResult calculateSimilarity(
     String source,
     String target,
@@ -246,7 +234,6 @@ AnimeMatchResult matchAnimeTitle(
             (source.length > target.length ? source.length : target.length);
     final double jw = jaroWinkler(source, target);
 
-    // Word level matching (for handling word order differences)
     final List<String> sourceWords =
         source.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
     final List<String> targetWords =
@@ -265,19 +252,15 @@ AnimeMatchResult matchAnimeTitle(
                     : targetWords.length)
             : 0;
 
-    // Season number matching bonus
     double seasonBonus = 0;
     if (targetSeasonNum != null && sourceSeasonNum != null) {
-      // Exact match gets full bonus
       if (targetSeasonNum == sourceSeasonNum) {
         seasonBonus = 0.3;
       } else {
-        // Partial bonus for being close (helps with "Season 4" matching "4th Season")
         seasonBonus = 0.1;
       }
     }
 
-    // Combined score with weighted components
     final double finalScore =
         levRatio * 0.3 + jw * 0.3 + wordMatchRatio * 0.2 + seasonBonus;
 
@@ -290,7 +273,6 @@ AnimeMatchResult matchAnimeTitle(
     );
   }
 
-  // Get scores for both titles
   final _SimilarityResult englishSimilarity = calculateSimilarity(
     normalizedEnglish,
     normalizedTarget,
@@ -304,7 +286,6 @@ AnimeMatchResult matchAnimeTitle(
     targetSeasonNumber,
   );
 
-  // Determine the best match
   final double bestScore =
       englishSimilarity.finalScore > romajiSimilarity.finalScore
           ? englishSimilarity.finalScore
@@ -332,28 +313,25 @@ AnimeMatchResult matchAnimeTitle(
   );
 }
 
-Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
+Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle,
+    {String? savedTitle}) async {
   final sourceController = Get.find<SourceController>();
   final isManga = animeId[0].split("*").last == "MANGA";
   final type = isManga ? ItemType.manga : ItemType.anime;
   String romajiTitle = animeId[1];
   String englishTitle = animeId[0].split("*").first;
 
-  // Normalize titles: remove non-alphanumeric characters and trim whitespace
   String normalize(String title) {
     return title.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '').trim().toLowerCase();
   }
 
-  // If romajiTitle is '??', use englishTitle
   if (romajiTitle == '??') {
     romajiTitle = englishTitle;
   }
 
-  // Normalize both titles
   romajiTitle = normalize(romajiTitle);
   englishTitle = normalize(englishTitle);
 
-  // Get the active source based on media type
   final activeSource = isManga
       ? sourceController.activeMangaSource.value
       : sourceController.activeSource.value;
@@ -378,12 +356,24 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
       searchedTitle.value = "Searching: $resultTitle";
       print("Matching '$resultTitle' with query '$query'");
 
-      // Use the advanced anime title matcher
+      if (savedTitle != null) {
+        final normalizedSavedTitle = normalize(savedTitle);
+        if (resultTitle == normalizedSavedTitle) {
+          highestSimilarity = 1.0;
+          bestMatch = resultTitle;
+          bestMatchResult = result;
+          searchResults = results;
+          searchedTitle.value = bestMatch!.toUpperCase();
+          print("Exact match found with savedTitle: $resultTitle");
+          return;
+        }
+      }
+
       final matchResult = matchAnimeTitle(
         englishTitle,
         romajiTitle,
         resultTitle,
-        threshold: 0.7, // Lower threshold for more flexible matching
+        threshold: 0.7,
       );
 
       print(
@@ -391,17 +381,15 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
       print(
           "Match details: English(${matchResult.englishScore.toStringAsFixed(3)}) Romaji(${matchResult.romajiScore.toStringAsFixed(3)})");
 
-      // Perfect match check
       if (matchResult.score >= 0.95) {
         highestSimilarity = matchResult.score;
         bestMatch = resultTitle;
         bestMatchResult = result;
         searchResults = results;
         print("Perfect match found: $resultTitle");
-        return; // Exit early for near-perfect match
+        return;
       }
 
-      // Update best match if this result has a higher similarity
       if (matchResult.score > highestSimilarity) {
         highestSimilarity = matchResult.score;
         bestMatch = resultTitle;
@@ -413,15 +401,24 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle) async {
     }
   }
 
-  // First search using englishTitle
+  if (savedTitle != null && savedTitle.isNotEmpty) {
+    print("Searching with savedTitle: $savedTitle");
+    await searchAndCompare(normalize(savedTitle));
+
+    if (highestSimilarity >= 1.0 &&
+        bestMatch != null &&
+        bestMatchResult != null) {
+      print("Perfect match found with savedTitle: $bestMatch");
+      return Media.froDMedia(bestMatchResult, type);
+    }
+  }
+
   await searchAndCompare(englishTitle);
 
-  // If no perfect match was found, try searching with romajiTitle
   if (highestSimilarity < 0.95) {
     await searchAndCompare(romajiTitle);
   }
 
-  // If we found a match with high enough similarity, return it
   if (highestSimilarity >= 0.7 &&
       bestMatch != null &&
       bestMatchResult != null) {

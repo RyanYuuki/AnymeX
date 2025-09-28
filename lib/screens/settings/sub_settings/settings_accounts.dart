@@ -238,7 +238,7 @@ class ProfileTile extends StatelessWidget {
                               child: CachedNetworkImage(
                                 height: 50,
                                 width: 50,
-                                imageUrl: userData!.avatar!,
+                                imageUrl: userData?.avatar ?? '',
                                 fit: BoxFit.cover,
                               ),
                             ),
