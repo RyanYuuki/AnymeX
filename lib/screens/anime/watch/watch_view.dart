@@ -63,7 +63,7 @@ class _WatchScreenState extends State<WatchScreen> {
           return Video(
               controller: controller.playerController,
               fit: controller.videoFit.value,
-              filterQuality: FilterQuality.none,
+              resumeUponEnteringForegroundMode: true,
               subtitleViewConfiguration:
                   const SubtitleViewConfiguration(visible: false),
               controls: (state) => const SizedBox.shrink());

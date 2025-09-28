@@ -634,7 +634,7 @@ class PlayerBottomSheets {
       BuildContext context, PlayerController controller) {
     final episodes = controller.episodeList;
     final selectedEpisode = controller.currentEpisode;
-    final offlineEpisode = controller.offlineStorageController
+    final offlineEpisode = controller.offlineStorage
         .getAnimeById(controller.anilistData.id)
         ?.episodes;
 

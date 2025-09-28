@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -15,7 +14,6 @@ import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart'
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
@@ -113,9 +111,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isSubtitlePaneOpened = false.obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
 
-  final OfflineStorageController offlineStorageController =
-      Get.find<OfflineStorageController>();
-
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
 
@@ -131,7 +126,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
 
-  // AniSkip
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
@@ -462,7 +456,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .getVideoList(
               d.DEpisode(episodeNumber: episode.number, url: episode.link));
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
+
       selectedVideo.value = episodeTracks.first;
+      _extractSubtitles();
       await _switchMedia(
           selectedVideo.value!.url, selectedVideo.value?.headers);
       PlayerBottomSheets.hideLoader();
@@ -544,7 +540,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _revertOrientations() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    windowManager.setFullScreen(false);
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      windowManager.setFullScreen(false);
+    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -642,10 +640,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         if (position.dx <= MediaQuery.of(context).size.width / 2) {
           final bright = brightness.value - delta / 500;
-          setBrightness(bright.clamp(0.0, 1.0).toDouble());
+          setBrightness(bright.clamp(0.0, 1.0).toDouble(), isDragging: true);
         } else {
           final vol = volume.value - delta / 500;
-          setVolume(vol.clamp(0.0, 1.0).toDouble());
+          setVolume(vol.clamp(0.0, 1.0).toDouble(), isDragging: true);
         }
       }
     }
@@ -655,6 +653,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
 
+      _hideVolumeIndicatorAfterDelay();
+      _hideBrightnessIndicatorAfterDelay();
+
       if (_wasControlsVisible && !showControls.value) {
         toggleControls(val: true);
       }
@@ -663,28 +664,46 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> setVolume(double value) async {
+  Future<void> setVolume(double value, {bool isDragging = false}) async {
     try {
       VolumeController.instance.setVolume(value);
     } catch (_) {}
     volume.value = value;
     volumeIndicator.value = true;
+
     _volumeTimer?.cancel();
-    _volumeTimer = Timer(const Duration(milliseconds: 200), () {
-      volumeIndicator.value = false;
-    });
+
+    if (!isDragging) {
+      _hideVolumeIndicatorAfterDelay();
+    }
   }
 
-  Future<void> setBrightness(double value) async {
+  Future<void> setBrightness(double value, {bool isDragging = false}) async {
     try {
       await ScreenBrightness.instance.setScreenBrightness(value);
     } catch (_) {}
     brightnessIndicator.value = true;
+
     _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(milliseconds: 200), () {
+
+    if (!isDragging) {
+      _hideBrightnessIndicatorAfterDelay();
+    }
+    refresh();
+  }
+
+  void _hideVolumeIndicatorAfterDelay() {
+    _volumeTimer?.cancel();
+    _volumeTimer = Timer(const Duration(milliseconds: 500), () {
+      volumeIndicator.value = false;
+    });
+  }
+
+  void _hideBrightnessIndicatorAfterDelay() {
+    _brightnessTimer?.cancel();
+    _brightnessTimer = Timer(const Duration(milliseconds: 500), () {
       brightnessIndicator.value = false;
     });
-    refresh();
   }
 
   void setExternalSub(model.Track? track) {
@@ -761,6 +780,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isEpisodePaneOpened.value = false;
     resetListeners();
     player.open(Media(''));
+    setExternalSub(null);
     currentEpisode.value = episode;
 
     _hasTrackedInitialLocal = false;
@@ -791,6 +811,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final totalDuration = episodeDuration.value.inMilliseconds;
 
       if (currentTimestamp == null) return;
+      if (episodeDuration.value.inMinutes < 1) return;
 
       if (currentTimestamp > 0 && currentTimestamp < totalDuration) {
         offlineStorage.addOrUpdateAnime(
@@ -821,6 +842,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _trackOnline(bool hasCrossedLimit) async {
+    if (currentEpisode.value.number.toString() ==
+        anilistData.serviceType.onlineService.currentMedia.value.episodeCount) {
+      return;
+    }
     try {
       final currEpisodeNum = currentEpisode.value.number.toInt();
       final service = anilistData.serviceType.onlineService;
@@ -830,7 +855,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           isAnime: true,
           status: hasCrossedLimit &&
                   anilistData.status == 'COMPLETED' &&
-                  hasNextEpisode
+                  !hasNextEpisode
               ? 'COMPLETED'
               : 'CURRENT',
           syncIds: [anilistData.idMal]));

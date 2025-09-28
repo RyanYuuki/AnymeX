@@ -227,7 +227,7 @@ class EpisodesPane extends StatelessWidget {
                       final episode = controller.episodeList[index];
                       final isSelected =
                           episode == controller.currentEpisode.value;
-                      final offlineEpisode = controller.offlineStorageController
+                      final offlineEpisode = controller.offlineStorage
                           .getAnimeById(controller.anilistData.id)
                           ?.episodes;
 

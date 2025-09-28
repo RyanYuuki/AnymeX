@@ -16,7 +16,6 @@ class SubtitleText extends StatelessWidget {
         : AnimatedPositioned(
             right: 0,
             left: 0,
-            top: 0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             bottom: controller.showControls.value
