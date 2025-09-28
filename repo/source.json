@@ -15,14 +15,14 @@
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
       "version": "3.0.1",
-      "versionDate": "2025-09-01T18:46:10Z",
+      "versionDate": "2025-09-28T20:32:30Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1/AnymeX-iOS-v3.0.1.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1-hotfix/AnymeX-iOS-v3.0.1-hotfix.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 40411227,
+      "size": 40375705,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -31,10 +31,10 @@
       "versions": [
         {
           "version": "3.0.1",
-          "date": "2025-09-01T18:46:10Z",
+          "date": "2025-09-28T20:32:30Z",
           "localizedDescription": "",
-          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1/AnymeX-iOS-v3.0.1.ipa",
-          "size": 40411227
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1-hotfix/AnymeX-iOS-v3.0.1-hotfix.ipa",
+          "size": 40375705
         },
         {
           "version": "3.0.0",
@@ -304,6 +304,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.1"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "3.0.1-hotfix - 28 Sep",
+      "identifier": "release-3.0.1-hotfix",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-09-28T20:32:30Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.1-hotfix"
     }
   ]
 }
