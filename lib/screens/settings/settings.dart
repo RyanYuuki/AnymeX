@@ -7,6 +7,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/get_string.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -26,6 +27,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
+    GetString.init(context);
     return Glow(
       child: Scaffold(
           body: SuperListView(
@@ -33,12 +35,12 @@ class _SettingsPageState extends State<SettingsPage> {
             mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
         children: [
-          const Row(
+          Row(
             children: [
-              CustomBackButton(),
-              SizedBox(width: 10),
-              Text("Settings",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              const CustomBackButton(),
+              const SizedBox(width: 10),
+              Text(GetString.settings,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
           const SizedBox(height: 30),
@@ -53,54 +55,52 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 CustomTile(
                     icon: IconlyLight.profile,
-                    title: "Accounts",
-                    description:
-                        "Manage your MyAnimeList, Anilist, Simkl Accounts!",
+                    title: GetString.accounts,
+                    description: GetString.accountsDescription,
                     onTap: () {
                       navigate(() => const SettingsAccounts());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedBulb,
-                    title: "Common",
-                    description: "Tweak Settings",
+                    title: GetString.common,
+                    description: GetString.commonDescription,
                     onTap: () {
                       navigate(() => const SettingsCommon());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
-                    title: "UI",
-                    description: "Play around with App UI",
+                    title: GetString.ui,
+                    description: GetString.uiDescription,
                     onTap: () {
                       navigate(() => const SettingsUi());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPlay,
-                    title: "Player",
-                    description: "Play around with Player",
+                    title: GetString.player,
+                    description: GetString.playerDescription,
                     onTap: () {
                       navigate(() => const SettingsPlayer());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBrush01,
-                    title: "Theme",
-                    description: "Play around with App theme",
+                    title: GetString.theme,
+                    description: GetString.themeDescription,
                     onTap: () {
                       navigate(() => const SettingsTheme());
                     }),
                 const SizedBox(height: 10),
                 CustomTile(
                     icon: Icons.extension_rounded,
-                    title: "Extensions",
-                    description: "Extensions that tends to your needs",
+                    title: GetString.extensions,
+                    description: GetString.extensionsDescription,
                     onTap: () {
                       navigate(() => const SettingsExtensions());
                     }),
                 const SizedBox(height: 10),
                 CustomTile(
                   icon: HugeIcons.strokeRoundedInformationCircle,
-                  title: "Experimental",
-                  description:
-                      "Experimental Settings that are still being tested.",
+                  title: GetString.experimental,
+                  description: GetString.experimentalDescription,
                   onTap: () async {
                     navigate(() => const SettingsExperimental());
                   },
@@ -108,15 +108,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(height: 10),
                 CustomTile(
                   icon: HugeIcons.strokeRoundedFile01,
-                  title: "Share Logs",
-                  description: "Share Logs of the App",
+                  title: GetString.shareLogs,
+                  description: GetString.shareLogsDescription,
                   onTap: () async => await Logger.share(),
                 ),
                 const SizedBox(height: 10),
                 CustomTile(
                   icon: HugeIcons.strokeRoundedInformationCircle,
-                  title: "About",
-                  description: "About the App",
+                  title: GetString.about,
+                  description: GetString.aboutDescription,
                   onTap: () async {
                     navigate(() => const AboutPage());
                   },

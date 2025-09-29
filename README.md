@@ -131,7 +131,7 @@ Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/
 
 <!--<details>
 <summary>Weblate Translation Graph</summary>
-<a href="https://hosted.weblate.org/projects/echo/#languages"><img src="https://hosted.weblate.org/widget/echo/app/multi-auto.svg" alt="Translation status" /></a>
+<a href="https://hosted.weblate.org/projects/anymex/#languages"><img src="https://hosted.weblate.org/widget/anymex/app/multi-auto.svg" alt="Translation status" /></a>
 </details>-->
 
 ## Visitors

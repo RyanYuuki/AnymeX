@@ -42,6 +42,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anymex/utils/get_string.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -256,6 +259,15 @@ class MainApp extends StatelessWidget {
             : theme.isLightMode
                 ? ThemeMode.light
                 : ThemeMode.dark,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', ''), // English
+        ],
         home: const FilterScreen(),
         enableLog: true,
         logWriterCallback: (text, {isError = false}) async {
@@ -313,6 +325,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    GetString.init(context);
     final authService = Get.find<ServiceHandler>();
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
@@ -327,6 +340,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildDesktopLayout(
       BuildContext context, ServiceHandler authService, bool isSimkl) {
+    GetString.init(context);
     return Scaffold(
       extendBody: true,
       backgroundColor: Provider.of<ThemeProvider>(context).isOled
@@ -350,7 +364,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           onTap: (index) {
                             return SettingsSheet.show(context);
                           },
-                          label: 'Profile',
+                          label: GetString.profile,
                           altIcon: CircleAvatar(
                               radius: 24,
                               backgroundColor: Theme.of(context)
@@ -373,33 +387,33 @@ class _FilterScreenState extends State<FilterScreen> {
                         unselectedIcon: IconlyLight.home,
                         selectedIcon: IconlyBold.home,
                         onTap: _onItemTapped,
-                        label: 'Home',
+                        label: GetString.home,
                       ),
                       NavItem(
                         unselectedIcon: Icons.movie_filter_outlined,
                         selectedIcon: Icons.movie_filter_rounded,
                         onTap: _onItemTapped,
-                        label: 'Anime',
+                        label: GetString.anime,
                       ),
                       NavItem(
                         unselectedIcon:
                             isSimkl ? Iconsax.monitor : Iconsax.book,
                         selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
                         onTap: _onItemTapped,
-                        label: 'Manga',
+                        label: GetString.manga,
                       ),
                       NavItem(
                         unselectedIcon: HugeIcons.strokeRoundedLibrary,
                         selectedIcon: HugeIcons.strokeRoundedLibrary,
                         onTap: _onItemTapped,
-                        label: 'Library',
+                        label: GetString.library,
                       ),
                       if (sourceController.shouldShowExtensions.value)
                         NavItem(
                           unselectedIcon: Icons.extension_outlined,
                           selectedIcon: Icons.extension_rounded,
                           onTap: _onItemTapped,
-                          label: "Extensions",
+                          label: GetString.extensions,
                         ),
                     ],
                   ),
@@ -431,25 +445,25 @@ class _FilterScreenState extends State<FilterScreen> {
               unselectedIcon: IconlyBold.home,
               selectedIcon: IconlyBold.home,
               onTap: _onMobileItemTapped,
-              label: 'Home',
+              label: GetString.home,
             ),
             NavItem(
               unselectedIcon: Icons.movie_filter_rounded,
               selectedIcon: Icons.movie_filter_rounded,
               onTap: _onMobileItemTapped,
-              label: 'Anime',
+              label: GetString.anime,
             ),
             NavItem(
               unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
               selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
               onTap: _onMobileItemTapped,
-              label: 'Manga',
+              label: GetString.manga,
             ),
             NavItem(
               unselectedIcon: HugeIcons.strokeRoundedLibrary,
               selectedIcon: HugeIcons.strokeRoundedLibrary,
               onTap: _onMobileItemTapped,
-              label: 'Library',
+              label: GetString.library,
             ),
           ],
         ));
