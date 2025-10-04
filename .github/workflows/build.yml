@@ -66,6 +66,7 @@ jobs:
           mkdir -p $HOME/cmake && cd $HOME/cmake
           wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
           tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+          mkdir -p android
           echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
           echo "$KEYSTORE_BASE64" | base64 -d > android/app/anymex.jks
           cat > android/key.properties << EOF
@@ -87,10 +88,12 @@ jobs:
       # Windows-specific setup
       - name: Setup Windows
         if: matrix.platform == 'windows'
+        shell: pwsh
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force
           [System.Net.ServicePointManager]::SecurityProtocol = 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+          choco install innosetup -y
       
       # Setup environment for all platforms
       - name: Setup Environment
@@ -142,10 +145,16 @@ jobs:
           echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
           curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
           unzip -q zsign.zip && chmod +x zsign*
+          
+          # Find the actual zsign executable
+          ZSIGN_EXEC=$(find . -maxdepth 1 -name "zsign*" -type f -executable | head -n 1)
+          
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
-          ./zsign -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          
+          $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          
           cd build/ios/iphoneos
           zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
       
