@@ -720,7 +720,7 @@ jobs:
           Set-ExecutionPolicy Bypass -Scope Process -Force
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-      
+     
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
@@ -733,23 +733,19 @@ jobs:
           try {
             Write-Host "Fetching latest release info..."
             $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
-           
             Write-Host "Looking for ZIP asset..."
             $zip_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-Windows\.zip' }
-           
             if (-not $zip_asset) {
               Write-Host "Available assets:"
               $release.assets | ForEach-Object { Write-Host " - $($_.name)" }
               throw "No matching ZIP found with pattern 'AnymeX-Windows.zip'"
             }
-           
             # Extract version from release tag
             $version = $release.tag_name -replace '^v', ''
             $zip_url = $zip_asset.browser_download_url
             Write-Host "Found ZIP: $($zip_asset.name)"
             Write-Host "Version: $version"
             Write-Host "URL: $zip_url"
-           
             # Download file and calculate hash
             Write-Host "Downloading file to calculate hash..."
             $tempFile = New-TemporaryFile
@@ -760,12 +756,10 @@ jobs:
             } finally {
               Remove-Item $tempFile.FullName -ErrorAction SilentlyContinue
             }
-           
             # Set environment variables
             echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
             echo "ZIP_URL=$zip_url" | Out-File -FilePath $env:GITHUB_ENV -Append
             echo "ZIP_HASH=$zip_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
-           
             Write-Host "Environment variables set successfully"
           }
           catch {
@@ -792,25 +786,22 @@ jobs:
               Write-Host "✓ Found: $file"
             }
           }
-      
+     
       - name: Update Chocolatey Package Files
         run: |
           try {
             $version = $env:VERSION
             $zip_url = $env:ZIP_URL
             $zip_hash = $env:ZIP_HASH
-           
             Write-Host "Updating package files with:"
             Write-Host " Version: $version"
             Write-Host " URL: $zip_url"
             Write-Host " Hash: $zip_hash"
-           
             # Update nuspec file
             Write-Host "Updating anymex.nuspec..."
             $nuspecContent = Get-Content chocolatey/anymex.nuspec -Raw
             $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
             Set-Content chocolatey/anymex.nuspec -Value $nuspecContent
-           
             # Update chocolateyInstall.ps1
             Write-Host "Updating chocolateyInstall.ps1..."
             $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
@@ -818,9 +809,7 @@ jobs:
             $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$zip_url'"
             $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$zip_hash'"
             Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
-           
             Write-Host "Package files updated successfully"
-           
             # Show updated content for verification
             Write-Host "`n--- Updated nuspec content ---"
             Get-Content chocolatey/anymex.nuspec | Select-Object -First 20
@@ -831,7 +820,7 @@ jobs:
             Write-Host "Error updating package files: $($_.Exception.Message)"
             throw
           }
-      
+     
       - name: Commit Updated Chocolatey Files
         run: |
           try {
@@ -884,10 +873,39 @@ jobs:
           name: chocolatey-package
           path: chocolatey/*.nupkg
           if-no-files-found: error
-      
+     
+      - name: Check Chocolatey Package Status
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        run: |
+          try {
+            if (-not $env:CHOCO_API_KEY) {
+              Write-Host "CHOCO_API_KEY is not set, skipping package status check."
+              echo "SKIP_PUSH=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+            } else {
+              Write-Host "Checking Chocolatey package status for com.ryan.anymex..."
+              $response = Invoke-RestMethod -Uri "https://push.chocolatey.org/api/v2/package/com.ryan.anymex" -Headers @{ "X-NuGet-ApiKey" = "$env:CHOCO_API_KEY" }
+              $status = $response.entry.properties.moderationStatus
+              Write-Host "Package status: $status"
+              if ($status -eq "pending" -or $status -eq "submitted") {
+                Write-Host "Previous version is pending review, skipping push for version $env:VERSION."
+                echo "SKIP_PUSH=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+              } else {
+                echo "SKIP_PUSH=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+              }
+            }
+          }
+          catch {
+            Write-Host "Error checking package status: $($_.Exception.Message)"
+            Write-Host "Assuming package can be pushed."
+            echo "SKIP_PUSH=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+        continue-on-error: true
+     
       - name: Push Chocolatey Package
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        if: env.SKIP_PUSH != 'true'
         run: |
           try {
             if (-not $env:CHOCO_API_KEY) {
@@ -904,7 +922,7 @@ jobs:
             Write-Host "Error pushing to Chocolatey: $($_.Exception.Message)"
             throw
           }
-      
+     
       - name: Release Chocolatey Package
         uses: ncipollo/release-action@v1
         with:
