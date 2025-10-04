@@ -1,5 +1,4 @@
 name: Build and Release AnymeX
-
 on:
   push:
     tags:
@@ -7,68 +6,95 @@ on:
   workflow_dispatch:
 
 env:
+  FLUTTER_VERSION: "3.32.8"
   ZSIGN_VERSION: "0.7"
 
 jobs:
-  build-android:
-    runs-on: ubuntu-latest
+  build-all-platforms:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Android ABIs
+          - platform: android
+            os: ubuntu-latest
+            abi: armeabi-v7a
+          - platform: android
+            os: ubuntu-latest
+            abi: arm64-v8a
+          - platform: android
+            os: ubuntu-latest
+            abi: x86_64
+          - platform: android
+            os: ubuntu-latest
+            abi: universal
+          # Desktop platforms
+          - platform: linux
+            os: ubuntu-latest
+          - platform: windows
+            os: windows-latest
+          - platform: macos
+            os: macos-latest
+          # Mobile platforms
+          - platform: ios
+            os: macos-latest
+    
+    runs-on: ${{ matrix.os }}
+    
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-java@v3
+        if: matrix.platform == 'android'
         with:
           distribution: "adopt"
           java-version: "17"
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.8"
-
-      - name: Download and Install CMake 3.18.1
-        run: |
-          # Create cmake directory
-          mkdir -p $HOME/cmake
-          cd $HOME/cmake
-
-          # Download CMake 3.18.1 for Linux x86_64
-          wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
-
-          # Extract the archive
-          tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
-
-          # Create symlink for easier access
-          ln -s $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake $HOME/cmake/cmake
-
-          # Verify installation
-          $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake --version
-
-      - name: Setup CMake path in local.properties
-        run: |
-          CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
-          echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
-          echo "CMake directory set to: $CMAKE_DIR"
-          cat android/local.properties
-
-      - name: Download keystore
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      
+      # Android-specific setup
+      - name: Setup Android
+        if: matrix.platform == 'android'
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/anymex.jks
-
-      - name: Set up signing variables
-        env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS}}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
-          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
-          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
-          echo "storeFile=anymex.jks" >> android/key.properties
-
-      - name: Setup .env File
+          mkdir -p $HOME/cmake && cd $HOME/cmake
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
+          tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+          echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/anymex.jks
+          cat > android/key.properties << EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=anymex.jks
+          EOF
+      
+      # Linux-specific setup
+      - name: Setup Linux
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
+          wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
+      
+      # Windows-specific setup
+      - name: Setup Windows
+        if: matrix.platform == 'windows'
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          [System.Net.ServicePointManager]::SecurityProtocol = 3072
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      
+      # Setup environment for all platforms
+      - name: Setup Environment
+        shell: bash
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
           AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
@@ -78,163 +104,64 @@ jobs:
           MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
           CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
         run: |
-          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
-
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Generate Splash Screens
-        run: dart run flutter_native_splash:create
-
-      - name: Build Android with Split ABI
-        run: flutter build apk --split-per-abi
-
-      - name: Rename APKs
+          cat > .env << EOF
+          AL_CLIENT_ID=$AL_CLIENT_ID
+          AL_CLIENT_SECRET=$AL_CLIENT_SECRET
+          SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID
+          SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET
+          MAL_CLIENT_ID=$MAL_CLIENT_ID
+          MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET
+          CALLBACK_SCHEME=$CALLBACK_SCHEME
+          EOF
+      
+      # Build Android
+      - name: Build Android
+        if: matrix.platform == 'android'
         run: |
-          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
-          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
-          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
-
-      - name: Build Universal APK
-        run: flutter build apk --release
-
-      - name: Rename Universal APK
-        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
-
-      - name: Release Android APKs
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/app/outputs/flutter-apk/AnymeX-Android-*.apk"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
-
-  build-ios:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.8"
-
-      - name: Setup .env File
-        env:
-          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-        run: |
-          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
-
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Generate Splash Screens
-        run: dart run flutter_native_splash:create
-
-      - name: Setup Signing Files
+          flutter pub get
+          dart run flutter_native_splash:create
+          if [ "${{ matrix.abi }}" = "universal" ]; then
+            flutter build apk --release
+            mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+          else
+            flutter build apk --target-platform android-${{ matrix.abi }} --split-per-abi
+            mv build/app/outputs/flutter-apk/app-${{ matrix.abi }}-release.apk build/app/outputs/flutter-apk/AnymeX-Android-${{ matrix.abi }}.apk
+          fi
+      
+      # Build iOS
+      - name: Build iOS
+        if: matrix.platform == 'ios'
         env:
           P12_BASE64: ${{ secrets.P12_CERTIFICATE }}
           PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
-        run: |
-          echo "$P12_BASE64" | base64 -d > certificate.p12
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
-          curl -L -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
-          unzip zsign.zip
-          chmod +x zsign || chmod +x zsign-*
-
-      - name: Build iOS
-        env:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: |
+          flutter pub get
+          dart run flutter_native_splash:create
+          echo "$P12_BASE64" | base64 -d > certificate.p12
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
+          curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
+          unzip -q zsign.zip && chmod +x zsign*
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
           ./zsign -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
           cd build/ios/iphoneos
-          zip -r ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
-
-      - name: Release iOS IPA
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "./build/ios/iphoneos/AnymeX-iOS-${{ github.ref_name }}.ipa"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
-
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
-          wget -O appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-          chmod +x appimagetool
-          sudo mv appimagetool /usr/local/bin/
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.8"
-
-      - name: Setup .env File
-        env:
-          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-        run: |
-          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
-
-      - name: Get Dependencies
-        run: flutter pub get
-
+          zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+      
+      # Build Linux
       - name: Build Linux
-        run: flutter build linux --release
-
-      - name: Create AppImage
+        if: matrix.platform == 'linux'
         run: |
-          # Create fresh AppDir structure
-          rm -rf AppDir
-          mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          # Copy built files
+          flutter pub get
+          flutter build linux --release
+          
+          # AppImage
+          rm -rf AppDir && mkdir -p AppDir/usr/{bin,share/icons/hicolor/256x256/apps}
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
           cp assets/images/logo.png AppDir/anymex.png
-          # Create desktop file in AppDir root
-          cat <<EOF > AppDir/anymex.desktop
+          cat > AppDir/anymex.desktop << 'EOF'
           [Desktop Entry]
           Name=AnymeX
           Exec=usr/bin/anymex
@@ -242,29 +169,25 @@ jobs:
           Type=Application
           Categories=Utility;
           EOF
-          # Create AppRun file
-          cat <<EOF > AppDir/AppRun
+          cat > AppDir/AppRun << 'EOF'
           #!/bin/sh
-          SELF=\$(readlink -f "\$0")
-          HERE=\${SELF%/*}
-          export PATH="\${HERE}/usr/bin/:\${PATH}"
-          export LD_LIBRARY_PATH="\${HERE}/usr/lib/:\${LD_LIBRARY_PATH}"
-          exec "\${HERE}/usr/bin/anymex" "\$@"
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export PATH="${HERE}/usr/bin/:${PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/lib/:${LD_LIBRARY_PATH}"
+          exec "${HERE}/usr/bin/anymex" "$@"
           EOF
           chmod +x AppDir/AppRun
-          # Make AppImage
           /usr/local/bin/appimagetool AppDir
           mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
-
-      - name: Create RPM Package
-        run: |
+          
+          # RPM
           mkdir -p rpm_build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
           cp -r build/linux/x64/release/bundle rpm_build/SOURCES/anymex-1.0.0
           tar czf rpm_build/SOURCES/anymex-1.0.0.tar.gz -C rpm_build/SOURCES anymex-1.0.0
           mkdir -p rpm_build/SOURCES/usr/share/icons/hicolor/256x256/apps
           cp assets/images/logo.png rpm_build/SOURCES/usr/share/icons/hicolor/256x256/apps/anymex.png
-          # RPM Spec File
-          cat <<EOF > rpm_build/SPECS/anymex.spec
+          cat > rpm_build/SPECS/anymex.spec << 'EOF'
           Name: anymex
           Version: 1.0.0
           Release: 1%{?dist}
@@ -272,20 +195,15 @@ jobs:
           License: MIT
           Source0: %{name}-%{version}.tar.gz
           BuildArch: x86_64
-
           %description
           AnymeX is a Flutter-based opensource app for tracking anime, mangas and novels.
-
           %prep
           %setup -q
-
           %install
-          mkdir -p %{buildroot}/usr/bin
-          mkdir -p %{buildroot}/usr/share/applications
-          mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
+          mkdir -p %{buildroot}/usr/{bin,share/applications,share/icons/hicolor/256x256/apps}
           cp -r * %{buildroot}/usr/bin/
           cp -r %{_sourcedir}/usr/share/* %{buildroot}/usr/share/
-          cat <<EOL > %{buildroot}/usr/share/applications/anymex.desktop
+          cat > %{buildroot}/usr/share/applications/anymex.desktop << 'EOL'
           [Desktop Entry]
           Name=AnymeX
           Exec=/usr/bin/anymex
@@ -298,342 +216,196 @@ jobs:
           /usr/share/applications/anymex.desktop
           /usr/share/icons/hicolor/256x256/apps/anymex.png
           EOF
-
           rpmbuild --define "_topdir $(pwd)/rpm_build" -ba rpm_build/SPECS/anymex.spec
           mv rpm_build/RPMS/x86_64/*.rpm build/linux/x64/release/AnymeX-Linux.rpm
-
-      - name: Create ZIP Archive
+          
+          # ZIP
+          cd build/linux/x64/release/bundle && zip -qr ../AnymeX-Linux.zip ./*
+      
+      # Build Windows
+      - name: Build Windows
+        if: matrix.platform == 'windows'
+        shell: pwsh
         run: |
-          cd build/linux/x64/release/bundle
-          zip -r ../AnymeX-Linux.zip ./*
-
-      - name: Release Linux Bundle, AppImage & RPM
-        uses: ncipollo/release-action@v1
+          flutter pub get
+          dart run inno_bundle:build --release
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
+      
+      # Build macOS
+      - name: Build macOS
+        if: matrix.platform == 'macos'
+        run: |
+          flutter pub get
+          flutter build macos --release
+          APP_PATH="build/macos/Build/Products/Release/anymex.app"
+          [ ! -d "$APP_PATH" ] && echo "Error: anymex.app not found" && exit 1
+          mkdir -p build/macos/Release temp_dir
+          cp -r "$APP_PATH" temp_dir/
+          ln -s /Applications temp_dir/Applications
+          hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
+          rm -rf temp_dir
+      
+      # Upload artifacts
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform == 'android'
         with:
-          artifacts: |
+          name: android-${{ matrix.abi }}
+          path: build/app/outputs/flutter-apk/AnymeX-Android-*.apk
+      
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform == 'ios'
+        with:
+          name: ios
+          path: build/ios/iphoneos/*.ipa
+      
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform == 'linux'
+        with:
+          name: linux
+          path: |
             build/linux/x64/release/AnymeX-Linux.zip
             build/linux/x64/release/AnymeX-Linux.AppImage
             build/linux/x64/release/AnymeX-Linux.rpm
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
-
-    update-aur:
-      needs: build-linux
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v3
-
-        - name: Download Linux Artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: linux-artifacts
-            path: artifacts
-
-        - name: Calculate SHA256 Hash
-          run: |
-            sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}' > hash.txt
-            echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
-
-        - name: Generate PKGBUILD
-          env:
-            VERSION: ${{ github.ref_name }}
-          run: |
-            # Normalize version for PKGBUILD (e.g., v3.0.1-hotfix -> 3.0.1_hotfix)
-            PKGVER="${VERSION#v}"
-            PKGVER="${PKGVER//-/_}" # Replace - with _ for PKGBUILD compatibility
-            cat <<EOF > PKGBUILD
-            # Maintainer: jullanggit <jullanggit@proton.me>
-            _pkgname=anymex
-            _PkgName=AnymeX
-            pkgname=\$_pkgname-bin
-            pkgver=$PKGVER
-            pkgrel=1
-            arch=(x86_64)
-            pkgdesc='An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)'
-            url="https://github.com/RyanYuuki/\$_PkgName"
-            license=(MIT)
-            provides=(\$_pkgname=\$pkgver)
-            depends=(
-              'libepoxy'
-              'gdk-pixbuf2'
-              'pango'
-              'webkit2gtk-4.1'
-              'harfbuzz'
-              'libsoup3'
-              'glibc'
-              'fontconfig'
-              'cairo'
-              'hicolor-icon-theme'
-              'glib2'
-              'gcc-libs'
-              'mpv'
-              'zlib-ng-compat'
-              'gtk3'
-              'at-spi2-core'
-            )
-            conflicts=(anymex)
-            _appimage="\$_PkgName-\$pkgver.AppImage"
-            source=("$_appimage::$url/releases/download/$VERSION/\$_PkgName-Linux.AppImage"
-                    "LICENSE-\$pkgver.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/$VERSION/LICENSE.md")
-            noextract=(\$_appimage)
-            sha256sums=('${{ env.HASH }}'
-                        'SKIP') # You may want to compute the LICENSE hash as well
-
-            prepare() {
-              chmod +x \$_appimage
-              ./\$_appimage --appimage-extract >/dev/null
-            }
-
-            build() {
-              chmod -R a-x+rX squashfs-root/usr
-              chmod +x squashfs-root/usr/bin/anymex
-            }
-
-            package() {
-              install -dm755 "\$pkgdir/usr/"
-              mv "\$srcdir"/squashfs-root/usr/* "\$pkgdir/usr/"
-              install -Dm644 "\$srcdir/LICENSE-\$pkgver.md" "\$pkgdir/usr/share/licenses/\$pkgname/LICENSE.md"
-              install -Dm644 /dev/stdin "\$pkgdir/usr/share/applications/\$_pkgname.desktop" <<DESKTOP
-            [Desktop Entry]
-            Version=\$pkgver
-            Type=Application
-            Name=\$_PkgName
-            GenericName=\$_PkgName
-            Comment=\$pkgdesc
-            Exec=\$_pkgname
-            Icon=\$_pkgname
-            Terminal=false
-            Categories=Utility;Application;
-            Keywords=\$_pkgname;anime
-            StartupNotify=true
-            DESKTOP
-            }
-            EOF
-
-        - name: Generate .SRCINFO
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y makepkg
-            makepkg --printsrcinfo > .SRCINFO
-
-        - name: Setup SSH for AUR
-          env:
-            AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          run: |
-            mkdir -p ~/.ssh
-            echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur
-            chmod 600 ~/.ssh/aur
-            echo "Host aur.archlinux.org" >> ~/.ssh/config
-            echo "  HostName aur.archlinux.org" >> ~/.ssh/config
-            echo "  User aur" >> ~/.ssh/config
-            echo "  IdentityFile ~/.ssh/aur" >> ~/.ssh/config
-
-        - name: Push to AUR
-          env:
-            VERSION: ${{ github.ref_name }}
-          run: |
-            git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur
-            cd aur
-            cp ../PKGBUILD .
-            cp ../.SRCINFO .
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add PKGBUILD .SRCINFO
-            git commit -m "Update to version ${VERSION#v}"
-            git push origin master
-
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform == 'windows'
         with:
-          flutter-version: "3.32.8"
-
-      - name: Setup .env File
-        env:
-          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-        run: |
-          echo "AL_CLIENT_ID=$env:AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$env:AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$env:SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$env:SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$env:MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$env:MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$env:CALLBACK_SCHEME" >> .env
-
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Build Windows
-        run: dart run inno_bundle:build --release
-
-      - name: Create ZIP file for Windows Build
-        run: |
-          cd build/windows/x64/runner/Release
-          Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
-
-      - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifacts
+          name: windows
           path: |
             build/windows/x64/runner/Release/AnymeX-Windows.zip
             build/windows/x64/installer/Release/AnymeX-x86_64-*-Installer.exe
-          if-no-files-found: error
-
-      - name: Release Windows Builds
-        uses: ncipollo/release-action@v1
+      
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform == 'macos'
         with:
-          artifacts: |
-            build/windows/x64/runner/Release/AnymeX-Windows.zip,
-            build/windows/x64/installer/Release/AnymeX-x86_64-*-Installer.exe
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
-
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.8"
-
-      - name: Setup .env File
-        env:
-          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
-          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
-          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
-          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
-          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
-          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
-          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
-        run: |
-          echo "AL_CLIENT_ID=$AL_CLIENT_ID" > .env
-          echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET" >> .env
-          echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID" >> .env
-          echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET" >> .env
-          echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
-          echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
-          echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
-
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Build macOS
-        run: flutter build macos --release
-
-      - name: Verify Build Output
-        run: |
-          echo "Checking build output..."
-          ls -la build/macos/Build/Products/Release/ || echo "Release directory not found"
-          find build/macos -name "*.app" -type d || echo "No .app files found"
-
-      - name: Create DMG file for macOS Build
-        run: |
-          set -e  # Exit on any error
-
-          # Check if the .app file exists
-          APP_PATH="build/macos/Build/Products/Release/anymex.app"
-          if [ ! -d "$APP_PATH" ]; then
-            echo "Error: anymex.app not found at $APP_PATH"
-            echo "Available files in Release directory:"
-            ls -la build/macos/Build/Products/Release/ || echo "Release directory doesn't exist"
-            exit 1
-          fi
-
-          # Create necessary directories
-          mkdir -p build/macos/Release
-          mkdir -p temp_dir
-
-          # Copy the app bundle
-          echo "Copying app bundle..."
-          cp -r "$APP_PATH" temp_dir/
-
-          # Create Applications symlink
-          echo "Creating Applications symlink..."
-          ln -s /Applications temp_dir/Applications
-
-          # Create DMG
-          echo "Creating DMG file..."
-          hdiutil create \
-            -volname "AnymeX" \
-            -srcfolder temp_dir \
-            -ov \
-            -format UDZO \
-            build/macos/Release/AnymeX.dmg
-
-          # Cleanup
-          echo "Cleaning up temporary directory..."
-          rm -rf temp_dir
-
-          # Verify DMG was created
-          if [ -f "build/macos/Release/AnymeX.dmg" ]; then
-            echo "DMG created successfully!"
-            ls -lh build/macos/Release/AnymeX.dmg
-          else
-            echo "Error: DMG file was not created"
-            exit 1
-          fi
-
-      - name: Upload DMG as Artifact (for debugging)
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-dmg
+          name: macos
           path: build/macos/Release/AnymeX.dmg
-          if-no-files-found: error
 
-      - name: Release macOS Builds
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/macos/Release/AnymeX.dmg"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          tag: ${{ github.ref_name }}
-
-  ios-source-build:
-    needs: build-ios
-    uses: ./.github/workflows/update_sideloading_source.yml
-
-  update-scoop-manifest:
-    needs: build-windows
+  release:
+    needs: build-all-platforms
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Download Windows Artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: artifacts
           path: artifacts
+      
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "artifacts/**/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          tag: ${{ github.ref_name }}
 
-      - name: Calculate SHA256 Hash
-        run: |
-          sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}' > hash.txt
-          echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
-
-      - name: Update Scoop Manifest
+  post-release:
+    needs: [build-all-platforms, release]
+    strategy:
+      matrix:
+        job: [aur, scoop, chocolatey]
+    runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
+      
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.job == 'aur' && 'linux' || 'windows' }}
+          path: artifacts
+      
+      # AUR Update
+      - name: Update AUR
+        if: matrix.job == 'aur'
         env:
           VERSION: ${{ github.ref_name }}
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
+          HASH=$(sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}')
+          PKGVER="${VERSION#v}"
+          PKGVER="${PKGVER//-/_}"
+          
+          cat > PKGBUILD << 'EOF'
+          # Maintainer: jullanggit <jullanggit@proton.me>
+          _pkgname=anymex
+          _PkgName=AnymeX
+          pkgname=$_pkgname-bin
+          pkgver=${PKGVER}
+          pkgrel=1
+          arch=(x86_64)
+          pkgdesc='An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)'
+          url="https://github.com/RyanYuuki/$_PkgName"
+          license=(MIT)
+          provides=($_pkgname=$pkgver)
+          depends=('libepoxy' 'gdk-pixbuf2' 'pango' 'webkit2gtk-4.1' 'harfbuzz' 'libsoup3' 'glibc' 'fontconfig' 'cairo' 'hicolor-icon-theme' 'glib2' 'gcc-libs' 'mpv' 'zlib-ng-compat' 'gtk3' 'at-spi2-core')
+          conflicts=(anymex)
+          _appimage="$_PkgName-$pkgver.AppImage"
+          source=("$_appimage::$url/releases/download/${VERSION}/$_PkgName-Linux.AppImage"
+                  "LICENSE-$pkgver.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md")
+          noextract=($_appimage)
+          sha256sums=('${HASH}' 'SKIP')
+          prepare() { chmod +x $_appimage && ./$_appimage --appimage-extract >/dev/null; }
+          build() { chmod -R a-x+rX squashfs-root/usr && chmod +x squashfs-root/usr/bin/anymex; }
+          package() {
+            install -dm755 "$pkgdir/usr/"
+            mv "$srcdir"/squashfs-root/usr/* "$pkgdir/usr/"
+            install -Dm644 "$srcdir/LICENSE-$pkgver.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+            install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/$_pkgname.desktop" <<DESKTOP
+          [Desktop Entry]
+          Version=$pkgver
+          Type=Application
+          Name=$_PkgName
+          GenericName=$_PkgName
+          Comment=$pkgdesc
+          Exec=$_pkgname
+          Icon=$_pkgname
+          Terminal=false
+          Categories=Utility;Application;
+          Keywords=$_pkgname;anime
+          StartupNotify=true
+          DESKTOP
+          }
+          EOF
+          
+          sed -i "s/\${PKGVER}/$PKGVER/g" PKGBUILD
+          sed -i "s/\${VERSION}/$VERSION/g" PKGBUILD
+          sed -i "s/\${HASH}/$HASH/g" PKGBUILD
+          
+          sudo apt-get update -qq && sudo apt-get install -y -qq makepkg
+          makepkg --printsrcinfo > .SRCINFO
+          
+          mkdir -p ~/.ssh
+          echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur && chmod 600 ~/.ssh/aur
+          cat >> ~/.ssh/config << 'SSHEOF'
+          Host aur.archlinux.org
+           HostName aur.archlinux.org
+           User aur
+           IdentityFile ~/.ssh/aur
+          SSHEOF
+          
+          git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur
+          cd aur
+          cp ../PKGBUILD ../.SRCINFO .
+          git config user.name "GitHub Actions" && git config user.email "actions@github.com"
+          git add PKGBUILD .SRCINFO
+          git commit -m "Update to version ${VERSION#v}" && git push origin master
+      
+      # Scoop Update
+      - name: Update Scoop
+        if: matrix.job == 'scoop'
+        env:
+          VERSION: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          HASH=$(sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}')
+          sudo apt-get update -qq && sudo apt-get install -y -qq gh
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          gh repo view "${{ github.actor }}/Main" >/dev/null 2>&1 || \
+            gh repo fork ScoopInstaller/Main --org "${{ github.actor }}" --clone=false
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.actor }}/Main.git scoop-fork
+          cd scoop-fork
+          git checkout -b update-anymex-$VERSION
           mkdir -p bucket
-          cat <<EOF > bucket/anymex.json
+          cat > bucket/anymex.json << EOF
           {
               "version": "${VERSION#v}",
               "description": "An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)",
@@ -642,262 +414,82 @@ jobs:
               "architecture": {
                   "64bit": {
                       "url": "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip",
-                      "hash": "${{ env.HASH }}"
+                      "hash": "$HASH"
                   }
               },
               "bin": "anymex.exe",
-              "shortcuts": [
-                  ["anymex.exe", "AnymeX"]
-              ],
-              "checkver": {
-                  "github": "https://github.com/RyanYuuki/AnymeX"
-              },
+              "shortcuts": [["anymex.exe", "AnymeX"]],
+              "checkver": {"github": "https://github.com/RyanYuuki/AnymeX"},
               "autoupdate": {
                   "architecture": {
-                      "64bit": {
-                          "url": "https://github.com/RyanYuuki/AnymeX/releases/download/v$version/AnymeX-Windows.zip"
-                      }
+                      "64bit": {"url": "https://github.com/RyanYuuki/AnymeX/releases/download/v\$version/AnymeX-Windows.zip"}
                   }
               }
           }
           EOF
-
-      - name: Setup Git
-        run: |
-          git config user.name "RyanYuuki"
-          git config user.email "108048963+RyanYuuki@users.noreply.github.com"
-
-      - name: Commit and Push to Scoop Bucket
-        env:
-          GITHUB_TOKEN: ${{ secrets.SCOOP_GITHUB_TOKEN }}
-        run: |
-          if [ -z "$GITHUB_TOKEN" ]; then
-            echo "Error: SCOOP_GITHUB_TOKEN secret is not set. Please set it in the repository settings."
-            echo "See https://docs.github.com/en/actions/security-guides/encrypted-secrets for instructions."
-            exit 1
-          fi
-          if ! git clone https://x-access-token:${GITHUB_TOKEN}@github.com/MiraiEnoki/Anymex_Scoop.git scoop-bucket; then
-            echo "Error: Failed to clone MiraiEnoki/Anymex_Scoop. Ensure the repository exists and the SCOOP_GITHUB_TOKEN has access."
-            echo "If the repository is not created, fork or create it at https://github.com/MiraiEnoki/Anymex_Scoop."
-            exit 1
-          fi
-          cd scoop-bucket
-          mkdir -p bucket
-          cp ../bucket/anymex.json bucket/
+          git config user.name "GitHub Actions" && git config user.email "actions@github.com"
           git add bucket/anymex.json
-          git commit -m "anymex@${VERSION#v}: Update to version ${VERSION#v}" || echo "No changes to commit"
-          git push origin main || echo "Push failed, possibly no changes or insufficient permissions"
-          gh pr create --repo ScoopInstaller/Main --title "anymex@${VERSION#v}: Update to version ${VERSION#v}" --body "Automated update of AnymeX manifest to version ${VERSION#v}" --base main --head MiraiEnoki:main || echo "PR creation skipped or failed"
-
-  build-chocolatey:
-    needs: build-windows
-    runs-on: windows-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: main
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.8"
-
-      - name: Install Chocolatey
+          git commit -m "Update anymex manifest to version ${VERSION#v}" || true
+          git push origin update-anymex-$VERSION
+          gh pr create --repo ScoopInstaller/Main \
+            --title "anymex@$VERSION: Update to version $VERSION" \
+            --body "Automated update of AnymeX manifest to version $VERSION. @ScoopInstaller/maintainers please review." \
+            --base main --head ${{ github.actor }}:update-anymex-$VERSION || true
+      
+      # Chocolatey Update
+      - name: Update Chocolatey
+        if: matrix.job == 'chocolatey'
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        shell: pwsh
         run: |
+          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest"
+          $zip_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-Windows\.zip' }
+          $version = $release.tag_name -replace '^v', ''
+          $zip_url = $zip_asset.browser_download_url
+          $tempFile = New-TemporaryFile
+          Invoke-WebRequest -Uri $zip_url -OutFile $tempFile.FullName
+          $zip_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
+          Remove-Item $tempFile.FullName
+          
+          $nuspecContent = Get-Content chocolatey/anymex.nuspec -Raw
+          $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
+          Set-Content chocolatey/anymex.nuspec -Value $nuspecContent
+          
+          $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
+          $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$zip_url'"
+          $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$zip_hash'"
+          Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
+          
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add chocolatey/
+          git diff-index --quiet HEAD || (git commit -m "Update Chocolatey to $version" && git push)
+          
           Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          [System.Net.ServicePointManager]::SecurityProtocol = 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
-      - name: Download Windows Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: artifacts
-          path: artifacts
-
-      - name: Get Latest Release Info
-        id: get_release
-        run: |
-          try {
-            Write-Host "Fetching latest release info..."
-            $release = (Invoke-RestMethod -Uri "https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest")
-            
-            Write-Host "Looking for ZIP asset..."
-            $zip_asset = $release.assets | Where-Object { $_.name -match 'AnymeX-Windows\.zip' }
-            
-            if (-not $zip_asset) { 
-              Write-Host "Available assets:"
-              $release.assets | ForEach-Object { Write-Host "  - $($_.name)" }
-              throw "No matching ZIP found with pattern 'AnymeX-Windows.zip'"
-            }
-            
-            # Extract version from release tag
-            $version = $release.tag_name -replace '^v', ''
-            $zip_url = $zip_asset.browser_download_url
-            Write-Host "Found ZIP: $($zip_asset.name)"
-            Write-Host "Version: $version"
-            Write-Host "URL: $zip_url"
-            
-            # Download file and calculate hash
-            Write-Host "Downloading file to calculate hash..."
-            $tempFile = New-TemporaryFile
-            try {
-              Invoke-WebRequest -Uri $zip_url -OutFile $tempFile.FullName -MaximumRedirection 5
-              $zip_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
-              Write-Host "SHA256 Hash: $zip_hash"
-            } finally {
-              Remove-Item $tempFile.FullName -ErrorAction SilentlyContinue
-            }
-            
-            # Set environment variables
-            echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo "ZIP_URL=$zip_url" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo "ZIP_HASH=$zip_hash" | Out-File -FilePath $env:GITHUB_ENV -Append
-            
-            Write-Host "Environment variables set successfully"
+          choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
+          
+          if ($env:CHOCO_API_KEY) {
+            choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
+            choco push "chocolatey/com.ryan.anymex.$version.nupkg" --source https://push.chocolatey.org/
           }
-          catch {
-            Write-Host "Error: $($_.Exception.Message)"
-            Write-Host "Stack trace: $($_.ScriptStackTrace)"
-            throw
-          }
-
-      - name: Verify Chocolatey Package Structure
-        run: |
-          Write-Host "Verifying Chocolatey package structure..."
-          $requiredFiles = @(
-            "chocolatey/anymex.nuspec",
-            "chocolatey/tools/chocolateyInstall.ps1",
-            "chocolatey/tools/chocolateyUninstall.ps1"
-          )
-          foreach ($file in $requiredFiles) {
-            if (-not (Test-Path $file)) {
-              Write-Host "Missing required file: $file"
-              Write-Host "Current directory structure:"
-              Get-ChildItem -Recurse | Select-Object FullName
-              throw "Required Chocolatey package file missing: $file"
-            } else {
-              Write-Host "✓ Found: $file"
-            }
-          }
-
-      - name: Update Chocolatey Package Files
-        run: |
-          try {
-            $version = $env:VERSION
-            $zip_url = $env:ZIP_URL
-            $zip_hash = $env:ZIP_HASH
-            
-            Write-Host "Updating package files with:"
-            Write-Host "  Version: $version"
-            Write-Host "  URL: $zip_url"
-            Write-Host "  Hash: $zip_hash"
-            
-            # Update nuspec file
-            Write-Host "Updating anymex.nuspec..."
-            $nuspecContent = Get-Content chocolatey/anymex.nuspec -Raw
-            $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
-            Set-Content chocolatey/anymex.nuspec -Value $nuspecContent
-            
-            # Update chocolateyInstall.ps1
-            Write-Host "Updating chocolateyInstall.ps1..."
-            $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
-            $installContent = $installContent -replace '\$packageName\s*=\s*[''"].*?[''"]', "`$packageName = 'com.ryan.anymex'"
-            $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$zip_url'"
-            $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$zip_hash'"
-            Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
-            
-            Write-Host "Package files updated successfully"
-            
-            # Show updated content for verification
-            Write-Host "`n--- Updated nuspec content ---"
-            Get-Content chocolatey/anymex.nuspec | Select-Object -First 20
-            Write-Host "`n--- Updated install script content ---"
-            Get-Content chocolatey/tools/chocolateyInstall.ps1 | Select-Object -First 20
-          }
-          catch {
-            Write-Host "Error updating package files: $($_.Exception.Message)"
-            throw
-          }
-
-      - name: Commit Updated Chocolatey Files
-        run: |
-          try {
-            git config --global user.name "GitHub Actions"
-            git config --global user.email "actions@github.com"
-            git checkout main
-            $changes = git status --porcelain
-            if ($changes) {
-              Write-Host "Changes detected, committing..."
-              git add chocolatey/anymex.nuspec chocolatey/tools/chocolateyInstall.ps1 chocolatey/tools/chocolateyUninstall.ps1
-              git commit -m "Update Chocolatey package files to version $env:VERSION"
-              git push origin main
-              Write-Host "Changes committed and pushed successfully"
-            } else {
-              Write-Host "No changes to commit"
-            }
-          }
-          catch {
-            Write-Host "Git operation failed: $($_.Exception.Message)"
-            Write-Host "This might be expected if there are no changes to commit"
-          }
-
-      - name: Build Chocolatey Package
-        run: |
-          try {
-            Write-Host "Building Chocolatey package..."
-            if (-not (Test-Path "chocolatey")) {
-              New-Item -ItemType Directory -Path "chocolatey" -Force
-            }
-            choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
-            $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
-            if (Test-Path $packageFile) {
-              Write-Host "✓ Package created successfully: $packageFile"
-              $fileInfo = Get-Item $packageFile
-              Write-Host "  Size: $([math]::Round($fileInfo.Length / 1KB, 2)) KB"
-            } else {
-              Write-Host "Available files in chocolatey directory:"
-              Get-ChildItem chocolatey/
-              throw "Package file was not created: $packageFile"
-            }
-          }
-          catch {
-            Write-Host "Error building Chocolatey package: $($_.Exception.Message)"
-            throw
-          }
-
-      - name: Upload Package as Artifact
-        uses: actions/upload-artifact@v4
+      
+      - uses: actions/upload-artifact@v4
+        if: matrix.job == 'chocolatey'
         with:
           name: chocolatey-package
           path: chocolatey/*.nupkg
-          if-no-files-found: error
-
-      - name: Push Chocolatey Package
-        env:
-          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
-        run: |
-          try {
-            if (-not $env:CHOCO_API_KEY) {
-              throw "CHOCO_API_KEY secret is not set"
-            }
-            Write-Host "Setting up Chocolatey API key..."
-            choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
-            $packageFile = "chocolatey/com.ryan.anymex.$env:VERSION.nupkg"
-            Write-Host "Pushing package: $packageFile"
-            choco push $packageFile --source https://push.chocolatey.org/
-            Write-Host "Package pushed successfully to Chocolatey repository"
-          }
-          catch {
-            Write-Host "Error pushing to Chocolatey: $($_.Exception.Message)"
-            throw
-          }
-
-      - name: Release Chocolatey Package
-        uses: ncipollo/release-action@v1
+      
+      - uses: ncipollo/release-action@v1
+        if: matrix.job == 'chocolatey'
         with:
           artifacts: "chocolatey/com.ryan.anymex.*.nupkg"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+
+  ios-source-build:
+    needs: build-all-platforms
+    uses: ./.github/workflows/update_sideloading_source.yml
