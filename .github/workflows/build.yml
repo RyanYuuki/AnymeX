@@ -15,19 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Android ABIs
+          # Single Android build that outputs all APKs
           - platform: android
             os: ubuntu-latest
-            abi: armeabi-v7a
-          - platform: android
-            os: ubuntu-latest
-            abi: arm64-v8a
-          - platform: android
-            os: ubuntu-latest
-            abi: x86_64
-          - platform: android
-            os: ubuntu-latest
-            abi: universal
           # Desktop platforms
           - platform: linux
             os: ubuntu-latest
@@ -123,13 +113,19 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          if [ "${{ matrix.abi }}" = "universal" ]; then
-            flutter build apk --release
-            mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
-          else
-            flutter build apk --target-platform android-${{ matrix.abi }} --split-per-abi
-            mv build/app/outputs/flutter-apk/app-${{ matrix.abi }}-release.apk build/app/outputs/flutter-apk/AnymeX-Android-${{ matrix.abi }}.apk
-          fi
+          
+          # Build split APKs (creates all ABIs in one go)
+          flutter build apk --split-per-abi
+          
+          # Build universal APK
+          flutter build apk --release
+          
+          # Rename all APKs
+          cd build/app/outputs/flutter-apk
+          mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
+          mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
+          mv app-x86_64-release.apk AnymeX-Android-x86_64.apk
+          mv app-release.apk AnymeX-Android-universal.apk
       
       # Build iOS
       - name: Build iOS
@@ -141,26 +137,38 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          echo "$P12_BASE64" | base64 -d > certificate.p12
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
+          
+          # Decode signing files
+          echo "$P12_BASE64" | base64 -D > certificate.p12
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 -D > profile.mobileprovision
+          
+          # Verify files exist
+          ls -lh certificate.p12 profile.mobileprovision
+          
+          # Download and extract zsign
           curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
           unzip -q zsign.zip
-          
-          # Make all extracted files executable
-          chmod +x zsign 2>/dev/null || chmod +x zsign-*
           
           # Find zsign executable
           if [ -f "./zsign" ]; then
             ZSIGN_EXEC="./zsign"
+          elif [ -f "./zsign-macos-x64" ]; then
+            ZSIGN_EXEC="./zsign-macos-x64"
           else
-            ZSIGN_EXEC=$(ls zsign-* 2>/dev/null | head -n 1)
+            echo "Available files:"
+            ls -la
+            exit 1
           fi
           
+          chmod +x "$ZSIGN_EXEC"
+          
+          # Build iOS
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
           
-          $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          # Sign with zsign
+          "$ZSIGN_EXEC" -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
           
           cd build/ios/iphoneos
           zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
