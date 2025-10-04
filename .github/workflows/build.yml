@@ -318,6 +318,132 @@ jobs:
           allowUpdates: true
           tag: ${{ github.ref_name }}
 
+    update-aur:
+      needs: build-linux
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v3
+
+        - name: Download Linux Artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: linux-artifacts
+            path: artifacts
+
+        - name: Calculate SHA256 Hash
+          run: |
+            sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}' > hash.txt
+            echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
+
+        - name: Generate PKGBUILD
+          env:
+            VERSION: ${{ github.ref_name }}
+          run: |
+            # Normalize version for PKGBUILD (e.g., v3.0.1-hotfix -> 3.0.1_hotfix)
+            PKGVER="${VERSION#v}"
+            PKGVER="${PKGVER//-/_}" # Replace - with _ for PKGBUILD compatibility
+            cat <<EOF > PKGBUILD
+            # Maintainer: jullanggit <jullanggit@proton.me>
+            _pkgname=anymex
+            _PkgName=AnymeX
+            pkgname=\$_pkgname-bin
+            pkgver=$PKGVER
+            pkgrel=1
+            arch=(x86_64)
+            pkgdesc='An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)'
+            url="https://github.com/RyanYuuki/\$_PkgName"
+            license=(MIT)
+            provides=(\$_pkgname=\$pkgver)
+            depends=(
+              'libepoxy'
+              'gdk-pixbuf2'
+              'pango'
+              'webkit2gtk-4.1'
+              'harfbuzz'
+              'libsoup3'
+              'glibc'
+              'fontconfig'
+              'cairo'
+              'hicolor-icon-theme'
+              'glib2'
+              'gcc-libs'
+              'mpv'
+              'zlib-ng-compat'
+              'gtk3'
+              'at-spi2-core'
+            )
+            conflicts=(anymex)
+            _appimage="\$_PkgName-\$pkgver.AppImage"
+            source=("$_appimage::$url/releases/download/$VERSION/\$_PkgName-Linux.AppImage"
+                    "LICENSE-\$pkgver.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/$VERSION/LICENSE.md")
+            noextract=(\$_appimage)
+            sha256sums=('${{ env.HASH }}'
+                        'SKIP') # You may want to compute the LICENSE hash as well
+
+            prepare() {
+              chmod +x \$_appimage
+              ./\$_appimage --appimage-extract >/dev/null
+            }
+
+            build() {
+              chmod -R a-x+rX squashfs-root/usr
+              chmod +x squashfs-root/usr/bin/anymex
+            }
+
+            package() {
+              install -dm755 "\$pkgdir/usr/"
+              mv "\$srcdir"/squashfs-root/usr/* "\$pkgdir/usr/"
+              install -Dm644 "\$srcdir/LICENSE-\$pkgver.md" "\$pkgdir/usr/share/licenses/\$pkgname/LICENSE.md"
+              install -Dm644 /dev/stdin "\$pkgdir/usr/share/applications/\$_pkgname.desktop" <<DESKTOP
+            [Desktop Entry]
+            Version=\$pkgver
+            Type=Application
+            Name=\$_PkgName
+            GenericName=\$_PkgName
+            Comment=\$pkgdesc
+            Exec=\$_pkgname
+            Icon=\$_pkgname
+            Terminal=false
+            Categories=Utility;Application;
+            Keywords=\$_pkgname;anime
+            StartupNotify=true
+            DESKTOP
+            }
+            EOF
+
+        - name: Generate .SRCINFO
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y makepkg
+            makepkg --printsrcinfo > .SRCINFO
+
+        - name: Setup SSH for AUR
+          env:
+            AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          run: |
+            mkdir -p ~/.ssh
+            echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur
+            chmod 600 ~/.ssh/aur
+            echo "Host aur.archlinux.org" >> ~/.ssh/config
+            echo "  HostName aur.archlinux.org" >> ~/.ssh/config
+            echo "  User aur" >> ~/.ssh/config
+            echo "  IdentityFile ~/.ssh/aur" >> ~/.ssh/config
+
+        - name: Push to AUR
+          env:
+            VERSION: ${{ github.ref_name }}
+          run: |
+            git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur
+            cd aur
+            cp ../PKGBUILD .
+            cp ../.SRCINFO .
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add PKGBUILD .SRCINFO
+            git commit -m "Update to version ${VERSION#v}"
+            git push origin master
+
   build-windows:
     runs-on: windows-latest
     steps:
