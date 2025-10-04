@@ -200,7 +200,9 @@ jobs:
           %prep
           %setup -q
           %install
-          mkdir -p %{buildroot}/usr/{bin,share/applications,share/icons/hicolor/256x256/apps}
+          mkdir -p %{buildroot}/usr/bin
+          mkdir -p %{buildroot}/usr/share/applications
+          mkdir -p %{buildroot}/usr/share/icons/hicolor/256x256/apps
           cp -r * %{buildroot}/usr/bin/
           cp -r %{_sourcedir}/usr/share/* %{buildroot}/usr/share/
           cat > %{buildroot}/usr/share/applications/anymex.desktop << 'EOL'
