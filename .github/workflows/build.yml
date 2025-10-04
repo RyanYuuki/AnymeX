@@ -66,7 +66,7 @@ jobs:
           mkdir -p $HOME/cmake && cd $HOME/cmake
           wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
           tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
-          mkdir -p android
+          mkdir -p android/app
           echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
           echo "$KEYSTORE_BASE64" | base64 -d > android/app/anymex.jks
           cat > android/key.properties << EOF
@@ -144,10 +144,17 @@ jobs:
           echo "$P12_BASE64" | base64 -d > certificate.p12
           echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
           curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
-          unzip -q zsign.zip && chmod +x zsign*
+          unzip -q zsign.zip
           
-          # Find the actual zsign executable
-          ZSIGN_EXEC=$(find . -maxdepth 1 -name "zsign*" -type f -executable | head -n 1)
+          # Make all extracted files executable
+          chmod +x zsign 2>/dev/null || chmod +x zsign-*
+          
+          # Find zsign executable
+          if [ -f "./zsign" ]; then
+            ZSIGN_EXEC="./zsign"
+          else
+            ZSIGN_EXEC=$(ls zsign-* 2>/dev/null | head -n 1)
+          fi
           
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
@@ -239,7 +246,19 @@ jobs:
         shell: pwsh
         run: |
           flutter pub get
-          dart run inno_bundle:build --release
+          dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
+          
+          # Fix missing language file issue
+          $issFile = "build\windows\x64\installer\Release\inno-script.iss"
+          if (Test-Path $issFile) {
+            $content = Get-Content $issFile -Raw
+            $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
+            Set-Content $issFile -Value $content -NoNewline
+            
+            # Recompile with fixed script
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $issFile
+          }
+          
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
