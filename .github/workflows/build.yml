@@ -6,21 +6,26 @@ on:
   workflow_dispatch:
 env:
   ZSIGN_VERSION: "0.7"
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
+    
       - name: Checkout Code
         uses: actions/checkout@v3
+    
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: "adopt"
           java-version: "17"
+     
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+     
       - name: Download and Install CMake 3.18.1
         run: |
           # Create cmake directory
@@ -34,16 +39,19 @@ jobs:
           ln -s $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake $HOME/cmake/cmake
           # Verify installation
           $HOME/cmake/cmake-3.18.1-Linux-x86_64/bin/cmake --version
+      
       - name: Setup CMake path in local.properties
         run: |
           CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
           echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
           echo "CMake directory set to: $CMAKE_DIR"
           cat android/local.properties
+      
       - name: Download keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_BASE64" | base64 --decode > android/app/anymex.jks
+      
       - name: Set up signing variables
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -54,6 +62,7 @@ jobs:
           echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
           echo "keyAlias=$KEY_ALIAS" >> android/key.properties
           echo "storeFile=anymex.jks" >> android/key.properties
+      
       - name: Setup .env File
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
@@ -71,21 +80,28 @@ jobs:
           echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+      
       - name: Get Dependencies
         run: flutter pub get
+     
       - name: Generate Splash Screens
         run: dart run flutter_native_splash:create
+    
       - name: Build Android with Split ABI
         run: flutter build apk --split-per-abi
+     
       - name: Rename APKs
         run: |
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-armeabi-v7a.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/AnymeX-Android-arm64.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/AnymeX-Android-x86_64.apk
+   
       - name: Build Universal APK
         run: flutter build apk --release
+    
       - name: Rename Universal APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/AnymeX-Android-universal.apk
+     
       - name: Release Android APKs
         uses: ncipollo/release-action@v1
         with:
@@ -93,15 +109,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+ 
   build-ios:
     runs-on: macos-latest
     steps:
+     
       - name: Checkout Code
         uses: actions/checkout@v3
+     
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+     
       - name: Setup .env File
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
@@ -119,10 +139,13 @@ jobs:
           echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+     
       - name: Get Dependencies
         run: flutter pub get
+      
       - name: Generate Splash Screens
         run: dart run flutter_native_splash:create
+      
       - name: Setup Signing Files
         env:
           P12_BASE64: ${{ secrets.P12_CERTIFICATE }}
@@ -133,6 +156,7 @@ jobs:
           curl -L -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
           unzip zsign.zip
           chmod +x zsign || chmod +x zsign-*
+     
       - name: Build iOS
         env:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -143,6 +167,7 @@ jobs:
           ./zsign -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
           cd build/ios/iphoneos
           zip -r ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+     
       - name: Release iOS IPA
         uses: ncipollo/release-action@v1
         with:
@@ -150,11 +175,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+  
   build-linux:
     runs-on: ubuntu-latest
     steps:
+     
       - name: Checkout Code
         uses: actions/checkout@v3
+      
       - name: Install Dependencies
         run: |
           sudo apt-get update
@@ -162,10 +190,12 @@ jobs:
           wget -O appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool
           sudo mv appimagetool /usr/local/bin/
+   
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+      
       - name: Setup .env File
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
@@ -183,10 +213,13 @@ jobs:
           echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+      
       - name: Get Dependencies
         run: flutter pub get
+      
       - name: Build Linux
         run: flutter build linux --release
+     
       - name: Create AppImage
         run: |
           # Create fresh AppDir structure
@@ -219,6 +252,7 @@ jobs:
           # Make AppImage
           /usr/local/bin/appimagetool AppDir
           mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
+     
       - name: Create RPM Package
         run: |
           mkdir -p rpm_build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
@@ -260,10 +294,12 @@ jobs:
           EOF
           rpmbuild --define "_topdir $(pwd)/rpm_build" -ba rpm_build/SPECS/anymex.spec
           mv rpm_build/RPMS/x86_64/*.rpm build/linux/x64/release/AnymeX-Linux.rpm
+      
       - name: Create ZIP Archive
         run: |
           cd build/linux/x64/release/bundle
           zip -r ../AnymeX-Linux.zip ./*
+      
       - name: Release Linux Bundle, AppImage & RPM
         uses: ncipollo/release-action@v1
         with:
@@ -274,21 +310,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+    
     update-aur:
       needs: build-linux
       runs-on: ubuntu-latest
       steps:
+        
         - name: Checkout Code
           uses: actions/checkout@v3
+        
         - name: Download Linux Artifact
           uses: actions/download-artifact@v4
           with:
             name: linux-artifacts
             path: artifacts
+        
         - name: Calculate SHA256 Hash
           run: |
             sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}' > hash.txt
             echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
+        
         - name: Generate PKGBUILD
           env:
             VERSION: ${{ github.ref_name }}
@@ -361,11 +402,13 @@ jobs:
             DESKTOP
             }
             EOF
+        
         - name: Generate .SRCINFO
           run: |
             sudo apt-get update
             sudo apt-get install -y makepkg
             makepkg --printsrcinfo > .SRCINFO
+        
         - name: Setup SSH for AUR
           env:
             AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -377,6 +420,7 @@ jobs:
             echo " HostName aur.archlinux.org" >> ~/.ssh/config
             echo " User aur" >> ~/.ssh/config
             echo " IdentityFile ~/.ssh/aur" >> ~/.ssh/config
+        
         - name: Push to AUR
           env:
             VERSION: ${{ github.ref_name }}
@@ -390,15 +434,19 @@ jobs:
             git add PKGBUILD .SRCINFO
             git commit -m "Update to version ${VERSION#v}"
             git push origin master
+  
   build-windows:
     runs-on: windows-latest
     steps:
+      
       - name: Checkout Code
         uses: actions/checkout@v3
+      
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+     
       - name: Setup .env File
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
@@ -416,14 +464,18 @@ jobs:
           echo "MAL_CLIENT_ID=$env:MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$env:MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$env:CALLBACK_SCHEME" >> .env
+      
       - name: Get Dependencies
         run: flutter pub get
+      
       - name: Build Windows
         run: dart run inno_bundle:build --release
+      
       - name: Create ZIP file for Windows Build
         run: |
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
+      
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -432,6 +484,7 @@ jobs:
             build/windows/x64/runner/Release/AnymeX-Windows.zip
             build/windows/x64/installer/Release/AnymeX-x86_64-*-Installer.exe
           if-no-files-found: error
+  
       - name: Release Windows Builds
         uses: ncipollo/release-action@v1
         with:
@@ -441,15 +494,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+  
   build-macos:
     runs-on: macos-latest
     steps:
+      
       - name: Checkout Code
         uses: actions/checkout@v3
+      
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+      
       - name: Setup .env File
         env:
           AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
@@ -467,15 +524,19 @@ jobs:
           echo "MAL_CLIENT_ID=$MAL_CLIENT_ID" >> .env
           echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET" >> .env
           echo "CALLBACK_SCHEME=$CALLBACK_SCHEME" >> .env
+      
       - name: Get Dependencies
         run: flutter pub get
+      
       - name: Build macOS
         run: flutter build macos --release
+      
       - name: Verify Build Output
         run: |
           echo "Checking build output..."
           ls -la build/macos/Build/Products/Release/ || echo "Release directory not found"
           find build/macos -name "*.app" -type d || echo "No .app files found"
+      
       - name: Create DMG file for macOS Build
         run: |
           set -e # Exit on any error
@@ -515,12 +576,14 @@ jobs:
             echo "Error: DMG file was not created"
             exit 1
           fi
+      
       - name: Upload DMG as Artifact (for debugging)
         uses: actions/upload-artifact@v4
         with:
           name: macos-dmg
           path: build/macos/Release/AnymeX.dmg
           if-no-files-found: error
+      
       - name: Release macOS Builds
         uses: ncipollo/release-action@v1
         with:
@@ -528,28 +591,35 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
+  
   ios-source-build:
     needs: build-ios
     uses: ./.github/workflows/update_sideloading_source.yml
+  
   update-scoop-manifest:
     needs: build-windows
     runs-on: ubuntu-latest
     steps:
+      
       - name: Checkout Code
         uses: actions/checkout@v3
+      
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
           name: artifacts
           path: artifacts
+      
       - name: Calculate SHA256 Hash
         run: |
           sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}' > hash.txt
           echo "HASH=$(cat hash.txt)" >> $GITHUB_ENV
+      
       - name: Install GitHub CLI
         run: |
           sudo apt-get update
           sudo apt-get install -y gh
+      
       - name: Fork ScoopInstaller/Main Repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -563,6 +633,7 @@ jobs:
           else
             echo "Fork already exists at ${{ github.actor }}/Main"
           fi
+      
       - name: Clone Forked Repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -570,6 +641,7 @@ jobs:
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.actor }}/Main.git scoop-fork
           cd scoop-fork
           git checkout -b update-anymex-${{ github.ref_name }}
+      
       - name: Update Scoop Manifest
         env:
           VERSION: ${{ github.ref_name }}
@@ -603,6 +675,7 @@ jobs:
               }
           }
           EOF
+      
       - name: Commit and Push to Fork
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -613,6 +686,7 @@ jobs:
           git add bucket/anymex.json
           git commit -m "Update anymex manifest to version ${VERSION#v}" || echo "No changes to commit"
           git push origin update-anymex-${{ github.ref_name }}
+      
       - name: Create Pull Request to ScoopInstaller/Main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -624,29 +698,35 @@ jobs:
             --base main \
             --head ${{ github.actor }}:update-anymex-${{ github.ref_name }} \
             || echo "PR creation skipped or already exists"
+  
   build-chocolatey:
     needs: build-windows
     runs-on: windows-latest
     steps:
+      
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: main
+      
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.32.8"
+      
       - name: Install Chocolatey
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force
           [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
           name: artifacts
           path: artifacts
+      
       - name: Get Latest Release Info
         id: get_release
         run: |
@@ -693,6 +773,7 @@ jobs:
             Write-Host "Stack trace: $($_.ScriptStackTrace)"
             throw
           }
+      
       - name: Verify Chocolatey Package Structure
         run: |
           Write-Host "Verifying Chocolatey package structure..."
@@ -711,6 +792,7 @@ jobs:
               Write-Host "✓ Found: $file"
             }
           }
+      
       - name: Update Chocolatey Package Files
         run: |
           try {
@@ -749,6 +831,7 @@ jobs:
             Write-Host "Error updating package files: $($_.Exception.Message)"
             throw
           }
+      
       - name: Commit Updated Chocolatey Files
         run: |
           try {
@@ -770,6 +853,7 @@ jobs:
             Write-Host "Git operation failed: $($_.Exception.Message)"
             Write-Host "This might be expected if there are no changes to commit"
           }
+      
       - name: Build Chocolatey Package
         run: |
           try {
@@ -793,12 +877,14 @@ jobs:
             Write-Host "Error building Chocolatey package: $($_.Exception.Message)"
             throw
           }
+      
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: chocolatey-package
           path: chocolatey/*.nupkg
           if-no-files-found: error
+      
       - name: Push Chocolatey Package
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
@@ -818,6 +904,7 @@ jobs:
             Write-Host "Error pushing to Chocolatey: $($_.Exception.Message)"
             throw
           }
+      
       - name: Release Chocolatey Package
         uses: ncipollo/release-action@v1
         with:
