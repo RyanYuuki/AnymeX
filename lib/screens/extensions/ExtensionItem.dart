@@ -22,11 +22,13 @@ import 'package:iconsax/iconsax.dart';
 class ExtensionListTileWidget extends StatefulWidget {
   final Source source;
   final ItemType mediaType;
+  final VoidCallback? onUpdate;
 
   const ExtensionListTileWidget({
     super.key,
     required this.source,
     required this.mediaType,
+    this.onUpdate,
   });
 
   @override
@@ -252,6 +254,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
         await sortExtensions();
         if (mounted) {
           setState(() => _isLoading = false);
+          if (widget.onUpdate != null) widget.onUpdate!();
         }
       } else {
         AlertDialogBuilder(context)

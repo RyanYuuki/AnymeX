@@ -315,9 +315,11 @@ class _ExtensionScreenState extends State<Extension>
         ),
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
-        source: element,
-        mediaType: widget.itemType,
-      ),
+          source: element,
+          mediaType: widget.itemType,
+          onUpdate: () {
+            setState(() {});
+          }),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
       order: GroupedListOrder.ASC,

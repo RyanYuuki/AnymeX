@@ -222,13 +222,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
           child: Column(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildDecrementButton(context),
                   const SizedBox(width: 8),
                   Expanded(
                     child: SizedBox(
-                      height: 56,
+                      height: 50,
                       child: TextFormField(
                         controller: _progressController,
                         keyboardType: TextInputType.number,
@@ -316,6 +316,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Obx(() {
+      widget.animeStatus.value;
       final bool canDecrement = widget.animeProgress.value > 0;
 
       return Material(
@@ -335,8 +336,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 }
               : null,
           child: Container(
-            width: 56,
-            height: 56,
+            width: 50,
+            height: 50,
             alignment: Alignment.center,
             child: Icon(
               Icons.remove_rounded,
@@ -356,6 +357,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Obx(() {
+      widget.animeStatus.value;
       final bool canIncrement = !hasKnownLimit ||
           (hasKnownLimit && widget.animeProgress.value < maxTotal!);
 
@@ -376,8 +378,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 }
               : null,
           child: Container(
-            width: 56,
-            height: 56,
+            width: 50,
+            height: 50,
             alignment: Alignment.center,
             child: Icon(
               Icons.add_rounded,

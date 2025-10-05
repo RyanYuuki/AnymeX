@@ -1,5 +1,6 @@
 import 'package:anymex/database/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -229,15 +230,10 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                           child: controller.isSubmitting.value
-                              ? SizedBox(
+                              ? const SizedBox(
                                   width: 18,
                                   height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      colorScheme.onPrimary,
-                                    ),
-                                  ),
+                                  child: ExpressiveLoadingIndicator(),
                                 )
                               : const Text(
                                   'Post',
@@ -344,9 +340,8 @@ class _CommentSectionState extends State<CommentSection> {
           child: Center(
             child: Column(
               children: [
-                CircularProgressIndicator(
+                ExpressiveLoadingIndicator(
                   color: colorScheme.primary,
-                  strokeWidth: 3,
                 ),
                 const SizedBox(height: 20),
                 Text(

@@ -186,22 +186,20 @@ class _MyLibraryState extends State<MyLibrary> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 28.0),
-                child: _buildHeader(),
-              ),
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 28.0),
+              child: _buildHeader(),
             ),
-            SliverToBoxAdapter(
-              child: _buildChipTabs(),
-            ),
-            _buildSliverTabsBody(),
-          ],
-        ),
+          ),
+          SliverToBoxAdapter(
+            child: _buildChipTabs(),
+          ),
+          _buildSliverTabsBody(),
+        ],
       ),
     );
   }

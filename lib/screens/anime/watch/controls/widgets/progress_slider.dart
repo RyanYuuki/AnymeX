@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -34,6 +35,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final duration = controller.episodeDuration.value.inMilliseconds;
       final position = controller.currentPosition.value.inMilliseconds;
       final buffer = controller.bufferred.value.inMilliseconds;
+      final fullDuration = Duration(milliseconds: duration);
 
       return SizedBox(
         height: 27,
@@ -44,7 +46,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
             label: PlayerUtils.formatDuration(Duration(milliseconds: position)),
             divisions: duration <= 0
                 ? 1
-                : Duration(milliseconds: duration).inSeconds ~/ 10,
+                : fullDuration.inSeconds < 60
+                    ? fullDuration.inSeconds
+                    : Duration(milliseconds: duration).inSeconds ~/ 10,
             focusNode: FocusNode(canRequestFocus: false, skipTraversal: true),
             min: 0,
             value: position.toDouble(),

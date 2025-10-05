@@ -22,6 +22,7 @@ import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
@@ -683,7 +684,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       ScreenBrightness.instance.resetScreenBrightness();
     } else {
       if (!isMobile) {
-        windowManager.setFullScreen(false);
+        AnymexTitleBar.setFullScreen(false);
       }
     }
     _keyboardListenerFocusNode.dispose();
@@ -1682,8 +1683,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                             onTap: () async {
                                               isFullscreen.value =
                                                   !isFullscreen.value;
-                                              await windowManager.setFullScreen(
-                                                  isFullscreen.value);
+                                              await AnymexTitleBar
+                                                  .setFullScreen(
+                                                      isFullscreen.value);
                                             },
                                             icon: !isFullscreen.value
                                                 ? Icons.fullscreen

@@ -1,6 +1,7 @@
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,7 +33,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: Text(
-            "${widget.source.name} Settings (Not Working)",
+            "${widget.source.name} Settings",
             style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
@@ -46,7 +47,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
           () {
             if (preference.value == null) {
               return const Center(
-                child: CircularProgressIndicator(),
+                child: ExpressiveLoadingIndicator(),
               );
             }
             if (preference.value!.isEmpty) {
@@ -95,6 +96,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                       value: p.value ?? false,
                       onChanged: (val) {
                         p.value = val;
+                        widget.source.methods.setPreference(pref, val);
                         setState(() {});
                       },
                     );
@@ -107,6 +109,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                           horizontal: 16.0, vertical: 0),
                       onChanged: (val) {
                         p.value = val;
+                        widget.source.methods.setPreference(pref, val);
                         setState(() {});
                       },
                     );
@@ -127,6 +130,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             p.valueIndex ?? 0,
                             (int index) {
                               p.valueIndex = index;
+                              widget.source.methods
+                                  .setPreference(pref, p.entryValues?[index]);
                               setState(() {});
                             },
                           )
@@ -173,6 +178,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             'OK',
                             () => setState(() {
                               p.values = newValues.toList();
+                              widget.source.methods
+                                  .setPreference(pref, newValues);
                             }),
                           )
                           ..setNegativeButton("Cancel", () {})
@@ -199,6 +206,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             'OK',
                             () => setState(() {
                               p.value = value;
+                              widget.source.methods.setPreference(pref, value);
                             }),
                           )
                           ..setNegativeButton("Cancel", () {})

@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/subtitles/repository/subtitle_repo.da
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -295,9 +296,8 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(
+            ExpressiveLoadingIndicator(
               color: colorScheme.primary,
-              strokeWidth: 3,
             ),
             const SizedBox(height: 16),
             Text(
@@ -366,8 +366,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                         child: SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                          child: ExpressiveLoadingIndicator(
                             color: colorScheme.primary,
                           ),
                         ),
@@ -546,7 +545,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                       const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: ExpressiveLoadingIndicator(),
                       )
                     else
                       Icon(Icons.arrow_forward_ios,
@@ -676,7 +675,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                 const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: ExpressiveLoadingIndicator(),
                 )
               else
                 Icon(Icons.arrow_forward_ios,
@@ -772,7 +771,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                 const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: ExpressiveLoadingIndicator(),
                 )
               else
                 Icon(Icons.arrow_forward_ios,
