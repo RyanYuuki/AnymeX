@@ -195,8 +195,9 @@ class Header extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: CachedNetworkImage(
-                  width: 50,
-                  height: 50,
+                  width: 45,
+                  height: 45,
+                  fit: BoxFit.cover,
                   errorWidget: (context, url, error) =>
                       const Icon(IconlyBold.profile),
                   imageUrl: profileData.profileData.value.avatar ?? '',
