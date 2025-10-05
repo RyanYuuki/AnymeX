@@ -158,27 +158,17 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          echo "$P12_BASE64" | base64 --decode > certificate.p12
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
-          ls -lh certificate.p12 profile.mobileprovision
-          if [ ! -s certificate.p12 ] || [ ! -s profile.mobileprovision ]; then
-            echo "Error: Signing files are empty. Check if P12_CERTIFICATE and PROVISIONING_PROFILE secrets are set."
-            exit 1
-          fi
-          curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
-          unzip -q zsign.zip
+          echo "$P12_BASE64" | base64 -d > certificate.p12
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
+          curl -L -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
+          unzip zsign.zip
           chmod +x zsign || chmod +x zsign-*
-          if [ -f "./zsign" ]; then
-            ZSIGN_EXEC="./zsign"
-          else
-            ZSIGN_EXEC=$(ls zsign* 2>/dev/null | head -n 1)
-          fi
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
-          $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          ./zsign -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
           cd build/ios/iphoneos
-          zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+          zip -r ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
       
       - name: Build Linux
         if: matrix.platform == 'linux'
