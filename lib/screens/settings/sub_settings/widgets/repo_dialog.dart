@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -304,8 +305,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                               ? SizedBox(
                                   height: 16,
                                   width: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  child: ExpressiveLoadingIndicator(
                                     color: colorScheme.onPrimary,
                                   ),
                                 )

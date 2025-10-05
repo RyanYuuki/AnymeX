@@ -11,6 +11,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
@@ -193,7 +194,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           filled: true,
           fillColor:
               Theme.of(context).colorScheme.surfaceContainer.withOpacity(.5),
-          hintText: 'Search ${widget.isManga ? 'manga' : 'anime'}...',
+          hintText:
+              'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...',
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               ),
@@ -547,12 +549,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.primary,
-                ),
-              ),
+              child: const ExpressiveLoadingIndicator(),
             ),
             const SizedBox(height: 24),
             Text(

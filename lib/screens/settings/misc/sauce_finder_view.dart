@@ -7,6 +7,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sauce_finder.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
@@ -338,14 +339,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               borderRadius: BorderRadius.circular(16),
               child: Center(
                 child: _isLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              colorScheme.onPrimary),
-                        ),
+                        child: ExpressiveLoadingIndicator(),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -449,13 +446,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       ),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 48,
             height: 48,
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-            ),
+            child: ExpressiveLoadingIndicator(),
           ),
           const SizedBox(height: 24),
           Text(

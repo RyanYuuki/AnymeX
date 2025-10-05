@@ -3,6 +3,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -63,6 +64,7 @@ class ProfilePage extends StatelessWidget {
                           profileData.value.name ?? 'Guest',
                           style: TextStyle(
                             fontSize: 24,
+                            fontFamily: 'Poppins-SemiBold',
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
@@ -109,17 +111,12 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Stats',
-                                style: TextStyle(fontSize: 24),
-                              ),
-                              const SizedBox(height: 10),
                               Container(
                                 margin: const EdgeInsets.all(5),
                                 padding: const EdgeInsets.all(10),
@@ -127,7 +124,8 @@ class ProfilePage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(7),
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .secondaryContainer,
+                                      .secondaryContainer
+                                      .withValues(alpha: 0.3),
                                 ),
                                 child: Column(
                                   children: [
@@ -213,7 +211,10 @@ class ProfilePage extends StatelessWidget {
       width: Get.width * 0.4,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: Theme.of(context)
+            .colorScheme
+            .secondaryContainer
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.only(
           topLeft: isFirst ? const Radius.circular(10) : Radius.zero,
           bottomLeft: isFirst ? const Radius.circular(10) : Radius.zero,

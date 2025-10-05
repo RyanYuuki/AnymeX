@@ -223,8 +223,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       "As many features are missing in the new player",
                                   switchValue: settings.preferences
                                       .get('useOldPlayer', defaultValue: false),
-                                  onChanged: (val) => settings.preferences
-                                      .put('useOldPlayer', val)),
+                                  onChanged: (val) {
+                                    settings.preferences
+                                        .put('useOldPlayer', val);
+                                    setState(() {});
+                                  }),
                               CustomTile(
                                 padding: 10,
                                 descColor:
