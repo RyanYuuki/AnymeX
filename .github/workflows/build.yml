@@ -252,20 +252,20 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-            flutter pub get
-            dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-            $innoPath = (Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\tools\ISCC.exe' -Recurse -ErrorAction SilentlyContinue).FullName
-            if (-not $innoPath) {
-                Write-Error "Inno Setup not found. Make sure innosetup is installed via Chocolatey."
-                exit 1
-            }
-            $issFile = "build\windows\x64\installer\Release\inno-script.iss"
-            $content = Get-Content $issFile -Raw
-            $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
-            Set-Content $issFile -Value $content -NoNewline
-            & "$innoPath" $issFile
-            cd build/windows/x64/runner/Release
-            Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
+          flutter pub get
+          $innoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $innoPath)) {
+              Write-Error "Inno Setup not found. Preinstalled version is expected on the runner."
+              exit 1
+          }
+          dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
+          $issFile = "build\windows\x64\installer\Release\inno-script.iss"
+          $content = Get-Content $issFile -Raw
+          $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
+          Set-Content $issFile -Value $content -NoNewline
+          & "$innoPath" $issFile
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
       - name: Build macOS
         if: matrix.platform == 'macos'
