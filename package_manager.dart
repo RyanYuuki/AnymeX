@@ -108,7 +108,7 @@ class AppNamePackageManager {
       String packageName = basePackageName;
 
       // Get app name from Android manifest
-      final androidManifestPath = 'android/app/src/main/AndroidManifest.xml';
+      const androidManifestPath = 'android/app/src/main/AndroidManifest.xml';
       if (await File(androidManifestPath).exists()) {
         final manifestContent = await File(androidManifestPath).readAsString();
 
@@ -128,7 +128,7 @@ class AppNamePackageManager {
       }
 
       // Fallback: try to get app name from strings.xml
-      final stringsPath = 'android/app/src/main/res/values/strings.xml';
+      const stringsPath = 'android/app/src/main/res/values/strings.xml';
       if (await File(stringsPath).exists()) {
         final stringsContent = await File(stringsPath).readAsString();
         final appNameMatch = RegExp(r'<string name="app_name">([^<]+)</string>')
@@ -139,7 +139,7 @@ class AppNamePackageManager {
       }
 
       // Alternative fallback: check iOS Info.plist for app name
-      final infoPlistPath = 'ios/Runner/Info.plist';
+      const infoPlistPath = 'ios/Runner/Info.plist';
       if (await File(infoPlistPath).exists()) {
         final plistContent = await File(infoPlistPath).readAsString();
 

@@ -34,13 +34,11 @@ class BigCarousel extends StatefulWidget {
 
 class _BigCarouselState extends State<BigCarousel> {
   int activeIndex = 0;
-  final PageController _pageController = PageController();
   final CarouselSliderController controller = CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
     final newData = widget.data.where((e) => e.cover != null).toList();
-    final ColorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: Column(
@@ -99,7 +97,7 @@ class _BigCarouselState extends State<BigCarousel> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  title ?? '??',
+                                  title,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -142,6 +140,7 @@ class _BigCarouselState extends State<BigCarousel> {
                         ),
                         const SizedBox(height: 10),
                         Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),
                           height: 50,

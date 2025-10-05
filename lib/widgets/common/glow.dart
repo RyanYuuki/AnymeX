@@ -9,11 +9,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
+enum GradientVariant {
+  subtle,
+  softVignette,
+  centerFocus,
+  edgeFade,
+  warmTone,
+  coolTone,
+  dynamicFlow,
+  minimalDark,
+}
+
 class Glow extends StatelessWidget {
   final Widget child;
   final Alignment begin;
   final Alignment end;
   final String color;
+  final bool disabled;
 
   const Glow({
     super.key,
@@ -21,6 +33,7 @@ class Glow extends StatelessWidget {
     this.begin = Alignment.topLeft,
     this.end = Alignment.bottomRight,
     this.color = '',
+    this.disabled = false,
   });
 
   @override
@@ -34,6 +47,15 @@ class Glow extends StatelessWidget {
             ),
           )
         : Theme.of(context).colorScheme;
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final ch = isDesktop
+        ? Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: child,
+          )
+        : child;
+
+    if (disabled) return child;
 
     return Obx(() {
       settings.liquidBackgroundPath;
@@ -43,13 +65,13 @@ class Glow extends StatelessWidget {
         return LiquidMode(
           theme: theme,
           gradientVariant: GradientVariant.subtle,
-          child: child,
+          child: ch,
         );
       } else {
         if (settings.disableGradient) {
-          return Container(color: theme.surface, child: child);
+          return Container(color: theme.surface, child: ch);
         }
-        return LightweightGlow(begin: begin, end: end, child: child);
+        return LightweightGlow(begin: begin, end: end, child: ch);
       }
     });
   }
@@ -100,17 +122,6 @@ class LiquidMode extends StatelessWidget {
       ],
     );
   }
-}
-
-enum GradientVariant {
-  subtle,
-  softVignette,
-  centerFocus,
-  edgeFade,
-  warmTone,
-  coolTone,
-  dynamicFlow,
-  minimalDark,
 }
 
 class _OptimizedGradientOverlay extends StatelessWidget {

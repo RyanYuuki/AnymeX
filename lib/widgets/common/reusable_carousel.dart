@@ -144,7 +144,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   Widget _buildCarouselItem(CarouselData itemData, int index) {
-    final String tag = '$index-${getRandomTag()}-${itemData.id}';
+    final tag = '${itemData.hashCode}-${itemData.id}';
 
     return Obx(() {
       final child = AnymexOnTap(

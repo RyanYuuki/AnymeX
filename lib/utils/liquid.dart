@@ -32,6 +32,7 @@ class ProgressController extends GetxController {
 }
 
 enum BlurStrength {
+  low(20, 'Low'),
   medium(40, 'Medium'),
   high(60, 'High'),
   veryHigh(100, 'Very High');
@@ -615,12 +616,6 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                           strength.label,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurface,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Optimized for speed • ~${strength.radius < 50 ? '3-5' : strength.radius < 90 ? '5-7' : '7-10'}s',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                         activeColor: colorScheme.primary,

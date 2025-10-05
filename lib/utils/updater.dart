@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/utils/abi_checker.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -545,8 +546,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                               SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                child: ExpressiveLoadingIndicator(
                                   color: colorScheme.primary,
                                 ),
                               ),

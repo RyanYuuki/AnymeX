@@ -1,3 +1,4 @@
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class AnymexProgressIndicator extends StatelessWidget {
@@ -14,11 +15,13 @@ class AnymexProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator(
-      value: value,
-      year2023: false,
-      strokeWidth: strokeWidth ?? 4,
-      backgroundColor: backgroundColor,
-    );
+    return value != null
+        ? CircularProgressIndicator(
+            value: value,
+            year2023: false,
+            strokeWidth: strokeWidth ?? 4,
+            backgroundColor: backgroundColor,
+          )
+        : const ExpressiveLoadingIndicator();
   }
 }
