@@ -45,6 +45,35 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       
+      - name: Cache Gradle
+        if: matrix.platform == 'android'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      
+      - name: Cache CMake
+        if: matrix.platform == 'android'
+        uses: actions/cache@v3
+        with:
+          path: ~/cmake
+          key: cmake-3.18.1-linux-x64
+      
+      - name: Cache Chocolatey
+        if: matrix.platform == 'windows'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~\AppData\Local\Temp\chocolatey
+            C:\ProgramData\chocolatey
+          key: ${{ runner.os }}-choco-innosetup
+          restore-keys: |
+            ${{ runner.os }}-choco-
+      
       - name: Setup Android
         if: matrix.platform == 'android'
         env:
@@ -52,9 +81,11 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          mkdir -p $HOME/cmake && cd $HOME/cmake
-          wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
-          tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+          if [ ! -d "$HOME/cmake/cmake-3.18.1-Linux-x86_64" ]; then
+            mkdir -p $HOME/cmake && cd $HOME/cmake
+            wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
+            tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+          fi
           cd $GITHUB_WORKSPACE
           CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
           echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
@@ -110,8 +141,8 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
-          flutter build apk --release --split-per-abi
+          flutter build apk --split-per-abi
+          flutter build apk --release
           cd build/app/outputs/flutter-apk
           mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
           mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
