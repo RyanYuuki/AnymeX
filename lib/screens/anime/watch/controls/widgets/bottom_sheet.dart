@@ -3,8 +3,10 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:dartotsu_extension_bridge/Mangayomi/string_extensions.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DynamicBottomSheet extends StatefulWidget {
@@ -490,7 +492,8 @@ class PlayerBottomSheets {
             .where((e) => e.title != null && e.language != null)
             .map((entry) {
           return BottomSheetItem(
-            title: entry.language ?? entry.title ?? entry.uri.toString(),
+            title: (entry.language ?? entry.title ?? entry.uri.toString())
+                .toUpperCase(),
             subtitle: 'Audio Track',
             icon: Icons.audiotrack,
           );
@@ -498,6 +501,44 @@ class PlayerBottomSheets {
       ],
       selectedIndex: currentIndex < 0 ? 0 : currentIndex,
       onItemSelected: (index) => Get.back(result: index),
+    );
+  }
+
+  static Future<int?> showOfflineSubs(
+      BuildContext context, PlayerController controller) {
+    final tracks = controller.embeddedSubs.value;
+    final currentIndex =
+        tracks.indexOf(controller.selectedSubsTrack.value ?? tracks.first);
+    return show<int>(
+      context: context,
+      title: 'Subtitle Tracks',
+      showSearch: tracks.length > 5,
+      searchHint: 'Search subtitle tracks...',
+      items: [
+        const BottomSheetItem(
+            title: 'None', subtitle: 'Subtitle Track', icon: Icons.audiotrack),
+        ...tracks
+            .where((e) => e.title != null && e.language != null)
+            .map((entry) {
+          return BottomSheetItem(
+            title: (entry.language ?? entry.title ?? entry.uri.toString())
+                .toUpperCase(),
+            subtitle: 'Subtitle Track',
+            icon: Icons.closed_caption_rounded,
+          );
+        })
+      ],
+      selectedIndex: currentIndex < 0 ? 0 : currentIndex,
+      onItemSelected: (index) {
+        if (index == 0) {
+          controller.setSubtitleTrack(SubtitleTrack.no());
+        } else {
+          final selectedTrack = tracks[index];
+          controller.selectedSubsTrack.value = selectedTrack;
+          controller.setSubtitleTrack(selectedTrack);
+        }
+        Get.back(result: index);
+      },
     );
   }
 
@@ -687,7 +728,7 @@ class PlayerBottomSheets {
         child: Container(
           color: Get.theme.colorScheme.surface,
           child: const Center(
-            child: CircularProgressIndicator(),
+            child: ExpressiveLoadingIndicator(),
           ),
         ),
       ),

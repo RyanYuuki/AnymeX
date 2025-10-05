@@ -94,7 +94,9 @@ class TopControls extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      controller.currentEpisode.value.title ?? 'Unknown Title',
+                      controller.currentEpisode.value.title ??
+                          controller.itemName ??
+                          'Unknown Title',
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
@@ -113,7 +115,9 @@ class TopControls extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Episode ${controller.currentEpisode.value.number}',
+                          controller.currentEpisode.value.number == "Offline"
+                              ? "Offline"
+                              : "Episode ${controller.currentEpisode.value.number}",
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w600,
@@ -134,7 +138,10 @@ class TopControls extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    controller.anilistData.title,
+                    (controller.anilistData.title == "?"
+                            ? controller.folderName
+                            : controller.anilistData.title) ??
+                        '',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -200,6 +207,7 @@ class TopControls extends StatelessWidget {
                         children: [
                           Text(
                             controller.currentEpisode.value.title ??
+                                controller.itemName ??
                                 'Unknown Title',
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.onSurface,
@@ -220,7 +228,10 @@ class TopControls extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                'Episode ${controller.currentEpisode.value.number}',
+                                controller.currentEpisode.value.number ==
+                                        "Offline"
+                                    ? "Offline"
+                                    : "Episode ${controller.currentEpisode.value.number}",
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
@@ -241,7 +252,10 @@ class TopControls extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          controller.anilistData.title,
+                          (controller.anilistData.title == "?"
+                                  ? controller.folderName
+                                  : controller.anilistData.title) ??
+                              '',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w600,

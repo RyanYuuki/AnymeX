@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -64,7 +65,7 @@ class CenterControls extends StatelessWidget {
                     );
                   },
                   child: controller.isBuffering.value
-                      ? const CircularProgressIndicator(year2023: false)
+                      ? const ExpressiveLoadingIndicator()
                       : Icon(
                           controller.isPlaying.value
                               ? Icons.pause_rounded
@@ -132,7 +133,7 @@ class CenterControls extends StatelessWidget {
                       );
                     },
                     child: controller.isBuffering.value
-                        ? const CircularProgressIndicator(year2023: false)
+                        ? const ExpressiveLoadingIndicator()
                         : Icon(
                             controller.isPlaying.value
                                 ? Icons.pause_rounded

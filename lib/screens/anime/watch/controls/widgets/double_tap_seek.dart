@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'dart:async';
 
+import 'package:get/get.dart';
+
 class DoubleTapSeekWidget extends StatefulWidget {
   final PlayerController controller;
 
@@ -220,6 +222,9 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       _glowAnimationController.reset();
 
       HapticFeedback.lightImpact();
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        _setPlaybackRate(_previousSpeed);
+      });
     }
   }
 
@@ -233,7 +238,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
         if (mounted) {
           widget.controller.setRate(_pendingSpeed);
 
-          Future.delayed(const Duration(milliseconds: 50), () {
+          Future.delayed(const Duration(milliseconds: 200), () {
             if (mounted) {
               double currentRate = widget.controller.playbackSpeed.value;
               if ((currentRate - _pendingSpeed).abs() > 0.1) {
@@ -293,7 +298,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: colorScheme.surface.withOpacity(0.95),
+                  color: colorScheme.surface.withOpacity(0.40),
                   border: Border.all(
                     color:
                         colorScheme.primary.withOpacity(_glowAnimation.value),
@@ -531,85 +536,90 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: MouseRegion(
-        onHover: (e) => {
-          if (!Platform.isAndroid && !Platform.isIOS)
-            {widget.controller.toggleControls(val: true)}
-        },
-        child: KeyboardListener(
-          focusNode: FocusNode()..requestFocus(),
-          onKeyEvent: _handleKeyboard,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onVerticalDragStart: (details) {
-              if (!_longPressStarted && !_isHolding) {
-                _isDragging = true;
-                widget.controller.onVerticalDragStart(context, details);
-              } else if (_isHolding) {
+      child: Obx(() {
+        return MouseRegion(
+          cursor: widget.controller.showControls.value
+              ? SystemMouseCursors.basic
+              : SystemMouseCursors.none,
+          onHover: (e) => {
+            if (!Platform.isAndroid && !Platform.isIOS)
+              {widget.controller.toggleControls(val: true)}
+          },
+          child: KeyboardListener(
+            focusNode: FocusNode()..requestFocus(),
+            onKeyEvent: _handleKeyboard,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragStart: (details) {
+                if (!_longPressStarted && !_isHolding) {
+                  _isDragging = true;
+                  widget.controller.onVerticalDragStart(context, details);
+                } else if (_isHolding) {
+                  _initialSwipeY = details.globalPosition.dy;
+                }
+              },
+              onVerticalDragEnd: (details) {
+                if (!_isHolding) {
+                  _isDragging = false;
+                  widget.controller.onVerticalDragEnd(context, details);
+                }
+              },
+              onVerticalDragUpdate: (details) {
+                if (_isHolding) {
+                  double deltaY = details.globalPosition.dy - _initialSwipeY;
+                  _updateSpeedFromSwipe(deltaY);
+                } else if (_isDragging) {
+                  widget.controller.onVerticalDragUpdate(context, details);
+                }
+              },
+              onTapDown: _handleSingleTap,
+              onDoubleTapDown: _handleDoubleTap,
+              onLongPressStart: (details) {
                 _initialSwipeY = details.globalPosition.dy;
-              }
-            },
-            onVerticalDragEnd: (details) {
-              if (!_isHolding) {
-                _isDragging = false;
-                widget.controller.onVerticalDragEnd(context, details);
-              }
-            },
-            onVerticalDragUpdate: (details) {
-              if (_isHolding) {
-                double deltaY = details.globalPosition.dy - _initialSwipeY;
-                _updateSpeedFromSwipe(deltaY);
-              } else if (_isDragging) {
-                widget.controller.onVerticalDragUpdate(context, details);
-              }
-            },
-            onTapDown: _handleSingleTap,
-            onDoubleTapDown: _handleDoubleTap,
-            onLongPressStart: (details) {
-              _initialSwipeY = details.globalPosition.dy;
-              _startHold();
-            },
-            onLongPressEnd: (details) => _endHold(),
-            onLongPressMoveUpdate: (details) {
-              if (_isHolding) {
-                double deltaY = details.globalPosition.dy - _initialSwipeY;
-                _updateSpeedFromSwipe(deltaY);
-              }
-            },
-            child: Container(
-              color: Colors.transparent,
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: _buildSeekIndicator(
-                      isLeft: true,
-                      tapCount: _leftTapCount,
+                _startHold();
+              },
+              onLongPressEnd: (details) => _endHold(),
+              onLongPressMoveUpdate: (details) {
+                if (_isHolding) {
+                  double deltaY = details.globalPosition.dy - _initialSwipeY;
+                  _updateSpeedFromSwipe(deltaY);
+                }
+              },
+              child: Container(
+                color: Colors.transparent,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: _buildSeekIndicator(
+                        isLeft: true,
+                        tapCount: _leftTapCount,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: _buildSeekIndicator(
-                      isLeft: false,
-                      tapCount: _rightTapCount,
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: _buildSeekIndicator(
+                        isLeft: false,
+                        tapCount: _rightTapCount,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: MediaQuery.of(context).size.height * 0.05,
-                    child: _buildSpeedIndicator(),
-                  ),
-                ],
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: MediaQuery.of(context).size.height * 0.05,
+                      child: _buildSpeedIndicator(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

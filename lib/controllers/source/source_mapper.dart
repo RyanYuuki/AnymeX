@@ -3,334 +3,71 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:get/get.dart';
 
-class AnimeMatchResult {
-  final bool isMatch;
-  final double score;
-  final String matchedTitle;
-  final double englishScore;
-  final double romajiScore;
-  final AnimeMatchDetails details;
-
-  AnimeMatchResult({
-    required this.isMatch,
-    required this.score,
-    required this.matchedTitle,
-    required this.englishScore,
-    required this.romajiScore,
-    required this.details,
-  });
-
-  @override
-  String toString() {
-    return 'AnimeMatchResult(isMatch: $isMatch, score: $score, matchedTitle: $matchedTitle)';
-  }
+String _normalizeLight(String title) {
+  return title.trim().toLowerCase();
 }
 
-class AnimeMatchDetails {
-  final double levenshtein;
-  final double jaroWinkler;
-  final double wordMatch;
-  final double seasonBonus;
+String _normalizeHeavy(String title) {
+  String normalized =
+      title.replaceAll(RegExp(r'\bseason\s*', caseSensitive: false), '');
 
-  AnimeMatchDetails({
-    required this.levenshtein,
-    required this.jaroWinkler,
-    required this.wordMatch,
-    required this.seasonBonus,
-  });
-
-  @override
-  String toString() {
-    return 'AnimeMatchDetails(levenshtein: $levenshtein, jaroWinkler: $jaroWinkler, wordMatch: $wordMatch, seasonBonus: $seasonBonus)';
-  }
+  normalized =
+      normalized.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '').trim().toLowerCase();
+  return normalized;
 }
 
-class _SimilarityResult {
-  final double levRatio;
-  final double jw;
-  final double wordMatchRatio;
-  final double seasonBonus;
-  final double finalScore;
+int? _extractSeasonNumber(String title) {
+  final patterns = [
+    RegExp(r'\b(\d+)(?:th|st|nd|rd)?\s*season\b', caseSensitive: false),
+    RegExp(r'\bseason\s*(\d+)\b', caseSensitive: false),
+    RegExp(r'\s(\d+)\b(?!\s*[a-zA-Z])'),
+    RegExp(r'\b(\d+)(nd|rd|th|st)\b'),
+  ];
 
-  _SimilarityResult({
-    required this.levRatio,
-    required this.jw,
-    required this.wordMatchRatio,
-    required this.seasonBonus,
-    required this.finalScore,
-  });
+  for (final pattern in patterns) {
+    final match = pattern.firstMatch(title);
+    if (match != null && match.group(1) != null) {
+      return int.tryParse(match.group(1)!);
+    }
+  }
+  return null;
 }
 
-AnimeMatchResult matchAnimeTitle(
-  String? sourceEnglishTitle,
-  String? sourceRomajiTitle,
-  String targetTitle, {
-  double threshold = 0.9,
-}) {
-  String normalize(String str) {
-    return str.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').trim();
+double _calculateMatchScore(
+  String sourceTitle,
+  String targetTitle,
+  int? sourceSeason,
+  int? targetSeason,
+) {
+  if (sourceTitle.isEmpty) return 0.0;
+
+  final tst = tokenSetRatio(sourceTitle, targetTitle) / 100.0;
+  final pr = partialRatio(sourceTitle, targetTitle) / 100.0;
+  final r = ratio(sourceTitle, targetTitle) / 100.0;
+
+  double score = (tst * 0.4) + (pr * 0.3) + (r * 0.3);
+
+  if (targetSeason != null && sourceSeason != null) {
+    score += (targetSeason == sourceSeason) ? 0.3 : -0.1;
   }
 
-  final String normalizedEnglish = normalize(sourceEnglishTitle ?? '');
-  final String normalizedRomaji = normalize(sourceRomajiTitle ?? '');
-  final String normalizedTarget = normalize(targetTitle);
-
-  if (normalizedEnglish == normalizedTarget ||
-      normalizedRomaji == normalizedTarget) {
-    return AnimeMatchResult(
-      isMatch: true,
-      score: 1.0,
-      matchedTitle:
-          normalizedEnglish == normalizedTarget ? 'english' : 'romaji',
-      englishScore: normalizedEnglish == normalizedTarget ? 1.0 : 0.0,
-      romajiScore: normalizedRomaji == normalizedTarget ? 1.0 : 0.0,
-      details: AnimeMatchDetails(
-        levenshtein: 1.0,
-        jaroWinkler: 1.0,
-        wordMatch: 1.0,
-        seasonBonus: 0.0,
-      ),
-    );
-  }
-
-  int? extractSeasonInfo(String title) {
-    final List<RegExp> seasonPatterns = [
-      RegExp(r'\b(\d+)(?:th|st|nd|rd)?\s*season\b', caseSensitive: false),
-      RegExp(r'\bseason\s*(\d+)\b', caseSensitive: false),
-      RegExp(r'\s(\d+)\b(?!\s*[a-zA-Z])'),
-      RegExp(r'\b(\d+)(nd|rd|th|st)\b'),
-    ];
-
-    for (final pattern in seasonPatterns) {
-      final match = pattern.firstMatch(title);
-      if (match != null && match.group(1) != null) {
-        return int.tryParse(match.group(1)!);
-      }
-    }
-
-    return null;
-  }
-
-  final int? targetSeasonNumber = extractSeasonInfo(normalizedTarget);
-  final int? englishSeasonNumber = extractSeasonInfo(normalizedEnglish);
-  final int? romajiSeasonNumber = extractSeasonInfo(normalizedRomaji);
-
-  int levenshtein(String a, String b) {
-    if (a.isEmpty) return b.length;
-    if (b.isEmpty) return a.length;
-
-    final List<List<int>> matrix = List.generate(
-      b.length + 1,
-      (i) => List.filled(a.length + 1, 0),
-    );
-
-    for (int i = 0; i <= b.length; i++) {
-      matrix[i][0] = i;
-    }
-
-    for (int j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (int i = 1; i <= b.length; i++) {
-      for (int j = 1; j <= a.length; j++) {
-        final int cost = a[j - 1] == b[i - 1] ? 0 : 1;
-        matrix[i][j] = [
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost,
-        ].reduce((a, b) => a < b ? a : b);
-      }
-    }
-
-    return matrix[b.length][a.length];
-  }
-
-  double jaroWinkler(String s1, String s2) {
-    if (s1.isEmpty && s2.isEmpty) return 1.0;
-    if (s1.isEmpty || s2.isEmpty) return 0.0;
-
-    final int matchDistance =
-        (s1.length > s2.length ? s1.length : s2.length) ~/ 2 - 1;
-    if (matchDistance < 0) return s1 == s2 ? 1.0 : 0.0;
-
-    final List<bool> s1Matches = List.filled(s1.length, false);
-    final List<bool> s2Matches = List.filled(s2.length, false);
-
-    int matches = 0;
-
-    for (int i = 0; i < s1.length; i++) {
-      final int start = i - matchDistance > 0 ? i - matchDistance : 0;
-      final int end =
-          i + matchDistance + 1 < s2.length ? i + matchDistance + 1 : s2.length;
-
-      for (int j = start; j < end; j++) {
-        if (!s2Matches[j] && s1[i] == s2[j]) {
-          s1Matches[i] = true;
-          s2Matches[j] = true;
-          matches++;
-          break;
-        }
-      }
-    }
-
-    if (matches == 0) return 0.0;
-
-    int transpositions = 0;
-    int j = 0;
-
-    for (int i = 0; i < s1.length; i++) {
-      if (s1Matches[i]) {
-        while (j < s2.length && !s2Matches[j]) {
-          j++;
-        }
-        if (j < s2.length && s1[i] != s2[j]) transpositions++;
-        j++;
-      }
-    }
-
-    final double jaro = (1 / 3) *
-        (matches / s1.length +
-            matches / s2.length +
-            (matches - transpositions / 2) / matches);
-
-    const double p = 0.1;
-    int l = 0;
-
-    final int minLength = s1.length < s2.length ? s1.length : s2.length;
-    final int prefixLength = minLength < 4 ? minLength : 4;
-
-    for (int i = 0; i < prefixLength; i++) {
-      if (s1[i] == s2[i]) {
-        l++;
-      } else {
-        break;
-      }
-    }
-
-    return jaro + l * p * (1 - jaro);
-  }
-
-  _SimilarityResult calculateSimilarity(
-    String source,
-    String target,
-    int? sourceSeasonNum,
-    int? targetSeasonNum,
-  ) {
-    if (source.isEmpty) {
-      return _SimilarityResult(
-        levRatio: 0,
-        jw: 0,
-        wordMatchRatio: 0,
-        seasonBonus: 0,
-        finalScore: 0,
-      );
-    }
-
-    final double levRatio = 1 -
-        levenshtein(source, target) /
-            (source.length > target.length ? source.length : target.length);
-    final double jw = jaroWinkler(source, target);
-
-    final List<String> sourceWords =
-        source.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
-    final List<String> targetWords =
-        target.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
-
-    int wordMatches = 0;
-    for (final String sWord in sourceWords) {
-      if (targetWords.contains(sWord)) wordMatches++;
-    }
-
-    final double wordMatchRatio =
-        sourceWords.isNotEmpty && targetWords.isNotEmpty
-            ? wordMatches /
-                (sourceWords.length > targetWords.length
-                    ? sourceWords.length
-                    : targetWords.length)
-            : 0;
-
-    double seasonBonus = 0;
-    if (targetSeasonNum != null && sourceSeasonNum != null) {
-      if (targetSeasonNum == sourceSeasonNum) {
-        seasonBonus = 0.3;
-      } else {
-        seasonBonus = 0.1;
-      }
-    }
-
-    final double finalScore =
-        levRatio * 0.3 + jw * 0.3 + wordMatchRatio * 0.2 + seasonBonus;
-
-    return _SimilarityResult(
-      levRatio: levRatio,
-      jw: jw,
-      wordMatchRatio: wordMatchRatio,
-      seasonBonus: seasonBonus,
-      finalScore: finalScore,
-    );
-  }
-
-  final _SimilarityResult englishSimilarity = calculateSimilarity(
-    normalizedEnglish,
-    normalizedTarget,
-    englishSeasonNumber,
-    targetSeasonNumber,
-  );
-  final _SimilarityResult romajiSimilarity = calculateSimilarity(
-    normalizedRomaji,
-    normalizedTarget,
-    romajiSeasonNumber,
-    targetSeasonNumber,
-  );
-
-  final double bestScore =
-      englishSimilarity.finalScore > romajiSimilarity.finalScore
-          ? englishSimilarity.finalScore
-          : romajiSimilarity.finalScore;
-  final String matchedTitle =
-      englishSimilarity.finalScore >= romajiSimilarity.finalScore
-          ? 'english'
-          : 'romaji';
-
-  final _SimilarityResult bestSimilarity =
-      matchedTitle == 'english' ? englishSimilarity : romajiSimilarity;
-
-  return AnimeMatchResult(
-    isMatch: bestScore >= threshold,
-    score: bestScore,
-    matchedTitle: matchedTitle,
-    englishScore: englishSimilarity.finalScore,
-    romajiScore: romajiSimilarity.finalScore,
-    details: AnimeMatchDetails(
-      levenshtein: bestSimilarity.levRatio,
-      jaroWinkler: bestSimilarity.jw,
-      wordMatch: bestSimilarity.wordMatchRatio,
-      seasonBonus: bestSimilarity.seasonBonus,
-    ),
-  );
+  return score.clamp(0.0, 1.0);
 }
 
-Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle,
-    {String? savedTitle}) async {
+Future<Media?> mapMedia(
+  List<String> animeId,
+  RxString searchedTitle, {
+  String? savedTitle,
+}) async {
   final sourceController = Get.find<SourceController>();
   final isManga = animeId[0].split("*").last == "MANGA";
   final type = isManga ? ItemType.manga : ItemType.anime;
-  String romajiTitle = animeId[1];
+
   String englishTitle = animeId[0].split("*").first;
-
-  String normalize(String title) {
-    return title.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '').trim().toLowerCase();
-  }
-
-  if (romajiTitle == '??') {
-    romajiTitle = englishTitle;
-  }
-
-  romajiTitle = normalize(romajiTitle);
-  englishTitle = normalize(englishTitle);
+  String romajiTitle = animeId[1] == '??' ? englishTitle : animeId[1];
 
   final activeSource = isManga
       ? sourceController.activeMangaSource.value
@@ -341,99 +78,116 @@ Future<Media?> mapMedia(List<String> animeId, RxString searchedTitle,
     return null;
   }
 
-  double highestSimilarity = 0;
-  String? bestMatch;
-  List<DMedia> searchResults = [];
-  dynamic bestMatchResult;
+  double bestScore = 0;
+  dynamic bestMatch;
+  List<DMedia> fallbackResults = [];
 
-  Future<void> searchAndCompare(String query) async {
+  Future<void> search(
+      String query, String sourceTitle, bool isHeavyNormalized) async {
+    searchedTitle.value = "Fetching results...";
     final results = (await activeSource.methods.search(query, 1, [])).list;
-
     if (results.isEmpty) return;
 
+    final sourceSeason = _extractSeasonNumber(sourceTitle);
+
     for (final result in results) {
-      final resultTitle = normalize((result.title ?? '').trim());
+      final resultTitle = result.title ?? '';
+      final normalizedResultTitle = isHeavyNormalized
+          ? _normalizeHeavy(resultTitle.trim())
+          : _normalizeLight(resultTitle.trim());
+
       searchedTitle.value = "Searching: $resultTitle";
-      print("Matching '$resultTitle' with query '$query'");
 
-      if (savedTitle != null) {
-        final normalizedSavedTitle = normalize(savedTitle);
-        if (resultTitle == normalizedSavedTitle) {
-          highestSimilarity = 1.0;
-          bestMatch = resultTitle;
-          bestMatchResult = result;
-          searchResults = results;
-          searchedTitle.value = bestMatch!.toUpperCase();
-          print("Exact match found with savedTitle: $resultTitle");
-          return;
-        }
-      }
-
-      final matchResult = matchAnimeTitle(
-        englishTitle,
-        romajiTitle,
-        resultTitle,
-        threshold: 0.7,
-      );
-
-      print(
-          "Match score: ${matchResult.score.toStringAsFixed(3)} for '$resultTitle'");
-      print(
-          "Match details: English(${matchResult.englishScore.toStringAsFixed(3)}) Romaji(${matchResult.romajiScore.toStringAsFixed(3)})");
-
-      if (matchResult.score >= 0.95) {
-        highestSimilarity = matchResult.score;
-        bestMatch = resultTitle;
-        bestMatchResult = result;
-        searchResults = results;
-        print("Perfect match found: $resultTitle");
+      if (savedTitle != null &&
+          _normalizeLight(resultTitle) == _normalizeLight(savedTitle)) {
+        bestScore = 1.0;
+        bestMatch = result;
+        fallbackResults = results;
+        print("Exact match with savedTitle: $resultTitle");
         return;
       }
 
-      if (matchResult.score > highestSimilarity) {
-        highestSimilarity = matchResult.score;
-        bestMatch = resultTitle;
-        bestMatchResult = result;
-        searchResults = results;
-        print(
-            "New best match: $resultTitle with score ${matchResult.score.toStringAsFixed(3)}");
+      final resultSeason = _extractSeasonNumber(resultTitle);
+
+      final score = _calculateMatchScore(
+        isHeavyNormalized
+            ? _normalizeHeavy(sourceTitle)
+            : _normalizeLight(sourceTitle),
+        normalizedResultTitle,
+        sourceSeason,
+        resultSeason,
+      );
+
+      print("Score: ${score.toStringAsFixed(3)} for '$resultTitle' "
+          "(Heavy normalized: $isHeavyNormalized)");
+
+      if (score >= 0.95) {
+        bestScore = score;
+        bestMatch = result;
+        fallbackResults = results;
+        print("Perfect match: $resultTitle");
+        return;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = result;
+        fallbackResults = results;
       }
     }
   }
 
   if (savedTitle != null && savedTitle.isNotEmpty) {
-    print("Searching with savedTitle: $savedTitle");
-    await searchAndCompare(normalize(savedTitle));
-
-    if (highestSimilarity >= 1.0 &&
-        bestMatch != null &&
-        bestMatchResult != null) {
-      print("Perfect match found with savedTitle: $bestMatch");
-      return Media.froDMedia(bestMatchResult, type);
+    await search(savedTitle, savedTitle, false);
+    if (bestScore >= 1.0 && bestMatch != null) {
+      searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+      return Media.froDMedia(bestMatch, type);
     }
   }
 
-  await searchAndCompare(englishTitle);
+  await search(englishTitle, englishTitle, false);
 
-  if (highestSimilarity < 0.95) {
-    await searchAndCompare(romajiTitle);
+  if (bestScore < 0.95) {
+    await search(romajiTitle, romajiTitle, false);
   }
 
-  if (highestSimilarity >= 0.7 &&
-      bestMatch != null &&
-      bestMatchResult != null) {
-    searchedTitle.value = bestMatch!.toUpperCase();
+  if (bestScore > 0.9 && bestMatch != null) {
+    searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+    print("Good match found: score ${bestScore.toStringAsFixed(3)}");
+    return Media.froDMedia(bestMatch, type);
+  }
+
+  print("No good match found. Trying with heavy normalization...");
+  bestScore = 0;
+  bestMatch = null;
+
+  if (savedTitle != null && savedTitle.isNotEmpty) {
+    await search(_normalizeHeavy(savedTitle), savedTitle, true);
+    if (bestScore >= 1.0 && bestMatch != null) {
+      searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+      return Media.froDMedia(bestMatch, type);
+    }
+  }
+
+  await search(_normalizeHeavy(englishTitle), englishTitle, true);
+
+  if (bestScore < 0.95) {
+    await search(_normalizeHeavy(romajiTitle), romajiTitle, true);
+  }
+
+  if (bestScore >= 0.7 && bestMatch != null) {
+    searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
     print(
-        "Final match selected: $bestMatch with score ${highestSimilarity.toStringAsFixed(3)}");
-    return Media.froDMedia(bestMatchResult, type);
+        "Final match with heavy normalization: score ${bestScore.toStringAsFixed(3)}");
+    return Media.froDMedia(bestMatch, type);
   }
 
-  print(
-      "No good match found. Highest similarity: ${highestSimilarity.toStringAsFixed(3)}");
-  searchedTitle.value = searchResults.isNotEmpty
-      ? searchResults.first.title ?? 'Unknown Title'
+  print("No good match. Best: ${bestScore.toStringAsFixed(3)}");
+  searchedTitle.value = fallbackResults.isNotEmpty
+      ? fallbackResults.first.title ?? 'Unknown Title'
       : "No match found";
-  return searchResults.isNotEmpty
-      ? Media.froDMedia(searchResults.first, type)
+
+  return fallbackResults.isNotEmpty
+      ? Media.froDMedia(fallbackResults.first, type)
       : Media(serviceType: ServicesType.anilist);
 }

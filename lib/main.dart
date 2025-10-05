@@ -32,6 +32,7 @@ import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -53,8 +54,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 late Isar isar;
 WebViewEnvironment? webViewEnvironment;
@@ -68,6 +67,9 @@ class MyHttpoverrides extends HttpOverrides {
 }
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics();
   @override
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
@@ -99,38 +101,7 @@ void main(List<String> args) async {
     initializeDateFormatting();
     MediaKit.ensureInitialized();
     if (!Platform.isAndroid && !Platform.isIOS) {
-      await WindowManager.instance.ensureInitialized();
-      try {
-        windowManager.setTitle("AnymeX (●'◡'●)");
-      } catch (e) {
-        windowManager.setTitle("AnymeX");
-      }
-      if (defaultTargetPlatform == TargetPlatform.windows) {
-        try {
-          final availableVersion =
-              await WebViewEnvironment.getAvailableVersion();
-          if (availableVersion == null) {
-            snackBar(
-              "Failed to find an installed WebView2 runtime or non-stable Microsoft Edge installation.\n\n"
-              "Try installing WebView2 runtime from:\n"
-              "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section",
-            );
-          } else {
-            final document = await getApplicationDocumentsDirectory();
-            webViewEnvironment = await WebViewEnvironment.create(
-              settings: WebViewEnvironmentSettings(
-                userDataFolder: p.join(document.path, 'flutter_inappwebview'),
-              ),
-            );
-          }
-        } catch (e) {
-          snackBar(
-            "Error initializing WebView2: ${e.toString()}\n\n"
-            "Try reinstalling WebView2 runtime from:\n"
-            "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section",
-          );
-        }
-      }
+      await AnymexTitleBar.initialize();
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -232,7 +203,7 @@ class MainApp extends StatelessWidget {
             Navigator.pop(Get.context!);
           } else if (event.logicalKey == LogicalKeyboardKey.f11) {
             bool isFullScreen = await windowManager.isFullScreen();
-            windowManager.setFullScreen(!isFullScreen);
+            AnymexTitleBar.setFullScreen(!isFullScreen);
           } else if (event.logicalKey == LogicalKeyboardKey.enter) {
             final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
                     .contains(LogicalKeyboardKey.altLeft) ||
@@ -240,7 +211,7 @@ class MainApp extends StatelessWidget {
                     .contains(LogicalKeyboardKey.altRight);
             if (isAltPressed) {
               bool isFullScreen = await windowManager.isFullScreen();
-              windowManager.setFullScreen(!isFullScreen);
+              AnymexTitleBar.setFullScreen(!isFullScreen);
             }
           }
         }
@@ -257,6 +228,27 @@ class MainApp extends StatelessWidget {
                 ? ThemeMode.light
                 : ThemeMode.dark,
         home: const FilterScreen(),
+        builder: (context, child) {
+          final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+
+          if (isDesktop) {
+            return Stack(
+              children: [
+                child!,
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.transparent,
+                    child: AnymexTitleBar.titleBar(),
+                  ),
+                ),
+              ],
+            );
+          }
+          return child!;
+        },
         enableLog: true,
         logWriterCallback: (text, {isError = false}) async {
           Logger.d(text);
@@ -295,7 +287,7 @@ class _FilterScreenState extends State<FilterScreen> {
     const AnimeHomePage(),
     const MangaHomePage(),
     const MyLibrary(),
-    const ExtensionScreen(),
+    const ExtensionScreen(disableGlow: true),
   ];
 
   final mobileRoutes = [
@@ -361,6 +353,8 @@ class _FilterScreenState extends State<FilterScreen> {
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(59),
                                       child: CachedNetworkImage(
+                                          width: 40,
+                                          height: 40,
                                           fit: BoxFit.cover,
                                           errorWidget: (context, url, error) =>
                                               const Icon(IconlyBold.profile),

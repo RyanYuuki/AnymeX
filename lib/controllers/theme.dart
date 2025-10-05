@@ -18,7 +18,7 @@ class ThemeProvider extends ChangeNotifier {
   List<String> availThemeModes = ["default", "material", "custom"];
 
   ThemeProvider()
-      : _seedColor = Colors.red,
+      : _seedColor = Colors.indigo,
         isLightMode =
             Hive.box("themeData").get("isLightMode", defaultValue: false),
         isSystemMode =
@@ -37,7 +37,7 @@ class ThemeProvider extends ChangeNotifier {
 
   void _determineSeedColor() {
     if (currentThemeMode == "default") {
-      _seedColor = Colors.red;
+      _seedColor = Colors.indigo;
     } else if (currentThemeMode == "material") {
       loadDynamicTheme();
     } else {
@@ -51,8 +51,9 @@ class ThemeProvider extends ChangeNotifier {
     currentThemeMode = "material";
     Hive.box("themeData").put("themeMode", "material");
     final corePalette = await DynamicColorPlugin.getCorePalette();
-    _seedColor =
-        corePalette != null ? Color(corePalette.primary.get(40)) : Colors.red;
+    _seedColor = corePalette != null
+        ? Color(corePalette.primary.get(40))
+        : Colors.indigo;
     _updateTheme();
   }
 
@@ -93,7 +94,7 @@ class ThemeProvider extends ChangeNotifier {
   void setDefaultTheme() {
     currentThemeMode = "default";
     Hive.box("themeData").put("themeMode", "default");
-    _seedColor = Colors.red;
+    _seedColor = Colors.indigo;
     _updateTheme();
   }
 
@@ -130,7 +131,7 @@ class ThemeProvider extends ChangeNotifier {
     isOled = false;
     selectedVariantIndex = 0;
     currentThemeMode = "default";
-    _seedColor = Colors.red;
+    _seedColor = Colors.indigo;
 
     _updateTheme();
     notifyListeners();

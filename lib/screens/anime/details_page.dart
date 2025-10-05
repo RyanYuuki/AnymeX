@@ -73,7 +73,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // Current Anime
   RxDouble animeScore = 0.0.obs;
   RxInt animeProgress = 0.obs;
-  RxString animeStatus = "CURRENT".obs;
+  RxString animeStatus = "".obs;
 
   Rxn<List<Comment>> comments = Rxn();
 
@@ -134,7 +134,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   void _initListVars() {
     animeProgress.value = currentAnime.value?.episodeCount?.toInt() ?? 0;
     animeScore.value = currentAnime.value?.score?.toDouble() ?? 0.0;
-    animeStatus.value = currentAnime.value?.watchingStatus ?? "CURRENT";
+    animeStatus.value = currentAnime.value?.watchingStatus ?? "";
     setState(() {});
   }
 

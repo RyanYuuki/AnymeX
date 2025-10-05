@@ -15,6 +15,7 @@ import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
@@ -26,7 +27,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:window_manager/window_manager.dart';
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode =>
@@ -51,12 +51,50 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
+  final isOffline = false.obs;
+
+  final String? folderName;
+  final String? itemName;
+  final String? offlineVideoPath;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
-      this.anilistData, List<model.Video> episodes) {
+      this.anilistData, List<model.Video> episodes,
+      {bool offline = false,
+      this.folderName,
+      this.itemName,
+      this.offlineVideoPath}) {
     selectedVideo.value = video;
     currentEpisode.value = episode;
     episodeTracks.value = episodes;
+    isOffline.value = offline;
+  }
+
+  factory PlayerController.offline({
+    required String folderName,
+    required String itemName,
+    required String videoPath,
+    required Episode episode,
+    required List<Episode> episodeList,
+    required anymex.Media anilistData,
+  }) {
+    final offlineVideo = model.Video(
+      videoPath,
+      'Offline',
+      videoPath,
+      headers: {},
+    );
+
+    return PlayerController(
+      offlineVideo,
+      episode,
+      episodeList,
+      anilistData,
+      [offlineVideo],
+      offline: true,
+      folderName: folderName,
+      itemName: itemName,
+      offlineVideoPath: videoPath,
+    );
   }
 
   late Player player;
@@ -144,15 +182,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
-
     WidgetsBinding.instance.addObserver(this);
-
     _initDatabaseVars();
     _initOrientations();
     _initializePlayer();
-    _initializeAniSkip();
+    if (!isOffline.value) {
+      _initializeAniSkip();
+    }
     _initializeListeners();
-    _extractSubtitles();
+    if (!isOffline.value) {
+      _extractSubtitles();
+    }
     _initializeSwipeStuffs();
     _initializeControlsAutoHide();
     updateNavigatorState();
@@ -198,7 +238,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _initOrientations() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     ever(isFullScreen,
-        (isFullScreen) => windowManager.setFullScreen(isFullScreen));
+        (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
@@ -246,8 +286,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
     Future.microtask(() async {
       try {
-        brightness.value = await ScreenBrightness.instance.current;
-        ScreenBrightness.instance.onCurrentBrightnessChanged.listen((value) {
+        brightness.value = await ScreenBrightness.instance.system;
+        ScreenBrightness.instance.onSystemScreenBrightnessChanged
+            .listen((value) {
           brightness.value = value;
         });
       } catch (_) {}
@@ -257,19 +298,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _initializePlayer() {
     player = Player(
         configuration: PlayerConfiguration(
-            bufferSize: 1024 * 1024 * 64,
+            bufferSize: 1024 * 1024 * 32,
             config: true,
             configDir: settings.mpvPath.value));
     playerController = VideoController(player,
         configuration: VideoControllerConfiguration(
-            hwdec: 'auto',
             enableHardwareAcceleration: Platform.isMacOS ? false : true,
-            vo: Platform.isAndroid ? "gpu" : "libmpv",
             androidAttachSurfaceAfterVideoParameters: true));
-    player.open(Media(selectedVideo.value!.url,
-        httpHeaders: selectedVideo.value!.headers,
-        start: Duration(
-            milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0)));
+
+    if (isOffline.value && offlineVideoPath != null) {
+      player.open(Media(offlineVideoPath!,
+          start: Duration(
+              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0)));
+    } else {
+      player.open(Media(selectedVideo.value!.url,
+          httpHeaders: selectedVideo.value!.headers,
+          start: Duration(
+              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0)));
+    }
 
     _performInitialTracking();
     applySavedProfile();
@@ -295,7 +341,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _hasTrackedInitialLocal = true;
       }
 
-      if (!_hasTrackedInitialOnline) {
+      if (!_hasTrackedInitialOnline && !isOffline.value) {
         await _trackOnline(false);
         _hasTrackedInitialOnline = true;
       }
@@ -323,11 +369,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value.durationInMilliseconds =
           episodeDuration.value.inMilliseconds;
 
-      if (_shouldMarkAsCompleted) {
+      if (_shouldMarkAsCompleted && !isOffline.value) {
         _trackOnline(true);
       }
 
-      if (isPlaying.value && skipTimes != null) {
+      if (isPlaying.value && skipTimes != null && !isOffline.value) {
         _handleAutoSkip();
       }
     });
@@ -450,6 +496,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> fetchEpisode(Episode episode) async {
+    if (isOffline.value) {
+      Logger.i('Offline mode: skipping episode fetch');
+      return;
+    }
+
     try {
       PlayerBottomSheets.showLoader();
       final data = await sourceController.activeSource.value!.methods
@@ -522,9 +573,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void delete() {
     Future.microtask(() async {
       _trackLocally();
-      _trackOnline((currentPosition.value).inMilliseconds /
-              episodeDuration.value.inMilliseconds >=
-          settings.markAsCompleted);
+      if (!isOffline.value) {
+        _trackOnline((currentPosition.value).inMilliseconds /
+                episodeDuration.value.inMilliseconds >=
+            settings.markAsCompleted);
+      }
     });
 
     WidgetsBinding.instance.removeObserver(this);
@@ -541,7 +594,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _revertOrientations() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     if (!Platform.isAndroid && !Platform.isIOS) {
-      windowManager.setFullScreen(false);
+      AnymexTitleBar.setFullScreen(false);
     }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -775,7 +828,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void changeEpisode(Episode episode) {
     _trackLocally();
 
-    _trackOnline(_shouldMarkAsCompleted);
+    if (!isOffline.value) {
+      _trackOnline(_shouldMarkAsCompleted);
+    }
 
     isEpisodePaneOpened.value = false;
     resetListeners();
@@ -842,6 +897,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _trackOnline(bool hasCrossedLimit) async {
+    if (isOffline.value) {
+      Logger.i('Offline mode: skipping online tracking');
+      return;
+    }
+
     if (currentEpisode.value.number.toString() ==
         anilistData.serviceType.onlineService.currentMedia.value.episodeCount) {
       return;

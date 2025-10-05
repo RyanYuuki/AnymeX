@@ -128,15 +128,17 @@ class BottomControls extends StatelessWidget {
                           ),
                         )),
                   ),
-                  const SizedBox(width: 16),
-                  ControlButton(
-                    icon: Symbols.playlist_play_rounded,
-                    onPressed: () {
-                      controller.isEpisodePaneOpened.value =
-                          !controller.isEpisodePaneOpened.value;
-                    },
-                    tooltip: 'Playlist',
-                  ),
+                  if (!controller.isOffline.value) ...[
+                    const SizedBox(width: 16),
+                    ControlButton(
+                      icon: Symbols.playlist_play_rounded,
+                      onPressed: () {
+                        controller.isEpisodePaneOpened.value =
+                            !controller.isEpisodePaneOpened.value;
+                      },
+                      tooltip: 'Playlist',
+                    ),
+                  ]
                 ],
               ),
               const Spacer(),
@@ -163,32 +165,45 @@ class BottomControls extends StatelessWidget {
                           tooltip: 'Shaders & Color Profiles',
                           compact: true,
                         ),
-                        ControlButton(
-                          icon: Symbols.subtitles_rounded,
-                          onPressed: () =>
-                              PlayerBottomSheets.showSubtitleTracks(
-                            context,
-                            controller,
+                        if (!controller.isOffline.value) ...[
+                          ControlButton(
+                            icon: Symbols.subtitles_rounded,
+                            onPressed: () =>
+                                PlayerBottomSheets.showSubtitleTracks(
+                              context,
+                              controller,
+                            ),
+                            tooltip: 'Subtitles',
+                            compact: true,
                           ),
-                          tooltip: 'Subtitles',
-                          compact: true,
-                        ),
-                        ControlButton(
-                          icon: Symbols.cloud_rounded,
-                          onPressed: () {
-                            PlayerBottomSheets.showVideoServers(
-                                context, controller);
-                          },
-                          tooltip: 'Server',
-                          compact: true,
-                        ),
-                        ControlButton(
-                          icon: Symbols.high_quality_rounded,
-                          onPressed: () => PlayerBottomSheets.showVideoQuality(
-                              context, controller),
-                          tooltip: 'Quality',
-                          compact: true,
-                        ),
+                          ControlButton(
+                            icon: Symbols.cloud_rounded,
+                            onPressed: () {
+                              PlayerBottomSheets.showVideoServers(
+                                  context, controller);
+                            },
+                            tooltip: 'Server',
+                            compact: true,
+                          ),
+                          ControlButton(
+                            icon: Symbols.high_quality_rounded,
+                            onPressed: () =>
+                                PlayerBottomSheets.showVideoQuality(
+                                    context, controller),
+                            tooltip: 'Quality',
+                            compact: true,
+                          ),
+                        ] else ...[
+                          ControlButton(
+                            icon: Symbols.subtitles_rounded,
+                            onPressed: () => PlayerBottomSheets.showOfflineSubs(
+                              context,
+                              controller,
+                            ),
+                            tooltip: 'Subtitles',
+                            compact: true,
+                          ),
+                        ],
                         ControlButton(
                           icon: Symbols.speed_rounded,
                           onPressed: () => PlayerBottomSheets.showPlaybackSpeed(
