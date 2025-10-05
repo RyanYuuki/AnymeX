@@ -111,7 +111,7 @@ jobs:
           flutter pub get
           dart run flutter_native_splash:create
           echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
-          flutter build apk --split-per-abi
+          flutter build apk --release --split-per-abi
           cd build/app/outputs/flutter-apk
           mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
           mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
