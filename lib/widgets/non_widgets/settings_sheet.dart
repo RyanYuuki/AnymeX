@@ -5,6 +5,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -21,12 +22,9 @@ class SettingsSheet extends StatelessWidget {
   final serviceHandler = Get.find<ServiceHandler>();
 
   static void show(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      builder: (context) => SettingsSheet(),
-    );
+    AnymexSheet(
+      customWidget: SettingsSheet(),
+    ).show(context);
   }
 
   void showServiceSelector(BuildContext context) {
@@ -55,49 +53,46 @@ class SettingsSheet extends StatelessWidget {
         },
     ];
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AnymexText(
-              text: "Select Service",
-              size: 16,
-              variant: TextVariant.semiBold,
-            ),
-            ...services.map((service) => ListTile(
-                  leading: service['icon'] != null
-                      ? Image.asset(
-                          color: Theme.of(context).colorScheme.primary,
-                          'assets/images/${service['icon']}',
-                          width: 30,
-                        )
-                      : Icon(
-                          Icons.extension,
-                          size: 30,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  title: AnymexText(
-                    text: service['name'] as String,
-                    variant: TextVariant.semiBold,
-                    color: serviceHandler.serviceType.value == service['type']
-                        ? Theme.of(context).colorScheme.primary
-                        : null,
-                  ),
-                  onTap: () {
-                    serviceHandler
-                        .changeService(service['type'] as ServicesType);
-                    Navigator.pop(context);
-                  },
-                )),
-          ],
+    AnymexSheet.custom(
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const AnymexText(
+                text: "Select Service",
+                size: 16,
+                variant: TextVariant.semiBold,
+              ),
+              ...services.map((service) => ListTile(
+                    leading: service['icon'] != null
+                        ? Image.asset(
+                            color: Theme.of(context).colorScheme.primary,
+                            'assets/images/${service['icon']}',
+                            width: 30,
+                          )
+                        : Icon(
+                            Icons.extension,
+                            size: 30,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    title: AnymexText(
+                      text: service['name'] as String,
+                      variant: TextVariant.semiBold,
+                      color: serviceHandler.serviceType.value == service['type']
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                    ),
+                    onTap: () {
+                      serviceHandler
+                          .changeService(service['type'] as ServicesType);
+                      Get.back();
+                    },
+                  )),
+            ],
+          ),
         ),
-      ),
-    );
+        context);
   }
 
   @override
@@ -119,6 +114,8 @@ class SettingsSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(50),
                         child: CachedNetworkImage(
                             fit: BoxFit.cover,
+                            width: 45,
+                            height: 45,
                             errorWidget: (context, url, error) =>
                                 const Icon(IconlyBold.profile),
                             imageUrl:

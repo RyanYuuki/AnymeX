@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -39,7 +40,12 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
 
     return AnymexOnTap(
       onTap: () {
-        if (media.type != "MANGA") {
+        if (serviceHandler.serviceType.value == ServicesType.simkl) {
+          navigate(() =>
+              AnimeDetailsPage(media: media, tag: media.createdAt.toString()));
+          return;
+        }
+        if (media.type == "ANIME") {
           navigate(() =>
               AnimeDetailsPage(media: media, tag: media.createdAt.toString()));
         } else {
