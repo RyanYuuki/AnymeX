@@ -1,6 +1,7 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -47,7 +48,7 @@ class NovelContentWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          ExpressiveLoadingIndicator(
             color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(height: 16),

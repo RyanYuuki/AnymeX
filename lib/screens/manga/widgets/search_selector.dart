@@ -9,21 +9,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void searchTypeSheet(BuildContext context) {
+  final isSimkl = serviceHandler.serviceType.value == ServicesType.simkl;
+  if (isSimkl) {
+    navigate(() => const SearchPage(
+          searchTerm: '',
+          isManga: false,
+        ));
+    return;
+  }
   showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (context) {
-        final serviceHanlder = Get.find<ServiceHandler>();
-        final isSimkl = serviceHanlder.serviceType.value == ServicesType.simkl;
         final button1Cover = (isSimkl
-                    ? serviceHanlder.simklService.trendingMovies
-                    : serviceHanlder.anilistService.trendingAnimes)
+                    ? serviceHandler.simklService.trendingMovies
+                    : serviceHandler.anilistService.trendingAnimes)
                 .firstWhere((e) => e.cover != null)
                 .cover ??
             '';
         final button2Cover = (isSimkl
-                    ? serviceHanlder.simklService.trendingSeries
-                    : serviceHanlder.anilistService.trendingMangas)
+                    ? serviceHandler.simklService.trendingSeries
+                    : serviceHandler.anilistService.trendingMangas)
                 .firstWhere((e) => e.cover != null)
                 .cover ??
             '';

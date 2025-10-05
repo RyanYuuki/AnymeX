@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -15,12 +17,15 @@ class ReaderTopControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final isDesktop =
+          Platform.isWindows || Platform.isLinux || Platform.isMacOS;
       final mediaQuery = MediaQuery.of(context);
       final statusBarHeight = mediaQuery.padding.top;
       const topControlsHeight = 50.0;
       const gapBetweenControls = 8.0;
 
-      final topControlsVisiblePosition = statusBarHeight + 8;
+      final topControlsVisiblePosition =
+          statusBarHeight + 8 + (isDesktop ? 40 : 0);
       final topControlsHiddenPosition =
           -(statusBarHeight + topControlsHeight + gapBetweenControls + 20);
 

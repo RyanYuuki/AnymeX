@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/screens/home_page.dart';
@@ -10,6 +8,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -90,17 +89,16 @@ class MangaStats extends StatelessWidget {
           future: MangaAnimeUtil.getAnimeAdaptation(data.romajiTitle),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Show loading indicator
+              return const ExpressiveLoadingIndicator();
             }
             if (snapshot.hasError) {
-              return SizedBox.shrink(); // Hide entirely on error
+              return const SizedBox.shrink();
             }
             final adaptation = snapshot.data!;
             if (adaptation.error != null || !adaptation.hasAdaptation) {
-              return SizedBox.shrink(); // Hide entirely if no adaptation
+              return const SizedBox.shrink();
             }
 
-            // Show the adaptation details only if adaptation exists
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -120,7 +118,7 @@ class MangaStats extends StatelessWidget {
                       AdaptationInfoColumn(
                         input: adaptation.animeStart ?? 'Unknown',
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       const StateItem(label: "Anime End", value: ''),
                       AdaptationInfoColumn(
                         input: adaptation.animeEnd ?? 'Unknown',
@@ -140,8 +138,8 @@ class MangaStats extends StatelessWidget {
           size: 17,
         ),
         GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.only(top: 15),
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 15),
           shrinkWrap: true,
           itemCount: data.genres.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

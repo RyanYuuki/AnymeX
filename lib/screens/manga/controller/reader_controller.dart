@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -88,6 +89,13 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   RxBool canGoNext = false.obs;
   RxBool canGoPrev = false.obs;
 
+  final RxBool isOverscrolling = false.obs;
+  final RxDouble overscrollProgress = 0.0.obs;
+  final RxBool isOverscrollingNext = true.obs;
+  double _overscrollStartOffset = 0.0;
+  final double _maxOverscrollDistance = 50.0;
+  Timer? _overscrollResetTimer;
+
   bool _isNavigating = false;
 
   @override
@@ -106,6 +114,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       _performFinalSave();
     });
 
+    _overscrollResetTimer?.cancel();
     pageController?.dispose();
     super.onClose();
   }
@@ -217,6 +226,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     scrollOffsetListener = ScrollOffsetListener.create();
     pageController = PreloadPageController(initialPage: 0);
     _setupPositionListener();
+    _setupScrollListener();
   }
 
   void _getPreferences() {
@@ -263,16 +273,140 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  void _setupScrollListener() {
+    if (scrollOffsetListener != null) {
+      scrollOffsetListener!.changes.listen(_onScrollChanged);
+    }
+  }
+
+  void _onScrollChanged(double offset) {
+    if (!overscrollToChapter.value ||
+        readingLayout.value != MangaPageViewMode.continuous ||
+        pageList.isEmpty ||
+        _isNavigating) {
+      return;
+    }
+
+    final positions = itemPositionsListener?.itemPositions.value;
+    if (positions == null || positions.isEmpty) return;
+
+    final lastPosition = positions.firstWhere(
+      (pos) => pos.index == pageList.length - 1,
+      orElse: () => positions.first,
+    );
+
+    final isAtLastPage = lastPosition.index == pageList.length - 1;
+
+    final firstPosition = positions.firstWhere(
+      (pos) => pos.index == 0,
+      orElse: () => positions.first,
+    );
+
+    final isAtFirstPage = firstPosition.index == 0;
+
+    // if (isAtLastPage &&
+    //     canGoNext.value &&
+    //     lastPosition.itemTrailingEdge <= 1.0) {
+    //   if (!isOverscrolling.value) {
+    //     _startOverscroll(true, offset);
+    //   } else {
+    //     _updateOverscroll(offset);
+    //   }
+    // } else if (isAtFirstPage &&
+    //     canGoPrev.value &&
+    //     firstPosition.itemLeadingEdge >= 0.0) {
+    //   if (!isOverscrolling.value) {
+    //     _startOverscroll(false, offset);
+    //   } else {
+    //     _updateOverscroll(offset);
+    //   }
+    // } else if (isOverscrolling.value) {
+    //   _resetOverscroll();
+    // }
+  }
+
+  void _startOverscroll(bool isNext, double offset) {
+    isOverscrolling.value = true;
+    isOverscrollingNext.value = isNext;
+    _overscrollStartOffset = offset;
+    overscrollProgress.value = 0.0;
+
+    if (showControls.value) {
+      showControls.value = false;
+    }
+  }
+
+  void _updateOverscroll(double currentOffset) {
+    final scrollDelta = (currentOffset - _overscrollStartOffset).abs();
+    final progress = (scrollDelta / _maxOverscrollDistance).clamp(0.0, 1.0);
+
+    overscrollProgress.value = progress;
+
+    if (progress >= 1.0) {
+      _triggerChapterChange();
+    }
+
+    _overscrollResetTimer?.cancel();
+    _overscrollResetTimer = Timer(const Duration(milliseconds: 1000), () {
+      if (overscrollProgress.value < 1.0) {
+        _resetOverscroll();
+      }
+    });
+  }
+
+  void _resetOverscroll() {
+    isOverscrolling.value = false;
+    overscrollProgress.value = 0.0;
+    _overscrollStartOffset = 0.0;
+    _overscrollResetTimer?.cancel();
+  }
+
+  void _triggerChapterChange() {
+    _resetOverscroll();
+    chapterNavigator(isOverscrollingNext.value);
+  }
+
   void _onPositionChanged() async {
     if (itemPositionsListener == null || pageList.isEmpty) return;
 
     final positions = itemPositionsListener!.itemPositions.value;
     if (positions.isEmpty || _isNavigating) return;
 
-    final topItem = currentPageIndex.value >= (pageList.length - 2)
-        ? positions.last
-        : positions.first;
-    final number = topItem.index + 1;
+    ItemPosition? mostVisibleItem;
+    double maxVisibleExtent = 0.0;
+
+    final lastItemPosition = positions.firstWhere(
+      (pos) => pos.index == pageList.length - 1,
+      orElse: () => positions.first,
+    );
+
+    final isAtEnd = lastItemPosition.index == pageList.length - 1 &&
+        lastItemPosition.itemTrailingEdge <= 1.0;
+
+    for (final position in positions) {
+      final leadingEdge = position.itemLeadingEdge;
+      final trailingEdge = position.itemTrailingEdge;
+
+      final visibleExtent =
+          (math.min(1.0, trailingEdge) - math.max(0.0, leadingEdge))
+              .clamp(0.0, 1.0);
+
+      if (isAtEnd && position.index == pageList.length - 1) {
+        if (visibleExtent > 0.3) {
+          mostVisibleItem = position;
+          break;
+        }
+      }
+
+      if (visibleExtent > maxVisibleExtent) {
+        maxVisibleExtent = visibleExtent;
+        mostVisibleItem = position;
+      }
+    }
+
+    if (mostVisibleItem == null) return;
+
+    final number = mostVisibleItem.index + 1;
 
     if (!_isValidPageNumber(number)) return;
 
@@ -397,16 +531,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final current = currentChapter.value;
     if (current == null || current.number == null) return;
 
-    // final targetNumber = next ? current.number! + 1 : current.number! - 1;
-
-    // final numberMatchIndex =
-    //     chapterList.indexWhere((chapter) => chapter.number == targetNumber);
-
-    // if (numberMatchIndex != -1) {
-    //   navigateToChapter(numberMatchIndex);
-    //   return;
-    // }
-
     final index = chapterList.indexOf(current);
     if (index == -1) return;
 
@@ -431,6 +555,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   Future<void> fetchImages(String url) async {
     _isNavigating = true;
+    _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
     currentPageIndex.value = 1;
     _syncAvailability();

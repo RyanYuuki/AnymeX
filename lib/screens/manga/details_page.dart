@@ -69,14 +69,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   // Current Manga
   RxDouble mangaScore = 0.0.obs;
   RxInt mangaProgress = 0.obs;
-  RxString mangaStatus = "CURRENT".obs;
+  RxString mangaStatus = "".obs;
 
   // Tracker's Controller
   PageController controller = PageController();
-
-  // List Editor Vars
-  final selectedScore = 0.0.obs;
-  final selectedStatus = "CURRENT";
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
@@ -118,7 +114,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     Logger.i('[_initListVars] ${currentManga.value?.episodeCount}');
     mangaProgress.value = currentManga.value?.episodeCount?.toInt() ?? 0;
     mangaScore.value = currentManga.value?.score?.toDouble() ?? 0.0;
-    mangaStatus.value = currentManga.value?.watchingStatus ?? "CURRENT";
+    mangaStatus.value = currentManga.value?.watchingStatus ?? "";
   }
 
   Future<void> _fetchAnilistData() async {
