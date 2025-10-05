@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/local_source/player/offline_player_old.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as h;
 import 'package:anymex/screens/local_source/controller/local_source_controller.dart';
@@ -11,6 +13,7 @@ import 'package:anymex/screens/local_source/player/offline_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -406,9 +409,8 @@ class _WatchOfflineState extends State<WatchOffline> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            ExpressiveLoadingIndicator(
               color: theme.colorScheme.primary,
-              strokeWidth: 3,
             ),
             const SizedBox(height: 16),
             Text(
@@ -431,9 +433,8 @@ class _WatchOfflineState extends State<WatchOffline> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            ExpressiveLoadingIndicator(
               color: theme.colorScheme.primary,
-              strokeWidth: 3,
             ),
             const SizedBox(height: 16),
             Text(
@@ -794,8 +795,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             child: SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
+              child: ExpressiveLoadingIndicator(
                 color: theme.colorScheme.primary,
               ),
             ),
@@ -821,9 +821,8 @@ class _WatchOfflineState extends State<WatchOffline> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            ExpressiveLoadingIndicator(
               color: theme.colorScheme.primary,
-              strokeWidth: 3,
             ),
             const SizedBox(height: 24),
             Text(
@@ -1168,13 +1167,23 @@ class _WatchOfflineState extends State<WatchOffline> {
         if (isDirectory) {
           controller.navigateToFolder(item.path);
         } else {
-          navigate(() => OfflineWatchPage(
-                episodePath: LocalEpisode(
+          if (settingsController.preferences
+              .get('useOldPlayer', defaultValue: false)) {
+            navigate(() => OfflineWatchPageOld(
+                  episodePath: LocalEpisode(
+                      path: item.path,
+                      name: itemName,
+                      folderName: path.basename(controller.currentPath.value)),
+                  episodesList: const [],
+                ));
+          } else {
+            navigate(() => OfflineWatchPage(
+                episodeList: const [],
+                episode: LocalEpisode(
                     path: item.path,
                     name: itemName,
-                    folderName: path.basename(controller.currentPath.value)),
-                episodesList: const [],
-              ));
+                    folderName: path.basename(controller.currentPath.value))));
+          }
         }
       },
       child: Container(
