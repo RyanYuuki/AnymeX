@@ -253,20 +253,17 @@ jobs:
         shell: pwsh
         run: |
           flutter pub get
-          if (-not (Get-Command ISCC.exe -ErrorAction SilentlyContinue)) {
-              choco install innosetup -y
-          }
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-          $innoPath = (Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\tools\ISCC.exe' -Recurse -ErrorAction SilentlyContinue).FullName
-          if (-not $innoPath) {
-              Write-Error "Inno Setup not found. Make sure innosetup is installed via Chocolatey."
-              exit 1
-          }
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
-          $content = Get-Content $issFile -Raw
-          $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
-          Set-Content $issFile -Value $content -NoNewline
-          & "$innoPath" $issFile
+          if (Test-Path $issFile) {
+            $content = Get-Content $issFile -Raw
+            $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
+            Set-Content $issFile -Value $content -NoNewline
+            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $issFile
+          } else {
+            Write-Error "ISS file not found: $issFile"
+            exit 1
+          }
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
