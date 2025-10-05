@@ -253,10 +253,13 @@ jobs:
         shell: pwsh
         run: |
           flutter pub get
+          if (-not (Get-Command ISCC.exe -ErrorAction SilentlyContinue)) {
+              choco install innosetup -y
+          }
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-          $innoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-          if (-not (Test-Path $innoPath)) {
-              Write-Error "Inno Setup not found at the expected preinstalled path: $innoPath"
+          $innoPath = (Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\tools\ISCC.exe' -Recurse -ErrorAction SilentlyContinue).FullName
+          if (-not $innoPath) {
+              Write-Error "Inno Setup not found. Make sure innosetup is installed via Chocolatey."
               exit 1
           }
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
