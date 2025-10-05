@@ -1,17 +1,18 @@
 ### 🌟 Features
--   implemented auto database delete on crash related to database
+-   support for player in local media
+-   custom titlebar for desktops
 
 ### 🔧 Bug Fixes & Improvements
--   removed dupe entries
--   fixed few player issues and improved media indicators
--   fixed media indicator on old player
--   fixed wrong title not remembering last selected title
--   fixed some stuff and improved list editor
--   fixed moving to current1 chapter instead of next chapter
--   fixed status progress not immediately updating
--   fixed non scrollable nav bar on small landscape displays
+-   improved mapper
+-   fixed minor issue in progress slider on offline player
+-   fixed abrupt background on desktop
+-   fixed mistaking manhwa as anime
+
+### 🎨 Style Changes
+-   consolidated other features on separate page
+-   some ui changes
 
 ### 🧹 Chores & Documentation
--   bump version to v3.0.1-hotfix hotfix
+-   bump version to v3.0.2 patch release
 
  
