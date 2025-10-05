@@ -253,12 +253,12 @@ jobs:
         shell: pwsh
         run: |
           flutter pub get
+          dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $innoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $innoPath)) {
-              Write-Error "Inno Setup not found. Preinstalled version is expected on the runner."
+              Write-Error "Inno Setup not found at the expected preinstalled path: $innoPath"
               exit 1
           }
-          dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
