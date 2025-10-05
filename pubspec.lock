@@ -366,7 +366,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "3d0fda59764752a4ff5e905ec1c49d6b4dc909bc"
+      resolved-ref: b5084413439c07dae5bbd61d0d9ed056e4697ff9
       url: "https://github.com/RyanYuuki/DartotsuExtensionBridge.git"
     source: git
     version: "0.0.4"
@@ -467,6 +467,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5+3"
+  expressive_loading_indicator:
+    dependency: "direct main"
+    description:
+      name: expressive_loading_indicator
+      sha256: df84bb56f6f1e977df01e2455ccf033e89f92bc1ecf4dc78e71d44fcbc947331
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   extended_image:
     dependency: "direct main"
     description:
@@ -731,6 +739,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  fuzzywuzzy:
+    dependency: "direct main"
+    description:
+      name: fuzzywuzzy
+      sha256: "3004379ffd6e7f476a0c2091f38f16588dc45f67de7adf7c41aa85dec06b432c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   fwfh_cached_network_image:
     dependency: transitive
     description:
@@ -1091,6 +1107,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  material_new_shapes:
+    dependency: transitive
+    description:
+      name: material_new_shapes
+      sha256: e4bc375205e187e8fb232573387112dd8c0dd45b03af8aa2b3c79eb4b9e3e0dc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   material_symbols_icons:
     dependency: "direct main"
     description:

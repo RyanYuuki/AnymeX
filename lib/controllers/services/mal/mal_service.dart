@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:math' show Random;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -79,56 +80,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
-                  // CustomSearchBar(
-                  //   onSubmitted: (val) {
-                  //     navigate(() => SearchPage(
-                  //           searchTerm: val,
-                  //           isManga: false,
-                  //         ));
-                  //   },
-                  //   suffixIconWidget: buildChip("ANIME"),
-                  //   disableIcons: true,
-                  //   hintText: "Search Anime...",
-                  // ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: getResponsiveSize(context,
-                            mobileSize: 10, desktopSize: 0),
-                        bottom: getResponsiveSize(context,
-                            mobileSize: 20, desktopSize: 0)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ImageButton(
-                            width: getResponsiveSize(context,
-                                mobileSize: Get.width / 2 - 20,
-                                desktopSize: 300),
-                            height: getResponsiveSize(context,
-                                mobileSize: 70, desktopSize: 90),
-                            buttonText: "Calendar",
-                            onPressed: () {
-                              navigate(() => const Calendar());
-                            },
-                            backgroundImage: trendingAnimes[3].cover ??
-                                trendingAnimes[3].poster),
-                        const SizedBox(width: 10),
-                        ImageButton(
-                            buttonText: "AI Picks",
-                            width: getResponsiveSize(context,
-                                mobileSize: Get.width / 2 - 20,
-                                desktopSize: 300),
-                            height: getResponsiveSize(context,
-                                mobileSize: 70, desktopSize: 90),
-                            onPressed: () async {
-                              navigate(() => const AIRecommendation(
-                                    isManga: false,
-                                  ));
-                            },
-                            backgroundImage: trendingAnimes[5].cover ??
-                                trendingAnimes[3].poster)
-                      ],
-                    ),
-                  ),
                   buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
                   buildSectionIfNotEmpty("Popular Animes", popularAnimes),
                   buildSectionIfNotEmpty("Top Animes", topAnimes),
@@ -143,37 +94,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
-                  // CustomSearchBar(
-                  //   onSubmitted: (val) {
-                  //     navigate(() => SearchPage(
-                  //           searchTerm: val,
-                  //           isManga: true,
-                  //         ));
-                  //   },
-                  //   suffixIconWidget: buildChip("MANGA"),
-                  //   disableIcons: true,
-                  //   hintText: "Search Manga...",
-                  // ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: getResponsiveSize(context,
-                            mobileSize: 10, desktopSize: 0),
-                        bottom: getResponsiveSize(context,
-                            mobileSize: 20, desktopSize: 0)),
-                    child: ImageButton(
-                        buttonText: "AI Picks",
-                        width: getResponsiveSize(context,
-                            mobileSize: Get.width - 40, desktopSize: 300),
-                        height: getResponsiveSize(context,
-                            mobileSize: 70, desktopSize: 90),
-                        onPressed: () async {
-                          navigate(() => const AIRecommendation(
-                                isManga: true,
-                              ));
-                        },
-                        backgroundImage: trendingAnimes[1].cover ??
-                            trendingAnimes[3].poster),
-                  ),
                   buildSectionIfNotEmpty("Trending Manga", trendingManga,
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
@@ -260,27 +180,34 @@ class MalService extends GetxController implements BaseService, OnlineService {
     return [
       Obx(() => Column(
             children: [
-              isLoggedIn.value
-                  ? Wrap(
-                      spacing: 8,
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ImageButton(
-                          width: isDesktop ? 300 : Get.width / 2 - 40,
-                          height: !isDesktop ? 70 : 90,
-                          buttonText: "ANIME LIST",
-                          backgroundImage: fb.trendingAnimes
-                                  .firstWhere((e) => e.cover != null)
-                                  .cover ??
-                              '',
-                          borderRadius: 16.multiplyRadius(),
-                          onPressed: () {
-                            navigate(() => const AnimeList());
-                          },
-                        ),
-                        const SizedBox(width: 15),
-                        ImageButton(
-                          width: isDesktop ? 300 : Get.width / 2 - 40,
+              if (isLoggedIn.value) ...[
+                LayoutBuilder(builder: (context, constraints) {
+                  final width =
+                      isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
+                  final overflow = constraints.maxWidth < 900;
+                  final overflowSecond =
+                      !isDesktop ? false : constraints.maxWidth < 600;
+                  return Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 15,
+                    children: [
+                      ImageButton(
+                        width: width,
+                        height: !isDesktop ? 70 : 90,
+                        buttonText: "ANIME LIST",
+                        backgroundImage: trendingAnimes
+                                .firstWhere((e) => e.cover != null)
+                                .cover ??
+                            '',
+                        borderRadius: 16.multiplyRadius(),
+                        onPressed: () {
+                          navigate(() => const AnimeList());
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
+                        child: ImageButton(
+                          width: width,
                           height: !isDesktop ? 70 : 90,
                           buttonText: "MANGA LIST",
                           borderRadius: 16.multiplyRadius(),
@@ -292,26 +219,47 @@ class MalService extends GetxController implements BaseService, OnlineService {
                             navigate(() => const AnilistMangaList());
                           },
                         ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-              if (isLoggedIn.value) const SizedBox(height: 30),
-              Obx(() => Column(
-                    children: acceptedLists.map((e) {
-                      return ReusableCarousel(
-                        data: filterListByLabel(
-                            e.contains("Manga") || e.contains("Reading")
-                                ? mangaList
-                                : animeList,
-                            e),
-                        title: e,
-                        variant: DataVariant.anilist,
-                        type: e.contains("Manga") || e.contains("Reading")
-                            ? ItemType.manga
-                            : ItemType.anime,
-                      );
-                    }).toList(),
-                  )),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
+                        child: ImageButton(
+                          width: width,
+                          height: !isDesktop ? 70 : 90,
+                          buttonText: "OTHER",
+                          borderRadius: 16.multiplyRadius(),
+                          backgroundImage: [
+                                ...popularAnimes,
+                                ...popularMangas,
+                                ...trendingMangas,
+                                ...trendingAnimes
+                              ].where((e) => e.cover != null).last.cover ??
+                              '',
+                          onPressed: () {
+                            navigate(() => const OtherFeaturesPage());
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+                const SizedBox(height: 10),
+                Obx(() => Column(
+                      children: acceptedLists.map((e) {
+                        return ReusableCarousel(
+                          data: filterListByLabel(
+                              e.contains("Manga") || e.contains("Reading")
+                                  ? mangaList
+                                  : animeList,
+                              e),
+                          title: e,
+                          variant: DataVariant.anilist,
+                          type: e.contains("Manga") || e.contains("Reading")
+                              ? ItemType.manga
+                              : ItemType.anime,
+                        );
+                      }).toList(),
+                    )),
+              ],
               buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
               buildSectionIfNotEmpty("Popular Animes", popularAnimes),
               buildSectionIfNotEmpty("Trending Manga", trendingManga,

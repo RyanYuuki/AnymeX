@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:math' show min;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -80,35 +81,65 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        Wrap(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ImageButton(
-              width: isDesktop ? 300 : Get.width / 2 - 40,
-              height: !isDesktop ? 70 : 90,
-              buttonText: "ANIME LIST",
-              backgroundImage:
-                  trendingAnimes.firstWhere((e) => e.cover != null).cover ?? '',
-              borderRadius: 16.multiplyRadius(),
-              onPressed: () {
-                navigate(() => const AnimeList());
-              },
-            ),
-            const SizedBox(width: 15),
-            ImageButton(
-              width: isDesktop ? 300 : Get.width / 2 - 40,
-              height: !isDesktop ? 70 : 90,
-              buttonText: "MANGA LIST",
-              borderRadius: 16.multiplyRadius(),
-              backgroundImage:
-                  trendingMangas.firstWhere((e) => e.cover != null).cover ?? '',
-              onPressed: () {
-                navigate(() => const AnilistMangaList());
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 30),
+        LayoutBuilder(builder: (context, constraints) {
+          final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
+          final overflow = constraints.maxWidth < 900;
+          final overflowSecond =
+              !isDesktop ? false : constraints.maxWidth < 600;
+          return Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 15,
+            children: [
+              ImageButton(
+                width: width,
+                height: !isDesktop ? 70 : 90,
+                buttonText: "ANIME LIST",
+                backgroundImage:
+                    trendingAnimes.firstWhere((e) => e.cover != null).cover ??
+                        '',
+                borderRadius: 16.multiplyRadius(),
+                onPressed: () {
+                  navigate(() => const AnimeList());
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
+                child: ImageButton(
+                  width: width,
+                  height: !isDesktop ? 70 : 90,
+                  buttonText: "MANGA LIST",
+                  borderRadius: 16.multiplyRadius(),
+                  backgroundImage:
+                      trendingMangas.firstWhere((e) => e.cover != null).cover ??
+                          '',
+                  onPressed: () {
+                    navigate(() => const AnilistMangaList());
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
+                child: ImageButton(
+                  width: width,
+                  height: !isDesktop ? 70 : 90,
+                  buttonText: "OTHER",
+                  borderRadius: 16.multiplyRadius(),
+                  backgroundImage: [
+                        ...popularAnimes,
+                        ...popularMangas,
+                        ...trendingMangas,
+                        ...trendingAnimes
+                      ].where((e) => e.cover != null).last.cover ??
+                      '',
+                  onPressed: () {
+                    navigate(() => const OtherFeaturesPage());
+                  },
+                ),
+              ),
+            ],
+          );
+        }),
+        const SizedBox(height: 10),
         Obx(() => Column(
               children: acceptedLists.map((e) {
                 return ReusableCarousel(
@@ -151,40 +182,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingAnimes, false),
-      Padding(
-        padding: EdgeInsets.only(
-            top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
-            bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
-        child: Wrap(
-          children: [
-            ImageButton(
-                width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, desktopSize: 300),
-                height:
-                    getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
-                buttonText: "Calendar",
-                onPressed: () {
-                  navigate(() => const Calendar());
-                },
-                backgroundImage:
-                    trendingAnimes[5].cover ?? trendingAnimes[6].poster),
-            const SizedBox(width: 10),
-            ImageButton(
-                buttonText: "AI Picks",
-                width: getResponsiveSize(context,
-                    mobileSize: Get.width / 2 - 20, desktopSize: 300),
-                height:
-                    getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
-                onPressed: () async {
-                  navigate(() => const AIRecommendation(
-                        isManga: false,
-                      ));
-                },
-                backgroundImage:
-                    trendingAnimes[1].cover ?? trendingAnimes[0].poster)
-          ],
-        ),
-      ),
       buildSection('Recently Updated', recentlyUpdatedAnimes),
       buildSection('Trending Animes', trendingAnimes),
       buildSection('Popular Animes', popularAnimes),
@@ -197,23 +194,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingMangas, true),
-      Padding(
-        padding: EdgeInsets.only(
-            top: getResponsiveSize(context, mobileSize: 10, desktopSize: 0),
-            bottom: getResponsiveSize(context, mobileSize: 20, desktopSize: 0)),
-        child: ImageButton(
-            buttonText: "AI Picks",
-            width: getResponsiveSize(context,
-                mobileSize: Get.width - 40, desktopSize: 300),
-            height: getResponsiveSize(context, mobileSize: 70, desktopSize: 90),
-            onPressed: () async {
-              navigate(() => const AIRecommendation(
-                    isManga: true,
-                  ));
-            },
-            backgroundImage:
-                trendingAnimes[4].cover ?? trendingAnimes[3].poster),
-      ),
       buildMangaSection('Trending Mangas', trendingMangas),
       buildMangaSection('Latest Mangas', latestMangas),
       buildMangaSection('Popular Mangas', popularMangas),
