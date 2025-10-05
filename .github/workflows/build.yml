@@ -53,12 +53,19 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
+          # Download and setup CMake
           mkdir -p $HOME/cmake && cd $HOME/cmake
           wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
           tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
+          
+          # Return to workspace
+          cd $GITHUB_WORKSPACE
+          
+          # Setup keystore directory
           mkdir -p android/app
-          echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
           echo "$KEYSTORE_BASE64" | base64 -d > android/app/anymex.jks
+          
+          # Setup signing config
           cat > android/key.properties << EOF
           storePassword=$KEYSTORE_PASSWORD
           keyPassword=$KEYSTORE_PASSWORD
@@ -114,6 +121,9 @@ jobs:
           flutter pub get
           dart run flutter_native_splash:create
           
+          # Set CMake path AFTER flutter pub get
+          echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
+          
           # Build split APKs (creates all ABIs in one go)
           flutter build apk --split-per-abi
           
@@ -138,29 +148,28 @@ jobs:
           flutter pub get
           dart run flutter_native_splash:create
           
-          # Decode signing files
-          echo "$P12_BASE64" | base64 -D > certificate.p12
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 -D > profile.mobileprovision
+          # Decode signing files (using --decode like original workflow)
+          echo "$P12_BASE64" | base64 --decode > certificate.p12
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
           
-          # Verify files exist
+          # Verify files exist and have content
           ls -lh certificate.p12 profile.mobileprovision
+          if [ ! -s certificate.p12 ] || [ ! -s profile.mobileprovision ]; then
+            echo "Error: Signing files are empty. Check if P12_CERTIFICATE and PROVISIONING_PROFILE secrets are set."
+            exit 1
+          fi
           
           # Download and extract zsign
           curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
           unzip -q zsign.zip
+          chmod +x zsign || chmod +x zsign-*
           
           # Find zsign executable
           if [ -f "./zsign" ]; then
             ZSIGN_EXEC="./zsign"
-          elif [ -f "./zsign-macos-x64" ]; then
-            ZSIGN_EXEC="./zsign-macos-x64"
           else
-            echo "Available files:"
-            ls -la
-            exit 1
+            ZSIGN_EXEC=$(ls zsign* 2>/dev/null | head -n 1)
           fi
-          
-          chmod +x "$ZSIGN_EXEC"
           
           # Build iOS
           flutter build ios --release --no-codesign
@@ -168,7 +177,7 @@ jobs:
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
           
           # Sign with zsign
-          "$ZSIGN_EXEC" -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
           
           cd build/ios/iphoneos
           zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
