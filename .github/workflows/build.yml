@@ -114,6 +114,7 @@ jobs:
           [System.Net.ServicePointManager]::SecurityProtocol = 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           choco install innosetup -y
+          refreshenv  
       
       - name: Setup Environment
         shell: bash
@@ -256,13 +257,20 @@ jobs:
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (Test-Path $issFile) {
-            $content = Get-Content $issFile -Raw
-            $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
-            Set-Content $issFile -Value $content -NoNewline
-            & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $issFile
+              # Remove Icelandic language line
+              $content = Get-Content $issFile -Raw
+              $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
+              Set-Content $issFile -Value $content -NoNewline
+              $innoPath = "C:\ProgramData\chocolatey\lib\innosetup\tools\ISCC.exe"
+              if (Test-Path $innoPath) {
+                  & "$innoPath" $issFile
+              } else {
+                  Write-Error "Inno Setup not found at $innoPath"
+                  exit 1
+              }
           } else {
-            Write-Error "ISS file not found: $issFile"
-            exit 1
+              Write-Error "ISS file not found: $issFile"
+              exit 1
           }
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
