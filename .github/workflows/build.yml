@@ -52,19 +52,14 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          # Download and setup CMake
           mkdir -p $HOME/cmake && cd $HOME/cmake
           wget -q https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.tar.gz
           tar -xzf cmake-3.18.1-Linux-x86_64.tar.gz
-          
-          # Return to workspace
           cd $GITHUB_WORKSPACE
-          
-          # Setup keystore directory
+          CMAKE_DIR="$HOME/cmake/cmake-3.18.1-Linux-x86_64"
+          echo "cmake.dir=$CMAKE_DIR" >> android/local.properties
           mkdir -p android/app
           echo "$KEYSTORE_BASE64" | base64 -d > android/app/anymex.jks
-          
-          # Setup signing config
           cat > android/key.properties << EOF
           storePassword=$KEYSTORE_PASSWORD
           keyPassword=$KEYSTORE_PASSWORD
@@ -72,7 +67,6 @@ jobs:
           storeFile=anymex.jks
           EOF
       
-      # Linux-specific setup
       - name: Setup Linux
         if: matrix.platform == 'linux'
         run: |
@@ -81,7 +75,6 @@ jobs:
           wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
       
-      # Windows-specific setup
       - name: Setup Windows
         if: matrix.platform == 'windows'
         shell: pwsh
@@ -91,7 +84,6 @@ jobs:
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           choco install innosetup -y
       
-      # Setup environment for all platforms
       - name: Setup Environment
         shell: bash
         env:
@@ -113,30 +105,20 @@ jobs:
           CALLBACK_SCHEME=$CALLBACK_SCHEME
           EOF
       
-      # Build Android
       - name: Build Android
         if: matrix.platform == 'android'
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          
-          # Set CMake path AFTER flutter pub get
           echo "cmake.dir=$HOME/cmake/cmake-3.18.1-Linux-x86_64" >> android/local.properties
-          
-          # Build split APKs (creates all ABIs in one go)
           flutter build apk --split-per-abi
-          
-          # Build universal APK
           flutter build apk --release
-          
-          # Rename all APKs
           cd build/app/outputs/flutter-apk
           mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
           mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
           mv app-x86_64-release.apk AnymeX-Android-x86_64.apk
           mv app-release.apk AnymeX-Android-universal.apk
       
-      # Build iOS
       - name: Build iOS
         if: matrix.platform == 'ios'
         env:
@@ -146,49 +128,33 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          
-          # Decode signing files (using --decode like original workflow)
           echo "$P12_BASE64" | base64 --decode > certificate.p12
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
-          
-          # Verify files exist and have content
           ls -lh certificate.p12 profile.mobileprovision
           if [ ! -s certificate.p12 ] || [ ! -s profile.mobileprovision ]; then
             echo "Error: Signing files are empty. Check if P12_CERTIFICATE and PROVISIONING_PROFILE secrets are set."
             exit 1
           fi
-          
-          # Download and extract zsign
           curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
           unzip -q zsign.zip
           chmod +x zsign || chmod +x zsign-*
-          
-          # Find zsign executable
           if [ -f "./zsign" ]; then
             ZSIGN_EXEC="./zsign"
           else
             ZSIGN_EXEC=$(ls zsign* 2>/dev/null | head -n 1)
           fi
-          
-          # Build iOS
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
-          
-          # Sign with zsign
           $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
-          
           cd build/ios/iphoneos
           zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
       
-      # Build Linux
       - name: Build Linux
         if: matrix.platform == 'linux'
         run: |
           flutter pub get
           flutter build linux --release
-          
-          # AppImage
           rm -rf AppDir && mkdir -p AppDir/usr/{bin,share/icons/hicolor/256x256/apps}
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
@@ -212,8 +178,6 @@ jobs:
           chmod +x AppDir/AppRun
           /usr/local/bin/appimagetool AppDir
           mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
-          
-          # RPM
           mkdir -p rpm_build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
           cp -r build/linux/x64/release/bundle rpm_build/SOURCES/anymex-1.0.0
           tar czf rpm_build/SOURCES/anymex-1.0.0.tar.gz -C rpm_build/SOURCES anymex-1.0.0
@@ -252,33 +216,24 @@ jobs:
           EOF
           rpmbuild --define "_topdir $(pwd)/rpm_build" -ba rpm_build/SPECS/anymex.spec
           mv rpm_build/RPMS/x86_64/*.rpm build/linux/x64/release/AnymeX-Linux.rpm
-          
-          # ZIP
           cd build/linux/x64/release/bundle && zip -qr ../AnymeX-Linux.zip ./*
       
-      # Build Windows
       - name: Build Windows
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           flutter pub get
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-          
-          # Fix missing language file issue
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (Test-Path $issFile) {
             $content = Get-Content $issFile -Raw
             $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
             Set-Content $issFile -Value $content -NoNewline
-            
-            # Recompile with fixed script
             & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" $issFile
           }
-          
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
-      # Build macOS
       - name: Build macOS
         if: matrix.platform == 'macos'
         run: |
@@ -292,7 +247,6 @@ jobs:
           hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
           rm -rf temp_dir
       
-      # Upload artifacts
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'
         with:
@@ -359,7 +313,6 @@ jobs:
           name: ${{ matrix.job == 'aur' && 'linux' || 'windows' }}
           path: artifacts
       
-      # AUR Update
       - name: Update AUR
         if: matrix.job == 'aur'
         env:
@@ -435,7 +388,6 @@ jobs:
           git add PKGBUILD .SRCINFO
           git commit -m "Update to version ${VERSION#v}" && git push origin master
       
-      # Scoop Update
       - name: Update Scoop
         if: matrix.job == 'scoop'
         env:
@@ -482,7 +434,6 @@ jobs:
             --body "Automated update of AnymeX manifest to version $VERSION. @ScoopInstaller/maintainers please review." \
             --base main --head ${{ github.actor }}:update-anymex-$VERSION || true
       
-      # Chocolatey Update
       - name: Update Chocolatey
         if: matrix.job == 'chocolatey'
         env:
