@@ -463,6 +463,10 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y
+
       - name: Build Windows
         run: dart run inno_bundle:build --release
 
