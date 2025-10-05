@@ -14,15 +14,15 @@
       "bundleIdentifier": "com.ryan.anymex",
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
-      "version": "3.0.1",
-      "versionDate": "2025-09-28T20:32:30Z",
+      "version": "3.0.2",
+      "versionDate": "2025-10-05T18:20:59Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1-hotfix/AnymeX-iOS-v3.0.1-hotfix.ipa",
+      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.2/AnymeX-iOS-v3.0.2.ipa",
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 40375705,
+      "size": 40453668,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -30,9 +30,16 @@
       ],
       "versions": [
         {
+          "version": "3.0.2",
+          "date": "2025-10-05T18:20:59Z",
+          "localizedDescription": "",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.2/AnymeX-iOS-v3.0.2.ipa",
+          "size": 40453668
+        },
+        {
           "version": "3.0.1",
           "date": "2025-09-28T20:32:30Z",
-          "localizedDescription": "",
+          "localizedDescription": "\ud83c\udd95 Changelog\n\ud83c\udf1f Features\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/4495c7b)  implemented auto database delete on crash related to database\n\n\n\ud83d\udd27 Bug Fixes & Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/cea9b2b)  removed dupe entries\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/a88564a)  fixed few player issues and improved media indicators\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/f8aafec)  fixed media indicator on old player\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/3d5a913)  fixed wrong title not remembering last selected title\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/78ed39b)  fixed some stuff and improved list editor\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/a870c85)  fixed moving to current1 chapter instead of next chapter\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/9a651db)  fixed status progress not immediately updating\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/77140b0)  fixed non scrollable nav bar on small landscape displays\n\n\n\ud83e\uddf9 Chores & Documentation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/a82ca25)  bump version to v3.0.1\u2022hotfix hotfix\n\n\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for\u2022the\u2022badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.1\u2022hotfix/total?style=for\u2022the\u2022badge&label=CURRENT%20RELEASE&labelColor=black&color=white)\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.1-hotfix/AnymeX-iOS-v3.0.1-hotfix.ipa",
           "size": 40375705
         },
@@ -315,6 +322,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.1-hotfix"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "3.0.2 - 05 Oct",
+      "identifier": "release-3.0.2",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-10-05T18:20:59Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.2"
     }
   ]
 }
