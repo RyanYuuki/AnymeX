@@ -45,7 +45,6 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       
-      # Android-specific setup
       - name: Setup Android
         if: matrix.platform == 'android'
         env:
@@ -297,7 +296,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'
         with:
-          name: android-${{ matrix.abi }}
+          name: android-all
           path: build/app/outputs/flutter-apk/AnymeX-Android-*.apk
       
       - uses: actions/upload-artifact@v4
