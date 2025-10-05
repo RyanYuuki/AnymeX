@@ -158,17 +158,27 @@ jobs:
         run: |
           flutter pub get
           dart run flutter_native_splash:create
-          echo "$P12_BASE64" | base64 -d > certificate.p12
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
-          curl -L -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
-          unzip zsign.zip
-          chmod +x zsign || chmod +x zsign-*
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
-          ./zsign -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          if [ -n "$P12_BASE64" ] && [ -n "$PROVISIONING_PROFILE_BASE64" ] && [ -n "$P12_PASSWORD" ]; then
+            echo "$P12_BASE64" | base64 --decode > certificate.p12
+            echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
+            curl -sL -o zsign.zip "https://github.com/zhlynn/zsign/releases/download/v${{ env.ZSIGN_VERSION }}/zsign-v${{ env.ZSIGN_VERSION }}-macos-x64.zip"
+            unzip -q zsign.zip
+            chmod +x zsign || chmod +x zsign-*
+            if [ -f "./zsign" ]; then
+              ZSIGN_EXEC="./zsign"
+            else
+              ZSIGN_EXEC=$(ls zsign* 2>/dev/null | head -n 1)
+            fi
+            $ZSIGN_EXEC -f -k ./certificate.p12 -p "$P12_PASSWORD" -m ./profile.mobileprovision ./build/ios/iphoneos/Payload/Runner.app
+          else
+            echo "⚠️ No signing secrets provided — building unsigned .ipa"
+          fi
           cd build/ios/iphoneos
-          zip -r ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+          zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
+
       
       - name: Build Linux
         if: matrix.platform == 'linux'
