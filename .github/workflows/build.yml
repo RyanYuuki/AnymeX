@@ -94,26 +94,26 @@ jobs:
       
       - name: Install Inno Setup
         if: matrix.platform == 'windows'
-        shell: cmd
+        shell: pwsh
         run: |
-          echo Checking for existing Inno Setup installation...
-          set "ISCC_PATH=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
-          if exist "%ISCC_PATH%" (
-            echo Inno Setup is already installed
-            exit /b 0
-          )
-          echo Downloading Inno Setup installer...
-          set "_url_=https://jrsoftware.org/download.php/is.exe?site=1"
-          set "_file_=innosetup.exe"
-          curl -L -o "%tmp%\%_file_%" "%_url_%"
-          echo Installing Inno Setup...
-          "%tmp%\%_file_%" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-          timeout /t 30 /nobreak >nul
-          if not exist "%ISCC_PATH%" (
-            echo ::error::Inno Setup installation failed
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (Test-Path $isccPath) {
+            Write-Host "Inno Setup is already installed at: $isccPath"
+            exit 0
+          }
+          Write-Host "Downloading Inno Setup installer..."
+          $url = "https://jrsoftware.org/download.php/is.exe"
+          $installer = "$env:TEMP\innosetup.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+          Write-Host "Installing Inno Setup..."
+          Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait -NoNewWindow
+          Start-Sleep -Seconds 5
+          if (Test-Path $isccPath) {
+            Write-Host "Inno Setup installed successfully at: $isccPath"
+          } else {
+            Write-Error "Inno Setup installation failed - ISCC.exe not found at expected location"
             exit 1
-          )
-          echo Inno Setup installed successfully
+          }
       
       - name: Add Inno Setup to PATH
         if: matrix.platform == 'windows'
@@ -272,6 +272,7 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
+          # Verify Inno Setup is accessible
           $isccCommand = Get-Command iscc -ErrorAction SilentlyContinue
           if ($isccCommand) {
             Write-Host "ISCC.exe found in PATH: $($isccCommand.Source)"
@@ -279,23 +280,33 @@ jobs:
             Write-Error "ISCC.exe not found in PATH"
             exit 1
           }
+          
           flutter pub get
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
+          
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
               Write-Error "ISS file not found: $issFile"
               exit 1
           }
+          
+          # Remove Icelandic language reference
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
           Set-Content $issFile -Value $content -NoNewline
+          
+          # Compile with ISCC
           Write-Host "Compiling installer with ISCC..."
           & iscc $issFile
+          
           if ($LASTEXITCODE -ne 0) {
               Write-Error "Inno Setup compilation failed with exit code $LASTEXITCODE"
               exit 1
           }
+          
           Write-Host "Installer compiled successfully"
+          
+          # Create zip archive
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
