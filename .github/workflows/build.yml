@@ -15,17 +15,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Single Android build that outputs all APKs
           - platform: android
             os: ubuntu-latest
-          # Desktop platforms
           - platform: linux
             os: ubuntu-latest
           - platform: windows
             os: windows-latest
           - platform: macos
             os: macos-latest
-          # Mobile platforms
           - platform: ios
             os: macos-latest
     
@@ -63,17 +60,6 @@ jobs:
           path: ~/cmake
           key: cmake-3.18.1-linux-x64
       
-      - name: Cache Chocolatey
-        if: matrix.platform == 'windows'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~\AppData\Local\Temp\chocolatey
-            C:\ProgramData\chocolatey
-          key: ${{ runner.os }}-choco-innosetup-v2
-          restore-keys: |
-            ${{ runner.os }}-choco-
-      
       - name: Setup Android
         if: matrix.platform == 'android'
         env:
@@ -106,20 +92,49 @@ jobs:
           wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
       
-      - name: Setup Windows
+      - name: Install Inno Setup
+        if: matrix.platform == 'windows'
+        shell: cmd
+        run: |
+          echo Checking for existing Inno Setup installation...
+          set "ISCC_PATH=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
+          if exist "%ISCC_PATH%" (
+            echo Inno Setup is already installed
+            exit /b 0
+          )
+          echo Downloading Inno Setup installer...
+          set "_url_=https://jrsoftware.org/download.php/is.exe?site=1"
+          set "_file_=innosetup.exe"
+          curl -L -o "%tmp%\%_file_%" "%_url_%"
+          echo Installing Inno Setup...
+          "%tmp%\%_file_%" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+          timeout /t 30 /nobreak >nul
+          if not exist "%ISCC_PATH%" (
+            echo ::error::Inno Setup installation failed
+            exit 1
+          )
+          echo Inno Setup installed successfully
+      
+      - name: Add Inno Setup to PATH
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          # Check if Inno Setup is already installed
-          $innoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          $innoPath = "${env:ProgramFiles(x86)}\Inno Setup 6"
           if (Test-Path $innoPath) {
-              Write-Host "Inno Setup is already installed at: $innoPath"
+            echo "$innoPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            Write-Host "Added Inno Setup to PATH: $innoPath"
+            # Verify ISCC.exe exists
+            $isccPath = Join-Path $innoPath "ISCC.exe"
+            if (Test-Path $isccPath) {
+              Write-Host "ISCC.exe found at: $isccPath"
+            } else {
+              Write-Error "ISCC.exe not found at expected location: $isccPath"
+              exit 1
+            }
           } else {
-              Write-Host "Installing Inno Setup via Chocolatey..."
-              choco install innosetup -y --no-progress
-              Write-Host "Inno Setup installation completed"
+            Write-Error "Inno Setup directory not found at: $innoPath"
+            exit 1
           }
-          refreshenv
       
       - name: Setup Environment
         shell: bash
@@ -184,7 +199,6 @@ jobs:
           fi
           cd build/ios/iphoneos
           zip -qr ./AnymeX-iOS-${{ github.ref_name }}.ipa Payload
-
       
       - name: Build Linux
         if: matrix.platform == 'linux'
@@ -258,9 +272,15 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
+          $isccCommand = Get-Command iscc -ErrorAction SilentlyContinue
+          if ($isccCommand) {
+            Write-Host "ISCC.exe found in PATH: $($isccCommand.Source)"
+          } else {
+            Write-Error "ISCC.exe not found in PATH"
+            exit 1
+          }
           flutter pub get
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-          
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
               Write-Error "ISS file not found: $issFile"
@@ -269,29 +289,8 @@ jobs:
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
           Set-Content $issFile -Value $content -NoNewline
-          $possiblePaths = @(
-              "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-              "${env:ProgramFiles}\Inno Setup 6\ISCC.exe",
-              "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
-              "C:\Program Files\Inno Setup 6\ISCC.exe"
-          )
-          $chocoPath = Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\*' -Directory -ErrorAction SilentlyContinue |
-                       Sort-Object Name -Descending |
-                       ForEach-Object { Join-Path $_.FullName 'tools\ISCC.exe' } |
-                       Where-Object { Test-Path $_ } |
-                       Select-Object -First 1
-          if ($chocoPath) {
-              $possiblePaths += $chocoPath
-          }
-          $innoPath = $possiblePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $innoPath) {
-              Write-Error "Inno Setup ISCC.exe not found in any expected location"
-              Write-Host "Searched paths:"
-              $possiblePaths | ForEach-Object { Write-Host "  - $_" }
-              exit 1
-          } 
-          Write-Host "Found Inno Setup at: $innoPath"
-          & "$innoPath" $issFile
+          Write-Host "Compiling installer with ISCC..."
+          & iscc $issFile
           if ($LASTEXITCODE -ne 0) {
               Write-Error "Inno Setup compilation failed with exit code $LASTEXITCODE"
               exit 1
