@@ -33,7 +33,7 @@ jobs:
             ALL_SUCCESS=true
           fi
 
-          REQUIRED_JOBS=("build-windows" "build-ios" "build-macos" "build-android" "build-linux")
+          REQUIRED_JOBS=("build-all-platforms (android, ubuntu-latest)" "build-all-platforms (linux, ubuntu-latest)" "build-all-platforms (windows, windows-latest)" "build-all-platforms (macos, macos-latest)" "build-all-platforms (ios, macos-latest)")
 
           if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
             for JOB in "${REQUIRED_JOBS[@]}"; do
