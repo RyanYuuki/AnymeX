@@ -92,30 +92,22 @@ jobs:
           wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
       
-      - name: Install Inno Setup
+      - name: Setup Windows (Install Inno)
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-          
           if (Test-Path $isccPath) {
             Write-Host "Inno Setup is already installed at: $isccPath"
             exit 0
           }
-          
           Write-Host "Downloading Inno Setup installer..."
           $url = "https://jrsoftware.org/download.php/is.exe"
           $installer = "$env:TEMP\innosetup.exe"
-          
           Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
-          
           Write-Host "Installing Inno Setup..."
           Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait -NoNewWindow
-          
-          # Wait a bit for installation to complete
           Start-Sleep -Seconds 5
-          
-          # Verify installation
           if (Test-Path $isccPath) {
             Write-Host "Inno Setup installed successfully at: $isccPath"
           } else {
@@ -131,7 +123,6 @@ jobs:
           if (Test-Path $innoPath) {
             echo "$innoPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
             Write-Host "Added Inno Setup to PATH: $innoPath"
-            # Verify ISCC.exe exists
             $isccPath = Join-Path $innoPath "ISCC.exe"
             if (Test-Path $isccPath) {
               Write-Host "ISCC.exe found at: $isccPath"
@@ -288,33 +279,23 @@ jobs:
             Write-Error "ISCC.exe not found in PATH"
             exit 1
           }
-          
           flutter pub get
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
-          
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
               Write-Error "ISS file not found: $issFile"
               exit 1
           }
-          
-          # Remove Icelandic language reference
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
           Set-Content $issFile -Value $content -NoNewline
-          
-          # Compile with ISCC
           Write-Host "Compiling installer with ISCC..."
           & iscc $issFile
-          
           if ($LASTEXITCODE -ne 0) {
               Write-Error "Inno Setup compilation failed with exit code $LASTEXITCODE"
               exit 1
           }
-          
           Write-Host "Installer compiled successfully"
-          
-          # Create zip archive
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
