@@ -97,17 +97,25 @@ jobs:
         shell: pwsh
         run: |
           $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          
           if (Test-Path $isccPath) {
             Write-Host "Inno Setup is already installed at: $isccPath"
             exit 0
           }
+          
           Write-Host "Downloading Inno Setup installer..."
           $url = "https://jrsoftware.org/download.php/is.exe"
           $installer = "$env:TEMP\innosetup.exe"
+          
           Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+          
           Write-Host "Installing Inno Setup..."
           Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait -NoNewWindow
+          
+          # Wait a bit for installation to complete
           Start-Sleep -Seconds 5
+          
+          # Verify installation
           if (Test-Path $isccPath) {
             Write-Host "Inno Setup installed successfully at: $isccPath"
           } else {
