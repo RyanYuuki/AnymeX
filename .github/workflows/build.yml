@@ -70,7 +70,7 @@ jobs:
           path: |
             ~\AppData\Local\Temp\chocolatey
             C:\ProgramData\chocolatey
-          key: ${{ runner.os }}-choco-innosetup
+          key: ${{ runner.os }}-choco-innosetup-v2
           restore-keys: |
             ${{ runner.os }}-choco-
       
@@ -110,10 +110,15 @@ jobs:
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = 3072
-          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-          choco install innosetup -y
+          # Check if Inno Setup is already installed
+          $innoPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (Test-Path $innoPath) {
+              Write-Host "Inno Setup is already installed at: $innoPath"
+          } else {
+              Write-Host "Installing Inno Setup via Chocolatey..."
+              choco install innosetup -y --no-progress
+              Write-Host "Inno Setup installation completed"
+          }
           refreshenv
       
       - name: Setup Environment
@@ -255,6 +260,7 @@ jobs:
         run: |
           flutter pub get
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
+          
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
               Write-Error "ISS file not found: $issFile"
@@ -263,16 +269,34 @@ jobs:
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
           Set-Content $issFile -Value $content -NoNewline
-          $innoPath = Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\*' -Directory |
-                      Sort-Object Name -Descending |
-                      ForEach-Object { Join-Path $_.FullName 'tools\ISCC.exe' } |
-                      Where-Object { Test-Path $_ } |
-                      Select-Object -First 1
+          $possiblePaths = @(
+              "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+              "${env:ProgramFiles}\Inno Setup 6\ISCC.exe",
+              "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+              "C:\Program Files\Inno Setup 6\ISCC.exe"
+          )
+          $chocoPath = Get-ChildItem 'C:\ProgramData\chocolatey\lib\innosetup\*' -Directory -ErrorAction SilentlyContinue |
+                       Sort-Object Name -Descending |
+                       ForEach-Object { Join-Path $_.FullName 'tools\ISCC.exe' } |
+                       Where-Object { Test-Path $_ } |
+                       Select-Object -First 1
+          if ($chocoPath) {
+              $possiblePaths += $chocoPath
+          }
+          $innoPath = $possiblePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $innoPath) {
-              Write-Error "Inno Setup not found in Chocolatey path."
+              Write-Error "Inno Setup ISCC.exe not found in any expected location"
+              Write-Host "Searched paths:"
+              $possiblePaths | ForEach-Object { Write-Host "  - $_" }
+              exit 1
+          } 
+          Write-Host "Found Inno Setup at: $innoPath"
+          & "$innoPath" $issFile
+          if ($LASTEXITCODE -ne 0) {
+              Write-Error "Inno Setup compilation failed with exit code $LASTEXITCODE"
               exit 1
           }
-          & "$innoPath" $issFile
+          Write-Host "Installer compiled successfully"
           cd build/windows/x64/runner/Release
           Compress-Archive -Path * -DestinationPath AnymeX-Windows.zip
       
@@ -364,7 +388,6 @@ jobs:
           HASH=$(sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
-          
           cat > PKGBUILD << 'EOF'
           # Maintainer: jullanggit <jullanggit@proton.me>
           _pkgname=anymex
@@ -406,14 +429,11 @@ jobs:
           DESKTOP
           }
           EOF
-          
           sed -i "s/\${PKGVER}/$PKGVER/g" PKGBUILD
           sed -i "s/\${VERSION}/$VERSION/g" PKGBUILD
           sed -i "s/\${HASH}/$HASH/g" PKGBUILD
-          
           sudo apt-get update -qq && sudo apt-get install -y -qq makepkg
           makepkg --printsrcinfo > .SRCINFO
-          
           mkdir -p ~/.ssh
           echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur && chmod 600 ~/.ssh/aur
           cat >> ~/.ssh/config << 'SSHEOF'
@@ -422,7 +442,6 @@ jobs:
            User aur
            IdentityFile ~/.ssh/aur
           SSHEOF
-          
           git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur
           cd aur
           cp ../PKGBUILD ../.SRCINFO .
@@ -490,26 +509,21 @@ jobs:
           Invoke-WebRequest -Uri $zip_url -OutFile $tempFile.FullName
           $zip_hash = (Get-FileHash -Path $tempFile.FullName -Algorithm SHA256).Hash
           Remove-Item $tempFile.FullName
-          
           $nuspecContent = Get-Content chocolatey/anymex.nuspec -Raw
           $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
           Set-Content chocolatey/anymex.nuspec -Value $nuspecContent
-          
           $installContent = Get-Content chocolatey/tools/chocolateyInstall.ps1 -Raw
           $installContent = $installContent -replace '\$url\s*=\s*[''"].*?[''"]', "`$url = '$zip_url'"
           $installContent = $installContent -replace '\$checksum\s*=\s*[''"].*?[''"]', "`$checksum = '$zip_hash'"
           Set-Content chocolatey/tools/chocolateyInstall.ps1 -Value $installContent
-          
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add chocolatey/
           git diff-index --quiet HEAD || (git commit -m "Update Chocolatey to $version" && git push)
-          
           Set-ExecutionPolicy Bypass -Scope Process -Force
           [System.Net.ServicePointManager]::SecurityProtocol = 3072
           iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           choco pack chocolatey/anymex.nuspec --outputdirectory chocolatey
-          
           if ($env:CHOCO_API_KEY) {
             choco apikey --key $env:CHOCO_API_KEY --source https://push.chocolatey.org/
             choco push "chocolatey/com.ryan.anymex.$version.nupkg" --source https://push.chocolatey.org/
