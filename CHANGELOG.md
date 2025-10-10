@@ -5,6 +5,9 @@
 
 
 ### 🔧 Bug Fixes & Improvements
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e646f83)  fixed brightness and volume jankiness
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ec16080)  fixed list editor
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/bb2963f)  fixed scroll animation causing header issues
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/2c6bf1a)  improved mapper
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/93769c1)  fixed minor issue in progress slider on offline player
 - [֍](https://github.com/RyanYuuki/AnymeX/commit/e1d45ae)  fixed abrupt background on desktop
