@@ -68,9 +68,6 @@ class MyHttpoverrides extends HttpOverrides {
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
-  ScrollPhysics getScrollPhysics(BuildContext context) =>
-      const BouncingScrollPhysics();
-  @override
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
