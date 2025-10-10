@@ -45,18 +45,9 @@ dependencies:
   install_plugin: ^2.1.0
   intl: ^0.20.1
   kenburns_nullsafety: ^1.0.1
-  media_kit:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: media_kit
-  media_kit_video:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: media_kit_video
-  media_kit_libs_video:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: libs/universal/media_kit_libs_video
+  media_kit: any
+  media_kit_video: any
+  media_kit_libs_video: any
   dartotsu_extension_bridge:
     git:
       url: https://github.com/RyanYuuki/DartotsuExtensionBridge.git

@@ -176,6 +176,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _brightnessTimer;
   Timer? _controlsTimer;
   bool _wasControlsVisible = false;
+  bool isLeftLandscaped = true;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
 
@@ -239,8 +240,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     ever(isFullScreen,
         (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+  }
+
+  void toggleOrientation() {
+    if (isLeftLandscaped) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      isLeftLandscaped = false;
+    } else {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+      isLeftLandscaped = true;
+    }
   }
 
   void _handleAutoSkip() {
@@ -297,19 +307,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializePlayer() {
     player = Player(
-        configuration: PlayerConfiguration(
-            bufferSize: 1024 * 1024 * 32,
-            config: true,
-            configDir: settings.mpvPath.value));
+        configuration: const PlayerConfiguration(
+      bufferSize: 1024 * 1024 * 32,
+    ));
     playerController = VideoController(player,
         configuration: VideoControllerConfiguration(
             enableHardwareAcceleration: Platform.isMacOS ? false : true,
             androidAttachSurfaceAfterVideoParameters: true));
 
     if (isOffline.value && offlineVideoPath != null) {
-      player.open(Media(offlineVideoPath!,
-          start: Duration(
-              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0)));
+      final stamp = settingsController.preferences
+          .get(offlineVideoPath, defaultValue: null);
+      player.open(
+          Media(offlineVideoPath!, start: Duration(milliseconds: stamp ?? 0)));
     } else {
       player.open(Media(selectedVideo.value!.url,
           httpHeaders: selectedVideo.value!.headers,
@@ -420,7 +430,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
 
     player.stream.completed.listen((e) {
-      if (e) {
+      if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
     });
@@ -579,16 +589,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             settings.markAsCompleted);
       }
     });
-
+    _revertOrientations();
     WidgetsBinding.instance.removeObserver(this);
-
     player.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
-    _revertOrientations();
+    Future.microtask(() {
+      ScreenBrightness.instance.system.then((e) {
+        ScreenBrightness.instance.setApplicationScreenBrightness(e);
+      });
+    });
   }
 
   void _revertOrientations() {
@@ -681,24 +694,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) async {
-    if (settings.enableSwipeControls) {
-      final screenHeight = MediaQuery.of(context).size.height;
-      final topBoundary = screenHeight * 0.2;
-      final bottomBoundary = screenHeight * 0.8;
+  void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) {
+    if (!settings.enableSwipeControls) return;
 
-      final position = e.localPosition;
-      if (position.dy >= topBoundary && position.dy <= bottomBoundary) {
-        final delta = e.delta.dy;
+    final size = MediaQuery.of(context).size;
+    final position = e.localPosition;
+    if (position.dy < size.height * 0.2 || position.dy > size.height * 0.8) {
+      return;
+    }
 
-        if (position.dx <= MediaQuery.of(context).size.width / 2) {
-          final bright = brightness.value - delta / 500;
-          setBrightness(bright.clamp(0.0, 1.0).toDouble(), isDragging: true);
-        } else {
-          final vol = volume.value - delta / 500;
-          setVolume(vol.clamp(0.0, 1.0).toDouble(), isDragging: true);
-        }
-      }
+    const sensitivity = 200.0;
+
+    final delta = e.delta.dy;
+    if (position.dx <= size.width / 2) {
+      final bright = brightness.value - delta / sensitivity;
+      setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
+    } else {
+      final vol = volume.value - delta / sensitivity;
+      setVolume(vol.clamp(0.0, 1.0), isDragging: true);
     }
   }
 
@@ -718,11 +731,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> setVolume(double value, {bool isDragging = false}) async {
+    volume.value = value;
+    volumeIndicator.value = true;
+
     try {
       VolumeController.instance.setVolume(value);
     } catch (_) {}
-    volume.value = value;
-    volumeIndicator.value = true;
 
     _volumeTimer?.cancel();
 
@@ -732,10 +746,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> setBrightness(double value, {bool isDragging = false}) async {
-    try {
-      await ScreenBrightness.instance.setScreenBrightness(value);
-    } catch (_) {}
+    brightness.value = value;
     brightnessIndicator.value = true;
+
+    try {
+      await ScreenBrightness.instance.setApplicationScreenBrightness(value);
+    } catch (_) {}
 
     _brightnessTimer?.cancel();
 
@@ -861,6 +877,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _trackLocally() async {
+    if (isOffline.value) {
+      settingsController.preferences
+          .put(offlineVideoPath, currentPosition.value.inMilliseconds);
+      return;
+    }
     try {
       final currentTimestamp = currentEpisode.value.timeStampInMilliseconds;
       final totalDuration = episodeDuration.value.inMilliseconds;
