@@ -218,6 +218,13 @@ class BottomControls extends StatelessWidget {
                           tooltip: 'Audio Track',
                           compact: true,
                         ),
+                        if (Platform.isAndroid || Platform.isIOS)
+                          ControlButton(
+                            icon: Icons.screen_rotation_rounded,
+                            onPressed: () => controller.toggleOrientation(),
+                            tooltip: 'Toggle Orientation',
+                            compact: true,
+                          ),
                         ControlButton(
                           icon: Symbols.fit_screen,
                           onPressed: () => controller.toggleVideoFit(),

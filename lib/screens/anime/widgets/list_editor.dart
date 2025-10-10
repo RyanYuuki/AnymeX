@@ -35,32 +35,27 @@ class ListEditorModal extends StatefulWidget {
 
 class _ListEditorModalState extends State<ListEditorModal> {
   late TextEditingController _progressController;
-  late Worker _progressWorker;
+
+  late String _localStatus;
+  late double _localScore;
+  late int _localProgress;
 
   @override
   void initState() {
     super.initState();
+
+    _localStatus =
+        widget.animeStatus.value.isEmpty ? "CURRENT" : widget.animeStatus.value;
+    _localScore = widget.animeScore.value;
+    _localProgress = widget.animeProgress.value;
+
     _progressController = TextEditingController(
-      text: widget.animeProgress.value.toString(),
+      text: _localProgress.toString(),
     );
-
-    _progressWorker = ever(widget.animeProgress, (progress) {
-      if (mounted && _progressController.text != progress.toString()) {
-        final int cursorPosition = _progressController.selection.baseOffset;
-        _progressController.text = progress.toString();
-
-        if (cursorPosition <= _progressController.text.length) {
-          _progressController.selection = TextSelection.fromPosition(
-            TextPosition(offset: cursorPosition),
-          );
-        }
-      }
-    });
   }
 
   @override
   void dispose() {
-    _progressWorker.dispose();
     _progressController.dispose();
     super.dispose();
   }
@@ -145,11 +140,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
             label: 'Status',
             icon: Icons.info_rounded,
             onChanged: (e) {
-              widget.animeStatus.value = e.value;
+              setState(() {
+                _localStatus = e.value;
+              });
             },
             selectedItem: DropdownItem(
-              value: widget.animeStatus.value,
-              text: widget.animeStatus.value,
+              value: _localStatus,
+              text: _getStatusDisplayText(_localStatus),
             ),
             items: [
               ('PLANNING', 'Planning', Icons.schedule_rounded),
@@ -168,6 +165,25 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ),
       ],
     );
+  }
+
+  String _getStatusDisplayText(String status) {
+    switch (status) {
+      case 'PLANNING':
+        return 'Planning';
+      case 'CURRENT':
+        return 'Watching';
+      case 'COMPLETED':
+        return 'Completed';
+      case 'REPEATING':
+        return 'Repeating';
+      case 'PAUSED':
+        return 'Paused';
+      case 'DROPPED':
+        return 'Dropped';
+      default:
+        return status;
+    }
   }
 
   Widget _buildProgressSection(BuildContext context) {
@@ -283,17 +299,21 @@ class _ListEditorModalState extends State<ListEditorModal> {
                             return;
                           }
 
-                          if (hasKnownLimit) {
-                            widget.animeProgress.value = newProgress <= maxTotal
-                                ? newProgress
-                                : maxTotal;
-                          } else {
-                            widget.animeProgress.value = newProgress;
-                          }
+                          setState(() {
+                            if (hasKnownLimit) {
+                              _localProgress = newProgress <= maxTotal
+                                  ? newProgress
+                                  : maxTotal;
+                            } else {
+                              _localProgress = newProgress;
+                            }
+                          });
                         },
                         onEditingComplete: () {
-                          _progressController.text =
-                              widget.animeProgress.value.toString();
+                          setState(() {
+                            _progressController.text =
+                                _localProgress.toString();
+                          });
                         },
                       ),
                     ),
@@ -314,143 +334,129 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildDecrementButton(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bool canDecrement = _localProgress > 0;
 
-    return Obx(() {
-      widget.animeStatus.value;
-      final bool canDecrement = widget.animeProgress.value > 0;
-
-      return Material(
-        color: canDecrement
-            ? colorScheme.secondaryContainer
-            : colorScheme.surfaceContainerHighest,
+    return Material(
+      color: canDecrement
+          ? colorScheme.secondaryContainer
+          : colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: canDecrement
-              ? () {
-                  widget.animeProgress.value--;
-                  if (mounted) {
-                    _progressController.text =
-                        widget.animeProgress.value.toString();
-                  }
-                }
-              : null,
-          child: Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.remove_rounded,
-              color: canDecrement
-                  ? colorScheme.onSecondaryContainer
-                  : colorScheme.onSurfaceVariant.withOpacity(0.5),
-              size: 24,
-            ),
+        onTap: canDecrement
+            ? () {
+                setState(() {
+                  _localProgress--;
+                  _progressController.text = _localProgress.toString();
+                });
+              }
+            : null,
+        child: Container(
+          width: 50,
+          height: 50,
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.remove_rounded,
+            color: canDecrement
+                ? colorScheme.onSecondaryContainer
+                : colorScheme.onSurfaceVariant.withOpacity(0.5),
+            size: 24,
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget _buildIncrementButton(
       BuildContext context, bool hasKnownLimit, int? maxTotal) {
     final colorScheme = Theme.of(context).colorScheme;
+    final bool canIncrement =
+        !hasKnownLimit || (hasKnownLimit && _localProgress < maxTotal!);
 
-    return Obx(() {
-      widget.animeStatus.value;
-      final bool canIncrement = !hasKnownLimit ||
-          (hasKnownLimit && widget.animeProgress.value < maxTotal!);
-
-      return Material(
-        color: canIncrement
-            ? colorScheme.primaryContainer
-            : colorScheme.surfaceContainerHighest,
+    return Material(
+      color: canIncrement
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: canIncrement
-              ? () {
-                  widget.animeProgress.value++;
-                  if (mounted) {
-                    _progressController.text =
-                        widget.animeProgress.value.toString();
-                  }
-                }
-              : null,
-          child: Container(
-            width: 50,
-            height: 50,
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.add_rounded,
-              color: canIncrement
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.onSurfaceVariant.withOpacity(0.5),
-              size: 24,
-            ),
+        onTap: canIncrement
+            ? () {
+                setState(() {
+                  _localProgress++;
+                  _progressController.text = _localProgress.toString();
+                });
+              }
+            : null,
+        child: Container(
+          width: 50,
+          height: 50,
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.add_rounded,
+            color: canIncrement
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurfaceVariant.withOpacity(0.5),
+            size: 24,
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget _buildProgressIndicator(BuildContext context, bool hasKnownLimit,
       int? maxTotal, String displayTotal) {
     final colorScheme = Theme.of(context).colorScheme;
+    final double progressPercentage =
+        hasKnownLimit ? (_localProgress / maxTotal!).clamp(0.0, 1.0) : 0.0;
 
-    return Obx(() {
-      final int currentProgress = widget.animeProgress.value;
-      final double progressPercentage =
-          hasKnownLimit ? (currentProgress / maxTotal!).clamp(0.0, 1.0) : 0.0;
-
-      return Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '$_localProgress / $displayTotal',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+            if (hasKnownLimit)
               Text(
-                '$currentProgress / $displayTotal',
+                '${(progressPercentage * 100).toStringAsFixed(0)}%',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
-              if (hasKnownLimit)
-                Text(
-                  '${(progressPercentage * 100).toStringAsFixed(0)}%',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-            ],
-          ),
-          if (hasKnownLimit) ...[
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progressPercentage,
-                backgroundColor: colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-                minHeight: 6,
-              ),
-            ),
           ],
-          if (!hasKnownLimit)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Total ${widget.isManga ? 'chapters' : 'episodes'} unknown',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontStyle: FontStyle.italic,
-                    ),
-              ),
+        ),
+        if (hasKnownLimit) ...[
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progressPercentage,
+              backgroundColor: colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+              minHeight: 6,
             ),
+          ),
         ],
-      );
-    });
+        if (!hasKnownLimit)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'Total ${widget.isManga ? 'chapters' : 'episodes'} unknown',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildScoreSection(BuildContext context) {
@@ -500,39 +506,40 @@ class _ListEditorModalState extends State<ListEditorModal> {
                       ),
                     ],
                   ),
-                  Obx(() => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${widget.animeScore.value.toStringAsFixed(1)}/10',
-                          style:
-                              Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    color: colorScheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                        ),
-                      )),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${_localScore.toStringAsFixed(1)}/10',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              Obx(() => CustomSlider(
-                    value: widget.animeScore.value,
-                    min: 0.0,
-                    max: 10.0,
-                    divisions: 100,
-                    label: widget.animeScore.value.toStringAsFixed(1),
-                    activeColor: colorScheme.primary,
-                    inactiveColor: colorScheme.surfaceContainerHighest,
-                    onChanged: (double newValue) {
-                      widget.animeScore.value = newValue;
-                    },
-                  )),
+              CustomSlider(
+                value: _localScore,
+                min: 0.0,
+                max: 10.0,
+                divisions: 100,
+                label: _localScore.toStringAsFixed(1),
+                activeColor: colorScheme.primary,
+                inactiveColor: colorScheme.surfaceContainerHighest,
+                onChanged: (double newValue) {
+                  setState(() {
+                    _localScore = newValue;
+                  });
+                },
+              ),
             ],
           ),
         ),
@@ -586,9 +593,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 Get.back();
                 widget.onUpdate(
                   widget.media.id,
-                  widget.animeScore.value,
-                  widget.animeStatus.value,
-                  widget.animeProgress.value,
+                  _localScore,
+                  _localStatus,
+                  _localProgress,
                 );
               },
               color: colorScheme.primary,
