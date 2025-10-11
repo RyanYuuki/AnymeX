@@ -130,7 +130,7 @@ jobs:
             FILE_NAME=$(basename "$ASSET_URL")
             
             # Categorize and set variables
-            if [[ "$FILE_NAME" == *"-arm64.apk" ]]; then
+            if [[ "$FILE_NAME" == *"-arm64-v8a.apk" ]]; then
               echo "apk_arm64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
             elif [[ "$FILE_NAME" == *"-armeabi-v7a.apk" ]]; then
               echo "apk_armeabi_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
