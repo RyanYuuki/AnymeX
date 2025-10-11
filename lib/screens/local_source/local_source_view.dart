@@ -11,6 +11,7 @@ import 'package:anymex/screens/local_source/controller/local_source_controller.d
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/get_string.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -40,6 +41,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   @override
   Widget build(BuildContext context) {
+    GetString.init(context);
     final theme = Theme.of(context);
 
     return PopScope(
@@ -105,7 +107,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Local Library',
+                  GetString.localLibrary,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -115,9 +117,9 @@ class _WatchOfflineState extends State<WatchOffline> {
                 const SizedBox(height: 4),
                 Obx(() => Text(
                       controller.viewMode.value == ViewMode.search
-                          ? 'Search stuff you wanna download'
+                          ? GetString.searchStuffToDownload
                           : controller.viewMode.value == ViewMode.download
-                              ? "AnymeX Downloads"
+                              ? GetString.anymexDownloads
                               : controller.currentDirectoryName,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
@@ -1041,7 +1043,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Iconsax.search_normal,
-                  label: 'Search',
+                  label: GetString.search,
                   viewMode: ViewMode.search,
                   isSelected: controller.viewMode.value == ViewMode.search,
                 )
@@ -1050,7 +1052,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Icons.download_rounded,
-                  label: 'Download',
+                  label: GetString.download,
                   viewMode: ViewMode.download,
                   isSelected: controller.viewMode.value == ViewMode.download,
                 )
@@ -1058,7 +1060,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           Obx(() => _buildModernTab(
                 controller: controller,
                 icon: Iconsax.folder_open,
-                label: 'Local',
+                label: GetString.local,
                 viewMode: ViewMode.local,
                 isSelected: controller.viewMode.value == ViewMode.local,
               )),
