@@ -68,6 +68,8 @@ class UpdateManager {
     }
   }
 
+  final bool _currentVersionIncludesHotfix = true;
+
   bool _shouldUpdate(String currentVersion, String latestVersion) {
     currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
     latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
@@ -89,9 +91,14 @@ class UpdateManager {
     final latestHasTag = latestSplit.length == 2;
 
     if (latestHasTag && latestSplit[1].toLowerCase() == 'hotfix') {
+      if (_currentVersionIncludesHotfix) {
+        return false;
+      }
+
       if (currentHasTag && currentSplit[1].toLowerCase() == 'hotfix') {
         return false;
       }
+
       return true;
     }
 
