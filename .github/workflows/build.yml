@@ -365,6 +365,7 @@ jobs:
   post-release:
     needs: [build-all-platforms, release]
     strategy:
+      fail-fast: false
       matrix:
         job: [aur, scoop, chocolatey]
     runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
@@ -380,6 +381,7 @@ jobs:
       
       - name: Update AUR
         if: matrix.job == 'aur'
+        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -450,6 +452,7 @@ jobs:
       
       - name: Update Scoop
         if: matrix.job == 'scoop'
+        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -496,6 +499,7 @@ jobs:
       
       - name: Update Chocolatey
         if: matrix.job == 'chocolatey'
+        continue-on-error: true
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
         shell: pwsh
