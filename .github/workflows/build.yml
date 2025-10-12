@@ -381,7 +381,29 @@ jobs:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
-          wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage"
+          # Wait and retry download with exponential backoff
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          SLEEP_TIME=10
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to download AppImage..."
+            if wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage"; then
+              echo "Download successful!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Download failed. Waiting ${SLEEP_TIME}s before retry..."
+                sleep $SLEEP_TIME
+                SLEEP_TIME=$((SLEEP_TIME * 2))
+              else
+                echo "Failed to download after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
           HASH=$(sha256sum AnymeX-Linux.AppImage | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
@@ -453,7 +475,29 @@ jobs:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip"
+          # Wait and retry download with exponential backoff
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          SLEEP_TIME=10
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to download Windows zip..."
+            if wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip"; then
+              echo "Download successful!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Download failed. Waiting ${SLEEP_TIME}s before retry..."
+                sleep $SLEEP_TIME
+                SLEEP_TIME=$((SLEEP_TIME * 2))
+              else
+                echo "Failed to download after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
           HASH=$(sha256sum AnymeX-Windows.zip | awk '{print $1}')
           sudo apt-get update -qq && sudo apt-get install -y -qq gh
           echo "$GITHUB_TOKEN" | gh auth login --with-token
