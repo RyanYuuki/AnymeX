@@ -506,7 +506,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleSingleTap(TapDownDetails details) {
-    print('Single tap');
     if (_isInSeekMode) {
       final screenWidth = MediaQuery.of(context).size.width;
       final tapX = details.localPosition.dx;

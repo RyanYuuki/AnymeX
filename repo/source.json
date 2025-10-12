@@ -15,27 +15,20 @@
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
       "version": "3.0.2",
-      "versionDate": "2025-10-05T18:47:33Z",
+      "versionDate": "2025-10-10T18:48:35Z",
       "versionDescription": "",
-      "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.2/AnymeX-iOS-v3.0.2.ipa",
+      "downloadURL": null,
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 40453675,
+      "size": null,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_2.webp"
       ],
       "versions": [
-        {
-          "version": "3.0.2",
-          "date": "2025-10-05T18:47:33Z",
-          "localizedDescription": "",
-          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.2/AnymeX-iOS-v3.0.2.ipa",
-          "size": 40453675
-        },
         {
           "version": "3.0.1",
           "date": "2025-09-28T20:32:30Z",

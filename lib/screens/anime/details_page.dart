@@ -6,7 +6,6 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/database/model/comment.dart';
-import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
