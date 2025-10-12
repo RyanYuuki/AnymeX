@@ -61,12 +61,14 @@ class _WatchScreenState extends State<WatchScreen> {
       children: [
         Obx(() {
           return Video(
-              controller: controller.playerController,
-              fit: controller.videoFit.value,
-              resumeUponEnteringForegroundMode: true,
-              subtitleViewConfiguration:
-                  const SubtitleViewConfiguration(visible: false),
-              controls: (state) => const SizedBox.shrink());
+            filterQuality: FilterQuality.medium,
+            controls: null,
+            controller: controller.playerController,
+            fit: controller.videoFit.value,
+            resumeUponEnteringForegroundMode: true,
+            subtitleViewConfiguration:
+                const SubtitleViewConfiguration(visible: false),
+          );
         }),
         PlayerOverlay(controller: controller),
         SubtitleText(controller: controller),
