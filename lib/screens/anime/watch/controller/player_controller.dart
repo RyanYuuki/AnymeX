@@ -152,8 +152,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
 
-  final RxDouble volume = 1.0.obs;
-  final RxDouble brightness = 1.0.obs;
+  final RxDouble defaultBrightness = 0.0.obs;
+  final RxDouble volume = 0.0.obs;
+  final RxDouble brightness = 0.0.obs;
 
   final brightnessIndicator = false.obs;
   final RxBool volumeIndicator = false.obs;
@@ -284,25 +285,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _initializeSwipeStuffs() {
-    Future.microtask(() async {
-      try {
-        VolumeController.instance.showSystemUI = false;
-        volume.value = await VolumeController.instance.getVolume();
-        VolumeController.instance.addListener((value) {
-          volume.value = value;
-        });
-      } catch (_) {}
-    });
-    Future.microtask(() async {
-      try {
-        brightness.value = await ScreenBrightness.instance.system;
-        ScreenBrightness.instance.onSystemScreenBrightnessChanged
-            .listen((value) {
-          brightness.value = value;
-        });
-      } catch (_) {}
-    });
+  void _initializeSwipeStuffs() async {
+    try {
+      VolumeController.instance.showSystemUI = false;
+      volume.value = await VolumeController.instance.getVolume();
+      VolumeController.instance.addListener((value) {
+        volume.value = value;
+      });
+    } catch (_) {}
+
+    try {
+      defaultBrightness.value = await ScreenBrightness.instance.system;
+      brightness.value = await ScreenBrightness.instance.application;
+      ScreenBrightness.instance.onCurrentBrightnessChanged.listen((value) {
+        brightness.value = value;
+      });
+    } catch (_) {}
   }
 
   void _initializePlayer() {
@@ -312,8 +310,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     ));
     playerController = VideoController(player,
         configuration: VideoControllerConfiguration(
-            enableHardwareAcceleration: Platform.isMacOS ? false : true,
-            androidAttachSurfaceAfterVideoParameters: true));
+            androidAttachSurfaceAfterVideoParameters:
+                Platform.isAndroid ? true : null));
 
     if (isOffline.value && offlineVideoPath != null) {
       final stamp = settingsController.preferences
@@ -597,11 +595,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
-    Future.microtask(() {
-      ScreenBrightness.instance.system.then((e) {
-        ScreenBrightness.instance.setApplicationScreenBrightness(e);
-      });
-    });
+    if (Platform.isAndroid || Platform.isIOS) {
+      ScreenBrightness.instance
+          .setApplicationScreenBrightness(defaultBrightness.value);
+    }
   }
 
   void _revertOrientations() {
@@ -711,13 +708,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
     } else {
       final vol = volume.value - delta / sensitivity;
-      setVolume(vol.clamp(0.0, 1.0), isDragging: true);
+      volume.value = vol.clamp(0.0, 1.0);
+      volumeIndicator.value = true;
     }
   }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
+
+      try {
+        VolumeController.instance.setVolume(volume.value);
+      } catch (_) {}
 
       _hideVolumeIndicatorAfterDelay();
       _hideBrightnessIndicatorAfterDelay();
@@ -731,13 +733,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> setVolume(double value, {bool isDragging = false}) async {
-    volume.value = value;
-    volumeIndicator.value = true;
-
     try {
       VolumeController.instance.setVolume(value);
     } catch (_) {}
-
+    volume.value = value;
+    volumeIndicator.value = true;
     _volumeTimer?.cancel();
 
     if (!isDragging) {
