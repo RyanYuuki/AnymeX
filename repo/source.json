@@ -15,7 +15,7 @@
       "developerName": "RyanYuuki",
       "subtitle": "Multiservice tracking client",
       "version": "3.0.2",
-      "versionDate": "2025-10-10T18:48:35Z",
+      "versionDate": "2025-10-12T10:37:56Z",
       "versionDescription": "",
       "downloadURL": null,
       "localizedDescription": "AnymeX is a multiservice tracking client, with AniList, MyAnimeList & Simkl support!",
@@ -29,6 +29,13 @@
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_2.webp"
       ],
       "versions": [
+        {
+          "version": "3.0.2",
+          "date": "2025-10-10T18:48:35Z",
+          "localizedDescription": "\ud83c\udd95 Changelog\n\ud83c\udf1f Features\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6c83b85)  support for player in local media\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/089c6a2)  custom titlebar for desktops\n\n\n\ud83d\udd27 Bug Fixes & Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/e646f83)  fixed brightness and volume jankiness\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/ec16080)  fixed list editor\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/bb2963f)  fixed scroll animation causing header issues\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/2c6bf1a)  improved mapper\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/93769c1)  fixed minor issue in progress slider on offline player\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/e1d45ae)  fixed abrupt background on desktop\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/8bc6dd7)  fixed mistaking manhwa as anime\n\n\n\ud83c\udfa8 Style Changes\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/8092f80)  consolidated other features on separate page\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/960b3a7)  some ui changes\n\n\n\ud83e\uddf9 Chores & Documentation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/ebc485b)  bump version to v3.0.2 patch release\n\n\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for\u2022the\u2022badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.2/total?style=for\u2022the\u2022badge&label=CURRENT%20RELEASE&labelColor=black&color=white)\n",
+          "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.0.2/AnymeX-iOS-v3.0.2.ipa",
+          "size": 40460398
+        },
         {
           "version": "3.0.1",
           "date": "2025-09-28T20:32:30Z",
@@ -326,6 +333,17 @@
       "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
       "notify": true,
       "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.2"
+    },
+    {
+      "appID": "com.ryan.anymex",
+      "title": "3.0.2-hotfix - 12 Oct",
+      "identifier": "release-3.0.2-hotfix",
+      "caption": "Update for AnymeX now available!",
+      "date": "2025-10-12T10:37:56Z",
+      "tintColor": "71717A",
+      "imageURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/news/update.webp",
+      "notify": true,
+      "url": "https://github.com/RyanYuuki/AnymeX/releases/tag/v3.0.2-hotfix"
     }
   ]
 }
