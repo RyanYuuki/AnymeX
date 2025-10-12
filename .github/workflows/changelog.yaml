@@ -22,48 +22,67 @@ jobs:
       - name: Check Job Statuses
         id: check_jobs
         env:
-          WORKFLOW_RUN: ${{ toJSON(github.event.workflow_run) }}
-          JOBS: ${{ toJSON(github.event.workflow_run.jobs) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
-          echo "Workflow run event: $WORKFLOW_RUN"
-          if [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
-            echo "Warning: No job data available from workflow_run. This may occur if the triggering workflow failed. Assuming failure unless manual trigger."
-            ALL_SUCCESS=false
-          else
-            ALL_SUCCESS=true
+          # For manual dispatch, always proceed
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Manual trigger detected, skipping job checks"
+            echo "all_jobs_success=true" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
+          # For auto-trigger, fetch job details from the triggering workflow
+          echo "Fetching jobs for workflow run ID: $RUN_ID"
+          
+          JOBS_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/jobs")
+          
+          echo "Jobs data retrieved"
+          
+          # Only check build-all-platforms jobs, ignore post-release jobs
           REQUIRED_JOBS=("build-all-platforms (android, ubuntu-latest)" "build-all-platforms (linux, ubuntu-latest)" "build-all-platforms (windows, windows-latest)" "build-all-platforms (macos, macos-latest)" "build-all-platforms (ios, macos-latest)")
-
-          if [ -n "$JOBS" ] && [ "$JOBS" != "null" ]; then
-            for JOB in "${REQUIRED_JOBS[@]}"; do
-              JOB_STATUS=$(echo "$JOBS" | jq -c ".[] | select(.name == \"$JOB\") | .conclusion")
-              if [ -z "$JOB_STATUS" ] || [ "$JOB_STATUS" != '"success"' ]; then
-                echo "Job $JOB failed or was not found. Status: $JOB_STATUS"
-                ALL_SUCCESS=false
-                break
-              else
-                echo "Job $JOB succeeded. Status: $JOB_STATUS"
-              fi
-            done
+          
+          ALL_SUCCESS=true
+          
+          for REQUIRED_JOB in "${REQUIRED_JOBS[@]}"; do
+            JOB_STATUS=$(echo "$JOBS_DATA" | jq -r --arg job "$REQUIRED_JOB" '.jobs[] | select(.name == $job) | .conclusion')
+            
+            if [ -z "$JOB_STATUS" ]; then
+              echo "⚠️ Job '$REQUIRED_JOB' not found in workflow run"
+              ALL_SUCCESS=false
+              break
+            elif [ "$JOB_STATUS" != "success" ]; then
+              echo "❌ Job '$REQUIRED_JOB' failed with status: $JOB_STATUS"
+              ALL_SUCCESS=false
+              break
+            else
+              echo "✅ Job '$REQUIRED_JOB' succeeded"
+            fi
+          done
+          
+          if [ "$ALL_SUCCESS" = true ]; then
+            echo "✅ All required build jobs succeeded"
+          else
+            echo "❌ Some required build jobs failed, skipping changelog generation"
           fi
-
+          
           echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
-        shell: /usr/bin/bash -e {0}
 
       - name: Checkout Code
         uses: actions/checkout@v4
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         with:
           fetch-depth: 0
 
       - name: Clear CHANGELOG.md
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: echo "" > CHANGELOG.md
 
       - name: Fetch Tags
         id: fetch_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           git fetch --tags
           TAGS=$(git tag --sort=-creatordate | tr '\n' ' ')
@@ -72,7 +91,7 @@ jobs:
 
       - name: Determine Tags for Comparison
         id: determine_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           if [ -n "${{ inputs.current_tag }}" ]; then
             CURRENT_TAG="${{ inputs.current_tag }}"
@@ -111,19 +130,19 @@ jobs:
           echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
 
       - name: Debug Commit Log
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
 
       - name: Get Commit Messages Between Tags
         id: get_commits
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h|||%s' > commits.tmp
           echo "commits_file=commits.tmp" >> $GITHUB_OUTPUT
 
       - name: Categorize Commits
         id: categorize
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           echo "Categorizing commits..."
           FEATURES=""; BUG_FIXES=""; REFACTORS=""; STYLE_CHANGES=""; PERFORMANCE=""; CHORES=""
@@ -169,11 +188,11 @@ jobs:
         shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: cat CHANGELOG.md
 
       - name: Commit and Push Changelog
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
@@ -182,6 +201,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Generate Plaintext Changelog for F-Droid/Izzy
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
          mkdir -p fastlane/metadata/android/en-US/changelogs
          awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
@@ -192,11 +212,11 @@ jobs:
          > fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Debug default.txt
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: cat fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Commit and Push default.txt
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
           git config --global user.name "Git Paneer"
           git config --global user.email "actions@github.com"
@@ -205,7 +225,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Create or Update Release
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
