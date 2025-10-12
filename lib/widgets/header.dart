@@ -252,21 +252,44 @@ class NetworkSizedImage extends StatelessWidget {
                 imageUrl: errorImage!,
                 placeholder: (context, url) => placeHolderWidget(context),
                 errorWidget: (context, url, error) =>
-                    _buildFallbackErrorWidget(),
+                    _buildFallbackErrorWidget(context),
               );
             } else {
-              return _buildFallbackErrorWidget();
+              return _buildFallbackErrorWidget(context);
             }
           },
         ));
   }
 
-  Widget _buildFallbackErrorWidget() {
+  Widget _buildFallbackErrorWidget(context) {
     return Container(
       width: width,
       height: height,
-      color: Colors.grey[300],
-      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withOpacity(0.3),
+            Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Text(
+          '(╥﹏╥)',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurfaceVariant
+                    .withOpacity(0.3),
+              ),
+        ),
+      ),
     );
   }
 }

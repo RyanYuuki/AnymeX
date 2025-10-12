@@ -11,6 +11,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
@@ -43,179 +44,197 @@ class _BigCarouselState extends State<BigCarousel> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: Column(
         children: [
-          AnymexOnTapAdv(
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  setState(() {
-                    controller.animateToPage(
-                        (activeIndex - 1).clamp(0, newData.length - 1));
-                  });
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  setState(() {
-                    controller
-                        .animateToPage((activeIndex + 1) % newData.length);
-                  });
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
-                    event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                  return KeyEventResult.ignored;
-                } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.space ||
-                    event.logicalKey == LogicalKeyboardKey.select) {
-                  navigateToDetailsPage(newData[activeIndex],
-                      '${newData[activeIndex].title}-$activeIndex');
+          Listener(
+            onPointerSignal: (pointerSignal) {
+              if (pointerSignal is PointerScrollEvent) {
+                if (pointerSignal.scrollDelta.dx > 0) {
+                  controller.nextPage();
+                } else if (pointerSignal.scrollDelta.dx < 0) {
+                  controller.previousPage();
                 }
               }
-              return KeyEventResult.handled;
             },
-            scale: 1,
-            child: CarouselSlider.builder(
-              itemCount: newData.length,
-              itemBuilder: (context, index, realIndex) {
-                final anime = newData[index];
-                final String posterUrl = anime.cover!;
-                final title = anime.title;
-                final randNum = Random().nextInt(100000);
-                final tag = '$randNum$index${anime.title}';
-                String extraData = anime.rating.toString();
+            child: AnymexOnTapAdv(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent) {
+                  if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    setState(() {
+                      controller.animateToPage(
+                          (activeIndex - 1).clamp(0, newData.length - 1));
+                    });
+                  } else if (event.logicalKey ==
+                      LogicalKeyboardKey.arrowRight) {
+                    setState(() {
+                      controller
+                          .animateToPage((activeIndex + 1) % newData.length);
+                    });
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+                      event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    return KeyEventResult.ignored;
+                  } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.space ||
+                      event.logicalKey == LogicalKeyboardKey.select) {
+                    navigateToDetailsPage(newData[activeIndex],
+                        '${newData[activeIndex].title}-$activeIndex');
+                  }
+                }
+                return KeyEventResult.handled;
+              },
+              scale: 1,
+              child: CarouselSlider.builder(
+                itemCount: newData.length,
+                disableGesture: false,
+                itemBuilder: (context, index, realIndex) {
+                  final anime = newData[index];
+                  final String posterUrl = anime.cover!;
+                  final title = anime.title;
+                  final randNum = Random().nextInt(100000);
+                  final tag = '$randNum$index${anime.title}';
+                  String extraData = anime.rating.toString();
 
-                return Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () => navigateToDetailsPage(anime, tag),
-                          child: _buildItem(context, tag, posterUrl),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    (8.multiplyRadius()),
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondaryContainer,
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Iconsax.star5,
-                                      size: 16,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      extraData,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontFamily: "Poppins-Bold",
-                                      ),
-                                    ),
-                                    const SizedBox(width: 3),
-                                  ],
-                                ),
-                              ),
-                            ],
+                  return Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () => navigateToDetailsPage(anime, tag),
+                            child: _buildItem(context, tag, posterUrl),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surface
-                                .withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: GestureDetector(
-                            onTap: () => _showDescriptionModal(
-                                context, anime.description),
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  child: AnymexText(
-                                    text: anime.description
-                                            .replaceAll(RegExp(r'<[^>]*>'), '')
-                                            .replaceAll(RegExp(r'\s+'), ' ')
-                                            .trim()
-                                            .isNotEmpty
-                                        ? anime.description
-                                            .replaceAll(RegExp(r'<[^>]*>'), '')
-                                            .replaceAll(RegExp(r'\s+'), ' ')
-                                            .trim()
-                                        : 'Tap to read description',
-                                    size: 12,
-                                    maxLines: 2,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
+                                  child: Text(
+                                    title,
                                     overflow: TextOverflow.ellipsis,
-                                    stripHtml: true,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  Icons.info_outline,
-                                  size: 16,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.7),
+                                const SizedBox(width: 20),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      (8.multiplyRadius()),
+                                    ),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer,
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Iconsax.star5,
+                                        size: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        extraData,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontFamily: "Poppins-Bold",
+                                        ),
+                                      ),
+                                      const SizedBox(width: 3),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ],
-                );
-              },
-              options: CarouselOptions(
-                height: getResponsiveSize(context,
-                    mobileSize: 270, desktopSize: 450),
-                viewportFraction: 1,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 5),
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enlargeCenterPage: false,
-                scrollDirection: Axis.horizontal,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    activeIndex = index;
-                  });
+                          const SizedBox(height: 10),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surface
+                                  .withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: GestureDetector(
+                              onTap: () => _showDescriptionModal(
+                                  context, anime.description),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: AnymexText(
+                                      text: anime.description
+                                              .replaceAll(
+                                                  RegExp(r'<[^>]*>'), '')
+                                              .replaceAll(RegExp(r'\s+'), ' ')
+                                              .trim()
+                                              .isNotEmpty
+                                          ? anime.description
+                                              .replaceAll(
+                                                  RegExp(r'<[^>]*>'), '')
+                                              .replaceAll(RegExp(r'\s+'), ' ')
+                                              .trim()
+                                          : 'Tap to read description',
+                                      size: 12,
+                                      maxLines: 2,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.7),
+                                      overflow: TextOverflow.ellipsis,
+                                      stripHtml: true,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 16,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.7),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  );
                 },
+                options: CarouselOptions(
+                  height: getResponsiveSize(context,
+                      mobileSize: 270, desktopSize: 450),
+                  viewportFraction: 1,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 5),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: false,
+                  scrollDirection: Axis.horizontal,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      activeIndex = index;
+                    });
+                  },
+                ),
+                carouselController: controller,
               ),
-              carouselController: controller,
             ),
           ),
           const SizedBox(height: 16),

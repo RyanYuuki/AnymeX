@@ -56,14 +56,14 @@ abstract class CarouselCard extends StatelessWidget {
           children: [
             Icon(
               getIconForVariant(itemData.extraData ?? '', variant, type),
-              size: 16,
+              size: 15,
               color: theme.colorScheme.onPrimary,
             ),
             const SizedBox(width: 4),
             AnymexText(
               text: itemData.extraData ?? '',
               color: theme.colorScheme.onPrimary,
-              size: 12,
+              size: 11,
               variant: TextVariant.bold,
             ),
           ],
