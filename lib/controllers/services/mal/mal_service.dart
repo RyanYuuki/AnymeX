@@ -195,10 +195,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
                         width: width,
                         height: !isDesktop ? 70 : 90,
                         buttonText: "ANIME LIST",
-                        backgroundImage: trendingAnimes
-                                .firstWhere((e) => e.cover != null)
-                                .cover ??
-                            '',
+                        backgroundImage: trendingAnimes.isEmpty
+                            ? ''
+                            : trendingAnimes
+                                    .firstWhere((e) => e.cover != null)
+                                    .cover ??
+                                '',
                         borderRadius: 16.multiplyRadius(),
                         onPressed: () {
                           navigate(() => const AnimeList());
