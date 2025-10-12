@@ -374,11 +374,6 @@ jobs:
         with:
           ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
       
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.job == 'aur' && 'linux' || 'windows' }}
-          path: artifacts
-      
       - name: Update AUR
         if: matrix.job == 'aur'
         continue-on-error: true
@@ -386,7 +381,8 @@ jobs:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
-          HASH=$(sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}')
+          wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage"
+          HASH=$(sha256sum AnymeX-Linux.AppImage | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
           cat > PKGBUILD << 'EOF'
@@ -457,7 +453,8 @@ jobs:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          HASH=$(sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}')
+          wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip"
+          HASH=$(sha256sum AnymeX-Windows.zip | awk '{print $1}')
           sudo apt-get update -qq && sudo apt-get install -y -qq gh
           echo "$GITHUB_TOKEN" | gh auth login --with-token
           gh repo view "${{ github.actor }}/Main" >/dev/null 2>&1 || \
