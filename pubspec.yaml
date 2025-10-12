@@ -1,7 +1,7 @@
 name: anymex
 description: "An Anilist Client"
 publish_to: "GitHub"
-version: 3.0.2+23
+version: 3.0.2+24
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
@@ -45,9 +45,18 @@ dependencies:
   install_plugin: ^2.1.0
   intl: ^0.20.1
   kenburns_nullsafety: ^1.0.1
-  media_kit: any
-  media_kit_video: any
-  media_kit_libs_video: any
+  media_kit:
+    git:
+      url: https://github.com/Schnitzel5/media-kit.git
+      path: media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/Schnitzel5/media-kit.git
+      path: media_kit_video
+  media_kit_libs_video:
+    git:
+      url: https://github.com/Schnitzel5/media-kit.git
+      path: libs/universal/media_kit_libs_video
   dartotsu_extension_bridge:
     git:
       url: https://github.com/RyanYuuki/DartotsuExtensionBridge.git
@@ -66,7 +75,7 @@ dependencies:
   share_plus: ^11.0.0
   url_launcher: any
   volume_controller: ^3.4.0 
-  screen_brightness: ^2.1.4 
+  screen_brightness: ^2.1.7 
   window_manager: ^0.4.3
   isar: 3.1.0+1
   isar_flutter_libs: 3.1.0+1
@@ -81,6 +90,7 @@ dependencies:
   material_symbols_icons: ^4.2867.0
   fuzzywuzzy: ^1.2.0
   expressive_loading_indicator: ^0.0.1
+  photo_view: ^0.15.0
 dev_dependencies:
   build_runner: ^2.4.11
   change_app_package_name: ^1.4.0
