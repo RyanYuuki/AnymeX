@@ -3,6 +3,9 @@
 -   custom titlebar for desktops
 
 ### 🔧 Bug Fixes & Improvements
+-   fixed brightness and volume jankiness
+-   fixed list editor
+-   fixed scroll animation causing header issues
 -   improved mapper
 -   fixed minor issue in progress slider on offline player
 -   fixed abrupt background on desktop
