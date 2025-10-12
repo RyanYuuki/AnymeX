@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/widgets/animation/animations.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -258,7 +259,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
     const double maxSwipeDistance = 100.0;
     const double minSpeed = 2.0;
-    const double maxSpeed = 10.0;
+    const double maxSpeed = 5.0;
 
     double normalizedDelta = (-deltaY / maxSwipeDistance).clamp(0.0, 1.0);
     double newSpeed = minSpeed + (normalizedDelta * (maxSpeed - minSpeed));
@@ -291,87 +292,69 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
             scale: _speedScaleAnimation.value,
             child: Container(
               padding: const EdgeInsets.all(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: colorScheme.surface.withOpacity(0.40),
-                  border: Border.all(
-                    color:
-                        colorScheme.primary.withOpacity(_glowAnimation.value),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary
-                          .withOpacity(_glowAnimation.value * 0.3),
-                      blurRadius: 15,
-                      spreadRadius: 3,
-                      offset: const Offset(0, 0),
-                    ),
-                    BoxShadow(
-                      color: colorScheme.shadow.withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorScheme.primary.withOpacity(0.15),
-                            border: Border.all(
-                              color: colorScheme.primary.withOpacity(0.3),
-                              width: 1,
-                            ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withOpacity(0.15),
+                        border: Border.all(
+                          color: colorScheme.primary
+                              .withOpacity(_glowAnimation.value * 0.5),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary
+                                .withOpacity(_glowAnimation.value * 0.2),
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 0),
                           ),
-                          child: Icon(
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
                             Icons.fast_forward_rounded,
                             size: 18,
-                            color: colorScheme.primary,
+                            color: colorScheme.primary.withOpacity(0.9),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${_currentSpeed.toStringAsFixed(_currentSpeed == _currentSpeed.toInt() ? 0 : 1)}x',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            width: 42,
+                            child: Text(
+                              '${_currentSpeed.toStringAsFixed(_currentSpeed == _currentSpeed.toInt() ? 0 : 1)}x',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
+                                height: 1,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 80,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: colorScheme.surfaceContainerHighest
-                            .withOpacity(0.5),
+                        ],
                       ),
+                    ),
+                    Positioned.fill(
                       child: FractionallySizedBox(
                         alignment: Alignment.centerLeft,
                         widthFactor:
-                            ((_currentSpeed - 2.0) / 8.0).clamp(0.0, 1.0),
+                            ((_currentSpeed - 2.0) / 3.0).clamp(0.0, 1.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(20),
                             gradient: LinearGradient(
                               colors: [
-                                colorScheme.primary,
-                                colorScheme.tertiary,
+                                colorScheme.primary.withOpacity(0.18),
+                                colorScheme.tertiary.withOpacity(0.18),
                               ],
                             ),
                           ),
