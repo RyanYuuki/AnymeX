@@ -87,7 +87,7 @@ class _ControlButtonState extends State<ControlButton>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOutCubic,
-                margin: EdgeInsets.symmetric(horizontal: 3),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
                 width: size,
                 height: size,
                 decoration: BoxDecoration(

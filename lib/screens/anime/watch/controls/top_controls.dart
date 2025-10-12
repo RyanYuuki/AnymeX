@@ -40,7 +40,7 @@ class TopControls extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      theme.colorScheme.surface.withValues(alpha: 0.8),
+                      Colors.black.withValues(alpha: 0.8),
                       Colors.transparent
                     ],
                   ),

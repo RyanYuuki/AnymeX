@@ -3,7 +3,6 @@ import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -16,7 +15,6 @@ class BottomControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
     final isDesktop = !Platform.isAndroid && !Platform.isIOS;
-    final theme = context.theme;
 
     return Obx(() => IgnorePointer(
           ignoring: !controller.showControls.value,
@@ -38,7 +36,7 @@ class BottomControls extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      theme.colorScheme.surface.withValues(alpha: 0.8),
+                      Colors.black.withValues(alpha: 0.8),
                     ],
                   ),
                 ),
