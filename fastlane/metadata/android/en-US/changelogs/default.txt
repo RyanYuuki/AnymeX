@@ -1,21 +1,18 @@
 ### 🌟 Features
--   support for player in local media
--   custom titlebar for desktops
+-   added zoom functionality for manga
 
 ### 🔧 Bug Fixes & Improvements
--   fixed brightness and volume jankiness
--   fixed list editor
--   fixed scroll animation causing header issues
--   improved mapper
--   fixed minor issue in progress slider on offline player
--   fixed abrupt background on desktop
--   fixed mistaking manhwa as anime
+-   fixed a moment of grey screen when switching services
+-   fixed volume indicator
+-   attempt at fixing macos crash
+-   fixed arrow keys navigation for manga
 
 ### 🎨 Style Changes
--   consolidated other features on separate page
--   some ui changes
+-   minor color adjustments on player ui
+-   styling adjustment of hold to speed up
+-   fixed overflowing ui and some changes on error images
 
 ### 🧹 Chores & Documentation
--   bump version to v3.0.2 patch release
+-   pubspec
 
  
