@@ -365,6 +365,7 @@ jobs:
   post-release:
     needs: [build-all-platforms, release]
     strategy:
+      fail-fast: false
       matrix:
         job: [aur, scoop, chocolatey]
     runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
@@ -373,18 +374,37 @@ jobs:
         with:
           ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
       
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.job == 'aur' && 'linux' || 'windows' }}
-          path: artifacts
-      
       - name: Update AUR
         if: matrix.job == 'aur'
+        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
-          HASH=$(sha256sum artifacts/AnymeX-Linux.AppImage | awk '{print $1}')
+          # Wait and retry download with exponential backoff
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          SLEEP_TIME=10
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to download AppImage..."
+            if wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage"; then
+              echo "Download successful!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Download failed. Waiting ${SLEEP_TIME}s before retry..."
+                sleep $SLEEP_TIME
+                SLEEP_TIME=$((SLEEP_TIME * 2))
+              else
+                echo "Failed to download after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
+          HASH=$(sha256sum AnymeX-Linux.AppImage | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
           cat > PKGBUILD << 'EOF'
@@ -450,11 +470,35 @@ jobs:
       
       - name: Update Scoop
         if: matrix.job == 'scoop'
+        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          HASH=$(sha256sum artifacts/AnymeX-Windows.zip | awk '{print $1}')
+          # Wait and retry download with exponential backoff
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          SLEEP_TIME=10
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to download Windows zip..."
+            if wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Windows.zip"; then
+              echo "Download successful!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Download failed. Waiting ${SLEEP_TIME}s before retry..."
+                sleep $SLEEP_TIME
+                SLEEP_TIME=$((SLEEP_TIME * 2))
+              else
+                echo "Failed to download after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
+          HASH=$(sha256sum AnymeX-Windows.zip | awk '{print $1}')
           sudo apt-get update -qq && sudo apt-get install -y -qq gh
           echo "$GITHUB_TOKEN" | gh auth login --with-token
           gh repo view "${{ github.actor }}/Main" >/dev/null 2>&1 || \
@@ -496,6 +540,7 @@ jobs:
       
       - name: Update Chocolatey
         if: matrix.job == 'chocolatey'
+        continue-on-error: true
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
         shell: pwsh
