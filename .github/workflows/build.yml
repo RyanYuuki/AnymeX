@@ -31,6 +31,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      
+      - name: Cache Rust
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      
       - uses: actions/setup-java@v3
         if: matrix.platform == 'android'
         with:
@@ -586,7 +604,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
-
-  ios-source-build:
-    needs: build-all-platforms
-    uses: ./.github/workflows/update_sideloading_source.yml
