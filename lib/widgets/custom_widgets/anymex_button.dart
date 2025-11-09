@@ -41,6 +41,7 @@ class AnymexButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      0.multiplyRadius();
       final BorderRadiusGeometry? effectiveRadius = radius != null
           ? BorderRadius.circular(radius!.multiplyRadius())
           : borderRadius;
