@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -127,6 +128,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void dispose() {
     controller.dispose();
+    DiscordRPCController.instance.updateBrowsingPresence();
     super.dispose();
   }
 
@@ -160,6 +162,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
       final tempData = await service
           .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+
       final isExtensions = widget.media.serviceType == ServicesType.extensions;
 
       setState(() {
@@ -173,6 +176,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           posterColor = tempData.color;
         }
       });
+      DiscordRPCController.instance
+          .updateMediaPresence(media: anilistData ?? widget.media);
       timeLeft.value = tempData.nextAiringEpisode?.airingAt ?? 0;
       if (timeLeft.value != 0) {
         startCountdown(tempData.nextAiringEpisode!.airingAt);

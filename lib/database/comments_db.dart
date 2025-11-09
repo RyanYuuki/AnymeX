@@ -118,6 +118,8 @@ class CommentsDatabase {
       {required String comment,
       required String mediaId,
       required String tag}) async {
+        return null;
+      
     // final currentUser = serviceHandler.anilistService.profileData.value;
     // if (currentUser.id == null) {
     //   Logger.i('Please login first');
@@ -149,6 +151,8 @@ class CommentsDatabase {
 
   Future<Map<String, dynamic>?> likeOrDislikeComment(
       int commentId, int currentVote, int newVote) async {
+        return null;
+      
     // final currentUser = serviceHandler.anilistService.profileData.value;
     // if (!serviceHandler.anilistService.isLoggedIn.value) {
     //   snackBar('Please login first');
@@ -231,6 +235,8 @@ class CommentsDatabase {
   }
 
   Future<Map<String, dynamic>?> getCurrentUserInfo() async {
+    return null;
+  
     // final currentUser = supabase.auth.currentUser;
     // if (currentUser == null) return null;
 

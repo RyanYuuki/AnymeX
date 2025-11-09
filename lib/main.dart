@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -38,7 +39,6 @@ import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:app_links/app_links.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -49,14 +49,14 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
 
-late Isar isar;
 WebViewEnvironment? webViewEnvironment;
+late Isar isar;
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -79,6 +79,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+
     await Logger.init();
     await dotenv.load(fileName: ".env");
 
@@ -98,6 +99,7 @@ void main(List<String> args) async {
     initializeDateFormatting();
     MediaKit.ensureInitialized();
     if (!Platform.isAndroid && !Platform.isIOS) {
+      await windowManager.ensureInitialized();
       await AnymexTitleBar.initialize();
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -130,7 +132,6 @@ void main(List<String> args) async {
   }, zoneSpecification: ZoneSpecification(
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
       Logger.i(line);
-      parent.print(zone, line);
     },
   ));
 }
@@ -177,6 +178,7 @@ void _initializeGetxController() async {
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
+  Get.put(DiscordRPCController());
   Get.put(SourceController());
   Get.put(Settings());
   Get.put(ServiceHandler());
@@ -226,7 +228,10 @@ class MainApp extends StatelessWidget {
                 : ThemeMode.dark,
         home: const FilterScreen(),
         builder: (context, child) {
-          final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+          if (PlatformDispatcher.instance.views.length > 1) {
+            return child!;
+          }
+          final isDesktop = Platform.isWindows;
 
           if (isDesktop) {
             return Stack(

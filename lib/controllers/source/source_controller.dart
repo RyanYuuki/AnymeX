@@ -16,6 +16,8 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/storage_provider.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Aniyomi/AniyomiExtensions.dart';
+import 'package:dartotsu_extension_bridge/Mangayomi/MangayomiExtensions.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
@@ -343,7 +345,10 @@ class SourceController extends GetxController implements BaseService {
       return true;
     }).toList();
     Logger.i(extenionTypes.length.toString());
-
+    if (Platform.isAndroid) {
+      Get.put(AniyomiExtensions(), tag: 'AniyomiExtensions');
+    }
+    Get.put(MangayomiExtensions(), tag: 'MangayomiExtensions');
     for (var type in extenionTypes) {
       await type
           .getManager()

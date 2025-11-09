@@ -19,8 +19,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
-import 'package:anymex/screens/anime/misc/calendar.dart';
-import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
@@ -28,7 +26,6 @@ import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -140,22 +137,26 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           );
         }),
         const SizedBox(height: 10),
-        Obx(() => Column(
-              children: acceptedLists.map((e) {
-                return ReusableCarousel(
-                  data: filterListByLabel(
-                      e.contains("Manga") || e.contains("Reading")
-                          ? anilistAuth.mangaList
-                          : anilistAuth.animeList,
-                      e),
-                  title: e,
-                  variant: DataVariant.anilist,
-                  type: e.contains("Manga") || e.contains("Reading")
-                      ? ItemType.manga
-                      : ItemType.anime,
-                );
-              }).toList(),
-            )),
+        Obx(() {
+          anilistAuth.isLoggedIn.value;
+          if (acceptedLists.isEmpty) return const SizedBox.shrink();
+          return Column(
+            children: acceptedLists.map((e) {
+              return ReusableCarousel(
+                data: filterListByLabel(
+                    e.contains("Manga") || e.contains("Reading")
+                        ? anilistAuth.mangaList
+                        : anilistAuth.animeList,
+                    e),
+                title: e,
+                variant: DataVariant.anilist,
+                type: e.contains("Manga") || e.contains("Reading")
+                    ? ItemType.manga
+                    : ItemType.anime,
+              );
+            }).toList(),
+          );
+        }),
       ],
       Column(
         children: [

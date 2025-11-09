@@ -10,6 +10,15 @@ import 'package:hive/hive.dart';
 
 final settingsController = Get.put(Settings());
 
+extension DatabaseExtensions on Enum {
+  T get<T>(T defaultVal) =>
+      settingsController.preferences.get(name, defaultValue: defaultVal);
+
+  void set<T>(T value) => settingsController.preferences.put(name, value);
+
+  void delete() => settingsController.preferences.delete(name);
+}
+
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
@@ -210,6 +219,10 @@ class Settings extends GetxController {
   int get seekDuration => _getPlayerSetting((s) => s.seekDuration);
   set seekDuration(int value) =>
       _setPlayerSetting((s) => s?.seekDuration = value);
+
+  bool get transitionSubtitle => _getPlayerSetting((s) => s.transitionSubtitle);
+  set transitionSubtitle(bool value) =>
+      _setPlayerSetting((s) => s?.transitionSubtitle = value);
 
   double get bottomMargin => _getPlayerSetting((s) => s.bottomMargin);
   set bottomMargin(double value) =>
