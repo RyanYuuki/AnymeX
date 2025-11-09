@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:anymex/screens/anime/widgets/media_indicator_old.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:io';
@@ -41,9 +42,9 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 
 class WatchPage extends StatefulWidget {
@@ -52,12 +53,14 @@ class WatchPage extends StatefulWidget {
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   final List<model.Video> episodeTracks;
+  final bool shouldTrack;
   const WatchPage(
       {super.key,
       required this.episodeSrc,
       required this.episodeList,
       required this.anilistData,
       required this.currentEpisode,
+      this.shouldTrack = true,
       required this.episodeTracks});
 
   @override
@@ -138,17 +141,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     mediaService = widget.anilistData.serviceType;
-    if (!settings.isTV.value) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      if (settings.defaultPortraitMode) {
-        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      } else {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight
-        ]);
-      }
-    }
+    _initOrientations();
     _leftAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -184,6 +177,32 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     });
   }
 
+  void _initOrientations() async {
+    if (!settings.isTV.value) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      if (settings.defaultPortraitMode) {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      } else {
+        final orientation = await _getClosestLandscapeOrientation();
+        SystemChrome.setPreferredOrientations([orientation]);
+      }
+    }
+  }
+
+  Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
+    final event = await accelerometerEvents.first;
+
+    double angle = math.atan2(event.y, event.x) * 180 / math.pi;
+
+    if (angle < 0) angle += 360;
+
+    if (angle >= 0 && angle < 180) {
+      return DeviceOrientation.landscapeLeft;
+    } else {
+      return DeviceOrientation.landscapeRight;
+    }
+  }
+
   Future<void> trackEpisode(
       Duration position, Duration duration, Episode currentEpisode,
       {bool updateAL = true}) async {
@@ -206,7 +225,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     offlineStorage.addOrUpdateWatchedEpisode(
         widget.anilistData.id, currentEpisode);
     if (currentEpisode.number.toInt() > ((temp?.episodeCount) ?? '1').toInt()) {
-      if (updateAL) {
+      if (updateAL && widget.shouldTrack) {
         await mediaService.onlineService.updateListEntry(UpdateListEntryParams(
             listId: anilistData.value.id,
             progress: epNum,

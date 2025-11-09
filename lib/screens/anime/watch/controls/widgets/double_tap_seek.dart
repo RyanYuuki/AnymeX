@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:anymex/widgets/animation/animations.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';

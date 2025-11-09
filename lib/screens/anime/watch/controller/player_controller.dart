@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -19,6 +21,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -26,6 +29,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
 
 extension PlayerControllerExtensions on PlayerController {
@@ -152,7 +156,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
 
-  final RxDouble defaultBrightness = 0.0.obs;
   final RxDouble volume = 0.0.obs;
   final RxDouble brightness = 0.0.obs;
 
@@ -188,6 +191,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _initDatabaseVars();
     _initOrientations();
     _initializePlayer();
+    _updateRpc();
     if (!isOffline.value) {
       _initializeAniSkip();
     }
@@ -204,6 +208,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
           .toList();
     });
+  }
+
+  Future<void> _updateRpc() async {
+    if (isOffline.value) {
+      await DiscordRPCController.instance.updateBrowsingPresence(
+        activity: 'Watching Offline Video',
+        details: itemName ?? 'Offline Media',
+      );
+      return;
+    }
+    await DiscordRPCController.instance.updateAnimePresence(
+      anime: anilistData,
+      episode: currentEpisode.value,
+      totalEpisodes: episodeList.length.toString(),
+    );
   }
 
   @override
@@ -237,11 +256,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         .cast<String, int>();
   }
 
-  void _initOrientations() {
+  Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     ever(isFullScreen,
         (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+
+    final orientation = await _getClosestLandscapeOrientation();
+
+    SystemChrome.setPreferredOrientations([orientation]);
+  }
+
+  Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
+    final event = await accelerometerEvents.first;
+
+    return event.x > 0
+        ? DeviceOrientation.landscapeLeft
+        : DeviceOrientation.landscapeRight;
   }
 
   void toggleOrientation() {
@@ -289,13 +319,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       VolumeController.instance.showSystemUI = false;
       volume.value = await VolumeController.instance.getVolume();
-      VolumeController.instance.addListener((value) {
-        volume.value = value;
-      });
     } catch (_) {}
 
     try {
-      defaultBrightness.value = await ScreenBrightness.instance.system;
       brightness.value = await ScreenBrightness.instance.application;
       ScreenBrightness.instance.onCurrentBrightnessChanged.listen((value) {
         brightness.value = value;
@@ -389,6 +415,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     player.stream.duration.listen((dur) {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
+      _updateRpc();
     });
 
     player.stream.buffer.throttleTime(const Duration(seconds: 1)).listen((buf) {
@@ -399,6 +426,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
+      }
+      if (isOffline.value) return;
+      if (!e) {
+        DiscordRPCController.instance.updateAnimePresencePaused(
+            anime: anilistData,
+            episode: currentEpisode.value,
+            totalEpisodes: episodeList.length.toString());
+      } else {
+        _updateRpc();
       }
     });
 
@@ -589,16 +625,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
     _revertOrientations();
     WidgetsBinding.instance.removeObserver(this);
+    if (!isOffline.value) {
+      DiscordRPCController.instance.updateMediaPresence(media: anilistData);
+    }
     player.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
-    if (Platform.isAndroid || Platform.isIOS) {
-      ScreenBrightness.instance
-          .setApplicationScreenBrightness(defaultBrightness.value);
-    }
+    ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
   void _revertOrientations() {
@@ -707,20 +743,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final bright = brightness.value - delta / sensitivity;
       setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
     } else {
-      final vol = volume.value - delta / sensitivity;
-      volume.value = vol.clamp(0.0, 1.0);
-      volumeIndicator.value = true;
+      final vol = (volume.value - delta / sensitivity).toPrecision(2);
+      if (volume.value != vol) {
+        volume.value = vol.clamp(0.0, 1.0);
+        volumeIndicator.value = true;
+        Future.microtask(
+            () => VolumeController.instance.setVolume(volume.value));
+      }
     }
   }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
-
-      try {
-        VolumeController.instance.setVolume(volume.value);
-      } catch (_) {}
-
       _hideVolumeIndicatorAfterDelay();
       _hideBrightnessIndicatorAfterDelay();
 

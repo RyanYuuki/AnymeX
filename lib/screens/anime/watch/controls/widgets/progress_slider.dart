@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
-import 'package:anymex/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';

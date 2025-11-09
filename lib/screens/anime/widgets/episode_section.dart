@@ -1,8 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
-import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -102,19 +103,11 @@ class _EpisodeSectionState extends State<EpisodeSection> {
   }
 
   void openSourcePreferences(BuildContext context) {
-    // final sourceController = Get.find<ServiceHandler>().extensionService;
-    // List<SourcePreference> sourcePreference = widget
-    //     .getSourcePreference(source: sourceController.activeSource.value!)
-    //     .map((e) => getSourcePreferenceEntry(
-    //         e.key!, sourceController.activeSource.value!.id!))
-    //     .toList();
-
-    // navigate(
-    //   () => SourcePreferenceWidget(
-    //     source: sourceController.activeSource.value!,
-    //     sourcePreference: sourcePreference,
-    //   ),
-    // );
+    navigate(
+      () => SourcePreferenceScreen(
+        source: sourceController.activeSource.value!,
+      ),
+    );
   }
 
   Widget buildSourceDropdown() {

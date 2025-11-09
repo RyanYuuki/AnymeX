@@ -21,13 +21,16 @@ class WatchScreen extends StatefulWidget {
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   final List<model.Video> episodeTracks;
-  const WatchScreen(
-      {super.key,
-      required this.episodeSrc,
-      required this.currentEpisode,
-      required this.episodeList,
-      required this.anilistData,
-      required this.episodeTracks});
+  final bool shouldTrack;
+  const WatchScreen({
+    super.key,
+    required this.episodeSrc,
+    required this.currentEpisode,
+    required this.episodeList,
+    required this.anilistData,
+    required this.episodeTracks,
+    this.shouldTrack = true,
+  });
 
   @override
   State<WatchScreen> createState() => _WatchScreenState();
