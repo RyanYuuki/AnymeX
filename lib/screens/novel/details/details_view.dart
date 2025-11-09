@@ -1,4 +1,3 @@
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';

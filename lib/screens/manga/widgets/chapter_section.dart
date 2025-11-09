@@ -1,6 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -190,6 +192,14 @@ class ChapterSection extends StatelessWidget {
         ));
   }
 
+  void openSourcePreferences(BuildContext context) {
+    navigate(
+      () => SourcePreferenceScreen(
+        source: sourceController.activeMangaSource.value!,
+      ),
+    );
+  }
+
   Widget buildMangaSourceDropdown() {
     List<DropdownItem> items = sourceController.installedMangaExtensions.isEmpty
         ? [
@@ -254,6 +264,8 @@ class ChapterSection extends StatelessWidget {
       selectedItem: selectedItem,
       label: "SELECT SOURCE",
       icon: Icons.extension_rounded,
+      actionIcon: Icons.settings_outlined,
+      onActionPressed: () => openSourcePreferences(Get.context!),
       onChanged: (DropdownItem item) async {
         chapterList.value = [];
         try {

@@ -4,7 +4,6 @@ import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:math' as math;
 
 class ReaderBottomControls extends StatelessWidget {
   final ReaderController controller;

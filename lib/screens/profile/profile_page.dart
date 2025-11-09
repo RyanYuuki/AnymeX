@@ -3,7 +3,6 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

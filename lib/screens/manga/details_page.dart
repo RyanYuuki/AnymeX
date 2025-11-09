@@ -1,4 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, unused_element
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 
@@ -134,7 +135,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           posterColor = tempData.color;
         }
       });
-
+      DiscordRPCController.instance
+          .updateMediaPresence(media: anilistData ?? widget.media);
       if (isExtensions) {
         Logger.i("Data Loaded for media => ${widget.media.title}");
         _processExtensionData(tempData);
@@ -199,6 +201,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   List<Chapter> _convertChapters(List<DEpisode> chapters, String title) {
     return DEpisodeToChapter(chapters, title);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    DiscordRPCController.instance.updateBrowsingPresence();
+    super.dispose();
   }
 
   @override
