@@ -13,12 +13,14 @@ class ReadingPage extends StatefulWidget {
   final Media anilistData;
   final List<Chapter> chapterList;
   final Chapter currentChapter;
+  final bool shouldTrack;
 
   const ReadingPage({
     super.key,
     required this.anilistData,
     required this.chapterList,
     required this.currentChapter,
+    required this.shouldTrack,
   });
 
   @override
@@ -26,7 +28,8 @@ class ReadingPage extends StatefulWidget {
 }
 
 class _ReadingPageState extends State<ReadingPage> {
-  final controller = Get.put(ReaderController());
+  late final ReaderController controller =
+      Get.put(ReaderController(shouldTrack: widget.shouldTrack));
   final FocusNode _focusNode = FocusNode();
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -52,6 +53,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final Rxn<Chapter> savedChapter = Rxn();
   final RxList<PageUrl> pageList = RxList();
   late ServicesType serviceHandler;
+  final bool shouldTrack;
+
+  ReaderController({
+    required this.shouldTrack,
+  });
 
   final SourceController sourceController = Get.find<SourceController>();
   final OfflineStorageController offlineStorageController =
@@ -97,13 +103,21 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   Timer? _overscrollResetTimer;
 
   bool _isNavigating = false;
+  late Worker _rpcWorker;
 
   @override
   void onInit() {
     super.onInit();
-
     WidgetsBinding.instance.addObserver(this);
     _performSave(reason: 'Page opened');
+
+    _rpcWorker = ever(currentPageIndex, (e) {
+      DiscordRPCController.instance.updateMangaPresence(
+          manga: media,
+          chapter: currentChapter.value!,
+          totalChapters: chapterList.length.toString(),
+          currentPage: e);
+    });
   }
 
   @override
@@ -113,6 +127,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     Future.microtask(() {
       _performFinalSave();
     });
+
+    DiscordRPCController.instance.updateMediaPresence(
+      media: media,
+    );
+
+    _rpcWorker.dispose();
 
     _overscrollResetTimer?.cancel();
     pageController?.dispose();
@@ -168,7 +188,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       Logger.i('Performing final save');
       _saveTracking();
-
+      if (!shouldTrack) return;
       final chapter = currentChapter.value;
       if (chapter != null &&
           chapter.pageNumber != null &&
@@ -432,6 +452,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
+    DiscordRPCController.instance.updateMangaPresence(
+        manga: media,
+        chapter: currentChapter.value!,
+        totalChapters: chapterList.length.toString());
 
     if (curCh.link != null) {
       fetchImages(curCh.link!);
@@ -448,6 +472,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (savedChapter.value == null) {
       offlineStorageController.addOrUpdateManga(media, chapterList, chapter);
     }
+
+    if (!shouldTrack) return;
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
@@ -559,6 +585,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
     currentPageIndex.value = 1;
     _syncAvailability();
+    print('Fetching images for $url');
 
     try {
       loadingState.value = LoadingState.loading;

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
@@ -12,7 +11,7 @@ import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
-    hide Extension;
+    hide Extension, ExtensionList;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,21 +23,17 @@ class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({super.key, this.disableGlow = false});
 
   @override
-  State<ExtensionScreen> createState() => _BrowseScreenState();
+  State<ExtensionScreen> createState() => _ExtensionScreenState();
 }
 
-class _BrowseScreenState extends State<ExtensionScreen>
+class _ExtensionScreenState extends State<ExtensionScreen>
     with TickerProviderStateMixin {
   late TabController _tabBarController;
   final _textEditingController = TextEditingController();
-  late String _selectedLanguage = 'all';
+  final RxString _selectedLanguage = 'all'.obs;
+  final RxMap<String, int> _extensionCounts = <String, int>{}.obs;
 
-  final Map<String, int> _extensionCounts = {};
-
-  Timer? _updateTimer;
-
-  @override
-  bool get wantKeepAlive => true;
+  List<Worker>? _workers;
 
   @override
   void initState() {
@@ -49,7 +44,24 @@ class _BrowseScreenState extends State<ExtensionScreen>
     _tabBarController.animateTo(0);
     _tabBarController.addListener(_onTabChanged);
 
-    _startPeriodicUpdates();
+    _setupReactiveListeners();
+  }
+
+  void _setupReactiveListeners() {
+    // Listen to all extension lists for reactivity
+    _workers = [
+      ever(sourceController.installedExtensions,
+          (_) => _updateExtensionCounts()),
+      ever(sourceController.installedMangaExtensions,
+          (_) => _updateExtensionCounts()),
+      ever(sourceController.installedNovelExtensions,
+          (_) => _updateExtensionCounts()),
+      // Also listen to language changes
+      ever(_selectedLanguage, (_) => _updateExtensionCounts()),
+    ];
+
+    // Initial count update
+    _updateExtensionCounts();
   }
 
   @override
@@ -57,24 +69,21 @@ class _BrowseScreenState extends State<ExtensionScreen>
     _tabBarController.removeListener(_onTabChanged);
     _tabBarController.dispose();
     _textEditingController.dispose();
-    _updateTimer?.cancel();
+
+    // Dispose all workers
+    if (_workers != null) {
+      for (var worker in _workers!) {
+        worker.dispose();
+      }
+    }
+
     super.dispose();
   }
 
   void _onTabChanged() {
     if (mounted) {
-      setState(() {
-        _textEditingController.clear();
-      });
+      _textEditingController.clear();
     }
-  }
-
-  void _startPeriodicUpdates() {
-    _updateTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (mounted) {
-        _updateExtensionCounts();
-      }
-    });
   }
 
   void _updateExtensionCounts() {
@@ -88,9 +97,9 @@ class _BrowseScreenState extends State<ExtensionScreen>
             : sourceController.getAvailableExtensions(itemType);
 
         final filteredCount = extensions
-            .where((element) => _selectedLanguage != 'all'
+            .where((element) => _selectedLanguage.value != 'all'
                 ? element.lang!.toLowerCase() ==
-                    completeLanguageCode(_selectedLanguage)
+                    completeLanguageCode(_selectedLanguage.value)
                 : true)
             .length;
 
@@ -98,25 +107,15 @@ class _BrowseScreenState extends State<ExtensionScreen>
       }
     }
 
-    if (_extensionCounts.toString() != newCounts.toString()) {
-      setState(() {
-        _extensionCounts.clear();
-        _extensionCounts.addAll(newCounts);
-      });
-    }
+    _extensionCounts.value = newCounts;
   }
-
-  Future<void> removeOldData() async {}
 
   Future<void> _fetchData() async {
     await sourceController.fetchRepos();
-    if (mounted) {
-      setState(() {});
-      _updateExtensionCounts();
-    }
+    _updateExtensionCounts();
   }
 
-  _checkPermission() async {
+  Future<void> _checkPermission() async {
     await StorageProvider().requestPermission();
   }
 
@@ -180,18 +179,17 @@ class _BrowseScreenState extends State<ExtensionScreen>
                   icon: Icon(Iconsax.language_square, color: theme.primary),
                   onPressed: () {
                     AlertDialogBuilder(context)
-                      ..setTitle(_selectedLanguage)
+                      ..setTitle(_selectedLanguage.value)
                       ..singleChoiceItems(
                         sortedLanguagesMap.keys.toList(),
                         sortedLanguagesMap.keys
                             .toList()
-                            .indexOf(_selectedLanguage),
+                            .indexOf(_selectedLanguage.value),
                         (index) {
                           final newLanguage =
                               sortedLanguagesMap.keys.elementAt(index);
-                          if (_selectedLanguage != newLanguage) {
-                            setState(() => _selectedLanguage = newLanguage);
-                            _updateExtensionCounts();
+                          if (_selectedLanguage.value != newLanguage) {
+                            _selectedLanguage.value = newLanguage;
                           }
                         },
                       )
@@ -204,21 +202,27 @@ class _BrowseScreenState extends State<ExtensionScreen>
           ),
           body: Column(
             children: [
-              TabBar(
-                indicatorSize: TabBarIndicatorSize.label,
-                isScrollable: true,
-                controller: _tabBarController,
-                tabAlignment: TabAlignment.start,
-                dragStartBehavior: DragStartBehavior.start,
-                tabs: [
-                  _buildTab(context, ItemType.anime, "Installed Anime", true),
-                  _buildTab(context, ItemType.anime, "Available Anime", false),
-                  _buildTab(context, ItemType.manga, "Installed Manga", true),
-                  _buildTab(context, ItemType.manga, "Available Manga", false),
-                  _buildTab(context, ItemType.novel, "Installed Novel", true),
-                  _buildTab(context, ItemType.novel, "Available Novel", false),
-                ],
-              ),
+              Obx(() => TabBar(
+                    indicatorSize: TabBarIndicatorSize.label,
+                    isScrollable: true,
+                    controller: _tabBarController,
+                    tabAlignment: TabAlignment.start,
+                    dragStartBehavior: DragStartBehavior.start,
+                    tabs: [
+                      _buildTab(
+                          context, ItemType.anime, "Installed Anime", true),
+                      _buildTab(
+                          context, ItemType.anime, "Available Anime", false),
+                      _buildTab(
+                          context, ItemType.manga, "Installed Manga", true),
+                      _buildTab(
+                          context, ItemType.manga, "Available Manga", false),
+                      _buildTab(
+                          context, ItemType.novel, "Installed Novel", true),
+                      _buildTab(
+                          context, ItemType.novel, "Available Novel", false),
+                    ],
+                  )),
               const SizedBox(height: 8.0),
               CustomSearchBar(
                   disableIcons: true,
@@ -227,50 +231,62 @@ class _BrowseScreenState extends State<ExtensionScreen>
                   onSubmitted: (v) {}),
               const SizedBox(height: 8.0),
               Expanded(
-                child: TabBarView(
-                  controller: _tabBarController,
-                  children: [
-                    Extension(
-                      installed: true,
-                      query: _textEditingController.text,
-                      itemType: ItemType.anime,
-                      selectedLanguage: _selectedLanguage,
-                      showRecommended: false,
-                    ),
-                    Extension(
-                      installed: false,
-                      query: _textEditingController.text,
-                      itemType: ItemType.anime,
-                      selectedLanguage: _selectedLanguage,
-                    ),
-                    Extension(
-                      installed: true,
-                      query: _textEditingController.text,
-                      itemType: ItemType.manga,
-                      selectedLanguage: _selectedLanguage,
-                      showRecommended: false,
-                    ),
-                    Extension(
-                      installed: false,
-                      query: _textEditingController.text,
-                      itemType: ItemType.manga,
-                      selectedLanguage: _selectedLanguage,
-                    ),
-                    Extension(
-                      installed: true,
-                      query: _textEditingController.text,
-                      itemType: ItemType.novel,
-                      selectedLanguage: _selectedLanguage,
-                      showRecommended: false,
-                    ),
-                    Extension(
-                      installed: false,
-                      query: _textEditingController.text,
-                      itemType: ItemType.novel,
-                      selectedLanguage: _selectedLanguage,
-                    ),
-                  ],
-                ),
+                child: Obx(() => TabBarView(
+                      controller: _tabBarController,
+                      children: [
+                        ExtensionList(
+                          key: ValueKey(
+                              'anime_installed_${_selectedLanguage.value}_${sourceController.activeAnimeRepo}'),
+                          installed: true,
+                          query: _textEditingController.text,
+                          itemType: ItemType.anime,
+                          selectedLanguage: _selectedLanguage.value,
+                          showRecommended: false,
+                        ),
+                        ExtensionList(
+                          key: ValueKey(
+                              'anime_available_${_selectedLanguage.value}_${sourceController.activeAnimeRepo}'),
+                          installed: false,
+                          query: _textEditingController.text,
+                          itemType: ItemType.anime,
+                          selectedLanguage: _selectedLanguage.value,
+                        ),
+                        ExtensionList(
+                          key: ValueKey(
+                              'manga_installed_${_selectedLanguage.value}_${sourceController.activeMangaRepo}'),
+                          installed: true,
+                          query: _textEditingController.text,
+                          itemType: ItemType.manga,
+                          selectedLanguage: _selectedLanguage.value,
+                          showRecommended: false,
+                        ),
+                        ExtensionList(
+                          key: ValueKey(
+                              'manga_available_${_selectedLanguage.value}_${sourceController.activeMangaRepo}'),
+                          installed: false,
+                          query: _textEditingController.text,
+                          itemType: ItemType.manga,
+                          selectedLanguage: _selectedLanguage.value,
+                        ),
+                        ExtensionList(
+                          key: ValueKey(
+                              'novel_installed_${_selectedLanguage.value}_${sourceController.activeNovelRepo}'),
+                          installed: true,
+                          query: _textEditingController.text,
+                          itemType: ItemType.novel,
+                          selectedLanguage: _selectedLanguage.value,
+                          showRecommended: false,
+                        ),
+                        ExtensionList(
+                          key: ValueKey(
+                              'novel_available_${_selectedLanguage.value}_${sourceController.activeNovelRepo}'),
+                          installed: false,
+                          query: _textEditingController.text,
+                          itemType: ItemType.novel,
+                          selectedLanguage: _selectedLanguage.value,
+                        ),
+                      ],
+                    )),
               ),
             ],
           ),

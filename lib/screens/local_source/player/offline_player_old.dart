@@ -39,7 +39,6 @@ import 'package:outlined_text/outlined_text.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:window_manager/window_manager.dart';
 
 class OfflineWatchPageOld extends StatefulWidget {
   final LocalEpisode episodePath;
@@ -164,14 +163,15 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
       player = Player();
       playerController = VideoController(player,
           configuration: const VideoControllerConfiguration(
+              enableHardwareAcceleration: false,
               androidAttachSurfaceAfterVideoParameters: true));
     } else {
       currentPosition.value = Duration.zero;
       episodeDuration.value = Duration.zero;
     }
-    player.open(Media('file:///${widget.episodePath.path}',
+    await player.open(Media('file:///${widget.episodePath.path}',
         start: Duration(milliseconds: startTimeMilliseconds)));
-    player.setRate(prevRate.value);
+    await player.setRate(prevRate.value);
     if (settings.preferences.get('shaders_enabled', defaultValue: false)) {
       final key = (PlayerShaders.getShaders()
           .indexWhere((e) => e == settings.selectedShader));

@@ -1,12 +1,15 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/general.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
+import 'package:anymex/screens/manga/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -149,13 +152,27 @@ class ChapterService {
         .toList();
   }
 
-  void navigateToReading(
-      Media anilistData, List<Chapter> chapterList, Chapter currentChapter) {
-    navigate(() => ReadingPage(
-          anilistData: anilistData,
-          chapterList: chapterList,
-          currentChapter: currentChapter,
-        ));
+  void navigateToReading(Media anilistData, List<Chapter> chapterList,
+      Chapter currentChapter, BuildContext context) async {
+    if (General.shouldAskForTrack.get(true) == false) {
+      navigate(() => ReadingPage(
+            anilistData: anilistData,
+            chapterList: chapterList,
+            currentChapter: currentChapter,
+            shouldTrack: true,
+          ));
+      return;
+    }
+    final shouldTrack = await showTrackingDialog(context);
+
+    if (shouldTrack != null) {
+      navigate(() => ReadingPage(
+            anilistData: anilistData,
+            chapterList: chapterList,
+            currentChapter: currentChapter,
+            shouldTrack: shouldTrack,
+          ));
+    }
   }
 }
 
@@ -320,10 +337,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ContinueChapterButton(
         onPressed: () => _chapterService.navigateToReading(
-          widget.anilistData,
-          widget.chapters!,
-          continueChapter,
-        ),
+            widget.anilistData, widget.chapters!, continueChapter, context),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
         chapter: continueChapter,
@@ -375,10 +389,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       readChapter: chapterState.readChapter,
       continueChapter: chapterState.continueChapter,
       onTap: () => _chapterService.navigateToReading(
-        widget.anilistData,
-        filteredFullChapters,
-        chapter,
-      ),
+          widget.anilistData, filteredFullChapters, chapter, context),
     );
   }
 }

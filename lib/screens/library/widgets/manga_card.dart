@@ -66,6 +66,7 @@ class MangaHistoryCard extends StatelessWidget {
                     anilistData: convertOfflineToMedia(data),
                     chapterList: data.chapters!,
                     currentChapter: data.currentChapter!,
+                    shouldTrack: true,
                   ));
             }
           }
