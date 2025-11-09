@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/general.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
@@ -17,6 +18,7 @@ class SettingsCommon extends StatefulWidget {
 class _SettingsCommonState extends State<SettingsCommon> {
   final settings = Get.find<Settings>();
   late bool uniScrapper;
+  late bool shouldAskForPermission = General.shouldAskForTrack.get(true);
 
   @override
   void initState() {
@@ -62,6 +64,21 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'Universal',
+                        content: CustomSwitchTile(
+                            icon: Icons.touch_app_rounded,
+                            title: 'Ask for tracking permission',
+                            description:
+                                'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
+                            switchValue: shouldAskForPermission,
+                            onChanged: (e) {
+                              setState(() {
+                                shouldAskForPermission = e;
+                                General.shouldAskForTrack.set(e);
+                              });
+                            })),
                     AnymexExpansionTile(
                         initialExpanded: true,
                         title: 'Anilist',
