@@ -1,11 +1,13 @@
+import 'package:anymex/controllers/discord/discord_login.dart';
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Service/online_service.dart';
-import 'package:anymex/utils/function.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/account_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -67,6 +69,7 @@ class SettingsAccounts extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
+            const DiscordTile(),
             for (var s in services)
               ProfileTile(
                 serviceIcon: s['icon'] as String,
@@ -80,16 +83,9 @@ class SettingsAccounts extends StatelessWidget {
   }
 }
 
-class ProfileTile extends StatelessWidget {
-  final String serviceIcon;
-  final OnlineService service;
-  final String title;
-
-  const ProfileTile({
+class DiscordTile extends StatelessWidget {
+  const DiscordTile({
     super.key,
-    required this.serviceIcon,
-    required this.service,
-    required this.title,
   });
 
   @override
@@ -97,104 +93,9 @@ class ProfileTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Obx(() {
-      final isLoggedIn = service.isLoggedIn.value;
-      final userData = isLoggedIn ? service.profileData.value : null;
-      final isPrimary = serviceHandler.onlineService == service;
-      final fallback = Image.asset(
-        'assets/images/$serviceIcon',
-        color: colorScheme.primary,
-      );
-
-      if (isPrimary && isLoggedIn) {
-        return AnymexExpansionTile(
-            title: 'Primary',
-            initialExpanded: true,
-            content: Column(
-              children: [
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            strokeAlign: BorderSide.strokeAlignOutside,
-                            width: 3,
-                            color: colorScheme.primary)),
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
-                          imageUrl: userData!.avatar!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                10.height(),
-                AnymexText(
-                  text: userData.name!,
-                  variant: TextVariant.semiBold,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colorScheme.secondaryContainer.withOpacity(0.6),
-                        colorScheme.surfaceContainerHighest.withOpacity(0.5)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      AnymexIconWrapper(
-                        child: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 16,
-                            child: fallback),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: AnymexText(
-                          text: 'Connected to $title',
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          service.logout();
-                        },
-                        child: const AnymexIconWrapper(
-                          child: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 16,
-                            child: Icon(
-                              IconlyLight.logout,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ));
-      }
+      final rpc = DiscordRPCController.instance;
+      final isLoggedIn = rpc.isLoggedIn;
+      final userData = isLoggedIn ? rpc.profile.value : null;
 
       return AnymexExpansionTile(
         content: Column(
@@ -238,17 +139,19 @@ class ProfileTile extends StatelessWidget {
                               child: CachedNetworkImage(
                                 height: 50,
                                 width: 50,
-                                imageUrl: userData?.avatar ?? '',
+                                imageUrl: userData?.avatarUrl ?? '',
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                         )
-                      : AnymexIconWrapper(
+                      : const AnymexIconWrapper(
                           child: CircleAvatar(
                               backgroundColor: Colors.transparent,
                               radius: 16,
-                              child: fallback),
+                              child: Icon(
+                                IconlyLight.profile,
+                              )),
                         ),
                   const SizedBox(width: 10),
                   isLoggedIn
@@ -256,27 +159,30 @@ class ProfileTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AnymexText(
-                              text: userData!.name ?? 'Guest',
+                              text: userData?.displayName ?? 'Loading...',
                               variant: TextVariant.semiBold,
                             ),
                             const SizedBox(height: 5),
                             SizedBox(
                               width: 130,
                               child: AnymexText(
-                                text: 'Connected to $title',
+                                text: 'Connected to Discord',
                                 color: Theme.of(context).colorScheme.primary,
                                 maxLines: 2,
                               ),
                             )
                           ],
                         )
-                      : AnymexText(
-                          text: 'Connect to $title',
+                      : const AnymexText(
+                          text: 'Connect to Discord',
                         ),
                   const Spacer(),
                   InkWell(
                     onTap: () {
-                      isLoggedIn ? service.logout() : service.login();
+                      isLoggedIn
+                          ? rpc.logout()
+                          : context.showDiscordLogin(
+                              (token) => rpc.onLoginSuccess(token));
                     },
                     child: AnymexIconWrapper(
                       child: CircleAvatar(
@@ -293,8 +199,8 @@ class ProfileTile extends StatelessWidget {
             ),
           ],
         ),
-        title: title,
-        initialExpanded: service.isLoggedIn.value,
+        title: 'Discord',
+        initialExpanded: true,
       );
     });
   }
