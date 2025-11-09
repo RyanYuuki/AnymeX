@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:anymex/main.dart' show isar;
 import 'package:dartotsu_extension_bridge/Mangayomi/Eval/dart/model/source_preference.dart';
-import 'package:dartotsu_extension_bridge/Mangayomi/Models/Source.dart';
-import 'package:dartotsu_extension_bridge/Settings/Settings.dart';
-import 'package:isar/isar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
+    hide isar;
+import 'package:isar_community/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -44,12 +45,17 @@ class StorageProvider {
       dir = Directory(path);
     }
 
-    final isar = Isar.openSync([
-      MSourceSchema,
-      SourcePreferenceSchema,
-      SourcePreferenceStringValueSchema,
-      BridgeSettingsSchema
-    ], directory: dir!.path, name: "AnymeX", inspector: inspector);
+    isar = Isar.openSync(
+      [
+        MSourceSchema,
+        SourcePreferenceSchema,
+        SourcePreferenceStringValueSchema,
+        BridgeSettingsSchema
+      ],
+      directory: dir!.path,
+      name: 'AnymeX',
+      inspector: false,
+    );
 
     return isar;
   }

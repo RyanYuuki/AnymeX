@@ -32,6 +32,7 @@ class ProgressController extends GetxController {
 }
 
 enum BlurStrength {
+  none(0, 'None'),
   low(20, 'Low'),
   medium(40, 'Medium'),
   high(60, 'High'),
