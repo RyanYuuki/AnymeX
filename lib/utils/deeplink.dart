@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:anymex/main.dart';
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';

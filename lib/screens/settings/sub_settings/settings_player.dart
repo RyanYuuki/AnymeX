@@ -357,6 +357,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           title: 'Subtitles',
                           content: Column(
                             children: [
+                              CustomSwitchTile(
+                                  icon: Icons.lightbulb,
+                                  title: 'Transition Subtitle',
+                                  description:
+                                      'By disabling this you can avoid the transition between subtitles.',
+                                  switchValue: settings.transitionSubtitle,
+                                  onChanged: (e) {
+                                    settings.transitionSubtitle = e;
+                                  }),
                               CustomTile(
                                 padding: 10,
                                 description: 'Change subtitle colors',
