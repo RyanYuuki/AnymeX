@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -5,9 +7,13 @@ class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
 
   static Future<void> initialize() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await windowManager.ensureInitialized();
-
+    if (!Platform.isWindows) {
+      windowManager.waitUntilReadyToShow(const WindowOptions(
+          backgroundColor: null,
+          titleBarStyle: TitleBarStyle.normal,
+          skipTaskbar: null));
+      return;
+    }
     const windowOptions = WindowOptions(
       backgroundColor: Colors.transparent,
       skipTaskbar: false,

@@ -27,10 +27,6 @@ dependencies:
   # flutter_local_notifications: ^18.0.1
   flutter_markdown: ^0.7.6
   flutter_native_splash: ^2.4.4
-  flutter_qjs:
-    git:
-      url: https://github.com/kodjodevf/flutter_qjs.git
-      ref: main
   flutter_web_auth_2: ^4.0.2
   get: ^4.6.6
   grouped_list: ^6.0.0
@@ -45,6 +41,11 @@ dependencies:
   install_plugin: ^2.1.0
   intl: ^0.20.1
   kenburns_nullsafety: ^1.0.1
+  dartotsu_extension_bridge:
+    git:
+      url: https://github.com/aayush2622/DartotsuExtensionBridge.git
+
+  outlined_text: ^1.0.1
   media_kit:
     git:
       url: https://github.com/Schnitzel5/media-kit.git
@@ -56,13 +57,9 @@ dependencies:
   media_kit_libs_video:
     git:
       url: https://github.com/Schnitzel5/media-kit.git
-      path: libs/universal/media_kit_libs_video
-  dartotsu_extension_bridge:
-    git:
-      url: https://github.com/RyanYuuki/DartotsuExtensionBridge.git
-      ref: master
+      path: libs/universal/media_kit_libs_video  
 
-  outlined_text: ^1.0.1
+
   package_info_plus: any
   path: ^1.9.0
   path_provider: any
@@ -77,8 +74,6 @@ dependencies:
   volume_controller: ^3.4.0 
   screen_brightness: ^2.1.7 
   window_manager: ^0.4.3
-  isar: 3.1.0+1
-  isar_flutter_libs: 3.1.0+1
   app_links: ^6.4.0
   preload_page_view: ^0.2.0
 
@@ -91,6 +86,17 @@ dependencies:
   fuzzywuzzy: ^1.2.0
   expressive_loading_indicator: ^0.0.1
   photo_view: ^0.15.0
+  rxdart: any
+  ffi: any
+  win32: any
+  isar_community: ^3.3.0-dev.3
+  isar_community_flutter_libs: ^3.3.0-dev.3
+  sensors_plus: ^7.0.0
+  flutter_discord_rpc_fork:
+    git:
+      url: https://github.com/Schnitzel5/flutter-discord-rpc.git
+      ref: main
+
 dev_dependencies:
   build_runner: ^2.4.11
   change_app_package_name: ^1.4.0
