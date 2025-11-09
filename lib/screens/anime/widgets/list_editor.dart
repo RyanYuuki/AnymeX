@@ -2,7 +2,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -92,23 +91,39 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Widget _buildHeader(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Edit ${widget.isManga ? 'Manga' : 'Anime'}',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
-              ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Edit ${widget.isManga ? 'Manga' : 'Anime'}',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Update your progress and rating',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Update your progress and rating',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-        ),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: colorScheme.surfaceContainerHighest,
+          ),
+          padding: const EdgeInsets.all(8),
+          child: IconButton(
+              color: colorScheme.onSurface,
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.close_rounded)),
+        )
       ],
     );
   }
@@ -150,7 +165,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
             ),
             items: [
               ('PLANNING', 'Planning', Icons.schedule_rounded),
-              ('CURRENT', 'Watching', Icons.play_circle_rounded),
+              (
+                'CURRENT',
+                widget.isManga ? 'Reading' : 'Watching',
+                Icons.play_circle_rounded
+              ),
               ('COMPLETED', 'Completed', Icons.check_circle_rounded),
               ('REPEATING', 'Repeating', Icons.repeat_rounded),
               ('PAUSED', 'Paused', Icons.pause_circle_rounded),
@@ -172,7 +191,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
       case 'PLANNING':
         return 'Planning';
       case 'CURRENT':
-        return 'Watching';
+        return widget.isManga ? 'Reading' : 'Watching';
       case 'COMPLETED':
         return 'Completed';
       case 'REPEATING':
@@ -375,7 +394,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
     return Material(
       color: canIncrement
-          ? colorScheme.primaryContainer
+          ? colorScheme.primary
           : colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
@@ -395,7 +414,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           child: Icon(
             Icons.add_rounded,
             color: canIncrement
-                ? colorScheme.onPrimaryContainer
+                ? colorScheme.onPrimary
                 : colorScheme.onSurfaceVariant.withOpacity(0.5),
             size: 24,
           ),
@@ -512,13 +531,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
+                      color: colorScheme.primary,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${_localScore.toStringAsFixed(1)}/10',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: colorScheme.onPrimaryContainer,
+                            color: colorScheme.onPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -560,22 +579,23 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 Navigator.pop(context);
                 widget.onDelete(widget.media.id);
               },
-              color: colorScheme.errorContainer,
+              color: colorScheme.tertiary,
               border: BorderSide.none,
-              radius: 16,
+              borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(100), right: Radius.circular(10)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.delete_rounded,
-                    color: colorScheme.onErrorContainer,
+                    color: colorScheme.onTertiary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Delete',
                     style: TextStyle(
-                      color: colorScheme.onErrorContainer,
+                      color: colorScheme.onTertiary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -584,11 +604,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 5),
         Expanded(
           child: SizedBox(
             height: 56,
             child: AnymexButton(
+              borderRadius: const BorderRadius.horizontal(
+                  right: Radius.circular(100), left: Radius.circular(10)),
               onTap: () {
                 Get.back();
                 widget.onUpdate(
@@ -600,7 +622,6 @@ class _ListEditorModalState extends State<ListEditorModal> {
               },
               color: colorScheme.primary,
               border: BorderSide.none,
-              radius: 16,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

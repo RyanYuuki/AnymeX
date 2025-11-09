@@ -6,16 +6,17 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:grouped_list/sliver_grouped_list.dart';
+import 'package:get/get.dart';
 import 'ExtensionItem.dart';
 
-class Extension extends StatefulWidget {
+class ExtensionList extends StatefulWidget {
   final bool installed;
   final ItemType itemType;
   final String query;
   final String selectedLanguage;
   final bool showRecommended;
 
-  const Extension({
+  const ExtensionList({
     required this.installed,
     required this.query,
     required this.itemType,
@@ -25,25 +26,19 @@ class Extension extends StatefulWidget {
   });
 
   @override
-  State<Extension> createState() => _ExtensionScreenState();
+  State<ExtensionList> createState() => _ExtensionListState();
 }
 
-class _ExtensionScreenState extends State<Extension>
+class _ExtensionListState extends State<ExtensionList>
     with AutomaticKeepAliveClientMixin {
   final controller = ScrollController();
 
-  final Map<String, List<Source>> _cachedData = {};
-  String _lastQuery = '';
-  String _lastLanguage = '';
-  ItemType? _lastItemType;
-  bool? _lastInstalled;
+  final RxList<Source> _installedEntries = <Source>[].obs;
+  final RxList<Source> _updateEntries = <Source>[].obs;
+  final RxList<Source> _notInstalledEntries = <Source>[].obs;
+  final RxList<Source> _recommendedEntries = <Source>[].obs;
 
-  Timer? _debounceTimer;
-
-  static const String _installedKey = 'installed';
-  static const String _updateKey = 'update';
-  static const String _notInstalledKey = 'notInstalled';
-  static const String _recommendedKey = 'recommended';
+  late Worker _extensionWorker;
 
   @override
   bool get wantKeepAlive => true;
@@ -51,81 +46,63 @@ class _ExtensionScreenState extends State<Extension>
   @override
   void initState() {
     super.initState();
-    _initializeCache();
+    _computeAllData();
+    _setupReactiveListeners();
+  }
+
+  void _setupReactiveListeners() {
+    _extensionWorker = ever(_getRelevantExtensionList(), (_) {
+      _computeAllData();
+    });
+  }
+
+  RxList<Source> _getRelevantExtensionList() {
+    switch (widget.itemType) {
+      case ItemType.manga:
+        return sourceController.installedMangaExtensions;
+      case ItemType.anime:
+        return sourceController.installedExtensions;
+      case ItemType.novel:
+        return sourceController.installedNovelExtensions;
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
-    _debounceTimer?.cancel();
+    _extensionWorker.dispose();
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(Extension oldWidget) {
+  void didUpdateWidget(ExtensionList oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.query != widget.query ||
         oldWidget.selectedLanguage != widget.selectedLanguage ||
         oldWidget.itemType != widget.itemType ||
         oldWidget.installed != widget.installed) {
-      _invalidateCacheIfNeeded();
+      _computeAllData();
     }
   }
 
-  void _initializeCache() {
-    _lastQuery = widget.query;
-    _lastLanguage = widget.selectedLanguage;
-    _lastItemType = widget.itemType;
-    _lastInstalled = widget.installed;
-    _updateCache();
-  }
+  void _computeAllData() {
+    if (!mounted) return;
 
-  void _invalidateCacheIfNeeded() {
-    bool needsUpdate = false;
+    _installedEntries.value = _computeInstalledEntries();
+    _updateEntries.value = _computeUpdateEntries();
+    _notInstalledEntries.value = _computeNotInstalledEntries();
 
-    if (_lastQuery != widget.query) {
-      needsUpdate = true;
-      _lastQuery = widget.query;
-    }
-
-    if (_lastLanguage != widget.selectedLanguage) {
-      needsUpdate = true;
-      _lastLanguage = widget.selectedLanguage;
-    }
-
-    if (_lastItemType != widget.itemType) {
-      needsUpdate = true;
-      _lastItemType = widget.itemType;
-    }
-
-    if (_lastInstalled != widget.installed) {
-      needsUpdate = true;
-      _lastInstalled = widget.installed;
-    }
-
-    if (needsUpdate) {
-      _cachedData.clear();
-      _updateCache();
-    }
-  }
-
-  void _updateCache() {
-    _cachedData[_installedKey] = _computeInstalledEntries();
-    _cachedData[_updateKey] = _computeUpdateEntries();
-    _cachedData[_notInstalledKey] = _computeNotInstalledEntries();
     if (widget.showRecommended) {
-      _cachedData[_recommendedKey] = _computeRecommendedEntries();
+      _recommendedEntries.value = _computeRecommendedEntries();
+    } else {
+      _recommendedEntries.clear();
     }
   }
 
   Future<void> _refreshData() async {
     await sourceController.fetchRepos();
-    _cachedData.clear();
-    _updateCache();
-    if (mounted) {
-      setState(() {});
-    }
+    _computeAllData();
   }
 
   List<Source> get _allAvailableExtensions {
@@ -144,52 +121,45 @@ class _ExtensionScreenState extends State<Extension>
       onRefresh: _refreshData,
       child: Padding(
         padding: const EdgeInsets.only(top: 10),
-        child: Builder(
-          builder: (context) {
-            final installedEntries =
-                _getCachedData(_installedKey, _computeInstalledEntries);
-            final updateEntries =
-                _getCachedData(_updateKey, _computeUpdateEntries);
-            final notInstalledEntries =
-                _getCachedData(_notInstalledKey, _computeNotInstalledEntries);
-            final recommendedEntries = widget.showRecommended
-                ? _getCachedData(_recommendedKey, _computeRecommendedEntries)
-                : <Source>[];
+        child: Obx(() {
+          final installedEntries = _installedEntries.value;
+          final updateEntries = _updateEntries.value;
+          final notInstalledEntries = _notInstalledEntries.value;
+          final recommendedEntries = _recommendedEntries.value;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: CustomScrollView(
-                controller: controller,
-                slivers: [
-                  if (widget.showRecommended && recommendedEntries.isNotEmpty)
-                    _buildRecommendedList(recommendedEntries),
-                  if (widget.installed && updateEntries.isNotEmpty)
-                    _buildUpdatePendingList(updateEntries),
-                  if (widget.installed && installedEntries.isNotEmpty)
-                    _buildInstalledList(installedEntries),
-                  if (!widget.installed && notInstalledEntries.isNotEmpty)
-                    _buildNotInstalledList(notInstalledEntries),
-                  if (_isEmpty(installedEntries, updateEntries,
-                      notInstalledEntries, recommendedEntries))
-                    const SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Text(
-                            'No extensions found',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: CustomScrollView(
+              controller: controller,
+              slivers: [
+                if (widget.showRecommended && recommendedEntries.isNotEmpty)
+                  _buildRecommendedList(recommendedEntries),
+                if (widget.installed && updateEntries.isNotEmpty)
+                  _buildUpdatePendingList(updateEntries),
+                if (widget.installed && installedEntries.isNotEmpty)
+                  _buildInstalledList(installedEntries),
+                if (!widget.installed && notInstalledEntries.isNotEmpty)
+                  _buildNotInstalledList(notInstalledEntries),
+                if (_isEmpty(installedEntries, updateEntries,
+                    notInstalledEntries, recommendedEntries))
+                  const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          'No extensions found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
                     ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -202,17 +172,6 @@ class _ExtensionScreenState extends State<Extension>
       return notInstalled.isEmpty &&
           (!widget.showRecommended || recommended.isEmpty);
     }
-  }
-
-  List<Source> _getCachedData(
-      String key, List<Source> Function() computeFunction) {
-    if (_cachedData.containsKey(key)) {
-      return _cachedData[key]!;
-    }
-
-    final data = computeFunction();
-    _cachedData[key] = data;
-    return data;
   }
 
   List<Source> _filterData(List<Source> data) {
@@ -315,11 +274,10 @@ class _ExtensionScreenState extends State<Extension>
         ),
       ),
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
-          source: element,
-          mediaType: widget.itemType,
-          onUpdate: () {
-            setState(() {});
-          }),
+        source: element,
+        mediaType: widget.itemType,
+        onUpdate: _computeAllData,
+      ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
       order: GroupedListOrder.ASC,
@@ -336,12 +294,7 @@ class _ExtensionScreenState extends State<Extension>
           .whereType<Future<dynamic>>();
 
       await Future.wait(futures);
-
-      _cachedData.clear();
-      _updateCache();
-      if (mounted) {
-        setState(() {});
-      }
+      _computeAllData();
     } catch (e) {
       debugPrint('Error updating extensions: $e');
     }
@@ -355,6 +308,7 @@ class _ExtensionScreenState extends State<Extension>
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
         mediaType: widget.itemType,
+        onUpdate: _computeAllData,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -380,6 +334,7 @@ class _ExtensionScreenState extends State<Extension>
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
         mediaType: widget.itemType,
+        onUpdate: _computeAllData,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
@@ -405,6 +360,7 @@ class _ExtensionScreenState extends State<Extension>
       itemBuilder: (context, Source element) => ExtensionListTileWidget(
         source: element,
         mediaType: widget.itemType,
+        onUpdate: _computeAllData,
       ),
       groupComparator: (group1, group2) => group1.compareTo(group2),
       itemComparator: (item1, item2) => item1.name!.compareTo(item2.name!),
