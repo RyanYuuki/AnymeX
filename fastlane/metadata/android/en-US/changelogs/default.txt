@@ -1,18 +1,22 @@
 ### 🌟 Features
--   added zoom functionality for manga
+-   optimized list editor
+-   discord rpc support for all platforms
+-   opt out option for tracking media
+-   opt out for subtitle transition
 
 ### 🔧 Bug Fixes & Improvements
--   fixed a moment of grey screen when switching services
--   fixed volume indicator
--   attempt at fixing macos crash
--   fixed arrow keys navigation for manga
+-   fixed a grey screen error on home page
+-   fixed volume not being update realtime
+-   fixed an issue where series was showing up as manga
+-   fixed extension settings button not working
+-   fixed dropdown barrier
+-   fixed header on platforms other than windows
 
 ### 🎨 Style Changes
--   minor color adjustments on player ui
--   styling adjustment of hold to speed up
--   fixed overflowing ui and some changes on error images
+-   option for having transparent image as bg
+-   new page transition
 
 ### 🧹 Chores & Documentation
--   pubspec
+-   bump version to v3.0.3 patch release
 
  
