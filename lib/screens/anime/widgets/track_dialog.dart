@@ -47,7 +47,7 @@ class TrackingDialog extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Sync your watch progress with AniList and MyAnimeList.',
+                'Sync your watch progress with AniList and MyAnimeList',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
