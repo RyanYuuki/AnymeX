@@ -100,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   icon: HugeIcons.strokeRoundedInformationCircle,
                   title: "Experimental",
                   description:
-                      "Experimental Settings that are still being tested.",
+                      "Experimental Settings that are still being tested",
                   onTap: () async {
                     navigate(() => const SettingsExperimental());
                   },
