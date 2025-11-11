@@ -69,21 +69,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
                     title: "UI",
-                    description: "Play around with App UI",
+                    description: "Play with the app interface",
                     onTap: () {
                       navigate(() => const SettingsUi());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPlay,
                     title: "Player",
-                    description: "Play around with Player",
+                    description: "Explore the player",
                     onTap: () {
                       navigate(() => const SettingsPlayer());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBrush01,
                     title: "Theme",
-                    description: "Play around with App theme",
+                    description: "Personalize the look and make it yours",
                     onTap: () {
                       navigate(() => const SettingsTheme());
                     }),
