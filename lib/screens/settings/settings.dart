@@ -76,7 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPlay,
                     title: "Player",
-                    description: "Explore the player",
+                    description: "Play around with the video player",
                     onTap: () {
                       navigate(() => const SettingsPlayer());
                     }),
