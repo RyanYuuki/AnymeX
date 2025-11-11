@@ -69,7 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
                     title: "UI",
-                    description: "Play with the app interface",
+                    description: "Customize the interface to your liking",
                     onTap: () {
                       navigate(() => const SettingsUi());
                     }),
