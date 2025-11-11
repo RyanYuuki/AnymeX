@@ -91,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: Icons.extension_rounded,
                     title: "Extensions",
-                    description: "Extensions that tends to your needs",
+                    description: "Extensions tailored to your needs",
                     onTap: () {
                       navigate(() => const SettingsExtensions());
                     }),
