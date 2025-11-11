@@ -114,7 +114,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
   void _showResizeModeDialog() {
     showSelectionDialog<String>(
-      title: 'Playback Speeds',
+      title: 'Resize Modes',
       items: resizeModeList,
       selectedItem: resizeMode,
       getTitle: (item) => item,
@@ -122,7 +122,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         resizeMode.value = selected;
         settings.resizeMode = selected;
       },
-      leadingIcon: Icons.speed,
+      leadingIcon: Icons.crop,
     );
   }
 
@@ -244,7 +244,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   icon: Icons.stay_current_portrait,
                                   title: "Default Portrait",
                                   description:
-                                      "For psychopath who watch in portrait",
+                                      "For psychopaths who like watching in portrait",
                                   switchValue: settings.defaultPortraitMode,
                                   onChanged: (val) =>
                                       settings.defaultPortraitMode = val),
@@ -358,6 +358,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           content: Column(
                             children: [
                               CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.lightbulb,
                                   title: 'Transition Subtitle',
                                   description:
