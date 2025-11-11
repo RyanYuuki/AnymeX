@@ -114,7 +114,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
   void _showResizeModeDialog() {
     showSelectionDialog<String>(
-      title: 'Playback Speeds',
+      title: 'Resize Modes',
       items: resizeModeList,
       selectedItem: resizeMode,
       getTitle: (item) => item,
@@ -122,7 +122,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         resizeMode.value = selected;
         settings.resizeMode = selected;
       },
-      leadingIcon: Icons.speed,
+      leadingIcon: Icons.crop,
     );
   }
 
