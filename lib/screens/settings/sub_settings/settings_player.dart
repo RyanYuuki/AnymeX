@@ -117,10 +117,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       title: 'Playback Speeds',
       items: resizeModeList,
       selectedItem: resizeMode,
-      getTitle: (item) => item,
+      getTitle: (item) => item.capitalizeFirst!,
       onItemSelected: (selected) {
         resizeMode.value = selected;
-        settings.resizeMode = selected;
+        settings.resizeMode = selected.toLowerCase();
       },
       leadingIcon: Icons.speed,
     );
@@ -265,7 +265,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 icon: Icons.aspect_ratio,
                                 title: 'Resize Mode',
                                 isDescBold: true,
-                                description: settings.resizeMode,
+                                description: settings.resizeMode.capitalizeFirst!,
                                 descColor:
                                     Theme.of(context).colorScheme.primary,
                                 onTap: () {
