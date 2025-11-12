@@ -25,7 +25,6 @@ class SettingsPlayer extends StatefulWidget {
 class _SettingsPlayerState extends State<SettingsPlayer> {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
-  RxString resizeMode = "Contain".obs;
   Rx<Color> subtitleColor = Colors.white.obs;
   Rx<Color> backgroundColor = Colors.black.obs;
   Rx<Color> outlineColor = Colors.black.obs;
@@ -116,10 +115,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     showSelectionDialog<String>(
       title: 'Playback Speeds',
       items: resizeModeList,
-      selectedItem: resizeMode,
+      selectedItem: settings.resizeMode.capitalizeFirst!.obs,
       getTitle: (item) => item.capitalizeFirst!,
       onItemSelected: (selected) {
-        resizeMode.value = selected;
         settings.resizeMode = selected.toLowerCase();
       },
       leadingIcon: Icons.speed,
