@@ -112,15 +112,23 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _showResizeModeDialog() {
+    final currentFit = settings.resizeMode;
+    final selectedLabel = resizeModeList.firstWhere(
+      (lbl) =>
+          (resizeModes[lbl]?.name.toLowerCase() ?? '') == currentFit.toLowerCase(),
+      orElse: () => resizeModeList.first,
+    );
+
     showSelectionDialog<String>(
       title: 'Playback Speeds',
       items: resizeModeList,
-      selectedItem: settings.resizeMode.capitalizeFirst!.obs,
-      getTitle: (item) => item.capitalizeFirst!,
+      selectedItem: selectedLabel.obs,
+      getTitle: (item) => item,
       onItemSelected: (selected) {
-        settings.resizeMode = selected.toLowerCase();
+        final fit = resizeModes[selected];
+        if (fit != null) settings.resizeMode = fit.name;
       },
-      leadingIcon: Icons.speed,
+      leadingIcon: Icons.aspect_ratio,
     );
   }
 
