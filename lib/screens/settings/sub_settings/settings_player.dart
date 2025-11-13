@@ -25,7 +25,6 @@ class SettingsPlayer extends StatefulWidget {
 class _SettingsPlayerState extends State<SettingsPlayer> {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
-  RxString resizeMode = "Contain".obs;
   Rx<Color> subtitleColor = Colors.white.obs;
   Rx<Color> backgroundColor = Colors.black.obs;
   Rx<Color> outlineColor = Colors.black.obs;
@@ -113,16 +112,23 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _showResizeModeDialog() {
+    final currentFit = settings.resizeMode;
+    final selectedLabel = resizeModeList.firstWhere(
+      (lbl) =>
+          (resizeModes[lbl]?.name.toLowerCase() ?? '') == currentFit.toLowerCase(),
+      orElse: () => resizeModeList.first,
+    );
+
     showSelectionDialog<String>(
-      title: 'Playback Speeds',
+      title: 'Resize Modes',
       items: resizeModeList,
-      selectedItem: resizeMode,
+      selectedItem: selectedLabel.obs,
       getTitle: (item) => item,
       onItemSelected: (selected) {
-        resizeMode.value = selected;
-        settings.resizeMode = selected;
+        final fit = resizeModes[selected];
+        if (fit != null) settings.resizeMode = fit.name;
       },
-      leadingIcon: Icons.speed,
+      leadingIcon: Icons.crop,
     );
   }
 
@@ -265,7 +271,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 icon: Icons.aspect_ratio,
                                 title: 'Resize Mode',
                                 isDescBold: true,
-                                description: settings.resizeMode,
+                                description: settings.resizeMode.capitalizeFirst!,
                                 descColor:
                                     Theme.of(context).colorScheme.primary,
                                 onTap: () {

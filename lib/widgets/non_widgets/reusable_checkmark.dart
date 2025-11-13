@@ -39,26 +39,28 @@ void showSelectionDialog<T>({
                 ),
               ),
               const SizedBox(height: 16),
-              SingleChildScrollView(
-                child: Column(
-                  children: items
-                      .map(
-                        (item) => Container(
-                          margin: const EdgeInsets.only(bottom: 7),
-                          child: ListTileWithCheckMark(
-                            leading:
-                                leadingIcon != null ? Icon(leadingIcon) : null,
-                            color: Theme.of(context).colorScheme.primary,
-                            active: item == selectedItem.value,
-                            title: getTitle(item),
-                            onTap: () {
-                              onItemSelected(item);
-                              Navigator.pop(context);
-                            },
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: items
+                        .map(
+                          (item) => Container(
+                            margin: const EdgeInsets.only(bottom: 7),
+                            child: ListTileWithCheckMark(
+                              leading:
+                                  leadingIcon != null ? Icon(leadingIcon) : null,
+                              color: Theme.of(context).colorScheme.primary,
+                              active: item == selectedItem.value,
+                              title: getTitle(item),
+                              onTap: () {
+                                onItemSelected(item);
+                                Navigator.pop(context);
+                              },
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
               )
             ],
