@@ -120,7 +120,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
 
     showSelectionDialog<String>(
-      title: 'Playback Speeds',
+      title: 'Resize Modes',
       items: resizeModeList,
       selectedItem: selectedLabel.obs,
       getTitle: (item) => item,
@@ -128,7 +128,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         final fit = resizeModes[selected];
         if (fit != null) settings.resizeMode = fit.name;
       },
-      leadingIcon: Icons.aspect_ratio,
+      leadingIcon: Icons.crop,
     );
   }
 
