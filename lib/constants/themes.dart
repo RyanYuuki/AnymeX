@@ -17,7 +17,8 @@ ThemeData lightMode = ThemeData(
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {
       for (var platform in TargetPlatform.values)
-        platform: const SharedAxisTransition(),
+        if (platform != TargetPlatform.iOS) // Exclude iOS
+          platform: const SharedAxisTransition(),
     },
   ),
   textTheme: const TextTheme(
@@ -82,7 +83,8 @@ ThemeData darkMode = ThemeData(
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {
       for (var platform in TargetPlatform.values)
-        platform: const SharedAxisTransition(),
+        if (platform != TargetPlatform.iOS) // Exclude iOS
+          platform: const SharedAxisTransition(),
     },
   ),
   inputDecorationTheme: InputDecorationTheme(
