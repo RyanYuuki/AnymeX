@@ -46,6 +46,8 @@ class InlineSearchHistory extends StatelessWidget {
     if (searchTerms.isEmpty) {
       return const SizedBox.shrink();
     }
+    
+    final displayedTerms = searchTerms.reversed.toList();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
@@ -139,10 +141,10 @@ class InlineSearchHistory extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               child: ListView.separated(
                 physics: const BouncingScrollPhysics(),
-                itemCount: searchTerms.length,
+                itemCount: displayedTerms.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  final term = searchTerms[index];
+                  final term = displayedTerms[index];
 
                   return Material(
                     color: Colors.transparent,
