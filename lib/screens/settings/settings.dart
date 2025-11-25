@@ -69,21 +69,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
                     title: "UI",
-                    description: "Play around with App UI",
+                    description: "Customize the interface to your liking",
                     onTap: () {
                       navigate(() => const SettingsUi());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPlay,
                     title: "Player",
-                    description: "Play around with Player",
+                    description: "Play around with the video player",
                     onTap: () {
                       navigate(() => const SettingsPlayer());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBrush01,
                     title: "Theme",
-                    description: "Play around with App theme",
+                    description: "Personalize the look and make it yours",
                     onTap: () {
                       navigate(() => const SettingsTheme());
                     }),
@@ -91,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CustomTile(
                     icon: Icons.extension_rounded,
                     title: "Extensions",
-                    description: "Extensions that tends to your needs",
+                    description: "Extensions tailored to your needs",
                     onTap: () {
                       navigate(() => const SettingsExtensions());
                     }),
@@ -100,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   icon: HugeIcons.strokeRoundedInformationCircle,
                   title: "Experimental",
                   description:
-                      "Experimental Settings that are still being tested.",
+                      "Experimental Settings that are still being tested",
                   onTap: () async {
                     navigate(() => const SettingsExperimental());
                   },
