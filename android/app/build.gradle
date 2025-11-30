@@ -32,6 +32,13 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+    
     signingConfigs {
         release {
             def keystoreProperties = new Properties()
