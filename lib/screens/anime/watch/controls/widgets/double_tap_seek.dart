@@ -379,7 +379,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
     if (tapCount == 0) return const SizedBox.shrink();
 
-    final totalSeekSeconds = 10 * tapCount;
+    final totalSeekSeconds = widget.controller.playerSettings.seekDuration * tapCount;
 
     return AnimatedItemWrapper(
         slideDistance: 5,
