@@ -18,6 +18,7 @@ import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
@@ -926,6 +927,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void toggleVideoFit() {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
+    AnymexToast.show(
+        message: videoFit.value.name.capitalizeFirst ?? '',
+        duration: const Duration(milliseconds: 700));
   }
 
   Future<void> _trackLocally() async {
