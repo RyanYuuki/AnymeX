@@ -267,11 +267,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
-    final event = await accelerometerEvents.first;
+    try {
+      final event = await accelerometerEvents.first
+          .timeout(const Duration(milliseconds: 100));
 
-    return event.x > 0
-        ? DeviceOrientation.landscapeLeft
-        : DeviceOrientation.landscapeRight;
+      const double threshold = 0.3;
+
+      if (event.x > threshold) {
+        return DeviceOrientation.landscapeLeft;
+      } else if (event.x < -threshold) {
+        return DeviceOrientation.landscapeRight;
+      }
+
+      if (event.y.abs() < 0.5) {
+        final view = WidgetsBinding.instance.platformDispatcher.views.first;
+        return view.physicalSize.width > view.physicalSize.height
+            ? DeviceOrientation.landscapeLeft
+            : DeviceOrientation.landscapeLeft;
+      }
+    } catch (_) {}
+
+    return DeviceOrientation.landscapeLeft;
   }
 
   void toggleOrientation() {
@@ -831,6 +847,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedVideo.value = track;
+    _extractSubtitles();
     await _switchMedia(track.url, track.headers,
         startPosition: player.state.position);
   }
