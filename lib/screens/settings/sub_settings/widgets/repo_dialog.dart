@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
@@ -105,10 +108,11 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
     final colorScheme = theme.colorScheme;
 
     return Dialog(
+      insetPadding:
+          Platform.isIOS ? const EdgeInsets.symmetric(horizontal: 8) : null,
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 420),
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(16),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -9,6 +11,7 @@ import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -69,7 +72,8 @@ class SettingsAccounts extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            const DiscordTile(),
+            if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS)
+              const DiscordTile(),
             for (var s in services)
               ProfileTile(
                 serviceIcon: s['icon'] as String,

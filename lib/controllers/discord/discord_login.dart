@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -16,43 +14,26 @@ class DiscordLoginPage extends StatefulWidget {
 }
 
 class _DiscordLoginPageState extends State<DiscordLoginPage> {
-  InAppWebViewController? _controller;
+  late InAppWebViewController _controller;
   bool _tokenExtracted = false;
   bool _isLoading = true;
   double _progress = 0.0;
 
   Future<void> _extractToken() async {
-    if (!mounted || _tokenExtracted || _controller == null) return;
+    if (!mounted || _tokenExtracted) return;
+
+    await Future.delayed(const Duration(seconds: 2));
 
     try {
-      await Future.delayed(const Duration(milliseconds: 1500));
-
-      final result = await _controller!.evaluateJavascript(source: '''
+      final result = await _controller.evaluateJavascript(source: '''
         (function() {
-          try {
-            var token = localStorage.getItem('token');
-            if (token) {
-              return token;
-            }
-            // Try alternative storage locations
-            for (var i = 0; i < localStorage.length; i++) {
-              var key = localStorage.key(i);
-              if (key && key.includes('token')) {
-                return localStorage.getItem(key);
-              }
-            }
-            return null;
-          } catch (e) {
-            return null;
-          }
+          return window.LOCAL_STORAGE.getItem('token');
         })()
       ''');
 
-      if (result != null &&
-          result.toString() != 'null' &&
-          result.toString().isNotEmpty) {
+      if (result != null && result != 'null') {
         _tokenExtracted = true;
-        final token = result.toString().trim().replaceAll('"', '');
+        final token = result.trim().replaceAll('"', '');
         widget.onTokenExtracted(token);
         if (mounted) {
           Navigator.of(context).pop();
@@ -64,35 +45,24 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
   }
 
   Future<void> _clearDiscordData() async {
-    if (_controller == null) return;
-
-    try {
-      await _controller!.evaluateJavascript(source: '''
-        (function() {
-          try {
-            localStorage.clear();
-            sessionStorage.clear();
-          } catch (e) {
-            console.log('Error clearing storage:', e);
-          }
-        })()
-      ''');
-    } catch (e) {
-      print('Error clearing data: $e');
-    }
+    await _controller.evaluateJavascript(source: '''
+      if (window.location.hostname === 'discord.com') {
+        window.LOCAL_STORAGE.clear();
+        window.sessionStorage.clear();
+      }
+    ''');
   }
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Platform.isAndroid || Platform.isIOS;
     return Scaffold(
       backgroundColor: const Color(0xFF313338),
       body: SafeArea(
         child: Column(
           children: [
+            // Custom header
             Container(
-              padding: EdgeInsets.fromLTRB(
-                  8, isMobile ? 12 : kToolbarHeight + 12, 8, 12),
+              padding: const EdgeInsets.fromLTRB(8, kToolbarHeight + 12, 8, 12),
               decoration: BoxDecoration(
                 color: const Color(0xFF2B2D31),
                 boxShadow: [
@@ -111,6 +81,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     tooltip: 'Close',
                   ),
                   const SizedBox(width: 8),
+                  // Discord logo icon
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -118,7 +89,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
-                      Icons.discord_rounded,
+                      Icons.discord,
                       color: Colors.white,
                       size: 20,
                     ),
@@ -190,36 +161,25 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     supportZoom: false,
                     useWideViewPort: true,
                     loadWithOverviewMode: true,
-                    allowsInlineMediaPlayback: true,
-                    mediaPlaybackRequiresUserGesture: false,
-                    cacheEnabled: true,
-                    clearCache: false,
-                    limitsNavigationsToAppBoundDomains: false,
-                    thirdPartyCookiesEnabled: true,
                   ),
-                  onWebViewCreated: (controller) async {
-                    _controller = controller;
-                    await _clearDiscordData();
-                  },
                   onLoadStart: (controller, url) async {
+                    await controller.evaluateJavascript(source: '''
+                      try {
+                        window.LOCAL_STORAGE = localStorage;
+                      } catch (e) {}
+                    ''');
                     if (mounted) {
                       setState(() {
                         _isLoading = true;
                       });
                     }
                   },
-                  onLoadStop: (controller, url) async {
+                  onLoadStop: (controller, url) {
                     if (mounted) {
                       setState(() {
                         _isLoading = false;
                         _progress = 1.0;
                       });
-                    }
-
-                    final currentUrl = url.toString();
-                    if (currentUrl.contains('discord.com/channels') ||
-                        currentUrl.contains('discord.com/app')) {
-                      await _extractToken();
                     }
                   },
                   onProgressChanged: (controller, progress) {
@@ -229,25 +189,19 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                       });
                     }
                   },
+                  onWebViewCreated: (controller) {
+                    _controller = controller;
+                    _clearDiscordData();
+                  },
                   onUpdateVisitedHistory: (controller, url, isReload) async {
-                    final urlString = url.toString();
-                    if (urlString.contains('discord.com/channels') ||
-                        urlString.contains('discord.com/app')) {
+                    if (url.toString() != 'https://discord.com/login' &&
+                        url.toString() != 'about:blank') {
                       await _extractToken();
                     }
                   },
                   shouldOverrideUrlLoading:
                       (controller, navigationAction) async {
                     return NavigationActionPolicy.ALLOW;
-                  },
-                  onConsoleMessage: (controller, consoleMessage) {
-                    print('Console: ${consoleMessage.message}');
-                  },
-                  onReceivedError: (controller, request, error) {
-                    print('WebView Error: ${error.description}');
-                  },
-                  onReceivedHttpError: (controller, request, errorResponse) {
-                    print('HTTP Error: ${errorResponse.statusCode}');
                   },
                 ),
               ),
@@ -263,7 +217,6 @@ extension DiscordLoginNavigation on BuildContext {
   Future<void> showDiscordLogin(Function(String) onTokenExtracted) async {
     await Navigator.of(this).push(
       MaterialPageRoute(
-        fullscreenDialog: true,
         builder: (context) => DiscordLoginPage(
           onTokenExtracted: onTokenExtracted,
         ),
