@@ -204,7 +204,8 @@ class _ExtensionListState extends State<ExtensionList>
         installedExtensions.map((e) => '${e.name}_${e.lang}').toSet();
 
     final notInstalled = availableExtensions.where((available) {
-      final key = '${available.name}_${available.lang}';
+      final key =
+          '${available.name}_${available.lang}_${available.extensionType?.name ?? 'PC'}';
       return !installedSet.contains(key);
     }).toList();
 
