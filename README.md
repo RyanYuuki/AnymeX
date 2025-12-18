@@ -151,6 +151,11 @@ Your efforts are invaluable.
   <img src="https://contrib.rocks/image?repo=RyanYuuki/AnymeX" alt="Contributors">
 </a>
 
+
+## Stats
+
+![Alt](https://repobeats.axiom.co/api/embed/3525f48156824c4d59e27eddedb26b53225f6733.svg "Repobeats analytics image")
+
 ## License
 
 AnymeX is licensed under the MIT License. More info can be found [here](LICENSE.md).
