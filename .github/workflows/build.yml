@@ -391,100 +391,204 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
+
+      - name: Download Linux Artifact
+        if: matrix.job == 'aur'
+        uses: actions/download-artifact@v4
+        with:
+          name: linux
+          path: .
       
       - name: Update AUR
         if: matrix.job == 'aur'
-        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
-          # Wait and retry download with exponential backoff
-          MAX_RETRIES=5
-          RETRY_COUNT=0
-          SLEEP_TIME=10
+          echo "Listing downloaded files..."
+          ls -la
           
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to download AppImage..."
-            if wget -q "https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage"; then
-              echo "Download successful!"
-              break
-            else
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                echo "Download failed. Waiting ${SLEEP_TIME}s before retry..."
-                sleep $SLEEP_TIME
-                SLEEP_TIME=$((SLEEP_TIME * 2))
-              else
-                echo "Failed to download after $MAX_RETRIES attempts"
-                exit 1
-              fi
-            fi
-          done
+          # Find the AppImage file
+          APPIMAGE_FILE=$(find . -name "AnymeX-Linux.AppImage" -o -name "*.AppImage" | head -n 1)
           
-          HASH=$(sha256sum AnymeX-Linux.AppImage | awk '{print $1}')
+          if [ -z "$APPIMAGE_FILE" ]; then
+            echo "Error: AppImage not found!"
+            echo "All files in current directory:"
+            find . -type f
+            exit 1
+          fi
+          
+          echo "Found AppImage at: $APPIMAGE_FILE"
+          echo "AppImage found from artifact, calculating hash..."
+          HASH=$(sha256sum "$APPIMAGE_FILE" | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
-          cat > PKGBUILD << 'EOF'
+          
+          echo "Creating PKGBUILD with version: $PKGVER and hash: $HASH"
+          
+          # Create a temporary directory for the package
+          mkdir -p aur-package
+          cd aur-package
+          
+          cat > PKGBUILD << EOF
           # Maintainer: jullanggit <jullanggit@proton.me>
           _pkgname=anymex
           _PkgName=AnymeX
-          pkgname=$_pkgname-bin
+          pkgname=\${_pkgname}-bin
           pkgver=${PKGVER}
           pkgrel=1
           arch=(x86_64)
           pkgdesc='An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)'
-          url="https://github.com/RyanYuuki/$_PkgName"
+          url="https://github.com/RyanYuuki/\${_PkgName}"
           license=(MIT)
-          provides=($_pkgname=$pkgver)
+          provides=(\${_pkgname}=\${pkgver})
           depends=('libepoxy' 'gdk-pixbuf2' 'pango' 'webkit2gtk-4.1' 'harfbuzz' 'libsoup3' 'glibc' 'fontconfig' 'cairo' 'hicolor-icon-theme' 'glib2' 'gcc-libs' 'mpv' 'zlib-ng-compat' 'gtk3' 'at-spi2-core')
           conflicts=(anymex)
-          _appimage="$_PkgName-$pkgver.AppImage"
-          source=("$_appimage::$url/releases/download/${VERSION}/$_PkgName-Linux.AppImage"
-                  "LICENSE-$pkgver.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md")
-          noextract=($_appimage)
+          _appimage="\${_PkgName}-\${pkgver}.AppImage"
+          source=("\${_appimage}::\${url}/releases/download/${VERSION}/\${_PkgName}-Linux.AppImage"
+                  "LICENSE-\${pkgver}.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md")
+          noextract=(\${_appimage})
           sha256sums=('${HASH}' 'SKIP')
-          prepare() { chmod +x $_appimage && ./$_appimage --appimage-extract >/dev/null; }
-          build() { chmod -R a-x+rX squashfs-root/usr && chmod +x squashfs-root/usr/bin/anymex; }
+          
+          prepare() {
+              chmod +x "\${_appimage}"
+              ./"\${_appimage}" --appimage-extract >/dev/null
+          }
+          
+          build() {
+              chmod -R a-x+rX squashfs-root/usr
+              chmod +x squashfs-root/usr/bin/anymex
+          }
+          
           package() {
-            install -dm755 "$pkgdir/usr/"
-            mv "$srcdir"/squashfs-root/usr/* "$pkgdir/usr/"
-            install -Dm644 "$srcdir/LICENSE-$pkgver.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
-            install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/$_pkgname.desktop" <<DESKTOP
+              install -dm755 "\${pkgdir}/usr/"
+              mv "\${srcdir}"/squashfs-root/usr/* "\${pkgdir}/usr/"
+              install -Dm644 "\${srcdir}/LICENSE-\${pkgver}.md" "\${pkgdir}/usr/share/licenses/\${pkgname}/LICENSE.md"
+              install -Dm644 /dev/stdin "\${pkgdir}/usr/share/applications/\${_pkgname}.desktop" <<DESKTOP
           [Desktop Entry]
-          Version=$pkgver
+          Version=\${pkgver}
           Type=Application
-          Name=$_PkgName
-          GenericName=$_PkgName
-          Comment=$pkgdesc
-          Exec=$_pkgname
-          Icon=$_pkgname
+          Name=\${_PkgName}
+          GenericName=\${_PkgName}
+          Comment=\${pkgdesc}
+          Exec=\${_pkgname}
+          Icon=\${_pkgname}
           Terminal=false
           Categories=Utility;Application;
-          Keywords=$_pkgname;anime
+          Keywords=\${_pkgname};anime
           StartupNotify=true
           DESKTOP
           }
           EOF
-          sed -i "s/\${PKGVER}/$PKGVER/g" PKGBUILD
-          sed -i "s/\${VERSION}/$VERSION/g" PKGBUILD
-          sed -i "s/\${HASH}/$HASH/g" PKGBUILD
-          sudo apt-get update -qq && sudo apt-get install -y -qq makepkg
-          makepkg --printsrcinfo > .SRCINFO
+          
+          echo "PKGBUILD created successfully"
+          cat PKGBUILD
+          
+          # Generate .SRCINFO manually (simpler than installing makepkg on Ubuntu)
+          echo "Generating .SRCINFO..."
+          cat > .SRCINFO << SRCEOF
+          pkgbase = anymex-bin
+            pkgdesc = An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)
+            pkgver = ${PKGVER}
+            pkgrel = 1
+            url = https://github.com/RyanYuuki/AnymeX
+            arch = x86_64
+            license = MIT
+            depends = libepoxy
+            depends = gdk-pixbuf2
+            depends = pango
+            depends = webkit2gtk-4.1
+            depends = harfbuzz
+            depends = libsoup3
+            depends = glibc
+            depends = fontconfig
+            depends = cairo
+            depends = hicolor-icon-theme
+            depends = glib2
+            depends = gcc-libs
+            depends = mpv
+            depends = zlib-ng-compat
+            depends = gtk3
+            depends = at-spi2-core
+            provides = anymex=${PKGVER}
+            conflicts = anymex
+            noextract = AnymeX-${PKGVER}.AppImage
+            source = AnymeX-${PKGVER}.AppImage::https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage
+            source = LICENSE-${PKGVER}.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md
+            sha256sums = ${HASH}
+            sha256sums = SKIP
+          
+          pkgname = anymex-bin
+          SRCEOF
+          
+          echo ".SRCINFO created successfully"
+          cat .SRCINFO
+          
+          # Setup SSH for AUR
+          echo "Setting up SSH for AUR..."
           mkdir -p ~/.ssh
-          echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur && chmod 600 ~/.ssh/aur
-          cat >> ~/.ssh/config << 'SSHEOF'
+          chmod 700 ~/.ssh
+          echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          
+          # Add SSH host key for AUR
+          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 644 ~/.ssh/known_hosts
+          
+          cat > ~/.ssh/config << 'SSHEOF'
           Host aur.archlinux.org
            HostName aur.archlinux.org
            User aur
            IdentityFile ~/.ssh/aur
+           StrictHostKeyChecking accept-new
+           ConnectTimeout 30
           SSHEOF
-          git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur
-          cd aur
-          cp ../PKGBUILD ../.SRCINFO .
-          git config user.name "GitHub Actions" && git config user.email "actions@github.com"
+          chmod 600 ~/.ssh/config
+          
+          # Test SSH connection
+          echo "Testing SSH connection to AUR..."
+          ssh -T aur@aur.archlinux.org -o ConnectTimeout=10 || echo "SSH test completed (this is expected to 'fail')"
+          
+          # Clone AUR repository
+          echo "Cloning AUR repository..."
+          cd ..
+          
+          # Set git timeout
+          export GIT_SSH_COMMAND="ssh -o ConnectTimeout=30"
+          
+          if ! git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur-repo 2>&1; then
+            echo "Failed to clone AUR repository. Check if:"
+            echo "1. The SSH key is correct and has access to AUR"
+            echo "2. The anymex-bin package exists on AUR"
+            echo "3. Network connectivity to aur.archlinux.org is working"
+            exit 1
+          fi
+          
+          cd aur-repo
+          
+          # Copy new files
+          echo "Copying new PKGBUILD and .SRCINFO..."
+          cp ../aur-package/PKGBUILD .
+          cp ../aur-package/.SRCINFO .
+          
+          # Show what changed
+          echo "Changes to be committed:"
+          git diff PKGBUILD || echo "PKGBUILD is new"
+          git diff .SRCINFO || echo ".SRCINFO is new"
+          
+          # Commit and push
+          echo "Committing and pushing to AUR..."
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add PKGBUILD .SRCINFO
-          git commit -m "Update to version ${VERSION#v}" && git push origin master
+          
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update to version ${VERSION#v}"
+            git push origin master
+            echo "Successfully pushed to AUR!"
+          fi
       
       - name: Update Scoop
         if: matrix.job == 'scoop'
