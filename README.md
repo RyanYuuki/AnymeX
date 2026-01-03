@@ -29,7 +29,7 @@
   </details>
 </div>
 <div align="center">
-<img src='assets/images/logo.png' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
+<img src='assets/images/anymex logo.gif' alt='AnymeX Icon' style="border-radius: 50px; height: 150px; width: 150px;">
   
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android_ios_windows_linux_macos-06599d?color=white&labelColor=black&style=for-the-badge"/>
