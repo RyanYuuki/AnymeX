@@ -9,12 +9,16 @@ class AnymexTitleBar {
 
   static Future<void> initialize() async {
     if (!Platform.isWindows) {
-      windowManager.waitUntilReadyToShow(const WindowOptions(
+      await windowManager.waitUntilReadyToShow(
+        const WindowOptions(
           backgroundColor: null,
           titleBarStyle: TitleBarStyle.normal,
-          skipTaskbar: null));
+          skipTaskbar: null,
+        ),
+      );
       return;
     }
+
     const windowOptions = WindowOptions(
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
@@ -30,17 +34,19 @@ class AnymexTitleBar {
   static Widget titleBar() => ValueListenableBuilder<bool>(
         valueListenable: isFullScreen,
         builder: (_, fullscreen, __) {
-          return fullscreen ? const SizedBox.shrink() : _TitleBarWidget();
+          return fullscreen ? const SizedBox.shrink() : const _TitleBarWidget();
         },
       );
 
   static Future<void> setFullScreen(bool enable) async {
-    windowManager.setFullScreen(enable);
+    await windowManager.setFullScreen(enable);
     isFullScreen.value = enable;
   }
 }
 
 class _TitleBarWidget extends StatelessWidget {
+  const _TitleBarWidget();
+
   @override
   Widget build(BuildContext context) {
     final defaultColor = Theme.of(context).colorScheme.onSurface;
@@ -69,10 +75,9 @@ class _TitleBarWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: AnymeXAnimatedLogo(
-                    size: 18,
-                    autoPlay: true,
-                    color: defaultColor,
-                  ),
+                  size: 18,
+                  autoPlay: true,
+                  color: defaultColor,
                 ),
               ),
               const SizedBox(width: 10),
@@ -88,15 +93,16 @@ class _TitleBarWidget extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onPanStart: (details) {
+                  onPanStart: (_) {
                     windowManager.startDragging();
                   },
                   onDoubleTap: () async {
-                    bool isMaximized = await windowManager.isMaximized();
+                    final isMaximized =
+                        await windowManager.isMaximized();
                     if (isMaximized) {
-                      windowManager.unmaximize();
+                      await windowManager.unmaximize();
                     } else {
-                      windowManager.maximize();
+                      await windowManager.maximize();
                     }
                   },
                 ),
@@ -109,11 +115,12 @@ class _TitleBarWidget extends StatelessWidget {
               _WindowButton(
                 icon: Icons.crop_square_rounded,
                 onPressed: () async {
-                  bool isMaximized = await windowManager.isMaximized();
+                  final isMaximized =
+                      await windowManager.isMaximized();
                   if (isMaximized) {
-                    windowManager.unmaximize();
+                    await windowManager.unmaximize();
                   } else {
-                    windowManager.maximize();
+                    await windowManager.maximize();
                   }
                 },
                 buttonColor: defaultColor,
@@ -152,8 +159,8 @@ class _WindowButton extends StatefulWidget {
 class _WindowButtonState extends State<_WindowButton>
     with SingleTickerProviderStateMixin {
   bool isHovered = false;
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -198,19 +205,17 @@ class _WindowButtonState extends State<_WindowButton>
               color: isHovered
                   ? (widget.isClose
                       ? Colors.red.withOpacity(0.9)
-                      : widget.buttonColor.withOpacity(isDark ? 0.15 : 0.1))
+                      : widget.buttonColor
+                          .withOpacity(isDark ? 0.15 : 0.1))
                   : Colors.transparent,
             ),
             child: Center(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                child: Icon(
-                  widget.icon,
-                  size: widget.isClose ? 18 : 16,
-                  color: isHovered && widget.isClose
-                      ? Colors.white
-                      : widget.buttonColor.withOpacity(0.9),
-                ),
+              child: Icon(
+                widget.icon,
+                size: widget.isClose ? 18 : 16,
+                color: isHovered && widget.isClose
+                    ? Colors.white
+                    : widget.buttonColor.withOpacity(0.9),
               ),
             ),
           ),
