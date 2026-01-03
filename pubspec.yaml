@@ -24,6 +24,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   flutter_html: ^3.0.0
   flutter_inappwebview: ^6.1.5
+  flutter_svg: ^2.0.10
   # flutter_local_notifications: ^18.0.1
   flutter_markdown: ^0.7.6
   flutter_native_splash: ^2.4.4
