@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// AnymeX Animated Logo Widget
 /// 
 /// This widget recreates your animated logo with:
-/// - Stroke drawing effect (starts at 0.5s, 2.3s duration)
 /// - Bottom-to-top fill (starts at 2.8s, 0.5s duration)
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
@@ -155,8 +154,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       </linearGradient>
       <linearGradient id="fillGradient" x1="0%" y1="100%" x2="0%" y2="0%">
         <stop offset="0%" stop-color="${_colorToRgba(colors[0], 1.0)}" />
-        <stop offset="${100 - fillHeight}%" stop-color="${_colorToRgba(colors.last, 0.0)}" />
-        <stop offset="${100 - fillHeight}%" stop-color="transparent" />
+        <stop offset="$fillHeight%" stop-color="${_colorToRgba(colors.last, 1.0)}" />
+        <stop offset="$fillHeight%" stop-color="transparent" />
         <stop offset="100%" stop-color="transparent" />
       </linearGradient>
     ''';
