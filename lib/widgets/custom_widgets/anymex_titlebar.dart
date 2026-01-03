@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -67,12 +68,10 @@ class _TitleBarWidget extends StatelessWidget {
                   color: defaultColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 18,
-                    height: 18,
+                child: AnymeXAnimatedLogo(
+                    size: 18,
+                    autoPlay: true,
+                    color: defaultColor,
                   ),
                 ),
               ),
