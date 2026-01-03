@@ -27,34 +27,18 @@ class AnymeXAnimatedLogo extends StatefulWidget {
 }
 
 class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
-    with TickerProviderStateMixin {
-  late AnimationController _strokeController;
+    with SingleTickerProviderStateMixin {
   late AnimationController _fillController;
   
-  late Animation<double> _strokeAnimation;
   late Animation<double> _fillAnimation;
 
   @override
   void initState() {
     super.initState();
     
-    // Stroke drawing animation (2.3s with 0.5s delay)
-    _strokeController = AnimationController(
-      duration: const Duration(milliseconds: 2300),
-      vsync: this,
-    );
-    
-    _strokeAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(
-      parent: _strokeController,
-      curve: Curves.easeInOut,
-    ));
-    
-    // Fill animation (0.5s at 2.8s) - bottom to top
+    // Fill animation (bottom to top)
     _fillController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
     
@@ -63,7 +47,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       end: 1,
     ).animate(CurvedAnimation(
       parent: _fillController,
-      curve: Curves.easeIn,
+      curve: Curves.easeInOut,
     ));
     
     if (widget.autoPlay) {
@@ -72,28 +56,19 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   Future<void> _startAnimation() async {
-    // Start stroke drawing after 500ms
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted) return;
-    _strokeController.forward();
-    
-    // Start fill after stroke completes (2800ms total: 500ms delay + 2300ms stroke)
-    await Future.delayed(const Duration(milliseconds: 2300));
-    if (!mounted) return;
+    // Start fill animation immediately
     await _fillController.forward();
     widget.onAnimationComplete?.call();
   }
 
   /// Replay the animation
   void replay() {
-    _strokeController.reset();
     _fillController.reset();
     _startAnimation();
   }
 
   @override
   void dispose() {
-    _strokeController.dispose();
     _fillController.dispose();
     super.dispose();
   }
@@ -104,10 +79,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(
-        animation: Listenable.merge([
-          _strokeAnimation,
-          _fillAnimation,
-        ]),
+        animation: _fillAnimation,
         builder: (context, child) {
           return _buildLogo();
         },
@@ -143,15 +115,11 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         const Color(0xFFD946EF),  // Pink
       ]);
     }
-
-    // Calculate the actual path length for proper stroke animation
-    final double pathLength = 2500;
-    final double currentDashOffset = pathLength * (1 - _strokeAnimation.value);
     
     // Calculate fill height for bottom-to-top effect
     final double fillHeight = _fillAnimation.value * 100;
 
-    // Logo SVG string with stroke animation and bottom-to-top fill
+    // Logo SVG string with bottom-to-top fill
     final logoSvg = '''
       <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -159,13 +127,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         </defs>
         <path
           d="M 112.215 360.035 L 112.834 357.67 L 126.867 336.96 L 140.899 316.25 L 150.631 303.52 L 160.363 290.789 L 168.307 283.587 L 176.25 276.384 L 184.31 271.867 L 192.37 267.349 L 199.374 264.887 L 206.378 262.426 L 217.512 261.042 L 228.647 259.658 L 238.69 257.09 L 248.733 254.521 L 258.326 249.907 L 267.919 245.293 L 276.548 237.222 L 285.177 229.15 L 292.543 219.4 L 299.91 209.65 L 312.802 190.8 L 325.695 171.95 L 330.184 166.981 L 334.673 162.012 L 339.472 159.563 L 344.271 157.115 L 364.911 156.999 L 385.55 156.882 L 388.475 156.941 L 391.4 157 L 391.4 159.646 L 369.718 191.148 L 348.035 222.65 L 336.893 237.56 L 325.75 252.47 L 313.464 265.291 L 301.178 278.112 L 290.714 285.915 L 280.25 293.719 L 269.85 298.742 L 259.45 303.766 L 249.7 306.419 L 239.95 309.072 L 216.032 312.843 L 192.114 316.613 L 191.115 318.382 L 190.116 320.15 L 179.758 336.4 L 169.4 352.65 L 164.279 356.31 L 159.158 359.97 L 154.054 361.154 L 148.95 362.338 L 130.273 362.369 L 111.597 362.4 Z M 354.35 361.163 L 340.05 360.376 L 334.745 357.574 L 329.439 354.771 L 326.192 350.461 L 322.946 346.15 L 309.3 324.7 L 295.655 303.25 L 294.722 301.66 L 293.79 300.07 L 310.397 283.785 L 327.005 267.5 L 328.601 267.5 L 347.325 297.412 L 366.05 327.324 L 376.125 342.995 L 386.2 358.665 L 386.2 360.797 L 383.275 361.581 L 380.35 362.364 L 374.5 362.157 L 368.65 361.95 Z M 160 276.894 L 160 275.816 L 173.147 253.133 L 186.294 230.45 L 201.904 203.8 L 217.514 177.15 L 222.484 170.478 L 227.454 163.806 L 234.282 160.403 L 241.11 157 L 245.73 157.008 L 250.35 157.016 L 255.094 158.333 L 259.838 159.651 L 264.844 164.589 L 269.85 169.527 L 278.625 184.093 L 287.4 198.658 L 287.4 203.413 L 281.073 211.732 L 274.746 220.051 L 266.869 227.526 L 258.993 235.001 L 256.327 235.001 L 251.608 226.563 L 246.889 218.124 L 245.89 217.507 L 244.89 216.889 L 235.474 233.745 L 226.058 250.6 L 213.898 250.6 L 204.407 253.23 L 194.915 255.86 L 186.072 260.314 L 177.229 264.767 L 168.614 271.37 L 160 277.972 Z"
-          stroke="$strokeFill"
-          stroke-width="3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
           fill="url(#fillGradient)"
-          stroke-dasharray="${pathLength}"
-          stroke-dashoffset="${currentDashOffset}"
         />
       </svg>
     ''';
