@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// AnymeX Animated Logo Widget
 /// 
 /// This widget recreates your animated logo with:
-/// - Bottom-to-top fill (starts at 2.8s, 0.5s duration)
+/// - Bottom-to-top fill (starts immediately, 2s duration)
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
   final bool autoPlay;
@@ -28,7 +28,6 @@ class AnymeXAnimatedLogo extends StatefulWidget {
 class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     with SingleTickerProviderStateMixin {
   late AnimationController _fillController;
-  
   late Animation<double> _fillAnimation;
 
   @override
@@ -87,7 +86,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   Widget _buildLogo() {
-    // Use gradient if provided, otherwise use color, otherwise default gradient
+    // Use theme colors
+    final theme = Theme.of(context);
     final bool useGradient = widget.gradient != null || widget.color == null;
     
     String strokeFill;
@@ -97,7 +97,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       // Use provided gradient
       final colors = widget.gradient is LinearGradient 
           ? (widget.gradient as LinearGradient).colors 
-          : [Colors.purple, Colors.blue];
+          : [theme.colorScheme.primary, theme.colorScheme.tertiary];
       
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient(colors);
@@ -106,12 +106,12 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([widget.color!, widget.color!]);
     } else {
-      // Default gradient (cyan to purple to pink - matching original SVG)
+      // Use theme colors for gradient (primary -> secondary -> tertiary)
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([
-        const Color(0xFF00D4FF),  // Cyan
-        const Color(0xFF7B4FF0),  // Purple
-        const Color(0xFFD946EF),  // Pink
+        theme.colorScheme.primary,
+        theme.colorScheme.secondary,
+        theme.colorScheme.tertiary,
       ]);
     }
     
