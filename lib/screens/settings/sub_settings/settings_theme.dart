@@ -1,15 +1,17 @@
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/liquid.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/dialogs/logo_animation_preview_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -34,6 +36,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late bool isOled;
   late int selectedVariantIndex;
   final settings = Get.find<Settings>();
+  late LogoAnimationType selectedLogoAnimation;
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -47,6 +50,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   void initState() {
     super.initState();
     _initializeDbVars();
+    _initializeLogoAnimation();
   }
 
   void handleThemeMode(String theme) {
@@ -93,6 +97,28 @@ class _SettingsThemeState extends State<SettingsTheme> {
             ? "Light"
             : "Dark";
     selectedVariantIndex = provider.selectedVariantIndex;
+  }
+
+  void _initializeLogoAnimation() {
+    final box = Hive.box("themeData");
+    final animationIndex = box.get('logoAnimationType', defaultValue: 0);
+    selectedLogoAnimation = LogoAnimationType.fromIndex(animationIndex);
+  }
+
+  void _showLogoAnimationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => LogoAnimationPreviewDialog(
+        initialAnimation: selectedLogoAnimation,
+        onConfirm: (LogoAnimationType animationType) {
+          setState(() {
+            selectedLogoAnimation = animationType;
+          });
+          final box = Hive.box("themeData");
+          box.put('logoAnimationType', animationType.index);
+        },
+      ),
+    );
   }
 
   void handleDefaultSwitch(bool value) {
@@ -315,6 +341,13 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           description: "Choose your favourite color!",
                           switchValue: customTheme,
                           onChanged: handleCustomThemeSwitch,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTile(
+                          icon: HugeIcons.strokeRoundedAnimation,
+                          title: "Logo Animation",
+                          description: "Customize your logo animation style",
+                          onTap: _showLogoAnimationDialog,
                         ),
                       ],
                     )),
