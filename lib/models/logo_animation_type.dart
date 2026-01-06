@@ -17,7 +17,6 @@ enum LogoAnimationType {
   spotifyPulse('Spotify Pulse', 'Energetic pulse with glow effect'),
   tikTokGlitch('TikTok RGB Glitch', 'RGB color split glitch effect'),
   instagramGradient('Instagram Shimmer', 'Gradient reveal with light shimmer'),
-  youTubeSlide('YouTube Slide', 'Smooth slide with spring effect'),
   discordBounce('Discord Bounce', 'Playful elastic bounce entrance'),
   telegramFlyIn('Telegram Fly-In', 'Paper plane diagonal fly-in'),
   twitterFlip('Twitter Flip', '3D card flip transformation'),
