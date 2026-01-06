@@ -1,16 +1,19 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
+import 'package:anymex/models/logo_animation_type.dart';
 
 /// AnymeX Animated Logo Widget
 /// 
-/// This widget recreates your animated logo with:
-/// - Bottom-to-top fill (starts immediately, 2s duration)
+/// This widget displays the animated logo with multiple animation styles
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
   final bool autoPlay;
   final VoidCallback? onAnimationComplete;
   final Color? color;
   final Gradient? gradient;
+  final LogoAnimationType? forceAnimationType;
   
   const AnymeXAnimatedLogo({
     Key? key,
@@ -19,6 +22,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
     this.onAnimationComplete,
     this.color,
     this.gradient,
+    this.forceAnimationType,
   }) : super(key: key);
 
   @override
@@ -27,25 +31,29 @@ class AnymeXAnimatedLogo extends StatefulWidget {
 
 class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     with SingleTickerProviderStateMixin {
-  late AnimationController _fillController;
-  late Animation<double> _fillAnimation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  late LogoAnimationType _animationType;
 
   @override
   void initState() {
     super.initState();
     
-    // Fill animation (bottom to top)
-    _fillController = AnimationController(
+    // Get animation type from storage or use default
+    _animationType = widget.forceAnimationType ?? _getStoredAnimationType();
+    
+    // Animation controller
+    _controller = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
     
-    _fillAnimation = Tween<double>(
+    _animation = Tween<double>(
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(
-      parent: _fillController,
-      curve: Curves.easeInOut,
+      parent: _controller,
+      curve: _getCurveForAnimationType(_animationType),
     ));
     
     if (widget.autoPlay) {
@@ -53,21 +61,54 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     }
   }
 
+  LogoAnimationType _getStoredAnimationType() {
+    try {
+      final box = Hive.box('themeData');
+      final index = box.get('logoAnimationType', defaultValue: 0);
+      return LogoAnimationType.fromIndex(index);
+    } catch (e) {
+      return LogoAnimationType.bottomToTop;
+    }
+  }
+
+  Curve _getCurveForAnimationType(LogoAnimationType type) {
+    switch (type) {
+      case LogoAnimationType.bottomToTop:
+      case LogoAnimationType.wave:
+        return Curves.easeInOut;
+      case LogoAnimationType.fadeIn:
+        return Curves.easeIn;
+      case LogoAnimationType.scale:
+        return Curves.elasticOut;
+      case LogoAnimationType.rotate:
+        return Curves.easeInOutCubic;
+      case LogoAnimationType.slideRight:
+        return Curves.easeOutCubic;
+      case LogoAnimationType.pulse:
+        return Curves.easeInOut;
+      case LogoAnimationType.glitch:
+        return Curves.linear;
+      case LogoAnimationType.bounce:
+        return Curves.bounceOut;
+      case LogoAnimationType.spiral:
+        return Curves.easeInOutQuart;
+    }
+  }
+
   Future<void> _startAnimation() async {
-    // Start fill animation immediately
-    await _fillController.forward();
+    await _controller.forward();
     widget.onAnimationComplete?.call();
   }
 
   /// Replay the animation
   void replay() {
-    _fillController.reset();
+    _controller.reset();
     _startAnimation();
   }
 
   @override
   void dispose() {
-    _fillController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -77,16 +118,132 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(
-        animation: _fillAnimation,
+        animation: _animation,
         builder: (context, child) {
-          return _buildLogo();
+          return _buildAnimatedLogo();
         },
       ),
     );
   }
 
-  Widget _buildLogo() {
-    // Use theme colors
+  Widget _buildAnimatedLogo() {
+    switch (_animationType) {
+      case LogoAnimationType.bottomToTop:
+        return _buildBottomToTopLogo();
+      case LogoAnimationType.fadeIn:
+        return _buildFadeInLogo();
+      case LogoAnimationType.scale:
+        return _buildScaleLogo();
+      case LogoAnimationType.rotate:
+        return _buildRotateLogo();
+      case LogoAnimationType.slideRight:
+        return _buildSlideRightLogo();
+      case LogoAnimationType.pulse:
+        return _buildPulseLogo();
+      case LogoAnimationType.glitch:
+        return _buildGlitchLogo();
+      case LogoAnimationType.bounce:
+        return _buildBounceLogo();
+      case LogoAnimationType.wave:
+        return _buildWaveLogo();
+      case LogoAnimationType.spiral:
+        return _buildSpiralLogo();
+    }
+  }
+
+  Widget _buildBottomToTopLogo() {
+    return ClipRect(
+      child: _buildBaseLogo(_animation.value * 100),
+    );
+  }
+
+  Widget _buildFadeInLogo() {
+    return Opacity(
+      opacity: _animation.value,
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  Widget _buildScaleLogo() {
+    return Transform.scale(
+      scale: _animation.value,
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  Widget _buildRotateLogo() {
+    return Transform.rotate(
+      angle: (1 - _animation.value) * math.pi * 2,
+      child: Opacity(
+        opacity: _animation.value,
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  Widget _buildSlideRightLogo() {
+    return Transform.translate(
+      offset: Offset((1 - _animation.value) * -widget.size, 0),
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  Widget _buildPulseLogo() {
+    final scale = 0.8 + (math.sin(_animation.value * math.pi * 4) * 0.1) + (_animation.value * 0.2);
+    return Transform.scale(
+      scale: scale,
+      child: Opacity(
+        opacity: _animation.value.clamp(0.0, 1.0),
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  Widget _buildGlitchLogo() {
+    final glitchOffset = _animation.value < 0.8 
+        ? math.Random(_animation.value.hashCode).nextDouble() * 10 - 5
+        : 0.0;
+    return Transform.translate(
+      offset: Offset(glitchOffset, 0),
+      child: Opacity(
+        opacity: _animation.value < 0.8 ? 0.5 + (_animation.value * 0.5) : 1.0,
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  Widget _buildBounceLogo() {
+    return Transform.translate(
+      offset: Offset(0, (1 - _animation.value) * -widget.size * 0.5),
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  Widget _buildWaveLogo() {
+    final fillHeight = _animation.value * 100;
+    final waveOffset = math.sin(_animation.value * math.pi * 2) * 5;
+    return Transform.translate(
+      offset: Offset(waveOffset, 0),
+      child: _buildBaseLogo(fillHeight),
+    );
+  }
+
+  Widget _buildSpiralLogo() {
+    final angle = (1 - _animation.value) * math.pi * 4;
+    final scale = _animation.value;
+    return Transform.rotate(
+      angle: angle,
+      child: Transform.scale(
+        scale: scale,
+        child: Opacity(
+          opacity: _animation.value,
+          child: _buildBaseLogo(100),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBaseLogo(double fillHeight) {
     final theme = Theme.of(context);
     final bool useGradient = widget.gradient != null || widget.color == null;
     
@@ -94,31 +251,24 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     String fillGradientDef;
     
     if (widget.gradient != null) {
-      // Use provided gradient
       final colors = widget.gradient is LinearGradient 
           ? (widget.gradient as LinearGradient).colors 
           : [theme.colorScheme.primary, theme.colorScheme.tertiary];
       
       strokeFill = 'url(#logoGradient)';
-      fillGradientDef = _createFillGradient(colors);
+      fillGradientDef = _createFillGradient(colors, fillHeight);
     } else if (widget.color != null) {
-      // Use single color
       strokeFill = 'url(#logoGradient)';
-      fillGradientDef = _createFillGradient([widget.color!, widget.color!]);
+      fillGradientDef = _createFillGradient([widget.color!, widget.color!], fillHeight);
     } else {
-      // Use theme colors for gradient (primary -> secondary -> tertiary)
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([
         theme.colorScheme.primary,
         theme.colorScheme.secondary,
         theme.colorScheme.tertiary,
-      ]);
+      ], fillHeight);
     }
-    
-    // Calculate fill height for bottom-to-top effect
-    final double fillHeight = _fillAnimation.value * 100;
 
-    // Logo SVG string with bottom-to-top fill
     final logoSvg = '''
       <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -138,10 +288,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  String _createFillGradient(List<Color> colors) {
-    final double fillHeight = _fillAnimation.value * 100;
-    
-    // Create gradient stops
+  String _createFillGradient(List<Color> colors, double fillHeight) {
     String gradientStops = '';
     for (int i = 0; i < colors.length; i++) {
       final offset = (i / (colors.length - 1)) * 100;
@@ -161,7 +308,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     ''';
   }
 
-  // Helper method to convert Color to rgba string (works better with SVG)
   String _colorToRgba(Color color, double opacity) {
     return 'rgba(${color.red}, ${color.green}, ${color.blue}, $opacity)';
   }
