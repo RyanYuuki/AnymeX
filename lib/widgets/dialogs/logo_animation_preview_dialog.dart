@@ -1,5 +1,4 @@
 /// Logo Animation Preview Dialog
-/// Place this file in: lib/widgets/dialogs/logo_animation_preview_dialog.dart
 
 import 'package:flutter/material.dart';
 import 'package:anymex/models/logo_animation_type.dart';
