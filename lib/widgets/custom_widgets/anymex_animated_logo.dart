@@ -1,12 +1,11 @@
+/// AnymeX Animated Logo Widget
+
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 
-/// AnymeX Animated Logo Widget
-/// 
-/// This widget displays the animated logo with multiple animation styles
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
   final bool autoPlay;
@@ -92,6 +91,34 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return Curves.bounceOut;
       case LogoAnimationType.spiral:
         return Curves.easeInOutQuart;
+      case LogoAnimationType.netflixSwoosh:
+        return Curves.easeInOutQuad;
+      case LogoAnimationType.spotifyPulse:
+        return Curves.easeInOut;
+      case LogoAnimationType.tikTokGlitch:
+        return Curves.linear;
+      case LogoAnimationType.instagramGradient:
+        return Curves.easeOut;
+      case LogoAnimationType.youTubeSlide:
+        return Curves.easeOutBack;
+      case LogoAnimationType.discordBounce:
+        return Curves.elasticOut;
+      case LogoAnimationType.telegramFlyIn:
+        return Curves.easeOutCubic;
+      case LogoAnimationType.twitterFlip:
+        return Curves.easeInOutCubic;
+      case LogoAnimationType.whatsAppBubble:
+        return Curves.easeInOut;
+      case LogoAnimationType.twitchScan:
+        return Curves.linear;
+      case LogoAnimationType.redditBob:
+        return Curves.easeInOut;
+      case LogoAnimationType.snapchatGhost:
+        return Curves.easeOut;
+      case LogoAnimationType.appleMinimal:
+        return Curves.easeInCubic;
+      case LogoAnimationType.amazonArrow:
+        return Curves.easeInOutCubic;
     }
   }
 
@@ -148,6 +175,34 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildWaveLogo();
       case LogoAnimationType.spiral:
         return _buildSpiralLogo();
+      case LogoAnimationType.netflixSwoosh:
+        return _buildNetflixSwooshLogo();
+      case LogoAnimationType.spotifyPulse:
+        return _buildSpotifyPulseLogo();
+      case LogoAnimationType.tikTokGlitch:
+        return _buildTikTokGlitchLogo();
+      case LogoAnimationType.instagramGradient:
+        return _buildInstagramGradientLogo();
+      case LogoAnimationType.youTubeSlide:
+        return _buildYouTubeSlideRightLogo();
+      case LogoAnimationType.discordBounce:
+        return _buildDiscordBounceLogo();
+      case LogoAnimationType.telegramFlyIn:
+        return _buildTelegramFlyInLogo();
+      case LogoAnimationType.twitterFlip:
+        return _buildTwitterFlipLogo();
+      case LogoAnimationType.whatsAppBubble:
+        return _buildWhatsAppBubblePopLogo();
+      case LogoAnimationType.twitchScan:
+        return _buildTwitchGlitchScanLogo();
+      case LogoAnimationType.redditBob:
+        return _buildRedditAntennaBobLogo();
+      case LogoAnimationType.snapchatGhost:
+        return _buildSnapchatGhostFadeLogo();
+      case LogoAnimationType.appleMinimal:
+        return _buildAppleMinimalLogo();
+      case LogoAnimationType.amazonArrow:
+        return _buildAmazonArrowLogo();
     }
   }
 
@@ -239,6 +294,268 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
           opacity: _animation.value,
           child: _buildBaseLogo(100),
         ),
+      ),
+    );
+  }
+
+  // Netflix-inspired swoosh animation
+  Widget _buildNetflixSwooshLogo() {
+    return Transform.translate(
+      offset: Offset(
+        math.sin(_animation.value * math.pi) * widget.size * 0.3,
+        (1 - _animation.value) * widget.size * 0.5,
+      ),
+      child: Opacity(
+        opacity: _animation.value,
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  // Spotify-inspired pulse with glow effect
+  Widget _buildSpotifyPulseLogo() {
+    final scale = 0.7 + (math.sin(_animation.value * math.pi * 6) * 0.15) + (_animation.value * 0.3);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Glow effect
+        Opacity(
+          opacity: (math.sin(_animation.value * math.pi * 3) * 0.3).clamp(0.0, 0.3),
+          child: Transform.scale(
+            scale: scale * 1.2,
+            child: _buildBaseLogo(100),
+          ),
+        ),
+        // Main logo
+        Transform.scale(
+          scale: scale,
+          child: Opacity(
+            opacity: _animation.value.clamp(0.0, 1.0),
+            child: _buildBaseLogo(100),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // TikTok-inspired RGB split glitch
+  Widget _buildTikTokGlitchLogo() {
+    final glitchIntensity = _animation.value < 0.7 ? (_animation.value * 0.3) : 0.0;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Red channel
+        Transform.translate(
+          offset: Offset(-glitchIntensity * 10, glitchIntensity * 5),
+          child: Opacity(
+            opacity: glitchIntensity > 0 ? 0.6 : 0,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(Colors.red, BlendMode.screen),
+              child: _buildBaseLogo(100),
+            ),
+          ),
+        ),
+        // Blue channel
+        Transform.translate(
+          offset: Offset(glitchIntensity * 10, -glitchIntensity * 5),
+          child: Opacity(
+            opacity: glitchIntensity > 0 ? 0.6 : 0,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.screen),
+              child: _buildBaseLogo(100),
+            ),
+          ),
+        ),
+        // Main logo
+        Opacity(
+          opacity: _animation.value,
+          child: _buildBaseLogo(100),
+        ),
+      ],
+    );
+  }
+
+  // Instagram-inspired gradient reveal
+  Widget _buildInstagramGradientLogo() {
+    return ClipRect(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Gradient overlay that reveals
+          Opacity(
+            opacity: _animation.value,
+            child: _buildBaseLogo(100),
+          ),
+          // Shimmer effect
+          if (_animation.value < 1.0)
+            Transform.translate(
+              offset: Offset(
+                -widget.size + (_animation.value * widget.size * 2),
+                -widget.size + (_animation.value * widget.size * 2),
+              ),
+              child: Container(
+                width: widget.size * 0.5,
+                height: widget.size * 2,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0),
+                      Colors.white.withOpacity(0.3),
+                      Colors.white.withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // YouTube-inspired slide with momentum
+  Widget _buildYouTubeSlideRightLogo() {
+    final easeOutBack = Curves.easeOutBack.transform(_animation.value);
+    return Transform.translate(
+      offset: Offset((1 - easeOutBack) * -widget.size * 1.5, 0),
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  // Discord-inspired bounce with overshoot
+  Widget _buildDiscordBounceLogo() {
+    final bounceValue = Curves.elasticOut.transform(_animation.value);
+    return Transform.translate(
+      offset: Offset(0, (1 - bounceValue) * -widget.size * 0.8),
+      child: _buildBaseLogo(100),
+    );
+  }
+
+  // Telegram-inspired paper plane fly-in
+  Widget _buildTelegramFlyInLogo() {
+    final flyProgress = Curves.easeOutCubic.transform(_animation.value);
+    return Transform.translate(
+      offset: Offset(
+        (1 - flyProgress) * widget.size * 0.8,
+        (1 - flyProgress) * -widget.size * 0.8,
+      ),
+      child: Transform.rotate(
+        angle: (1 - flyProgress) * math.pi * 0.5,
+        child: Opacity(
+          opacity: _animation.value,
+          child: _buildBaseLogo(100),
+        ),
+      ),
+    );
+  }
+
+  // Twitter/X-inspired flip reveal
+  Widget _buildTwitterFlipLogo() {
+    final flipAngle = (1 - _animation.value) * math.pi;
+    return Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.identity()
+        ..setEntry(3, 2, 0.001)
+        ..rotateY(flipAngle),
+      child: Opacity(
+        opacity: _animation.value,
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  // WhatsApp-inspired bubble pop
+  Widget _buildWhatsAppBubblePopLogo() {
+    final popScale = _animation.value < 0.5
+        ? _animation.value * 2.4
+        : 1.2 - ((_animation.value - 0.5) * 0.4);
+    return Transform.scale(
+      scale: popScale,
+      child: Opacity(
+        opacity: _animation.value.clamp(0.0, 1.0),
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  // Twitch-inspired glitch scan
+  Widget _buildTwitchGlitchScanLogo() {
+    final scanProgress = _animation.value;
+    final glitchOffset = math.Random((_animation.value * 100).toInt()).nextDouble() * 5;
+    
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _buildBaseLogo(100),
+        if (scanProgress < 1.0)
+          ClipRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: scanProgress,
+              child: Transform.translate(
+                offset: Offset(glitchOffset, 0),
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xFF9146FF),
+                    BlendMode.modulate,
+                  ),
+                  child: _buildBaseLogo(100),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Reddit-inspired antenna bob
+  Widget _buildRedditAntennaBobLogo() {
+    final bobAmount = math.sin(_animation.value * math.pi * 4) * 10 * (1 - _animation.value);
+    return Transform.translate(
+      offset: Offset(0, bobAmount),
+      child: Transform.rotate(
+        angle: math.sin(_animation.value * math.pi * 4) * 0.1 * (1 - _animation.value),
+        child: Opacity(
+          opacity: _animation.value.clamp(0.0, 1.0),
+          child: _buildBaseLogo(100),
+        ),
+      ),
+    );
+  }
+
+  // Snapchat-inspired ghost fade
+  Widget _buildSnapchatGhostFadeLogo() {
+    final waveOffset = math.sin(_animation.value * math.pi * 3) * 8;
+    return Transform.translate(
+      offset: Offset(waveOffset, (1 - _animation.value) * -20),
+      child: Opacity(
+        opacity: _animation.value,
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  // Apple-inspired smooth minimal fade
+  Widget _buildAppleMinimalLogo() {
+    return Transform.scale(
+      scale: 0.95 + (_animation.value * 0.05),
+      child: Opacity(
+        opacity: Curves.easeInCubic.transform(_animation.value),
+        child: _buildBaseLogo(100),
+      ),
+    );
+  }
+
+  // Amazon-inspired arrow smile
+  Widget _buildAmazonArrowLogo() {
+    final curveProgress = Curves.easeInOutCubic.transform(_animation.value);
+    return Transform.translate(
+      offset: Offset(
+        math.sin(curveProgress * math.pi) * 15,
+        -15 + (curveProgress * 15),
+      ),
+      child: Opacity(
+        opacity: _animation.value,
+        child: _buildBaseLogo(100),
       ),
     );
   }
