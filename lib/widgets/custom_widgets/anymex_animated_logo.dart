@@ -117,6 +117,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return Curves.easeInCubic;
       case LogoAnimationType.amazonArrow:
         return Curves.easeInOutCubic;
+      case LogoAnimationType.particleConvergence:
+        return Curves.easeInOutCubic;
     }
   }
 
@@ -199,6 +201,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildAppleMinimalLogo();
       case LogoAnimationType.amazonArrow:
         return _buildAmazonArrowLogo();
+      case LogoAnimationType.particleConvergence:
+        return _buildParticleConvergenceLogo();
     }
   }
 
@@ -544,6 +548,94 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         opacity: _animation.value,
         child: _buildBaseLogo(100),
       ),
+    );
+  }
+
+  // NEW: Particle Convergence Animation
+  Widget _buildParticleConvergenceLogo() {
+    // Animation phases:
+    // 0.0 - 0.6: Dots jumping and moving with color changes
+    // 0.6 - 1.0: Dots converge to center and logo appears
+
+    final particlePhase = _animation.value.clamp(0.0, 0.6) / 0.6;
+    final convergePhase = (_animation.value - 0.6).clamp(0.0, 0.4) / 0.4;
+    final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
+
+    // Generate particles
+    final particles = List.generate(12, (index) {
+      final angle = (index / 12) * 2 * math.pi;
+      final radius = widget.size * 0.4;
+      
+      // Initial scattered positions
+      final startX = math.cos(angle) * radius;
+      final startY = math.sin(angle) * radius;
+      
+      // Jumping motion
+      final jumpHeight = math.sin(particlePhase * math.pi * 3 + index) * 20;
+      final moveX = math.cos(particlePhase * math.pi * 2 + index) * 30;
+      final moveY = math.sin(particlePhase * math.pi * 2 + index) * 30;
+      
+      // Color cycling
+      final colorPhase = (particlePhase + (index / 12)) % 1.0;
+      final particleColor = HSVColor.fromAHSV(
+        1.0,
+        colorPhase * 360,
+        0.8,
+        1.0,
+      ).toColor();
+      
+      // Converge to center
+      final currentX = convergePhase < 1.0
+          ? startX + moveX - (startX + moveX) * convergePhase
+          : 0.0;
+      final currentY = convergePhase < 1.0
+          ? startY + moveY + jumpHeight - (startY + moveY + jumpHeight) * convergePhase
+          : 0.0;
+      
+      // Fade out particles as logo appears
+      final particleOpacity = convergePhase < 0.8
+          ? 1.0
+          : 1.0 - ((convergePhase - 0.8) / 0.2);
+      
+      return Positioned(
+        left: widget.size / 2 + currentX - 8,
+        top: widget.size / 2 + currentY - 8,
+        child: Opacity(
+          opacity: particleOpacity,
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: particleColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: particleColor.withOpacity(0.6),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Particles
+        ...particles,
+        // Logo appears after convergence with bottom-to-top fill
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: logoPhase,
+            child: Opacity(
+              opacity: logoPhase,
+              child: _buildBaseLogo(logoPhase * 100), // Bottom-to-top fill based on logo appearance
+            ),
+          ),
+      ],
     );
   }
 
