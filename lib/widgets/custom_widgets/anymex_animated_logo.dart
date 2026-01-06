@@ -99,8 +99,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return Curves.linear;
       case LogoAnimationType.instagramGradient:
         return Curves.easeOut;
-      case LogoAnimationType.youTubeSlide:
-        return Curves.easeOutBack;
       case LogoAnimationType.discordBounce:
         return Curves.elasticOut;
       case LogoAnimationType.telegramFlyIn:
@@ -183,8 +181,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildTikTokGlitchLogo();
       case LogoAnimationType.instagramGradient:
         return _buildInstagramGradientLogo();
-      case LogoAnimationType.youTubeSlide:
-        return _buildYouTubeSlideRightLogo();
       case LogoAnimationType.discordBounce:
         return _buildDiscordBounceLogo();
       case LogoAnimationType.telegramFlyIn:
@@ -412,21 +408,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // YouTube-inspired slide with momentum
-Widget _buildYouTubeSlideRightLogo() {
-  final easeOutBack = Curves.easeOutBack.transform(_animation.value).clamp(0.0, 1.15);
-  
-  return ClipRect(
-    child: OverflowBox(
-      maxWidth: widget.size * 2,
-      alignment: Alignment.centerLeft,
-      child: Transform.translate(
-        offset: Offset((1 - easeOutBack) * -widget.size * 1.2, 0),
-        child: _buildBaseLogo(100),
-      ),
-    ),
-  );
-}
   // Discord-inspired bounce with overshoot
   Widget _buildDiscordBounceLogo() {
     final bounceValue = Curves.elasticOut.transform(_animation.value);
