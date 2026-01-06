@@ -52,7 +52,7 @@ jobs:
       - uses: actions/setup-java@v3
         if: matrix.platform == 'android'
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: "17"
       
       - uses: subosito/flutter-action@v2
