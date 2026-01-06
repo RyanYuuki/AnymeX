@@ -1,5 +1,3 @@
-/// AnymeX Animated Logo Widget
-
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,7 +11,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
   final Color? color;
   final Gradient? gradient;
   final LogoAnimationType? forceAnimationType;
-  
+
   const AnymeXAnimatedLogo({
     Key? key,
     this.size = 200,
@@ -37,16 +35,16 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   @override
   void initState() {
     super.initState();
-    
+
     // Get animation type from storage or use default
     _animationType = widget.forceAnimationType ?? _getStoredAnimationType();
-    
+
     // Animation controller
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    
+
     _animation = Tween<double>(
       begin: 0,
       end: 1,
@@ -54,7 +52,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       parent: _controller,
       curve: _getCurveForAnimationType(_animationType),
     ));
-    
+
     if (widget.autoPlay) {
       _startAnimation();
     }
@@ -118,6 +116,16 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       case LogoAnimationType.amazonArrow:
         return Curves.easeInOutCubic;
       case LogoAnimationType.particleConvergence:
+        return Curves.easeInOutCubic;
+      case LogoAnimationType.particleExplosion:
+        return Curves.easeInOutCubic;
+      case LogoAnimationType.orbitalRings:
+        return Curves.easeInOutQuart;
+      case LogoAnimationType.pixelAssembly:
+        return Curves.easeOut;
+      case LogoAnimationType.liquidMorph:
+        return Curves.easeInOutSine;
+      case LogoAnimationType.geometricUnfold:
         return Curves.easeInOutCubic;
     }
   }
@@ -203,12 +211,26 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildAmazonArrowLogo();
       case LogoAnimationType.particleConvergence:
         return _buildParticleConvergenceLogo();
+      case LogoAnimationType.particleExplosion:
+        return _buildParticleExplosionLogo();
+      case LogoAnimationType.orbitalRings:
+        return _buildOrbitalRingsLogo();
+      case LogoAnimationType.pixelAssembly:
+        return _buildPixelAssemblyLogo();
+      case LogoAnimationType.liquidMorph:
+        return _buildLiquidMorphLogo();
+      case LogoAnimationType.geometricUnfold:
+        return _buildGeometricUnfoldLogo();
     }
   }
 
   Widget _buildBottomToTopLogo() {
     return ClipRect(
-      child: _buildBaseLogo(_animation.value * 100),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        heightFactor: _animation.value,
+        child: _buildBaseLogo(100),
+      ),
     );
   }
 
@@ -255,7 +277,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   Widget _buildGlitchLogo() {
-    final glitchOffset = _animation.value < 0.8 
+    final glitchOffset = _animation.value < 0.8
         ? math.Random(_animation.value.hashCode).nextDouble() * 10 - 5
         : 0.0;
     return Transform.translate(
@@ -472,7 +494,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Widget _buildTwitchGlitchScanLogo() {
     final scanProgress = _animation.value;
     final glitchOffset = math.Random((_animation.value * 100).toInt()).nextDouble() * 5;
-    
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -551,52 +573,35 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // NEW: Particle Convergence Animation
+  // PARTICLE CONVERGENCE - Colorful particles converge to form logo
   Widget _buildParticleConvergenceLogo() {
-    // Animation phases:
-    // 0.0 - 0.6: Dots jumping and moving with color changes
-    // 0.6 - 1.0: Dots converge to center and logo appears
-
     final particlePhase = _animation.value.clamp(0.0, 0.6) / 0.6;
     final convergePhase = (_animation.value - 0.6).clamp(0.0, 0.4) / 0.4;
     final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
 
-    // Generate particles
     final particles = List.generate(12, (index) {
       final angle = (index / 12) * 2 * math.pi;
       final radius = widget.size * 0.4;
-      
-      // Initial scattered positions
+
       final startX = math.cos(angle) * radius;
       final startY = math.sin(angle) * radius;
-      
-      // Jumping motion
+
       final jumpHeight = math.sin(particlePhase * math.pi * 3 + index) * 20;
       final moveX = math.cos(particlePhase * math.pi * 2 + index) * 30;
       final moveY = math.sin(particlePhase * math.pi * 2 + index) * 30;
-      
-      // Color cycling
+
       final colorPhase = (particlePhase + (index / 12)) % 1.0;
-      final particleColor = HSVColor.fromAHSV(
-        1.0,
-        colorPhase * 360,
-        0.8,
-        1.0,
-      ).toColor();
-      
-      // Converge to center
+      final particleColor = HSVColor.fromAHSV(1.0, colorPhase * 360, 0.8, 1.0).toColor();
+
       final currentX = convergePhase < 1.0
           ? startX + moveX - (startX + moveX) * convergePhase
           : 0.0;
       final currentY = convergePhase < 1.0
           ? startY + moveY + jumpHeight - (startY + moveY + jumpHeight) * convergePhase
           : 0.0;
-      
-      // Fade out particles as logo appears
-      final particleOpacity = convergePhase < 0.8
-          ? 1.0
-          : 1.0 - ((convergePhase - 0.8) / 0.2);
-      
+
+      final particleOpacity = convergePhase < 0.8 ? 1.0 : 1.0 - ((convergePhase - 0.8) / 0.2);
+
       return Positioned(
         left: widget.size / 2 + currentX - 8,
         top: widget.size / 2 + currentY - 8,
@@ -624,15 +629,357 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Particles
         ...particles,
-        // Logo appears after convergence with bottom-to-top fill
         if (logoPhase > 0)
           Transform.scale(
             scale: logoPhase,
             child: Opacity(
               opacity: logoPhase,
-              child: _buildBaseLogo(logoPhase * 100), // Bottom-to-top fill based on logo appearance
+              child: _buildBaseLogo(logoPhase * 100),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // PARTICLE EXPLOSION - Logo explodes into particles then reforms
+  Widget _buildParticleExplosionLogo() {
+    final explosionPhase = (_animation.value.clamp(0.0, 0.4) / 0.4);
+    final reformPhase = (_animation.value - 0.4).clamp(0.0, 0.6) / 0.6;
+
+    final logoOpacity = _animation.value < 0.2
+        ? 1.0 - (explosionPhase * 5)
+        : _animation.value > 0.6
+            ? reformPhase
+            : 0.0;
+
+    final particles = List.generate(20, (index) {
+      final angle = (index / 20) * 2 * math.pi;
+      final distance = explosionPhase * widget.size * 0.8;
+
+      final x = math.cos(angle) * distance * (1 - reformPhase);
+      final y = math.sin(angle) * distance * (1 - reformPhase);
+
+      final rotation = explosionPhase * math.pi * 4 * (1 - reformPhase);
+      final particleOpacity = _animation.value > 0.1 && _animation.value < 0.8 ? 1.0 : 0.0;
+
+      final colorIndex = (index / 20);
+      final color = HSVColor.fromAHSV(1.0, colorIndex * 360, 0.9, 1.0).toColor();
+
+      return Positioned(
+        left: widget.size / 2 + x - 6,
+        top: widget.size / 2 + y - 6,
+        child: Transform.rotate(
+          angle: rotation,
+          child: Opacity(
+            opacity: particleOpacity,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(2),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.5),
+                    blurRadius: 6,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...particles,
+        if (logoOpacity > 0)
+          Opacity(
+            opacity: logoOpacity,
+            child: _buildBaseLogo(logoOpacity * 100),
+          ),
+      ],
+    );
+  }
+
+  // ORBITAL RINGS - Rotating rings collapse into logo
+  Widget _buildOrbitalRingsLogo() {
+    final ringPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
+    final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
+
+    final rings = List.generate(4, (index) {
+      final ringSize = widget.size * (0.4 + (index * 0.2));
+      final rotation = ringPhase * math.pi * 2 * (index % 2 == 0 ? 1 : -1);
+      final scale = 1.0 - (ringPhase * (0.8 - index * 0.15));
+      final opacity = 1.0 - ringPhase;
+
+      final colors = [Colors.cyan, Colors.purple, Colors.pink, Colors.orange];
+
+      return Transform.rotate(
+        angle: rotation,
+        child: Opacity(
+          opacity: opacity,
+          child: Transform.scale(
+            scale: scale,
+            child: Container(
+              width: ringSize,
+              height: ringSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: colors[index], width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors[index].withOpacity(0.4),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...rings,
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: logoPhase,
+            child: Opacity(
+              opacity: logoPhase,
+              child: _buildBaseLogo(logoPhase * 100),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // PIXEL ASSEMBLY - Pixels randomly assemble the logo
+  Widget _buildPixelAssemblyLogo() {
+    final assemblyPhase = _animation.value;
+    final logoPhase = (_animation.value - 0.6).clamp(0.0, 0.4) / 0.4;
+
+    final gridSize = 8;
+    final pixels = <Widget>[];
+
+    for (int i = 0; i < gridSize; i++) {
+      for (int j = 0; j < gridSize; j++) {
+        final pixelIndex = i * gridSize + j;
+        final totalPixels = gridSize * gridSize;
+        final appearTime = (pixelIndex / totalPixels) * 0.6;
+        final pixelProgress = (assemblyPhase - appearTime).clamp(0.0, 0.2) / 0.2;
+
+        if (pixelProgress > 0) {
+          final pixelSize = widget.size / gridSize;
+          final startX = (math.Random(pixelIndex).nextDouble() - 0.5) * widget.size * 2;
+          final startY = (math.Random(pixelIndex + 1000).nextDouble() - 0.5) * widget.size * 2;
+
+          final currentX = startX - (startX * pixelProgress);
+          final currentY = startY - (startY * pixelProgress);
+
+          final colorValue = (pixelIndex / totalPixels);
+          final color = HSVColor.fromAHSV(1.0, colorValue * 360, 0.7, 0.9).toColor();
+
+          pixels.add(
+            Positioned(
+              left: (i * pixelSize) + currentX,
+              top: (j * pixelSize) + currentY,
+              child: Opacity(
+                opacity: pixelProgress,
+                child: Container(
+                  width: pixelSize - 2,
+                  height: pixelSize - 2,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (assemblyPhase < 0.8)
+          SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: Stack(children: pixels),
+          ),
+        if (logoPhase > 0)
+          Opacity(
+            opacity: logoPhase,
+            child: _buildBaseLogo(logoPhase * 100),
+          ),
+      ],
+    );
+  }
+
+  // LIQUID MORPH - Liquid drops merge into logo shape
+  Widget _buildLiquidMorphLogo() {
+    final dropPhase = _animation.value.clamp(0.0, 0.5) / 0.5;
+    final mergePhase = (_animation.value - 0.4).clamp(0.0, 0.4) / 0.4;
+    final logoPhase = (_animation.value - 0.6).clamp(0.0, 0.4) / 0.4;
+
+    final drops = List.generate(8, (index) {
+      final angle = (index / 8) * 2 * math.pi;
+      final radius = widget.size * 0.4;
+
+      final startX = math.cos(angle) * radius;
+      final startY = math.sin(angle) * radius - widget.size * 0.3;
+
+      final fallProgress = (dropPhase * 1.5).clamp(0.0, 1.0);
+      final bounceHeight = fallProgress < 1.0
+          ? startY + (widget.size * 0.3 * fallProgress)
+          : 0.0;
+
+      final currentX = startX - (startX * mergePhase);
+      final currentY = bounceHeight - (bounceHeight * mergePhase);
+
+      final dropSize = 15.0 + (mergePhase * 10);
+      final opacity = _animation.value < 0.7 ? 1.0 : 1.0 - logoPhase;
+
+      final colors = [
+        Colors.blue, Colors.cyan, Colors.teal, Colors.lightBlue,
+        Colors.indigo, Colors.blueAccent, Colors.cyanAccent, Colors.tealAccent,
+      ];
+
+      return Positioned(
+        left: widget.size / 2 + currentX - dropSize / 2,
+        top: widget.size / 2 + currentY - dropSize / 2,
+        child: Opacity(
+          opacity: opacity,
+          child: Container(
+            width: dropSize,
+            height: dropSize,
+            decoration: BoxDecoration(
+              color: colors[index],
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: colors[index].withOpacity(0.6),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...drops,
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: logoPhase,
+            child: Opacity(
+              opacity: logoPhase,
+              child: _buildBaseLogo(logoPhase * 100),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // GEOMETRIC UNFOLD - Geometric shapes unfold to reveal logo
+  Widget _buildGeometricUnfoldLogo() {
+    final unfoldPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
+    final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
+
+    final shapes = List.generate(6, (index) {
+      final angle = (index / 6) * 2 * math.pi;
+      final distance = (1 - unfoldPhase) * widget.size * 0.5;
+
+      final x = math.cos(angle) * distance;
+      final y = math.sin(angle) * distance;
+
+      final rotation = unfoldPhase * math.pi * 2;
+      final scale = 1.0 - (unfoldPhase * 0.5);
+
+      final shapeColors = [
+        Colors.red, Colors.orange, Colors.yellow,
+        Colors.green, Colors.blue, Colors.purple,
+      ];
+
+      Widget shape;
+      if (index % 3 == 0) {
+        shape = CustomPaint(
+          size: const Size(40, 40),
+          painter: _TrianglePainter(shapeColors[index]),
+        );
+      } else if (index % 3 == 1) {
+        shape = Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: shapeColors[index],
+            boxShadow: [
+              BoxShadow(
+                color: shapeColors[index].withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+        );
+      } else {
+        shape = Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: shapeColors[index],
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: shapeColors[index].withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+        );
+      }
+
+      return Positioned(
+        left: widget.size / 2 + x - 20,
+        top: widget.size / 2 + y - 20,
+        child: Transform.rotate(
+          angle: rotation,
+          child: Transform.scale(
+            scale: scale,
+            child: Opacity(
+              opacity: 1.0 - unfoldPhase,
+              child: shape,
+            ),
+          ),
+        ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...shapes,
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: logoPhase,
+            child: Opacity(
+              opacity: logoPhase,
+              child: _buildBaseLogo(logoPhase * 100),
             ),
           ),
       ],
@@ -642,15 +989,15 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Widget _buildBaseLogo(double fillHeight) {
     final theme = Theme.of(context);
     final bool useGradient = widget.gradient != null || widget.color == null;
-    
+
     String strokeFill;
     String fillGradientDef;
-    
+
     if (widget.gradient != null) {
-      final colors = widget.gradient is LinearGradient 
-          ? (widget.gradient as LinearGradient).colors 
+      final colors = widget.gradient is LinearGradient
+          ? (widget.gradient as LinearGradient).colors
           : [theme.colorScheme.primary, theme.colorScheme.tertiary];
-      
+
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient(colors, fillHeight);
     } else if (widget.color != null) {
@@ -690,7 +1037,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final offset = (i / (colors.length - 1)) * 100;
       gradientStops += '<stop offset="$offset%" stop-color="${_colorToRgba(colors[i], 1.0)}" />';
     }
-    
+
     return '''
       <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
         $gradientStops
@@ -707,4 +1054,29 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   String _colorToRgba(Color color, double opacity) {
     return 'rgba(${color.red}, ${color.green}, ${color.blue}, $opacity)';
   }
+}
+
+// Helper class for drawing triangles
+class _TrianglePainter extends CustomPainter {
+  final Color color;
+  _TrianglePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+    canvas.drawShadow(path, color.withOpacity(0.5), 10.0, true);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
