@@ -25,7 +25,10 @@ enum LogoAnimationType {
   redditBob('Reddit Bob', 'Antenna bobbing motion'),
   snapchatGhost('Snapchat Ghost', 'Floating ghost fade-in'),
   appleMinimal('Apple Minimal', 'Minimalist elegant fade'),
-  amazonArrow('Amazon Arrow', 'Smile curve path animation');
+  amazonArrow('Amazon Arrow', 'Smile curve path animation'),
+  
+  // Custom Particle Animation
+  particleConvergence('Particle Convergence', 'Colorful particles converge to form logo');
 
   final String displayName;
   final String description;
