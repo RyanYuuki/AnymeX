@@ -27,8 +27,13 @@ enum LogoAnimationType {
   appleMinimal('Apple Minimal', 'Minimalist elegant fade'),
   amazonArrow('Amazon Arrow', 'Smile curve path animation'),
   
-  // Custom Particle Animation
-  particleConvergence('Particle Convergence', 'Colorful particles converge to form logo');
+  // Custom Particle Animations
+  particleConvergence('Particle Convergence', 'Colorful particles converge to form logo'),
+  particleExplosion('Particle Explosion', 'Logo explodes into particles then reforms'),
+  orbitalRings('Orbital Rings', 'Rotating rings collapse into logo'),
+  pixelAssembly('Pixel Assembly', 'Pixels randomly assemble the logo'),
+  liquidMorph('Liquid Morph', 'Liquid drops merge into logo shape'),
+  geometricUnfold('Geometric Unfold', 'Geometric shapes unfold to reveal logo');
 
   final String displayName;
   final String description;
