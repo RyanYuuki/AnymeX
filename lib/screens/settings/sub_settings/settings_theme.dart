@@ -344,7 +344,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                         ),
                         const SizedBox(height: 10),
                         CustomTile(
-                          icon: HugeIcons.strokeRoundedAnimation,
+                          icon: HugeIcons.strokeRoundedPlayCircle, // Changed from strokeRoundedAnimation
                           title: "Logo Animation",
                           description: "Customize your logo animation style",
                           onTap: _showLogoAnimationDialog,
