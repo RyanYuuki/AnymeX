@@ -18,8 +18,14 @@ enum LogoAnimationType {
   orbitalRings('Orbital Rings', 'Multiple rotating rings collapse with glow'),
   pixelAssembly('Pixel Assembly', 'Dynamic pixels randomly assemble with rotation'),
   liquidMorph('Liquid Morph', 'Liquid drops merge with realistic physics'),
-  geometricUnfold('Geometric Unfold', 'Geometric shapes unfold with transformations');
-
+  geometricUnfold('Geometric Unfold', 'Geometric shapes unfold with transformations'),
+  
+  // Cinematic & Sci-Fi Effects
+  matrixRain('Matrix Rain', 'Digital rain code forms logo cyberpunk-style'),
+  shatter('Shatter', 'Glass shards explode outward then reform dramatically'),
+  hologram('Hologram', 'Futuristic holographic projection with scan lines and flicker'),
+  vortex('Vortex', 'Logo emerges from spinning dimensional vortex with depth');
+  
   final String displayName;
   final String description;
   
