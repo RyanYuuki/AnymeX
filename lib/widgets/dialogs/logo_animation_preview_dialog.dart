@@ -142,55 +142,61 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
   }
 
   Widget _buildPortraitLayout() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Preview Section
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: AnymeXAnimatedLogo(
-                key: _logoKey,
-                size: 140,
-                autoPlay: true,
-                forceAnimationType: _selectedAnimation,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Preview Section (Fixed height, not scrollable)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: AnymeXAnimatedLogo(
+                    key: _logoKey,
+                    size: 120,
+                    autoPlay: true,
+                    forceAnimationType: _selectedAnimation,
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                icon: const Icon(Icons.replay, size: 18),
+                label: const Text('Replay'),
+                onPressed: _replayAnimation,
+              ),
+              const SizedBox(height: 16),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Select Animation Style',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
           ),
-          
-          const SizedBox(height: 8),
-          
-          Center(
-            child: TextButton.icon(
-              icon: const Icon(Icons.replay, size: 18),
-              label: const Text('Replay'),
-              onPressed: _replayAnimation,
-            ),
+        ),
+        
+        // Animation List (Scrollable)
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildAnimationList(),
           ),
-          
-          const SizedBox(height: 16),
-          
-          const Text(
-            'Select Animation Style',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 12),
-          
-          // Animation List
-          _buildAnimationList(),
-          
-          const SizedBox(height: 12),
-        ],
-      ),
+        ),
+        
+        const SizedBox(height: 12),
+      ],
     );
   }
 
@@ -207,7 +213,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 240,
+                  height: 200,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
@@ -215,7 +221,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                   child: Center(
                     child: AnymeXAnimatedLogo(
                       key: _logoKey,
-                      size: 160,
+                      size: 140,
                       autoPlay: true,
                       forceAnimationType: _selectedAnimation,
                     ),
@@ -260,8 +266,6 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
 
   Widget _buildAnimationList() {
     return ListView.builder(
-      shrinkWrap: true,
-      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: LogoAnimationType.values.length,
       itemBuilder: (context, index) {
         final animationType = LogoAnimationType.values[index];
