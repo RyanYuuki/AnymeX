@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 
+/// Dialog for previewing and selecting logo animation styles
 class LogoAnimationPreviewDialog extends StatefulWidget {
   final LogoAnimationType initialAnimation;
   final Function(LogoAnimationType) onConfirm;
