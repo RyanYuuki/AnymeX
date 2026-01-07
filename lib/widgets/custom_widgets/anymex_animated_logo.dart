@@ -167,41 +167,18 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     }
   }
 
-  // Enhanced smooth bottom to top reveal with gradient mask
-  Widget _buildBottomToTopLogo() {
+  // bottom to top
+    Widget _buildBottomToTopLogo() {
     return ClipRect(
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            heightFactor: _animation.value,
-            child: _buildBaseLogo(100),
-          ),
-          if (_animation.value < 1.0)
-            Positioned(
-              bottom: widget.size * _animation.value - 20,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withOpacity(0),
-                      Colors.white.withOpacity(0.15),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-        ],
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        heightFactor: _animation.value,
+        child: _buildBaseLogo(100),
       ),
     );
   }
 
-  // Smooth professional fade with subtle scale
+  // fade in
   Widget _buildFadeInLogo() {
     final scale = 0.95 + (_animation.value * 0.05);
     return Transform.scale(
@@ -213,7 +190,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Enhanced elastic scale with smooth entrance
+  // scale
   Widget _buildScaleLogo() {
     return Transform.scale(
       scale: _animation.value,
@@ -224,7 +201,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Professional 3D rotation with depth
+  // rotation
   Widget _buildRotateLogo() {
     final rotationAngle = (1 - _animation.value) * math.pi * 1.5;
     return Transform(
@@ -239,7 +216,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Smooth horizontal slide with momentum
+  // horizontal slide
   Widget _buildSlideRightLogo() {
     final slideValue = Curves.easeOutCubic.transform(_animation.value);
     return Transform.translate(
@@ -251,7 +228,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Enhanced professional pulse with glow
+  // pulse
   Widget _buildPulseLogo() {
     final pulseScale = 0.85 + (math.sin(_animation.value * math.pi * 3) * 0.08) + (_animation.value * 0.15);
     final glowIntensity = math.sin(_animation.value * math.pi * 2) * 0.3;
@@ -278,7 +255,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Professional glitch with controlled distortion
+  // glitch
   Widget _buildGlitchLogo() {
     final phase = (_animation.value * 5) % 1.0;
     final glitchActive = phase > 0.85;
@@ -326,7 +303,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Enhanced bounce with realistic physics
+  // bounce
   Widget _buildBounceLogo() {
     final bounceProgress = Curves.bounceOut.transform(_animation.value);
     return Transform.translate(
@@ -357,7 +334,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // Enhanced spiral with depth perspective
+  // spiral
   Widget _buildSpiralLogo() {
     final spiralAngle = (1 - _animation.value) * math.pi * 3;
     final spiralScale = _animation.value * _animation.value;
@@ -381,7 +358,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // PARTICLE CONVERGENCE - Enhanced with trail effects
+  // PARTICLE CONVERGENCE
   Widget _buildParticleConvergenceLogo() {
     final particlePhase = _animation.value.clamp(0.0, 0.5) / 0.5;
     final convergePhase = (_animation.value - 0.4).clamp(0.0, 0.5) / 0.5;
@@ -445,7 +422,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // PARTICLE EXPLOSION - Enhanced with rotation and trails
+  // PARTICLE EXPLOSION
   Widget _buildParticleExplosionLogo() {
     final initialPhase = (_animation.value.clamp(0.0, 0.2) / 0.2);
     final explosionPhase = (_animation.value.clamp(0.2, 0.5) / 0.3);
@@ -516,7 +493,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // ORBITAL RINGS - Enhanced with multiple orbits and glow
+  // ORBITAL RINGS
   Widget _buildOrbitalRingsLogo() {
     final ringPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
     final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
@@ -581,7 +558,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // PIXEL ASSEMBLY - Enhanced with staggered timing and colors
+  // PIXEL ASSEMBLY
   Widget _buildPixelAssemblyLogo() {
     final assemblyPhase = _animation.value;
     final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
@@ -663,7 +640,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // LIQUID MORPH - Enhanced with better physics and trails
+  // LIQUID MORPH
   Widget _buildLiquidMorphLogo() {
     final dropPhase = _animation.value.clamp(0.0, 0.4) / 0.4;
     final mergePhase = (_animation.value - 0.3).clamp(0.0, 0.5) / 0.5;
@@ -743,7 +720,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // GEOMETRIC UNFOLD - Enhanced with dynamic transformations
+  // GEOMETRIC UNFOLD
   Widget _buildGeometricUnfoldLogo() {
     final unfoldPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
     final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
