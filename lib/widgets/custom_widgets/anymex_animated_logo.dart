@@ -132,6 +132,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
+          // Don't show anything during initial delay
+          if (_animation.value < 0.05) {
+            return const SizedBox.shrink();
+          }
           return _buildAnimatedLogo();
         },
       ),
@@ -184,13 +188,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   // bottom to top
-    Widget _buildBottomToTopLogo() {
+  Widget _buildBottomToTopLogo() {
     return ClipRect(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        heightFactor: _animation.value,
-        child: _buildBaseLogo(100),
-      ),
+      child: _buildBaseLogo(_animation.value * 100),
     );
   }
 
@@ -376,9 +376,12 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // PARTICLE CONVERGENCE
   Widget _buildParticleConvergenceLogo() {
-    final particlePhase = _animation.value.clamp(0.0, 0.5) / 0.5;
-    final convergePhase = (_animation.value - 0.4).clamp(0.0, 0.5) / 0.5;
-    final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
+    // Adjust timing so animation starts after initial delay
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final particlePhase = adjustedProgress.clamp(0.0, 0.5) / 0.5;
+    final convergePhase = (adjustedProgress - 0.4).clamp(0.0, 0.5) / 0.5;
+    final logoPhase = (adjustedProgress - 0.7).clamp(0.0, 0.3) / 0.3;
 
     final particles = List.generate(16, (index) {
       final angle = (index / 16) * 2 * math.pi;
@@ -440,16 +443,18 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // PARTICLE EXPLOSION
   Widget _buildParticleExplosionLogo() {
-    final initialPhase = (_animation.value.clamp(0.0, 0.2) / 0.2);
-    final explosionPhase = (_animation.value.clamp(0.2, 0.5) / 0.3);
-    final reformPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
+    // Adjust timing
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final initialPhase = (adjustedProgress.clamp(0.0, 0.2) / 0.2);
+    final explosionPhase = (adjustedProgress.clamp(0.2, 0.5) / 0.3);
+    final reformPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
-    final logoOpacity = _animation.value < 0.2
+    final logoOpacity = adjustedProgress < 0.2
         ? 1.0 - initialPhase
-        : _animation.value > 0.6
+        : adjustedProgress > 0.6
             ? reformPhase
             : 0.0;
-
     final particles = List.generate(24, (index) {
       final angle = (index / 24) * 2 * math.pi;
       final speed = 0.8 + (math.Random(index).nextDouble() * 0.4);
@@ -458,7 +463,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final y = math.sin(angle) * distance * (1 - reformPhase);
 
       final rotation = explosionPhase * math.pi * 6 * (1 - reformPhase);
-      final particleOpacity = _animation.value > 0.15 && _animation.value < 0.85 ? 1.0 : 0.0;
+      final particleOpacity = adjustedProgress > 0.15 && adjustedProgress < 0.85 ? 1.0 : 0.0;
 
       final colorIndex = (index / 24);
       final color = HSVColor.fromAHSV(1.0, colorIndex * 360, 0.95, 1.0).toColor();
@@ -511,8 +516,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // ORBITAL RINGS
   Widget _buildOrbitalRingsLogo() {
-    final ringPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
-    final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final ringPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
+    final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
     final rings = List.generate(5, (index) {
       final ringSize = widget.size * (0.3 + (index * 0.18));
@@ -576,8 +583,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // PIXEL ASSEMBLY
   Widget _buildPixelAssemblyLogo() {
-    final assemblyPhase = _animation.value;
-    final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    final assemblyPhase = adjustedProgress;
+    final logoPhase = (adjustedProgress - 0.7).clamp(0.0, 0.3) / 0.3;
 
     final gridSize = 10;
     final pixels = <Widget>[];
@@ -658,9 +666,11 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // LIQUID MORPH
   Widget _buildLiquidMorphLogo() {
-    final dropPhase = _animation.value.clamp(0.0, 0.4) / 0.4;
-    final mergePhase = (_animation.value - 0.3).clamp(0.0, 0.5) / 0.5;
-    final logoPhase = (_animation.value - 0.6).clamp(0.0, 0.4) / 0.4;
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final dropPhase = adjustedProgress.clamp(0.0, 0.4) / 0.4;
+    final mergePhase = (adjustedProgress - 0.3).clamp(0.0, 0.5) / 0.5;
+    final logoPhase = (adjustedProgress - 0.6).clamp(0.0, 0.4) / 0.4;
 
     final drops = List.generate(10, (index) {
       final angle = (index / 10) * 2 * math.pi;
@@ -676,7 +686,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final currentY = (bounceHeight + elasticity) * (1 - mergePhase);
 
       final dropSize = 12.0 + (mergePhase * 15) + (math.sin(dropPhase * math.pi * 3 + index) * 3);
-      final opacity = _animation.value < 0.75 ? 1.0 : 1.0 - logoPhase;
+      final opacity = adjustedProgress < 0.75 ? 1.0 : 1.0 - logoPhase;
 
       final colors = [
         Colors.blue.shade400,
@@ -738,8 +748,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // GEOMETRIC UNFOLD
   Widget _buildGeometricUnfoldLogo() {
-    final unfoldPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
-    final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final unfoldPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
+    final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
     final shapes = List.generate(8, (index) {
       final angle = (index / 8) * 2 * math.pi;
@@ -854,154 +866,341 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     );
   }
 
-  // MATRIX RAIN - Digital rain effect forming logo
-Widget _buildMatrixRainLogo() {
-  final rainPhase = _animation.value.clamp(0.0, 0.6) / 0.6;
-  final formPhase = (_animation.value - 0.4).clamp(0.0, 0.6) / 0.6;
-  final logoPhase = (_animation.value - 0.7).clamp(0.0, 0.3) / 0.3;
-
-  final columns = 15;
-  final rainDrops = List.generate(columns, (col) {
-    final drops = <Widget>[];
-    final dropsPerColumn = 8;
+  // MATRIX RAIN
+  Widget _buildMatrixRainLogo() {
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
     
-    for (int row = 0; row < dropsPerColumn; row++) {
-      final random = math.Random(col * 100 + row);
-      final dropDelay = random.nextDouble() * 0.3;
-      final dropProgress = (rainPhase - dropDelay).clamp(0.0, 1.0);
+    final rainPhase = adjustedProgress.clamp(0.0, 0.6) / 0.6;
+    final formPhase = (adjustedProgress - 0.4).clamp(0.0, 0.6) / 0.6;
+    final logoPhase = (adjustedProgress - 0.7).clamp(0.0, 0.3) / 0.3;
+
+    final columns = 15;
+    final rainDrops = List.generate(columns, (col) {
+      final drops = <Widget>[];
+      final dropsPerColumn = 8;
       
-      if (dropProgress > 0) {
-        final x = (col / columns) * widget.size;
-        final fallDistance = dropProgress * widget.size * 1.3;
-        final y = -20.0 + fallDistance - (row * 25);
+      for (int row = 0; row < dropsPerColumn; row++) {
+        final random = math.Random(col * 100 + row);
+        final dropDelay = random.nextDouble() * 0.3;
+        final dropProgress = (rainPhase - dropDelay).clamp(0.0, 1.0);
         
-        final opacity = dropProgress < 0.8 
-            ? 1.0 
-            : 1.0 - ((dropProgress - 0.8) / 0.2);
-        final fade = formPhase > 0 ? 1.0 - formPhase : 1.0;
-        
-        final brightness = 1.0 - (row / dropsPerColumn) * 0.6;
-        
-        drops.add(
-          Positioned(
-            left: x,
-            top: y,
-            child: Opacity(
-              opacity: opacity * fade,
-              child: Container(
-                width: widget.size / columns * 0.8,
-                height: 20,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.lightGreen.withOpacity(brightness),
-                      Colors.green.withOpacity(brightness * 0.3),
+        if (dropProgress > 0) {
+          final x = (col / columns) * widget.size;
+          final fallDistance = dropProgress * widget.size * 1.3;
+          final y = -20.0 + fallDistance - (row * 25);
+          
+          final opacity = dropProgress < 0.8 
+              ? 1.0 
+              : 1.0 - ((dropProgress - 0.8) / 0.2);
+          final fade = formPhase > 0 ? 1.0 - formPhase : 1.0;
+          
+          final brightness = 1.0 - (row / dropsPerColumn) * 0.6;
+          
+          drops.add(
+            Positioned(
+              left: x,
+              top: y,
+              child: Opacity(
+                opacity: opacity * fade,
+                child: Container(
+                  width: widget.size / columns * 0.8,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.lightGreen.withOpacity(brightness),
+                        Colors.green.withOpacity(brightness * 0.3),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.5 * brightness),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.withOpacity(0.5 * brightness),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    String.fromCharCode(33 + random.nextInt(94)),
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(brightness),
-                      fontSize: 12,
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.bold,
+                  child: Center(
+                    child: Text(
+                      String.fromCharCode(33 + random.nextInt(94)),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(brightness),
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
+          );
+        }
       }
-    }
-    return drops;
-  }).expand((x) => x).toList();
+      return drops;
+    }).expand((x) => x).toList();
 
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      if (formPhase < 1.0) ...rainDrops,
-      if (logoPhase > 0)
-        Transform.scale(
-          scale: Curves.easeOutBack.transform(logoPhase),
-          child: Opacity(
-            opacity: logoPhase,
-            child: _buildBaseLogo(logoPhase * 100),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (formPhase < 1.0) ...rainDrops,
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: Curves.easeOutBack.transform(logoPhase),
+            child: Opacity(
+              opacity: logoPhase,
+              child: _buildBaseLogo(logoPhase * 100),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // SHATTER
+  Widget _buildShatterLogo() {
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final shatterPhase = adjustedProgress.clamp(0.0, 0.5) / 0.5;
+    final reformPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
+
+    final shards = List.generate(20, (index) {
+      final angle = (index / 20) * 2 * math.pi;
+      final random = math.Random(index);
+      final distance = shatterPhase * widget.size * (0.6 + random.nextDouble() * 0.4);
+      final x = math.cos(angle) * distance * (1 - reformPhase);
+      final y = math.sin(angle) * distance * (1 - reformPhase);
+      
+      final rotation = shatterPhase * (random.nextDouble() * math.pi * 4 - math.pi * 2) * (1 - reformPhase);
+      final scale = 0.3 + (shatterPhase * 0.7) * (1 - reformPhase * 0.5);
+      
+      final shardOpacity = adjustedProgress < 0.2 
+          ? 1.0 - (adjustedProgress / 0.2)
+          : adjustedProgress > 0.8
+              ? reformPhase
+              : 0.8;
+
+      final colors = [
+        Colors.cyan.shade200,
+        Colors.blue.shade200,
+        Colors.lightBlue.shade200,
+        Colors.teal.shade200,
+      ];
+      final color = colors[index % colors.length];
+
+      return Positioned(
+        left: widget.size / 2 + x - 25,
+        top: widget.size / 2 + y - 25,
+        child: Transform.rotate(
+          angle: rotation,
+          child: Transform.scale(
+            scale: scale,
+            child: Opacity(
+              opacity: shardOpacity,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      color,
+                      color.withOpacity(0.3),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.4),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-    ],
-  );
-}
+      );
+    });
 
-// SHATTER - Logo breaks into glass shards and reforms
-Widget _buildShatterLogo() {
-  final shatterPhase = _animation.value.clamp(0.0, 0.5) / 0.5;
-  final reformPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
-
-  final shards = List.generate(20, (index) {
-    final angle = (index / 20) * 2 * math.pi;
-    final random = math.Random(index);
-    final distance = shatterPhase * widget.size * (0.6 + random.nextDouble() * 0.4);
-    final x = math.cos(angle) * distance * (1 - reformPhase);
-    final y = math.sin(angle) * distance * (1 - reformPhase);
-    
-    final rotation = shatterPhase * (random.nextDouble() * math.pi * 4 - math.pi * 2) * (1 - reformPhase);
-    final scale = 0.3 + (shatterPhase * 0.7) * (1 - reformPhase * 0.5);
-    
-    final shardOpacity = _animation.value < 0.2 
-        ? 1.0 - (_animation.value / 0.2)
-        : _animation.value > 0.8
+    final logoOpacity = adjustedProgress < 0.15 
+        ? 1.0 - (adjustedProgress / 0.15)
+        : adjustedProgress > 0.7
             ? reformPhase
-            : 0.8;
+            : 0.0;
 
-    final colors = [
-      Colors.cyan.shade200,
-      Colors.blue.shade200,
-      Colors.lightBlue.shade200,
-      Colors.teal.shade200,
-    ];
-    final color = colors[index % colors.length];
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (adjustedProgress > 0.1 && adjustedProgress < 0.9) ...shards,
+        if (logoOpacity > 0)
+          Transform.scale(
+            scale: Curves.easeOutBack.transform(logoOpacity),
+            child: Opacity(
+              opacity: logoOpacity,
+              child: _buildBaseLogo(logoOpacity * 100),
+            ),
+          ),
+      ],
+    );
+  }
 
-    return Positioned(
-      left: widget.size / 2 + x - 25,
-      top: widget.size / 2 + y - 25,
-      child: Transform.rotate(
-        angle: rotation,
-        child: Transform.scale(
-          scale: scale,
-          child: Opacity(
-            opacity: shardOpacity,
+  // HOLOGRAM
+  Widget _buildHologramLogo() {
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final scanPhase = adjustedProgress.clamp(0.0, 0.6) / 0.6;
+    final stabilizePhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
+    
+    final flickerOffset = adjustedProgress < 0.7 
+        ? math.sin(adjustedProgress * math.pi * 30) * 2 * (1 - stabilizePhase)
+        : 0.0;
+    
+    final scanLineY = -widget.size + (scanPhase * widget.size * 2);
+    final glitchActive = adjustedProgress > 0.3 && adjustedProgress < 0.6 && 
+                          ((adjustedProgress * 20) % 1.0) > 0.8;
+    
+    final logoOpacity = adjustedProgress.clamp(0.2, 0.9);
+    final hologramColor = Colors.cyan.shade400;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (scanPhase < 1.0)
+          Positioned(
+            top: scanLineY,
             child: Container(
-              width: 50,
-              height: 50,
+              width: widget.size,
+              height: 3,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    color,
-                    color.withOpacity(0.3),
+                    Colors.transparent,
+                    hologramColor,
+                    Colors.transparent,
                   ],
-                ),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.5),
-                  width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.4),
-                    blurRadius: 10,
+                    color: hologramColor.withOpacity(0.8),
+                    blurRadius: 15,
+                    spreadRadius: 3,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        
+        if (glitchActive)
+          Transform.translate(
+            offset: Offset(flickerOffset * 3, 0),
+            child: Opacity(
+              opacity: 0.3,
+              child: _buildBaseLogo(logoOpacity * 100),
+            ),
+          ),
+        
+        Transform.translate(
+          offset: Offset(flickerOffset, 0),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Opacity(
+                opacity: 0.4 * logoOpacity,
+                child: Transform.scale(
+                  scale: 1.1,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      hologramColor,
+                      BlendMode.srcATop,
+                    ),
+                    child: _buildBaseLogo(logoOpacity * 100),
+                  ),
+                ),
+              ),
+              Opacity(
+                opacity: logoOpacity * 0.9,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    hologramColor.withOpacity(0.6),
+                    BlendMode.modulate,
+                  ),
+                  child: _buildBaseLogo(logoOpacity * 100),
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        ...List.generate(8, (index) {
+          return Positioned(
+            top: (index / 8) * widget.size,
+            child: Opacity(
+              opacity: 0.1 * logoOpacity,
+              child: Container(
+                width: widget.size,
+                height: 1,
+                color: Colors.cyan.shade100,
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  // VORTEX
+  Widget _buildVortexLogo() {
+    final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
+    
+    final vortexPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
+    final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
+
+    final rings = List.generate(12, (index) {
+      final progress = (vortexPhase - (index * 0.05)).clamp(0.0, 1.0);
+      final ringSize = widget.size * (0.1 + index * 0.08) * progress;
+      final depth = (1 - progress) * 0.8;
+      final rotation = progress * math.pi * 6 + (index * math.pi / 6);
+      
+      final opacity = progress < 0.8 
+          ? (progress * 1.2).clamp(0.0, 1.0) 
+          : 1.0 - ((progress - 0.8) / 0.2);
+      
+      final zDepth = 1.0 - (depth * 0.5);
+      
+      final colors = [
+        Colors.purple.shade400,
+        Colors.deepPurple.shade400,
+        Colors.indigo.shade400,
+        Colors.blue.shade400,
+      ];
+      final color = colors[index % colors.length];
+
+      return Transform.scale(
+        scale: zDepth,
+        child: Transform.rotate(
+          angle: rotation,
+          child: Opacity(
+            opacity: opacity * (1 - logoPhase),
+            child: Container(
+              width: ringSize,
+              height: ringSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color,
+                  width: 2.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.6),
+                    blurRadius: 12 * zDepth,
                     spreadRadius: 2,
                   ),
                 ],
@@ -1009,215 +1208,30 @@ Widget _buildShatterLogo() {
             ),
           ),
         ),
-      ),
+      );
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...rings,
+        if (logoPhase > 0)
+          Transform.scale(
+            scale: Curves.easeOutBack.transform(logoPhase),
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateX((1 - logoPhase) * math.pi * 0.5),
+              child: Opacity(
+                opacity: logoPhase,
+                child: _buildBaseLogo(logoPhase * 100),
+              ),
+            ),
+          ),
+      ],
     );
-  });
-
-  final logoOpacity = _animation.value < 0.15 
-      ? 1.0 - (_animation.value / 0.15)
-      : _animation.value > 0.7
-          ? reformPhase
-          : 0.0;
-
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      if (_animation.value > 0.1 && _animation.value < 0.9) ...shards,
-      if (logoOpacity > 0)
-        Transform.scale(
-          scale: Curves.easeOutBack.transform(logoOpacity),
-          child: Opacity(
-            opacity: logoOpacity,
-            child: _buildBaseLogo(logoOpacity * 100),
-          ),
-        ),
-    ],
-  );
-}
-
-// HOLOGRAM - Sci-fi holographic projection effect
-Widget _buildHologramLogo() {
-  final scanPhase = _animation.value.clamp(0.0, 0.6) / 0.6;
-  final stabilizePhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
-  
-  final flickerOffset = _animation.value < 0.7 
-      ? math.sin(_animation.value * math.pi * 30) * 2 * (1 - stabilizePhase)
-      : 0.0;
-  
-  final scanLineY = -widget.size + (scanPhase * widget.size * 2);
-  final glitchActive = _animation.value > 0.3 && _animation.value < 0.6 && 
-                        ((_animation.value * 20) % 1.0) > 0.8;
-  
-  final logoOpacity = _animation.value.clamp(0.2, 0.9);
-  final hologramColor = Colors.cyan.shade400;
-
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      // Scanning line
-      if (scanPhase < 1.0)
-        Positioned(
-          top: scanLineY,
-          child: Container(
-            width: widget.size,
-            height: 3,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  hologramColor,
-                  Colors.transparent,
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: hologramColor.withOpacity(0.8),
-                  blurRadius: 15,
-                  spreadRadius: 3,
-                ),
-              ],
-            ),
-          ),
-        ),
-      
-      // Glitch effect
-      if (glitchActive)
-        Transform.translate(
-          offset: Offset(flickerOffset * 3, 0),
-          child: Opacity(
-            opacity: 0.3,
-            child: _buildBaseLogo(logoOpacity * 100),
-          ),
-        ),
-      
-      // Main hologram logo
-      Transform.translate(
-        offset: Offset(flickerOffset, 0),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Glow effect
-            Opacity(
-              opacity: 0.4 * logoOpacity,
-              child: Transform.scale(
-                scale: 1.1,
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    hologramColor,
-                    BlendMode.srcATop,
-                  ),
-                  child: _buildBaseLogo(logoOpacity * 100),
-                ),
-              ),
-            ),
-            // Main logo with hologram tint
-            Opacity(
-              opacity: logoOpacity * 0.9,
-              child: ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                  hologramColor.withOpacity(0.6),
-                  BlendMode.modulate,
-                ),
-                child: _buildBaseLogo(logoOpacity * 100),
-              ),
-            ),
-          ],
-        ),
-      ),
-      
-      // Horizontal scan lines
-      ...List.generate(8, (index) {
-        return Positioned(
-          top: (index / 8) * widget.size,
-          child: Opacity(
-            opacity: 0.1 * logoOpacity,
-            child: Container(
-              width: widget.size,
-              height: 1,
-              color: Colors.cyan.shade100,
-            ),
-          ),
-        );
-      }),
-    ],
-  );
-}
-
-// VORTEX - Logo emerges from spinning vortex
-Widget _buildVortexLogo() {
-  final vortexPhase = _animation.value.clamp(0.0, 0.7) / 0.7;
-  final logoPhase = (_animation.value - 0.5).clamp(0.0, 0.5) / 0.5;
-
-  final rings = List.generate(12, (index) {
-    final progress = (vortexPhase - (index * 0.05)).clamp(0.0, 1.0);
-    final ringSize = widget.size * (0.1 + index * 0.08) * progress;
-    final depth = (1 - progress) * 0.8;
-    final rotation = progress * math.pi * 6 + (index * math.pi / 6);
-    
-    final opacity = progress < 0.8 
-        ? (progress * 1.2).clamp(0.0, 1.0) 
-        : 1.0 - ((progress - 0.8) / 0.2);
-    
-    final zDepth = 1.0 - (depth * 0.5);
-    
-    final colors = [
-      Colors.purple.shade400,
-      Colors.deepPurple.shade400,
-      Colors.indigo.shade400,
-      Colors.blue.shade400,
-    ];
-    final color = colors[index % colors.length];
-
-    return Transform.scale(
-      scale: zDepth,
-      child: Transform.rotate(
-        angle: rotation,
-        child: Opacity(
-          opacity: opacity * (1 - logoPhase),
-          child: Container(
-            width: ringSize,
-            height: ringSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: color,
-                width: 2.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.6),
-                  blurRadius: 12 * zDepth,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  });
-
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      ...rings,
-      if (logoPhase > 0)
-        Transform.scale(
-          scale: Curves.easeOutBack.transform(logoPhase),
-          child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateX((1 - logoPhase) * math.pi * 0.5),
-            child: Opacity(
-              opacity: logoPhase,
-              child: _buildBaseLogo(logoPhase * 100),
-            ),
-          ),
-        ),
-    ],
-  );
-}
+  }
 
   Widget _buildBaseLogo(double fillHeight) {
     final theme = Theme.of(context);
