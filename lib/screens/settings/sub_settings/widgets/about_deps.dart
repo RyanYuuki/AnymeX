@@ -1,4 +1,5 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfo extends StatelessWidget {
@@ -93,16 +94,9 @@ class ProfileSection extends StatelessWidget {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/logo.png'),
-                fit: BoxFit.cover,
-              ),
-              border: Border.all(
-                color: theme.colorScheme.primary,
-                width: 2,
-              ),
+            child: AnymeXAnimatedLogo(
+              size: 80,
+              autoPlay: true,
             ),
           ),
           const SizedBox(height: 12),
@@ -130,8 +124,11 @@ class ProfileSection extends StatelessWidget {
             onTap: () async {
               await launchUrlHelper('https://github.com/');
             },
-            leading: const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/logo.png'),
+            leading: CircleAvatar(
+              child: AnymeXAnimatedLogo(
+                size: 40,
+                autoPlay: true,
+              ),
             ),
             title: "Developer",
             subtitle: "RyanYuuki",

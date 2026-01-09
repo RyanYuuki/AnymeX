@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -116,12 +117,9 @@ class AboutPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: CircleAvatar(
-                          backgroundColor: theme.colorScheme.surfaceContainer,
-                          child: Image.asset(
-                            'assets/images/logo_transparent.png',
-                            fit: BoxFit.cover,
-                          ),
+                        child: AnymeXAnimatedLogo(
+                          size: 70,
+                          autoPlay: true,
                         )),
                   ),
                 ),
