@@ -185,6 +185,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
 
+  final RxBool isLocked = false.obs;
+
   @override
   void onInit() {
     super.onInit();

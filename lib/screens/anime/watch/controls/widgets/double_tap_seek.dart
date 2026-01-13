@@ -93,16 +93,22 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleLeftSeek() {
+    // Block seek if locked
+    if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: true);
   }
 
   void _handleRightSeek() {
+    // Block seek if locked
+    if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: false);
   }
 
   void _performSeek({required bool isLeft}) {
+    if (widget.controller.isLocked.value) return;
+
     setState(() {
       _isInSeekMode = true;
       if (isLeft) {
@@ -176,6 +182,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _startHold() {
+    if (widget.controller.isLocked.value) return;
     if (!widget.controller.isPlaying.value || _isDragging) return;
 
     _longPressStarted = true;
@@ -203,6 +210,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _endHold() {
+    if (widget.controller.isLocked.value) return;
     _longPressStarted = false;
     _holdStartTimer?.cancel();
 
@@ -229,6 +237,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _setPlaybackRate(double rate) {
+    if (widget.controller.isLocked.value) return;
     try {
       _pendingSpeed = rate;
 
@@ -254,6 +263,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _updateSpeedFromSwipe(double deltaY) {
+    if (widget.controller.isLocked.value) return;
     if (!_isHolding) return;
 
     const double maxSwipeDistance = 100.0;
@@ -476,6 +486,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleDoubleTap(TapDownDetails details) {
+    if (widget.controller.isLocked.value) return;
     final screenWidth = MediaQuery.of(context).size.width;
     final tapPosition = details.globalPosition;
     final isLeft = tapPosition.dx < screenWidth / 2;
@@ -488,6 +499,10 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleSingleTap(TapDownDetails details) {
+    if (widget.controller.isLocked.value) {
+      widget.controller.toggleControls();
+      return;
+    }
     if (_isInSeekMode) {
       final screenWidth = MediaQuery.of(context).size.width;
       final tapX = details.localPosition.dx;
@@ -503,6 +518,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleKeyboard(KeyEvent event) {
+      if (widget.controller.isLocked.value) return;
     if (event is KeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _handleLeftSeek();

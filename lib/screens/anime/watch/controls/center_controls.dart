@@ -15,25 +15,30 @@ class CenterControls extends StatelessWidget {
     final isDesktop = !Platform.isAndroid && !Platform.isIOS;
     final theme = Theme.of(context);
 
-    return Obx(() => IgnorePointer(
-          ignoring: !controller.showControls.value,
-          child: Align(
-            alignment: Alignment.center,
-            child: AnimatedScale(
-              scale: controller.showControls.value ? 1.0 : 0.8,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutBack,
-              child: AnimatedOpacity(
-                opacity: controller.showControls.value ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-                child: isDesktop
-                    ? _buildDesktopLayout(theme)
-                    : _buildMobileLayout(theme),
-              ),
+    return Obx(() {
+      if (controller.isLocked.value) {
+        return const SizedBox.shrink();
+      }
+      return IgnorePointer(
+        ignoring: !controller.showControls.value,
+        child: Align(
+          alignment: Alignment.center,
+          child: AnimatedScale(
+            scale: controller.showControls.value ? 1.0 : 0.8,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutBack,
+            child: AnimatedOpacity(
+              opacity: controller.showControls.value ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              child: isDesktop
+                  ? _buildDesktopLayout(theme)
+                  : _buildMobileLayout(theme),
             ),
           ),
-        ));
+        ),
+      );
+    });
   }
 
   Widget _buildMobileLayout(ThemeData theme) {
