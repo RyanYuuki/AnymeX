@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>com.ryan.anymex</id>
-    <version>3.0.1-hotfix</version>
+    <version>3.0.3</version>
     <title>AnymeX</title>
     <authors>RyanYuuki</authors>
     <owners>Ryan_Yuuki</owners>
@@ -22,6 +22,7 @@
     <file src="tools\**" target="tools" />
   </files>
 </package>
+
 
 
 
