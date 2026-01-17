@@ -189,6 +189,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<int?> videoWidth = Rx<int?>(null);
   final Rx<int?> videoHeight = Rx<int?>(null);
 
+  final _subscriptions = <StreamSubscription>[];
+
   @override
   void onInit() {
     super.onInit();
@@ -344,9 +346,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       brightness.value = await ScreenBrightness.instance.application;
-      ScreenBrightness.instance.onCurrentBrightnessChanged.listen((value) {
-        brightness.value = value;
-      });
+      _subscriptions
+          .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
+        (value) {
+          brightness.value = value;
+        },
+      ));
     } catch (_) {}
   }
 
@@ -415,7 +420,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _initializeListeners() {
-    player.stream.position
+    _subscriptions.add(player.stream.position
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
       if (isSeeking.value) return;
@@ -431,19 +436,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (isPlaying.value && skipTimes != null && !isOffline.value) {
         _handleAutoSkip();
       }
-    });
+    }));
 
-    player.stream.duration.listen((dur) {
+    _subscriptions.add(player.stream.duration.listen((dur) {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
-    });
+    }));
 
-    player.stream.buffer.throttleTime(const Duration(seconds: 1)).listen((buf) {
+    _subscriptions.add(player.stream.buffer.throttleTime(const Duration(seconds: 1)).listen((buf) {
       bufferred.value = buf;
-    });
+    }));
 
-    player.stream.playing.listen((e) {
+    _subscriptions.add(player.stream.playing.listen((e) {
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
@@ -457,46 +462,46 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       } else {
         _updateRpc();
       }
-    });
+    }));
 
-    player.stream.buffering.listen((e) {
+    _subscriptions.add(player.stream.buffering.listen((e) {
       isBuffering.value = e;
-    });
+    }));
 
-    player.stream.tracks.listen((e) {
+    _subscriptions.add(player.stream.tracks.listen((e) {
       embeddedAudioTracks.value = e.audio;
       embeddedSubs.value = e.subtitle;
       embeddedQuality.value = e.video;
-    });
+    }));
 
-    player.stream.rate.listen((e) {
+    _subscriptions.add(player.stream.rate.listen((e) {
       playbackSpeed.value = e;
-    });
+    }));
 
-    player.stream.error.listen((e) {
+    _subscriptions.add(player.stream.error.listen((e) {
       Logger.i(e);
       if (e.toString().contains('Failed to open')) {
         snackBar('Failed, Dont Bother..');
       }
-    });
+    }));
 
-    player.stream.subtitle.listen((e) {
+    _subscriptions.add(player.stream.subtitle.listen((e) {
       subtitleText.value = e;
-    });
+    }));
 
-    player.stream.width.listen((width) {
+    _subscriptions.add(player.stream.width.listen((width) {
       videoWidth.value = width;
-    });
+    }));
 
-    player.stream.height.listen((height) {
+    _subscriptions.add(player.stream.height.listen((height) {
       videoHeight.value = height;
-    });
+    }));
 
-    player.stream.completed.listen((e) {
+    _subscriptions.add(player.stream.completed.listen((e) {
       if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
-    });
+    }));
   }
 
   void _initializeControlsAutoHide() {
@@ -656,6 +661,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
+    }
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
     }
     player.dispose();
     _seekDebounce?.cancel();
