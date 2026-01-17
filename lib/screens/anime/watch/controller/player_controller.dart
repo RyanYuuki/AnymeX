@@ -571,7 +571,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
               d.DEpisode(episodeNumber: episode.number, url: episode.link));
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
-      selectedVideo.value = episodeTracks.first;
+      final previousTrack = selectedVideo.value;
+      selectedVideo.value =
+          _findBestMatchingTrack(episodeTracks, previousTrack);
       _extractSubtitles();
       await _switchMedia(
           selectedVideo.value!.url, selectedVideo.value?.headers);
@@ -580,6 +582,49 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       Logger.i(e.toString());
     } finally {
       updateNavigatorState();
+    }
+  }
+
+  model.Video _findBestMatchingTrack(
+      List<model.Video> tracks, model.Video? previousTrack) {
+    if (previousTrack == null) {
+      return tracks.first;
+    }
+
+    final scoredTracks = <Map<String, dynamic>>[];
+    for (final track in tracks) {
+      int score = 0;
+      final quality = track.quality.toLowerCase();
+      final prevQuality = previousTrack.quality.toLowerCase();
+      final isDub = prevQuality.contains('dub');
+
+      if ((isDub && quality.contains('dub')) ||
+          (!isDub && !quality.contains('dub'))) {
+        score += 4;
+      }
+
+      final prevQualityRegex = RegExp(r'\d{3,4}p');
+      final prevQualityMatch = prevQualityRegex.firstMatch(prevQuality);
+      if (prevQualityMatch != null) {
+        if (quality.contains(prevQualityMatch.group(0)!)) {
+          score += 2;
+        }
+      }
+
+      final prevServer = prevQuality.split(' ').first;
+      if (quality.startsWith(prevServer)) {
+        score += 1;
+      }
+
+      scoredTracks.add({'track': track, 'score': score});
+    }
+
+    scoredTracks.sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
+
+    if (scoredTracks.isNotEmpty && scoredTracks.first['score'] > 0) {
+      return scoredTracks.first['track'] as model.Video;
+    } else {
+      return tracks.first;
     }
   }
 
