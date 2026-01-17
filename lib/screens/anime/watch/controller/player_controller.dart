@@ -186,7 +186,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
 
   final RxBool isLocked = false.obs;
-  final Rx<int?> videoWidth = Rx<int?>(null);
   final Rx<int?> videoHeight = Rx<int?>(null);
 
   final _subscriptions = <StreamSubscription>[];
@@ -487,10 +486,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _subscriptions.add(player.stream.subtitle.listen((e) {
       subtitleText.value = e;
-    }));
-
-    _subscriptions.add(player.stream.width.listen((width) {
-      videoWidth.value = width;
     }));
 
     _subscriptions.add(player.stream.height.listen((height) {
