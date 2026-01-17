@@ -186,6 +186,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
 
   final RxBool isLocked = false.obs;
+  final Rx<int?> videoWidth = Rx<int?>(null);
+  final Rx<int?> videoHeight = Rx<int?>(null);
 
   @override
   void onInit() {
@@ -480,6 +482,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     player.stream.subtitle.listen((e) {
       subtitleText.value = e;
+    });
+
+    player.stream.width.listen((width) {
+      videoWidth.value = width;
+    });
+
+    player.stream.height.listen((height) {
+      videoHeight.value = height;
     });
 
     player.stream.completed.listen((e) {
