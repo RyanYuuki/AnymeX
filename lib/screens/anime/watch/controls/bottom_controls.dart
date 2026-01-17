@@ -16,46 +16,87 @@ class BottomControls extends StatelessWidget {
     final controller = Get.find<PlayerController>();
     final isDesktop = !Platform.isAndroid && !Platform.isIOS;
 
-    return Obx(() => IgnorePointer(
-          ignoring: !controller.showControls.value,
-          child: AnimatedSlide(
-            offset: controller.showControls.value
-                ? Offset.zero
-                : const Offset(0, 1),
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOutCubic,
-            child: AnimatedOpacity(
-              opacity: controller.showControls.value ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.8),
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  top: false,
-                  left: false,
-                  right: false,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 32 : 20,
-                      vertical: isDesktop ? 24 : 8,
-                    ),
-                    child: _buildLayout(context),
+    return Obx(() {
+      if (controller.isLocked.value) {
+        if (!controller.showControls.value) {
+          return const SizedBox.shrink();
+        }
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black.withValues(alpha: 0.8),
+              ],
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            left: false,
+            right: false,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 32 : 20,
+                vertical: isDesktop ? 24 : 8,
+              ),
+              child: IgnorePointer(
+                ignoring: true,
+                child: Opacity(
+                  opacity: 0.7,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    child: const ProgressSlider(),
                   ),
                 ),
               ),
             ),
           ),
-        ));
+        );
+      }
+      return IgnorePointer(
+        ignoring: !controller.showControls.value,
+        child: AnimatedSlide(
+          offset: controller.showControls.value
+              ? Offset.zero
+              : const Offset(0, 1),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+          child: AnimatedOpacity(
+            opacity: controller.showControls.value ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.8),
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                left: false,
+                right: false,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktop ? 32 : 20,
+                    vertical: isDesktop ? 24 : 8,
+                  ),
+                  child: _buildLayout(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildLayout(BuildContext context) {
@@ -73,8 +114,9 @@ class BottomControls extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               color: Colors.transparent,
               child: InkWell(
-                onTap: () =>
-                    controller.megaSeek(controller.playerSettings.skipDuration),
+                onTap: controller.isLocked.value
+                    ? null // Disable skip while locked
+                    : () => controller.megaSeek(controller.playerSettings.skipDuration),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -90,6 +132,9 @@ class BottomControls extends StatelessWidget {
                   child: AnymexText(
                     text: '+${controller.playerSettings.skipDuration}',
                     variant: TextVariant.semiBold,
+                    color: controller.isLocked.value
+                        ? theme.colorScheme.onSurface.withOpacity(0.4)
+                        : null,
                   ),
                 ),
               ),
