@@ -36,9 +36,8 @@ class TopControls extends StatelessWidget {
       return IgnorePointer(
         ignoring: !controller.showControls.value,
         child: AnimatedSlide(
-          offset: controller.showControls.value
-              ? Offset.zero
-              : const Offset(0, -1),
+          offset:
+              controller.showControls.value ? Offset.zero : const Offset(0, -1),
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
@@ -168,8 +167,7 @@ class TopControls extends StatelessWidget {
           const SizedBox(width: 16),
           Obx(
             () => _QualityChip(
-                videoHeight: controller.videoHeight.value,
-                isMobile: true),
+                videoHeight: controller.videoHeight.value, isMobile: true),
           ),
           const SizedBox(width: 8),
           ControlButton(
@@ -298,8 +296,7 @@ class TopControls extends StatelessWidget {
         ),
         Obx(
           () => _QualityChip(
-              videoHeight: controller.videoHeight.value,
-              isMobile: false),
+              videoHeight: controller.videoHeight.value, isMobile: false),
         ),
         const SizedBox(width: 8),
         Container(
@@ -375,14 +372,17 @@ class _QualityChip extends StatelessWidget {
 
     final theme = Theme.of(context);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
+      padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
       ),
       child: Text(
         _qualityText,
-        style: (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
+        style:
+            (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
+                ?.copyWith(
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.w600,
           fontSize: isMobile ? 12 : null,
