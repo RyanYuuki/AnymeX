@@ -43,9 +43,9 @@ class BottomControls extends StatelessWidget {
                 vertical: isDesktop ? 24 : 8,
               ),
               child: IgnorePointer(
-                ignoring: true, // disables interaction
+                ignoring: true,
                 child: Opacity(
-                  opacity: 0.7, // visually indicate disabled state
+                  opacity: 0.7,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: const ProgressSlider(),
