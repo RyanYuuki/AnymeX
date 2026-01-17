@@ -386,7 +386,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.10),
                 blurRadius: 4,
-                offset: Offset(1, 2),
+                offset: const Offset(1, 2),
               ),
             ],
           ),
