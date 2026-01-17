@@ -359,6 +359,8 @@ class _QualityChip extends StatelessWidget {
 
   String get _qualityText {
     if (videoHeight == null) return '';
+    if (videoHeight! >= 2160) return '2160p';
+    if (videoHeight! >= 1440) return '1440p';
     if (videoHeight! >= 1080) return '1080p';
     if (videoHeight! >= 720) return '720p';
     if (videoHeight! >= 480) return '480p';
