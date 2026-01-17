@@ -619,7 +619,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       scoredTracks.add({'track': track, 'score': score});
     }
 
-    scoredTracks.sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
+    scoredTracks
+        .sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
 
     if (scoredTracks.isNotEmpty && scoredTracks.first['score'] > 0) {
       return scoredTracks.first['track'] as model.Video;
