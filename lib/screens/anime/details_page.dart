@@ -455,6 +455,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
+                                    //Todo: Implement figuring out how to extract website url from extension
                                     snackBar(
                                         "This feature is not implemented yet");
                                   },
