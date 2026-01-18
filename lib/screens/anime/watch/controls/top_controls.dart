@@ -36,9 +36,8 @@ class TopControls extends StatelessWidget {
       return IgnorePointer(
         ignoring: !controller.showControls.value,
         child: AnimatedSlide(
-          offset: controller.showControls.value
-              ? Offset.zero
-              : const Offset(0, -1),
+          offset:
+              controller.showControls.value ? Offset.zero : const Offset(0, -1),
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
@@ -166,6 +165,11 @@ class TopControls extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
+          Obx(
+            () => _QualityChip(
+                videoHeight: controller.videoHeight.value, isMobile: true),
+          ),
+          const SizedBox(width: 8),
           ControlButton(
             icon: Icons.lock_rounded,
             onPressed: () => controller.isLocked.value = true,
@@ -290,6 +294,11 @@ class TopControls extends StatelessWidget {
             ),
           ),
         ),
+        Obx(
+          () => _QualityChip(
+              videoHeight: controller.videoHeight.value, isMobile: false),
+        ),
+        const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -338,6 +347,49 @@ class TopControls extends StatelessWidget {
         ),
         const SizedBox(width: 20),
       ],
+    );
+  }
+}
+
+class _QualityChip extends StatelessWidget {
+  final int? videoHeight;
+  final bool isMobile;
+
+  const _QualityChip({required this.videoHeight, required this.isMobile});
+
+  String get _qualityText {
+    if (videoHeight == null) return '';
+    if (videoHeight! >= 2160) return '2160p';
+    if (videoHeight! >= 1440) return '1440p';
+    if (videoHeight! >= 1080) return '1080p';
+    if (videoHeight! >= 720) return '720p';
+    if (videoHeight! >= 480) return '480p';
+    if (videoHeight! >= 360) return '360p';
+    return '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_qualityText.isEmpty) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
+      ),
+      child: Text(
+        _qualityText,
+        style:
+            (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
+                ?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: isMobile ? 12 : null,
+        ),
+      ),
     );
   }
 }
