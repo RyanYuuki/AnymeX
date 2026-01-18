@@ -211,6 +211,28 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     super.dispose();
   }
 
+  Widget _buildPageButton({required VoidCallback onTap, required IconData icon}) {
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PlatformBuilder(
@@ -258,67 +280,31 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         Obx(
                           () {
                             if (selectedPage.value == 0) {
-                              return Container(
-                                height: 50,
-                                width: 60,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .outline
-                                        .withOpacity(0.2),
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainer
-                                      .withOpacity(0.5),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () async {
-                                      if (anilistData != null) {
-                                        final url =
-                                            'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
-                                        await launchUrl(Uri.parse(url));
+                              return _buildPageButton(
+                                onTap: () async {
+                                  if (anilistData != null) {
+                                    final url =
+                                        'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
+                                    try {
+                                      final launched =
+                                          await launchUrl(Uri.parse(url));
+                                      if (!launched) {
+                                        snackBar("Could not open link");
                                       }
-                                    },
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: const Icon(Icons.open_in_new),
-                                  ),
-                                ),
+                                    } catch (e) {
+                                      snackBar("Failed to open link");
+                                    }
+                                  }
+                                },
+                                icon: Icons.open_in_new,
                               );
                             } else {
-                              return Container(
-                                height: 50,
-                                width: 60,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .outline
-                                        .withOpacity(0.2),
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainer
-                                      .withOpacity(0.5),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      //Todo: Implement figuring out how to extract website url from extension
-                                      snackBar(
-                                          "This feature is not implemented yet");
-                                    },
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: const Icon(
-                                        Icons.travel_explore_outlined),
-                                  ),
-                                ),
+                              return _buildPageButton(
+                                onTap: () {
+                                  snackBar(
+                                      "This feature is not implemented yet");
+                                },
+                                icon: Icons.travel_explore_outlined,
                               );
                             }
                           },
