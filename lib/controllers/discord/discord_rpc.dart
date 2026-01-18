@@ -6,6 +6,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/utils/extension_utils.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
@@ -382,7 +383,46 @@ class DiscordRPCController extends GetxController {
     }
   }
 
-// Fixed updateAnimePresence method
+  /// Helper method to get the appropriate media URL based on service type
+  String _getMediaUrl(Media media) {
+    String mediaType;
+    String mediaId = media.id;
+
+    switch (media.serviceType) {
+      case ServicesType.anilist:
+      case ServicesType.mal:
+        // For AniList and MAL, determine if it's anime or manga
+        mediaType = media.mediaType.isAnime ? 'anime' : 'manga';
+        break;
+      case ServicesType.simkl:
+        // For Simkl, parse the ID to determine the type
+        final parts = media.id.split('*');
+        if (parts.length == 2) {
+          mediaId = parts[0];
+          final typeIndicator = parts[1];
+          if (typeIndicator == 'MOVIE') {
+            mediaType = 'movie';
+          } else if (typeIndicator == 'SERIES') {
+            mediaType = 'tv';
+          } else {
+            // Fallback to anime if type is unclear
+            mediaType = 'anime';
+          }
+        } else {
+          // Default to anime if no type indicator
+          mediaType = 'anime';
+        }
+        break;
+      default:
+        // Fallback for extensions or other services
+        mediaType = media.mediaType.isAnime ? 'anime' : 'manga';
+        break;
+    }
+
+    return getServiceMediaUrl(media.serviceType, mediaType, mediaId) ??
+        'https://anilist.co/${media.mediaType.isAnime ? 'anime' : 'manga'}/${media.id}';
+  }
+
   Future<void> updateAnimePresence({
     required Media anime,
     required Episode episode,
@@ -404,7 +444,7 @@ class DiscordRPCController extends GetxController {
     final episodeNumber = episode.number.toString();
     final episodeName = episode.title ?? 'Episode $episodeNumber';
     final coverUrl = anime.cover ?? anime.poster;
-    final anilistUrl = 'https://anilist.co/anime/${anime.id}';
+    final mediaUrl = _getMediaUrl(anime);
     final animeTitle = anime.title;
 
     if (isMobile) {
@@ -435,7 +475,7 @@ class DiscordRPCController extends GetxController {
               ],
               'metadata': {
                 'button_urls': [
-                  anilistUrl,
+                  mediaUrl,
                   'https://github.com/RyanYuuki/AnymeX/',
                 ],
               }
@@ -466,7 +506,7 @@ class DiscordRPCController extends GetxController {
               smallText: 'AnymeX',
             ),
             buttons: [
-              RPCButton(label: 'View Anime', url: anilistUrl),
+              RPCButton(label: 'View Anime', url: mediaUrl),
               const RPCButton(
                 label: 'Watch on AnymeX',
                 url: 'https://github.com/RyanYuuki/AnymeX/',
@@ -494,7 +534,7 @@ class DiscordRPCController extends GetxController {
 
     final episodeNumber = episode.number.toString();
     final coverUrl = anime.cover ?? anime.poster;
-    final anilistUrl = 'https://anilist.co/anime/${anime.id}';
+    final mediaUrl = _getMediaUrl(anime);
     final animeTitle = anime.title;
 
     final currentSeconds =
@@ -528,7 +568,7 @@ class DiscordRPCController extends GetxController {
               ],
               'metadata': {
                 'button_urls': [
-                  anilistUrl,
+                  mediaUrl,
                   'https://github.com/RyanYuuki/AnymeX/',
                 ],
               }
@@ -554,7 +594,7 @@ class DiscordRPCController extends GetxController {
               smallText: 'AnymeX',
             ),
             buttons: [
-              RPCButton(label: 'View Anime', url: anilistUrl),
+              RPCButton(label: 'View Anime', url: mediaUrl),
               const RPCButton(
                 label: 'Watch on AnymeX',
                 url: 'https://github.com/RyanYuuki/AnymeX/',
@@ -582,7 +622,7 @@ class DiscordRPCController extends GetxController {
     }
 
     final coverUrl = manga.cover ?? manga.poster;
-    final anilistUrl = 'https://anilist.co/manga/${manga.id}';
+    final mediaUrl = _getMediaUrl(manga);
     final mangaTitle = manga.title;
     final chapterNumber = chapter.number?.toString() ?? 'Unknown';
     final totalPages = chapter.totalPages ?? 1;
@@ -611,7 +651,7 @@ class DiscordRPCController extends GetxController {
               ],
               'metadata': {
                 'button_urls': [
-                  anilistUrl,
+                  mediaUrl,
                   'https://github.com/RyanYuuki/AnymeX/',
                 ],
               }
@@ -638,7 +678,7 @@ class DiscordRPCController extends GetxController {
               smallText: 'AnymeX',
             ),
             buttons: [
-              RPCButton(label: 'View Manga', url: anilistUrl),
+              RPCButton(label: 'View Manga', url: mediaUrl),
               const RPCButton(
                 label: 'Read on AnymeX',
                 url: 'https://github.com/RyanYuuki/AnymeX/',
@@ -659,8 +699,7 @@ class DiscordRPCController extends GetxController {
       return;
     }
 
-    final anilistUrl =
-        'https://anilist.co/${media.mediaType.isAnime ? 'anime' : 'manga'}/${media.id}';
+    final mediaUrl = _getMediaUrl(media);
     final animeTitle = media.title;
     final type = media.mediaType.name.capitalizeFirst ?? '';
 
@@ -688,7 +727,7 @@ class DiscordRPCController extends GetxController {
               ],
               'metadata': {
                 'button_urls': [
-                  anilistUrl,
+                  mediaUrl,
                   'https://github.com/RyanYuuki/AnymeX',
                 ],
               }
@@ -714,7 +753,7 @@ class DiscordRPCController extends GetxController {
               smallText: 'AnymeX',
             ),
             buttons: [
-              RPCButton(label: 'View $type', url: anilistUrl),
+              RPCButton(label: 'View $type', url: mediaUrl),
               const RPCButton(
                 label: 'Watch on AnymeX',
                 url: 'https://github.com/RyanYuuki/AnymeX/',

@@ -520,3 +520,36 @@ String getRandomTag({String? addition}) {
   }
   return DateTime.now().millisecond.toString();
 }
+
+/// Returns a service-specific media URL based on the service type, media type, and media ID.
+///
+/// For [ServicesType.aniList] and [ServicesType.mal], the [mediaType] should be 'anime' or 'manga'.
+/// For [ServicesType.simkl], the [mediaType] should be 'anime', 'tv', or 'movie'.
+///
+/// Returns `null` if the service type is not supported or if the media type is invalid for Simkl.
+String? getServiceMediaUrl(ServicesType serviceType, String mediaType, String mediaId) {
+  switch (serviceType) {
+    case ServicesType.anilist:
+      // AniList media URLs are distinguished by "anime" or "manga" in the path
+      return 'https://anilist.co/$mediaType/$mediaId';
+    case ServicesType.mal:
+      // MyAnimeList media URLs are distinguished by "anime" or "manga" in the path
+      return 'https://myanimelist.net/$mediaType/$mediaId';
+    case ServicesType.simkl:
+      // Simkl URLs depend on distinct media types
+      switch (mediaType.toLowerCase()) {
+        case 'anime':
+          return 'https://simkl.com/anime/$mediaId';
+        case 'tv':
+          return 'https://simkl.com/tv/$mediaId';
+        case 'movie':
+          return 'https://simkl.com/movies/$mediaId';
+        default:
+          // Unsupported media type for Simkl
+          return null;
+      }
+    default:
+      // Service not supported
+      return null;
+  }
+}
