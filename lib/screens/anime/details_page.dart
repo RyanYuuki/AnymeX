@@ -427,7 +427,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 }
                               },
                               borderRadius: BorderRadius.circular(16),
-                              child: const Icon(Icons.open_in_new)),
+                              child: Obx(() => Icon(selectedPage.value == 0
+                                    ? Icons.open_in_new
+                                    : Icons.travel_explore_outlined))),
                         ),
                       ),
                       const SizedBox(width: 7),

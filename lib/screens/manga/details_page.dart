@@ -282,7 +282,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                   }
                                 },
                                 borderRadius: BorderRadius.circular(16),
-                                child: const Icon(Icons.travel_explore)),
+                                child: Obx(() => Icon(selectedPage.value == 0
+                                    ? Icons.open_in_new
+                                    : Icons.travel_explore_outlined))),
                           ),
                         ),
                         const SizedBox(width: 7),
