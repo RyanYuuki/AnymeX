@@ -38,6 +38,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
@@ -254,6 +255,37 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   Obx(() {
                     return Row(
                       children: [
+                        Container(
+                          height: 50,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withOpacity(0.2),
+                            ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainer
+                                .withOpacity(0.5),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                                onTap: () async {
+                                  if (anilistData != null) {
+                                    final url =
+                                        'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
+                                    await launchUrl(Uri.parse(url));
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(16),
+                                child: const Icon(Icons.travel_explore)),
+                          ),
+                        ),
+                        const SizedBox(width: 7),
                         if (widget.media.serviceType !=
                                 ServicesType.extensions &&
                             widget.media.serviceType.onlineService.isLoggedIn
@@ -345,12 +377,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                     context,
                                     anilistData!,
                                     offlineStorage.animeCustomLists.value,
-                                    ItemType.anime);
+                                    ItemType.manga);
                               },
                               label: 'Add to Library',
                               icon: HugeIcons.strokeRoundedLibrary,
                             ),
-                          )
+                          ),
                         ]
                       ],
                     );

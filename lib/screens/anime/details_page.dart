@@ -42,6 +42,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
@@ -397,110 +398,151 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
               child: Column(
                 children: [
-                  Obx(() {
-                    return Row(
-                      children: [
-                        if (widget.media.serviceType !=
-                                ServicesType.extensions &&
-                            widget.media.serviceType.onlineService.isLoggedIn
-                                .value) ...[
-                          Expanded(
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .withOpacity(0.2),
-                                ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .withOpacity(0.5),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (widget.media.serviceType.onlineService
-                                        .isLoggedIn.value) {
-                                      showListEditorModal(context);
-                                    } else {
-                                      snackBar("You aren't logged in Genius.",
-                                          duration: 1000);
-                                    }
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AnymexText(
-                                        text: convertAniListStatus(
-                                            animeStatus.value),
-                                        variant: TextVariant.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 7),
-                          Container(
-                            height: 50,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .withOpacity(0.2),
-                              ),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .withOpacity(0.5),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                  onTap: () {
-                                    showCustomListDialog(
-                                        context,
-                                        anilistData!,
-                                        offlineStorage.animeCustomLists.value,
-                                        ItemType.anime);
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: const Icon(
-                                      HugeIcons.strokeRoundedLibrary)),
-                            ),
-                          ),
-                        ] else ...[
-                          Expanded(
-                            child: AnymexButton2(
-                              onTap: () {
-                                showCustomListDialog(
-                                    context,
-                                    anilistData!,
-                                    offlineStorage.animeCustomLists.value,
-                                    ItemType.anime);
-                              },
-                              label: 'Add to Library',
-                              icon: HugeIcons.strokeRoundedLibrary,
-                            ),
-                          )
-                        ]
-                      ],
-                    );
-                  }),
-                  const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          height: 50,
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .outline
+                                                  .withOpacity(0.2),
+                                            ),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceContainer
+                                                .withOpacity(0.5),
+                                          ),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                                onTap: () async {
+                                                  if (anilistData != null) {
+                                                    final url =
+                                                        'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
+                                                    await launchUrl(Uri.parse(url));
+                                                  }
+                                                },
+                                                borderRadius: BorderRadius.circular(16),
+                                                child: const Icon(Icons.open_in_new)),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 7),
+                                        Expanded(
+                                          child: Obx(() {
+                                            return Row(
+                                              children: [
+                                                if (widget.media.serviceType !=
+                                                        ServicesType.extensions &&
+                                                    widget.media.serviceType.onlineService
+                                                        .isLoggedIn.value) ...[
+                                                  Expanded(
+                                                    child: Container(
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(16),
+                                                        border: Border.all(
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .outline
+                                                              .withOpacity(0.2),
+                                                        ),
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surfaceContainer
+                                                            .withOpacity(0.5),
+                                                      ),
+                                                      child: Material(
+                                                        color: Colors.transparent,
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            if (widget.media.serviceType
+                                                                    .onlineService
+                                                                    .isLoggedIn.value) {
+                                                              showListEditorModal(context);
+                                                            } else {
+                                                              snackBar(
+                                                                  "You aren't logged in Genius.",
+                                                                  duration: 1000);
+                                                            }
+                                                          },
+                                                          borderRadius: BorderRadius.circular(16),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.center,
+                                                            children: [
+                                                              AnymexText(
+                                                                text: convertAniListStatus(
+                                                                    animeStatus.value),
+                                                                variant: TextVariant.bold,
+                                                                color: Theme.of(context)
+                                                                    .colorScheme
+                                                                    .primary,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 7),
+                                                  Container(
+                                                    height: 50,
+                                                    width: 60,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(16),
+                                                      border: Border.all(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .outline
+                                                            .withOpacity(0.2),
+                                                      ),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .surfaceContainer
+                                                          .withOpacity(0.5),
+                                                    ),
+                                                    child: Material(
+                                                      color: Colors.transparent,
+                                                      child: InkWell(
+                                                          onTap: () {
+                                                            showCustomListDialog(
+                                                                context,
+                                                                anilistData!,
+                                                                offlineStorage
+                                                                    .animeCustomLists.value,
+                                                                ItemType.anime);
+                                                          },
+                                                          borderRadius: BorderRadius.circular(16),
+                                                          child: const Icon(
+                                                              HugeIcons.strokeRoundedLibrary)),
+                                                    ),
+                                                  ),
+                                                ] else ...[
+                                                  Expanded(
+                                                    child: AnymexButton2(
+                                                      onTap: () {
+                                                        showCustomListDialog(
+                                                            context,
+                                                            anilistData!,
+                                                            offlineStorage
+                                                                .animeCustomLists.value,
+                                                            ItemType.anime);
+                                                      },
+                                                      label: 'Add to Library',
+                                                      icon: HugeIcons.strokeRoundedLibrary,
+                                                    ),
+                                                  ),
+                                                ]
+                                              ],
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    ),                  const SizedBox(height: 10),
                   _buildProgressContainer(context)
                 ],
               ),
