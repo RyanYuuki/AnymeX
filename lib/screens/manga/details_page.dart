@@ -255,73 +255,73 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   Obx(() {
                     return Row(
                       children: [
-                      Obx(
-                        () {
-                          if (selectedPage.value == 0) {
-                            return Container(
-                              height: 50,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
+                        Obx(
+                          () {
+                            if (selectedPage.value == 0) {
+                              return Container(
+                                height: 50,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withOpacity(0.2),
+                                  ),
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .outline
-                                      .withOpacity(0.2),
+                                      .surfaceContainer
+                                      .withOpacity(0.5),
                                 ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .withOpacity(0.5),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () async {
-                                    if (anilistData != null) {
-                                      final url =
-                                          'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
-                                      await launchUrl(Uri.parse(url));
-                                    }
-                                  },
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      if (anilistData != null) {
+                                        final url =
+                                            'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
+                                        await launchUrl(Uri.parse(url));
+                                      }
+                                    },
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: const Icon(Icons.open_in_new),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                height: 50,
+                                width: 60,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  child: const Icon(Icons.open_in_new),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Container(
-                              height: 50,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withOpacity(0.2),
+                                  ),
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .outline
-                                      .withOpacity(0.2),
+                                      .surfaceContainer
+                                      .withOpacity(0.5),
                                 ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .withOpacity(0.5),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    snackBar(
-                                        "This feature is not implemented yet");
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child:
-                                      const Icon(Icons.travel_explore_outlined),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      snackBar(
+                                          "This feature is not implemented yet");
+                                    },
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: const Icon(
+                                        Icons.travel_explore_outlined),
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                              );
+                            }
+                          },
+                        ),
                         const SizedBox(width: 7),
                         if (widget.media.serviceType !=
                                 ServicesType.extensions &&
