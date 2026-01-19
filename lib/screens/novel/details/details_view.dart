@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
@@ -15,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final Media media;
@@ -56,6 +59,49 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     controller.dispose();
     Get.delete<NovelDetailsController>();
     super.dispose();
+  }
+
+  String? _getServiceUrl() {
+    final media = controller.media.value;
+
+    if (media.serviceType == ServicesType.extensions) {
+      return media.id; // The ID is the URL for extensions
+    }
+
+    switch (media.serviceType) {
+      case ServicesType.anilist:
+        return 'https://anilist.co/manga/${media.id}';
+      case ServicesType.mal:
+        return 'https://myanimelist.net/manga/${media.idMal}';
+      case ServicesType.simkl:
+        // Simkl doesn't really have novels in the same way, but let's see if we can link to something
+        final simklId = media.id.toString().split('*').first;
+        return 'https://simkl.com/tv/$simklId'; // Guessing tv, might be incorrect
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildPageButton({required VoidCallback onTap, required IconData icon}) {
+    return Container(
+      height: 56, // Match height of add to library button
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
   }
 
   @override
@@ -129,6 +175,25 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   Widget _buildAddToLibraryButton(BuildContext context) {
     return Row(
       children: [
+        _buildPageButton(
+          onTap: () async {
+            final url = _getServiceUrl();
+            if (url != null) {
+              try {
+                final launched = await launchUrl(Uri.parse(url));
+                if (!launched) {
+                  snackBar("Could not open link");
+                }
+              } catch (e) {
+                snackBar("Failed to open link");
+              }
+            } else {
+              snackBar("Service URL not available");
+            }
+          },
+          icon: Icons.open_in_new,
+        ),
+        const SizedBox(width: 7),
         Expanded(
           child: Container(
             height: 56,
