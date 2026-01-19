@@ -345,6 +345,30 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
+  String? _getServiceUrl() {
+    if (anilistData == null) return null;
+    
+    switch (widget.media.serviceType) {
+      case ServicesType.anilist:
+        return 'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
+      case ServicesType.mal:
+        return 'https://myanimelist.net/anime/${anilistData!.idMal}';
+      case ServicesType.simkl:
+        // Simkl uses ID format like "12345*MOVIE" or "12345*SERIES"
+        final simklId = anilistData!.id.toString().split('*').first;
+        final isMovie = anilistData!.id.toString().split('*').last == "MOVIE";
+        
+        if (isMovie) {
+          return 'https://simkl.com/movies/$simklId';
+        } else {
+          // For series, Simkl uses /tv/ endpoint
+          return 'https://simkl.com/tv/$simklId';
+        }
+      default:
+        return null;
+    }
+  }
+
   Widget _buildPageButton({required VoidCallback onTap, required IconData icon}) {
     return Container(
       height: 50,
@@ -428,16 +452,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                             return _buildPageButton(
                               onTap: () async {
                                 if (anilistData != null) {
-                                  final url =
-                                      'https://anilist.co/${anilistData!.mediaType.name}/${anilistData!.id}';
-                                  try {
-                                    final launched =
-                                        await launchUrl(Uri.parse(url));
-                                    if (!launched) {
-                                      snackBar("Could not open link");
+                                  final url = _getServiceUrl();
+                                  if (url != null) {
+                                    try {
+                                      final launched = await launchUrl(Uri.parse(url));
+                                      if (!launched) {
+                                        snackBar("Could not open link");
+                                      }
+                                    } catch (e) {
+                                      snackBar("Failed to open link");
                                     }
-                                  } catch (e) {
-                                    snackBar("Failed to open link");
+                                  } else {
+                                    snackBar("Service URL not available");
                                   }
                                 }
                               },
