@@ -178,7 +178,7 @@ class ReaderSettings {
                   Obx(() {
                     return CustomSwitchTile(
                       icon: Icons.crop_rounded,
-                      title: "Crop Images",
+                      title: "Crop Borders",
                       description: "Crop white/black borders from pages",
                       switchValue: controller.cropImages.value,
                       onChanged: (val) => controller.toggleCropImages(),
