@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 
 /// Fetches an image from [url] using optional [headers], crops the white
 /// margins and returns the cropped bytes.
-Future<Uint8List> fetchAndCropImageBytes(String url,
-    {Map<String, String>? headers}) async {
+Future<Uint8List> fetchAndCropImageBytes(
+  String url, {
+  Map<String, String>? headers,
+  Duration? timeout,
+}) async {
   try {
     final uri = Uri.parse(url);
-    final response = await http.get(uri, headers: headers);
+    final effectiveTimeout = timeout ?? const Duration(seconds: 10);
+    final response =
+        await http.get(uri, headers: headers).timeout(effectiveTimeout);
     if (response.statusCode == 200) {
       final original = response.bodyBytes;
       // Reuse the existing cropper to trim any white/black borders.
