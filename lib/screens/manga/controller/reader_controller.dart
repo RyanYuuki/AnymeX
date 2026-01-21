@@ -268,7 +268,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
-    cropImages.value = settingsController.preferences.get('crop_images', defaultValue: false);
+    cropImages.value =
+        settingsController.preferences.get('crop_images', defaultValue: false);
   }
 
   void _savePreferences() {
