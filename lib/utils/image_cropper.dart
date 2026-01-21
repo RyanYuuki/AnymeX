@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 
 /// Fetches an image from [url] using optional [headers], crops the white
 /// margins and returns the cropped bytes.
-Future<Uint8List> fetchAndCropImageBytes(String url, {Map<String, String>? headers}) async {
+Future<Uint8List> fetchAndCropImageBytes(String url,
+    {Map<String, String>? headers}) async {
   try {
     final uri = Uri.parse(url);
     final response = await http.get(uri, headers: headers);
@@ -63,15 +64,16 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
 
   Future<Uint8List> _loadBytes() async {
     // Include headers in the cache key to support different header sets per request
-    final headersKey = (widget.headers?.entries
-            .map((e) => '${e.key}:${e.value}')
-            .join(';'))
-        ?.toString() ?? '';
+    final headersKey =
+        (widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';'))
+                ?.toString() ??
+            '';
     final cacheKey = '${widget.url}#$headersKey';
     if (_cache.containsKey(cacheKey)) {
       return _cache[cacheKey]!;
     }
-    final bytes = await fetchAndCropImageBytes(widget.url, headers: widget.headers);
+    final bytes =
+        await fetchAndCropImageBytes(widget.url, headers: widget.headers);
     if (bytes.isNotEmpty) {
       _cache[cacheKey] = bytes;
     }
@@ -86,7 +88,9 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
         if (snapshot.connectionState != ConnectionState.done) {
           return widget.placeholder ?? const SizedBox.shrink();
         }
-        if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+        if (snapshot.hasData &&
+            snapshot.data != null &&
+            snapshot.data!.isNotEmpty) {
           return Image.memory(
             snapshot.data!,
             width: widget.width,
