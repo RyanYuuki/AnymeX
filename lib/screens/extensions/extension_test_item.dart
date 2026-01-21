@@ -1,4 +1,5 @@
 // lib/screens/extensions/extension_test_item.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
@@ -97,7 +98,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       }
     }
 
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
       return;
     }
 
@@ -105,7 +106,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     DMedia? detailedMedia;
     final episodeStart = DateTime.now();
     try {
-      detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
+        detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
       if (mounted) {
         setState(() {
           episodeResult.size = detailedMedia?.episodes?.length ?? 0;
@@ -138,7 +139,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
               DateTime.now().difference(serverStart).inMilliseconds;
         });
       }
-    } catch (e) {
+    }
+    catch (e) {
       if (mounted) {
         setState(() {
           serverResult.size = 0;
@@ -181,7 +183,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       }
     }
 
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
       return;
     }
 
@@ -189,7 +191,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     DMedia? detailedMedia;
     final chapterStart = DateTime.now();
     try {
-      detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
+        detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
       if (mounted) {
         setState(() {
           episodeResult.size = detailedMedia?.episodes?.length ?? 0;
@@ -267,21 +269,21 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       }
     }
 
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
       return;
     }
 
     // Book/Chapter test
     final chapterStart = DateTime.now();
     try {
-      final detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
-      if (mounted) {
-        setState(() {
-          episodeResult.size = detailedMedia?.episodes?.length ?? 0;
-          episodeResult.time =
-              DateTime.now().difference(chapterStart).inMilliseconds;
-        });
-      }
+        final detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
+        if (mounted) {
+          setState(() {
+            episodeResult.size = detailedMedia.episodes?.length ?? 0;
+            episodeResult.time =
+                DateTime.now().difference(chapterStart).inMilliseconds;
+          });
+        }
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -389,16 +391,25 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       );
     }
 
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: theme.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        Icons.extension,
-        color: theme.primary,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.file(
+        File(widget.source.iconUrl!),
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: theme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.extension,
+            color: theme.primary,
+          ),
+        ),
       ),
     );
   }

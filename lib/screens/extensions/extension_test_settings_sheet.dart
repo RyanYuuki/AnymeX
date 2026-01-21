@@ -1,4 +1,5 @@
 // lib/screens/extensions/extension_test_settings_sheet.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -270,10 +271,19 @@ class _ExtensionTestSettingsSheetState
       );
     }
 
-    return Icon(
-      Icons.extension,
-      size: 32,
-      color: Theme.of(context).colorScheme.primary,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Image.file(
+        File(source.iconUrl!),
+        width: 32,
+        height: 32,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Icon(
+          Icons.extension,
+          size: 32,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 
