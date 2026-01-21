@@ -41,6 +41,7 @@ class ExtensionTestController extends GetxController {
 
       if (source != null) {
         final testItem = ExtensionTestResultItem(
+          key: UniqueKey(),
           source: source,
           itemType: extensionType.value,
           testType: testType.value,
