@@ -80,6 +80,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+  final RxBool cropImages = false.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
@@ -267,6 +268,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
+    cropImages.value = settingsController.preferences.get('crop_images', defaultValue: false);
   }
 
   void _savePreferences() {
@@ -284,6 +286,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+    settingsController.preferences.put('crop_images', cropImages.value);
   }
 
   void _setupPositionListener() {
@@ -520,6 +523,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleOverscrollToChapter() {
     overscrollToChapter.value = !overscrollToChapter.value;
+    savePreferences();
+  }
+
+  void toggleCropImages() {
+    cropImages.value = !cropImages.value;
     savePreferences();
   }
 

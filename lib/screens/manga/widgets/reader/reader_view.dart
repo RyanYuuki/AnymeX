@@ -7,6 +7,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:anymex/screens/manga/utils/image_cropper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -327,28 +328,39 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       return Container(
         padding: EdgeInsets.symmetric(
             vertical: widget.controller.spacedPages.value ? 8.0 : 0),
-        child: ExtendedImage.network(
-          page.url,
-          cacheMaxAge: Duration(
-              days: settingsController.preferences
-                  .get('cache_days', defaultValue: 7)),
-          mode: ExtendedImageMode.none,
-          gaplessPlayback: true,
-          cache: true,
-          headers: (page.headers?.isEmpty ?? true)
-              ? {
-                  'Referer':
-                      sourceController.activeMangaSource.value?.baseUrl ?? ''
-                }
-              : page.headers,
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-          constraints: BoxConstraints(
-            maxWidth: 500 * widget.controller.pageWidthMultiplier.value,
-          ),
-          filterQuality: FilterQuality.medium,
-          enableLoadState: true,
-          loadStateChanged: (ExtendedImageState state) {
+        child: widget.controller.cropImages.value
+            ? CroppedNetworkImage(
+                url: page.url,
+                headers: (page.headers?.isEmpty ?? true)
+                    ? {
+                        'Referer': sourceController.activeMangaSource.value?.baseUrl ?? ''
+                      }
+                    : page.headers,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+              )
+            : ExtendedImage.network(
+                page.url,
+                cacheMaxAge: Duration(
+                  days: settingsController.preferences
+                      .get('cache_days', defaultValue: 7)),
+                mode: ExtendedImageMode.none,
+                gaplessPlayback: true,
+                cache: true,
+                headers: (page.headers?.isEmpty ?? true)
+                    ? {
+                        'Referer':
+                            sourceController.activeMangaSource.value?.baseUrl ?? ''
+                      }
+                    : page.headers,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+                constraints: BoxConstraints(
+                    maxWidth: 500 * widget.controller.pageWidthMultiplier.value,
+                    ),
+                filterQuality: FilterQuality.medium,
+                enableLoadState: true,
+                loadStateChanged: (ExtendedImageState state) {
             switch (state.extendedImageLoadState) {
               case LoadState.loading:
                 final progress =
@@ -425,11 +437,22 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         padding: EdgeInsets.symmetric(
             vertical: widget.controller.spacedPages.value ? 8.0 : 0),
         child: Center(
-          child: ExtendedImage.network(
-            page.url,
-            cacheMaxAge: Duration(
-                days: settingsController.preferences
-                    .get('cache_days', defaultValue: 7)),
+          child: widget.controller.cropImages.value
+              ? CroppedNetworkImage(
+                  url: page.url,
+                  headers: (page.headers?.isEmpty ?? true)
+                      ? {
+                          'Referer': sourceController.activeMangaSource.value?.baseUrl ?? ''
+                        }
+                      : page.headers,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                )
+              : ExtendedImage.network(
+                page.url,
+                cacheMaxAge: Duration(
+                    days: settingsController.preferences
+                        .get('cache_days', defaultValue: 7)),
             mode: ExtendedImageMode.none,
             gaplessPlayback: true,
             headers: (page.headers?.isEmpty ?? true)
