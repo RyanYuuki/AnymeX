@@ -68,10 +68,22 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
 
   Future<void> _runAnimeTest() async {
     if (widget.testType == 'ping') {
-      if (mounted) {
-        setState(() {
-          pingError = 'Test not supported';
-        });
+      final pingStart = DateTime.now();
+      try {
+        await widget.source.methods.getPopular(1);
+        if (mounted) {
+          setState(() {
+            pingTime = DateTime.now().difference(pingStart).inMilliseconds;
+            pingError = null;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            pingTime = null;
+            pingError = e.toString();
+          });
+        }
       }
       return;
     }
@@ -153,10 +165,22 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
 
   Future<void> _runMangaTest() async {
     if (widget.testType == 'ping') {
-      if (mounted) {
-        setState(() {
-          pingError = 'Test not supported';
-        });
+      final pingStart = DateTime.now();
+      try {
+        await widget.source.methods.getPopular(1);
+        if (mounted) {
+          setState(() {
+            pingTime = DateTime.now().difference(pingStart).inMilliseconds;
+            pingError = null;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            pingTime = null;
+            pingError = e.toString();
+          });
+        }
       }
       return;
     }
