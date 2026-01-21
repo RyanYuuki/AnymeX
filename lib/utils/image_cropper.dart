@@ -65,8 +65,7 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
   Future<Uint8List> _loadBytes() async {
     // Include headers in the cache key to support different header sets per request
     final headersKey =
-        (widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';'))
-                ?.toString() ??
+        widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';') ??
             '';
     final cacheKey = '${widget.url}#$headersKey';
     if (_cache.containsKey(cacheKey)) {
