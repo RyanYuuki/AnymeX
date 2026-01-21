@@ -67,37 +67,6 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
     _futureBytes = _loadBytes();
   }
 
-  @override
-  void didUpdateWidget(covariant CroppedNetworkImage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final bool urlChanged = widget.url != oldWidget.url;
-    final bool headersChanged =
-        !_headersEqual(widget.headers, oldWidget.headers);
-    if (urlChanged || headersChanged) {
-      setState(() {
-        _futureBytes = _loadBytes();
-      });
-    }
-  }
-
-  bool _headersEqual(
-      Map<String, String>? a, Map<String, String>? b) {
-    if (identical(a, b)) {
-      return true;
-    }
-    if (a == null || b == null) {
-      return a == b;
-    }
-    if (a.length != b.length) {
-      return false;
-    }
-    for (final key in a.keys) {
-      if (!b.containsKey(key) || b[key] != a[key]) {
-        return false;
-      }
-    }
-    return true;
-  }
   Future<Uint8List> _loadBytes() async {
     // Include headers in the cache key to support different header sets per request
     final headersKey =
