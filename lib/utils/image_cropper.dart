@@ -13,7 +13,7 @@ Future<Uint8List> fetchAndCropImageBytes(
 }) async {
   try {
     final uri = Uri.parse(url);
-    final effectiveTimeout = timeout ?? const Duration(seconds: 10);
+    final effectiveTimeout = timeout ?? const Duration(seconds: 15);
     final response =
         await http.get(uri, headers: headers).timeout(effectiveTimeout);
     if (response.statusCode == 200) {
