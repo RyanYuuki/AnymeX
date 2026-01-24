@@ -86,42 +86,44 @@ class _ExtensionTestSettingsSheetState
               ),
             ),
             const SizedBox(height: 8),
-            Obx(() => Column(
-              children: [
-                RadioListTile<ItemType>(
-                  title: const Text('Anime'),
-                  value: ItemType.anime,
-                  groupValue: widget.controller.extensionType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.extensionType.value = value;
-                      widget.controller.selectedExtensions.clear();
-                    }
-                  },
-                ),
-                RadioListTile<ItemType>(
-                  title: const Text('Manga'),
-                  value: ItemType.manga,
-                  groupValue: widget.controller.extensionType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.extensionType.value = value;
-                      widget.controller.selectedExtensions.clear();
-                    }
-                  },
-                ),
-                RadioListTile<ItemType>(
-                  title: const Text('Novel'),
-                  value: ItemType.novel,
-                  groupValue: widget.controller.extensionType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.extensionType.value = value;
-                      widget.controller.selectedExtensions.clear();
-                    }
-                  },
-                ),
-              ],
+            Obx(() => Center(
+              child: ToggleButtons(
+                isSelected: [
+                  widget.controller.extensionType.value == ItemType.anime,
+                  widget.controller.extensionType.value == ItemType.manga,
+                  widget.controller.extensionType.value == ItemType.novel,
+                ],
+                onPressed: (index) {
+                  ItemType selectedType;
+                  if (index == 0) {
+                    selectedType = ItemType.anime;
+                  } else if (index == 1) {
+                    selectedType = ItemType.manga;
+                  } else {
+                    selectedType = ItemType.novel;
+                  }
+                  widget.controller.extensionType.value = selectedType;
+                  widget.controller.selectedExtensions.clear();
+                },
+                borderRadius: BorderRadius.circular(8),
+                selectedColor: theme.onPrimary,
+                color: theme.primary,
+                fillColor: theme.primary,
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Anime'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Manga'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Novel'),
+                  ),
+                ],
+              ),
             )),
             const SizedBox(height: 16),
             // Test Type Radio Group
@@ -133,39 +135,43 @@ class _ExtensionTestSettingsSheetState
               ),
             ),
             const SizedBox(height: 8),
-            Obx(() => Column(
-              children: [
-                RadioListTile<String>(
-                  title: const Text('Ping'),
-                  value: 'ping',
-                  groupValue: widget.controller.testType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.testType.value = value;
-                    }
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text('Basic'),
-                  value: 'basic',
-                  groupValue: widget.controller.testType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.testType.value = value;
-                    }
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text('Full'),
-                  value: 'full',
-                  groupValue: widget.controller.testType.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      widget.controller.testType.value = value;
-                    }
-                  },
-                ),
-              ],
+            Obx(() => Center(
+              child: ToggleButtons(
+                isSelected: [
+                  widget.controller.testType.value == 'ping',
+                  widget.controller.testType.value == 'basic',
+                  widget.controller.testType.value == 'full',
+                ],
+                onPressed: (index) {
+                  String selectedType;
+                  if (index == 0) {
+                    selectedType = 'ping';
+                  } else if (index == 1) {
+                    selectedType = 'basic';
+                  } else {
+                    selectedType = 'full';
+                  }
+                  widget.controller.testType.value = selectedType;
+                },
+                borderRadius: BorderRadius.circular(8),
+                selectedColor: theme.onPrimary,
+                color: theme.primary,
+                fillColor: theme.primary,
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Ping'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Basic'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('Full'),
+                  ),
+                ],
+              ),
             )),
             const SizedBox(height: 16),
             // Search Query Input
