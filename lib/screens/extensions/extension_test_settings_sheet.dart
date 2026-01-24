@@ -236,6 +236,10 @@ class _ExtensionTestSettingsSheetState
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primary,
+                foregroundColor: theme.onPrimary,
+              ),
               child: const Text('Done'),
             ),
             const SizedBox(height: 16),

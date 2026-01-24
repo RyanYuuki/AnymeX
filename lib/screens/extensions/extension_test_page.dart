@@ -1,5 +1,7 @@
 // lib/screens/extensions/extension_test_page.dart
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'extension_test_controller.dart';
@@ -37,22 +39,23 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          leading: Center(
-            child: Container(
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Theme.of(context).colorScheme.surfaceContainer,
+          leading: getResponsiveValue(context,
+              mobileValue: Center(
+                child: AnymexOnTap(
+                  onTap: () => Get.back(),
+                  child: Container(
+                      width: 35,
+                      height: 35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color:
+                              Theme.of(context).colorScheme.surfaceContainer),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded)),
+                ),
               ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                iconSize: 18,
-                onPressed: () => Get.back(),
-              ),
-            ),
-          ),
-          leadingWidth: null,
+              desktopValue: const SizedBox.shrink()),
+          leadingWidth: getResponsiveValue(context,
+              mobileValue: null, desktopValue: 0.0),
           title: Text(
             "Extension Test",
             style: TextStyle(
