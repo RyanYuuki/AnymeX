@@ -11,6 +11,11 @@ class ReaderSettings {
   ReaderSettings({required this.controller});
 
   void showSettings(BuildContext context) {
+    final wasVolumeEnabled = controller.volumeKeysEnabled.value;
+    if (wasVolumeEnabled) {
+      controller.pauseVolumeKeys();
+    }
+    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -175,6 +180,29 @@ class ReaderSettings {
                       onChanged: (val) => controller.togglePageIndicator(),
                     );
                   }),
+                  if (Platform.isAndroid)
+                    Obx(() {
+                      return CustomSwitchTile(
+                        icon: Iconsax.volume_high,
+                        title: "Volume Keys Navigation",
+                        description: "Use volume keys to change pages",
+                        switchValue: controller.volumeKeysEnabled.value,
+                        onChanged: (val) => controller.toggleVolumeKeys(),
+                      );
+                    }),
+                  if (Platform.isAndroid)
+                    Obx(() {
+                      return CustomSwitchTile(
+                        icon: Iconsax.arrow_swap_horizontal,
+                        title: "Invert Volume Keys",
+                        description: "Swap Up/Down actions",
+                        switchValue: controller.invertVolumeKeys.value,
+                        onChanged: (val) {
+                          controller.invertVolumeKeys.value = val;
+                          controller.savePreferences();
+                        },
+                      );
+                    }),
                   Obx(() {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -226,7 +254,7 @@ class ReaderSettings {
                           },
                           onChangedEnd: (e) => controller.savePreferences(),
                           description:
-                              'Adjust Key Scrolling Speed (Up, Down, Left, Right)',
+                              'Adjust Key & Volume Scrolling Speed',
                           icon: Icons.speed,
                           min: 1.0,
                           max: 5.0,
@@ -241,6 +269,11 @@ class ReaderSettings {
           ),
         );
       },
-    );
+    ).then((_) {
+     
+      if (wasVolumeEnabled) {
+        controller.resumeVolumeKeys();
+      }
+    });
   }
 }

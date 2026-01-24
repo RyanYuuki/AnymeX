@@ -284,6 +284,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     return ScrollablePositionedList.builder(
       itemCount: widget.controller.pageList.length,
       itemScrollController: widget.controller.itemScrollController,
+      scrollOffsetController: widget.controller.scrollOffsetController,
       itemPositionsListener: widget.controller.itemPositionsListener,
       scrollOffsetListener: widget.controller.scrollOffsetListener,
       initialScrollIndex: (widget.controller.currentPageIndex.value - 1)
