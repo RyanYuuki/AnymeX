@@ -1,31 +1,32 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 
 class MangaAnimeUtil {
-  static const String _baseUrl = 'https://api.mangaupdates.com/v1';
+  static const String _baseUrl = 'https://api.mangabaka.dev/v1';
 
-  /// Get anime adaptation details for a manga title
+  /// Get anime adaptation details using AniList or MAL ID
   /// Returns AnimeAdaptation object with start/end dates
-  static Future<AnimeAdaptation> getAnimeAdaptation(String mangaTitle) async {
+  static Future<AnimeAdaptation> getAnimeAdaptation(Media media) async {
     try {
-      // Search for manga
-      final searchResults = await _searchManga(mangaTitle);
+      // Determine which ID to use based on service type
+      final seriesData = await _getSeriesFromId(media);
 
-      if (searchResults.isEmpty) {
+      if (seriesData == null || seriesData.isEmpty) {
         return AnimeAdaptation(
           hasAdaptation: false,
-          error: 'No manga found with title: $mangaTitle',
+          error: 'No series found for this media',
         );
       }
 
-      // Get series details
-      final seriesId = searchResults[0]['record']['series_id'] as int;
-      final seriesDetails = await _getSeriesDetails(seriesId);
+      // Get the first series result
+      final series = seriesData[0];
 
       // Check for anime adaptation
-      if (seriesDetails['anime'] != null) {
-        final animeData = seriesDetails['anime'];
+      if (series['has_anime'] == true && series['anime'] != null) {
+        final animeData = series['anime'];
         final start = animeData['start'] as String?;
         final end = animeData['end'] as String?;
 
@@ -47,34 +48,37 @@ class MangaAnimeUtil {
     }
   }
 
-  // Private helper methods
-  static Future<List<dynamic>> _searchManga(String title) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/series/search'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'search': title,
-        'type': 'Manga',
-      }),
-    );
+  // Private helper method to get series data from AniList or MAL ID
+  static Future<List<dynamic>?> _getSeriesFromId(Media media) async {
+    String endpoint;
+    
+    // Determine which endpoint to use based on service type
+    switch (media.serviceType) {
+      case ServicesType.anilist:
+        endpoint = '$_baseUrl/source/anilist/${media.id}';
+        break;
+      case ServicesType.mal:
+        endpoint = '$_baseUrl/source/my-anime-list/${media.idMal ?? media.id}';
+        break;
+      default:
+        // For extensions or other services, try AniList ID if available
+        if (media.id != null) {
+          endpoint = '$_baseUrl/source/anilist/${media.id}';
+        } else {
+          return null;
+        }
+    }
+
+    final response = await http.get(Uri.parse(endpoint));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return data['results'] ?? [];
+      return data['data']?['series'] as List<dynamic>?;
+    } else if (response.statusCode == 404) {
+      // Not found, return empty list
+      return [];
     } else {
-      throw Exception('Search failed with status: ${response.statusCode}');
-    }
-  }
-
-  static Future<Map<String, dynamic>> _getSeriesDetails(int seriesId) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/series/$seriesId'),
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to get series details: ${response.statusCode}');
+      throw Exception('Failed to fetch series: ${response.statusCode}');
     }
   }
 }
