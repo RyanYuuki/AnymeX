@@ -116,7 +116,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
         return;
       }
 
-      if (widget.testType == 'full') {
+      if (widget.testType == 'full' && widget.itemType != ItemType.novel) {
         await _runContentTest(detailedMedia);
       }
     } catch (e) {
@@ -261,13 +261,15 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                 (r) => '${r.size} ${_getEpisodeLabel()} in ${r.time}ms',
                 theme,
               ),
-              const SizedBox(height: 8),
-              _buildResultDisplay(
-                _getServerLabel(),
-                contentResult,
-                (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
-                theme,
-              ),
+              if (widget.itemType != ItemType.novel) ...[
+                const SizedBox(height: 8),
+                _buildResultDisplay(
+                  _getServerLabel(),
+                  contentResult,
+                  (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
+                  theme,
+                ),
+              ],
             ],
           ],
         ),
