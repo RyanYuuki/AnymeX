@@ -16,39 +16,45 @@ class ExtensionTestController extends GetxController {
 
     final sourceController = Get.find<SourceController>();
     final extensions = selectedExtensions.toList();
+    final itemKeys = <GlobalKey<ExtensionTestResultItemState>>[];
 
     for (final extensionName in extensions) {
       Source? source;
 
       switch (extensionType.value) {
         case ItemType.anime:
-          source = sourceController.installedExtensions.firstWhereOrNull(
-            (e) => e.name == extensionName,
-          );
+          source = sourceController.installedExtensions
+              .firstWhereOrNull((e) => e.name == extensionName);
           break;
         case ItemType.manga:
-          source = sourceController.installedMangaExtensions.firstWhereOrNull(
-            (e) => e.name == extensionName,
-          );
+          source = sourceController.installedMangaExtensions
+              .firstWhereOrNull((e) => e.name == extensionName);
           break;
         case ItemType.novel:
-          source = sourceController.installedNovelExtensions.firstWhereOrNull(
-            (e) => e.name == extensionName,
-          );
+          source = sourceController.installedNovelExtensions
+              .firstWhereOrNull((e) => e.name == extensionName);
           break;
       }
 
       if (source != null) {
+        final key = GlobalKey<ExtensionTestResultItemState>();
+        itemKeys.add(key);
         final testItem = ExtensionTestResultItem(
-          key: UniqueKey(),
+          key: key,
           source: source,
           itemType: extensionType.value,
           testType: testType.value,
           searchQuery: searchQuery.value,
+          autostart: false,
         );
         testResults.add(testItem);
-        await Future.delayed(const Duration(milliseconds: 100));
       }
+    }
+
+    await Future.delayed(Duration.zero);
+
+    for (final key in itemKeys) {
+      await key.currentState?.startTest();
     }
   }
 

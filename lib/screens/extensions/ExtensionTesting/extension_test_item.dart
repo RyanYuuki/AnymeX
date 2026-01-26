@@ -1,11 +1,16 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:flutter/material.dart';
+
+enum TestState { notStarted, running, completed }
 
 class TestResult {
   int size = 0;
   int time = 0;
   String? errorMessage;
+  TestState state = TestState.notStarted;
 }
 
 class ExtensionTestResultItem extends StatefulWidget {
@@ -13,6 +18,7 @@ class ExtensionTestResultItem extends StatefulWidget {
   final ItemType itemType;
   final String testType;
   final String searchQuery;
+  final bool autostart;
 
   const ExtensionTestResultItem({
     super.key,
@@ -20,360 +26,184 @@ class ExtensionTestResultItem extends StatefulWidget {
     required this.itemType,
     required this.testType,
     required this.searchQuery,
+    this.autostart = true,
   });
 
   @override
   State<ExtensionTestResultItem> createState() =>
-      _ExtensionTestResultItemState();
+      ExtensionTestResultItemState();
 }
 
-class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
-  late TestResult searchResult;
-  late TestResult episodeResult;
-  late TestResult serverResult;
-  int? pingTime;
-  String? pingError;
-  bool isRunning = true;
+class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
+  late final TestResult pingResult;
+  late final TestResult searchResult;
+  late final TestResult detailResult;
+  late final TestResult contentResult;
 
   @override
   void initState() {
     super.initState();
+    pingResult = TestResult();
     searchResult = TestResult();
-    episodeResult = TestResult();
-    serverResult = TestResult();
-    _startTest();
+    detailResult = TestResult();
+    contentResult = TestResult();
+
+    if (widget.autostart) {
+      startTest();
+    }
   }
 
-  Future<void> _startTest() async {
+  bool get isRunning =>
+      pingResult.state == TestState.running ||
+      searchResult.state == TestState.running ||
+      detailResult.state == TestState.running ||
+      contentResult.state == TestState.running;
+
+  Future<T?> _executeTest<T>(
+    TestResult result,
+    Future<T> Function() testFn, {
+    void Function(T value)? onResult,
+  }) async {
+    if (!mounted) return null;
+    setState(() => result.state = TestState.running);
+
+    final stopwatch = Stopwatch()..start();
     try {
-      switch (widget.itemType) {
-        case ItemType.anime:
-          await _runAnimeTest();
-          break;
-        case ItemType.manga:
-          await _runMangaTest();
-          break;
-        case ItemType.novel:
-          await _runNovelTest();
-          break;
+      final value = await testFn();
+      stopwatch.stop();
+      if (mounted) {
+        setState(() {
+          result.time = stopwatch.elapsedMilliseconds;
+          result.errorMessage = null;
+          onResult?.call(value);
+          result.state = TestState.completed;
+        });
+      }
+      return value;
+    } catch (e) {
+      stopwatch.stop();
+      if (mounted) {
+        setState(() {
+          result.time = stopwatch.elapsedMilliseconds;
+          result.errorMessage = e.toString();
+          result.state = TestState.completed;
+        });
+      }
+      debugPrint('Test error for ${widget.source.name}: $e');
+      return null;
+    }
+  }
+
+  Future<void> startTest() async {
+    try {
+      if (widget.testType == 'ping') {
+        await _runPingTest();
+        return;
+      }
+
+      final searchResults = await _runSearchTest();
+      if (_isTestAborted(searchResult) ||
+          widget.testType == 'basic' ||
+          searchResults == null) {
+        return;
+      }
+
+      final firstResult = searchResults.list?.first;
+      if (firstResult == null) return;
+
+      final detailedMedia = await _runDetailTest(firstResult);
+      if (_isTestAborted(detailResult) || detailedMedia == null) {
+        return;
+      }
+
+      if (widget.testType == 'full') {
+        await _runContentTest(detailedMedia);
       }
     } catch (e) {
-      debugPrint('Test error: $e');
+      debugPrint('Unhandled test error for ${widget.source.name}: $e');
     } finally {
       if (mounted) {
-        setState(() => isRunning = false);
+        setState(() {});
       }
     }
+  }
+
+  bool _isTestAborted(TestResult result) {
+    return result.errorMessage != null ||
+        (result.state == TestState.completed && result.size == 0);
   }
 
   Future<void> _runPingTest() async {
-    final pingStart = DateTime.now();
-    try {
-      await widget.source.methods.getPopular(1);
-      if (mounted) {
-        setState(() {
-          pingTime = DateTime.now().difference(pingStart).inMilliseconds;
-          pingError = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          pingTime = null;
-          pingError = e.toString();
-        });
-      }
-    }
+    await _executeTest(pingResult, () => widget.source.methods.getPopular(1));
   }
 
   Future<dynamic> _runSearchTest() async {
-    dynamic searchResults;
-    final searchStart = DateTime.now();
-    try {
-      searchResults =
-          await widget.source.methods.search(widget.searchQuery, 1, []);
-
-      // Safely extract list and ensure it's not null
-      final resultsList = searchResults?.list;
-      final size = resultsList?.length ?? 0;
-
+    if (widget.searchQuery.isEmpty) {
       if (mounted) {
         setState(() {
-          searchResult.size = size;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
-          searchResult.errorMessage = null;
+          searchResult.errorMessage = 'Search query is empty';
+          searchResult.state = TestState.completed;
         });
       }
-
-      return searchResults;
-    } catch (e) {
-      final errorMsg = e.toString();
-      if (mounted) {
-        setState(() {
-          searchResult.size = 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
-          searchResult.errorMessage = errorMsg;
-        });
-      }
-      debugPrint('Search test error: $e');
       return null;
     }
+
+    return await _executeTest(
+      searchResult,
+      () => widget.source.methods.search(widget.searchQuery, 1, []),
+      onResult: (result) {
+        searchResult.size = result?.list?.length ?? 0;
+      },
+    );
   }
 
-  Future<DMedia?> _runDetailTest(dynamic firstResult) async {
-    if (firstResult == null) return null;
-
-    DMedia? detailedMedia;
-    final detailStart = DateTime.now();
-    try {
-      detailedMedia = await widget.source.methods.getDetail(firstResult);
-
-      final size = detailedMedia.episodes?.length ?? 0;
-      if (mounted) {
-        setState(() {
-          episodeResult.size = size;
-          episodeResult.time =
-              DateTime.now().difference(detailStart).inMilliseconds;
-          episodeResult.errorMessage = null;
-        });
-      }
-
-      return detailedMedia;
-    } catch (e) {
-      final errorMsg = e.toString();
-      if (mounted) {
-        setState(() {
-          episodeResult.size = 0;
-          episodeResult.time =
-              DateTime.now().difference(detailStart).inMilliseconds;
-          episodeResult.errorMessage = errorMsg;
-        });
-      }
-      debugPrint('Detail test error: $e');
-      return null;
-    }
+  Future<DMedia?> _runDetailTest(dynamic searchResult) async {
+    return await _executeTest(
+      detailResult,
+      () => widget.source.methods.getDetail(searchResult),
+      onResult: (result) {
+        detailResult.size = result.episodes?.length ?? 0;
+      },
+    );
   }
 
-  /// Runs server/video list test for anime
-  Future<void> _runServerTest(DMedia detailedMedia) async {
+  Future<void> _runContentTest(DMedia detailedMedia) async {
     final episodes = detailedMedia.episodes;
     if (episodes == null || episodes.isEmpty) {
       if (mounted) {
         setState(() {
-          serverResult.errorMessage = 'No episodes available';
+          contentResult.errorMessage = widget.itemType == ItemType.anime
+              ? 'No episodes available'
+              : 'No chapters available';
+          contentResult.state = TestState.completed;
         });
       }
       return;
     }
 
-    final serverStart = DateTime.now();
-    try {
-      final servers = await widget.source.methods.getVideoList(episodes.first);
-      if (mounted) {
-        setState(() {
-          serverResult.size = servers.length;
-          serverResult.time =
-              DateTime.now().difference(serverStart).inMilliseconds;
-          serverResult.errorMessage = null;
-        });
-      }
-    } catch (e) {
-      final errorMsg = e.toString();
-      if (mounted) {
-        setState(() {
-          serverResult.size = 0;
-          serverResult.time =
-              DateTime.now().difference(serverStart).inMilliseconds;
-          serverResult.errorMessage = errorMsg;
-        });
-      }
-      debugPrint('Server test error: $e');
-    }
-  }
-
-  /// Runs page list test for manga
-  Future<void> _runPageListTest(DMedia detailedMedia) async {
-    final episodes = detailedMedia.episodes;
-    if (episodes == null || episodes.isEmpty) {
-      if (mounted) {
-        setState(() {
-          serverResult.errorMessage = 'No chapters available';
-        });
-      }
-      return;
-    }
-
-    final pageStart = DateTime.now();
-    try {
-      final pages = await widget.source.methods.getPageList(
-        DEpisode(url: episodes.first.url, episodeNumber: "1"),
-      );
-      if (mounted) {
-        setState(() {
-          serverResult.size = pages.length;
-          serverResult.time =
-              DateTime.now().difference(pageStart).inMilliseconds;
-          serverResult.errorMessage = null;
-        });
-      }
-    } catch (e) {
-      final errorMsg = e.toString();
-      if (mounted) {
-        setState(() {
-          serverResult.size = 0;
-          serverResult.time =
-              DateTime.now().difference(pageStart).inMilliseconds;
-          serverResult.errorMessage = errorMsg;
-        });
-      }
-      debugPrint('Page list test error: $e');
-    }
-  }
-
-  Future<void> _runAnimeTest() async {
-    if (widget.testType == 'ping') {
-      await _runPingTest();
-      return;
-    }
-
-    final searchResults = await _runSearchTest();
-
-    if (searchResult.size == 0 ||
-        widget.testType == 'basic' ||
-        searchResults == null) {
-      return;
-    }
-
-    final firstResult = (searchResults.list?.isNotEmpty ?? false)
-        ? searchResults.list!.first
-        : null;
-    if (firstResult == null) {
-      return;
-    }
-
-    final detailedMedia = await _runDetailTest(firstResult);
-
-    if (episodeResult.size == 0 || detailedMedia == null) {
-      return;
-    }
-
-    if (widget.testType == 'full') {
-      await _runServerTest(detailedMedia);
-    }
-  }
-
-  Future<void> _runMangaTest() async {
-    if (widget.testType == 'ping') {
-      await _runPingTest();
-      return;
-    }
-
-    final searchResults = await _runSearchTest();
-
-    if (searchResult.size == 0 ||
-        widget.testType == 'basic' ||
-        searchResults == null) {
-      return;
-    }
-
-    final firstResult = (searchResults.list?.isNotEmpty ?? false)
-        ? searchResults.list!.first
-        : null;
-    if (firstResult == null) {
-      return;
-    }
-
-    final detailedMedia = await _runDetailTest(firstResult);
-
-    if (episodeResult.size == 0 || detailedMedia == null) {
-      return;
-    }
-
-    if (widget.testType == 'full') {
-      await _runPageListTest(detailedMedia);
-    }
-  }
-
-  Future<void> _runNovelTest() async {
-    // Novel doesn't support ping
-    if (widget.testType == 'ping') {
-      if (mounted) {
-        setState(() {
-          pingError = 'Test not supported for novels';
-        });
-      }
-      return;
-    }
-
-    final searchResults = await _runSearchTest();
-
-    if (searchResult.size == 0 ||
-        widget.testType == 'basic' ||
-        searchResults == null) {
-      return;
-    }
-
-    final firstResult = (searchResults.list?.isNotEmpty ?? false)
-        ? searchResults.list!.first
-        : null;
-    if (firstResult == null) {
-      return;
-    }
-
-    final detailedMedia = await _runDetailTest(firstResult);
-
-    if (episodeResult.size == 0 || detailedMedia == null) {
-      return;
-    }
-
-    if (widget.testType == 'full') {
-      await _runNovelContentTest(detailedMedia);
-    }
-  }
-
-  Future<void> _runNovelContentTest(DMedia detailedMedia) async {
-    final chapters = detailedMedia.episodes;
-    if (chapters == null || chapters.isEmpty) {
-      if (mounted) {
-        setState(() {
-          serverResult.errorMessage = 'No chapters available';
-        });
-      }
-      return;
-    }
-
-    final contentStart = DateTime.now();
-    try {
-      final content = await widget.source.methods.getPageList(
-        DEpisode(url: chapters.first.url, episodeNumber: "1"),
-      );
-      if (mounted) {
-        setState(() {
-          serverResult.size = content.length;
-          serverResult.time =
-              DateTime.now().difference(contentStart).inMilliseconds;
-          serverResult.errorMessage = null;
-        });
-      }
-    } catch (e) {
-      final errorMsg = e.toString();
-      if (mounted) {
-        setState(() {
-          serverResult.size = 0;
-          serverResult.time =
-              DateTime.now().difference(contentStart).inMilliseconds;
-          serverResult.errorMessage = errorMsg;
-        });
-      }
-      debugPrint('Novel content test error: $e');
+    final firstEpisode = episodes.first;
+    switch (widget.itemType) {
+      case ItemType.anime:
+        await _executeTest(
+          contentResult,
+          () => widget.source.methods.getVideoList(firstEpisode),
+          onResult: (result) => contentResult.size = result.length,
+        );
+        break;
+      case ItemType.manga:
+      case ItemType.novel:
+        await _executeTest(
+          contentResult,
+          () => widget.source.methods.getPageList(firstEpisode),
+          onResult: (result) => contentResult.size = result.length,
+        );
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context).colorScheme;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -382,7 +212,6 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Extension Header
             Row(
               children: [
                 _buildExtensionIcon(theme),
@@ -409,17 +238,36 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
               ],
             ),
             const SizedBox(height: 16),
-            // Results
-            if (widget.testType == 'ping') ...[
-              _buildPingResult(theme),
-            ] else if (widget.testType == 'basic') ...[
-              _buildSearchResult(theme),
-            ] else if (widget.testType == 'full') ...[
-              _buildSearchResult(theme),
+            if (widget.testType == 'ping')
+              _buildResultDisplay(
+                'Ping',
+                pingResult,
+                (r) => '${r.time}ms',
+                theme,
+                checkSize: false,
+              ),
+            if (widget.testType == 'basic' || widget.testType == 'full')
+              _buildResultDisplay(
+                'Search',
+                searchResult,
+                (r) => '${r.size} results in ${r.time}ms',
+                theme,
+              ),
+            if (widget.testType == 'full') ...[
               const SizedBox(height: 8),
-              _buildEpisodeResult(theme),
+              _buildResultDisplay(
+                _getEpisodeLabel(),
+                detailResult,
+                (r) => '${r.size} ${_getEpisodeLabel()} in ${r.time}ms',
+                theme,
+              ),
               const SizedBox(height: 8),
-              _buildServerResult(theme),
+              _buildResultDisplay(
+                _getServerLabel(),
+                contentResult,
+                (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
+                theme,
+              ),
             ],
           ],
         ),
@@ -427,173 +275,56 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     );
   }
 
-  Widget _buildExtensionIcon(ColorScheme theme) {
-    if (widget.source.iconUrl == null || widget.source.iconUrl!.isEmpty) {
-      return Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: theme.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          Icons.extension,
-          color: theme.primary,
-        ),
-      );
-    }
-
-    if (widget.source.iconUrl!.startsWith('http')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          widget.source.iconUrl!,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: theme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.extension,
-              color: theme.primary,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.file(
-        File(widget.source.iconUrl!),
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: theme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.extension,
-            color: theme.primary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPingResult(ColorScheme theme) {
-    if (pingError != null) {
-      return _buildResultRow(
-        'Ping',
-        pingError ?? 'Test not supported',
-        false,
-        theme,
-      );
-    }
-
-    final text = pingTime != null ? '${pingTime}ms' : 'Testing...';
-    return _buildResultRow('Ping', text, pingTime != null, theme);
-  }
-
-  Widget _buildSearchResult(ColorScheme theme) {
-    if (searchResult.time == 0) {
-      return _buildResultRow('Search', 'Testing...', false, theme);
-    }
-
-    final success = searchResult.size > 0;
+  Widget _buildResultDisplay(
+    String label,
+    TestResult result,
+    String Function(TestResult) textBuilder,
+    ColorScheme theme, {
+    bool checkSize = true,
+  }) {
     String text;
+    bool success = false;
+    bool isLoading = result.state == TestState.running;
 
-    if (!success && searchResult.errorMessage != null) {
-      text = 'Error: ${searchResult.errorMessage}';
-    } else if (success) {
-      text = '${searchResult.size} results in ${searchResult.time}ms';
+    if (isLoading) {
+      text = 'Testing...';
+    } else if (result.state == TestState.notStarted) {
+      text = 'Not tested';
     } else {
-      text = 'No results found';
+      if (result.errorMessage != null) {
+        text = 'Error: ${result.errorMessage}';
+      } else {
+        final hasResult = checkSize ? result.size > 0 : true;
+        if (hasResult) {
+          text = textBuilder(result);
+          success = true;
+        } else {
+          text = 'No results found';
+        }
+      }
     }
 
-    return _buildResultRow('Search', text, success, theme);
-  }
-
-  Widget _buildEpisodeResult(ColorScheme theme) {
-    if (episodeResult.time == 0) {
-      return _buildResultRow('Episodes', 'Testing...', false, theme);
-    }
-
-    final success = episodeResult.size > 0;
-    final label = _getEpisodeLabel();
-    String text;
-
-    if (!success && episodeResult.errorMessage != null) {
-      text = 'Error: ${episodeResult.errorMessage}';
-    } else if (success) {
-      text = '${episodeResult.size} $label in ${episodeResult.time}ms';
-    } else {
-      text = 'No $label found';
-    }
-
-    return _buildResultRow(label, text, success, theme);
-  }
-
-  Widget _buildServerResult(ColorScheme theme) {
-    if (serverResult.time == 0) {
-      return _buildResultRow('Servers', 'Testing...', false, theme);
-    }
-
-    final success = serverResult.size > 0;
-    final label = _getServerLabel();
-    String text;
-
-    if (!success && serverResult.errorMessage != null) {
-      text = 'Error: ${serverResult.errorMessage}';
-    } else if (success) {
-      text = '${serverResult.size} $label in ${serverResult.time}ms';
-    } else {
-      text = 'No $label found';
-    }
-
-    return _buildResultRow(label, text, success, theme);
-  }
-
-  String _getEpisodeLabel() {
-    switch (widget.itemType) {
-      case ItemType.manga:
-        return 'Chapters';
-      case ItemType.novel:
-        return 'Chapters';
-      case ItemType.anime:
-        return 'Episodes';
-    }
-  }
-
-  String _getServerLabel() {
-    switch (widget.itemType) {
-      case ItemType.manga:
-        return 'Images';
-      case ItemType.novel:
-        return 'Content';
-      case ItemType.anime:
-        return 'Servers';
-    }
+    return _buildResultRow(label, text, success, theme, isLoading: isLoading);
   }
 
   Widget _buildResultRow(
-      String label, String result, bool success, ColorScheme theme) {
+      String label, String result, bool success, ColorScheme theme,
+      {bool isLoading = false}) {
     return Row(
       children: [
-        Icon(
-          success ? Icons.check_circle : Icons.cancel,
-          color: success ? Colors.green : theme.error,
-          size: 20,
-        ),
+        if (isLoading)
+          SizedBox(
+            width: 20,
+            height: 20,
+            child:
+                CircularProgressIndicator(strokeWidth: 2, color: theme.primary),
+          )
+        else
+          Icon(
+            success ? Icons.check_circle : Icons.cancel,
+            color: success ? Colors.green : theme.error,
+            size: 20,
+          ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -615,11 +346,84 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                   color: theme.onSurface,
                   fontFamily: 'Poppins',
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ],
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildExtensionIcon(ColorScheme theme) {
+    if (widget.source.iconUrl == null || widget.source.iconUrl!.isEmpty) {
+      return Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+              color: theme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8)),
+          child: Icon(Icons.extension, color: theme.primary));
+    }
+
+    if (widget.source.iconUrl!.startsWith('http')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          widget.source.iconUrl!,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                color: theme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8)),
+            child: Icon(Icons.extension, color: theme.primary),
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.file(
+        File(widget.source.iconUrl!),
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+              color: theme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8)),
+          child: Icon(Icons.extension, color: theme.primary),
+        ),
+      ),
+    );
+  }
+
+  String _getEpisodeLabel() {
+    switch (widget.itemType) {
+      case ItemType.anime:
+        return 'Episodes';
+      case ItemType.manga:
+      case ItemType.novel:
+        return 'Chapters';
+    }
+  }
+
+  String _getServerLabel() {
+    switch (widget.itemType) {
+      case ItemType.anime:
+        return 'Servers';
+      case ItemType.manga:
+        return 'Pages';
+      case ItemType.novel:
+        return 'Content';
+    }
   }
 }
