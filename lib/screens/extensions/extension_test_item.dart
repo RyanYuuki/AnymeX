@@ -6,6 +6,7 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 class TestResult {
   int size = 0;
   int time = 0;
+  String? errorMessage;
 }
 
 class ExtensionTestResultItem extends StatefulWidget {
@@ -66,197 +67,220 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
   }
 
-  Future<void> _runAnimeTest() async {
-    if (widget.testType == 'ping') {
-      final pingStart = DateTime.now();
-      try {
-        await widget.source.methods.getPopular(1);
-        if (mounted) {
-          setState(() {
-            pingTime = DateTime.now().difference(pingStart).inMilliseconds;
-            pingError = null;
-          });
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            pingTime = null;
-            pingError = e.toString();
-          });
-        }
-      }
-      return;
-    }
-
-    // Search test
-    dynamic searchResults;
-    final searchStart = DateTime.now();
+  Future<void> _runPingTest() async {
+    final pingStart = DateTime.now();
     try {
-      searchResults = await widget.source.methods.search(widget.searchQuery, 1, []);
+      await widget.source.methods.getPopular(1);
       if (mounted) {
         setState(() {
-          searchResult.size = searchResults?.list?.length ?? 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
+          pingTime = DateTime.now().difference(pingStart).inMilliseconds;
+          pingError = null;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          searchResult.size = 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
-        });
-      }
-    }
-
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
-      return;
-    }
-
-    // Episode test
-    DMedia? detailedMedia;
-    final episodeStart = DateTime.now();
-    try {
-        detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
-      if (mounted) {
-        setState(() {
-          episodeResult.size = detailedMedia?.episodes?.length ?? 0;
-          episodeResult.time =
-              DateTime.now().difference(episodeStart).inMilliseconds;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          episodeResult.size = 0;
-          episodeResult.time =
-              DateTime.now().difference(episodeStart).inMilliseconds;
-        });
-      }
-    }
-
-    if (episodeResult.size == 0 || detailedMedia == null || (detailedMedia.episodes?.isEmpty ?? true)) {
-      return;
-    }
-
-    // Server test
-    final serverStart = DateTime.now();
-    try {
-      final servers = await widget.source.methods.getVideoList(detailedMedia.episodes!.first);
-      if (mounted) {
-        setState(() {
-          serverResult.size = servers.length;
-          serverResult.time =
-              DateTime.now().difference(serverStart).inMilliseconds;
-        });
-      }
-    }
-    catch (e) {
-      if (mounted) {
-        setState(() {
-          serverResult.size = 0;
-          serverResult.time =
-              DateTime.now().difference(serverStart).inMilliseconds;
+          pingTime = null;
+          pingError = e.toString();
         });
       }
     }
   }
 
-  Future<void> _runMangaTest() async {
-    if (widget.testType == 'ping') {
-      final pingStart = DateTime.now();
-      try {
-        await widget.source.methods.getPopular(1);
-        if (mounted) {
-          setState(() {
-            pingTime = DateTime.now().difference(pingStart).inMilliseconds;
-            pingError = null;
-          });
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            pingTime = null;
-            pingError = e.toString();
-          });
-        }
-      }
-      return;
-    }
-
-    // Search test
+  Future<dynamic> _runSearchTest() async {
     dynamic searchResults;
     final searchStart = DateTime.now();
     try {
       searchResults = await widget.source.methods.search(widget.searchQuery, 1, []);
+      
+      // Safely extract list and ensure it's not null
+      final resultsList = searchResults?.list;
+      final size = resultsList?.length ?? 0;
+      
       if (mounted) {
         setState(() {
-          searchResult.size = searchResults?.list?.length ?? 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.size = size;
+          searchResult.time = DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.errorMessage = null;
         });
       }
+      
+      return searchResults;
     } catch (e) {
+      final errorMsg = e.toString();
       if (mounted) {
         setState(() {
           searchResult.size = 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.time = DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.errorMessage = errorMsg;
         });
       }
+      debugPrint('Search test error: $e');
+      return null;
     }
+  }
 
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
-      return;
-    }
-
-    // Chapter test
+  Future<DMedia?> _runDetailTest(dynamic firstResult) async {
+    if (firstResult == null) return null;
+    
     DMedia? detailedMedia;
-    final chapterStart = DateTime.now();
+    final detailStart = DateTime.now();
     try {
-        detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
+      detailedMedia = await widget.source.methods.getDetail(firstResult);
+      
+      final size = detailedMedia.episodes?.length ?? 0;
       if (mounted) {
         setState(() {
-          episodeResult.size = detailedMedia?.episodes?.length ?? 0;
-          episodeResult.time =
-              DateTime.now().difference(chapterStart).inMilliseconds;
+          episodeResult.size = size;
+          episodeResult.time = DateTime.now().difference(detailStart).inMilliseconds;
+          episodeResult.errorMessage = null;
         });
       }
-    }
-    catch (e) {
+      
+      return detailedMedia;
+    } catch (e) {
+      final errorMsg = e.toString();
       if (mounted) {
         setState(() {
           episodeResult.size = 0;
-          episodeResult.time =
-              DateTime.now().difference(chapterStart).inMilliseconds;
+          episodeResult.time = DateTime.now().difference(detailStart).inMilliseconds;
+          episodeResult.errorMessage = errorMsg;
         });
       }
+      debugPrint('Detail test error: $e');
+      return null;
     }
+  }
 
-    if (episodeResult.size == 0 || detailedMedia == null || (detailedMedia.episodes?.isEmpty ?? true)) {
+  /// Runs server/video list test for anime
+  Future<void> _runServerTest(DMedia detailedMedia) async {
+    final episodes = detailedMedia.episodes;
+    if (episodes == null || episodes.isEmpty) {
+      if (mounted) {
+        setState(() {
+          serverResult.errorMessage = 'No episodes available';
+        });
+      }
       return;
     }
 
-    // Image test
-    final imageStart = DateTime.now();
+    final serverStart = DateTime.now();
     try {
-      final pages = await widget.source.methods.getPageList(DEpisode(url: detailedMedia.episodes!.first.url, episodeNumber: "1"));
+      final servers = await widget.source.methods.getVideoList(episodes.first);
       if (mounted) {
         setState(() {
-          serverResult.size = pages.length;
-          serverResult.time =
-              DateTime.now().difference(imageStart).inMilliseconds;
+          serverResult.size = servers.length;
+          serverResult.time = DateTime.now().difference(serverStart).inMilliseconds;
+          serverResult.errorMessage = null;
         });
       }
     } catch (e) {
+      final errorMsg = e.toString();
       if (mounted) {
         setState(() {
           serverResult.size = 0;
-          serverResult.time =
-              DateTime.now().difference(imageStart).inMilliseconds;
+          serverResult.time = DateTime.now().difference(serverStart).inMilliseconds;
+          serverResult.errorMessage = errorMsg;
         });
       }
+      debugPrint('Server test error: $e');
+    }
+  }
+
+  /// Runs page list test for manga
+  Future<void> _runPageListTest(DMedia detailedMedia) async {
+    final episodes = detailedMedia.episodes;
+    if (episodes == null || episodes.isEmpty) {
+      if (mounted) {
+        setState(() {
+          serverResult.errorMessage = 'No chapters available';
+        });
+      }
+      return;
+    }
+
+    final pageStart = DateTime.now();
+    try {
+      final pages = await widget.source.methods.getPageList(
+        DEpisode(url: episodes.first.url, episodeNumber: "1"),
+      );
+      if (mounted) {
+        setState(() {
+          serverResult.size = pages.length;
+          serverResult.time = DateTime.now().difference(pageStart).inMilliseconds;
+          serverResult.errorMessage = null;
+        });
+      }
+    } catch (e) {
+      final errorMsg = e.toString();
+      if (mounted) {
+        setState(() {
+          serverResult.size = 0;
+          serverResult.time = DateTime.now().difference(pageStart).inMilliseconds;
+          serverResult.errorMessage = errorMsg;
+        });
+      }
+      debugPrint('Page list test error: $e');
+    }
+  }
+
+  Future<void> _runAnimeTest() async {
+    if (widget.testType == 'ping') {
+      await _runPingTest();
+      return;
+    }
+
+    final searchResults = await _runSearchTest();
+    
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+      return;
+    }
+
+    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
+        ? searchResults.list!.first 
+        : null;
+    if (firstResult == null) {
+      return;
+    }
+
+    final detailedMedia = await _runDetailTest(firstResult);
+    
+    if (episodeResult.size == 0 || detailedMedia == null) {
+      return;
+    }
+
+    if (widget.testType == 'full') {
+      await _runServerTest(detailedMedia);
+    }
+  }
+
+  Future<void> _runMangaTest() async {
+    if (widget.testType == 'ping') {
+      await _runPingTest();
+      return;
+    }
+
+    final searchResults = await _runSearchTest();
+    
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+      return;
+    }
+
+    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
+        ? searchResults.list!.first 
+        : null;
+    if (firstResult == null) {
+      return;
+    }
+
+    final detailedMedia = await _runDetailTest(firstResult);
+    
+    if (episodeResult.size == 0 || detailedMedia == null) {
+      return;
+    }
+
+    if (widget.testType == 'full') {
+      await _runPageListTest(detailedMedia);
     }
   }
 
@@ -271,51 +295,63 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       return;
     }
 
-    // Search test
-    dynamic searchResults;
-    final searchStart = DateTime.now();
-    try {
-      searchResults = await widget.source.methods.search(widget.searchQuery, 1, []);
-      if (mounted) {
-        setState(() {
-          searchResult.size = searchResults?.list?.length ?? 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          searchResult.size = 0;
-          searchResult.time =
-              DateTime.now().difference(searchStart).inMilliseconds;
-        });
-      }
-    }
-
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null || searchResults.list.isEmpty) {
+    final searchResults = await _runSearchTest();
+    
+    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
       return;
     }
 
-    // Book/Chapter test
-    final chapterStart = DateTime.now();
-    try {
-        final detailedMedia = await widget.source.methods.getDetail(searchResults.list.first);
-        if (mounted) {
-          setState(() {
-            episodeResult.size = detailedMedia.episodes?.length ?? 0;
-            episodeResult.time =
-                DateTime.now().difference(chapterStart).inMilliseconds;
-          });
-        }
-    } catch (e) {
+    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
+        ? searchResults.list!.first 
+        : null;
+    if (firstResult == null) {
+      return;
+    }
+
+    final detailedMedia = await _runDetailTest(firstResult);
+    
+    if (episodeResult.size == 0 || detailedMedia == null) {
+      return;
+    }
+
+    if (widget.testType == 'full') {
+      await _runNovelContentTest(detailedMedia);
+    }
+  }
+
+  Future<void> _runNovelContentTest(DMedia detailedMedia) async {
+    final chapters = detailedMedia.episodes;
+    if (chapters == null || chapters.isEmpty) {
       if (mounted) {
         setState(() {
-          episodeResult.size = 0;
-          episodeResult.time =
-              DateTime.now().difference(chapterStart).inMilliseconds;
+          serverResult.errorMessage = 'No chapters available';
         });
       }
+      return;
+    }
+
+    final contentStart = DateTime.now();
+    try {
+      final content = await widget.source.methods.getPageList(
+        DEpisode(url: chapters.first.url, episodeNumber: "1"),
+      );
+      if (mounted) {
+        setState(() {
+          serverResult.size = content.length;
+          serverResult.time = DateTime.now().difference(contentStart).inMilliseconds;
+          serverResult.errorMessage = null;
+        });
+      }
+    } catch (e) {
+      final errorMsg = e.toString();
+      if (mounted) {
+        setState(() {
+          serverResult.size = 0;
+          serverResult.time = DateTime.now().difference(contentStart).inMilliseconds;
+          serverResult.errorMessage = errorMsg;
+        });
+      }
+      debugPrint('Novel content test error: $e');
     }
   }
 
@@ -458,9 +494,16 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final success = searchResult.size > 0;
-    final text = success
-        ? '${searchResult.size} results in ${searchResult.time}ms'
-        : 'No results found';
+    String text;
+    
+    if (!success && searchResult.errorMessage != null) {
+      text = 'Error: ${searchResult.errorMessage}';
+    } else if (success) {
+      text = '${searchResult.size} results in ${searchResult.time}ms';
+    } else {
+      text = 'No results found';
+    }
+    
     return _buildResultRow('Search', text, success, theme);
   }
 
@@ -470,10 +513,17 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final success = episodeResult.size > 0;
-    final label = widget.itemType == ItemType.manga ? 'Chapters' : 'Episodes';
-    final text = success
-        ? '${episodeResult.size} $label in ${episodeResult.time}ms'
-        : 'No results found';
+    final label = _getEpisodeLabel();
+    String text;
+    
+    if (!success && episodeResult.errorMessage != null) {
+      text = 'Error: ${episodeResult.errorMessage}';
+    } else if (success) {
+      text = '${episodeResult.size} $label in ${episodeResult.time}ms';
+    } else {
+      text = 'No $label found';
+    }
+    
     return _buildResultRow(label, text, success, theme);
   }
 
@@ -483,11 +533,40 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final success = serverResult.size > 0;
-    final label = widget.itemType == ItemType.manga ? 'Images' : 'Servers';
-    final text = success
-        ? '${serverResult.size} $label in ${serverResult.time}ms'
-        : 'No results found';
+    final label = _getServerLabel();
+    String text;
+    
+    if (!success && serverResult.errorMessage != null) {
+      text = 'Error: ${serverResult.errorMessage}';
+    } else if (success) {
+      text = '${serverResult.size} $label in ${serverResult.time}ms';
+    } else {
+      text = 'No $label found';
+    }
+    
     return _buildResultRow(label, text, success, theme);
+  }
+
+  String _getEpisodeLabel() {
+    switch (widget.itemType) {
+      case ItemType.manga:
+        return 'Chapters';
+      case ItemType.novel:
+        return 'Chapters';
+      case ItemType.anime:
+        return 'Episodes';
+    }
+  }
+
+  String _getServerLabel() {
+    switch (widget.itemType) {
+      case ItemType.manga:
+        return 'Images';
+      case ItemType.novel:
+        return 'Content';
+      case ItemType.anime:
+        return 'Servers';
+    }
   }
 
   Widget _buildResultRow(

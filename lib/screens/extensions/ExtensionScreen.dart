@@ -173,7 +173,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 onTap: () => Get.to(() => const ExtensionTestPage()),
                 child: IconButton(
                   icon:
-                      Icon(Icons.bug_report_rounded, color: theme.primary),
+                      Icon(Icons.build_outlined, color: theme.primary),
                   onPressed: () => Get.to(() => const ExtensionTestPage()),
                   tooltip: "Test Extensions",
                 ),
