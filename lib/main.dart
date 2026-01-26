@@ -33,6 +33,7 @@ import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -187,8 +188,28 @@ void _initializeGetxController() async {
   // DownloadManagerBinding.initializeDownloadManager();
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool _showMainApp = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Show animated splash for 3 seconds, then main app
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _showMainApp = true;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +247,7 @@ class MainApp extends StatelessWidget {
             : theme.isLightMode
                 ? ThemeMode.light
                 : ThemeMode.dark,
-        home: const FilterScreen(),
+        home: _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
         builder: (context, child) {
           if (PlatformDispatcher.instance.views.length > 1) {
             return child!;

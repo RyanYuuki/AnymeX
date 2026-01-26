@@ -7,6 +7,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -126,9 +127,9 @@ class Header extends StatelessWidget {
                 SizedBox(
                     width: 50,
                     height: 70,
-                    child: Image.asset(
-                      'assets/images/logo_transparent.png',
-                      fit: BoxFit.cover,
+                    child: AnymeXAnimatedLogo(
+                      size: 50,
+                      autoPlay: true,
                       color: Theme.of(context).colorScheme.inverseSurface,
                     )),
                 const Spacer(),
@@ -170,8 +171,9 @@ class Header extends StatelessWidget {
                 CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.transparent,
-                    child: Image.asset(
-                      'assets/images/logo_transparent.png',
+                    child: AnymeXAnimatedLogo(
+                      size: 80,
+                      autoPlay: true,
                       color: Theme.of(context).colorScheme.inverseSurface,
                     )),
               ],

@@ -178,7 +178,6 @@ jobs:
         if: matrix.platform == 'android'
         run: |
           flutter pub get
-          dart run flutter_native_splash:create
           flutter build apk --split-per-abi
           flutter build apk --release
           cd build/app/outputs/flutter-apk
@@ -195,7 +194,6 @@ jobs:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: |
           flutter pub get
-          dart run flutter_native_splash:create
           flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
           ln -s ../Runner.app build/ios/iphoneos/Payload/Runner.app
