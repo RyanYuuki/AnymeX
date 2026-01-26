@@ -10,6 +10,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex/services/volume_key_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -80,12 +81,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+  final RxBool cropImages = false.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
       MangaPageViewDirection.down.obs;
 
   final RxBool showControls = true.obs;
+  final RxBool volumeKeysEnabled = false.obs;
+  final RxBool invertVolumeKeys = false.obs;
+
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
 
@@ -103,7 +108,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   Timer? _overscrollResetTimer;
 
   bool _isNavigating = false;
+
   late Worker _rpcWorker;
+  final VolumeKeyHandler _volumeKeyHandler = VolumeKeyHandler();
+  StreamSubscription? _volumeSubscription;
 
   @override
   void onInit() {
@@ -118,6 +126,98 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           totalChapters: chapterList.length.toString(),
           currentPage: e);
     });
+    
+  }
+
+  void _enableVolumeKeys() {
+     _volumeKeyHandler.enableInterception();
+     _volumeSubscription?.cancel();
+     _volumeSubscription = _volumeKeyHandler.volumeEvents.listen((event) {
+       _handleVolumeEvent(event);
+     });
+  }
+
+  void _handleVolumeEvent(String event) {
+   
+   
+    if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true || Get.isOverlaysOpen == true) {
+      return;
+    }
+
+   
+    if (showControls.value) {
+      toggleControls();
+      return;
+    }
+
+   
+    if (event == 'up') {
+      if (invertVolumeKeys.value) {
+        _navigateForward();
+      } else {
+        _navigateBackward();
+      }
+    } else if (event == 'down') {
+      if (invertVolumeKeys.value) {
+        _navigateBackward();
+      } else {
+        _navigateForward();
+      }
+    }
+  }
+
+  void _disableVolumeKeys() {
+     _volumeKeyHandler.disableInterception();
+     _volumeSubscription?.cancel();
+     _volumeSubscription = null;
+  }
+
+  void _navigateForward() {
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+       final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
+       scrollOffsetController?.animateScroll(
+          offset: offset,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut);
+    } else {
+       pageController?.nextPage(
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    }
+  }
+
+  void _navigateBackward() {
+     if (readingLayout.value == MangaPageViewMode.continuous) {
+       final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
+       scrollOffsetController?.animateScroll(
+          offset: -offset,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut);
+    } else {
+       pageController?.previousPage(
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    }
+  }
+
+  void toggleVolumeKeys() {
+    volumeKeysEnabled.value = !volumeKeysEnabled.value;
+    if (volumeKeysEnabled.value) {
+      _enableVolumeKeys();
+    } else {
+      _disableVolumeKeys();
+    }
+    savePreferences();
+  }
+
+  
+  void pauseVolumeKeys() {
+    _disableVolumeKeys();
+  }
+
+
+  void resumeVolumeKeys() {
+    if (volumeKeysEnabled.value) {
+      _enableVolumeKeys();
+    }
   }
 
   @override
@@ -133,6 +233,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     );
 
     _rpcWorker.dispose();
+    _disableVolumeKeys();
 
     _overscrollResetTimer?.cancel();
     pageController?.dispose();
@@ -154,6 +255,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         Logger.i('App resumed');
+        if (volumeKeysEnabled.value) {
+          _enableVolumeKeys();
+        }
         break;
       case AppLifecycleState.inactive:
         Logger.i('App inactive');
@@ -161,6 +265,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       case AppLifecycleState.hidden:
         Logger.i('App hidden - saving progress');
         _performSave(reason: 'App hidden');
+        _disableVolumeKeys();
         break;
     }
   }
@@ -267,6 +372,18 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
+    // Both features: crop images AND volume keys
+    cropImages.value =
+        settingsController.preferences.get('crop_images', defaultValue: false);
+    volumeKeysEnabled.value = settingsController.preferences
+        .get('volume_keys_enabled', defaultValue: false);
+    invertVolumeKeys.value = settingsController.preferences
+        .get('invert_volume_keys', defaultValue: false);
+    
+    // Enable volume keys if preference is set
+    if (volumeKeysEnabled.value) {
+      _enableVolumeKeys();
+    }
   }
 
   void _savePreferences() {
@@ -284,6 +401,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+    // Both features: crop images AND volume keys
+    settingsController.preferences.put('crop_images', cropImages.value);
+    settingsController.preferences
+        .put('volume_keys_enabled', volumeKeysEnabled.value);
+    settingsController.preferences
+        .put('invert_volume_keys', invertVolumeKeys.value);
   }
 
   void _setupPositionListener() {
@@ -520,6 +643,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleOverscrollToChapter() {
     overscrollToChapter.value = !overscrollToChapter.value;
+    savePreferences();
+  }
+
+  void toggleCropImages() {
+    cropImages.value = !cropImages.value;
     savePreferences();
   }
 

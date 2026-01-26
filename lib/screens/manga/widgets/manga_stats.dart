@@ -86,7 +86,7 @@ class MangaStats extends StatelessWidget {
               },
             )),
         FutureBuilder<AnimeAdaptation>(
-          future: MangaAnimeUtil.getAnimeAdaptation(data.romajiTitle),
+          future: MangaAnimeUtil.getAnimeAdaptation(data),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const ExpressiveLoadingIndicator();
