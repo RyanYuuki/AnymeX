@@ -15,6 +15,9 @@ on:
         description: "Current tag to generate changelog for (optional, defaults to latest tag)"
         required: false
 
+permissions:
+  contents: write
+
 jobs:
   generate-changelog:
     runs-on: ubuntu-latest
@@ -132,7 +135,7 @@ jobs:
       - name: Debug Commit Log
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
-
+   
       - name: Get Commit Messages Between Tags
         id: get_commits
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
@@ -143,37 +146,57 @@ jobs:
       - name: Categorize Commits
         id: categorize
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           echo "Categorizing commits..."
           FEATURES=""; BUG_FIXES=""; REFACTORS=""; STYLE_CHANGES=""; PERFORMANCE=""; CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
+          # Function to get GitHub username from commit SHA using the Commits API
+          get_author_username() {
+            local commit_sha="$1"
+            local api_url="https://api.github.com/repos/${REPO}/commits/${commit_sha}"
+            local response=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "${api_url}")
+            
+            # Extract the author's login. If it's null, default to 'ghost'.
+            echo "$response" | jq -r '.author.login // "ghost"'
+          }
+
+          # Process each commit
           while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
-            CLEAN_MESSAGE=$(echo "$MESSAGE" | sed 's/#[0-9]\+//g' | sed 's/[^a-zA-Z0-9 .,:!-]//g' | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-            echo "Processing commit: $HASH - $CLEAN_MESSAGE"
+            
+            # Get the GitHub username using the commit hash
+            AUTHOR_USERNAME=$(get_author_username "$HASH")
+            
+            echo "Processing commit: $HASH - $MESSAGE by $AUTHOR_USERNAME"
 
+            # Categorize and format the entry
             if [[ "$MESSAGE" =~ ^feat: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^feat://')
-              FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^fix:|^bug:|^improvement:|^patch: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^fix://; s/^bug://; s/^improvement://; s/^patch://')
-              BUG_FIXES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
+              DESCR=$(echo "$MESSAGE" | sed 's/^feat: //')
+              FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
+            elif [[ "$MESSAGE" =~ ^(fix|bug|improvement|patch): ]]; then
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^(fix|bug|improvement|patch): //')
+              BUG_FIXES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^refactor: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^refactor://')
-              REFACTORS+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
+              DESCR=$(echo "$MESSAGE" | sed 's/^refactor: //')
+              REFACTORS+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^style: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^style://')
-              STYLE_CHANGES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
+              DESCR=$(echo "$MESSAGE" | sed 's/^style: //')
+              STYLE_CHANGES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^perf: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^perf://')
-              PERFORMANCE+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
-            elif [[ "$MESSAGE" =~ ^chore:|^docs:|^build:|^ci: ]]; then
-              DESCR=$(echo "$CLEAN_MESSAGE" | sed 's/^chore://; s/^docs://; s/^build://; s/^ci://')
-              CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR"$'\n'
+              DESCR=$(echo "$MESSAGE" | sed 's/^perf: //')
+              PERFORMANCE+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
+            elif [[ "$MESSAGE" =~ ^(chore|docs|build|ci): ]]; then
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^(chore|docs|build|ci): //')
+              CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             fi
+          # The git log command fetches the hash and the full subject line
           done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
 
+          # Write the final changelog
           echo "### 🆕 Changelog" > CHANGELOG.md
           [ -n "$FEATURES" ] && echo -e "### 🌟 Features\n$FEATURES\n" >> CHANGELOG.md
           [ -n "$BUG_FIXES" ] && echo -e "### 🔧 Bug Fixes & Improvements\n$BUG_FIXES\n" >> CHANGELOG.md
@@ -184,7 +207,6 @@ jobs:
 
           CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
           echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)" >> CHANGELOG.md
-          rm -f commits.tmp
         shell: /usr/bin/bash -e {0}
 
       - name: Debug CHANGELOG.md
