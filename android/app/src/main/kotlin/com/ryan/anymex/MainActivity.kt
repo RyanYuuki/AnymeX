@@ -1,7 +1,12 @@
 package com.ryan.anymex
 
+import android.view.KeyEvent
+import android.view.KeyEvent.ACTION_DOWN
+import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
+import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import android.os.Build
 import java.io.BufferedReader
@@ -9,6 +14,10 @@ import java.io.InputStreamReader
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "app/architecture"
+    private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
+    private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
+    private var volumeKeysEnabled = false
+    private var volumeEventsSink: EventChannel.EventSink? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -24,6 +33,43 @@ class MainActivity: FlutterActivity() {
                 }
             }
         }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "enable" -> {
+                    volumeKeysEnabled = true
+                    result.success(null)
+                }
+                "disable" -> {
+                    volumeKeysEnabled = false
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_EVENTS).setStreamHandler(
+            object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    volumeEventsSink = events
+                }
+
+                override fun onCancel(arguments: Any?) {
+                    volumeEventsSink = null
+                }
+            }
+        )
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (volumeKeysEnabled && (event.keyCode == KEYCODE_VOLUME_UP || event.keyCode == KEYCODE_VOLUME_DOWN)) {
+            if (event.action == ACTION_DOWN) {
+                val direction = if (event.keyCode == KEYCODE_VOLUME_UP) "up" else "down"
+                volumeEventsSink?.success(direction)
+            }
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     private fun getCurrentArchitecture(): String {
