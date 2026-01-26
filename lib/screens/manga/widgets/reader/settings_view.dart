@@ -204,6 +204,15 @@ class ReaderSettings {
                       );
                     }),
                   Obx(() {
+                    return CustomSwitchTile(
+                      icon: Icons.crop_rounded,
+                      title: "Crop Borders",
+                      description: "Crop white/black borders from pages",
+                      switchValue: controller.cropImages.value,
+                      onChanged: (val) => controller.toggleCropImages(),
+                    );
+                  }),
+                  Obx(() {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: CustomSliderTile(

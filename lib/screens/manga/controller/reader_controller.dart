@@ -81,6 +81,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
+  final RxBool cropImages = false.obs;
 
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
@@ -371,12 +372,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         settingsController.preferences.get('preload_pages', defaultValue: 3);
     showPageIndicator.value = settingsController.preferences
         .get('show_page_indicator', defaultValue: false);
+    // Both features: crop images AND volume keys
+    cropImages.value =
+        settingsController.preferences.get('crop_images', defaultValue: false);
     volumeKeysEnabled.value = settingsController.preferences
         .get('volume_keys_enabled', defaultValue: false);
     invertVolumeKeys.value = settingsController.preferences
         .get('invert_volume_keys', defaultValue: false);
     
-   
+    // Enable volume keys if preference is set
     if (volumeKeysEnabled.value) {
       _enableVolumeKeys();
     }
@@ -397,6 +401,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     settingsController.preferences.put('preload_pages', preloadPages.value);
     settingsController.preferences
         .put('show_page_indicator', showPageIndicator.value);
+    // Both features: crop images AND volume keys
+    settingsController.preferences.put('crop_images', cropImages.value);
     settingsController.preferences
         .put('volume_keys_enabled', volumeKeysEnabled.value);
     settingsController.preferences
@@ -637,6 +643,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleOverscrollToChapter() {
     overscrollToChapter.value = !overscrollToChapter.value;
+    savePreferences();
+  }
+
+  void toggleCropImages() {
+    cropImages.value = !cropImages.value;
     savePreferences();
   }
 
