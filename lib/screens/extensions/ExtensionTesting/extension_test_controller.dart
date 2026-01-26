@@ -13,14 +13,12 @@ class ExtensionTestController extends GetxController {
 
   Future<void> startTests() async {
     testResults.clear();
-
     final sourceController = Get.find<SourceController>();
     final extensions = selectedExtensions.toList();
     final itemKeys = <GlobalKey<ExtensionTestResultItemState>>[];
 
     for (final extensionName in extensions) {
       Source? source;
-
       switch (extensionType.value) {
         case ItemType.anime:
           source = sourceController.installedExtensions
@@ -35,7 +33,6 @@ class ExtensionTestController extends GetxController {
               .firstWhereOrNull((e) => e.name == extensionName);
           break;
       }
-
       if (source != null) {
         final key = GlobalKey<ExtensionTestResultItemState>();
         itemKeys.add(key);
@@ -51,10 +48,13 @@ class ExtensionTestController extends GetxController {
       }
     }
 
-    await Future.delayed(Duration.zero);
+    await Future.delayed(const Duration(milliseconds: 100));
 
     for (final key in itemKeys) {
-      await key.currentState?.startTest();
+      final state = key.currentState;
+      if (state != null) {
+        await state.startTest();
+      }
     }
   }
 
