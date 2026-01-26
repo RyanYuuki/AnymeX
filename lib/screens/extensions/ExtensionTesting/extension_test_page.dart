@@ -53,8 +53,8 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                 ),
               ),
               desktopValue: const SizedBox.shrink()),
-          leadingWidth: getResponsiveValue(context,
-              mobileValue: null, desktopValue: 0.0),
+          leadingWidth:
+              getResponsiveValue(context, mobileValue: null, desktopValue: 0.0),
           title: Text(
             "Extension Test",
             style: TextStyle(
@@ -96,8 +96,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primary,
                       foregroundColor: theme.onPrimary,
-                      disabledBackgroundColor:
-                          theme.primary.withOpacity(0.5),
+                      disabledBackgroundColor: theme.primary.withOpacity(0.5),
                     ),
                   )),
               const SizedBox(height: 24),

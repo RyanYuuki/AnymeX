@@ -90,27 +90,30 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     dynamic searchResults;
     final searchStart = DateTime.now();
     try {
-      searchResults = await widget.source.methods.search(widget.searchQuery, 1, []);
-      
+      searchResults =
+          await widget.source.methods.search(widget.searchQuery, 1, []);
+
       // Safely extract list and ensure it's not null
       final resultsList = searchResults?.list;
       final size = resultsList?.length ?? 0;
-      
+
       if (mounted) {
         setState(() {
           searchResult.size = size;
-          searchResult.time = DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.time =
+              DateTime.now().difference(searchStart).inMilliseconds;
           searchResult.errorMessage = null;
         });
       }
-      
+
       return searchResults;
     } catch (e) {
       final errorMsg = e.toString();
       if (mounted) {
         setState(() {
           searchResult.size = 0;
-          searchResult.time = DateTime.now().difference(searchStart).inMilliseconds;
+          searchResult.time =
+              DateTime.now().difference(searchStart).inMilliseconds;
           searchResult.errorMessage = errorMsg;
         });
       }
@@ -121,28 +124,30 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
 
   Future<DMedia?> _runDetailTest(dynamic firstResult) async {
     if (firstResult == null) return null;
-    
+
     DMedia? detailedMedia;
     final detailStart = DateTime.now();
     try {
       detailedMedia = await widget.source.methods.getDetail(firstResult);
-      
+
       final size = detailedMedia.episodes?.length ?? 0;
       if (mounted) {
         setState(() {
           episodeResult.size = size;
-          episodeResult.time = DateTime.now().difference(detailStart).inMilliseconds;
+          episodeResult.time =
+              DateTime.now().difference(detailStart).inMilliseconds;
           episodeResult.errorMessage = null;
         });
       }
-      
+
       return detailedMedia;
     } catch (e) {
       final errorMsg = e.toString();
       if (mounted) {
         setState(() {
           episodeResult.size = 0;
-          episodeResult.time = DateTime.now().difference(detailStart).inMilliseconds;
+          episodeResult.time =
+              DateTime.now().difference(detailStart).inMilliseconds;
           episodeResult.errorMessage = errorMsg;
         });
       }
@@ -169,7 +174,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = servers.length;
-          serverResult.time = DateTime.now().difference(serverStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(serverStart).inMilliseconds;
           serverResult.errorMessage = null;
         });
       }
@@ -178,7 +184,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = 0;
-          serverResult.time = DateTime.now().difference(serverStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(serverStart).inMilliseconds;
           serverResult.errorMessage = errorMsg;
         });
       }
@@ -206,7 +213,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = pages.length;
-          serverResult.time = DateTime.now().difference(pageStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(pageStart).inMilliseconds;
           serverResult.errorMessage = null;
         });
       }
@@ -215,7 +223,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = 0;
-          serverResult.time = DateTime.now().difference(pageStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(pageStart).inMilliseconds;
           serverResult.errorMessage = errorMsg;
         });
       }
@@ -230,20 +239,22 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final searchResults = await _runSearchTest();
-    
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+
+    if (searchResult.size == 0 ||
+        widget.testType == 'basic' ||
+        searchResults == null) {
       return;
     }
 
-    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
-        ? searchResults.list!.first 
+    final firstResult = (searchResults.list?.isNotEmpty ?? false)
+        ? searchResults.list!.first
         : null;
     if (firstResult == null) {
       return;
     }
 
     final detailedMedia = await _runDetailTest(firstResult);
-    
+
     if (episodeResult.size == 0 || detailedMedia == null) {
       return;
     }
@@ -260,20 +271,22 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final searchResults = await _runSearchTest();
-    
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+
+    if (searchResult.size == 0 ||
+        widget.testType == 'basic' ||
+        searchResults == null) {
       return;
     }
 
-    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
-        ? searchResults.list!.first 
+    final firstResult = (searchResults.list?.isNotEmpty ?? false)
+        ? searchResults.list!.first
         : null;
     if (firstResult == null) {
       return;
     }
 
     final detailedMedia = await _runDetailTest(firstResult);
-    
+
     if (episodeResult.size == 0 || detailedMedia == null) {
       return;
     }
@@ -295,20 +308,22 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     }
 
     final searchResults = await _runSearchTest();
-    
-    if (searchResult.size == 0 || widget.testType == 'basic' || searchResults == null) {
+
+    if (searchResult.size == 0 ||
+        widget.testType == 'basic' ||
+        searchResults == null) {
       return;
     }
 
-    final firstResult = (searchResults.list?.isNotEmpty ?? false) 
-        ? searchResults.list!.first 
+    final firstResult = (searchResults.list?.isNotEmpty ?? false)
+        ? searchResults.list!.first
         : null;
     if (firstResult == null) {
       return;
     }
 
     final detailedMedia = await _runDetailTest(firstResult);
-    
+
     if (episodeResult.size == 0 || detailedMedia == null) {
       return;
     }
@@ -337,7 +352,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = content.length;
-          serverResult.time = DateTime.now().difference(contentStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(contentStart).inMilliseconds;
           serverResult.errorMessage = null;
         });
       }
@@ -346,7 +362,8 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           serverResult.size = 0;
-          serverResult.time = DateTime.now().difference(contentStart).inMilliseconds;
+          serverResult.time =
+              DateTime.now().difference(contentStart).inMilliseconds;
           serverResult.errorMessage = errorMsg;
         });
       }
@@ -494,7 +511,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
 
     final success = searchResult.size > 0;
     String text;
-    
+
     if (!success && searchResult.errorMessage != null) {
       text = 'Error: ${searchResult.errorMessage}';
     } else if (success) {
@@ -502,7 +519,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     } else {
       text = 'No results found';
     }
-    
+
     return _buildResultRow('Search', text, success, theme);
   }
 
@@ -514,7 +531,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     final success = episodeResult.size > 0;
     final label = _getEpisodeLabel();
     String text;
-    
+
     if (!success && episodeResult.errorMessage != null) {
       text = 'Error: ${episodeResult.errorMessage}';
     } else if (success) {
@@ -522,7 +539,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     } else {
       text = 'No $label found';
     }
-    
+
     return _buildResultRow(label, text, success, theme);
   }
 
@@ -534,7 +551,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     final success = serverResult.size > 0;
     final label = _getServerLabel();
     String text;
-    
+
     if (!success && serverResult.errorMessage != null) {
       text = 'Error: ${serverResult.errorMessage}';
     } else if (success) {
@@ -542,7 +559,7 @@ class _ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     } else {
       text = 'No $label found';
     }
-    
+
     return _buildResultRow(label, text, success, theme);
   }
 

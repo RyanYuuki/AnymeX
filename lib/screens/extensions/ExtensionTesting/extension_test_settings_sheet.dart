@@ -71,115 +71,115 @@ class _ExtensionTestSettingsSheetState
             Text(
               'Test Settings',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-              ),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             // Extension Type Radio Group
             Text(
               'Extension Type',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-              ),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Obx(() => Center(
-              child: ToggleButtons(
-                isSelected: [
-                  widget.controller.extensionType.value == ItemType.anime,
-                  widget.controller.extensionType.value == ItemType.manga,
-                  widget.controller.extensionType.value == ItemType.novel,
-                ],
-                onPressed: (index) {
-                  ItemType selectedType;
-                  if (index == 0) {
-                    selectedType = ItemType.anime;
-                  } else if (index == 1) {
-                    selectedType = ItemType.manga;
-                  } else {
-                    selectedType = ItemType.novel;
-                  }
-                  widget.controller.extensionType.value = selectedType;
-                  widget.controller.selectedExtensions.clear();
-                },
-                borderRadius: BorderRadius.circular(8),
-                selectedColor: theme.onPrimary,
-                color: theme.primary,
-                fillColor: theme.primary,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Anime'),
+                  child: ToggleButtons(
+                    isSelected: [
+                      widget.controller.extensionType.value == ItemType.anime,
+                      widget.controller.extensionType.value == ItemType.manga,
+                      widget.controller.extensionType.value == ItemType.novel,
+                    ],
+                    onPressed: (index) {
+                      ItemType selectedType;
+                      if (index == 0) {
+                        selectedType = ItemType.anime;
+                      } else if (index == 1) {
+                        selectedType = ItemType.manga;
+                      } else {
+                        selectedType = ItemType.novel;
+                      }
+                      widget.controller.extensionType.value = selectedType;
+                      widget.controller.selectedExtensions.clear();
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    selectedColor: theme.onPrimary,
+                    color: theme.primary,
+                    fillColor: theme.primary,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Anime'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Manga'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Novel'),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Manga'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Novel'),
-                  ),
-                ],
-              ),
-            )),
+                )),
             const SizedBox(height: 16),
             // Test Type Radio Group
             Text(
               'Test Type',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-              ),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Obx(() => Center(
-              child: ToggleButtons(
-                isSelected: [
-                  widget.controller.testType.value == 'ping',
-                  widget.controller.testType.value == 'basic',
-                  widget.controller.testType.value == 'full',
-                ],
-                onPressed: (index) {
-                  String selectedType;
-                  if (index == 0) {
-                    selectedType = 'ping';
-                  } else if (index == 1) {
-                    selectedType = 'basic';
-                  } else {
-                    selectedType = 'full';
-                  }
-                  widget.controller.testType.value = selectedType;
-                },
-                borderRadius: BorderRadius.circular(8),
-                selectedColor: theme.onPrimary,
-                color: theme.primary,
-                fillColor: theme.primary,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Ping'),
+                  child: ToggleButtons(
+                    isSelected: [
+                      widget.controller.testType.value == 'ping',
+                      widget.controller.testType.value == 'basic',
+                      widget.controller.testType.value == 'full',
+                    ],
+                    onPressed: (index) {
+                      String selectedType;
+                      if (index == 0) {
+                        selectedType = 'ping';
+                      } else if (index == 1) {
+                        selectedType = 'basic';
+                      } else {
+                        selectedType = 'full';
+                      }
+                      widget.controller.testType.value = selectedType;
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    selectedColor: theme.onPrimary,
+                    color: theme.primary,
+                    fillColor: theme.primary,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Ping'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Basic'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Full'),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Basic'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('Full'),
-                  ),
-                ],
-              ),
-            )),
+                )),
             const SizedBox(height: 16),
             // Search Query Input
             Text(
               'Search Query',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-              ),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -199,9 +199,9 @@ class _ExtensionTestSettingsSheetState
             Text(
               'Select Extensions',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-              ),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Obx(() {
@@ -221,20 +221,20 @@ class _ExtensionTestSettingsSheetState
               return Column(
                 children: extensions.map((source) {
                   return Obx(() => CheckboxListTile(
-                    title: Text(
-                      source.name ?? 'Unknown',
-                      style: const TextStyle(fontFamily: 'Poppins'),
-                    ),
-                    value: widget.controller.selectedExtensions
-                        .contains(source.name),
-                    onChanged: (isChecked) {
-                      widget.controller.toggleExtension(
-                        source.name ?? '',
-                        isChecked ?? false,
-                      );
-                    },
-                    secondary: _buildExtensionIcon(source),
-                  ));
+                        title: Text(
+                          source.name ?? 'Unknown',
+                          style: const TextStyle(fontFamily: 'Poppins'),
+                        ),
+                        value: widget.controller.selectedExtensions
+                            .contains(source.name),
+                        onChanged: (isChecked) {
+                          widget.controller.toggleExtension(
+                            source.name ?? '',
+                            isChecked ?? false,
+                          );
+                        },
+                        secondary: _buildExtensionIcon(source),
+                      ));
                 }).toList(),
               );
             }),
