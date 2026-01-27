@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/widgets/repo_sheet.dart';
+import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/storage_provider.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
@@ -173,14 +174,27 @@ class _ExtensionScreenState extends State<ExtensionScreen>
             ),
             iconTheme: IconThemeData(color: theme.primary),
             actions: [
+              // Extension Test Button
+              AnymexOnTap(
+                onTap: () => Get.to(() => const ExtensionTestPage()),
+                child: IconButton(
+                  icon:
+                      Icon(Icons.build_outlined, color: theme.primary),
+                  onPressed: () => Get.to(() => const ExtensionTestPage()),
+                  tooltip: "Test Extensions",
+                ),
+              ),
+              // Repository Settings Button
               AnymexOnTap(
                 onTap: repoSheet,
                 child: IconButton(
                   icon:
                       Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
                   onPressed: repoSheet,
+                  tooltip: "Repositories",
                 ),
               ),
+              // Language Filter Button
               AnymexOnTap(
                 child: IconButton(
                   icon: Icon(Iconsax.language_square, color: theme.primary),
@@ -202,6 +216,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                       )
                       ..show();
                   },
+                  tooltip: "Language Filter",
                 ),
               ),
               const SizedBox(width: 8.0),
