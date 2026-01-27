@@ -491,9 +491,9 @@ class PlayerBottomSheets {
       items: [
         const BottomSheetItem(
             title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
-        ...filteredTracks.map((entry) {
+        ...tracks.where((e) => e.samplerate != null).map((entry) {
           return BottomSheetItem(
-            title: (entry.language ?? entry.title ?? entry.uri.toString())
+            title: (entry.title ?? entry.language ?? entry.uri.toString())
                 .toUpperCase(),
             subtitle: 'Audio Track',
             icon: Icons.audiotrack,

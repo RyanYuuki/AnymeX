@@ -1,4 +1,3 @@
-
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -34,7 +33,7 @@ class GradientPoster extends StatelessWidget {
             minAnimationDuration: const Duration(milliseconds: 6000),
             maxAnimationDuration: const Duration(milliseconds: 10000),
             child: Obx(() {
-              return NetworkSizedImage(
+              return AnymeXImage(
                 imageUrl: data?.cover ?? posterUrl,
                 errorImage: data?.poster,
                 radius: 0,
@@ -77,7 +76,7 @@ class GradientPoster extends StatelessWidget {
               Stack(children: [
                 Hero(
                   tag: tag,
-                  child: NetworkSizedImage(
+                  child: AnymeXImage(
                       imageUrl: posterUrl,
                       radius: 16.multiplyRoundness(),
                       width: isDesktop ? 150 : 120,
@@ -131,23 +130,20 @@ class GradientPoster extends StatelessWidget {
           ),
         ),
         Positioned(
-            top: 30,
-            right: 20,
-            child: AnymexOnTap(
-              onTap: () {
-                Get.back();
-              },
-              margin: 0,
-              child: IconButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainer,
-                  ),
-                  onPressed: () {
-                    Get.back();
-                  },
-                  icon: const Icon(Icons.close)),
-            )),
+          top: MediaQuery.of(context).padding.top + 8,
+          right: 20,
+          child: AnymexOnTap(
+            onTap: Get.back,
+            margin: 0,
+            child: IconButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              ),
+              onPressed: Get.back,
+              icon: const Icon(Icons.close),
+            ),
+          ),
+        ),
       ],
     );
   }

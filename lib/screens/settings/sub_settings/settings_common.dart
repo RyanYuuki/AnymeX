@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/general.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -19,12 +20,18 @@ class _SettingsCommonState extends State<SettingsCommon> {
   final settings = Get.find<Settings>();
   late bool uniScrapper;
   late bool shouldAskForPermission = General.shouldAskForTrack.get(true);
+  late bool hideAdultContent = General.hideAdultContent.get(true);
+  bool get isMal => serviceHandler.serviceType.value.isMal;
+  late Map<String, bool> homePageCards;
 
   @override
   void initState() {
     super.initState();
     uniScrapper = settingsController.preferences
         .get('universal_scrapper', defaultValue: false);
+    homePageCards = isMal ? settings.homePageCardsMal : settings.homePageCards;
+    homePageCards.putIfAbsent('Recommended Animes', () => true);
+    homePageCards.putIfAbsent('Recommended Mangas', () => true);
   }
 
   @override
@@ -65,20 +72,37 @@ class _SettingsCommonState extends State<SettingsCommon> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Universal',
-                        content: CustomSwitchTile(
-                            icon: Icons.touch_app_rounded,
-                            title: 'Ask for tracking permission',
-                            description:
-                                'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
-                            switchValue: shouldAskForPermission,
-                            onChanged: (e) {
-                              setState(() {
-                                shouldAskForPermission = e;
-                                General.shouldAskForTrack.set(e);
-                              });
-                            })),
+                      initialExpanded: true,
+                      title: 'Universal',
+                      content: Column(
+                        children: [
+                          CustomSwitchTile(
+                              icon: Icons.touch_app_rounded,
+                              title: 'Ask for tracking permission',
+                              description:
+                                  'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
+                              switchValue: shouldAskForPermission,
+                              onChanged: (e) {
+                                setState(() {
+                                  shouldAskForPermission = e;
+                                  General.shouldAskForTrack.set(e);
+                                });
+                              }),
+                          CustomSwitchTile(
+                              icon: Icons.play_disabled_rounded,
+                              title: 'Hide Adult Content',
+                              description:
+                                  'If enabled, you will not get a prompt for enabling adult content on Anilist/MyAnimeList.',
+                              switchValue: hideAdultContent,
+                              onChanged: (e) {
+                                setState(() {
+                                  hideAdultContent = e;
+                                  General.hideAdultContent.set(e);
+                                });
+                              }),
+                        ],
+                      ),
+                    ),
                     AnymexExpansionTile(
                         initialExpanded: true,
                         title: 'Anilist',
@@ -86,7 +110,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           icon: Icons.format_list_bulleted_sharp,
                           title: 'Manage Anilist Lists',
                           description: "Choose which list to show on home page",
-                          onTap: () => _showHomePageCardsDialog(context, false),
+                          onTap: () => _showHomePageCardsDialog(),
                         )),
                     AnymexExpansionTile(
                         initialExpanded: true,
@@ -95,25 +119,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           icon: Icons.format_list_bulleted_sharp,
                           title: 'Manage MyAnimeList Lists',
                           description: "Choose which list to show on home page",
-                          onTap: () => _showHomePageCardsDialog(context, true),
+                          onTap: () => _showHomePageCardsDialog(),
                         )),
-                    // AnymexExpansionTile(
-                    //     initialExpanded: true,
-                    //     title: 'Experimental',
-                    //     content: CustomSwitchTile(
-                    //       switchValue: uniScrapper,
-                    //       icon: Iconsax.global,
-                    //       title: 'Use Universal Scrapper',
-                    //       description:
-                    //           "it could be really slow depending on the site, might not work for all sites its in testing stages.",
-                    //       onChanged: (v) {
-                    //         setState(() {
-                    //           uniScrapper = v;
-                    //         });
-                    //         settingsController.preferences
-                    //             .put('universal_scrapper', v);
-                    //       },
-                    //     )),
                   ],
                 )
               ],
@@ -124,7 +131,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
     );
   }
 
-  void _showHomePageCardsDialog(BuildContext context, bool isMal) {
+  void _showHomePageCardsDialog() {
     showDialog(
       context: context,
       builder: (context) {

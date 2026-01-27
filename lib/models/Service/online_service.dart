@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class OnlineService {
@@ -11,7 +12,7 @@ abstract class OnlineService {
   Rx<Profile> get profileData;
 
   Future<void> autoLogin();
-  Future<void> login();
+  Future<void> login(BuildContext context);
   Future<void> logout();
   Future<void> refresh();
   void setCurrentMedia(String id, {bool isManga = false});

@@ -1,21 +1,20 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -221,7 +220,7 @@ class ChapterSection extends StatelessWidget {
               value: '${source.name} (${source.lang?.toUpperCase()})',
               text: source.name?.toUpperCase() ?? 'Unknown Source',
               subtitle: source.lang?.toUpperCase() ?? 'Unknown',
-              leadingIcon: NetworkSizedImage(
+              leadingIcon: AnymeXImage(
                 radius: 16,
                 imageUrl: isMangayomi
                     ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
@@ -245,7 +244,7 @@ class ChapterSection extends StatelessWidget {
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
           text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
           subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
-          leadingIcon: NetworkSizedImage(
+          leadingIcon: AnymeXImage(
             radius: 12,
             imageUrl: isMangayomi
                 ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"

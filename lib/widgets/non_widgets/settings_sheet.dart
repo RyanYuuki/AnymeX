@@ -1,13 +1,13 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
+import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
-import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -134,11 +134,11 @@ class SettingsSheet extends StatelessWidget {
                   if (serviceHandler.serviceType.value !=
                       ServicesType.extensions)
                     AnymexOnTap(
-                      onTap: () {
+                      onTap: () async {
                         if (serviceHandler.isLoggedIn.value) {
                           serviceHandler.logout();
                         } else {
-                          serviceHandler.login();
+                          await serviceHandler.login(context);
                         }
                         Get.back();
                       },

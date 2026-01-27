@@ -109,7 +109,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Center(
-                                  child: NetworkSizedImage(
+                                  child: AnymeXImage(
                                     imageUrl: item!.cover ?? "",
                                     height: 140,
                                     radius: 12,

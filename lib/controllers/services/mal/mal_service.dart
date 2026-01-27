@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/utils/logger.dart';
 import 'dart:math' show Random;
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -18,14 +17,16 @@ import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -385,7 +386,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     String clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     String secret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
     final secureRandom = Random.secure();

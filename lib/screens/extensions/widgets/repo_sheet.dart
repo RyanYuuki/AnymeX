@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -80,6 +81,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
   }
 
   Future<void> handleSave() async {
+    snackBar("Please wait a second!");
     final type = isAndroid && selectedTab == 1
         ? ExtensionType.aniyomi
         : ExtensionType.mangayomi;
@@ -92,9 +94,8 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
     if (selectedTab == 0) {
       controller.activeNovelRepo = novelRepoController.text;
     }
-
-    Navigator.of(context).pop();
     await widget.onSave();
+    Navigator.of(context).pop();
   }
 
   @override

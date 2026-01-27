@@ -70,52 +70,65 @@ class UISettings extends HiveObject {
   @HiveField(21)
   bool usePosterColor;
 
-  UISettings(
-      {this.glowMultiplier = 1.0,
-      this.radiusMultiplier = 1.0,
-      this.saikouLayout = false,
-      this.tabBarHeight = 50.0,
-      this.tabBarWidth = 180.0,
-      this.tabBarRoundness = 10.0,
-      this.compactCards = false,
-      this.cardRoundness = 1.0,
-      this.blurMultipler = 1.0,
-      this.animationDuration = 200,
-      this.glowDensity = 0.3,
-      this.translucentTabBar = true,
-      this.homePageCards = const {
-        "Continue Watching": true,
-        "Continue Reading": true,
-        "Completed TV": false,
-        "Completed Manga": false,
-        "Completed Movie": false,
-        "Paused Animes": false,
-        "Paused Manga": false,
-        "Dropped Animes": false,
-        "Dropped Manga": false,
-        "Planning Animes": false,
-        "Planning Manga": false,
-        "Rewatching Animes": false,
-        "Rewatching Manga": false,
-      },
-      this.homePageCardsMal = const {
-        "Continue Watching": true,
-        "Continue Reading": true,
-        "Completed TV": false,
-        "Completed Manga": false,
-        "Paused Animes": false,
-        "Paused Manga": false,
-        "Dropped Animes": false,
-        "Dropped Manga": false,
-        "Planning Animes": false,
-        "Planning Manga": false,
-      },
-      this.enableAnimation = true,
-      this.disableGradient = false,
-      this.cardStyle = 2,
-      this.historyCardStyle = 0,
-      this.liquidMode = true,
-      this.retainOriginalColor = false,
-      this.liquidBackgroundPath = '',
-      this.usePosterColor = false});
+  UISettings({
+    this.glowMultiplier = 1.0,
+    this.radiusMultiplier = 1.0,
+    this.saikouLayout = false,
+    this.tabBarHeight = 50.0,
+    this.tabBarWidth = 180.0,
+    this.tabBarRoundness = 10.0,
+    this.compactCards = false,
+    this.cardRoundness = 1.0,
+    this.blurMultipler = 1.0,
+    this.animationDuration = 200,
+    this.glowDensity = 0.3,
+    this.translucentTabBar = true,
+    Map<String, bool>? homePageCards,
+    Map<String, bool>? homePageCardsMal,
+    this.enableAnimation = true,
+    this.disableGradient = false,
+    this.cardStyle = 2,
+    this.historyCardStyle = 0,
+    this.liquidMode = true,
+    this.retainOriginalColor = false,
+    this.liquidBackgroundPath = '',
+    this.usePosterColor = false,
+  })  : homePageCards = homePageCards ??
+            {
+              "Continue Watching": true,
+              "Continue Reading": true,
+              "Completed TV": false,
+              "Completed Manga": false,
+              "Completed Movie": false,
+              "Paused Animes": false,
+              "Paused Manga": false,
+              "Dropped Animes": false,
+              "Dropped Manga": false,
+              "Planning Animes": false,
+              "Planning Manga": false,
+              "Rewatching Animes": false,
+              "Rewatching Manga": false,
+            },
+        homePageCardsMal = homePageCardsMal ??
+            {
+              "Continue Watching": true,
+              "Continue Reading": true,
+              "Completed TV": false,
+              "Completed Manga": false,
+              "Paused Animes": false,
+              "Paused Manga": false,
+              "Dropped Animes": false,
+              "Dropped Manga": false,
+              "Planning Animes": false,
+              "Planning Manga": false,
+            };
+
+  void normalizeMaps() {
+    homePageCards = Map<String, bool>.from(homePageCards);
+    homePageCards.putIfAbsent('Recommended Animes', () => true);
+    homePageCards.putIfAbsent('Recommended Mangas', () => true);
+    homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
+    homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
+    homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+  }
 }

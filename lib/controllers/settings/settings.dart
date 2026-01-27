@@ -49,6 +49,7 @@ class Settings extends GetxController {
     var uiBox = Hive.box<UISettings>("UiSettings");
     var playerBox = Hive.box<PlayerSettings>("PlayerSettings");
     uiSettings = Rx<UISettings>(uiBox.get('settings') ?? UISettings());
+    uiSettings.value.normalizeMaps();
     playerSettings =
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
     preferences = Hive.box('preferences');

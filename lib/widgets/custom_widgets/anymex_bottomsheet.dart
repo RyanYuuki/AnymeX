@@ -61,6 +61,7 @@ class AnymexSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (title != null) ...[
+                  const SizedBox(height: 10),
                   AnymexText(text: title!, size: 18, variant: TextVariant.bold),
                   const SizedBox(height: 10),
                 ],

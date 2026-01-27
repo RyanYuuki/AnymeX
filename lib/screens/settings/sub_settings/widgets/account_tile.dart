@@ -205,7 +205,7 @@ class ProfileTile extends StatelessWidget {
                   const Spacer(),
                   InkWell(
                     onTap: () {
-                      isLoggedIn ? service.logout() : service.login();
+                      isLoggedIn ? service.logout() : service.login(context);
                     },
                     child: AnymexIconWrapper(
                       child: CircleAvatar(

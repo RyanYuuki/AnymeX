@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
+
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/player.dart';
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as model;
@@ -22,7 +24,6 @@ import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -356,11 +357,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializePlayer() {
     player = Player(
-        configuration: const PlayerConfiguration(
-      bufferSize: 1024 * 1024 * 32,
-    ));
+        configuration: PlayerConfiguration(
+            bufferSize: 1024 * 1024 * 32,
+            libass: PlayerKeys.useLibass.get(false)));
     playerController = VideoController(player,
         configuration: VideoControllerConfiguration(
+            hwdec: 'no',
             androidAttachSurfaceAfterVideoParameters:
                 Platform.isAndroid ? true : null));
 
@@ -443,7 +445,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _updateRpc();
     }));
 
-    _subscriptions.add(player.stream.buffer.throttleTime(const Duration(seconds: 1)).listen((buf) {
+    _subscriptions.add(player.stream.buffer
+        .throttleTime(const Duration(seconds: 1))
+        .listen((buf) {
       bufferred.value = buf;
     }));
 
@@ -999,40 +1003,120 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .put(offlineVideoPath, currentPosition.value.inMilliseconds);
       return;
     }
+
     try {
-      final currentTimestamp = currentEpisode.value.timeStampInMilliseconds;
+      final episode = currentEpisode.value;
+      final currentTimestamp = episode.timeStampInMilliseconds;
       final totalDuration = episodeDuration.value.inMilliseconds;
 
       if (currentTimestamp == null) return;
       if (episodeDuration.value.inMinutes < 1) return;
 
-      if (currentTimestamp > 0 && currentTimestamp < totalDuration) {
-        offlineStorage.addOrUpdateAnime(
-            anilistData, episodeList, currentEpisode.value);
-        offlineStorage.addOrUpdateWatchedEpisode(
-            anilistData.id, currentEpisode.value);
-        currentEpisode.value.currentTrack = selectedVideo.value;
-        currentEpisode.value.videoTracks = episodeTracks;
+      final Uint8List? screenshot = await player.screenshot(
+        includeLibassSubtitles: true,
+        format: 'image/png',
+      );
 
-        Logger.i(
-            'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
-      } else {
-        final episodeToSave = currentEpisode.value;
-        episodeToSave.timeStampInMilliseconds = 0;
+      final String? thumbnailBase64 =
+          screenshot != null ? base64Encode(screenshot) : null;
 
-        offlineStorage.addOrUpdateAnime(
-            anilistData, episodeList, episodeToSave);
-        offlineStorage.addOrUpdateWatchedEpisode(anilistData.id, episodeToSave);
-        episodeToSave.currentTrack = selectedVideo.value;
-        episodeToSave.videoTracks = episodeTracks;
-
-        Logger.i(
-            'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
+      if (screenshot == null) {
+        Logger.w('Screenshot failed — thumbnail will not be saved');
       }
-    } catch (e) {
-      Logger.i('Failed to track locally: $e');
+
+      final episodeToSave = Episode(
+        number: episode.number,
+        title: episode.title,
+        link: episode.link,
+        timeStampInMilliseconds:
+            (currentTimestamp > 0 && currentTimestamp < totalDuration)
+                ? currentTimestamp
+                : 0,
+        thumbnail: thumbnailBase64 ?? episode.thumbnail,
+        currentTrack: selectedVideo.value,
+        videoTracks: episodeTracks,
+        durationInMilliseconds: episode.durationInMilliseconds,
+        lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
+        source: episode.source,
+        desc: episode.desc,
+      );
+
+      offlineStorage.addOrUpdateAnime(
+        anilistData,
+        episodeList,
+        episodeToSave,
+      );
+
+      offlineStorage.addOrUpdateWatchedEpisode(
+        anilistData.id,
+        episodeToSave,
+      );
+      Logger.i(
+        'Saved episode ${episodeToSave.number} | '
+        'timestamp=${episodeToSave.timeStampInMilliseconds} | '
+        'thumbnailLength=${episodeToSave.thumbnail?.length}',
+      );
+    } catch (e, st) {
+      Logger.e('Failed to track locally $e', stackTrace: st);
     }
   }
+
+  // Future<void> _trackLocally() async {
+  //   if (isOffline.value) {
+  //     settingsController.preferences
+  //         .put(offlineVideoPath, currentPosition.value.inMilliseconds);
+  //     return;
+  //   }
+  //   try {
+  //     final currentTimestamp = currentEpisode.value.timeStampInMilliseconds;
+  //     final totalDuration = episodeDuration.value.inMilliseconds;
+  //     final thumbnail = await player.screenshot(
+  //         includeLibassSubtitles: true, format: 'image/png');
+
+  //     if (currentTimestamp == null) return;
+  //     if (episodeDuration.value.inMinutes < 1) return;
+
+  //     if (currentTimestamp > 0 && currentTimestamp < totalDuration) {
+  //       if (thumbnail != null) {
+  //         currentEpisode.value.thumbnail = base64Encode(thumbnail);
+  //         print('Thumbnail saved for episode ${currentEpisode.value.number}');
+  //         print(
+  //             'Thumbnail  ${currentEpisode.value.thumbnail!.substring(0, 20)}...');
+  //       }
+  //       offlineStorage.addOrUpdateAnime(
+  //           anilistData, episodeList, currentEpisode.value);
+  //       offlineStorage.addOrUpdateWatchedEpisode(
+  //           anilistData.id, currentEpisode.value);
+  //       currentEpisode.value.currentTrack = selectedVideo.value;
+  //       currentEpisode.value.videoTracks = episodeTracks;
+
+  //       Logger.i(
+  //           'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
+  //     } else {
+  //       final episodeToSave = currentEpisode.value;
+  //       episodeToSave.timeStampInMilliseconds = 0;
+
+  //       if (thumbnail != null) {
+  //         episodeToSave.thumbnail = base64Encode(thumbnail);
+  //         print('Thumbnail saved for episode ${currentEpisode.value.number}');
+
+  //         print(
+  //             'Thumbnail  ${currentEpisode.value.thumbnail!.substring(0, 20)}...');
+  //       }
+
+  //       offlineStorage.addOrUpdateAnime(
+  //           anilistData, episodeList, episodeToSave);
+  //       offlineStorage.addOrUpdateWatchedEpisode(anilistData.id, episodeToSave);
+  //       episodeToSave.currentTrack = selectedVideo.value;
+  //       episodeToSave.videoTracks = episodeTracks;
+
+  //       Logger.i(
+  //           'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
+  //     }
+  //   } catch (e) {
+  //     Logger.i('Failed to track locally: $e');
+  //   }
+  // }
 
   Future<void> _trackOnline(bool hasCrossedLimit) async {
     if (isOffline.value) {

@@ -1,31 +1,33 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/models/player/player_adaptor.dart';
-import 'package:anymex/models/ui/ui_adaptor.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/controllers/ui/greeting.dart';
+import 'package:anymex/firebase_options.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:anymex/models/player/player_adaptor.dart';
+import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
+import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
-import 'package:anymex/controllers/services/anilist/anilist_data.dart';
-import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
@@ -40,6 +42,8 @@ import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:app_links/app_links.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -58,6 +62,8 @@ import 'package:window_manager/window_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
 late Isar isar;
+
+FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 class MyHttpoverrides extends HttpOverrides {
   @override
@@ -84,10 +90,11 @@ void main(List<String> args) async {
     await Logger.init();
     await dotenv.load(fileName: ".env");
 
-    // TODO: For all the contributors just make a supabase account and then change this
-    // await Supabase.initialize(
-    //     url: dotenv.env['SUPABASE_URL']!,
-    //     anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
+    if (!Platform.isLinux) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
 
     if (Platform.isWindows) {
       ['dar', 'anymex', 'sugoireads', 'mangayomi']
@@ -101,7 +108,9 @@ void main(List<String> args) async {
     MediaKit.ensureInitialized();
     if (!Platform.isAndroid && !Platform.isIOS) {
       await windowManager.ensureInitialized();
-      await AnymexTitleBar.initialize();
+      if (Platform.isWindows) {
+        await AnymexTitleBar.initialize();
+      }
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -328,7 +337,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Get.find<ServiceHandler>();
+    final authService = Get.put(ServiceHandler());
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Glow(

@@ -1,7 +1,7 @@
-import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -140,11 +140,33 @@ class PlayerShaders {
   }
 
   static void setShaders(dynamic player, String shader) async {
+    if (Platform.isLinux || Platform.isAndroid || Platform.isIOS) {
+      await setShadersAlternative(player, shader);
+      return;
+    }
+
     settingsController.selectedShader = shader;
     var paths =
         (await PlayerShaders.getShaderPathsForProfile(shader)).join(';');
     Logger.i('Paths: $paths');
     (player.platform as dynamic).setProperty('glsl-shaders', paths);
+  }
+
+  static Future<void> setShadersAlternative(
+      dynamic player, String shader) async {
+    settingsController.selectedShader = shader;
+
+    final paths = await PlayerShaders.getShaderPathsForProfile(shader);
+
+    Logger.i('Shader paths: $paths');
+
+    final mpv = player.platform as dynamic;
+
+    mpv.setProperty('glsl-shaders', '');
+
+    for (final path in paths) {
+      mpv.setProperty('glsl-shader', path);
+    }
   }
 
   static Future<bool> areShadersDownloaded() async {

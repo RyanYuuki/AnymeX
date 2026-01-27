@@ -79,7 +79,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                       topLeft: Radius.circular(12.multiplyRadius()),
                       bottomLeft: Radius.circular(12.multiplyRadius()),
                     ),
-                    child: NetworkSizedImage(
+                    child: AnymeXImage(
                       imageUrl: media.poster,
                       width: 80,
                       height: 100,

@@ -68,7 +68,7 @@ class UpdateManager {
     }
   }
 
-  final bool _currentVersionIncludesHotfix = true;
+  final bool _currentVersionIncludesHotfix = false;
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
     currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
