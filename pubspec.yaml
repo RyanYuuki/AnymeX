@@ -1,160 +1,162 @@
 name: anymex
 description: "An Anilist Client"
-publish_to: "GitHub"
+publish_to: "https://github.com/RyanYuuki/AnymeX"
 version: 3.0.3+25
 
 environment:
-  sdk: ">=3.4.4 <4.0.0"
-  flutter: ">=3.0.0"
+    sdk: ">=3.4.4 <4.0.0"
+    flutter: ">=3.0.0"
 
 dependencies:
-  algorithmic: ^0.0.11
-  blur: ^4.0.0
-  cached_network_image: ^3.4.1
-  carousel_slider: ^5.0.0
-  checkmark: ^0.0.2+1
-  device_info_plus: ^11.2.2
-  dio: ^5.8.0+1
-  dynamic_color: ^1.7.0
-  expandable_page_view: ^1.0.17
-  extended_image: ^10.0.1
-  file_picker: ^8.1.7
-  flutter:
-    sdk: flutter
-  flutter_dotenv: ^5.2.1
-  flutter_html: ^3.0.0
-  flutter_inappwebview: ^6.1.5
-  flutter_svg: ^2.0.10
-  # flutter_local_notifications: ^18.0.1
-  flutter_markdown: ^0.7.6
-  flutter_native_splash: ^2.4.4
-  flutter_web_auth_2: ^4.0.2
-  get: ^4.6.6
-  grouped_list: ^6.0.0
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
-  html: any
-  http: ^1.2.2
-  http_interceptor: ^2.0.0
-  hugeicons: ^0.0.7
-  iconly: ^1.0.1
-  iconsax: ^0.0.8
-  install_plugin: ^2.1.0
-  intl: ^0.20.1
-  kenburns_nullsafety: ^1.0.1
-  dartotsu_extension_bridge:
-    git:
-      url: https://github.com/aayush2622/DartotsuExtensionBridge.git
+    algorithmic: ^0.0.11
+    blur: ^4.0.0
+    cached_network_image: ^3.4.1
+    carousel_slider: ^5.0.0
+    checkmark: ^0.0.2+1
+    device_info_plus: ^11.2.2
+    dio: ^5.8.0+1
+    dynamic_color: ^1.7.0
+    expandable_page_view: ^1.0.17
+    extended_image: ^10.0.1
+    file_picker: ^8.1.7
+    flutter:
+        sdk: flutter
+    flutter_dotenv: ^5.2.1
+    flutter_html: ^3.0.0
+    flutter_inappwebview: ^6.1.5
+    flutter_svg: ^2.0.10
+    # flutter_local_notifications: ^18.0.1
+    flutter_markdown: ^0.7.6
+    flutter_native_splash: ^2.4.4
+    flutter_web_auth_2: ^4.0.2
+    get: ^4.6.6
+    grouped_list: ^6.0.0
+    hive: ^2.2.3
+    hive_flutter: ^1.1.0
+    html: any
+    http: ^1.2.2
+    http_interceptor: ^2.0.0
+    hugeicons: ^0.0.7
+    iconly: ^1.0.1
+    iconsax: ^0.0.8
+    install_plugin: ^2.1.0
+    intl: ^0.20.1
+    kenburns_nullsafety: ^1.0.1
+    dartotsu_extension_bridge:
+        git:
+            url: https://github.com/aayush2622/DartotsuExtensionBridge.git
 
-  outlined_text: ^1.0.1
-  media_kit:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: media_kit
-  media_kit_video:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: media_kit_video
-  media_kit_libs_video:
-    git:
-      url: https://github.com/Schnitzel5/media-kit.git
-      path: libs/universal/media_kit_libs_video  
+    outlined_text: ^1.0.1
+    media_kit:
+        git:
+            url: https://github.com/Schnitzel5/media-kit.git
+            path: media_kit
+    media_kit_video:
+        git:
+            url: https://github.com/Schnitzel5/media-kit.git
+            path: media_kit_video
+    media_kit_libs_video:
+        git:
+            url: https://github.com/Schnitzel5/media-kit.git
+            path: libs/universal/media_kit_libs_video
 
+    package_info_plus: any
+    path: ^1.9.0
+    path_provider: any
+    permission_handler: ^11.3.1
+    provider: ^6.1.2
+    scrollable_positioned_list: ^0.3.8
+    shimmer: ^3.0.0
+    smooth_page_indicator: ^1.2.0+3
+    super_sliver_list: ^0.4.1
+    share_plus: ^11.0.0
+    url_launcher: any
+    volume_controller: ^3.4.0
+    screen_brightness: ^2.1.7
+    window_manager: ^0.4.3
+    app_links: ^6.4.0
+    preload_page_view: ^0.2.0
 
-  package_info_plus: any
-  path: ^1.9.0
-  path_provider: any
-  permission_handler: ^11.3.1
-  provider: ^6.1.2
-  scrollable_positioned_list: ^0.3.8
-  shimmer: ^3.0.0
-  smooth_page_indicator: ^1.2.0+3
-  super_sliver_list: ^0.4.1
-  share_plus: ^11.0.0
-  url_launcher: any
-  volume_controller: ^3.4.0 
-  screen_brightness: ^2.1.7 
-  window_manager: ^0.4.3
-  app_links: ^6.4.0
-  preload_page_view: ^0.2.0
-
-  archive: any
-  image: any
-  flutter_widget_from_html: ^0.17.0
-  timeago: ^3.7.1
-  flutter_staggered_animations: ^1.1.1
-  material_symbols_icons: ^4.2867.0
-  fuzzywuzzy: ^1.2.0
-  expressive_loading_indicator: ^0.0.1
-  photo_view: ^0.15.0
-  rxdart: any
-  ffi: any
-  win32: any
-  isar_community: ^3.3.0-dev.3
-  isar_community_flutter_libs: ^3.3.0-dev.3
-  sensors_plus: ^7.0.0
-  flutter_discord_rpc_fork:
-    git:
-      url: https://github.com/Schnitzel5/flutter-discord-rpc.git
-      ref: main
+    archive: any
+    image: any
+    flutter_widget_from_html: ^0.17.0
+    timeago: ^3.7.1
+    flutter_staggered_animations: ^1.1.1
+    material_symbols_icons: ^4.2867.0
+    fuzzywuzzy: ^1.2.0
+    expressive_loading_indicator: ^0.0.1
+    photo_view: ^0.15.0
+    rxdart: any
+    ffi: any
+    win32: any
+    isar_community: ^3.3.0-dev.3
+    isar_community_flutter_libs: ^3.3.0-dev.3
+    sensors_plus: ^7.0.0
+    flutter_discord_rpc_fork:
+        git:
+            url: https://github.com/Schnitzel5/flutter-discord-rpc.git
+            ref: main
+    firebase_core: ^4.4.0
+    firebase_analytics: ^12.1.1
+    background_downloader: ^9.5.2
 
 dev_dependencies:
-  build_runner: ^2.4.11
-  change_app_package_name: ^1.4.0
-  flutter_lints: ^3.0.0
-  flutter_test:
-    sdk: flutter
-  flutter_launcher_icons: ^0.14.2
-  inno_bundle: ^0.7.4
+    build_runner: ^2.4.11
+    change_app_package_name: ^1.4.0
+    flutter_lints: ^3.0.0
+    flutter_test:
+        sdk: flutter
+    flutter_launcher_icons: ^0.14.2
+    inno_bundle: ^0.7.4
 
 # dependency_overrides:
 #   path: ^1.9.1
 
 flutter_launcher_icons:
-  android: false
-  ios: false
-  image_path: "assets/images/logo.png"
-  windows:
-    generate: true
+    android: false
+    ios: false
     image_path: "assets/images/logo.png"
-    icon_size: 256
-  macos:
-    generate: false
-    image_path: "assets/images/logo.png"
+    windows:
+        generate: true
+        image_path: "assets/images/logo.png"
+        icon_size: 256
+    macos:
+        generate: false
+        image_path: "assets/images/logo.png"
 
 flutter_native_splash:
-  fullscreen: true
-  color: "#000000"
-  # Disabled native splash - using animated logo instead
-  # image: assets/images/logo.png
-  android_12:
+    fullscreen: true
     color: "#000000"
-   # image: assets/images/logo.png
+    # Disabled native splash - using animated logo instead
+    # image: assets/images/logo.png
+    android_12:
+        color: "#000000"
+        # image: assets/images/logo.png
 
 flutter:
-  uses-material-design: true
+    uses-material-design: true
 
-  assets:
-    - assets/images/
-    - .env
+    assets:
+        - assets/images/
+        - .env
 
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+    fonts:
+        - family: Poppins
+          fonts:
+              - asset: assets/fonts/Poppins/Poppins-Regular.ttf
 
-    - family: Poppins-SemiBold
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+        - family: Poppins-SemiBold
+          fonts:
+              - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
 
-    - family: Poppins-Bold
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+        - family: Poppins-Bold
+          fonts:
+              - asset: assets/fonts/Poppins/Poppins-Bold.ttf
 
 inno_bundle:
-  id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
-  publisher: Ryan Yuuki
-  name: AnymeX
-  version: 3.0.3
-  admin: auto
-  installer_icon: ./anymex.ico
+    id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
+    publisher: Ryan Yuuki
+    name: AnymeX
+    version: 3.0.3
+    admin: auto
+    installer_icon: ./anymex.ico
