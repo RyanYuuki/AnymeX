@@ -1,18 +1,18 @@
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/player.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
-
 import 'package:outlined_text/outlined_text.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
@@ -115,7 +115,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     final currentFit = settings.resizeMode;
     final selectedLabel = resizeModeList.firstWhere(
       (lbl) =>
-          (resizeModes[lbl]?.name.toLowerCase() ?? '') == currentFit.toLowerCase(),
+          (resizeModes[lbl]?.name.toLowerCase() ?? '') ==
+          currentFit.toLowerCase(),
       orElse: () => resizeModeList.first,
     );
 
@@ -234,6 +235,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                         .put('useOldPlayer', val);
                                     setState(() {});
                                   }),
+                              CustomSwitchTile(
+                                  icon: Icons.subtitles,
+                                  padding: const EdgeInsets.all(10),
+                                  title: "Use Libass for Subtitles",
+                                  description:
+                                      "Better subtitle rendering using libass library",
+                                  switchValue:
+                                      PlayerKeys.useLibass.get<bool>(false),
+                                  onChanged: (val) {
+                                    PlayerKeys.useLibass.set<bool>(val);
+                                    setState(() {});
+                                  }),
                               CustomTile(
                                 padding: 10,
                                 descColor:
@@ -271,7 +284,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 icon: Icons.aspect_ratio,
                                 title: 'Resize Mode',
                                 isDescBold: true,
-                                description: settings.resizeMode.capitalizeFirst!,
+                                description:
+                                    settings.resizeMode.capitalizeFirst!,
                                 descColor:
                                     Theme.of(context).colorScheme.primary,
                                 onTap: () {
