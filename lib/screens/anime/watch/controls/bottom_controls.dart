@@ -1,11 +1,12 @@
 import 'dart:io';
+
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class BottomControls extends StatelessWidget {
@@ -47,7 +48,8 @@ class BottomControls extends StatelessWidget {
                 child: Opacity(
                   opacity: 0.7,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: const ProgressSlider(),
                   ),
                 ),
@@ -59,9 +61,8 @@ class BottomControls extends StatelessWidget {
       return IgnorePointer(
         ignoring: !controller.showControls.value,
         child: AnimatedSlide(
-          offset: controller.showControls.value
-              ? Offset.zero
-              : const Offset(0, 1),
+          offset:
+              controller.showControls.value ? Offset.zero : const Offset(0, 1),
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
@@ -102,6 +103,7 @@ class BottomControls extends StatelessWidget {
   Widget _buildLayout(BuildContext context) {
     final controller = Get.find<PlayerController>();
     final theme = context.theme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -115,17 +117,22 @@ class BottomControls extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: controller.isLocked.value
-                    ? null // Disable skip while locked
-                    : () => controller.megaSeek(controller.playerSettings.skipDuration),
+                    ? null
+                    : () => controller
+                        .megaSeek(controller.playerSettings.skipDuration),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainer
-                        .withValues(alpha: 0.6),
+                    color: isDark
+                        ? theme.colorScheme.surfaceContainer
+                            .withValues(alpha: 0.6)
+                        : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: theme.colorScheme.outline,
+                      color: isDark
+                          ? theme.colorScheme.outline
+                          : theme.colorScheme.outline.withOpacity(0.5),
                       width: 0.5,
                     ),
                   ),
@@ -155,10 +162,14 @@ class BottomControls extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                      color: isDark
+                          ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.2),
+                        color: isDark
+                            ? theme.colorScheme.outline.withOpacity(0.2)
+                            : theme.colorScheme.outline.withOpacity(0.4),
                         width: 0.5,
                       ),
                     ),
@@ -191,10 +202,14 @@ class BottomControls extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.2),
+                      color: isDark
+                          ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.15),
+                        color: isDark
+                            ? theme.colorScheme.outline.withOpacity(0.15)
+                            : theme.colorScheme.outline.withOpacity(0.3),
                         width: 0.5,
                       ),
                     ),
@@ -282,10 +297,14 @@ class BottomControls extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                      color: isDark
+                          ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.2),
+                        color: isDark
+                            ? theme.colorScheme.outline.withOpacity(0.2)
+                            : theme.colorScheme.outline.withOpacity(0.4),
                         width: 0.5,
                       ),
                     ),
