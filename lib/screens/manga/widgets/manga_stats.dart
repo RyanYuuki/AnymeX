@@ -49,6 +49,60 @@ class MangaStats extends StatelessWidget {
             ],
           ),
         ),
+        // Only show if the status is RELEASING
+        if ((data.status?.toUpperCase() ?? '') == 'RELEASING')
+          FutureBuilder<NextRelease>(
+            future: MangaAnimeUtil.getNextChapterPrediction(data),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Center(child: ExpressiveLoadingIndicator(size: 20)),
+                );
+              }
+              
+              if (snapshot.hasError || !snapshot.hasData) {
+                return const SizedBox.shrink();
+              }
+
+              final prediction = snapshot.data!;
+              if (prediction.error != null || prediction.nextReleaseDate == null) {
+                return const SizedBox.shrink();
+              }
+
+              // Formatting dates
+              final dateFormat = DateFormat('d MMM yyyy');
+              final formattedDate = dateFormat.format(prediction.nextReleaseDate!);
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 30),
+                  const AnymexText(
+                    text: "Release Prediction",
+                    variant: TextVariant.bold,
+                    size: 17,
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      children: [
+                        StateItem(
+                          label: "Est. Next Chapter", 
+                          value: formattedDate,
+                        ),
+                        StateItem(
+                          label: "Release Schedule", 
+                          value: "Every ~${prediction.averageIntervalDays} days",
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         const SizedBox(height: 30),
         const AnymexText(
           text: "Romaji Title",
