@@ -378,7 +378,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                NetworkSizedImage(
+                AnymeXImage(
                   width: 40,
                   radius: 20,
                   height: 40,
