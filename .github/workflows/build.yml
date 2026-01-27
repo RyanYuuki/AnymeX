@@ -379,6 +379,7 @@ jobs:
           tag: ${{ github.ref_name }}
 
   post-release:
+    if: false
     needs: [build-all-platforms, release]
     strategy:
       fail-fast: false

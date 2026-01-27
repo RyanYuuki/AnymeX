@@ -24,6 +24,8 @@ import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
+import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -110,6 +112,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       _checkAnimePresence();
     });
     _fetchAnilistData();
+    
+    // Preload comments immediately when media opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CommentPreloader.to.preloadComments(widget.media.id.toString());
+    });
   }
 
   Future<void> _syncMediaIds() async {
@@ -128,6 +135,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void dispose() {
     controller.dispose();
+    // Clean up preloaded comments when media page is closed
+    CommentPreloader.to.removePreloadedController(widget.media.id.toString());
     DiscordRPCController.instance.updateBrowsingPresence();
     super.dispose();
   }
@@ -199,11 +208,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       }
       Logger.i("Media Details Fetch Failed => $e");
     } finally {
-      if (widget.media.serviceType == ServicesType.anilist) {
-        final data =
-            await CommentsDatabase().fetchComments(widget.media.id.toString());
-        comments.value = data;
-      }
+      // Comments are now handled by CommentSection widget
+      // No need to fetch here as it's done in the CommentSectionController
     }
   }
 
@@ -523,7 +529,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               else
                 const SizedBox.shrink(),
               _buildEpisodeSection(context),
-              // _buildCommentsSection(context)
+              _buildCommentsSection(context)
             ],
           )
         ],
@@ -636,14 +642,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildCommentsSection(BuildContext context) {
-    return
-        // comments.value != null
-        //     ? CommentSection(
-        //         mediaId: widget.media.id,
-        //         currentTag: ('Episode ${currentAnime.value?.episodeCount ?? '0'}'),
-        //       )
-        //     :
-        const SizedBox.shrink();
+    return CommentSection(
+      mediaId: widget.media.id.toString(),
+      currentTag: ('Episode ${currentAnime.value?.episodeCount ?? '0'}'),
+    );
   }
 
   // Common Info Section
@@ -739,11 +741,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                           selectedIcon: Iconsax.play5,
                           unselectedIcon: Iconsax.play,
                           label: "Watch"),
-                    // NavItem(
-                    //     onTap: _onPageSelected,
-                    //     selectedIcon: HugeIcons.strokeRoundedComment01,
-                    //     unselectedIcon: HugeIcons.strokeRoundedComment02,
-                    //     label: "Comments"),
+                    NavItem(
+                        onTap: _onPageSelected,
+                        selectedIcon: HugeIcons.strokeRoundedComment01,
+                        unselectedIcon: HugeIcons.strokeRoundedComment02,
+                        label: "Comments"),
                   ]),
             ],
           ),
@@ -768,6 +770,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   selectedIcon: Iconsax.play5,
                   unselectedIcon: Iconsax.play,
                   label: "Watch"),
+              NavItem(
+                  onTap: _onPageSelected,
+                  selectedIcon: HugeIcons.strokeRoundedComment01,
+                  unselectedIcon: HugeIcons.strokeRoundedComment02,
+                  label: "Comments"),
             ]));
   }
 

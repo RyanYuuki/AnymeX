@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
@@ -116,7 +117,17 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                     ),
                   ),
                   SliverToBoxAdapter(child: 20.height()),
-                  ChapterSliverSection(controller: controller)
+                  ChapterSliverSection(controller: controller),
+                  SliverToBoxAdapter(child: 20.height()),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    sliver: SliverToBoxAdapter(
+                      child: CommentSection(
+                        mediaId: widget.media.id.toString(),
+                        currentTag: ('Chapter ${controller.offlineMedia.value?.currentChapter?.number ?? 1}'),
+                      ),
+                    ),
+                  ),
                 ],
               );
             }),

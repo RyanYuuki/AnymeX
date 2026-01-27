@@ -11,6 +11,7 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -38,6 +39,14 @@ class AnilistAuth extends GetxController {
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
+      
+      // Check Commentum v2 user role after auto login
+      try {
+        final commentumService = Get.find<CommentumService>();
+        await commentumService.getUserRole();
+      } catch (e) {
+        Logger.i('Error checking Commentum role during auto login: $e');
+      }
     }
   }
 
@@ -88,6 +97,14 @@ class AnilistAuth extends GetxController {
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
+      
+      // Check Commentum v2 user role after successful login
+      try {
+        final commentumService = Get.find<CommentumService>();
+        await commentumService.getUserRole();
+      } catch (e) {
+        Logger.i('Error checking Commentum role: $e');
+      }
     } else {
       throw Exception('Failed to exchange code for token: ${response.body}');
     }
