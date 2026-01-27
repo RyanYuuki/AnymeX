@@ -1,11 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -212,58 +214,98 @@ class Header extends StatelessWidget {
   }
 }
 
-class NetworkSizedImage extends StatelessWidget {
+bool isBase64Image(String value) {
+  if (value.isEmpty) return false;
+
+  if (value.startsWith('data:image')) return true;
+
+  return RegExp(r'^[A-Za-z0-9+/]+={0,2}$').hasMatch(value);
+}
+
+Uint8List base64ToBytes(String base64) {
+  final cleaned = base64.contains(',') ? base64.split(',').last : base64;
+  return base64Decode(cleaned);
+}
+
+class AnymeXImage extends StatelessWidget {
   final String imageUrl;
-  final double radius;
-  final double? height;
   final double width;
+  final double? height;
+  final double radius;
+  final BoxFit fit;
   final Alignment alignment;
-  final String? errorImage;
   final Color? color;
-  const NetworkSizedImage({
+  final String? errorImage;
+
+  const AnymeXImage({
     super.key,
     required this.imageUrl,
-    required this.radius,
-    this.height,
     required this.width,
+    this.height,
+    this.radius = 8,
+    this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
-    this.errorImage,
     this.color,
+    this.errorImage,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isBase64 = isBase64Image(imageUrl);
+
     return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: CachedNetworkImage(
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-          alignment: alignment,
-          color: color,
-          colorBlendMode: color != null ? BlendMode.color : null,
-          imageUrl: imageUrl,
-          placeholder: (context, url) => placeHolderWidget(context),
-          errorWidget: (context, url, error) {
-            if (errorImage != null && errorImage!.isNotEmpty) {
-              return CachedNetworkImage(
-                width: width,
-                height: height,
-                fit: BoxFit.cover,
-                alignment: alignment,
-                imageUrl: errorImage!,
-                placeholder: (context, url) => placeHolderWidget(context),
-                errorWidget: (context, url, error) =>
-                    _buildFallbackErrorWidget(context),
-              );
-            } else {
-              return _buildFallbackErrorWidget(context);
-            }
-          },
-        ));
+      borderRadius: BorderRadius.circular(radius),
+      child: isBase64
+          ? Image.memory(
+              base64ToBytes(imageUrl),
+              width: width,
+              height: height,
+              fit: fit,
+              alignment: alignment,
+              color: color,
+              colorBlendMode: color != null ? BlendMode.color : null,
+              errorBuilder: (_, __, ___) => _fallback(context),
+            )
+          : CachedNetworkImage(
+              imageUrl: imageUrl,
+              width: width,
+              height: height,
+              fit: fit,
+              alignment: alignment,
+              color: color,
+              colorBlendMode: color != null ? BlendMode.color : null,
+              placeholder: (_, __) => _placeholder(context),
+              errorWidget: (_, __, ___) {
+                if (errorImage != null && errorImage!.isNotEmpty) {
+                  return CachedNetworkImage(
+                    imageUrl: errorImage!,
+                    width: width,
+                    height: height,
+                    fit: fit,
+                    placeholder: (_, __) => _placeholder(context),
+                    errorWidget: (_, __, ___) => _fallback(context),
+                  );
+                }
+                return _fallback(context);
+              },
+            ),
+    );
   }
 
-  Widget _buildFallbackErrorWidget(context) {
+  Widget _placeholder(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      alignment: Alignment.center,
+      color: Theme.of(context)
+          .colorScheme
+          .surfaceContainerHighest
+          .withOpacity(0.2),
+      child: const CircularProgressIndicator(strokeWidth: 2),
+    );
+  }
+
+  Widget _fallback(BuildContext context) {
     return Container(
       width: width,
       height: height,
@@ -279,7 +321,6 @@ class NetworkSizedImage extends StatelessWidget {
             Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
           ],
         ),
-        borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
         child: Text(

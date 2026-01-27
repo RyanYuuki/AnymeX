@@ -97,8 +97,7 @@ class _TitleBarWidget extends StatelessWidget {
                     windowManager.startDragging();
                   },
                   onDoubleTap: () async {
-                    final isMaximized =
-                        await windowManager.isMaximized();
+                    final isMaximized = await windowManager.isMaximized();
                     if (isMaximized) {
                       await windowManager.unmaximize();
                     } else {
@@ -115,8 +114,7 @@ class _TitleBarWidget extends StatelessWidget {
               _WindowButton(
                 icon: Icons.crop_square_rounded,
                 onPressed: () async {
-                  final isMaximized =
-                      await windowManager.isMaximized();
+                  final isMaximized = await windowManager.isMaximized();
                   if (isMaximized) {
                     await windowManager.unmaximize();
                   } else {
@@ -205,8 +203,7 @@ class _WindowButtonState extends State<_WindowButton>
               color: isHovered
                   ? (widget.isClose
                       ? Colors.red.withOpacity(0.9)
-                      : widget.buttonColor
-                          .withOpacity(isDark ? 0.15 : 0.1))
+                      : widget.buttonColor.withOpacity(isDark ? 0.15 : 0.1))
                   : Colors.transparent,
             ),
             child: Center(
