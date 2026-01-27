@@ -270,7 +270,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
           children: [
             Hero(
               tag: data.description,
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 radius: 12.multiplyRoundness(),
                 imageUrl: data.poster,
                 width: 120,

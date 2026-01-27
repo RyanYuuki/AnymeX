@@ -222,7 +222,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                   tag: widget.data.title,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: NetworkSizedImage(
+                    child: AnymeXImage(
                       radius: 12,
                       imageUrl: widget.data.poster,
                       width: cardWidth,
@@ -391,7 +391,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
           child: Stack(children: [
             // Background image
             Positioned.fill(
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: widget.data.cover ?? widget.data.poster,
                 radius: 0,
                 width: double.infinity,
@@ -418,7 +418,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                NetworkSizedImage(
+                AnymeXImage(
                   width: getResponsiveSize(context,
                       mobileSize: 120, desktopSize: 130),
                   height: getResponsiveSize(context,
