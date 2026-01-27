@@ -40,7 +40,7 @@ class UnifiedHistoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Stack(children: [
               Positioned.fill(
-                child: NetworkSizedImage(
+                child: AnymeXImage(
                   imageUrl: media.cover,
                   radius: 0,
                   width: double.infinity,
@@ -74,7 +74,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                         topLeft: Radius.circular(16.multiplyRadius()),
                         bottomLeft: Radius.circular(16.multiplyRadius()),
                       ),
-                      child: NetworkSizedImage(
+                      child: AnymeXImage(
                         imageUrl: media.poster,
                         width: double.infinity,
                         height: double.infinity,
@@ -200,10 +200,10 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                 topLeft: Radius.circular(16.multiplyRadius()),
                 topRight: Radius.circular(16.multiplyRadius()),
               ),
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: media.cover.isEmpty ? media.poster : media.cover,
                 width: double.infinity,
-                height: 130,
+                height: 160,
                 radius: 0,
               ),
             ),
@@ -334,11 +334,12 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                     topLeft: Radius.circular(16.multiplyRadius()),
                     bottomLeft: Radius.circular(16.multiplyRadius()),
                   ),
-                  child: NetworkSizedImage(
+                  child: AnymeXImage(
                     imageUrl: media.poster,
                     width: double.infinity,
                     height: double.infinity,
                     radius: 0,
+                    errorImage: media.poster,
                   ),
                 ),
               ),

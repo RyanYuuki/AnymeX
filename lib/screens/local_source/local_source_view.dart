@@ -3,16 +3,17 @@
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/screens/local_source/player/offline_player_old.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as h;
 import 'package:anymex/screens/local_source/controller/local_source_controller.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
+import 'package:anymex/screens/local_source/player/offline_player_old.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
