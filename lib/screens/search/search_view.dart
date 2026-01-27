@@ -1,26 +1,27 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
-import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/widgets/common/glow.dart';
 
 enum ViewMode { grid, list }
 
@@ -250,14 +251,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       child: Row(
         children: [
           if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
-            Obx(() {
-              return _buildToggleButton(
-                label: 'Adult',
-                isActive: isAdult.value,
-                onTap: () => isAdult.value = !isAdult.value,
-              );
-            }),
-            const SizedBox(width: 12),
+            if (!General.hideAdultContent.get(true)) ...[
+              Obx(() {
+                return _buildToggleButton(
+                  label: 'Adult',
+                  isActive: isAdult.value,
+                  onTap: () => isAdult.value = !isAdult.value,
+                );
+              }),
+              const SizedBox(width: 12),
+            ],
             _buildActionButton(
               icon: Iconsax.setting_4,
               label: 'Filters',

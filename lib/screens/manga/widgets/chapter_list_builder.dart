@@ -1,5 +1,5 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -14,12 +14,12 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class ChapterState {
@@ -331,13 +331,19 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       List<Chapter> filteredFullChapters, ChapterState chapterState) {
     final continueChapter =
         chapterState.readChapter ?? chapterState.continueChapter;
-    if (continueChapter == null) return const SizedBox.shrink();
+
+    final existsInList = continueChapter != null &&
+        filteredFullChapters.any((e) => e.link == continueChapter.link);
+
+    if (!existsInList) {
+      return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ContinueChapterButton(
         onPressed: () => _chapterService.navigateToReading(
-            widget.anilistData, widget.chapters!, continueChapter, context),
+            widget.anilistData, filteredFullChapters, continueChapter, context),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
         chapter: continueChapter,
@@ -635,7 +641,7 @@ class ContinueChapterButton extends StatelessWidget {
 
   Widget _buildBackgroundImage() {
     return Positioned.fill(
-      child: NetworkSizedImage(
+      child: AnymeXImage(
         radius: borderRadius,
         height: height,
         width: double.infinity,
