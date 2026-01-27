@@ -1,7 +1,7 @@
 class NextRelease {
   final DateTime? nextReleaseDate;
   final int? averageIntervalDays;
-  final String? nextChapter; // Added this field
+  final String? nextChapter;
   final String? error;
 
   NextRelease({
@@ -14,6 +14,6 @@ class NextRelease {
   @override
   String toString() {
     if (error != null) return 'Error: $error';
-    return 'Next: $nextReleaseDate (Interval: $averageIntervalDays days)';
+    return 'Next: $nextChapter on $nextReleaseDate (Interval: $averageIntervalDays days)';
   }
 }
