@@ -1,5 +1,6 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
+import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
@@ -11,6 +12,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 
 class MangaStats extends StatelessWidget {
   final Media data;
@@ -46,63 +48,45 @@ class MangaStats extends StatelessWidget {
               StateItem(
                   label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
+
+              // Prediction Widget (Single Line)
+              if ((data.status?.toUpperCase() ?? '') == 'RELEASING')
+                FutureBuilder<NextRelease>(
+                  future: MangaAnimeUtil.getNextChapterPrediction(data),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.data!.nextReleaseDate != null) {
+                      final pred = snapshot.data!;
+                      final dateStr =
+                          DateFormat('d MMMM').format(pred.nextReleaseDate!);
+                      final String message =
+                          "${pred.nextChapter} estimated to release on $dateStr";
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: AnymexText(
+                                text: message,
+                                variant: TextVariant.semiBold,
+                                size: 14,
+                                color: Theme.of(context).colorScheme.primary,
+                                maxLines: 2,
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
             ],
           ),
         ),
-        // Only show if the status is RELEASING
-        if ((data.status?.toUpperCase() ?? '') == 'RELEASING')
-          FutureBuilder<NextRelease>(
-            future: MangaAnimeUtil.getNextChapterPrediction(data),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Center(child: ExpressiveLoadingIndicator(size: 20)),
-                );
-              }
-              
-              if (snapshot.hasError || !snapshot.hasData) {
-                return const SizedBox.shrink();
-              }
-
-              final prediction = snapshot.data!;
-              if (prediction.error != null || prediction.nextReleaseDate == null) {
-                return const SizedBox.shrink();
-              }
-
-              // Formatting dates
-              final dateFormat = DateFormat('d MMM yyyy');
-              final formattedDate = dateFormat.format(prediction.nextReleaseDate!);
-              
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 30),
-                  const AnymexText(
-                    text: "Release Prediction",
-                    variant: TextVariant.bold,
-                    size: 17,
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      children: [
-                        StateItem(
-                          label: "Est. Next Chapter", 
-                          value: formattedDate,
-                        ),
-                        StateItem(
-                          label: "Release Schedule", 
-                          value: "Every ~${prediction.averageIntervalDays} days",
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
         const SizedBox(height: 30),
         const AnymexText(
           text: "Romaji Title",
