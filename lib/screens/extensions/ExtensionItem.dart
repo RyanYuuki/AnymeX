@@ -1,20 +1,20 @@
 // ignore_for_file: invalid_use_of_protected_member
 
-import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
-import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -121,7 +121,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                   Positioned(
                     top: 1,
                     right: 1,
-                    child: NetworkSizedImage(
+                    child: AnymeXImage(
                       radius: 50,
                       imageUrl: widget.source.extensionType ==
                               ExtensionType.mangayomi
