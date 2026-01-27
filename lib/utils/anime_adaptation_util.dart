@@ -1,39 +1,51 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
-import 'package:anymex/models/mangaupdates/next_release.dart'; // Import the new model
+import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 
 class MangaAnimeUtil {
   static const String _baseUrl = 'https://api.mangabaka.dev/v1';
 
-  /// Get anime adaptation details
+  /// Get anime adaptation details using AniList or MAL ID
   static Future<AnimeAdaptation> getAnimeAdaptation(Media media) async {
     try {
       final seriesData = await _getSeriesFromId(media);
       if (seriesData == null || seriesData.isEmpty) {
-        return AnimeAdaptation(hasAdaptation: false, error: 'No series found');
+        return AnimeAdaptation(
+          hasAdaptation: false,
+          error: 'No series found for this media',
+        );
       }
 
       final series = seriesData[0];
+
       if (series['has_anime'] == true && series['anime'] != null) {
         final animeData = series['anime'];
-        return AnimeAdaptation(
-          animeStart: animeData['start'] as String?,
-          animeEnd: animeData['end'] as String?,
-          hasAdaptation: true,
-        );
+        final start = animeData['start'] as String?;
+        final end = animeData['end'] as String?;
+
+        if (start != null || end != null) {
+          return AnimeAdaptation(
+            animeStart: start,
+            animeEnd: end,
+            hasAdaptation: true,
+          );
+        }
       }
       return AnimeAdaptation(hasAdaptation: false);
     } catch (error) {
-      return AnimeAdaptation(hasAdaptation: false, error: error.toString());
+      return AnimeAdaptation(
+        hasAdaptation: false,
+        error: error.toString(),
+      );
     }
   }
 
-  /// NEW: Get Estimated Next Chapter Release
+  /// Get Estimated Next Chapter Release and Number
   static Future<NextRelease> getNextChapterPrediction(Media media) async {
-    // 1. Basic Status Check: Only predict for Releasing media
+    // 1. Basic Status Check (Case insensitive)
     if (media.status?.toUpperCase() != 'RELEASING') {
       return NextRelease(error: 'Series is not releasing');
     }
@@ -46,47 +58,57 @@ class MangaAnimeUtil {
       }
 
       final series = seriesData[0];
-      final String? muId = series['source']?['manga_updates']?['id']?.toString();
+      final String? muId =
+          series['source']?['manga_updates']?['id']?.toString();
 
       if (muId == null) {
         return NextRelease(error: 'MangaUpdates ID missing');
       }
 
       // 3. Fetch Release Page
-      // We look at the series archive page
-      final url = 'https://www.mangaupdates.com/releases/archive?search=$muId&search_type=series';
+      final url =
+          'https://www.mangaupdates.com/releases/archive?search=$muId&search_type=series';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode != 200) {
         throw Exception('Failed to load release info');
       }
 
-      // 4. Parse Dates using Regex (Scraping)
-      // Looking for pattern: <div class="col-2 text">2023-12-30</div>
-      final RegExp dateRegExp = RegExp(r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>');
-      final matches = dateRegExp.allMatches(response.body);
+      // 4. Regex to capture Date (Group 1) and Chapter (Group 2)
+      // Pattern looks for the Date column, skips the volume column, and grabs the chapter column
+      final RegExp rowRegExp = RegExp(
+        r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>[\s\S]*?class="col-1 text text-center">[\s\S]*?</div>\s*<div class="col-1 text text-center">\s*(.*?)\s*</div>',
+        caseSensitive: false,
+      );
 
+      final matches = rowRegExp.allMatches(response.body);
       List<DateTime> releaseDates = [];
+      String? latestChapterStr;
+
       for (final match in matches) {
         final dateStr = match.group(1);
+        final chapterStr = match.group(2);
+
         if (dateStr != null) {
           try {
             releaseDates.add(DateTime.parse(dateStr));
+            // Save the chapter from the very first (newest) match only
+            if (latestChapterStr == null &&
+                chapterStr != null &&
+                chapterStr.isNotEmpty) {
+              latestChapterStr = chapterStr;
+            }
           } catch (e) {
-            // ignore invalid dates
+            // skip invalid dates
           }
         }
       }
 
-      // Sort Descending (Newest first)
-      releaseDates.sort((a, b) => b.compareTo(a));
-
-      // 5. Calculate Prediction
-      // We need at least 2 dates to calculate an interval
       if (releaseDates.length < 2) {
         return NextRelease(error: 'Insufficient data');
       }
 
+      // 5. Calculate Prediction
       // Take only the last 7-10 releases for recency bias
       int sampleSize = releaseDates.length > 8 ? 8 : releaseDates.length;
       List<int> intervals = [];
@@ -103,28 +125,48 @@ class MangaAnimeUtil {
         return NextRelease(error: 'Irregular release schedule');
       }
 
-      // Calculate Average Interval
+      // Average Interval
       double avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
       int roundedInterval = avgInterval.round();
 
-      // Next Date = Latest Date + Average Interval
+      // Predict Date
       DateTime latestRelease = releaseDates[0];
-      DateTime predictedDate = latestRelease.add(Duration(days: roundedInterval));
+      DateTime predictedDate =
+          latestRelease.add(Duration(days: roundedInterval));
+
+      // Predict Chapter Number
+      String nextChapterName = "Next Chapter";
+      if (latestChapterStr != null) {
+        // Try to parse number from string like "106", "c.106", "106.5"
+        final numericMatch =
+            RegExp(r'(\d+(?:\.\d+)?)').firstMatch(latestChapterStr);
+        if (numericMatch != null) {
+          double? chNum = double.tryParse(numericMatch.group(1)!);
+          if (chNum != null) {
+            if (chNum % 1 == 0) {
+              nextChapterName = "Chapter ${chNum.toInt() + 1}";
+            } else {
+              nextChapterName = "Chapter ${(chNum + 1).toStringAsFixed(1)}";
+            }
+          }
+        }
+      }
 
       return NextRelease(
         nextReleaseDate: predictedDate,
         averageIntervalDays: roundedInterval,
-        lastReleaseDate: "${latestRelease.year}-${latestRelease.month}-${latestRelease.day}",
+        nextChapter: nextChapterName,
       );
-
     } catch (e) {
       return NextRelease(error: e.toString());
     }
   }
 
-  // Helper from previous file (unchanged logic)
+  // Private helper method to get series data from AniList or MAL ID
   static Future<List<dynamic>?> _getSeriesFromId(Media media) async {
     String endpoint;
+
+    // Determine which endpoint to use based on service type
     switch (media.serviceType) {
       case ServicesType.anilist:
         endpoint = '$_baseUrl/source/anilist/${media.id}';
@@ -133,6 +175,7 @@ class MangaAnimeUtil {
         endpoint = '$_baseUrl/source/my-anime-list/${media.idMal ?? media.id}';
         break;
       default:
+        // For extensions or other services, try AniList ID if available
         if (media.id != null) {
           endpoint = '$_baseUrl/source/anilist/${media.id}';
         } else {
@@ -141,6 +184,7 @@ class MangaAnimeUtil {
     }
 
     final response = await http.get(Uri.parse(endpoint));
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return data['data']?['series'] as List<dynamic>?;
