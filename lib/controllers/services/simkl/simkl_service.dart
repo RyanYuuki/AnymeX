@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
-import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -15,11 +15,12 @@ import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -394,7 +395,7 @@ class SimklService extends GetxController
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
   @override
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
     final redirectUri = dotenv.env['CALLBACK_SCHEME'];
 

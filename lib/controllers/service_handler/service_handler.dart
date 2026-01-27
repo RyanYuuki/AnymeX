@@ -1,5 +1,3 @@
-import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -11,6 +9,7 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -20,6 +19,10 @@ enum ServicesType {
   mal,
   simkl,
   extensions;
+
+  bool get isMal => this == ServicesType.mal;
+  bool get isAL => this == ServicesType.anilist;
+  bool get isSimkl => this == ServicesType.simkl;
 
   BaseService get service {
     switch (this) {
@@ -94,7 +97,7 @@ class ServiceHandler extends GetxController {
   RxBool get isLoggedIn => onlineService.isLoggedIn;
 
   // Online Services Method
-  Future<void> login() => onlineService.login();
+  Future<void> login(BuildContext context) => onlineService.login(context);
   Future<void> logout() => onlineService.logout();
   Future<void> autoLogin() => Future.wait([
         malService.autoLogin(),

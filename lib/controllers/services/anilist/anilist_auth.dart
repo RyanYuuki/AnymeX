@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
-import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -9,13 +9,15 @@ import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
@@ -41,7 +43,7 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
     String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
     String redirectUri = dotenv.env['CALLBACK_SCHEME'] ?? '';
