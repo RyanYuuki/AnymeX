@@ -477,19 +477,21 @@ class PlayerBottomSheets {
   static Future<int?> showAudioTracks(
       BuildContext context, PlayerController controller) {
     final tracks = controller.embeddedAudioTracks.value;
-    final currentIndex =
-        tracks.indexOf(controller.selectedAudioTrack.value ?? tracks.first);
+    final filteredTracks =
+        tracks.where((e) => e.title != null && e.language != null).toList();
+    final currentIndex = filteredTracks
+            .indexOf(controller.selectedAudioTrack.value ?? tracks.first) +
+        1;
+
     return show<int>(
       context: context,
       title: 'Audio Tracks',
-      showSearch: tracks.length > 5,
+      showSearch: filteredTracks.length > 5,
       searchHint: 'Search audio tracks...',
       items: [
         const BottomSheetItem(
             title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
-        ...tracks
-            .where((e) => e.title != null && e.language != null)
-            .map((entry) {
+        ...filteredTracks.map((entry) {
           return BottomSheetItem(
             title: (entry.language ?? entry.title ?? entry.uri.toString())
                 .toUpperCase(),
@@ -499,7 +501,17 @@ class PlayerBottomSheets {
         })
       ],
       selectedIndex: currentIndex < 0 ? 0 : currentIndex,
-      onItemSelected: (index) => Get.back(result: index),
+      onItemSelected: (index) {
+        if (index == 0) {
+          controller.setAudioTrack(AudioTrack.auto());
+          controller.selectedAudioTrack.value = AudioTrack.auto();
+        } else {
+          final selectedTrack = filteredTracks[index - 1];
+          controller.setAudioTrack(selectedTrack);
+          controller.selectedAudioTrack.value = selectedTrack;
+        }
+        Get.back(result: index);
+      },
     );
   }
 
