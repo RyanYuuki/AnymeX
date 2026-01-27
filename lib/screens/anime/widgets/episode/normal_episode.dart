@@ -289,7 +289,7 @@ class _OptimizedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NetworkSizedImage(
+    return AnymeXImage(
       imageUrl: imageUrl,
       width: width,
       height: height,

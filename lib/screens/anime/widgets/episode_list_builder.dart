@@ -652,7 +652,7 @@ class ContinueEpisodeButton extends StatelessWidget {
               Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  child: NetworkSizedImage(
+                  child: AnymeXImage(
                     height: height,
                     width: double.infinity,
                     imageUrl: backgroundImage,
