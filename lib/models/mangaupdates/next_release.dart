@@ -1,13 +1,13 @@
 class NextRelease {
   final DateTime? nextReleaseDate;
   final int? averageIntervalDays;
-  final String? lastReleaseDate;
+  final String? nextChapter; // Added this field
   final String? error;
 
   NextRelease({
     this.nextReleaseDate,
     this.averageIntervalDays,
-    this.lastReleaseDate,
+    this.nextChapter,
     this.error,
   });
 
