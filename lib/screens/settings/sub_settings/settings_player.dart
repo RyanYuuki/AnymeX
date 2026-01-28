@@ -39,26 +39,27 @@ class _BottomControl {
   });
 }
 
+
 final List<_BottomControl> _bottomControls = [
-  _BottomControl(
+  const _BottomControl(
       id: 'playlist',
       name: 'Playlist',
       icon: Symbols.playlist_play_rounded,
       defaultPosition: 'left'),
-  _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
-  _BottomControl(
+  const _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+  const _BottomControl(
       id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
-  _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
-  _BottomControl(
+  const _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+  const _BottomControl(
       id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
-  _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
-  _BottomControl(
+  const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+  const _BottomControl(
       id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
-  _BottomControl(
+  const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
       icon: Icons.screen_rotation_rounded),
-  _BottomControl(
+  const _BottomControl(
       id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
 ];
 
