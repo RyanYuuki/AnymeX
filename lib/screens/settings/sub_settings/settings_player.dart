@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/player.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -22,6 +25,39 @@ class SettingsPlayer extends StatefulWidget {
   State<SettingsPlayer> createState() => _SettingsPlayerState();
 }
 
+class _BottomControl {
+  final String id;
+  final String name;
+  final IconData icon;
+  final String defaultPosition;
+
+  const _BottomControl({
+    required this.id,
+    required this.name,
+    required this.icon,
+    this.defaultPosition = 'right',
+  });
+}
+
+final List<_BottomControl> _bottomControls = [
+  _BottomControl(
+      id: 'playlist',
+      name: 'Playlist',
+      icon: Symbols.playlist_play_rounded,
+      defaultPosition: 'left'),
+  _BottomControl(
+      id: 'megaskip', name: 'Mega Skip', icon: Iconsax.forward, defaultPosition: 'right'),
+  _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+  _BottomControl(id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+  _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+  _BottomControl(id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+  _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+  _BottomControl(id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
+  _BottomControl(
+      id: 'orientation', name: 'Orientation', icon: Icons.screen_rotation_rounded),
+  _BottomControl(id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+];
+
 class _SettingsPlayerState extends State<SettingsPlayer> {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
@@ -30,12 +66,28 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Rx<Color> outlineColor = Colors.black.obs;
   final styles = ['Regular', 'Accent', 'Blurred Accent'];
   final selectedStyleIndex = 0.obs;
+  late Map<String, dynamic> _controlsConfig;
 
   @override
   void initState() {
     super.initState();
     speed.value = settings.speed;
     selectedStyleIndex.value = settings.playerStyle;
+    _controlsConfig = json
+        .decode(settings.preferences.get('bottomControlsSettings', defaultValue: '{}'));
+  }
+
+  void _updateButtonConfig(String id, {bool? visible, String? position}) {
+    final config = Map<String, dynamic>.from(_controlsConfig[id] ?? {});
+    if (visible != null) {
+      config['visible'] = visible;
+    }
+    if (position != null) {
+      config['position'] = position;
+    }
+    _controlsConfig[id] = config;
+    settings.preferences.put('bottomControlsSettings', json.encode(_controlsConfig));
+    setState(() {});
   }
 
   String numToPlayerStyle(int i) {
@@ -503,6 +555,68 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               ),
                             ],
                           )),
+                      AnymexExpansionTile(
+                        title: 'Bottom Controls',
+                        content: Column(
+                          children: _bottomControls.map((control) {
+                            final config = _controlsConfig[control.id]
+                                    as Map<String, dynamic>? ??
+                                {};
+                            final isVisible = config['visible'] as bool? ?? true;
+                            final position = config['position'] as String? ??
+                                control.defaultPosition;
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 8),
+                                  Icon(control.icon, size: 22),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                      child: Text(control.name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500))),
+                                  IconButton(
+                                    tooltip: 'Toggle visibility',
+                                    icon: Icon(
+                                        isVisible
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                        size: 20),
+                                    onPressed: () => _updateButtonConfig(
+                                        control.id,
+                                        visible: !isVisible),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Move to left',
+                                    icon: const Icon(
+                                        Icons.keyboard_arrow_left_rounded),
+                                    color: position == 'left'
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                    onPressed: () => _updateButtonConfig(
+                                        control.id,
+                                        position: 'left'),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Move to right',
+                                    icon: const Icon(
+                                        Icons.keyboard_arrow_right_rounded),
+                                    color: position == 'right'
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
+                                    onPressed: () => _updateButtonConfig(
+                                        control.id,
+                                        position: 'right'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
                     ],
                   ))
             ],
