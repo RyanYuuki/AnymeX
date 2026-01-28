@@ -9,8 +9,8 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -123,8 +123,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     sliver: SliverToBoxAdapter(
                       child: CommentSection(
-                        mediaId: widget.media.id.toString(),
-                        currentTag: ('Chapter ${controller.offlineMedia.value?.currentChapter?.number ?? 1}'),
+                        media: widget.media,
                       ),
                     ),
                   ),

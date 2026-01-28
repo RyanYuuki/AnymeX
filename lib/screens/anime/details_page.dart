@@ -1,4 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
@@ -11,20 +10,18 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
-import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/database/model/comment.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
+import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
-import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
-import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
@@ -41,6 +38,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -57,43 +55,34 @@ class AnimeDetailsPage extends StatefulWidget {
 }
 
 class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
-  // AnilistData
   Media? anilistData;
   Rx<TrackedMedia?> currentAnime = TrackedMedia().obs;
   final anilist = Get.find<AnilistAuth>();
-  // Tracker for Avail Anime
+
   RxBool isListedAnime = false.obs;
 
-  // Offline Storage
   final offlineStorage = Get.find<OfflineStorageController>();
 
-  // Extension Data
   RxString searchedTitle = ''.obs;
   RxList<Episode> episodeList = <Episode>[].obs;
   RxList<Episode> rawEpisodes = <Episode>[].obs;
   Rx<bool> isAnify = true.obs;
   Rx<bool> showAnify = true.obs;
 
-  // Current Anime
   RxDouble animeScore = 0.0.obs;
   RxInt animeProgress = 0.obs;
   RxString animeStatus = "".obs;
 
   Rxn<List<Comment>> comments = Rxn();
 
-  // Page View Tracker
   RxInt selectedPage = 0.obs;
 
-  // Error tracker
   RxBool episodeError = false.obs;
 
-  // Tracker's Controller
   PageController controller = PageController();
 
-  // Extensions Controller
   final sourceController = Get.find<SourceController>();
 
-  // Episode Countdown
   final RxInt timeLeft = 0.obs;
 
   String posterColor = '';
@@ -114,10 +103,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       _checkAnimePresence();
     });
     _fetchAnilistData();
-    
-    // Preload comments immediately when media opens
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      CommentPreloader.to.preloadComments(widget.media.id.toString());
+      CommentPreloader.to.preloadComments(widget.media);
     });
   }
 
@@ -137,7 +125,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void dispose() {
     controller.dispose();
-    // Clean up preloaded comments when media page is closed
+
     CommentPreloader.to.removePreloadedController(widget.media.id.toString());
     DiscordRPCController.instance.updateBrowsingPresence();
     super.dispose();
@@ -209,10 +197,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         await _mapToService();
       }
       Logger.i("Media Details Fetch Failed => $e");
-    } finally {
-      // Comments are now handled by CommentSection widget
-      // No need to fetch here as it's done in the CommentSectionController
-    }
+    } finally {}
   }
 
   Future<void> _mapToService() async {
@@ -245,11 +230,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       episodeError.value = false;
       final episodeFuture = await sourceController.activeSource.value!.methods
           .getDetail(DMedia.withUrl(media.id));
-
-      // if (episodeFuture == null) {
-      //   episodeError.value = true;
-      //   return;
-      // }
 
       final episodes = _convertEpisodes(
         episodeFuture.episodes!.reversed.toList(),
@@ -355,7 +335,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuilder(
-      strictMode: true,
+      strictMode: !kDebugMode,
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
     );
@@ -636,8 +616,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeError: episodeError,
         mapToAnilist: _mapToService,
         getDetailsFromSource: _fetchSourceDetails,
-
-        // getSourcePreference: getSourcePreference,
         isAnify: isAnify,
         showAnify: showAnify,
       );
@@ -646,12 +624,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildCommentsSection(BuildContext context) {
     return CommentSection(
-      mediaId: widget.media.id.toString(),
-      currentTag: ('Episode ${currentAnime.value?.episodeCount ?? '0'}'),
+      media: anilistData ?? widget.media,
     );
   }
 
-  // Common Info Section
   Column _buildCommonInfo(BuildContext context) {
     return Column(
       children: [
@@ -685,9 +661,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       ],
     );
   }
-  // Common Info Section
 
-  // Desktop Navigation bar: START
   Widget _buildDesktopNav() {
     return Obx(() => Container(
           margin: const EdgeInsets.all(20),
@@ -754,9 +728,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           ),
         ));
   }
-  // Desktop Navigation bar: END
 
-// Mobile Navigation bar: START
   Widget _buildMobiledNav() {
     return Obx(() => ResponsiveNavBar(
             isDesktop: false,

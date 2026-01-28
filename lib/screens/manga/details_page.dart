@@ -1,19 +1,15 @@
 // ignore_for_file: invalid_use_of_protected_member, unused_element
 import 'package:anymex/controllers/discord/discord_rpc.dart';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/utils/logger.dart';
-
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
-import 'package:anymex/controllers/source/source_mapper.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
@@ -23,18 +19,22 @@ import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/manga/widgets/manga_stats.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -214,7 +214,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformBuilder(
-      strictMode: true,
+      strictMode: !kDebugMode,
       androidBuilder: _buildAndroidLayout(context),
       desktopBuilder: _buildDesktopLayout(context),
     );
@@ -389,8 +389,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Widget _buildCommentsSection(BuildContext context) {
     return CommentSection(
-      mediaId: widget.media.id.toString(),
-      currentTag: ('Chapter ${mangaProgress.value}'),
+      media: widget.media,
     );
   }
 
