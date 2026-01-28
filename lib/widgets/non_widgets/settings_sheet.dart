@@ -28,21 +28,27 @@ class SettingsSheet extends StatelessWidget {
   }
 
   void showServiceSelector(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final services = [
       {
         'type': ServicesType.anilist,
         'name': "AniList",
         'icon': 'anilist-icon.png',
+        'desc': 'Track anime & manga'
       },
       {
         'type': ServicesType.mal,
         'name': "MyAnimeList",
         'icon': 'mal-icon.png',
+        'desc': 'The largest database of anime & manga'
       },
       {
         'type': ServicesType.simkl,
         'name': "Simkl",
         'icon': 'simkl-icon.png',
+        'desc': 'for movies and series'
       },
       if (serviceHandler.extensionService.installedExtensions.length > 2 &&
           serviceHandler.extensionService.installedMangaExtensions.length > 2)
@@ -50,49 +56,146 @@ class SettingsSheet extends StatelessWidget {
           'type': ServicesType.extensions,
           'name': "Extensions",
           'icon': null,
+          'desc': 'Third-party plugins'
         },
     ];
 
     AnymexSheet.custom(
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const AnymexText(
-                text: "Select Service",
-                size: 16,
-                variant: TextVariant.semiBold,
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.onSurface.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
               ),
-              ...services.map((service) => ListTile(
-                    leading: service['icon'] != null
-                        ? Image.asset(
-                            color: Theme.of(context).colorScheme.primary,
-                            'assets/images/${service['icon']}',
-                            width: 30,
-                          )
-                        : Icon(
-                            Icons.extension,
-                            size: 30,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                    title: AnymexText(
-                      text: service['name'] as String,
-                      variant: TextVariant.semiBold,
-                      color: serviceHandler.serviceType.value == service['type']
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                    ),
+            ),
+            const AnymexText(
+              text: "Choose Provider",
+              size: 20,
+              variant: TextVariant.bold,
+            ),
+            const SizedBox(height: 5),
+            AnymexText(
+              text: "Select your preferred content source",
+              size: 14,
+              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              variant: TextVariant.regular,
+            ),
+            const SizedBox(height: 25),
+            ...services.map((service) {
+              final isSelected =
+                  serviceHandler.serviceType.value == service['type'];
+              final primaryColor = theme.colorScheme.primary;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
                     onTap: () {
                       serviceHandler
                           .changeService(service['type'] as ServicesType);
                       Get.back();
                     },
-                  )),
-            ],
-          ),
+                    borderRadius: BorderRadius.circular(16),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? primaryColor.withOpacity(0.1)
+                            : theme.colorScheme.surfaceContainerHighest
+                                .withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? primaryColor : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? primaryColor.withOpacity(0.2)
+                                  : theme.colorScheme.surface,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: service['icon'] != null
+                                ? Image.asset(
+                                    'assets/images/${service['icon']}',
+                                    width: 24,
+                                    height: 24,
+                                    color: isSelected
+                                        ? primaryColor
+                                        : theme.iconTheme.color,
+                                  )
+                                : Icon(
+                                    Icons.extension_rounded,
+                                    size: 24,
+                                    color: isSelected
+                                        ? primaryColor
+                                        : theme.iconTheme.color,
+                                  ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AnymexText(
+                                  text: service['name'] as String,
+                                  size: 16,
+                                  variant: TextVariant.semiBold,
+                                  color: isSelected ? primaryColor : null,
+                                ),
+                                if (service['desc'] != null) ...[
+                                  const SizedBox(height: 2),
+                                  AnymexText(
+                                    text: service['desc'] as String,
+                                    size: 12,
+                                    color: theme.colorScheme.onSurface
+                                        .withOpacity(0.6),
+                                  ),
+                                ]
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primaryColor,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 14,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
         ),
-        context);
+      ),
+      context,
+    );
   }
 
   @override
