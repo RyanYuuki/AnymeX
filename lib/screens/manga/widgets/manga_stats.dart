@@ -1,5 +1,6 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
+import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
@@ -11,6 +12,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 
 class MangaStats extends StatelessWidget {
   final Media data;
@@ -46,6 +48,42 @@ class MangaStats extends StatelessWidget {
               StateItem(
                   label: "Total Chapters", value: data.totalChapters ?? '??'),
               StateItem(label: "Premiered", value: data.premiered),
+
+              // Prediction Widget (Single Line)
+              if ((data.status?.toUpperCase() ?? '') == 'RELEASING')
+                FutureBuilder<NextRelease>(
+                  future: MangaAnimeUtil.getNextChapterPrediction(data),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.data!.nextReleaseDate != null) {
+                      final pred = snapshot.data!;
+                      final dateStr =
+                          DateFormat('d MMMM').format(pred.nextReleaseDate!);
+                      final String message =
+                          "${pred.nextChapter} estimated to release on $dateStr";
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: AnymexText(
+                                text: message,
+                                variant: TextVariant.semiBold,
+                                size: 14,
+                                color: Theme.of(context).colorScheme.primary,
+                                maxLines: 2,
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
             ],
           ),
         ),
