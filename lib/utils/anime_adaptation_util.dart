@@ -1,9 +1,10 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:http/http.dart' as http;
 
 class MangaAnimeUtil {
   static const String _baseUrl = 'https://api.mangabaka.dev/v1';
@@ -43,15 +44,13 @@ class MangaAnimeUtil {
     }
   }
 
-  /// Get Estimated Next Chapter Release and Number
   static Future<NextRelease> getNextChapterPrediction(Media media) async {
-    // 1. Basic Status Check (Case insensitive)
-    if (media.status?.toUpperCase() != 'RELEASING') {
+    print('getNextChapterPrediction');
+    if (media.status.toUpperCase() != 'RELEASING') {
       return NextRelease(error: 'Series is not releasing');
     }
 
     try {
-      // 2. Fetch MangaUpdates ID via MangaBaka
       final seriesData = await _getSeriesFromId(media);
       if (seriesData == null || seriesData.isEmpty) {
         return NextRelease(error: 'MangaUpdates ID not found');
@@ -65,17 +64,32 @@ class MangaAnimeUtil {
         return NextRelease(error: 'MangaUpdates ID missing');
       }
 
-      // 3. Fetch Release Page
-      final url =
-          'https://www.mangaupdates.com/releases/archive?search=$muId&search_type=series';
-      final response = await http.get(Uri.parse(url));
+      final url = 'https://www.mangaupdates.com/series/$muId/one-piece';
+      final detailsResponse = await http.get(Uri.parse(url));
+
+      if (detailsResponse.statusCode != 200) {
+        throw Exception('Failed to load release info');
+      }
+
+      final archiveUrlRegex = RegExp(
+        r'<a\s+[^>]*href="([^"]+)"[^>]*>\s*<i>\s*<u>Search for all releases of this series<\/u>\s*<\/i>\s*<\/a>',
+        caseSensitive: false,
+        multiLine: true,
+      );
+
+      final match = archiveUrlRegex.firstMatch(detailsResponse.body);
+
+      String archiveUrl = match != null
+          ? "https://www.mangaupdates.com${match.group(1)!.replaceAll('amp;', '')}"
+          : "";
+      final response = await http.get(Uri.parse(archiveUrl));
 
       if (response.statusCode != 200) {
         throw Exception('Failed to load release info');
       }
 
-      // 4. Regex to capture Date (Group 1) and Chapter (Group 2)
-      // Pattern looks for the Date column, skips the volume column, and grabs the chapter column
+      print(response.body.substring(1, 100));
+
       final RegExp rowRegExp = RegExp(
         r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>[\s\S]*?class="col-1 text text-center">[\s\S]*?</div>\s*<div class="col-1 text text-center">\s*(.*?)\s*</div>',
         caseSensitive: false,
@@ -87,19 +101,20 @@ class MangaAnimeUtil {
 
       for (final match in matches) {
         final dateStr = match.group(1);
+        print("Dates => $dateStr");
         final chapterStr = match.group(2);
 
         if (dateStr != null) {
           try {
             releaseDates.add(DateTime.parse(dateStr));
-            // Save the chapter from the very first (newest) match only
             if (latestChapterStr == null &&
                 chapterStr != null &&
                 chapterStr.isNotEmpty) {
               latestChapterStr = chapterStr;
+              print(dateStr);
             }
           } catch (e) {
-            // skip invalid dates
+            print(e);
           }
         }
       }
@@ -108,14 +123,12 @@ class MangaAnimeUtil {
         return NextRelease(error: 'Insufficient data');
       }
 
-      // 5. Calculate Prediction
-      // Take only the last 7-10 releases for recency bias
       int sampleSize = releaseDates.length > 8 ? 8 : releaseDates.length;
       List<int> intervals = [];
 
       for (int i = 0; i < sampleSize - 1; i++) {
+        print('$i ${releaseDates[i]} ${releaseDates[i + 1]}');
         final diff = releaseDates[i].difference(releaseDates[i + 1]).inDays;
-        // Filter out anomalies (e.g., mass releases of 0 days or gaps > 1 year)
         if (diff > 0 && diff < 365) {
           intervals.add(diff);
         }
@@ -125,19 +138,17 @@ class MangaAnimeUtil {
         return NextRelease(error: 'Irregular release schedule');
       }
 
-      // Average Interval
+      print('Not outta here');
+
       double avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
       int roundedInterval = avgInterval.round();
 
-      // Predict Date
       DateTime latestRelease = releaseDates[0];
       DateTime predictedDate =
           latestRelease.add(Duration(days: roundedInterval));
 
-      // Predict Chapter Number
       String nextChapterName = "Next Chapter";
       if (latestChapterStr != null) {
-        // Try to parse number from string like "106", "c.106", "106.5"
         final numericMatch =
             RegExp(r'(\d+(?:\.\d+)?)').firstMatch(latestChapterStr);
         if (numericMatch != null) {
@@ -151,6 +162,10 @@ class MangaAnimeUtil {
           }
         }
       }
+
+      print('Average interval: $roundedInterval days');
+      print('Next release date: $predictedDate');
+      print('Next chapter name: $nextChapterName');
 
       return NextRelease(
         nextReleaseDate: predictedDate,
@@ -184,6 +199,8 @@ class MangaAnimeUtil {
     }
 
     final response = await http.get(Uri.parse(endpoint));
+
+    print(endpoint);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
