@@ -40,9 +40,9 @@ class MediaIndicatorBuilder extends StatelessWidget {
             curve: Curves.easeOutCubic,
             child: Center(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(100),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                   child: Container(
                     width: 140,
                     height: 140,
