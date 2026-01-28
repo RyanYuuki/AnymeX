@@ -677,16 +677,17 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: _rightButtonIds.length,
                               itemBuilder: (context, index) {
-                                final id = _rightButtonIds[index];
+                                final id = _rightButtonIds[_rightButtonIds.length - 1 - index];
                                 final control = _bottomControls.firstWhere((c) => c.id == id);
                                 return _buildControlOption(context, control, 'right', key: ValueKey('right_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
                                 setState(() {
+                                  _rightButtonIds = _rightButtonIds.reversed.toList();
                                   if (newIndex > oldIndex) newIndex -= 1;
-                                  final String item =
-                                      _rightButtonIds.removeAt(oldIndex);
+                                  final String item = _rightButtonIds.removeAt(oldIndex);
                                   _rightButtonIds.insert(newIndex, item);
+                                  _rightButtonIds = _rightButtonIds.reversed.toList();
                                   _saveButtonConfig();
                                 });
                               },
