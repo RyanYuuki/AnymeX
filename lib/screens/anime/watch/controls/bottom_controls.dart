@@ -107,12 +107,15 @@ class BottomControls extends StatelessWidget {
     final settings = Get.find<Settings>();
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
-    final controlsConfig = json.decode(
-        settings.preferences.get('bottomControlsSettings', defaultValue: '{}'));
 
-    bool isVisible(String id) => (controlsConfig[id]?['visible'] as bool?) ?? true;
-    String getPosition(String id, String defaultPos) =>
-        (controlsConfig[id]?['position'] as String?) ?? defaultPos;
+    final String jsonString = settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+
+    final List<String> leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
+    final List<String> rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
+    final Map<String, dynamic> buttonConfigs = Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
+
+    bool isVisible(String id) => (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -190,70 +193,51 @@ class BottomControls extends StatelessWidget {
       ),
     };
 
-    final List<Widget> leftButtons = [];
-    final List<Widget> rightButtons = [];
-    final List<Widget> rightCompactButtons = [];
+    List<Widget> buildButtonList(List<String> ids) {
+      final regularButtons = <Widget>[];
+      final compactButtons = <Widget>[];
 
-    final buttonOrder = [
-      'playlist',
-      'shaders',
-      'subtitles',
-      'server',
-      'quality',
-      'speed',
-      'audio_track',
-      'orientation',
-      'aspect_ratio'
-    ];
+      for (var id in ids) {
+        if (!isVisible(id)) continue;
+        if (id == 'server' && controller.isOffline.value) continue;
+        if (id == 'quality' && controller.isOffline.value) continue;
+        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) continue;
 
-    for (var id in buttonOrder) {
-      if (id == 'server' && controller.isOffline.value) continue;
-      if (id == 'quality' && controller.isOffline.value) continue;
-      if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
-        continue;
-      }
-
-      if (isVisible(id)) {
         final widget = buttonWidgets[id];
         if (widget != null) {
-          if ((widget as ControlButton).compact) {
-             if (getPosition(id, 'right') == 'left') {
-              leftButtons.add(widget);
-             } else {
-              rightCompactButtons.add(widget);
-             }
+          if (widget is ControlButton && widget.compact) {
+            compactButtons.add(widget);
           } else {
-            if (getPosition(id, 'left') == 'left') {
-              leftButtons.add(widget);
-            } else {
-              rightButtons.add(widget);
-            }
+            regularButtons.add(widget);
           }
         }
       }
-    }
-    
-    if (rightCompactButtons.isNotEmpty) {
-      rightButtons.add(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: isDark
-                ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
-                : theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
+
+      if (compactButtons.isNotEmpty) {
+        regularButtons.add(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
               color: isDark
-                  ? theme.colorScheme.outline.withOpacity(0.15)
-                  : theme.colorScheme.outline.withOpacity(0.3),
-              width: 0.5,
+                  ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                  : theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? theme.colorScheme.outline.withOpacity(0.15)
+                    : theme.colorScheme.outline.withOpacity(0.3),
+                width: 0.5,
+              ),
             ),
+            child: Row(mainAxisSize: MainAxisSize.min, children: compactButtons),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: rightCompactButtons),
-        ),
-      );
+        );
+      }
+      return regularButtons;
     }
 
+    final leftButtons = buildButtonList(leftButtonIds);
+    final rightButtons = buildButtonList(rightButtonIds);
 
     return Column(
       mainAxisSize: MainAxisSize.min,

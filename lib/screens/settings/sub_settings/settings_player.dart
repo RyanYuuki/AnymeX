@@ -46,14 +46,20 @@ final List<_BottomControl> _bottomControls = [
       icon: Symbols.playlist_play_rounded,
       defaultPosition: 'left'),
   _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
-  _BottomControl(id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
-  _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
-  _BottomControl(id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
-  _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
-  _BottomControl(id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
   _BottomControl(
-      id: 'orientation', name: 'Orientation', icon: Icons.screen_rotation_rounded),
-  _BottomControl(id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+      id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+  _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+  _BottomControl(
+      id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+  _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+  _BottomControl(
+      id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
+  _BottomControl(
+      id: 'orientation',
+      name: 'Orientation',
+      icon: Icons.screen_rotation_rounded),
+  _BottomControl(
+      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer> {
@@ -64,28 +70,99 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Rx<Color> outlineColor = Colors.black.obs;
   final styles = ['Regular', 'Accent', 'Blurred Accent'];
   final selectedStyleIndex = 0.obs;
-  late Map<String, dynamic> _controlsConfig;
+
+  late List<String> _leftButtonIds;
+  late List<String> _rightButtonIds;
+  late Map<String, dynamic> _buttonConfigs;
 
   @override
   void initState() {
     super.initState();
     speed.value = settings.speed;
     selectedStyleIndex.value = settings.playerStyle;
-    _controlsConfig = json
-        .decode(settings.preferences.get('bottomControlsSettings', defaultValue: '{}'));
+
+    final String jsonString = settings.preferences
+        .get('bottomControlsSettings', defaultValue: '{}');
+    final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+
+    _leftButtonIds =
+        List<String>.from(decodedConfig['leftButtonIds'] ?? []);
+    _rightButtonIds =
+        List<String>.from(decodedConfig['rightButtonIds'] ?? []);
+    _buttonConfigs =
+        Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
+
+    if (_leftButtonIds.isEmpty && _rightButtonIds.isEmpty && _bottomControls.isNotEmpty) {
+      _initializeDefaultButtonLayout();
+    } else {
+      _pruneRemovedButtons();
+    }
   }
 
-  void _updateButtonConfig(String id, {bool? visible, String? position}) {
-    final config = Map<String, dynamic>.from(_controlsConfig[id] ?? {});
-    if (visible != null) {
-      config['visible'] = visible;
+  void _saveButtonConfig() {
+    final Map<String, dynamic> configToSave = {
+      'leftButtonIds': _leftButtonIds,
+      'rightButtonIds': _rightButtonIds,
+      'buttonConfigs': _buttonConfigs,
+    };
+    settings.preferences
+        .put('bottomControlsSettings', json.encode(configToSave));
+    if (mounted) {
+      setState(() {});
     }
-    if (position != null) {
-      config['position'] = position;
+  }
+  
+  void _initializeDefaultButtonLayout() {
+    _leftButtonIds = [];
+    _rightButtonIds = [];
+    _buttonConfigs = {};
+    for (final control in _bottomControls) {
+      if (control.defaultPosition == 'left') {
+        _leftButtonIds.add(control.id);
+      } else {
+        _rightButtonIds.add(control.id);
+      }
+      _buttonConfigs[control.id] = {'visible': true};
     }
-    _controlsConfig[id] = config;
-    settings.preferences.put('bottomControlsSettings', json.encode(_controlsConfig));
-    setState(() {});
+    _saveButtonConfig();
+  }
+  
+  void _pruneRemovedButtons() {
+    final allKnownIds = _bottomControls.map((c) => c.id).toSet();
+    bool changed = false;
+
+    int initialLeftCount = _leftButtonIds.length;
+    _leftButtonIds.removeWhere((id) => !allKnownIds.contains(id));
+    if(_leftButtonIds.length != initialLeftCount) changed = true;
+
+    int initialRightCount = _rightButtonIds.length;
+    _rightButtonIds.removeWhere((id) => !allKnownIds.contains(id));
+    if(_rightButtonIds.length != initialRightCount) changed = true;
+
+    int initialConfigCount = _buttonConfigs.length;
+    _buttonConfigs.removeWhere((id, _) => !allKnownIds.contains(id));
+    if(_buttonConfigs.length != initialConfigCount) changed = true;
+    
+    if(changed) _saveButtonConfig();
+  }
+
+  void _updateButtonVisibility(String id, bool isVisible) {
+    final config = Map<String, dynamic>.from(_buttonConfigs[id] ?? {});
+    config['visible'] = isVisible;
+    _buttonConfigs[id] = config;
+    _saveButtonConfig();
+  }
+
+  void _moveButton(String id, String to) {
+    // to: 'left' or 'right'
+    if (to == 'left') {
+      _rightButtonIds.remove(id);
+      _leftButtonIds.add(id);
+    } else {
+      _leftButtonIds.remove(id);
+      _rightButtonIds.add(id);
+    }
+    _saveButtonConfig();
   }
 
   String numToPlayerStyle(int i) {
@@ -223,20 +300,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    final leftWidgets = <Widget>[];
-    final rightWidgets = <Widget>[];
-
-    for (final control in _bottomControls) {
-      final config = _controlsConfig[control.id] as Map<String, dynamic>? ?? {};
-      final position = config['position'] as String? ?? control.defaultPosition;
-
-      if (position == 'left') {
-        leftWidgets.add(_buildControlOption(context, control));
-      } else {
-        rightWidgets.add(_buildControlOption(context, control));
-      }
-    }
-
     return Glow(
       child: Scaffold(
         backgroundColor: widget.isModal
@@ -573,16 +636,60 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                              child: Text('Left Side', style: Theme.of(context).textTheme.titleMedium),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Text('Left Side',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ),
-                            ...leftWidgets,
+                            ReorderableListView.builder(
+                              key: const Key('left_list'),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _leftButtonIds.length,
+                              itemBuilder: (context, index) {
+                                final id = _leftButtonIds[index];
+                                final control = _bottomControls.firstWhere((c) => c.id == id);
+                                return _buildControlOption(context, control, 'left', key: ValueKey('left_$id'));
+                              },
+                              onReorder: (oldIndex, newIndex) {
+                                setState(() {
+                                  if (newIndex > oldIndex) newIndex -= 1;
+                                  final String item =
+                                      _leftButtonIds.removeAt(oldIndex);
+                                  _leftButtonIds.insert(newIndex, item);
+                                  _saveButtonConfig();
+                                });
+                              },
+                            ),
                             const SizedBox(height: 16),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                              child: Text('Right Side', style: Theme.of(context).textTheme.titleMedium),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Text('Right Side',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ),
-                            ...rightWidgets,
+                            ReorderableListView.builder(
+                              key: const Key('right_list'),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _rightButtonIds.length,
+                              itemBuilder: (context, index) {
+                                final id = _rightButtonIds[index];
+                                final control = _bottomControls.firstWhere((c) => c.id == id);
+                                return _buildControlOption(context, control, 'right', key: ValueKey('right_$id'));
+                              },
+                              onReorder: (oldIndex, newIndex) {
+                                setState(() {
+                                  if (newIndex > oldIndex) newIndex -= 1;
+                                  final String item =
+                                      _rightButtonIds.removeAt(oldIndex);
+                                  _rightButtonIds.insert(newIndex, item);
+                                  _saveButtonConfig();
+                                });
+                              },
+                            ),
                           ],
                         ),
                       )
@@ -595,21 +702,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  Widget _buildControlOption(BuildContext context, _BottomControl control) {
-    final config = _controlsConfig[control.id] as Map<String, dynamic>? ?? {};
+  Widget _buildControlOption(
+      BuildContext context, _BottomControl control, String position,
+      {required Key key}) {
+    final config = _buttonConfigs[control.id] as Map<String, dynamic>? ?? {};
     final isVisible = config['visible'] as bool? ?? true;
-    final position = config['position'] as String? ?? control.defaultPosition;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Row(
+    return ListTile(
+      key: key,
+      leading: Icon(control.icon, size: 22),
+      title: Text(control.name,
+          style: const TextStyle(fontWeight: FontWeight.w500)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(width: 8),
-          Icon(control.icon, size: 22),
-          const SizedBox(width: 16),
-          Expanded(
-              child: Text(control.name,
-                  style: const TextStyle(fontWeight: FontWeight.w500))),
           IconButton(
             tooltip: 'Toggle visibility',
             icon: Icon(
@@ -617,22 +723,19 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 size: 20),
-            onPressed: () =>
-                _updateButtonConfig(control.id, visible: !isVisible),
+            onPressed: () => _updateButtonVisibility(control.id, !isVisible),
           ),
           if (position == 'left')
             IconButton(
               tooltip: 'Move to right',
               icon: const Icon(Icons.keyboard_arrow_right_rounded),
-              onPressed: () =>
-                  _updateButtonConfig(control.id, position: 'right'),
+              onPressed: () => _moveButton(control.id, 'right'),
             )
           else
             IconButton(
               tooltip: 'Move to left',
               icon: const Icon(Icons.keyboard_arrow_left_rounded),
-              onPressed: () =>
-                  _updateButtonConfig(control.id, position: 'left'),
+              onPressed: () => _moveButton(control.id, 'left'),
             ),
         ],
       ),
