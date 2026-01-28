@@ -108,14 +108,19 @@ class BottomControls extends StatelessWidget {
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final String jsonString = settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final String jsonString =
+        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
-    final List<String> leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
-    final List<String> rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
-    final Map<String, dynamic> buttonConfigs = Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
+    final List<String> leftButtonIds =
+        List<String>.from(decodedConfig['leftButtonIds'] ?? []);
+    final List<String> rightButtonIds =
+        List<String>.from(decodedConfig['rightButtonIds'] ?? []);
+    final Map<String, dynamic> buttonConfigs =
+        Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
 
-    bool isVisible(String id) => (buttonConfigs[id]?['visible'] as bool?) ?? true;
+    bool isVisible(String id) =>
+        (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -175,7 +180,8 @@ class BottomControls extends StatelessWidget {
       ),
       'audio_track': ControlButton(
         icon: Symbols.music_note_rounded,
-        onPressed: () => PlayerBottomSheets.showAudioTracks(context, controller),
+        onPressed: () =>
+            PlayerBottomSheets.showAudioTracks(context, controller),
         tooltip: 'Audio Track',
         compact: true,
       ),
@@ -201,7 +207,8 @@ class BottomControls extends StatelessWidget {
         if (!isVisible(id)) continue;
         if (id == 'server' && controller.isOffline.value) continue;
         if (id == 'quality' && controller.isOffline.value) continue;
-        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) continue;
+        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS))
+          continue;
 
         final widget = buttonWidgets[id];
         if (widget != null) {
@@ -229,7 +236,8 @@ class BottomControls extends StatelessWidget {
                 width: 0.5,
               ),
             ),
-            child: Row(mainAxisSize: MainAxisSize.min, children: compactButtons),
+            child:
+                Row(mainAxisSize: MainAxisSize.min, children: compactButtons),
           ),
         );
       }
@@ -293,8 +301,8 @@ class BottomControls extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
@@ -326,8 +334,8 @@ class BottomControls extends StatelessWidget {
                   ...rightButtons,
                   if (rightButtons.isNotEmpty) const SizedBox(width: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surfaceVariant.withOpacity(0.3)

@@ -39,17 +39,18 @@ class _BottomControl {
   });
 }
 
-
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
       name: 'Playlist',
       icon: Symbols.playlist_play_rounded,
       defaultPosition: 'left'),
-  const _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+  const _BottomControl(
+      id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
   const _BottomControl(
       id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
-  const _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+  const _BottomControl(
+      id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
   const _BottomControl(
       id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
@@ -82,18 +83,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     speed.value = settings.speed;
     selectedStyleIndex.value = settings.playerStyle;
 
-    final String jsonString = settings.preferences
-        .get('bottomControlsSettings', defaultValue: '{}');
+    final String jsonString =
+        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
-    _leftButtonIds =
-        List<String>.from(decodedConfig['leftButtonIds'] ?? []);
-    _rightButtonIds =
-        List<String>.from(decodedConfig['rightButtonIds'] ?? []);
+    _leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
+    _rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
     _buttonConfigs =
         Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
 
-    if (_leftButtonIds.isEmpty && _rightButtonIds.isEmpty && _bottomControls.isNotEmpty) {
+    if (_leftButtonIds.isEmpty &&
+        _rightButtonIds.isEmpty &&
+        _bottomControls.isNotEmpty) {
       _initializeDefaultButtonLayout();
     } else {
       _pruneRemovedButtons();
@@ -112,7 +113,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       setState(() {});
     }
   }
-  
+
   void _initializeDefaultButtonLayout() {
     _leftButtonIds = [];
     _rightButtonIds = [];
@@ -127,24 +128,24 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     }
     _saveButtonConfig();
   }
-  
+
   void _pruneRemovedButtons() {
     final allKnownIds = _bottomControls.map((c) => c.id).toSet();
     bool changed = false;
 
     int initialLeftCount = _leftButtonIds.length;
     _leftButtonIds.removeWhere((id) => !allKnownIds.contains(id));
-    if(_leftButtonIds.length != initialLeftCount) changed = true;
+    if (_leftButtonIds.length != initialLeftCount) changed = true;
 
     int initialRightCount = _rightButtonIds.length;
     _rightButtonIds.removeWhere((id) => !allKnownIds.contains(id));
-    if(_rightButtonIds.length != initialRightCount) changed = true;
+    if (_rightButtonIds.length != initialRightCount) changed = true;
 
     int initialConfigCount = _buttonConfigs.length;
     _buttonConfigs.removeWhere((id, _) => !allKnownIds.contains(id));
-    if(_buttonConfigs.length != initialConfigCount) changed = true;
-    
-    if(changed) _saveButtonConfig();
+    if (_buttonConfigs.length != initialConfigCount) changed = true;
+
+    if (changed) _saveButtonConfig();
   }
 
   void _updateButtonVisibility(String id, bool isVisible) {
@@ -650,8 +651,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               itemCount: _leftButtonIds.length,
                               itemBuilder: (context, index) {
                                 final id = _leftButtonIds[index];
-                                final control = _bottomControls.firstWhere((c) => c.id == id);
-                                return _buildControlOption(context, control, 'left', key: ValueKey('left_$id'));
+                                final control = _bottomControls
+                                    .firstWhere((c) => c.id == id);
+                                return _buildControlOption(
+                                    context, control, 'left',
+                                    key: ValueKey('left_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
                                 setState(() {
@@ -677,17 +681,24 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: _rightButtonIds.length,
                               itemBuilder: (context, index) {
-                                final id = _rightButtonIds[_rightButtonIds.length - 1 - index];
-                                final control = _bottomControls.firstWhere((c) => c.id == id);
-                                return _buildControlOption(context, control, 'right', key: ValueKey('right_$id'));
+                                final id = _rightButtonIds[
+                                    _rightButtonIds.length - 1 - index];
+                                final control = _bottomControls
+                                    .firstWhere((c) => c.id == id);
+                                return _buildControlOption(
+                                    context, control, 'right',
+                                    key: ValueKey('right_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
                                 setState(() {
-                                  _rightButtonIds = _rightButtonIds.reversed.toList();
+                                  _rightButtonIds =
+                                      _rightButtonIds.reversed.toList();
                                   if (newIndex > oldIndex) newIndex -= 1;
-                                  final String item = _rightButtonIds.removeAt(oldIndex);
+                                  final String item =
+                                      _rightButtonIds.removeAt(oldIndex);
                                   _rightButtonIds.insert(newIndex, item);
-                                  _rightButtonIds = _rightButtonIds.reversed.toList();
+                                  _rightButtonIds =
+                                      _rightButtonIds.reversed.toList();
                                   _saveButtonConfig();
                                 });
                               },
