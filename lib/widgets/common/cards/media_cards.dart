@@ -274,7 +274,7 @@ class ExoticCard extends CarouselCard {
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
-                      text: itemData.extraData ?? '',
+                      text: (itemData.extraData ?? '').replaceAll('_', ' '),
                       color: Theme.of(context).colorScheme.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
@@ -420,7 +420,7 @@ class MinimalExoticCard extends CarouselCard {
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
-                      text: itemData.extraData ?? '',
+                      text: (itemData.extraData ?? '').replaceAll('_', ' '),
                       color: Theme.of(context).colorScheme.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
