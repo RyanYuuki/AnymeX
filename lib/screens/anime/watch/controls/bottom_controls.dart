@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
@@ -102,52 +104,219 @@ class BottomControls extends StatelessWidget {
 
   Widget _buildLayout(BuildContext context) {
     final controller = Get.find<PlayerController>();
+    final settings = Get.find<Settings>();
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
+    final controlsConfig = json.decode(
+        settings.preferences.get('bottomControlsSettings', defaultValue: '{}'));
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Material(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: controller.isLocked.value
-                    ? null
-                    : () => controller
-                        .megaSeek(controller.playerSettings.skipDuration),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
+    bool isVisible(String id) => (controlsConfig[id]?['visible'] as bool?) ?? true;
+    String getPosition(String id, String defaultPos) =>
+        (controlsConfig[id]?['position'] as String?) ?? defaultPos;
+
+    Widget buildMegaSkip() {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: controller.isLocked.value
+                  ? null
+                  : () =>
+                      controller.megaSeek(controller.playerSettings.skipDuration),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
+                      : theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
                     color: isDark
-                        ? theme.colorScheme.surfaceContainer
-                            .withValues(alpha: 0.6)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isDark
-                          ? theme.colorScheme.outline
-                          : theme.colorScheme.outline.withOpacity(0.5),
-                      width: 0.5,
-                    ),
+                        ? theme.colorScheme.outline
+                        : theme.colorScheme.outline.withOpacity(0.5),
+                    width: 0.5,
                   ),
-                  child: AnymexText(
-                    text: '+${controller.playerSettings.skipDuration}',
-                    variant: TextVariant.semiBold,
-                    color: controller.isLocked.value
-                        ? theme.colorScheme.onSurface.withOpacity(0.4)
-                        : null,
-                  ),
+                ),
+                child: AnymexText(
+                  text: '+${controller.playerSettings.skipDuration}',
+                  variant: TextVariant.semiBold,
+                  color: controller.isLocked.value
+                      ? theme.colorScheme.onSurface.withOpacity(0.4)
+                      : null,
                 ),
               ),
             ),
           ),
         ),
+      );
+    }
+
+    final Map<String, Widget> buttonWidgets = {
+      'megaskip': buildMegaSkip(),
+      'playlist': ControlButton(
+        icon: Symbols.playlist_play_rounded,
+        onPressed: () {
+          controller.isEpisodePaneOpened.value =
+              !controller.isEpisodePaneOpened.value;
+        },
+        tooltip: 'Playlist',
+      ),
+      'shaders': ControlButton(
+        icon: Symbols.tune_rounded,
+        onPressed: () => controller.openColorProfileBottomSheet(context),
+        tooltip: 'Shaders & Color Profiles',
+        compact: true,
+      ),
+      'subtitles': !controller.isOffline.value
+          ? ControlButton(
+              icon: Symbols.subtitles_rounded,
+              onPressed: () => PlayerBottomSheets.showSubtitleTracks(
+                context,
+                controller,
+              ),
+              tooltip: 'Subtitles',
+              compact: true,
+            )
+          : ControlButton(
+              icon: Symbols.subtitles_rounded,
+              onPressed: () => PlayerBottomSheets.showOfflineSubs(
+                context,
+                controller,
+              ),
+              tooltip: 'Subtitles',
+              compact: true,
+            ),
+      'server': ControlButton(
+        icon: Symbols.cloud_rounded,
+        onPressed: () {
+          PlayerBottomSheets.showVideoServers(context, controller);
+        },
+        tooltip: 'Server',
+        compact: true,
+      ),
+      'quality': ControlButton(
+        icon: Symbols.high_quality_rounded,
+        onPressed: () =>
+            PlayerBottomSheets.showVideoQuality(context, controller),
+        tooltip: 'Quality',
+        compact: true,
+      ),
+      'speed': ControlButton(
+        icon: Symbols.speed_rounded,
+        onPressed: () =>
+            PlayerBottomSheets.showPlaybackSpeed(context, controller),
+        tooltip: 'Speed',
+        compact: true,
+      ),
+      'audio_track': ControlButton(
+        icon: Symbols.music_note_rounded,
+        onPressed: () => PlayerBottomSheets.showAudioTracks(context, controller),
+        tooltip: 'Audio Track',
+        compact: true,
+      ),
+      'orientation': ControlButton(
+        icon: Icons.screen_rotation_rounded,
+        onPressed: () => controller.toggleOrientation(),
+        tooltip: 'Toggle Orientation',
+        compact: true,
+      ),
+      'aspect_ratio': ControlButton(
+        icon: Symbols.fit_screen,
+        onPressed: () => controller.toggleVideoFit(),
+        tooltip: 'Aspect Ratio',
+        compact: true,
+      ),
+    };
+
+    final List<Widget> leftButtons = [];
+    final List<Widget> rightButtons = [];
+    final List<Widget> rightCompactButtons = [];
+
+    final buttonOrder = [
+      'playlist',
+      'shaders',
+      'subtitles',
+      'server',
+      'quality',
+      'speed',
+      'audio_track',
+      'orientation',
+      'aspect_ratio'
+    ];
+    final megaSkipOrder = ['megaskip'];
+
+    for (var id in megaSkipOrder) {
+      if (isVisible(id)) {
+        final widget = buttonWidgets[id];
+        if (widget != null) {
+          if (getPosition(id, 'right') == 'left') {
+            leftButtons.add(widget);
+          } else {
+            rightButtons.add(widget);
+          }
+        }
+      }
+    }
+
+    for (var id in buttonOrder) {
+      if (id == 'server' && controller.isOffline.value) continue;
+      if (id == 'quality' && controller.isOffline.value) continue;
+      if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
+        continue;
+      }
+
+      if (isVisible(id)) {
+        final widget = buttonWidgets[id];
+        if (widget != null) {
+          if ((widget as ControlButton).compact) {
+             if (getPosition(id, 'right') == 'left') {
+              leftButtons.add(widget);
+             } else {
+              rightCompactButtons.add(widget);
+             }
+          } else {
+            if (getPosition(id, 'left') == 'left') {
+              leftButtons.add(widget);
+            } else {
+              rightButtons.add(widget);
+            }
+          }
+        }
+      }
+    }
+    
+    if (rightCompactButtons.isNotEmpty) {
+      rightButtons.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: isDark
+                ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                : theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark
+                  ? theme.colorScheme.outline.withOpacity(0.15)
+                  : theme.colorScheme.outline.withOpacity(0.3),
+              width: 0.5,
+            ),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: rightCompactButtons),
+        ),
+      );
+    }
+
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (rightButtons.whereType<Padding>().isNotEmpty)
+          ...rightButtons.whereType<Padding>(),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: const ProgressSlider(),
@@ -159,8 +328,8 @@ class BottomControls extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
@@ -182,120 +351,18 @@ class BottomControls extends StatelessWidget {
                           ),
                         )),
                   ),
-                  if (!controller.isOffline.value) ...[
-                    const SizedBox(width: 16),
-                    ControlButton(
-                      icon: Symbols.playlist_play_rounded,
-                      onPressed: () {
-                        controller.isEpisodePaneOpened.value =
-                            !controller.isEpisodePaneOpened.value;
-                      },
-                      tooltip: 'Playlist',
-                    ),
-                  ]
+                  if (leftButtons.isNotEmpty) const SizedBox(width: 16),
+                  ...leftButtons,
                 ],
               ),
               const Spacer(),
               Row(
                 children: [
+                  ...rightButtons.where((w) => w is! Padding),
+                  if (rightButtons.where((w) => w is! Padding).isNotEmpty) const SizedBox(width: 20),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
-                          : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isDark
-                            ? theme.colorScheme.outline.withOpacity(0.15)
-                            : theme.colorScheme.outline.withOpacity(0.3),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ControlButton(
-                          icon: Symbols.tune_rounded,
-                          onPressed: () =>
-                              controller.openColorProfileBottomSheet(context),
-                          tooltip: 'Shaders & Color Profiles',
-                          compact: true,
-                        ),
-                        if (!controller.isOffline.value) ...[
-                          ControlButton(
-                            icon: Symbols.subtitles_rounded,
-                            onPressed: () =>
-                                PlayerBottomSheets.showSubtitleTracks(
-                              context,
-                              controller,
-                            ),
-                            tooltip: 'Subtitles',
-                            compact: true,
-                          ),
-                          ControlButton(
-                            icon: Symbols.cloud_rounded,
-                            onPressed: () {
-                              PlayerBottomSheets.showVideoServers(
-                                  context, controller);
-                            },
-                            tooltip: 'Server',
-                            compact: true,
-                          ),
-                          ControlButton(
-                            icon: Symbols.high_quality_rounded,
-                            onPressed: () =>
-                                PlayerBottomSheets.showVideoQuality(
-                                    context, controller),
-                            tooltip: 'Quality',
-                            compact: true,
-                          ),
-                        ] else ...[
-                          ControlButton(
-                            icon: Symbols.subtitles_rounded,
-                            onPressed: () => PlayerBottomSheets.showOfflineSubs(
-                              context,
-                              controller,
-                            ),
-                            tooltip: 'Subtitles',
-                            compact: true,
-                          ),
-                        ],
-                        ControlButton(
-                          icon: Symbols.speed_rounded,
-                          onPressed: () => PlayerBottomSheets.showPlaybackSpeed(
-                              context, controller),
-                          tooltip: 'Speed',
-                          compact: true,
-                        ),
-                        ControlButton(
-                          icon: Symbols.music_note_rounded,
-                          onPressed: () => PlayerBottomSheets.showAudioTracks(
-                              context, controller),
-                          tooltip: 'Audio Track',
-                          compact: true,
-                        ),
-                        if (Platform.isAndroid || Platform.isIOS)
-                          ControlButton(
-                            icon: Icons.screen_rotation_rounded,
-                            onPressed: () => controller.toggleOrientation(),
-                            tooltip: 'Toggle Orientation',
-                            compact: true,
-                          ),
-                        ControlButton(
-                          icon: Symbols.fit_screen,
-                          onPressed: () => controller.toggleVideoFit(),
-                          tooltip: 'Aspect Ratio',
-                          compact: true,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
                           ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
