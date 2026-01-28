@@ -4,8 +4,6 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
-import 'package:anymex/utils/fallback/fallback_anime.dart';
-import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -33,8 +31,6 @@ class AnimeStats extends StatelessWidget {
             : [
                 ...serviceHandler.anilistService.trendingAnimes,
                 ...serviceHandler.anilistService.trendingMangas,
-                ...trendingAnimes,
-                ...trendingMangas
               ])
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();

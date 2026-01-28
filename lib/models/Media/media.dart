@@ -334,6 +334,7 @@ class Media {
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',
+      totalEpisodes: json['episodes']?.toString() ?? '?',
       poster: json['coverImage']?['large'] ?? '?',
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
