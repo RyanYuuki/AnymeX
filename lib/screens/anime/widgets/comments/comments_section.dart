@@ -1,19 +1,18 @@
 import 'package:anymex/database/model/comment.dart';
-import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentSection extends StatefulWidget {
-  final String mediaId;
-  final String? currentTag;
+  final Media media;
 
   const CommentSection({
     super.key,
-    required this.mediaId,
-    this.currentTag,
+    required this.media,
   });
 
   @override
@@ -27,59 +26,45 @@ class _CommentSectionState extends State<CommentSection> {
   @override
   void initState() {
     super.initState();
-    lastMediaId = widget.mediaId;
-    
-    // Check if comments are already preloaded
-    final preloadedController = CommentPreloader.to.getPreloadedController(widget.mediaId);
+    lastMediaId = widget.media.uniqueId;
+
+    final preloadedController =
+        CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
     if (preloadedController != null) {
-      // Use the preloaded controller
       controller = preloadedController;
-      print('Using preloaded controller for media: ${widget.mediaId}');
     } else {
-      // Create new controller if not preloaded
-      controller = Get.put(CommentSectionController(
-        mediaId: widget.mediaId,
-        currentTag: widget.currentTag,
-      ), tag: widget.mediaId);
-      print('Created new controller for media: ${widget.mediaId}');
+      controller = Get.put(CommentSectionController(media: widget.media),
+          tag: widget.media.uniqueId);
     }
   }
 
   @override
   void didUpdateWidget(CommentSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Check if mediaId changed
-    if (widget.mediaId != oldWidget.mediaId) {
-      // Don't delete the old controller if it was preloaded
-      final wasPreloaded = CommentPreloader.to.isPreloaded(oldWidget.mediaId);
+
+    if (widget.media.uniqueId != oldWidget.media.uniqueId) {
+      final wasPreloaded =
+          CommentPreloader.to.isPreloaded(oldWidget.media.uniqueId);
       if (!wasPreloaded) {
-        Get.delete<CommentSectionController>(tag: oldWidget.mediaId);
+        Get.delete<CommentSectionController>(tag: oldWidget.media.uniqueId);
       }
-      
-      // Check if new media has preloaded controller
-      final preloadedController = CommentPreloader.to.getPreloadedController(widget.mediaId);
+
+      final preloadedController =
+          CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
       if (preloadedController != null) {
         controller = preloadedController;
-        print('Using preloaded controller for new media: ${widget.mediaId}');
       } else {
-        // Create new controller for new media
-        controller = Get.put(CommentSectionController(
-          mediaId: widget.mediaId,
-          currentTag: widget.currentTag,
-        ), tag: widget.mediaId);
-        print('Created new controller for new media: ${widget.mediaId}');
+        controller = Get.put(CommentSectionController(media: widget.media),
+            tag: widget.media.uniqueId);
       }
-      
-      print('Media changed from ${oldWidget.mediaId} to ${widget.mediaId}');
     }
   }
 
   @override
   void dispose() {
-    // Don't delete preloaded controllers, only delete non-preloaded ones
-    final isPreloaded = CommentPreloader.to.isPreloaded(widget.mediaId);
+    final isPreloaded = CommentPreloader.to.isPreloaded(widget.media.uniqueId);
     if (!isPreloaded) {
-      Get.delete<CommentSectionController>(tag: widget.mediaId);
+      Get.delete<CommentSectionController>(tag: widget.media.uniqueId);
     }
     super.dispose();
   }
@@ -90,7 +75,7 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       decoration: BoxDecoration(
         color: colorScheme.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
@@ -106,7 +91,43 @@ class _CommentSectionState extends State<CommentSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(context, controller),
-          _buildCommentInput(context, controller),
+          if (controller.isLoggedIn)
+            _buildCommentInput(context, controller)
+          else
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              margin: const EdgeInsets.all(16),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color:
+                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: controller.commentFocusNode.hasFocus
+                      ? colorScheme.primary.withOpacity(0.4)
+                      : colorScheme.outlineVariant.withOpacity(0.3),
+                  width: 1.5,
+                ),
+                boxShadow: controller.commentFocusNode.hasFocus
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.primary.withOpacity(0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Text(
+                'You need to be logged in to comment.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
           _buildCommentsList(context, controller),
         ],
@@ -122,7 +143,7 @@ class _CommentSectionState extends State<CommentSection> {
     return Obx(() => Container(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withValues(alpha: 0.5),
+            color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Row(
@@ -145,28 +166,27 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Refresh button
               Obx(() => IconButton(
-                onPressed: controller.isRefreshing.value 
-                    ? null 
-                    : () => controller.forceRefresh(),
-                icon: controller.isRefreshing.value
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            colorScheme.onSurfaceVariant,
+                    onPressed: controller.isRefreshing.value
+                        ? null
+                        : () => controller.forceRefresh(),
+                    icon: controller.isRefreshing.value
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.refresh,
+                            color: colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      )
-                    : Icon(
-                        Icons.refresh,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                tooltip: 'Refresh comments',
-              )),
+                    tooltip: 'Refresh comments',
+                  )),
             ],
           ),
         ));
@@ -180,8 +200,8 @@ class _CommentSectionState extends State<CommentSection> {
     return Obx(() => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOutCubic,
-          margin: const EdgeInsets.fromLTRB(24, 10, 24, 0),
-          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(20),
@@ -256,65 +276,64 @@ class _CommentSectionState extends State<CommentSection> {
                   height: 1,
                 ),
                 const SizedBox(height: 16),
+                _buildTagSelector(context, controller),
+                const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    if (controller.currentTag != null)
-                      _buildCurrentTag(context, controller.currentTag!),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: controller.clearInputs,
-                          style: TextButton.styleFrom(
-                            foregroundColor: colorScheme.onSurfaceVariant,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
+                    TextButton(
+                      onPressed: controller.clearInputs,
+                      style: TextButton.styleFrom(
+                        foregroundColor: colorScheme.onSurfaceVariant,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                        const SizedBox(width: 12),
-                        FilledButton(
-                          onPressed: controller.isSubmitting.value
-                              ? null
-                              : controller.addComment,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
-                            disabledBackgroundColor:
-                                colorScheme.surfaceContainerHigh,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: controller.isSubmitting.value
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: ExpressiveLoadingIndicator(),
-                                )
-                              : const Text(
-                                  'Post',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ],
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ),
+                    const SizedBox(width: 12),
+                    Obx(() {
+                      return FilledButton(
+                        onPressed: controller.isSubmitting.value ||
+                                controller.tag.value.isEmpty ||
+                                controller.commentContent.value.isEmpty
+                            ? null
+                            : controller.addComment,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          disabledBackgroundColor:
+                              colorScheme.surfaceContainerHigh,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: controller.isSubmitting.value
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: ExpressiveLoadingIndicator(),
+                              )
+                            : const Text(
+                                'Post',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
+                      );
+                    }),
                   ],
                 ),
               ],
@@ -323,39 +342,109 @@ class _CommentSectionState extends State<CommentSection> {
         ));
   }
 
-  Widget _buildCurrentTag(BuildContext context, String tag) {
-    final colorScheme = Theme.of(context).colorScheme;
+  Widget _buildTagSelector(
+      BuildContext context, CommentSectionController controller) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: colorScheme.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: colorScheme.primary.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+    final quickTags = ['General', 'Spoiler', 'Theory', 'Review'];
+
+    return Obx(() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.label_rounded,
-            color: colorScheme.primary,
-            size: 14,
-          ),
-          const SizedBox(width: 6),
           Text(
-            tag,
+            'Tag',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: quickTags.map((t) {
+              final isSelected = controller.tag.value == t;
+              return InkWell(
+                onTap: () {
+                  controller.tag.value = t;
+                  controller.tagController.value.text = t;
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? colorScheme.primary.withOpacity(0.15)
+                        : colorScheme.surfaceContainerLow
+                            .withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary.withOpacity(0.4)
+                          : colorScheme.outlineVariant.withOpacity(0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Text(
+                    t,
+                    style: TextStyle(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: controller.tagController.value,
             style: TextStyle(
-              color: colorScheme.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Or type custom tag...',
+              hintStyle: TextStyle(
+                color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                fontSize: 14,
+              ),
+              filled: true,
+              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.15),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.primary.withOpacity(0.5),
+                  width: 1.5,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildUserAvatar(
@@ -488,17 +577,16 @@ class _CommentSectionState extends State<CommentSection> {
     });
   }
 
-  // Calculate total comment count including replies
   String _getTotalCommentCount(List<Comment> comments) {
     int totalComments = comments.length;
     int totalReplies = 0;
-    
+
     for (final comment in comments) {
       totalReplies += _countReplies(comment);
     }
-    
+
     final total = totalComments + totalReplies;
-    
+
     if (total == 1) {
       return '1 comment';
     } else if (totalReplies > 0) {
@@ -508,38 +596,33 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
-  // Count all replies recursively
   int _countReplies(Comment comment) {
     int replyCount = 0;
-    
+
     if (comment.replies != null) {
       replyCount += comment.replies!.length;
       for (final reply in comment.replies!) {
-        replyCount += _countReplies(reply); // Count nested replies
+        replyCount += _countReplies(reply);
       }
     }
-    
+
     return replyCount;
   }
 
-  // Build comment with its nested replies
   Widget _buildCommentWithReplies(BuildContext context, Comment comment,
       CommentSectionController controller, int depth) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Main comment
         Container(
           margin: EdgeInsets.only(
             left: depth > 0 ? 16.0 + (depth * 20.0) : 0,
           ),
           child: _buildCommentItem(context, comment, controller),
         ),
-        
-        // Replies section
         if (comment.replies != null && comment.replies!.isNotEmpty) ...[
           const SizedBox(height: 16),
           Container(
@@ -558,11 +641,11 @@ class _CommentSectionState extends State<CommentSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Reply count indicator
                 if (comment.replies!.length > 1)
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(8),
@@ -575,21 +658,15 @@ class _CommentSectionState extends State<CommentSection> {
                       ),
                     ),
                   ),
-                
-                // Individual replies
                 ...comment.replies!.asMap().entries.map((entry) {
                   final replyIndex = entry.key;
                   final reply = entry.value;
                   final isLastReply = replyIndex == comment.replies!.length - 1;
-                  
+
                   return Column(
                     children: [
                       _buildCommentWithReplies(
-                        context, 
-                        reply, 
-                        controller, 
-                        depth + 1
-                      ),
+                          context, reply, controller, depth + 1),
                       if (!isLastReply)
                         Container(
                           margin: EdgeInsets.only(
@@ -604,7 +681,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                     ],
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
@@ -617,6 +694,7 @@ class _CommentSectionState extends State<CommentSection> {
       CommentSectionController controller) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -691,19 +769,15 @@ class _CommentSectionState extends State<CommentSection> {
                     ),
                   ),
                   const Spacer(),
-                  if (comment.tag.isNotEmpty && comment.tag != 'General')
-                    _buildTag(context, comment.tag),
+                  if (comment.tag.isNotEmpty) _buildTag(context, comment.tag),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
-                comment.commentText,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontSize: 16,
-                  height: 1.5,
-                  fontWeight: FontWeight.w400,
-                ),
+              _SpoilerText(
+                text: comment.commentText,
+                isSpoiler: isSpoiler,
+                theme: theme,
+                colorScheme: colorScheme,
               ),
               const SizedBox(height: 16),
               Row(
@@ -726,46 +800,30 @@ class _CommentSectionState extends State<CommentSection> {
                     isUpvote: false,
                   ),
                   const Spacer(),
-                  // Action buttons based on user role and ownership
-                  // Edit button (only for comment owners)
                   if (comment.userId == controller.profile.id?.toString())
                     _buildActionButton(
                       context: context,
                       icon: Icons.edit_outlined,
-                      onTap: () => _showEditDialog(context, comment, controller),
+                      onTap: () =>
+                          _showEditDialog(context, comment, controller),
                     ),
                   if (comment.userId == controller.profile.id?.toString())
                     const SizedBox(width: 8),
-                  // Delete button (owners + admins)
-                  if (controller.canDeleteComment(comment))
+                  if (comment.userId == controller.profile.id?.toString())
                     _buildActionButton(
                       context: context,
                       icon: Icons.delete_outline,
-                      onTap: () => _showDeleteDialog(context, comment, controller),
+                      onTap: () =>
+                          _showDeleteDialog(context, comment, controller),
                     ),
-                  if (controller.canDeleteComment(comment))
+                  if (comment.userId == controller.profile.id?.toString())
                     const SizedBox(width: 8),
-                  // Report button (only for non-owners)
                   if (comment.userId != controller.profile.id?.toString())
                     _buildActionButton(
                       context: context,
                       icon: Icons.flag_outlined,
-                      onTap: () => _showReportDialog(context, comment, controller),
-                    ),
-                    if (comment.userId != controller.profile.id?.toString())
-                    const SizedBox(width: 8),
-                  // Reply button (available to everyone)
-                  _buildActionButton(
-                    context: context,
-                    icon: Icons.reply_outlined,
-                    onTap: () => _showReplyDialog(context, comment, controller),
-                  ),
-                  const SizedBox(width: 8),
-                  if (controller.canModerate())
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.more_vert,
-                      onTap: () => _showModerationMenu(context, comment, controller),
+                      onTap: () =>
+                          _showReportDialog(context, comment, controller),
                     ),
                 ],
               ),
@@ -790,7 +848,7 @@ class _CommentSectionState extends State<CommentSection> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -802,9 +860,11 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  void _showEditDialog(BuildContext context, Comment comment, CommentSectionController controller) {
-    final TextEditingController editController = TextEditingController(text: comment.commentText);
-    
+  void _showEditDialog(BuildContext context, Comment comment,
+      CommentSectionController controller) {
+    final TextEditingController editController =
+        TextEditingController(text: comment.commentText);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -837,12 +897,14 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Comment comment, CommentSectionController controller) {
+  void _showDeleteDialog(BuildContext context, Comment comment,
+      CommentSectionController controller) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Comment'),
-        content: const Text('Are you sure you want to delete this comment? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete this comment? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -864,234 +926,11 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  void _showModerationMenu(BuildContext context, Comment comment, CommentSectionController controller) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: comment.avatarUrl?.isNotEmpty == true
-                        ? NetworkImage(comment.avatarUrl!)
-                        : null,
-                    child: comment.avatarUrl?.isEmpty != true
-                        ? null
-                        : Icon(Icons.person, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          comment.username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'ID: ${comment.id}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.push_pin_outlined),
-              title: const Text('Pin Comment'),
-              onTap: () {
-                Navigator.pop(context);
-                controller.moderateComment(
-                  comment: comment,
-                  action: 'pin_comment',
-                  reason: 'Pinned by moderator',
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.lock_outlined),
-              title: const Text('Lock Thread'),
-              onTap: () {
-                Navigator.pop(context);
-                controller.moderateComment(
-                  comment: comment,
-                  action: 'lock_thread',
-                  reason: 'Thread locked by moderator',
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outlined),
-              title: const Text('Delete Comment'),
-              onTap: () {
-                Navigator.pop(context);
-                controller.moderateComment(
-                  comment: comment,
-                  action: 'delete_comment',
-                  reason: 'Deleted by moderator',
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_off_outlined),
-              title: const Text('Manage User'),
-              onTap: () {
-                Navigator.pop(context);
-                _showUserManagementDialog(context, comment, controller);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showUserManagementDialog(BuildContext context, Comment comment, CommentSectionController controller) {
-    final TextEditingController reasonController = TextEditingController();
-    String selectedAction = 'warn_user';
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Manage User: ${comment.username}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Select action:'),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: selectedAction,
-              decoration: const InputDecoration(
-                labelText: 'Action',
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'warn_user', child: Text('Warn User')),
-                DropdownMenuItem(value: 'mute_user', child: Text('Mute User')),
-                DropdownMenuItem(value: 'ban_user', child: Text('Ban User')),
-              ],
-              onChanged: (value) {
-                selectedAction = value!;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Reason',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (reasonController.text.trim().isNotEmpty) {
-                controller.manageUser(
-                  targetUserId: comment.userId!,
-                  action: selectedAction,
-                  reason: reasonController.text.trim(),
-                );
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Apply'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showReplyDialog(BuildContext context, Comment comment, CommentSectionController controller) {
-    final TextEditingController replyController = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Reply to ${comment.username}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    comment.username,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    comment.commentText,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: replyController,
-              maxLines: 4,
-              minLines: 2,
-              decoration: const InputDecoration(
-                hintText: 'Write your reply...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (replyController.text.trim().isNotEmpty) {
-                // For now, we'll create a reply as a new comment
-                // In a full implementation, this would be a nested reply
-                controller.addReply(comment, replyController.text.trim());
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Reply'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showReportDialog(BuildContext context, Comment comment, CommentSectionController controller) {
+  void _showReportDialog(BuildContext context, Comment comment,
+      CommentSectionController controller) {
     final TextEditingController reasonController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1102,17 +941,23 @@ class _CommentSectionState extends State<CommentSection> {
             const Text('Please select a reason for reporting this comment:'),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: reasonController.text.isEmpty ? null : reasonController.text,
+              value:
+                  reasonController.text.isEmpty ? null : reasonController.text,
               decoration: const InputDecoration(
                 labelText: 'Reason',
                 border: OutlineInputBorder(),
               ),
               items: const [
                 DropdownMenuItem(value: 'spam', child: Text('Spam')),
-                DropdownMenuItem(value: 'inappropriate', child: Text('Inappropriate Content')),
-                DropdownMenuItem(value: 'harassment', child: Text('Harassment')),
-                DropdownMenuItem(value: 'offensive', child: Text('Offensive Language')),
-                DropdownMenuItem(value: 'misinformation', child: Text('Misinformation')),
+                DropdownMenuItem(
+                    value: 'inappropriate',
+                    child: Text('Inappropriate Content')),
+                DropdownMenuItem(
+                    value: 'harassment', child: Text('Harassment')),
+                DropdownMenuItem(
+                    value: 'offensive', child: Text('Offensive Language')),
+                DropdownMenuItem(
+                    value: 'misinformation', child: Text('Misinformation')),
                 DropdownMenuItem(value: 'other', child: Text('Other')),
               ],
               onChanged: (value) {
@@ -1138,7 +983,8 @@ class _CommentSectionState extends State<CommentSection> {
           FilledButton(
             onPressed: () {
               if (reasonController.text.trim().isNotEmpty) {
-                controller.reportComment(comment, reasonController.text.trim(), notes: notesController.text.trim());
+                controller.reportComment(comment, reasonController.text.trim(),
+                    notes: notesController.text.trim());
                 Navigator.pop(context);
               }
             },
@@ -1195,7 +1041,7 @@ class _CommentSectionState extends State<CommentSection> {
           decoration: BoxDecoration(
             color: isActive
                 ? activeColor.withOpacity(0.1)
-                : colorScheme.surfaceContainerLow,
+                : colorScheme.surfaceContainer.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isActive
@@ -1224,6 +1070,73 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ],
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpoilerText extends StatefulWidget {
+  final String text;
+  final bool isSpoiler;
+  final ThemeData theme;
+  final ColorScheme colorScheme;
+
+  const _SpoilerText({
+    required this.text,
+    required this.isSpoiler,
+    required this.theme,
+    required this.colorScheme,
+  });
+
+  @override
+  State<_SpoilerText> createState() => _SpoilerTextState();
+}
+
+class _SpoilerTextState extends State<_SpoilerText> {
+  bool _isRevealed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.isSpoiler) {
+      return Text(
+        widget.text,
+        style: widget.theme.textTheme.bodyLarge?.copyWith(
+          color: widget.colorScheme.onSurface,
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w400,
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isRevealed = !_isRevealed;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: _isRevealed
+              ? Colors.transparent
+              : widget.colorScheme.surfaceContainerHighest.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          widget.text,
+          style: widget.theme.textTheme.bodyLarge?.copyWith(
+            color:
+                _isRevealed ? widget.colorScheme.onSurface : Colors.transparent,
+            fontSize: 16,
+            height: 1.5,
+            fontWeight: FontWeight.w400,
+            backgroundColor: _isRevealed
+                ? Colors.transparent
+                : widget.colorScheme.surfaceContainerHighest.withOpacity(0.8),
           ),
         ),
       ),
