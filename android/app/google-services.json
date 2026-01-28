@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655963122485",
+    "project_id": "anymex-ryan7",
+    "storage_bucket": "anymex-ryan7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655963122485:android:928a151d682058a33dba7c",
+        "android_client_info": {
+          "package_name": "com.ryan.anymex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5sGDX3VFXZn8Co4FaeODwQzqT3H1ifK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

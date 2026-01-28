@@ -7,16 +7,15 @@ import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
-
 import 'package:get/get.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 enum HistoryCardStyle { regular, blurred, bootiful }
 
 double getHistoryCardHeight(HistoryCardStyle style, BuildContext context) {
   switch (style) {
     case HistoryCardStyle.bootiful:
-      return 270;
+      return 300;
     default:
       return getResponsiveSize(context, mobileSize: 150, desktopSize: 190);
   }

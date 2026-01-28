@@ -39,7 +39,7 @@ class MediaCard extends StatelessWidget {
                 children: [
                   Hero(
                     tag: tag,
-                    child: NetworkSizedImage(
+                    child: AnymeXImage(
                       imageUrl: data.poster ?? '',
                       radius: 12.multiplyRadius(),
                       width: double.infinity,

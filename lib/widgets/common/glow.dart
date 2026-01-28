@@ -47,7 +47,7 @@ class Glow extends StatelessWidget {
             ),
           )
         : Theme.of(context).colorScheme;
-    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final isDesktop = Platform.isWindows;
     final ch = isDesktop
         ? Padding(
             padding: const EdgeInsets.only(top: 40),

@@ -1,18 +1,16 @@
 import 'dart:convert';
-import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/utils/logger.dart';
 import 'dart:math' show min;
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/kitsu.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
+import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -22,11 +20,14 @@ import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
-import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
+import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -67,7 +68,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .where((entry) => entry.value)
         .map<String>((entry) => entry.key)
         .toList();
-    final isDesktop = Get.width > 600;
     final recAnimes =
         (popularAnimes + trendingAnimes + latestAnimes).removeDupes();
     final recMangas =
@@ -78,64 +78,74 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        LayoutBuilder(builder: (context, constraints) {
-          final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
-          final overflow = constraints.maxWidth < 900;
-          final overflowSecond =
-              !isDesktop ? false : constraints.maxWidth < 600;
-          return Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 15,
-            children: [
-              ImageButton(
-                width: width,
-                height: !isDesktop ? 70 : 90,
-                buttonText: "ANIME LIST",
-                backgroundImage:
-                    trendingAnimes.firstWhere((e) => e.cover != null).cover ??
-                        '',
-                borderRadius: 16.multiplyRadius(),
-                onPressed: () {
-                  navigate(() => const AnimeList());
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
-                child: ImageButton(
-                  width: width,
-                  height: !isDesktop ? 70 : 90,
-                  buttonText: "MANGA LIST",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage:
-                      trendingMangas.firstWhere((e) => e.cover != null).cover ??
-                          '',
-                  onPressed: () {
-                    navigate(() => const AnilistMangaList());
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
-                child: ImageButton(
-                  width: width,
-                  height: !isDesktop ? 70 : 90,
-                  buttonText: "OTHER",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktop = constraints.maxWidth > 600;
+            final buttonHeight = !isDesktop ? 70.0 : 90.0;
+
+            final double itemWidth = isDesktop ? 300.0 : constraints.maxWidth;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 20,
+                runSpacing: 10,
+                children: [
+                  SizedBox(
+                    width: itemWidth * 2 + 15,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ImageButton(
+                            height: buttonHeight,
+                            buttonText: "ANIME LIST",
+                            backgroundImage: trendingAnimes
+                                .firstWhere((e) => e.cover != null)
+                                .cover!,
+                            borderRadius: 16.multiplyRadius(),
+                            onPressed: () => navigate(() => const AnimeList()),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: ImageButton(
+                            height: buttonHeight,
+                            buttonText: "MANGA LIST",
+                            backgroundImage: trendingMangas
+                                .firstWhere((e) => e.cover != null)
+                                .cover!,
+                            borderRadius: 16.multiplyRadius(),
+                            onPressed: () =>
+                                navigate(() => const AnilistMangaList()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: constraints.maxWidth > (itemWidth * 3)
+                        ? itemWidth
+                        : itemWidth * 2 + 15,
+                    child: ImageButton(
+                      height: buttonHeight,
+                      buttonText: "OTHER",
+                      borderRadius: 16.multiplyRadius(),
+                      backgroundImage: [
                         ...popularAnimes,
                         ...popularMangas,
                         ...trendingMangas,
                         ...trendingAnimes
-                      ].where((e) => e.cover != null).last.cover ??
-                      '',
-                  onPressed: () {
-                    navigate(() => const OtherFeaturesPage());
-                  },
-                ),
+                      ].where((e) => e.cover != null).last.cover!,
+                      onPressed: () =>
+                          navigate(() => const OtherFeaturesPage()),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          );
-        }),
+            );
+          },
+        ),
         const SizedBox(height: 10),
         Obx(() {
           anilistAuth.isLoggedIn.value;
@@ -145,8 +155,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
               return ReusableCarousel(
                 data: filterListByLabel(
                     e.contains("Manga") || e.contains("Reading")
-                        ? anilistAuth.mangaList
-                        : anilistAuth.animeList,
+                        ? anilistAuth.mangaList.removeDupes()
+                        : anilistAuth.animeList.removeDupes(),
                     e),
                 title: e,
                 variant: DataVariant.anilist,
@@ -160,20 +170,24 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       ],
       Column(
         children: [
-          ReusableCarousel(
-            title: "Recommended Animes",
-            data: isLoggedIn.value
-                ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
-                : recAnimes,
-            type: ItemType.anime,
-          ),
-          ReusableCarousel(
-            title: "Recommended Mangas",
-            data: isLoggedIn.value
-                ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
-                : recMangas,
-            type: ItemType.manga,
-          )
+          if (acceptedLists.contains("Recommended Animes") &&
+              settings.homePageCards.keys.contains('Recommended Animes'))
+            ReusableCarousel(
+              title: "Recommended Animes",
+              data: isLoggedIn.value
+                  ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
+                  : recAnimes,
+              type: ItemType.anime,
+            ),
+          if (acceptedLists.contains("Recommended Mangas") &&
+              settings.homePageCards.keys.contains('Recommended Mangas'))
+            ReusableCarousel(
+              title: "Recommended Mangas",
+              data: isLoggedIn.value
+                  ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
+                  : recMangas,
+              type: ItemType.manga,
+            )
         ],
       )
     ].obs;
@@ -808,7 +822,7 @@ averageScore
   RxList<TrackedMedia> get mangaList => anilistAuth.mangaList;
 
   @override
-  Future<void> login() async => anilistAuth.login();
+  Future<void> login(BuildContext context) async => anilistAuth.login(context);
 
   @override
   Future<void> logout() async => anilistAuth.logout();

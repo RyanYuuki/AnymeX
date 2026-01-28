@@ -1,23 +1,22 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'dart:async';
+
 import 'package:anymex/controllers/discord/discord_rpc.dart';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/utils/logger.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
+import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/database/model/comment.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/services/anilist/anilist_data.dart';
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
@@ -27,19 +26,22 @@ import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -404,6 +406,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
+                    widget.media.serviceType.onlineService.animeList.value;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=

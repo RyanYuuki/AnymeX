@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 
 class TopControls extends StatelessWidget {
   final bool enableBlur;
@@ -86,6 +87,7 @@ class TopControls extends StatelessWidget {
 
   Widget _buildMobileLayout(ThemeData theme) {
     final controller = Get.find<PlayerController>();
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -110,7 +112,9 @@ class TopControls extends StatelessWidget {
                           controller.itemName ??
                           'Unknown Title',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                        color: Get.isDarkMode
+                            ? theme.colorScheme.onSurface
+                            : Colors.white,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,
                       ),
@@ -123,7 +127,9 @@ class TopControls extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.15),
+                          color: isDark
+                              ? theme.colorScheme.primary.withOpacity(0.15)
+                              : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -131,7 +137,9 @@ class TopControls extends StatelessWidget {
                               ? "Offline"
                               : "Episode ${controller.currentEpisode.value.number}",
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
+                            color: isDark
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                           ),
@@ -146,7 +154,9 @@ class TopControls extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.15),
+                    color: isDark
+                        ? theme.colorScheme.primary.withOpacity(0.15)
+                        : theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -155,7 +165,9 @@ class TopControls extends StatelessWidget {
                             : controller.anilistData.title) ??
                         '',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.primary,
+                      color: isDark
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -207,6 +219,7 @@ class TopControls extends StatelessWidget {
 
   Widget _buildLayout(ThemeData theme) {
     final controller = Get.find<PlayerController>();
+    final isDark = theme.brightness == Brightness.dark;
 
     return Row(
       children: [
@@ -234,7 +247,9 @@ class TopControls extends StatelessWidget {
                                 controller.itemName ??
                                 'Unknown Title',
                             style: theme.textTheme.titleMedium?.copyWith(
-                              color: theme.colorScheme.onSurface,
+                              color: Get.isDarkMode
+                                  ? theme.colorScheme.onSurface
+                                  : Colors.white,
                               fontFamily: 'Poppins-SemiBold',
                               letterSpacing: 0.2,
                             ),
@@ -247,8 +262,10 @@ class TopControls extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 4),
                               decoration: BoxDecoration(
-                                color:
-                                    theme.colorScheme.primary.withOpacity(0.15),
+                                color: isDark
+                                    ? theme.colorScheme.primary
+                                        .withOpacity(0.15)
+                                    : theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -257,7 +274,9 @@ class TopControls extends StatelessWidget {
                                     ? "Offline"
                                     : "Episode ${controller.currentEpisode.value.number}",
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
+                                  color: isDark
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 1,
@@ -272,7 +291,9 @@ class TopControls extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.15),
+                          color: isDark
+                              ? theme.colorScheme.primary.withOpacity(0.15)
+                              : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -281,7 +302,9 @@ class TopControls extends StatelessWidget {
                                   : controller.anilistData.title) ??
                               '',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
+                            color: isDark
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,
@@ -302,10 +325,14 @@ class TopControls extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.2),
+            color: isDark
+                ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.15),
+              color: isDark
+                  ? theme.colorScheme.outline.withOpacity(0.15)
+                  : theme.colorScheme.outline.withOpacity(0.3),
               width: 0.5,
             ),
           ),
@@ -373,11 +400,15 @@ class _QualityChip extends StatelessWidget {
     if (_qualityText.isEmpty) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.symmetric(
           horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.15),
+        color: isDark
+            ? theme.colorScheme.primary.withOpacity(0.15)
+            : theme.colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
       ),
       child: Text(
@@ -385,7 +416,9 @@ class _QualityChip extends StatelessWidget {
         style:
             (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
                 ?.copyWith(
-          color: theme.colorScheme.primary,
+          color: isDark
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onPrimaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: isMobile ? 12 : null,
         ),
@@ -409,6 +442,8 @@ class _UnlockButtonState extends State<_UnlockButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(right: 24),
       child: GestureDetector(
@@ -428,10 +463,14 @@ class _UnlockButtonState extends State<_UnlockButton> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.55),
+            color: isDark
+                ? Colors.black.withOpacity(0.55)
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.4),
+              color: isDark
+                  ? theme.colorScheme.primary.withOpacity(0.4)
+                  : theme.colorScheme.primary.withOpacity(0.6),
               width: 1.5,
             ),
             boxShadow: [
@@ -446,7 +485,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.lock_open_rounded, // open lock for unlock popup
+                Icons.lock_open_rounded,
                 color: theme.colorScheme.primary,
                 size: 22,
               ),

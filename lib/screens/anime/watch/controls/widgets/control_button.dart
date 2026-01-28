@@ -70,6 +70,7 @@ class _ControlButtonState extends State<ControlButton>
   Widget build(BuildContext context) {
     final size = widget.compact ? 36.0 : (widget.isPrimary ? 48.0 : 44.0);
     final iconSize = widget.compact ? 20.0 : (widget.isPrimary ? 26.0 : 24.0);
+    final isDark = context.theme.brightness == Brightness.dark;
 
     Widget button = AnymexOnTap(
       onTapDown: (_) => _handleTapDown(),
@@ -92,25 +93,52 @@ class _ControlButtonState extends State<ControlButton>
                 height: size,
                 decoration: BoxDecoration(
                   color: widget.isPrimary
-                      ? (_isHovered
-                          ? context.theme.colorScheme.primary.withOpacity(0.15)
-                          : context.theme.colorScheme.primary.withOpacity(0.08))
-                      : (_isHovered
-                          ? context.theme.colorScheme.primary.withOpacity(0.1)
-                          : context.theme.colorScheme.surfaceVariant
-                              .withOpacity(0.05)),
+                      ? (isDark
+                          ? (_isHovered
+                              ? context.theme.colorScheme.primary
+                                  .withOpacity(0.15)
+                              : context.theme.colorScheme.primary
+                                  .withOpacity(0.08))
+                          : (_isHovered
+                              ? context.theme.colorScheme.primaryContainer
+                              : context
+                                  .theme.colorScheme.surfaceContainerHighest))
+                      : (isDark
+                          ? (_isHovered
+                              ? context.theme.colorScheme.primary
+                                  .withOpacity(0.1)
+                              : context.theme.colorScheme.surfaceVariant
+                                  .withOpacity(0.05))
+                          : (_isHovered
+                              ? context.theme.colorScheme.surfaceContainerHigh
+                              : context
+                                  .theme.colorScheme.surfaceContainerHighest)),
                   borderRadius: BorderRadius.circular(
                       widget.compact ? 12 : (widget.isPrimary ? 18 : 16)),
                   border: Border.all(
                     color: widget.isPrimary
-                        ? (_isHovered
-                            ? context.theme.colorScheme.primary.withOpacity(0.4)
-                            : context.theme.colorScheme.primary
-                                .withOpacity(0.2))
-                        : (_isHovered
-                            ? context.theme.colorScheme.primary.withOpacity(0.3)
-                            : context.theme.colorScheme.outline
-                                .withOpacity(0.1)),
+                        ? (isDark
+                            ? (_isHovered
+                                ? context.theme.colorScheme.primary
+                                    .withOpacity(0.4)
+                                : context.theme.colorScheme.primary
+                                    .withOpacity(0.2))
+                            : (_isHovered
+                                ? context.theme.colorScheme.primary
+                                    .withOpacity(0.5)
+                                : context.theme.colorScheme.outline
+                                    .withOpacity(0.3)))
+                        : (isDark
+                            ? (_isHovered
+                                ? context.theme.colorScheme.primary
+                                    .withOpacity(0.3)
+                                : context.theme.colorScheme.outline
+                                    .withOpacity(0.1))
+                            : (_isHovered
+                                ? context.theme.colorScheme.outline
+                                    .withOpacity(0.4)
+                                : context.theme.colorScheme.outline
+                                    .withOpacity(0.3))),
                     width: _isHovered ? 1.0 : 0.5,
                   ),
                   boxShadow: _isHovered
@@ -118,9 +146,9 @@ class _ControlButtonState extends State<ControlButton>
                           BoxShadow(
                             color: widget.isPrimary
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(0.3)
+                                    .withOpacity(isDark ? 0.3 : 0.2)
                                 : context.theme.colorScheme.primary
-                                    .withOpacity(0.2),
+                                    .withOpacity(isDark ? 0.2 : 0.15),
                             blurRadius: widget.isPrimary ? 12 : 8,
                             offset: const Offset(0, 2),
                           ),
@@ -135,9 +163,14 @@ class _ControlButtonState extends State<ControlButton>
                       size: iconSize,
                       color: enabled
                           ? (widget.isPrimary
-                              ? context.theme.colorScheme.primary
-                              : (_isHovered
+                              ? (isDark
                                   ? context.theme.colorScheme.primary
+                                  : context
+                                      .theme.colorScheme.onPrimaryContainer)
+                              : (isDark
+                                  ? (_isHovered
+                                      ? context.theme.colorScheme.primary
+                                      : context.theme.colorScheme.onSurface)
                                   : context.theme.colorScheme.onSurface))
                           : context.theme.colorScheme.onSurface
                               .withOpacity(0.5),

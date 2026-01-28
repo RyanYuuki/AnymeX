@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dartotsu_extension_bridge
   desktop_webview_window
   dynamic_color
+  firebase_core
   flutter_inappwebview_windows
   flutter_qjs
   isar_community_flutter_libs

@@ -58,7 +58,7 @@ class CharactersCarousel extends StatelessWidget {
                         children: [
                           Hero(
                             tag: tag,
-                            child: NetworkSizedImage(
+                            child: AnymeXImage(
                               imageUrl: itemData.image ??
                                   'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                               radius: 12.multiplyRoundness(),
@@ -170,7 +170,7 @@ class CharactersCarousel extends StatelessWidget {
                             children: [
                               Hero(
                                 tag: tag,
-                                child: NetworkSizedImage(
+                                child: AnymeXImage(
                                   imageUrl: itemData?.image ??
                                       'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                                   radius: 0,

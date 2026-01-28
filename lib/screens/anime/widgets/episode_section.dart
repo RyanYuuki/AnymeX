@@ -131,7 +131,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               value: '${source.name} (${source.lang?.toUpperCase()})',
               text: source.name?.toUpperCase() ?? 'Unknown Source',
               subtitle: source.lang?.toUpperCase() ?? 'Unknown',
-              leadingIcon: NetworkSizedImage(
+              leadingIcon: AnymeXImage(
                 radius: 16,
                 imageUrl: isMangayomi
                     ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
@@ -155,7 +155,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
           text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
           subtitle: activeSource.lang?.toUpperCase() ?? 'Unknown',
-          leadingIcon: NetworkSizedImage(
+          leadingIcon: AnymeXImage(
             radius: 12,
             imageUrl: isMangayomi
                 ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"

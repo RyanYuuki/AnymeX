@@ -36,7 +36,7 @@ class AnimeCard extends StatelessWidget {
             Expanded(
               child: Stack(
                 children: [
-                  NetworkSizedImage(
+                  AnymeXImage(
                     imageUrl: data.poster ?? '',
                     radius: 12.multiplyRadius(),
                     width: double.infinity,

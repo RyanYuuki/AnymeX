@@ -47,7 +47,7 @@ class SaikouCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,
@@ -122,7 +122,7 @@ class ModernCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,
@@ -212,7 +212,7 @@ class ExoticCard extends CarouselCard {
                   children: [
                     Hero(
                       tag: tag,
-                      child: NetworkSizedImage(
+                      child: AnymeXImage(
                         imageUrl: itemData.poster!,
                         radius: 10,
                         height: double.infinity,
@@ -337,7 +337,7 @@ class MinimalExoticCard extends CarouselCard {
                   children: [
                     Hero(
                       tag: tag,
-                      child: NetworkSizedImage(
+                      child: AnymeXImage(
                         imageUrl: itemData.poster!,
                         radius: 10,
                         height: double.infinity,
@@ -459,7 +459,7 @@ class BlurCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,

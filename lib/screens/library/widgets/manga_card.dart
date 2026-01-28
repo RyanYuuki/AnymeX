@@ -77,7 +77,7 @@ class MangaHistoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Stack(children: [
               Positioned.fill(
-                child: NetworkSizedImage(
+                child: AnymeXImage(
                   imageUrl: data.cover ?? data.poster!,
                   radius: 0,
                   width: double.infinity,
@@ -111,7 +111,7 @@ class MangaHistoryCard extends StatelessWidget {
                         topLeft: Radius.circular(16.multiplyRadius()),
                         bottomLeft: Radius.circular(16.multiplyRadius()),
                       ),
-                      child: NetworkSizedImage(
+                      child: AnymeXImage(
                         imageUrl: data.poster!,
                         width: double.infinity,
                         height: double.infinity,
@@ -261,7 +261,7 @@ class MangaHistoryCard extends StatelessWidget {
 //           child: Stack(children: [
 //             // Background image
 //             Positioned.fill(
-//               child: NetworkSizedImage(
+//               child: AnymeXImage(
 //                 imageUrl: data.cover ?? data.poster!,
 //                 radius: 0,
 //                 width: double.infinity,
@@ -286,7 +286,7 @@ class MangaHistoryCard extends StatelessWidget {
 //             Row(
 //               crossAxisAlignment: CrossAxisAlignment.start,
 //               children: [
-//                 NetworkSizedImage(
+//                 AnymeXImage(
 //                   width: getResponsiveSize(context,
 //                       mobileSize: 100, desktopSize: 130),
 //                   height: getResponsiveSize(context,

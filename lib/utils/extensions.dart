@@ -15,5 +15,6 @@ class Extensions {
       settings.activeNovelRepo = repo;
     }
     await settings.fetchRepos();
+    await sourceController.sortAllExtensions();
   }
 }

@@ -4,11 +4,11 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -118,7 +118,7 @@ class GridAnimeCard extends StatelessWidget {
                   tag: media.title,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: NetworkSizedImage(
+                    child: AnymeXImage(
                       radius: 12,
                       imageUrl: media.poster,
                       width: cardWidth,
@@ -258,7 +258,7 @@ class BlurAnimeCard extends StatelessWidget {
           child: Stack(children: [
             // Background image
             Positioned.fill(
-              child: NetworkSizedImage(
+              child: AnymeXImage(
                 imageUrl: data.cover ?? data.poster,
                 radius: 0,
                 width: double.infinity,
@@ -283,7 +283,7 @@ class BlurAnimeCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                NetworkSizedImage(
+                AnymeXImage(
                   width: getResponsiveSize(context,
                       mobileSize: 120, desktopSize: 130),
                   height: getResponsiveSize(context,
