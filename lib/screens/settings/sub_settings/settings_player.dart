@@ -45,8 +45,6 @@ final List<_BottomControl> _bottomControls = [
       name: 'Playlist',
       icon: Symbols.playlist_play_rounded,
       defaultPosition: 'left'),
-  _BottomControl(
-      id: 'megaskip', name: 'Mega Skip', icon: Iconsax.forward, defaultPosition: 'right'),
   _BottomControl(id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
   _BottomControl(id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
   _BottomControl(id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
@@ -225,6 +223,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final leftWidgets = <Widget>[];
+    final rightWidgets = <Widget>[];
+
+    for (final control in _bottomControls) {
+      final config = _controlsConfig[control.id] as Map<String, dynamic>? ?? {};
+      final position = config['position'] as String? ?? control.defaultPosition;
+
+      if (position == 'left') {
+        leftWidgets.add(_buildControlOption(context, control));
+      } else {
+        rightWidgets.add(_buildControlOption(context, control));
+      }
+    }
+
     return Glow(
       child: Scaffold(
         backgroundColor: widget.isModal
@@ -558,63 +570,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       AnymexExpansionTile(
                         title: 'Bottom Controls',
                         content: Column(
-                          children: _bottomControls.map((control) {
-                            final config = _controlsConfig[control.id]
-                                    as Map<String, dynamic>? ??
-                                {};
-                            final isVisible = config['visible'] as bool? ?? true;
-                            final position = config['position'] as String? ??
-                                control.defaultPosition;
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  const SizedBox(width: 8),
-                                  Icon(control.icon, size: 22),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: Text(control.name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w500))),
-                                  IconButton(
-                                    tooltip: 'Toggle visibility',
-                                    icon: Icon(
-                                        isVisible
-                                            ? Icons.visibility_outlined
-                                            : Icons.visibility_off_outlined,
-                                        size: 20),
-                                    onPressed: () => _updateButtonConfig(
-                                        control.id,
-                                        visible: !isVisible),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Move to left',
-                                    icon: const Icon(
-                                        Icons.keyboard_arrow_left_rounded),
-                                    color: position == 'left'
-                                        ? Theme.of(context).colorScheme.primary
-                                        : null,
-                                    onPressed: () => _updateButtonConfig(
-                                        control.id,
-                                        position: 'left'),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Move to right',
-                                    icon: const Icon(
-                                        Icons.keyboard_arrow_right_rounded),
-                                    color: position == 'right'
-                                        ? Theme.of(context).colorScheme.primary
-                                        : null,
-                                    onPressed: () => _updateButtonConfig(
-                                        control.id,
-                                        position: 'right'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Text('Left Side', style: Theme.of(context).textTheme.titleMedium),
+                            ),
+                            ...leftWidgets,
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Text('Right Side', style: Theme.of(context).textTheme.titleMedium),
+                            ),
+                            ...rightWidgets,
+                          ],
                         ),
                       )
                     ],
@@ -622,6 +591,50 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildControlOption(BuildContext context, _BottomControl control) {
+    final config = _controlsConfig[control.id] as Map<String, dynamic>? ?? {};
+    final isVisible = config['visible'] as bool? ?? true;
+    final position = config['position'] as String? ?? control.defaultPosition;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Row(
+        children: [
+          const SizedBox(width: 8),
+          Icon(control.icon, size: 22),
+          const SizedBox(width: 16),
+          Expanded(
+              child: Text(control.name,
+                  style: const TextStyle(fontWeight: FontWeight.w500))),
+          IconButton(
+            tooltip: 'Toggle visibility',
+            icon: Icon(
+                isVisible
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                size: 20),
+            onPressed: () =>
+                _updateButtonConfig(control.id, visible: !isVisible),
+          ),
+          if (position == 'left')
+            IconButton(
+              tooltip: 'Move to right',
+              icon: const Icon(Icons.keyboard_arrow_right_rounded),
+              onPressed: () =>
+                  _updateButtonConfig(control.id, position: 'right'),
+            )
+          else
+            IconButton(
+              tooltip: 'Move to left',
+              icon: const Icon(Icons.keyboard_arrow_left_rounded),
+              onPressed: () =>
+                  _updateButtonConfig(control.id, position: 'left'),
+            ),
+        ],
       ),
     );
   }

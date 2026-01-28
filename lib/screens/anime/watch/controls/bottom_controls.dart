@@ -114,50 +114,7 @@ class BottomControls extends StatelessWidget {
     String getPosition(String id, String defaultPos) =>
         (controlsConfig[id]?['position'] as String?) ?? defaultPos;
 
-    Widget buildMegaSkip() {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Material(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: controller.isLocked.value
-                  ? null
-                  : () =>
-                      controller.megaSeek(controller.playerSettings.skipDuration),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
-                      : theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isDark
-                        ? theme.colorScheme.outline
-                        : theme.colorScheme.outline.withOpacity(0.5),
-                    width: 0.5,
-                  ),
-                ),
-                child: AnymexText(
-                  text: '+${controller.playerSettings.skipDuration}',
-                  variant: TextVariant.semiBold,
-                  color: controller.isLocked.value
-                      ? theme.colorScheme.onSurface.withOpacity(0.4)
-                      : null,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     final Map<String, Widget> buttonWidgets = {
-      'megaskip': buildMegaSkip(),
       'playlist': ControlButton(
         icon: Symbols.playlist_play_rounded,
         onPressed: () {
@@ -248,20 +205,6 @@ class BottomControls extends StatelessWidget {
       'orientation',
       'aspect_ratio'
     ];
-    final megaSkipOrder = ['megaskip'];
-
-    for (var id in megaSkipOrder) {
-      if (isVisible(id)) {
-        final widget = buttonWidgets[id];
-        if (widget != null) {
-          if (getPosition(id, 'right') == 'left') {
-            leftButtons.add(widget);
-          } else {
-            rightButtons.add(widget);
-          }
-        }
-      }
-    }
 
     for (var id in buttonOrder) {
       if (id == 'server' && controller.isOffline.value) continue;
@@ -315,8 +258,46 @@ class BottomControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (rightButtons.whereType<Padding>().isNotEmpty)
-          ...rightButtons.whereType<Padding>(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Material(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: controller.isLocked.value
+                    ? null
+                    : () => controller
+                        .megaSeek(controller.playerSettings.skipDuration),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? theme.colorScheme.surfaceContainer
+                            .withValues(alpha: 0.6)
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark
+                          ? theme.colorScheme.outline
+                          : theme.colorScheme.outline.withOpacity(0.5),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: AnymexText(
+                    text: '+${controller.playerSettings.skipDuration}',
+                    variant: TextVariant.semiBold,
+                    color: controller.isLocked.value
+                        ? theme.colorScheme.onSurface.withOpacity(0.4)
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: const ProgressSlider(),
@@ -358,8 +339,8 @@ class BottomControls extends StatelessWidget {
               const Spacer(),
               Row(
                 children: [
-                  ...rightButtons.where((w) => w is! Padding),
-                  if (rightButtons.where((w) => w is! Padding).isNotEmpty) const SizedBox(width: 20),
+                  ...rightButtons,
+                  if (rightButtons.isNotEmpty) const SizedBox(width: 20),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 8),
