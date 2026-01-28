@@ -9,16 +9,17 @@ import 'package:anymex/database/comments_db.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/services/commentum_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
@@ -41,8 +42,7 @@ class AnilistAuth extends GetxController {
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
-      
-      // Check Commentum v2 user role after auto login
+
       try {
         final commentumService = Get.find<CommentumService>();
         await commentumService.getUserRole();
@@ -53,27 +53,276 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
+    final selectedMethod = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => _buildLoginBottomSheet(context),
+    );
+
+    if (selectedMethod == null) return;
+
     String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
     String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
     String redirectUri = dotenv.env['CALLBACK_SCHEME'] ?? '';
 
-    final url =
-        'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
-
-    try {
-      final result = await FlutterWebAuth2.authenticate(
-        url: url,
-        callbackUrlScheme: 'anymex',
-      );
-
-      final code = Uri.parse(result).queryParameters['code'];
-      if (code != null) {
-        Logger.i("token found: $code");
-        await _exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
+    if (selectedMethod == 'browser') {
+      // Browser login flow
+      final url =
+          'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
+      try {
+        final result = await FlutterWebAuth2.authenticate(
+          url: url,
+          callbackUrlScheme: 'anymex',
+        );
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          Logger.i("token found: $code");
+          await _exchangeCodeForToken(
+              code, clientId, clientSecret, redirectUri);
+        }
+      } catch (e) {
+        Logger.i('Error during login: $e');
       }
-    } catch (e) {
-      Logger.i('Error during login: $e');
+    } else if (selectedMethod == 'token') {
+      _showTokenInputDialog(context);
     }
+  }
+
+  Widget _buildLoginBottomSheet(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Handle bar
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.onSurface.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Title
+          Text(
+            'Login to AniList',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.onSurface,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 38),
+          // Browser login button
+          _buildButton(
+            context,
+            onPressed: () => Navigator.pop(context, 'browser'),
+            icon: Icons.language,
+            label: 'Login from Browser',
+          ),
+          const SizedBox(height: 16),
+          _buildButton(
+            context,
+            onPressed: () => Navigator.pop(context, 'token'),
+            icon: Icons.vpn_key,
+            label: 'Login with Token',
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(
+    BuildContext context, {
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+  }) {
+    final theme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: theme.surfaceContainer,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.primary.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: theme.primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: theme.primary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: theme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 18,
+                color: theme.onPrimaryContainer.withOpacity(0.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTokenInputDialog(BuildContext context) async {
+    final TextEditingController tokenController = TextEditingController();
+    final theme = Theme.of(context).colorScheme;
+
+    const url =
+        'https://anilist.co/api/v2/oauth/authorize?client_id=35224&response_type=token';
+
+    await launchUrlString(url);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: theme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Login with Token',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            color: theme.onSurface,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Please paste the token from the browser',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: theme.onSurface.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: tokenController,
+              decoration: InputDecoration(
+                hintText: 'Enter token here',
+                hintStyle: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: theme.onSurface.withOpacity(0.5),
+                ),
+                filled: true,
+                fillColor: theme.surfaceVariant,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: theme.onSurface,
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: theme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final token = tokenController.text.trim();
+              if (token.isNotEmpty) {
+                Navigator.pop(context);
+                try {
+                  await storage.put('auth_token', token);
+                  await fetchUserProfile();
+                  await fetchUserAnimeList();
+                  await fetchUserMangaList();
+                  try {
+                    final commentumService = Get.find<CommentumService>();
+                    await commentumService.getUserRole();
+                  } catch (e) {
+                    Logger.i('Error checking Commentum role: $e');
+                  }
+                } catch (e) {
+                  Logger.i('Error saving token: $e');
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.primaryContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Login',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                color: theme.onPrimaryContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _exchangeCodeForToken(String code, String clientId,
@@ -91,7 +340,6 @@ class AnilistAuth extends GetxController {
         'code': code,
       },
     );
-
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final token = data['access_token'];
@@ -99,8 +347,6 @@ class AnilistAuth extends GetxController {
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
-      
-      // Check Commentum v2 user role after successful login
       try {
         final commentumService = Get.find<CommentumService>();
         await commentumService.getUserRole();

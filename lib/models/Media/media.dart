@@ -1,5 +1,3 @@
-import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
@@ -8,6 +6,7 @@ import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
 class Media {
@@ -44,6 +43,9 @@ class Media {
   DateTime? createdAt;
   bool? isAdult;
   String? sourceName;
+
+  // String get uniqueId => "$id-${serviceType.name}";
+  String get uniqueId => id;
 
   Media(
       {this.id = '0',

@@ -13,12 +13,6 @@ import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
-import 'package:anymex/models/player/player_adaptor.dart';
-import 'package:anymex/models/ui/ui_adaptor.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
@@ -30,10 +24,12 @@ import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/anime/home_page.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
@@ -68,6 +64,7 @@ import 'package:window_manager/window_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
 late Isar isar;
+final appLinks = AppLinks();
 
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
@@ -153,7 +150,6 @@ void main(List<String> args) async {
 }
 
 void initDeepLinkListener() async {
-  final appLinks = AppLinks();
   if (Platform.isLinux) return;
 
   try {
