@@ -1,6 +1,8 @@
 // discord_rpc_controller.dart
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
@@ -10,7 +12,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 enum DiscordKeys { token, profile }
@@ -129,6 +130,10 @@ class DiscordRPCController extends GetxController {
     await _loadToken();
     if (_token.value.isNotEmpty) {
       await _loadProfile();
+      await connect();
+    }
+
+    if (!isMobile) {
       await connect();
     }
   }
