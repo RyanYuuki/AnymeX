@@ -130,6 +130,7 @@ class BottomControls extends StatelessWidget {
               !controller.isEpisodePaneOpened.value;
         },
         tooltip: 'Playlist',
+        compact: true,
       ),
       'shaders': ControlButton(
         icon: Symbols.tune_rounded,
