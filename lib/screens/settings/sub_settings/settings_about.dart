@@ -24,6 +24,24 @@ Future<void> launchUrlHelper(String link) async {
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
+  Future<void> _fetchAndShowTOS(BuildContext context) async {
+    snackBar('Fetching Terms of Service...');
+    try {
+      final response = await http.get(Uri.parse(
+          'https://raw.githubusercontent.com/RyanYuuki/AnymeX/master/TOS.md'));
+
+      if (response.statusCode == 200) {
+        if (context.mounted) {
+          _showPolicyModal(context, "Terms of Service", response.body);
+        }
+      } else {
+        snackBar("Failed to fetch TOS.", duration: 2000);
+      }
+    } catch (e) {
+      snackBar("Error fetching TOS: $e", duration: 2000);
+    }
+  }
+
   Future<void> _fetchAndShowCommentPolicy(BuildContext context) async {
     snackBar('Fetching policy...');
     try {
@@ -38,8 +56,9 @@ class AboutPage extends StatelessWidget {
         if (startIndex != -1) {
           // Find the next header (##) to end the selection
           // Start searching after the start marker length
-          final nextHeaderIndex = text.indexOf('## ', startIndex + startMarker.length);
-          
+          final nextHeaderIndex =
+              text.indexOf('## ', startIndex + startMarker.length);
+
           String policyText;
           if (nextHeaderIndex != -1) {
             policyText = text.substring(startIndex, nextHeaderIndex).trim();
@@ -47,7 +66,6 @@ class AboutPage extends StatelessWidget {
             policyText = text.substring(startIndex).trim();
           }
 
-          // Show the modal 
           if (context.mounted) {
             _showPolicyModal(context, "Comment Policy", policyText);
           }
@@ -124,11 +142,12 @@ class AboutPage extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.5,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.5,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
@@ -378,8 +397,7 @@ class AboutPage extends StatelessWidget {
                 items: [
                   CustomListTile(
                     onTap: () async {
-                      await launchUrlHelper(
-                          'https://github.com/itsmechinmoy/AnymeX/blob/master/TOS.md');
+                      await _fetchAndShowTOS(context);
                     },
                     leading: const Icon(HugeIcons.strokeRoundedPolicy),
                     title: "Terms of Service/Privacy Policy",
