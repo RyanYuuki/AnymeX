@@ -30,7 +30,6 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   Future<void> _init() async {
     try {
-      // 1. Search for the series ID
       final searchResults = await WatchOrderUtil.searchWatchOrder(widget.title);
 
       if (searchResults.isEmpty) {
@@ -43,7 +42,6 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         return;
       }
 
-      // 2. Fetch the watch order using the best match (first result)
       final id = searchResults.first.id;
       final order = await WatchOrderUtil.fetchWatchOrder(id);
 
@@ -161,25 +159,15 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
           ],
         ),
         onTap: () {
-          // Navigate to details if Anilist ID exists
           if (item.anilistId.isNotEmpty) {
-            // Note: Media ID usually expects int, but if your model uses String, keep as String.
-            // Based on logs, it likely expects int.
-            final int? mediaId = int.tryParse(item.anilistId);
-            
-            if (mediaId != null) {
-                final media = Media(
-                  id: mediaId,
-                  title: item.nameEnglish ?? item.name,
-                  poster: item.image,
-                  serviceType: ServicesType.anilist,
-                );
-                navigate(
-                    () => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
-            } else {
-               // Fallback or error handling if ID isn't valid int
-               // Some projects use String IDs for Media, check Media model if this fails again.
-            }
+            final media = Media(
+              id: int.parse(item.anilistId), 
+              title: item.nameEnglish ?? item.name,
+              poster: item.image,
+              serviceType: ServicesType.anilist,
+            );
+            navigate(
+                () => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
           }
         },
       ),
