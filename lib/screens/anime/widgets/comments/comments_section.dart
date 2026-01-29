@@ -2,9 +2,11 @@ import 'package:anymex/database/model/comment.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentSection extends StatefulWidget {
@@ -67,6 +69,52 @@ class _CommentSectionState extends State<CommentSection> {
       Get.delete<CommentSectionController>(tag: widget.media.uniqueId);
     }
     super.dispose();
+  }
+
+  void _handlePostComment() {
+    // Check if user has accepted rules
+    final box = Hive.box('themeData');
+    final bool hasAccepted =
+        box.get('hasAcceptedCommentRules', defaultValue: false);
+
+    if (hasAccepted) {
+      controller.addComment();
+    } else {
+      _showRulesAcceptanceDialog();
+    }
+  }
+
+  void _showRulesAcceptanceDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Comment Policy'),
+        content: const Text(
+          'To maintain a safe and friendly community, please read and accept our comment policy before posting.\n\nWe do not tolerate spam, harassment, or offensive content.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // Show the full rules sheet
+              showPolicySheet(context, PolicyType.commentPolicy);
+            },
+            child: const Text('Read Full Rules'),
+          ),
+          FilledButton(
+            onPressed: () {
+              // Save acceptance
+              Hive.box('themeData').put('hasAcceptedCommentRules', true);
+              Navigator.pop(context);
+              // Proceed to post
+              controller.addComment();
+            },
+            child: const Text('Accept & Post'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -165,7 +213,17 @@ class _CommentSectionState extends State<CommentSection> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 4),
+              IconButton(
+                onPressed: () =>
+                    showPolicySheet(context, PolicyType.commentPolicy),
+                icon: Icon(
+                  Icons.assignment_outlined,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
+                tooltip: 'Comment Rules',
+              ),
               Obx(() => IconButton(
                     onPressed: controller.isRefreshing.value
                         ? null
@@ -305,7 +363,7 @@ class _CommentSectionState extends State<CommentSection> {
                                 controller.tag.value.isEmpty ||
                                 controller.commentContent.value.isEmpty
                             ? null
-                            : controller.addComment,
+                            : () => _handlePostComment(),
                         style: FilledButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: colorScheme.onPrimary,

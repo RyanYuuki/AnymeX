@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -219,6 +220,20 @@ class AboutPage extends StatelessWidget {
                 title: "Others",
                 subtitle: "Other Stuffs",
                 items: [
+                  CustomListTile(
+                    onTap: () async {
+                      await showPolicySheet(context, PolicyType.tos);
+                    },
+                    leading: const Icon(HugeIcons.strokeRoundedPolicy),
+                    title: "Terms of Service/Privacy Policy",
+                  ),
+                  CustomListTile(
+                    onTap: () async {
+                      await showPolicySheet(context, PolicyType.commentPolicy);
+                    },
+                    leading: const Icon(HugeIcons.strokeRoundedAlertSquare),
+                    title: "Comment Policy",
+                  ),
                   CustomListTile(
                     onTap: () async {
                       snackBar('Checking for updates!');
