@@ -1,15 +1,15 @@
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/Offline/Hive/offline_storage.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:hive/hive.dart';
-import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 
 class OfflineStorageController extends GetxController {
   var animeLibrary = <OfflineMedia>[].obs;
@@ -592,6 +592,8 @@ class OfflineStorageController extends GetxController {
         readChapters: chapters ?? [],
         serviceIndex: handler.serviceType.value.index);
   }
+
+  void saveEverything() => _saveLibraries();
 
   void _saveLibraries() {
     if (_isUpdating) return;

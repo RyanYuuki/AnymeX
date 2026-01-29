@@ -42,7 +42,7 @@ class MediaIndicatorBuilder extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                  filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                   child: Container(
                     width: 140,
                     height: 140,

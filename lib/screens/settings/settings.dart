@@ -1,7 +1,7 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
@@ -68,12 +68,19 @@ class _SettingsPageState extends State<SettingsPage> {
                       navigate(() => const SettingsCommon());
                     }),
                 CustomTile(
-                    icon: HugeIcons.strokeRoundedComment01,
-                    title: "Comments",
-                    description: "Comment system settings and moderation",
+                    icon: HugeIcons.strokeRoundedLibraries,
+                    title: "Backup & Restore",
+                    description: "Backup and restore your library",
                     onTap: () {
-                      navigate(() => const SettingsComments());
+                      navigate(() => const BackupRestorePage());
                     }),
+                // CustomTile(
+                //     icon: HugeIcons.strokeRoundedComment01,
+                //     title: "Comments",
+                //     description: "Comment system settings and moderation",
+                //     onTap: () {
+                //       navigate(() => const SettingsComments());
+                //     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
                     title: "UI",

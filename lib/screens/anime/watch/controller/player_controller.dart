@@ -693,15 +693,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await player.open(Media(url, httpHeaders: headers, start: startPosition));
   }
 
-  void delete() {
-    Future.microtask(() async {
-      _trackLocally();
+  @override
+  Future<void> dispose() async {
+    super.dispose();
+    try {
+      await _trackLocally();
       if (!isOffline.value) {
-        _trackOnline((currentPosition.value).inMilliseconds /
+        await _trackOnline((currentPosition.value).inMilliseconds /
                 episodeDuration.value.inMilliseconds >=
             settings.markAsCompleted);
       }
-    });
+    } catch (e) {
+      Logger.e('Error saving during dispose: $e');
+    }
+
     _revertOrientations();
     WidgetsBinding.instance.removeObserver(this);
     if (!isOffline.value) {
@@ -717,6 +722,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
     ScreenBrightness.instance.resetApplicationScreenBrightness();
+  }
+
+  Future<void> delete() async {
+    await dispose();
   }
 
   void _revertOrientations() {
