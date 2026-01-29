@@ -30,7 +30,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   Future<void> _init() async {
     try {
-      // 1. Search for the series ID
+      //Search for the series ID
       final searchResults = await WatchOrderUtil.searchWatchOrder(widget.title);
 
       if (searchResults.isEmpty) {
@@ -43,7 +43,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         return;
       }
 
-      // 2. Fetch the watch order using the best match (first result)
+      //Fetch the watch order using the best match (first result)
       final id = searchResults.first.id;
       final order = await WatchOrderUtil.fetchWatchOrder(id);
 
