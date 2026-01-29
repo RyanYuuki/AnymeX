@@ -38,7 +38,8 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: getResponsiveValue(context,
-                      mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                      mobileValue:
+                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(
@@ -47,66 +48,66 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                    AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Mangayomi',
-                        content: Column(
-                          children: [
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Anime Github Repo',
-                              description: "Add github repo for anime",
-                              onTap: () => const GitHubRepoDialog(
-                                type: ItemType.anime,
-                                extType: ExtensionType.mangayomi,
-                              ).show(context: context),
-                            ),
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Manga Github Repo',
-                              description: "Add github repo for manga",
-                              onTap: () => const GitHubRepoDialog(
-                                type: ItemType.manga,
-                                extType: ExtensionType.mangayomi,
-                              ).show(context: context),
-                            ),
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedGithub,
-                              title: 'Novel Github Repo',
-                              description: "Add github repo for novel",
-                              onTap: () => const GitHubRepoDialog(
-                                type: ItemType.novel,
-                                extType: ExtensionType.mangayomi,
-                              ).show(context: context),
-                            ),
-                          ],
-                        )),
-                    if (Platform.isAndroid)
-                      AnymexExpansionTile(
-                          initialExpanded: true,
-                          title: 'Aniyomi',
-                          content: Column(
-                            children: [
-                              CustomTile(
-                                icon: HugeIcons.strokeRoundedGithub,
-                                title: 'Anime Github Repo',
-                                description: "Add github repo for anime",
-                                onTap: () => const GitHubRepoDialog(
-                                  type: ItemType.anime,
-                                  extType: ExtensionType.aniyomi,
-                                ).show(context: context),
-                              ),
-                              CustomTile(
-                                icon: HugeIcons.strokeRoundedGithub,
-                                title: 'Manga Github Repo',
-                                description: "Add github repo for manga",
-                                onTap: () => const GitHubRepoDialog(
-                                  type: ItemType.manga,
-                                  extType: ExtensionType.aniyomi,
-                                ).show(context: context),
-                              ),
-                            ],
-                          )),
+                          AnymexExpansionTile(
+                              initialExpanded: true,
+                              title: 'Mangayomi',
+                              content: Column(
+                                children: [
+                                  CustomTile(
+                                    icon: HugeIcons.strokeRoundedGithub,
+                                    title: 'Anime Github Repo',
+                                    description: "Add github repo for anime",
+                                    onTap: () => const GitHubRepoDialog(
+                                      type: ItemType.anime,
+                                      extType: ExtensionType.mangayomi,
+                                    ).show(context: context),
+                                  ),
+                                  CustomTile(
+                                    icon: HugeIcons.strokeRoundedGithub,
+                                    title: 'Manga Github Repo',
+                                    description: "Add github repo for manga",
+                                    onTap: () => const GitHubRepoDialog(
+                                      type: ItemType.manga,
+                                      extType: ExtensionType.mangayomi,
+                                    ).show(context: context),
+                                  ),
+                                  CustomTile(
+                                    icon: HugeIcons.strokeRoundedGithub,
+                                    title: 'Novel Github Repo',
+                                    description: "Add github repo for novel",
+                                    onTap: () => const GitHubRepoDialog(
+                                      type: ItemType.novel,
+                                      extType: ExtensionType.mangayomi,
+                                    ).show(context: context),
+                                  ),
+                                ],
+                              )),
+                          if (Platform.isAndroid)
+                            AnymexExpansionTile(
+                                initialExpanded: true,
+                                title: 'Aniyomi',
+                                content: Column(
+                                  children: [
+                                    CustomTile(
+                                      icon: HugeIcons.strokeRoundedGithub,
+                                      title: 'Anime Github Repo',
+                                      description: "Add github repo for anime",
+                                      onTap: () => const GitHubRepoDialog(
+                                        type: ItemType.anime,
+                                        extType: ExtensionType.aniyomi,
+                                      ).show(context: context),
+                                    ),
+                                    CustomTile(
+                                      icon: HugeIcons.strokeRoundedGithub,
+                                      title: 'Manga Github Repo',
+                                      description: "Add github repo for manga",
+                                      onTap: () => const GitHubRepoDialog(
+                                        type: ItemType.manga,
+                                        extType: ExtensionType.aniyomi,
+                                      ).show(context: context),
+                                    ),
+                                  ],
+                                )),
                         ],
                       )
                     ],

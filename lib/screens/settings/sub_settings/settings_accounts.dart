@@ -46,15 +46,14 @@ class SettingsAccounts extends StatelessWidget {
             .compareTo(a['service'] == serviceHandler.onlineService ? 1 : 0));
 
     return Glow(
-      child: Scaffold(
-        body: Column( // Changed from ScrollWrapper to Column
+        child: Scaffold(
+            body: Column(children: [
+      const NestedHeader(title: 'Accounts'),
+      Expanded(
+        child: ScrollWrapper(
+          comfortPadding: false,
+          customPadding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
           children: [
-            const NestedHeader(title: 'Accounts'), // Add NestedHeader
-            Expanded( // Wrap scrollable content in Expanded
-              child: ScrollWrapper(
-                comfortPadding: false,
-                customPadding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0), // Changed top from 50.0 to 20.0
-                children: [
             if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS)
               const DiscordTile(),
             for (var s in services)
@@ -66,10 +65,7 @@ class SettingsAccounts extends StatelessWidget {
           ],
         ),
       ),
-          ]
-        )
-      )
-      );
+    ])));
   }
 }
 

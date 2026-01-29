@@ -20,113 +20,115 @@ class SettingsComments extends StatefulWidget {
 
 class _SettingsCommentsState extends State<SettingsComments> {
   final commentumService = Get.find<CommentumService>();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const NestedHeader(title: 'Comment System'),
-          Expanded(
-            child: SuperListView(
-              padding: getResponsiveValue(context,
-                  mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                  desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
-              children: [
-          const Row(
+        body: Column(
+      children: [
+        const NestedHeader(title: 'Comment System'),
+        Expanded(
+          child: SuperListView(
+            padding: getResponsiveValue(context,
+                mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                desktopValue:
+                    const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
             children: [
-              CustomBackButton(),
-              SizedBox(width: 10),
-              Text("Comment System",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              const Row(
+                children: [
+                  CustomBackButton(),
+                  SizedBox(width: 10),
+                  Text("Comment System",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                ],
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer
+                        .withOpacity(0.3)),
+                child: Column(
+                  children: [
+                    CustomTile(
+                        icon: Icons.info_outline,
+                        title: "About Commentum v2",
+                        description:
+                            "Powered by Commentum v2 - Advanced comment system with moderation",
+                        onTap: () {
+                          _showAboutDialog();
+                        }),
+                    CustomTile(
+                        icon: Icons.person_outline,
+                        title: "User Role",
+                        description: _getCurrentRoleDescription(),
+                        postFix: Obx(() => Text(
+                              commentumService.currentUserRole.value
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                color: _getRoleColor(),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                        onTap: () {
+                          _showRoleInfo();
+                        }),
+                    const Divider(height: 1),
+                    CustomTile(
+                        icon: Icons.admin_panel_settings,
+                        title: "Moderation Panel",
+                        description: "Access moderation tools and reports",
+                        onTap: () {
+                          navigate(() => const SettingsModeration());
+                        }),
+                    CustomTile(
+                        icon: Icons.report_outlined,
+                        title: "Reported Comments",
+                        description: "View and manage reported content",
+                        onTap: () {
+                          _navigateToReportsPanel();
+                        }),
+                    const Divider(height: 1),
+                    CustomTile(
+                        icon: Icons.settings_outlined,
+                        title: "Comment Preferences",
+                        description: "Customize comment display and behavior",
+                        onTap: () {
+                          _showCommentPreferences();
+                        }),
+                    CustomTile(
+                        icon: Icons.notifications_outlined,
+                        title: "Notification Settings",
+                        description: "Configure comment notifications",
+                        onTap: () {
+                          _showNotificationSettings();
+                        }),
+                    const Divider(height: 1),
+                    CustomTile(
+                        icon: Icons.help_outline,
+                        title: "Help & Support",
+                        description: "Get help with the comment system",
+                        onTap: () {
+                          _showHelpDialog();
+                        }),
+                    CustomTile(
+                        icon: Icons.privacy_tip_outlined,
+                        title: "Privacy & Safety",
+                        description: "Privacy settings and safety features",
+                        onTap: () {
+                          _showPrivacyDialog();
+                        }),
+                  ],
+                ),
+              ),
+              30.height(),
             ],
           ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .withOpacity(0.3)),
-            child: Column(
-              children: [
-                CustomTile(
-                    icon: Icons.info_outline,
-                    title: "About Commentum v2",
-                    description:
-                        "Powered by Commentum v2 - Advanced comment system with moderation",
-                    onTap: () {
-                      _showAboutDialog();
-                    }),
-                CustomTile(
-                    icon: Icons.person_outline,
-                    title: "User Role",
-                    description: _getCurrentRoleDescription(),
-                    postFix: Obx(() => Text(
-                      commentumService.currentUserRole.value.toUpperCase(),
-                      style: TextStyle(
-                        color: _getRoleColor(),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    onTap: () {
-                      _showRoleInfo();
-                    }),
-                const Divider(height: 1),
-                CustomTile(
-                    icon: Icons.admin_panel_settings,
-                    title: "Moderation Panel",
-                    description: "Access moderation tools and reports",
-                    onTap: () {
-                      navigate(() => const SettingsModeration());
-                    }),
-                CustomTile(
-                    icon: Icons.report_outlined,
-                    title: "Reported Comments",
-                    description: "View and manage reported content",
-                    onTap: () {
-                      _navigateToReportsPanel();
-                    }),
-                const Divider(height: 1),
-                CustomTile(
-                    icon: Icons.settings_outlined,
-                    title: "Comment Preferences",
-                    description: "Customize comment display and behavior",
-                    onTap: () {
-                      _showCommentPreferences();
-                    }),
-                CustomTile(
-                    icon: Icons.notifications_outlined,
-                    title: "Notification Settings",
-                    description: "Configure comment notifications",
-                    onTap: () {
-                      _showNotificationSettings();
-                    }),
-                const Divider(height: 1),
-                CustomTile(
-                    icon: Icons.help_outline,
-                    title: "Help & Support",
-                    description: "Get help with the comment system",
-                    onTap: () {
-                      _showHelpDialog();
-                    }),
-                CustomTile(
-                    icon: Icons.privacy_tip_outlined,
-                    title: "Privacy & Safety",
-                    description: "Privacy settings and safety features",
-                    onTap: () {
-                      _showPrivacyDialog();
-                    }),
-              ],
-            ),
-          ),
-          30.height(),
-        ],
-      ),
-          )
-        ],
-      )
-    );
+        )
+      ],
+    ));
   }
 
   String _getCurrentRoleDescription() {
@@ -170,10 +172,13 @@ class _SettingsCommentsState extends State<SettingsComments> {
             SizedBox(height: 8),
             BulletPoint(text: 'Real-time commenting with nested replies'),
             BulletPoint(text: 'Advanced moderation tools'),
-            BulletPoint(text: 'User role management (User, Moderator, Admin, Super Admin)'),
+            BulletPoint(
+                text:
+                    'User role management (User, Moderator, Admin, Super Admin)'),
             BulletPoint(text: 'Content reporting and safety features'),
             BulletPoint(text: 'Voting system with upvotes/downvotes'),
-            BulletPoint(text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
+            BulletPoint(
+                text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
             SizedBox(height: 8),
             Text('Base URL: https://whzwmfxngelicmjyxwmr.supabase.co'),
           ],
@@ -197,7 +202,8 @@ class _SettingsCommentsState extends State<SettingsComments> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your current role and permissions:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Your current role and permissions:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             RoleDescription(
               role: 'User',
@@ -260,7 +266,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
       snackBar('You need moderator or admin permissions to access this panel');
       return;
     }
-    
+
     // Navigate to moderation panel (to be implemented)
     snackBar('Moderation panel coming soon!');
   }
@@ -271,7 +277,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
       snackBar('You need moderator or admin permissions to access this panel');
       return;
     }
-    
+
     // Navigate to reports panel (to be implemented)
     snackBar('Reports panel coming soon!');
   }
@@ -284,9 +290,11 @@ class _SettingsCommentsState extends State<SettingsComments> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Comment display preferences will be available in future updates.'),
+            Text(
+                'Comment display preferences will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Default sorting order'),
             BulletPoint(text: 'Comment density settings'),
             BulletPoint(text: 'Show/hide avatars'),
@@ -312,9 +320,11 @@ class _SettingsCommentsState extends State<SettingsComments> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Comment notification preferences will be available in future updates.'),
+            Text(
+                'Comment notification preferences will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Replies to your comments'),
             BulletPoint(text: 'Mentions in comments'),
             BulletPoint(text: 'Moderation notifications'),
@@ -340,16 +350,21 @@ class _SettingsCommentsState extends State<SettingsComments> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('How to use the comment system:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('How to use the comment system:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            BulletPoint(text: 'Log in with your AniList, MyAnimeList, or SIMKL account'),
-            BulletPoint(text: 'Comments are automatically linked to your account'),
+            BulletPoint(
+                text:
+                    'Log in with your AniList, MyAnimeList, or SIMKL account'),
+            BulletPoint(
+                text: 'Comments are automatically linked to your account'),
             BulletPoint(text: 'You can edit or delete your own comments'),
             BulletPoint(text: 'Vote on comments you like or dislike'),
             BulletPoint(text: 'Report inappropriate content to moderators'),
             SizedBox(height: 12),
             Text('Need help?', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text('• Contact moderators for content issues\n• Report bugs through the app settings\n• Join our Discord community for support'),
+            Text(
+                '• Contact moderators for content issues\n• Report bugs through the app settings\n• Join our Discord community for support'),
           ],
         ),
         actions: [
@@ -371,14 +386,19 @@ class _SettingsCommentsState extends State<SettingsComments> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your privacy is important:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Your privacy is important:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            BulletPoint(text: 'Only your username and avatar are shown publicly'),
+            BulletPoint(
+                text: 'Only your username and avatar are shown publicly'),
             BulletPoint(text: 'Your personal information is never shared'),
-            BulletPoint(text: 'Comments can be deleted but may be retained for moderation'),
+            BulletPoint(
+                text:
+                    'Comments can be deleted but may be retained for moderation'),
             BulletPoint(text: 'Reported content is reviewed by moderators'),
             SizedBox(height: 12),
-            Text('Safety features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Safety features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Content filtering and moderation'),
             BulletPoint(text: 'User reporting system'),
             BulletPoint(text: 'Ban and warning system for violations'),
@@ -398,7 +418,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
 
 class BulletPoint extends StatelessWidget {
   final String text;
-  
+
   const BulletPoint({super.key, required this.text});
 
   @override
@@ -419,12 +439,9 @@ class BulletPoint extends StatelessWidget {
 class RoleDescription extends StatelessWidget {
   final String role;
   final List<String> permissions;
-  
-  const RoleDescription({
-    super.key, 
-    required this.role, 
-    required this.permissions
-  });
+
+  const RoleDescription(
+      {super.key, required this.role, required this.permissions});
 
   @override
   Widget build(BuildContext context) {
@@ -440,15 +457,17 @@ class RoleDescription extends StatelessWidget {
           Text(role, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           ...permissions.map((permission) => Padding(
-            padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('• '),
-                Expanded(child: Text(permission, style: const TextStyle(fontSize: 12))),
-              ],
-            ),
-          )),
+                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• '),
+                    Expanded(
+                        child: Text(permission,
+                            style: const TextStyle(fontSize: 12))),
+                  ],
+                ),
+              )),
         ],
       ),
     );

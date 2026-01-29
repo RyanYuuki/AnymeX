@@ -46,62 +46,65 @@ class _SettingsCommonState extends State<SettingsCommon> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: getResponsiveValue(context,
-                      mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                      mobileValue:
+                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    AnymexExpansionTile(
-                      initialExpanded: true,
-                      title: 'Universal',
-                      content: Column(
-                        children: [
-                          CustomSwitchTile(
-                              icon: Icons.touch_app_rounded,
-                              title: 'Ask for tracking permission',
-                              description:
-                                  'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
-                              switchValue: shouldAskForPermission,
-                              onChanged: (e) {
-                                setState(() {
-                                  shouldAskForPermission = e;
-                                  General.shouldAskForTrack.set(e);
-                                });
-                              }),
-                          CustomSwitchTile(
-                              icon: Icons.play_disabled_rounded,
-                              title: 'Hide Adult Content',
-                              description:
-                                  'If enabled, you will not get a prompt for enabling adult content on Anilist/MyAnimeList.',
-                              switchValue: hideAdultContent,
-                              onChanged: (e) {
-                                setState(() {
-                                  hideAdultContent = e;
-                                  General.hideAdultContent.set(e);
-                                });
-                              }),
-                        ],
+                      AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'Universal',
+                        content: Column(
+                          children: [
+                            CustomSwitchTile(
+                                icon: Icons.touch_app_rounded,
+                                title: 'Ask for tracking permission',
+                                description:
+                                    'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
+                                switchValue: shouldAskForPermission,
+                                onChanged: (e) {
+                                  setState(() {
+                                    shouldAskForPermission = e;
+                                    General.shouldAskForTrack.set(e);
+                                  });
+                                }),
+                            CustomSwitchTile(
+                                icon: Icons.play_disabled_rounded,
+                                title: 'Hide Adult Content',
+                                description:
+                                    'If enabled, you will not get a prompt for enabling adult content on Anilist/MyAnimeList.',
+                                switchValue: hideAdultContent,
+                                onChanged: (e) {
+                                  setState(() {
+                                    hideAdultContent = e;
+                                    General.hideAdultContent.set(e);
+                                  });
+                                }),
+                          ],
+                        ),
                       ),
-                    ),
-                    AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Anilist',
-                        content: CustomTile(
-                          icon: Icons.format_list_bulleted_sharp,
-                          title: 'Manage Anilist Lists',
-                          description: "Choose which list to show on home page",
-                          onTap: () => _showHomePageCardsDialog(),
-                        )),
-                    AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'MyAnimeList',
-                        content: CustomTile(
-                          icon: Icons.format_list_bulleted_sharp,
-                          title: 'Manage MyAnimeList Lists',
-                          description: "Choose which list to show on home page",
-                          onTap: () => _showHomePageCardsDialog(),
-                        )),
+                      AnymexExpansionTile(
+                          initialExpanded: true,
+                          title: 'Anilist',
+                          content: CustomTile(
+                            icon: Icons.format_list_bulleted_sharp,
+                            title: 'Manage Anilist Lists',
+                            description:
+                                "Choose which list to show on home page",
+                            onTap: () => _showHomePageCardsDialog(),
+                          )),
+                      AnymexExpansionTile(
+                          initialExpanded: true,
+                          title: 'MyAnimeList',
+                          content: CustomTile(
+                            icon: Icons.format_list_bulleted_sharp,
+                            title: 'Manage MyAnimeList Lists',
+                            description:
+                                "Choose which list to show on home page",
+                            onTap: () => _showHomePageCardsDialog(),
+                          )),
                     ],
                   ),
                 ),

@@ -29,17 +29,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'Settings'),
-            Expanded(
-              child: SuperListView(
-                padding: getResponsiveValue(context,
-                    mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                    desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
-                children: [
-
+        child: Scaffold(
+            body: Column(children: [
+      const NestedHeader(title: 'Settings'),
+      Expanded(
+          child: SuperListView(
+        padding: getResponsiveValue(context,
+            mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+            desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
+        children: [
           const SizedBox(height: 30),
           Container(
             decoration: BoxDecoration(
@@ -149,11 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
           30.height(),
         ],
       )),
-          ]
-        )
-      )
-    );
-
+    ])));
   }
 }
 

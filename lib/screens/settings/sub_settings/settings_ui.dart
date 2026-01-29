@@ -40,20 +40,22 @@ class _SettingsUiState extends State<SettingsUi> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Glow(
-    child: Scaffold(
-      body: Column( // Changed from SingleChildScrollView to Column
-        children: [
-          const NestedHeader(title: 'UI'), // Add NestedHeader
-          Expanded( // Wrap scrollable content in Expanded
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 50), // Changed top from 50.0 to 20.0
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+  @override
+  Widget build(BuildContext context) {
+    return Glow(
+        child: Scaffold(
+            body: Column(// Changed from SingleChildScrollView to Column
+                children: [
+      const NestedHeader(title: 'UI'), // Add NestedHeader
+      Expanded(
+        // Wrap scrollable content in Expanded
+        child: SingleChildScrollView(
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  15.0, 20.0, 15.0, 50), // Changed top from 50.0 to 20.0
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,9 +167,6 @@ Widget build(BuildContext context) {
               )),
         ),
       ),
-        ]
-      )
-    )
-    );
+    ])));
   }
 }
