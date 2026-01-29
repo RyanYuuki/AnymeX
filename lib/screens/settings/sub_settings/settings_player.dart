@@ -95,7 +95,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
     _leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
     _rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
-    _hiddenButtonIds = List<String>.from(decodedConfig['hiddenButtonIds'] ?? []);
+    _hiddenButtonIds =
+        List<String>.from(decodedConfig['hiddenButtonIds'] ?? []);
     _buttonConfigs =
         Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
 
@@ -676,8 +677,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 final id = _leftButtonIds[index];
                                 final control = _bottomControls
                                     .firstWhere((c) => c.id == id);
-                                return _buildControlTile(
-                                    control, 'left',
+                                return _buildControlTile(control, 'left',
                                     key: ValueKey('left_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
@@ -702,8 +702,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     _rightButtonIds.length - 1 - index];
                                 final control = _bottomControls
                                     .firstWhere((c) => c.id == id);
-                                return _buildControlTile(
-                                    control, 'right',
+                                return _buildControlTile(control, 'right',
                                     key: ValueKey('right_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
@@ -766,7 +765,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       key: key,
       leading: Icon(control.icon, size: 22, color: Colors.white),
       title: Text(control.name,
-          style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white)),
+          style: const TextStyle(
+              fontWeight: FontWeight.w500, color: Colors.white)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: _buildTrailingButtons(control, position),
@@ -779,12 +779,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       return [
         IconButton(
           tooltip: 'Show on left',
-          icon: const Icon(Icons.visibility_outlined, size: 20, color: Colors.white),
+          icon: const Icon(Icons.visibility_outlined,
+              size: 20, color: Colors.white),
           onPressed: () => _showButton(control.id, 'left'),
         ),
         IconButton(
           tooltip: 'Show on right',
-          icon: const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white),
+          icon: const Icon(Icons.keyboard_arrow_right_rounded,
+              color: Colors.white),
           onPressed: () => _showButton(control.id, 'right'),
         ),
       ];
@@ -792,19 +794,22 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       return [
         IconButton(
           tooltip: 'Hide button',
-          icon: const Icon(Icons.visibility_off_outlined, size: 20, color: Colors.white),
+          icon: const Icon(Icons.visibility_off_outlined,
+              size: 20, color: Colors.white),
           onPressed: () => _hideButton(control.id),
         ),
         if (position == 'left')
           IconButton(
             tooltip: 'Move to right',
-            icon: const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white),
+            icon: const Icon(Icons.keyboard_arrow_right_rounded,
+                color: Colors.white),
             onPressed: () => _moveButton(control.id, 'right'),
           )
         else
           IconButton(
             tooltip: 'Move to left',
-            icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white),
+            icon: const Icon(Icons.keyboard_arrow_left_rounded,
+                color: Colors.white),
             onPressed: () => _moveButton(control.id, 'left'),
           ),
       ];
