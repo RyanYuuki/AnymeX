@@ -16,6 +16,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/screens/other_features.dart';
 
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
@@ -330,57 +331,40 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        backgroundColor: widget.isModal
-            ? Theme.of(context).colorScheme.surfaceContainer
-            : Colors.transparent,
-        body: SingleChildScrollView(
-          padding: getResponsiveValue(context,
-              mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 50.0),
-              desktopValue: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.isModal) ...[
-                const Center(
-                  child: Text("Player Settings",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                )
-              ] else ...[
-                Row(
-                  children: [
-                    IconButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainer
-                            .withOpacity(0.5),
-                      ),
-                      onPressed: () {
-                        Get.back();
-                      },
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text("Player Settings",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)),
+@override
+Widget build(BuildContext context) {
+  return Glow(
+    child: Scaffold(
+      backgroundColor: widget.isModal
+          ? Theme.of(context).colorScheme.surfaceContainer
+          : Colors.transparent,
+      body: Column(
+        children: [
+          if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: getResponsiveValue(context,
+                  mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
+                  desktopValue: const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.isModal) ...[
+                    const Center(
+                      child: Text("Player Settings",
+                          style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                    )
                   ],
-                ),
-              ],
-              const SizedBox(height: 30),
-              Obx(() => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnymexExpansionTile(
-                          initialExpanded: true,
-                          title: 'Common',
-                          content: Column(
-                            children: [
+                  SizedBox(height: widget.isModal ? 30.0 : 0),
+                  Obx(() => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymexExpansionTile(
+                              initialExpanded: true,
+                              title: 'Common',
+                              content: Column(
+                                children: [
                               CustomSwitchTile(
                                   icon: Icons.play_arrow_rounded,
                                   padding: const EdgeInsets.all(10),
@@ -745,6 +729,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
           ),
         ),
       ),
+        ]
+      )
+    )
     );
   }
 

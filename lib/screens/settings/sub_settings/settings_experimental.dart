@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
+import 'package:anymex/screens/other_features.dart';
 
 class SettingsExperimental extends StatefulWidget {
   const SettingsExperimental({super.key});
@@ -236,35 +237,19 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
     return Glow(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: getResponsiveValue(context,
-                mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-                desktopValue:
-                    const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0)),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(
-                children: [
-                  IconButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainer
-                          .withValues(alpha: 0.5),
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text("Experimental Settings",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ],
-              ),
-              const SizedBox(height: 30),
+        body: Column(
+          children: [
+            const NestedHeader(title: 'Experimental Settings'),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: getResponsiveValue(context,
+                      mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                      desktopValue:
+                          const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
               Obx(() => AnymexExpansionTile(
                     title: "Reader",
                     initialExpanded: true,
@@ -850,6 +835,9 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
           ),
         ),
       ),
+          ]
+    )
+      )
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/screens/other_features.dart';
 
 import 'settings_moderation.dart';
 
@@ -23,11 +24,15 @@ class _SettingsCommentsState extends State<SettingsComments> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SuperListView(
-        padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-            desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
+      body: Column(
         children: [
+          const NestedHeader(title: 'Comment System'),
+          Expanded(
+            child: SuperListView(
+              padding: getResponsiveValue(context,
+                  mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                  desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
+              children: [
           const Row(
             children: [
               CustomBackButton(),
@@ -36,7 +41,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
-          const SizedBox(height: 30),
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -119,6 +123,9 @@ class _SettingsCommentsState extends State<SettingsComments> {
           30.height(),
         ],
       ),
+          )
+        ],
+      )
     );
   }
 

@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:anymex/screens/other_features.dart';
 
 class SettingsAccounts extends StatelessWidget {
   const SettingsAccounts({super.key});
@@ -46,32 +47,14 @@ class SettingsAccounts extends StatelessWidget {
 
     return Glow(
       child: Scaffold(
-        body: ScrollWrapper(
-          comfortPadding: false,
-          customPadding: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
+        body: Column( // Changed from ScrollWrapper to Column
           children: [
-            Row(
-              children: [
-                IconButton(
-                  style: IconButton.styleFrom(
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  "Accounts",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
+            const NestedHeader(title: 'Accounts'), // Add NestedHeader
+            Expanded( // Wrap scrollable content in Expanded
+              child: ScrollWrapper(
+                comfortPadding: false,
+                customPadding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0), // Changed top from 50.0 to 20.0
+                children: [
             if (!Platform.isWindows && !Platform.isLinux && !Platform.isMacOS)
               const DiscordTile(),
             for (var s in services)
@@ -83,7 +66,10 @@ class SettingsAccounts extends StatelessWidget {
           ],
         ),
       ),
-    );
+          ]
+        )
+      )
+      );
   }
 }
 

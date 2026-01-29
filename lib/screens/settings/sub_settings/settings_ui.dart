@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/screens/other_features.dart';
 
 class SettingsUi extends StatefulWidget {
   const SettingsUi({super.key});
@@ -39,37 +40,20 @@ class _SettingsUiState extends State<SettingsUi> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainer
-                              .withOpacity(0.5),
-                        ),
-                        onPressed: () {
-                          Get.back();
-                        },
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text("UI",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
+@override
+Widget build(BuildContext context) {
+  return Glow(
+    child: Scaffold(
+      body: Column( // Changed from SingleChildScrollView to Column
+        children: [
+          const NestedHeader(title: 'UI'), // Add NestedHeader
+          Expanded( // Wrap scrollable content in Expanded
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 50), // Changed top from 50.0 to 20.0
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,6 +165,9 @@ class _SettingsUiState extends State<SettingsUi> {
               )),
         ),
       ),
+        ]
+      )
+    )
     );
   }
 }

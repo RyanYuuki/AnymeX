@@ -11,6 +11,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/screens/other_features.dart';
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -29,34 +30,36 @@ class AboutPage extends StatelessWidget {
     final theme = Theme.of(context);
     return Glow(
       child: Scaffold(
-        body: SuperListView(
-          padding: const EdgeInsets.fromLTRB(15.0, 50.0, 15.0, 20.0),
+        body: Column(
           children: [
-            const HeaderSection(),
-            const SizedBox(height: 16),
+            const NestedHeader(title: 'About'),
+            Expanded(
+              child: SuperListView(
+                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
+                children: [
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Column(
-                  children: [
-                    const SizedBox(height: 40),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color:
-                            theme.colorScheme.surfaceContainer.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
+                      Column(
                         children: [
+                          const SizedBox(height: 40),
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color:
+                                  theme.colorScheme.surfaceContainer.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
                           const SizedBox(height: 50),
                           FutureBuilder<PackageInfo>(
                             future: PackageInfo.fromPlatform(),
@@ -246,6 +249,9 @@ class AboutPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+                ],
+              ),
+            ),
           ],
         ),
       ),

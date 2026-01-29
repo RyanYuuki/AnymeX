@@ -18,6 +18,7 @@ import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/screens/other_features.dart';
 
 import 'package:provider/provider.dart';
 
@@ -182,31 +183,16 @@ class _SettingsThemeState extends State<SettingsTheme> {
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainer
-                                .withOpacity(0.5)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-                    const SizedBox(width: 10),
-                    const Text("Theme",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)),
-                  ],
-                ),
-                const SizedBox(height: 30),
+        body: Column(
+          children: [
+            const NestedHeader(title: 'Theme'),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                 AnymexExpansionTile(
                   title: 'Appearance',
                   content: Column(
@@ -373,6 +359,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
               ],
             ),
           ),
+        ),
+      ),
+          ]
         ),
       ),
     );
