@@ -7,6 +7,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -49,7 +50,34 @@ class AnimeStats extends StatelessWidget {
             context,
             icon: Icons.analytics_outlined,
             title: "Statistics",
-            child: _buildStatsGrid(context),
+            child: Column(
+              children: [
+                _buildStatsGrid(context),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      navigate(() => WatchOrderPage(title: data.title));
+                    },
+                    icon: const Icon(Icons.account_tree_rounded),
+                    label: const Text("View Watch Order"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary.withOpacity(0.1),
+                      foregroundColor: colorScheme.primary,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: colorScheme.primary.withOpacity(0.2),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           Row(
