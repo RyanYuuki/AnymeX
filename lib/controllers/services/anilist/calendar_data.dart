@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,36 +16,37 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
   final isMAL = serviceHandler.serviceType.value == ServicesType.mal;
 
   const String query = '''
-    query (\$page: Int, \$startTime: Int, \$endTime: Int) {
-      Page(page: \$page, perPage: 50) {
-        pageInfo {
-          hasNextPage
-        }
-        airingSchedules(
-          airingAt_greater: \$startTime,
-          airingAt_lesser: \$endTime,
-          sort: TIME_DESC
-        ) {
-          episode
-          airingAt
-          timeUntilAiring
-          media {
-            id
-            idMal
-            status
-            averageScore
-            coverImage { 
-              large 
-            }
-            title {
-              english
-              romaji
-            }
+  query (\$page: Int, \$startTime: Int, \$endTime: Int) {
+    Page(page: \$page, perPage: 50) {
+      pageInfo {
+        hasNextPage
+      }
+      airingSchedules(
+        airingAt_greater: \$startTime,
+        airingAt_lesser: \$endTime,
+        sort: TIME_DESC,
+      ) {
+        episode
+        airingAt
+        timeUntilAiring
+        media {
+          id
+          idMal
+          isAdult
+          status
+          averageScore
+          coverImage {
+            large
+          }
+          title {
+            english
+            romaji
           }
         }
       }
     }
-  ''';
+  }
+''';
 
   final response = await http.post(
     Uri.parse(url),
@@ -64,13 +66,20 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
     final pageInfo = responseData['data']['Page']['pageInfo'];
     final schedules = responseData['data']['Page']['airingSchedules'];
 
-    List<Media> newMediaList = schedules.map<Media>((schedule) {
-      return Media.fromSmallJson(schedule['media'], false, isMal: isMAL)
-        ..nextAiringEpisode = NextAiringEpisode(
-            airingAt: schedule['airingAt'],
-            timeUntilAiring: schedule['timeUntilAiring'],
-            episode: schedule['episode']);
-    }).toList();
+    List<Media> newMediaList = schedules
+        .map<Media?>((schedule) {
+          final media =
+              Media.fromSmallJson(schedule['media'], false, isMal: isMAL);
+          if (media.isAdult ?? false) return null;
+          return media
+            ..nextAiringEpisode = NextAiringEpisode(
+                airingAt: schedule['airingAt'],
+                timeUntilAiring: schedule['timeUntilAiring'],
+                episode: schedule['episode']);
+        })
+        .toList()
+        .whereType<Media>()
+        .toList();
 
     callbackData.addAll(newMediaList);
 
