@@ -186,7 +186,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _moveButton(String id, String to) {
-    // to: 'left' or 'right'
     if (to == 'left') {
       _rightButtonIds.remove(id);
       _leftButtonIds.add(id);
@@ -667,15 +666,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
-                              child: Text('Left Side',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(color: Colors.white)),
-                            ),
+                            _buildSectionLabel('Left Side'),
                             ReorderableListView.builder(
                               key: const Key('left_list'),
                               shrinkWrap: true,
@@ -685,8 +676,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 final id = _leftButtonIds[index];
                                 final control = _bottomControls
                                     .firstWhere((c) => c.id == id);
-                                return _buildControlOption(
-                                    context, control, 'left',
+                                return _buildControlTile(
+                                    control, 'left',
                                     key: ValueKey('left_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
@@ -700,15 +691,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               },
                             ),
                             const SizedBox(height: 16),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
-                              child: Text('Right Side',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(color: Colors.white)),
-                            ),
+                            _buildSectionLabel('Right Side'),
                             ReorderableListView.builder(
                               key: const Key('right_list'),
                               shrinkWrap: true,
@@ -719,8 +702,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     _rightButtonIds.length - 1 - index];
                                 final control = _bottomControls
                                     .firstWhere((c) => c.id == id);
-                                return _buildControlOption(
-                                    context, control, 'right',
+                                return _buildControlTile(
+                                    control, 'right',
                                     key: ValueKey('right_$id'));
                               },
                               onReorder: (oldIndex, newIndex) {
@@ -739,15 +722,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                             ),
                             if (_hiddenButtonIds.isNotEmpty) ...[
                               const SizedBox(height: 16),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Text('Hidden',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(color: Colors.white)),
-                              ),
+                              _buildSectionLabel('Hidden'),
                               ListView.builder(
                                 key: const Key('hidden_list'),
                                 shrinkWrap: true,
@@ -757,8 +732,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   final id = _hiddenButtonIds[index];
                                   final control = _bottomControls
                                       .firstWhere((c) => c.id == id);
-                                  return _buildHiddenControlOption(
-                                      context, control,
+                                  return _buildControlTile(control, 'hidden',
                                       key: ValueKey('hidden_$id'));
                                 },
                               ),
@@ -775,8 +749,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  Widget _buildControlOption(
-      BuildContext context, _BottomControl control, String position,
+  Widget _buildSectionLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Text(label,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(color: Colors.white)),
+    );
+  }
+
+  Widget _buildControlTile(_BottomControl control, String position,
       {required Key key}) {
     return ListTile(
       key: key,
@@ -785,53 +769,46 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
           style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            tooltip: 'Hide button',
-            icon: const Icon(Icons.visibility_off_outlined, size: 20, color: Colors.white),
-            onPressed: () => _hideButton(control.id),
-          ),
-          if (position == 'left')
-            IconButton(
-              tooltip: 'Move to right',
-              icon: const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white),
-              onPressed: () => _moveButton(control.id, 'right'),
-            )
-          else
-            IconButton(
-              tooltip: 'Move to left',
-              icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white),
-              onPressed: () => _moveButton(control.id, 'left'),
-            ),
-        ],
+        children: _buildTrailingButtons(control, position),
       ),
     );
   }
 
-  Widget _buildHiddenControlOption(
-      BuildContext context, _BottomControl control,
-      {required Key key}) {
-    return ListTile(
-      key: key,
-      leading: Icon(control.icon, size: 22, color: Colors.white),
-      title: Text(control.name,
-          style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white)),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+  List<Widget> _buildTrailingButtons(_BottomControl control, String position) {
+    if (position == 'hidden') {
+      return [
+        IconButton(
+          tooltip: 'Show on left',
+          icon: const Icon(Icons.visibility_outlined, size: 20, color: Colors.white),
+          onPressed: () => _showButton(control.id, 'left'),
+        ),
+        IconButton(
+          tooltip: 'Show on right',
+          icon: const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white),
+          onPressed: () => _showButton(control.id, 'right'),
+        ),
+      ];
+    } else {
+      return [
+        IconButton(
+          tooltip: 'Hide button',
+          icon: const Icon(Icons.visibility_off_outlined, size: 20, color: Colors.white),
+          onPressed: () => _hideButton(control.id),
+        ),
+        if (position == 'left')
           IconButton(
-            tooltip: 'Show on left',
-            icon: const Icon(Icons.visibility_outlined, size: 20, color: Colors.white),
-            onPressed: () => _showButton(control.id, 'left'),
-          ),
-          IconButton(
-            tooltip: 'Show on right',
+            tooltip: 'Move to right',
             icon: const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white),
-            onPressed: () => _showButton(control.id, 'right'),
+            onPressed: () => _moveButton(control.id, 'right'),
+          )
+        else
+          IconButton(
+            tooltip: 'Move to left',
+            icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.white),
+            onPressed: () => _moveButton(control.id, 'left'),
           ),
-        ],
-      ),
-    );
+      ];
+    }
   }
 
   static List<Shadow> outlinedText(
