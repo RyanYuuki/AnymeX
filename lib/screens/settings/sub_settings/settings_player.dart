@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/player.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -22,6 +25,45 @@ class SettingsPlayer extends StatefulWidget {
   State<SettingsPlayer> createState() => _SettingsPlayerState();
 }
 
+class _BottomControl {
+  final String id;
+  final String name;
+  final IconData icon;
+  final String defaultPosition;
+
+  const _BottomControl({
+    required this.id,
+    required this.name,
+    required this.icon,
+    this.defaultPosition = 'right',
+  });
+}
+
+final List<_BottomControl> _bottomControls = [
+  const _BottomControl(
+      id: 'playlist',
+      name: 'Playlist',
+      icon: Symbols.playlist_play_rounded,
+      defaultPosition: 'left'),
+  const _BottomControl(
+      id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+  const _BottomControl(
+      id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+  const _BottomControl(
+      id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+  const _BottomControl(
+      id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+  const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+  const _BottomControl(
+      id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
+  const _BottomControl(
+      id: 'orientation',
+      name: 'Orientation',
+      icon: Icons.screen_rotation_rounded),
+  const _BottomControl(
+      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+];
+
 class _SettingsPlayerState extends State<SettingsPlayer> {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
@@ -31,11 +73,128 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   final styles = ['Regular', 'Accent', 'Blurred Accent'];
   final selectedStyleIndex = 0.obs;
 
+  late List<String> _leftButtonIds;
+  late List<String> _rightButtonIds;
+  late List<String> _hiddenButtonIds;
+  late Map<String, dynamic> _buttonConfigs;
+
   @override
   void initState() {
     super.initState();
     speed.value = settings.speed;
     selectedStyleIndex.value = settings.playerStyle;
+
+    _leftButtonIds = [];
+    _rightButtonIds = [];
+    _hiddenButtonIds = [];
+    _buttonConfigs = {};
+
+    final String jsonString =
+        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+
+    _leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
+    _rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
+    _hiddenButtonIds =
+        List<String>.from(decodedConfig['hiddenButtonIds'] ?? []);
+    _buttonConfigs =
+        Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
+
+    if (_leftButtonIds.isEmpty &&
+        _rightButtonIds.isEmpty &&
+        _hiddenButtonIds.isEmpty &&
+        _bottomControls.isNotEmpty) {
+      _initializeDefaultButtonLayout();
+    } else {
+      _pruneRemovedButtons();
+    }
+  }
+
+  void _saveButtonConfig() {
+    final Map<String, dynamic> configToSave = {
+      'leftButtonIds': _leftButtonIds,
+      'rightButtonIds': _rightButtonIds,
+      'hiddenButtonIds': _hiddenButtonIds,
+      'buttonConfigs': _buttonConfigs,
+    };
+    settings.preferences
+        .put('bottomControlsSettings', json.encode(configToSave));
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _initializeDefaultButtonLayout() {
+    _leftButtonIds = [];
+    _rightButtonIds = [];
+    _hiddenButtonIds = [];
+    _buttonConfigs = {};
+    for (final control in _bottomControls) {
+      if (control.defaultPosition == 'left') {
+        _leftButtonIds.add(control.id);
+      } else {
+        _rightButtonIds.add(control.id);
+      }
+      _buttonConfigs[control.id] = {'visible': true};
+    }
+    _saveButtonConfig();
+  }
+
+  void _pruneRemovedButtons() {
+    final allKnownIds = _bottomControls.map((c) => c.id).toSet();
+    bool changed = false;
+
+    int initialLeftCount = _leftButtonIds.length;
+    _leftButtonIds.removeWhere((id) => !allKnownIds.contains(id));
+    if (_leftButtonIds.length != initialLeftCount) changed = true;
+
+    int initialRightCount = _rightButtonIds.length;
+    _rightButtonIds.removeWhere((id) => !allKnownIds.contains(id));
+    if (_rightButtonIds.length != initialRightCount) changed = true;
+
+    int initialHiddenCount = _hiddenButtonIds.length;
+    _hiddenButtonIds.removeWhere((id) => !allKnownIds.contains(id));
+    if (_hiddenButtonIds.length != initialHiddenCount) changed = true;
+
+    int initialConfigCount = _buttonConfigs.length;
+    _buttonConfigs.removeWhere((id, _) => !allKnownIds.contains(id));
+    if (_buttonConfigs.length != initialConfigCount) changed = true;
+
+    if (changed) _saveButtonConfig();
+  }
+
+  void _hideButton(String id) {
+    _leftButtonIds.remove(id);
+    _rightButtonIds.remove(id);
+    if (!_hiddenButtonIds.contains(id)) {
+      _hiddenButtonIds.add(id);
+    }
+    _saveButtonConfig();
+  }
+
+  void _showButton(String id, String position) {
+    _hiddenButtonIds.remove(id);
+    if (position == 'left') {
+      if (!_leftButtonIds.contains(id)) {
+        _leftButtonIds.add(id);
+      }
+    } else {
+      if (!_rightButtonIds.contains(id)) {
+        _rightButtonIds.add(id);
+      }
+    }
+    _saveButtonConfig();
+  }
+
+  void _moveButton(String id, String to) {
+    if (to == 'left') {
+      _rightButtonIds.remove(id);
+      _leftButtonIds.add(id);
+    } else {
+      _leftButtonIds.remove(id);
+      _rightButtonIds.add(id);
+    }
+    _saveButtonConfig();
   }
 
   String numToPlayerStyle(int i) {
@@ -503,6 +662,83 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               ),
                             ],
                           )),
+                      AnymexExpansionTile(
+                        title: 'Bottom Controls',
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSectionLabel('Left Side'),
+                            ReorderableListView.builder(
+                              key: const Key('left_list'),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _leftButtonIds.length,
+                              itemBuilder: (context, index) {
+                                final id = _leftButtonIds[index];
+                                final control = _bottomControls
+                                    .firstWhere((c) => c.id == id);
+                                return _buildControlTile(control, 'left',
+                                    key: ValueKey('left_$id'));
+                              },
+                              onReorder: (oldIndex, newIndex) {
+                                setState(() {
+                                  if (newIndex > oldIndex) newIndex -= 1;
+                                  final String item =
+                                      _leftButtonIds.removeAt(oldIndex);
+                                  _leftButtonIds.insert(newIndex, item);
+                                  _saveButtonConfig();
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildSectionLabel('Right Side'),
+                            ReorderableListView.builder(
+                              key: const Key('right_list'),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _rightButtonIds.length,
+                              itemBuilder: (context, index) {
+                                final id = _rightButtonIds[
+                                    _rightButtonIds.length - 1 - index];
+                                final control = _bottomControls
+                                    .firstWhere((c) => c.id == id);
+                                return _buildControlTile(control, 'right',
+                                    key: ValueKey('right_$id'));
+                              },
+                              onReorder: (oldIndex, newIndex) {
+                                setState(() {
+                                  _rightButtonIds =
+                                      _rightButtonIds.reversed.toList();
+                                  if (newIndex > oldIndex) newIndex -= 1;
+                                  final String item =
+                                      _rightButtonIds.removeAt(oldIndex);
+                                  _rightButtonIds.insert(newIndex, item);
+                                  _rightButtonIds =
+                                      _rightButtonIds.reversed.toList();
+                                  _saveButtonConfig();
+                                });
+                              },
+                            ),
+                            if (_hiddenButtonIds.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              _buildSectionLabel('Hidden'),
+                              ListView.builder(
+                                key: const Key('hidden_list'),
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _hiddenButtonIds.length,
+                                itemBuilder: (context, index) {
+                                  final id = _hiddenButtonIds[index];
+                                  final control = _bottomControls
+                                      .firstWhere((c) => c.id == id);
+                                  return _buildControlTile(control, 'hidden',
+                                      key: ValueKey('hidden_$id'));
+                                },
+                              ),
+                            ],
+                          ],
+                        ),
+                      )
                     ],
                   ))
             ],
@@ -510,6 +746,74 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         ),
       ),
     );
+  }
+
+  Widget _buildSectionLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Text(label,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(color: Colors.white)),
+    );
+  }
+
+  Widget _buildControlTile(_BottomControl control, String position,
+      {required Key key}) {
+    return ListTile(
+      key: key,
+      leading: Icon(control.icon, size: 22, color: Colors.white),
+      title: Text(control.name,
+          style: const TextStyle(
+              fontWeight: FontWeight.w500, color: Colors.white)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: _buildTrailingButtons(control, position),
+      ),
+    );
+  }
+
+  List<Widget> _buildTrailingButtons(_BottomControl control, String position) {
+    if (position == 'hidden') {
+      return [
+        IconButton(
+          tooltip: 'Show on left',
+          icon: const Icon(Icons.visibility_outlined,
+              size: 20, color: Colors.white),
+          onPressed: () => _showButton(control.id, 'left'),
+        ),
+        IconButton(
+          tooltip: 'Show on right',
+          icon: const Icon(Icons.keyboard_arrow_right_rounded,
+              color: Colors.white),
+          onPressed: () => _showButton(control.id, 'right'),
+        ),
+      ];
+    } else {
+      return [
+        IconButton(
+          tooltip: 'Hide button',
+          icon: const Icon(Icons.visibility_off_outlined,
+              size: 20, color: Colors.white),
+          onPressed: () => _hideButton(control.id),
+        ),
+        if (position == 'left')
+          IconButton(
+            tooltip: 'Move to right',
+            icon: const Icon(Icons.keyboard_arrow_right_rounded,
+                color: Colors.white),
+            onPressed: () => _moveButton(control.id, 'right'),
+          )
+        else
+          IconButton(
+            tooltip: 'Move to left',
+            icon: const Icon(Icons.keyboard_arrow_left_rounded,
+                color: Colors.white),
+            onPressed: () => _moveButton(control.id, 'left'),
+          ),
+      ];
+    }
   }
 
   static List<Shadow> outlinedText(
