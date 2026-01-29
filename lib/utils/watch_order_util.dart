@@ -51,6 +51,7 @@ class WatchOrderUtil {
     "Referer": "https://chiaki.site/?/tools/watch_order",
     "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "X-Requested-With": "XMLHttpRequest", // Added this header often needed for AJAX endpoints
   };
 
   static Future<List<WatchOrderSearch>> searchWatchOrder(String name) async {
@@ -59,8 +60,14 @@ class WatchOrderUtil {
         "https://chiaki.site/?/tools/autocomplete_series&term=$name",
       );
       final res = await http.get(url, headers: _headers);
-      final data = jsonDecode(res.body) as List?;
-      return data?.map((e) => WatchOrderSearch.fromJson(e)).toList() ?? [];
+      
+      if (res.statusCode != 200) return [];
+
+      final data = jsonDecode(res.body);
+      if (data is List) {
+        return data.map((e) => WatchOrderSearch.fromJson(e)).toList();
+      }
+      return [];
     } catch (_) {
       return [];
     }
@@ -72,7 +79,7 @@ class WatchOrderUtil {
         Uri.parse("https://chiaki.site/?/tools/watch_order/id/$id"),
         headers: _headers,
       );
-      
+
       final doc = parse(res.body);
       final rows = doc.querySelectorAll("table > tbody > tr");
 
@@ -81,13 +88,18 @@ class WatchOrderUtil {
       return rows.map((e) {
         final imgDiv = e.querySelector("td > div.wo_avatar_big");
         String imageUrl = "";
-        
+
         if (imgDiv != null) {
+          // Mangayomi logic for extracting image: 
+          // outerHtml gives: <div ... style="background-image: url('...')" ...>
+          // But accessing attributes['style'] directly is cleaner if possible. 
+          // Let's stick to parsing the style attribute string.
+          
           final style = imgDiv.attributes['style'] ?? "";
           if (style.contains("url('")) {
             final start = style.indexOf("url('") + 5;
             final end = style.indexOf("')", start);
-            if (end != -1) {
+            if (start != -1 && end != -1) {
               imageUrl = "https://chiaki.site/${style.substring(start, end)}";
             }
           }
@@ -97,11 +109,11 @@ class WatchOrderUtil {
           id: e.attributes["data-id"] ?? id,
           anilistId: e.attributes["data-anilist-id"] ?? "",
           image: imageUrl,
-          name: e.querySelector("td > span.wo_title")?.text.trim() ?? "Unknown",
+          name: e.querySelector("td > span.wo_title")?.text.trim() ?? "Unknown title",
           nameEnglish: e.querySelector("td > span.uk-text-small")?.text.trim(),
           text: e.querySelector("td > span.uk-text-muted.uk-text-small")?.text.trim() ?? "",
         );
-      }).where((e) => e.name != "Unknown").toList();
+      }).where((e) => e.name != "Unknown title").toList();
     } catch (e) {
       return [];
     }
