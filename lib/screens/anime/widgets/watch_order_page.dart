@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
@@ -5,7 +6,6 @@ import 'package:anymex/utils/watch_order_util.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -32,12 +32,14 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
     try {
       // 1. Search for the series ID
       final searchResults = await WatchOrderUtil.searchWatchOrder(widget.title);
-      
+
       if (searchResults.isEmpty) {
-        setState(() {
-          isLoading = false;
-          error = "Could not find watch order for '${widget.title}'";
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            error = "Could not find watch order for '${widget.title}'";
+          });
+        }
         return;
       }
 
@@ -45,15 +47,19 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
       final id = searchResults.first.id;
       final order = await WatchOrderUtil.fetchWatchOrder(id);
 
-      setState(() {
-        watchOrder = order;
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          watchOrder = order;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-        error = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          error = e.toString();
+        });
+      }
     }
   }
 
@@ -66,7 +72,11 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
-          title: const Text("Watch Order", style: TextStyle(fontWeight: FontWeight.bold)),
+          title: const AnymexText(
+            text: "Watch Order",
+            variant: TextVariant.bold,
+            size: 18,
+          ),
         ),
         body: Builder(
           builder: (context) {
@@ -77,12 +87,15 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Text(error!, textAlign: TextAlign.center),
+                  child: AnymexText(
+                    text: error!,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               );
             }
             if (watchOrder.isEmpty) {
-              return const Center(child: Text("No watch order found."));
+              return const Center(child: AnymexText(text: "No watch order found."));
             }
 
             return ListView.separated(
@@ -100,9 +113,10 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
     );
   }
 
-  Widget _buildWatchOrderItem(BuildContext context, WatchOrderItem item, int index) {
+  Widget _buildWatchOrderItem(
+      BuildContext context, WatchOrderItem item, int index) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer.withOpacity(0.3),
@@ -115,34 +129,32 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
           backgroundColor: colorScheme.primaryContainer,
           child: Text(
             "$index",
-            style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: colorScheme.primary, fontWeight: FontWeight.bold),
           ),
         ),
-        title: Text(
-          item.name,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        title: AnymexText(
+          text: item.name,
+          variant: TextVariant.semiBold,
+          size: 14,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (item.nameEnglish != null && item.nameEnglish != item.name)
-              Text(
-                item.nameEnglish!,
-                style: TextStyle(
-                  fontSize: 12, 
-                  color: colorScheme.onSurfaceVariant.withOpacity(0.8)
-                ),
+              AnymexText(
+                text: item.nameEnglish!,
+                size: 12,
+                color: colorScheme.onSurfaceVariant.withOpacity(0.8),
               ),
             if (item.text.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  item.text,
-                  style: TextStyle(
-                    fontSize: 11, 
-                    color: colorScheme.primary,
-                    fontStyle: FontStyle.italic
-                  ),
+                child: AnymexText(
+                  text: item.text,
+                  size: 11,
+                  color: colorScheme.primary,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
           ],
@@ -150,15 +162,14 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         onTap: () {
           // Navigate to details if Anilist ID exists
           if (item.anilistId.isNotEmpty) {
-             // Create a minimal Media object to navigate
-             final media = Media(
-               id: int.tryParse(item.anilistId) ?? 0,
-               title: item.nameEnglish ?? item.name,
-               poster: item.image,
-             );
-             // You might need to fetch full details inside AnimeDetailsPage or 
-             // ensure your navigation handles partial media objects
-             navigate(() => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
+            final media = Media(
+              id: int.tryParse(item.anilistId) ?? 0,
+              title: item.nameEnglish ?? item.name,
+              poster: item.image,
+              serviceType: ServicesType.anilist, // FIX: Added missing parameter
+            );
+            navigate(
+                () => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
           }
         },
       ),
