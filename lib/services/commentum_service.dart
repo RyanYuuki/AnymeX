@@ -209,6 +209,8 @@ class CommentumService extends GetxController {
         'comment_id': commentId,
         'user_info': {
           "user_id": targetUserId,
+          "username": currentUsername,
+          "avatar": currentUserAvatar,
         },
       };
 
