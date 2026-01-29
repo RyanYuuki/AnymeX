@@ -30,6 +30,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   Future<void> _init() async {
     try {
+      // 1. Search for the series ID
       final searchResults = await WatchOrderUtil.searchWatchOrder(widget.title);
 
       if (searchResults.isEmpty) {
@@ -42,6 +43,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         return;
       }
 
+      // 2. Fetch the watch order using the best match (first result)
       final id = searchResults.first.id;
       final order = await WatchOrderUtil.fetchWatchOrder(id);
 
@@ -161,7 +163,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         onTap: () {
           if (item.anilistId.isNotEmpty) {
             final media = Media(
-              id: int.parse(item.anilistId), 
+              id: item.anilistId, // Passed as String directly
               title: item.nameEnglish ?? item.name,
               poster: item.image,
               serviceType: ServicesType.anilist,
