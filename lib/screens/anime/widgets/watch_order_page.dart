@@ -163,7 +163,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         onTap: () {
           if (item.anilistId.isNotEmpty) {
             final media = Media(
-              id: item.anilistId, // Passed as String directly
+              id: item.anilistId,
               title: item.nameEnglish ?? item.name,
               poster: item.image,
               serviceType: ServicesType.anilist,
