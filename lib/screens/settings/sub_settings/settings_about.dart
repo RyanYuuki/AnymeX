@@ -274,7 +274,7 @@ class AboutPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: AnymexAnimatedLogo(
+                        child: AnymeXAnimatedLogo(
                           size: 70,
                           autoPlay: true,
                         )),
