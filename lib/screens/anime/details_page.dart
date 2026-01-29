@@ -20,7 +20,6 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comment_preload
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
-import 'package:anymex/screens/anime/widgets/seasons_buttons.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -646,7 +645,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             ],
           ),
         ),
-        SeasonsGrid(relations: anilistData!.relations ?? []),
         ReusableCarousel(
           data: anilistData!.relations ?? [],
           title: "Relations",

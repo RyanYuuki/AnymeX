@@ -343,10 +343,19 @@ class _MangaStatsState extends State<MangaStats> {
       },
     ];
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: stats.map((stat) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: stats.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        mainAxisExtent: 75,
+      ),
+      itemBuilder: (context, index) {
+        final stat = stats[index];
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
@@ -390,7 +399,7 @@ class _MangaStatsState extends State<MangaStats> {
             ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 

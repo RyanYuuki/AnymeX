@@ -2,12 +2,14 @@
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
+import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -50,34 +52,7 @@ class AnimeStats extends StatelessWidget {
             context,
             icon: Icons.analytics_outlined,
             title: "Statistics",
-            child: Column(
-              children: [
-                _buildStatsGrid(context),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      navigate(() => WatchOrderPage(title: data.title));
-                    },
-                    icon: const Icon(Icons.account_tree_rounded),
-                    label: const Text("View Watch Order"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary.withOpacity(0.1),
-                      foregroundColor: colorScheme.primary,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: colorScheme.primary.withOpacity(0.2),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: _buildStatsGrid(context),
           ),
           const SizedBox(height: 16),
           Row(
@@ -169,9 +144,193 @@ class AnimeStats extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(height: 16),
+          _buildSeasons(context),
+          const SizedBox(height: 16),
+          _buildOthersSection(context),
+          const SizedBox(height: 16),
         ],
       ),
     );
+  }
+
+  Widget _buildOthersSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return _buildSectionContainer(context,
+        icon: Icons.more,
+        title: "Others",
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                navigate(() => AnimeThemePlayerPage(animeDetails: data));
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.music_note_rounded,
+                        size: 22,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymexText(
+                            text: "Openings & Endings",
+                            variant: TextVariant.bold,
+                            size: 14,
+                          ),
+                          const SizedBox(height: 4),
+                          AnymexText(
+                            text: "View opening and ending themes",
+                            variant: TextVariant.regular,
+                            size: 13,
+                            color: colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 20,
+                      color: colorScheme.primary.withOpacity(0.7),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            10.height(),
+            GestureDetector(
+              onTap: () {
+                navigate(() => WatchOrderPage(title: data.title));
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.playlist_play_rounded,
+                        size: 22,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymexText(
+                            text: "Watch Order",
+                            variant: TextVariant.bold,
+                            size: 14,
+                          ),
+                          const SizedBox(height: 4),
+                          AnymexText(
+                            text:
+                                "View the chronological watch order of this anime",
+                            variant: TextVariant.regular,
+                            size: 13,
+                            color: colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 20,
+                      color: colorScheme.primary.withOpacity(0.7),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget _buildSeasons(BuildContext context) {
+    final filteredRelations = data.relations
+            ?.where((element) =>
+                element.relationType == 'SEQUEL' ||
+                element.relationType == 'PREQUEL')
+            .take(2)
+            .toList() ??
+        [];
+
+    return filteredRelations.isEmpty
+        ? const SizedBox.shrink()
+        : _buildSectionContainer(context,
+            icon: Icons.tv_rounded,
+            title: "Seasons",
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  spacing: 5,
+                  mainAxisAlignment: getResponsiveValue(context,
+                      mobileValue: MainAxisAlignment.spaceBetween,
+                      desktopValue: MainAxisAlignment.center),
+                  children: filteredRelations
+                      .map((relation) => Expanded(
+                            child: ImageButton(
+                              height: getResponsiveSize(context,
+                                  mobileSize: 60, desktopSize: 80),
+                              buttonText: relation.relationType,
+                              onPressed: () {
+                                navigate(
+                                  () => AnimeDetailsPage(
+                                      media: Media(
+                                          id: relation.id.toString(),
+                                          title: relation.title,
+                                          poster: relation.poster,
+                                          serviceType: ServicesType.anilist),
+                                      tag: relation.id.toString()),
+                                );
+                              },
+                              backgroundImage: relation.cover.isNotEmpty
+                                  ? relation.cover
+                                  : relation.poster,
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ));
   }
 
   Widget _buildCountdownCard(BuildContext context) {
@@ -349,7 +508,7 @@ class AnimeStats extends StatelessWidget {
       },
       {
         'label': 'Episodes',
-        'value': data.totalEpisodes ?? '??',
+        'value': data.totalEpisodes,
         'icon': Icons.movie_outlined
       },
       {
@@ -375,10 +534,19 @@ class AnimeStats extends StatelessWidget {
         },
     ];
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: stats.map((stat) {
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: stats.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        mainAxisExtent: 75,
+      ),
+      itemBuilder: (context, index) {
+        final stat = stats[index];
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
@@ -422,7 +590,7 @@ class AnimeStats extends StatelessWidget {
             ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 }
