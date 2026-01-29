@@ -49,4 +49,36 @@ class Chapter extends HiveObject {
       this.currentOffset,
       this.maxOffset,
       this.sourceName});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'link': link,
+      'title': title,
+      'releaseDate': releaseDate,
+      'scanlator': scanlator,
+      'number': number,
+      'pageNumber': pageNumber,
+      'totalPages': totalPages,
+      'lastReadTime': lastReadTime,
+      'currentOffset': currentOffset,
+      'maxOffset': maxOffset,
+      'sourceName': sourceName,
+    };
+  }
+
+  factory Chapter.fromJson(Map<String, dynamic> json) {
+    return Chapter(
+      link: json['link'] as String?,
+      title: json['title'] as String?,
+      releaseDate: json['releaseDate'] as String?,
+      scanlator: json['scanlator'] as String?,
+      number: (json['number'] as num?)?.toDouble(),
+      pageNumber: json['pageNumber'] as int?,
+      totalPages: json['totalPages'] as int?,
+      lastReadTime: json['lastReadTime'] as int?,
+      currentOffset: (json['currentOffset'] as num?)?.toDouble(),
+      maxOffset: (json['maxOffset'] as num?)?.toDouble(),
+      sourceName: json['sourceName'] as String?,
+    );
+  }
 }

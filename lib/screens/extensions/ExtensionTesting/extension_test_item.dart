@@ -205,74 +205,76 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                _buildExtensionIcon(theme),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    widget.source.name ?? 'Unknown',
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _buildExtensionIcon(theme),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.source.name ?? 'Unknown',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: theme.onSurface,
                   ),
                 ),
-                if (isRunning)
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: theme.primary,
-                    ),
+              ),
+              if (isRunning)
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: theme.primary,
                   ),
-              ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (widget.testType == 'ping')
+            _buildResultDisplay(
+              'Ping',
+              pingResult,
+              (r) => '${r.time}ms',
+              theme,
+              checkSize: false,
             ),
-            const SizedBox(height: 16),
-            if (widget.testType == 'ping')
-              _buildResultDisplay(
-                'Ping',
-                pingResult,
-                (r) => '${r.time}ms',
-                theme,
-                checkSize: false,
-              ),
-            if (widget.testType == 'basic' || widget.testType == 'full')
-              _buildResultDisplay(
-                'Search',
-                searchResult,
-                (r) => '${r.size} results in ${r.time}ms',
-                theme,
-              ),
-            if (widget.testType == 'full') ...[
+          if (widget.testType == 'basic' || widget.testType == 'full')
+            _buildResultDisplay(
+              'Search',
+              searchResult,
+              (r) => '${r.size} results in ${r.time}ms',
+              theme,
+            ),
+          if (widget.testType == 'full') ...[
+            const SizedBox(height: 8),
+            _buildResultDisplay(
+              _getEpisodeLabel(),
+              detailResult,
+              (r) => '${r.size} ${_getEpisodeLabel()} in ${r.time}ms',
+              theme,
+            ),
+            if (widget.itemType != ItemType.novel) ...[
               const SizedBox(height: 8),
               _buildResultDisplay(
-                _getEpisodeLabel(),
-                detailResult,
-                (r) => '${r.size} ${_getEpisodeLabel()} in ${r.time}ms',
+                _getServerLabel(),
+                contentResult,
+                (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
                 theme,
               ),
-              if (widget.itemType != ItemType.novel) ...[
-                const SizedBox(height: 8),
-                _buildResultDisplay(
-                  _getServerLabel(),
-                  contentResult,
-                  (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
-                  theme,
-                ),
-              ],
             ],
           ],
-        ),
+        ],
       ),
     );
   }
@@ -313,18 +315,22 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       String label, String result, bool success, ColorScheme theme,
       {bool isLoading = false}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (isLoading)
-          SizedBox(
+          Container(
+            margin: const EdgeInsets.only(top: 2),
             width: 20,
             height: 20,
-            child:
-                CircularProgressIndicator(strokeWidth: 2, color: theme.primary),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: theme.primary,
+            ),
           )
         else
           Icon(
-            success ? Icons.check_circle : Icons.cancel,
-            color: success ? Colors.green : theme.error,
+            success ? Icons.check_circle : Icons.error,
+            color: success ? theme.primary : theme.error,
             size: 20,
           ),
         const SizedBox(width: 12),
@@ -338,9 +344,10 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.onSurface,
+                  color: theme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 result,
                 style: TextStyle(
@@ -361,12 +368,14 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
   Widget _buildExtensionIcon(ColorScheme theme) {
     if (widget.source.iconUrl == null || widget.source.iconUrl!.isEmpty) {
       return Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-              color: theme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8)),
-          child: Icon(Icons.extension, color: theme.primary));
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: theme.primary.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(Icons.extension, color: theme.primary, size: 24),
+      );
     }
 
     if (widget.source.iconUrl!.startsWith('http')) {
@@ -381,9 +390,10 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-                color: theme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8)),
-            child: Icon(Icons.extension, color: theme.primary),
+              color: theme.primary.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.extension, color: theme.primary, size: 24),
           ),
         ),
       );
@@ -400,9 +410,10 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-              color: theme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8)),
-          child: Icon(Icons.extension, color: theme.primary),
+            color: theme.primary.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.extension, color: theme.primary, size: 24),
         ),
       ),
     );
