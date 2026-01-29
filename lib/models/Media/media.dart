@@ -45,7 +45,7 @@ class Media {
   String? sourceName;
 
   // String get uniqueId => "$id-${serviceType.name}";
-  String get uniqueId => id;
+  String get uniqueId => id.split('*').first;
 
   Media(
       {this.id = '0',
@@ -334,6 +334,7 @@ class Media {
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',
+      isAdult: json['isAdult'] ?? false,
       totalEpisodes: json['episodes']?.toString() ?? '?',
       poster: json['coverImage']?['large'] ?? '?',
       cover: json['bannerImage'],

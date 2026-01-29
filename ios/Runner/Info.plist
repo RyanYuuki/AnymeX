@@ -10,6 +10,16 @@
     <true/>
     <!-- <key>FLTEnableImpeller</key>
     <false /> -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to photo library to save backup files</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app needs access to save backup files to your photo library</string>
+    <key>UISupportsDocumentBrowser</key>
+    <true/>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
+    <key>UIFileSharingEnabled</key>
+    <true/>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
