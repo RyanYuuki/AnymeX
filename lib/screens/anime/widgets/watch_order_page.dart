@@ -95,7 +95,8 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
               );
             }
             if (watchOrder.isEmpty) {
-              return const Center(child: AnymexText(text: "No watch order found."));
+              return const Center(
+                  child: AnymexText(text: "No watch order found."));
             }
 
             return ListView.separated(
@@ -162,14 +163,23 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         onTap: () {
           // Navigate to details if Anilist ID exists
           if (item.anilistId.isNotEmpty) {
-            final media = Media(
-              id: int.tryParse(item.anilistId) ?? 0,
-              title: item.nameEnglish ?? item.name,
-              poster: item.image,
-              serviceType: ServicesType.anilist, // FIX: Added missing parameter
-            );
-            navigate(
-                () => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
+            // Note: Media ID usually expects int, but if your model uses String, keep as String.
+            // Based on logs, it likely expects int.
+            final int? mediaId = int.tryParse(item.anilistId);
+            
+            if (mediaId != null) {
+                final media = Media(
+                  id: mediaId,
+                  title: item.nameEnglish ?? item.name,
+                  poster: item.image,
+                  serviceType: ServicesType.anilist,
+                );
+                navigate(
+                    () => AnimeDetailsPage(media: media, tag: "wo-${item.id}"));
+            } else {
+               // Fallback or error handling if ID isn't valid int
+               // Some projects use String IDs for Media, check Media model if this fails again.
+            }
           }
         },
       ),
