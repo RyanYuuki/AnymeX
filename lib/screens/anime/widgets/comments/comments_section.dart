@@ -98,7 +98,7 @@ class _CommentSectionState extends State<CommentSection> {
             onPressed: () {
               Navigator.pop(context); // Close dialog
               // Show the full rules sheet
-              showPolicySheet(context, PolicyType.commentPolicy);
+              showPolicySheet(context, PolicyType.commentsRules);
             },
             child: const Text('Read Full Rules'),
           ),
