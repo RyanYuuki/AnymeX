@@ -244,49 +244,53 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 20.0),
-                                      child: Text(
-                                        "Continue Watching (Literally)",
-                                        style: TextStyle(
-                                          fontFamily: "Poppins-SemiBold",
-                                          fontSize: 17,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                if (historyData.isNotEmpty) ...[
+                                  10.height(),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 20.0),
+                                        child: Text(
+                                          "Continue Watching (Literally)",
+                                          style: TextStyle(
+                                            fontFamily: "Poppins-SemiBold",
+                                            fontSize: 17,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    10.height(),
-                                    SizedBox(
-                                      height: 228,
-                                      child: GridView.builder(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15),
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: historyData.length,
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 1,
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 0,
-                                                mainAxisExtent: 300),
-                                        itemBuilder: (context, i) {
-                                          final historyModel =
-                                              HistoryModel.fromOfflineMedia(
-                                                  historyData[i],
-                                                  ItemType.anime);
-                                          return ContinueWatchingCard(
-                                              media: historyModel);
-                                        },
-                                      ),
-                                    )
-                                  ],
-                                ),
+                                      10.height(),
+                                      SizedBox(
+                                        height: 228,
+                                        child: GridView.builder(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: historyData.length,
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 1,
+                                                  crossAxisSpacing: 10,
+                                                  mainAxisSpacing: 0,
+                                                  mainAxisExtent: 300),
+                                          itemBuilder: (context, i) {
+                                            final historyModel =
+                                                HistoryModel.fromOfflineMedia(
+                                                    historyData[i],
+                                                    ItemType.anime);
+                                            return ContinueWatchingCard(
+                                                media: historyModel);
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ],
                             ),
                           );
