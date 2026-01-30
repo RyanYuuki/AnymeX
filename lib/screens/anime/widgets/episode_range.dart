@@ -16,37 +16,60 @@ class EpisodeChunkSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
         children: List.generate(
           chunks.length,
           (index) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(0, 10, 10, 5),
-              child: ChoiceChip(
-                backgroundColor: Theme.of(context)
-                    .colorScheme
-                    .secondaryContainer
-                    .withOpacity(0.4),
-                showCheckmark: false,
-                label: Text(
-                  index == 0
-                      ? "All"
-                      : '${chunks[index].first.number} - ${chunks[index].last.number}',
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                selected: selectedChunkIndex.value == index,
-                onSelected: (bool selected) {
-                  if (selected) {
+              child: Obx(() {
+                final isSelected = selectedChunkIndex.value == index;
+
+                return InkWell(
+                  onTap: () {
                     selectedChunkIndex.value = index;
                     onChunkSelected(index);
-                  }
-                },
-              ),
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.primary.withOpacity(0.4)
+                          : colorScheme.surfaceContainerHigh.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? colorScheme.primary.withOpacity(0.4)
+                            : colorScheme.outline.withOpacity(0.4),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      index == 0
+                          ? "All"
+                          : '${chunks[index].first.number} - ${chunks[index].last.number}',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                );
+              }),
             );
           },
         ),
