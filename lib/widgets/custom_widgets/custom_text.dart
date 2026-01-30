@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 enum TextVariant { regular, semiBold, bold }
@@ -13,6 +14,10 @@ class AnymexText extends StatelessWidget {
   final FontStyle fontStyle;
   final bool stripHtml;
 
+  final bool autoResize;
+  final double? minFontSize;
+  final double? stepGranularity;
+
   const AnymexText({
     super.key,
     required this.text,
@@ -24,37 +29,46 @@ class AnymexText extends StatelessWidget {
     this.maxLines = 2,
     this.fontStyle = FontStyle.normal,
     this.stripHtml = false,
+    this.autoResize = false,
+    this.minFontSize = 10,
+    this.stepGranularity = 1,
   });
 
   @override
   Widget build(BuildContext context) {
-    String fontFamily;
+    final fontFamily = switch (variant) {
+      TextVariant.semiBold => "Poppins-SemiBold",
+      TextVariant.bold => "Poppins-Bold",
+      _ => "Poppins",
+    };
 
-    switch (variant) {
-      case TextVariant.semiBold:
-        fontFamily = "Poppins-SemiBold";
-        break;
-      case TextVariant.bold:
-        fontFamily = "Poppins-Bold";
-        break;
-      case TextVariant.regular:
-      default:
-        fontFamily = "Poppins";
+    final processedText = stripHtml ? _removeHtmlTags(text) : text;
+
+    final textStyle = TextStyle(
+      fontFamily: fontFamily,
+      fontSize: size ?? 14.0,
+      color: color,
+      fontStyle: fontStyle,
+    );
+
+    if (!autoResize) {
+      return Text(
+        processedText,
+        textAlign: textAlign,
+        overflow: overflow,
+        maxLines: maxLines,
+        style: textStyle,
+      );
     }
 
-    String processedText = stripHtml ? _removeHtmlTags(text) : text;
-
-    return Text(
+    return AutoSizeText(
       processedText,
       textAlign: textAlign,
-      overflow: overflow,
       maxLines: maxLines,
-      style: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: size ?? 14.0,
-        color: color,
-        fontStyle: fontStyle,
-      ),
+      minFontSize: minFontSize ?? 10,
+      stepGranularity: stepGranularity ?? 1,
+      overflow: overflow,
+      style: textStyle,
     );
   }
 
