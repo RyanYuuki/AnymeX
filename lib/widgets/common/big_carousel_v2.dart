@@ -5,14 +5,14 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
-enum CarouselType { anime, manga, simkl }
 
 class BigCarouselV2 extends StatefulWidget {
   final List<Media> data;
@@ -38,31 +38,9 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
     if (newData.isEmpty) return const SizedBox.shrink();
 
     final colorScheme = Theme.of(context).colorScheme;
-    final activeItem = newData[activeIndex];
 
     return Stack(
       children: [
-        Positioned.fill(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            child: Container(
-              key: ValueKey<String>(activeItem.cover ?? ''),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(activeItem.cover!),
-                  fit: BoxFit.cover,
-                  opacity: 0.15,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  color: colorScheme.surface.withOpacity(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
@@ -225,6 +203,9 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                     const SizedBox(width: 8),
                                     _buildDot(colorScheme),
                                     const SizedBox(width: 8),
+                                    Icon(Icons.play_circle_rounded,
+                                        size: 12, color: colorScheme.primary),
+                                    const SizedBox(width: 4),
                                     Text(
                                       media.totalEpisodes,
                                       maxLines: 1,
@@ -238,6 +219,9 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                     const SizedBox(width: 8),
                                     _buildDot(colorScheme),
                                     const SizedBox(width: 8),
+                                    Icon(Icons.info_rounded,
+                                        size: 12, color: colorScheme.primary),
+                                    const SizedBox(width: 4),
                                     GestureDetector(
                                       onTap: () =>
                                           _showDescriptionSheet(context, media),
@@ -376,13 +360,12 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        media.description ?? "No description available.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.6,
-                          color: colorScheme.onSurface.withOpacity(0.8),
-                        ),
+                      AnymexText(
+                        text: media.description,
+                        size: 14,
+                        color: colorScheme.onSurface.withOpacity(0.8),
+                        stripHtml: true,
+                        maxLines: 999,
                       ),
                       const SizedBox(height: 40),
                     ],
