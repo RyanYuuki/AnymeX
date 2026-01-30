@@ -98,7 +98,7 @@ class _CommentSectionState extends State<CommentSection> {
             onPressed: () {
               Navigator.pop(context); // Close dialog
               // Show the full rules sheet
-              showPolicySheet(context, PolicyType.commentPolicy);
+              showPolicySheet(context, PolicyType.commentRules);
             },
             child: const Text('Read Full Rules'),
           ),
@@ -216,7 +216,7 @@ class _CommentSectionState extends State<CommentSection> {
               const SizedBox(width: 4),
               IconButton(
                 onPressed: () =>
-                    showPolicySheet(context, PolicyType.commentPolicy),
+                    showPolicySheet(context, PolicyType.commentRules),
                 icon: Icon(
                   Icons.assignment_outlined,
                   color: colorScheme.primary,
