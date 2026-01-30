@@ -377,7 +377,8 @@ class OfflineStorageController extends GetxController {
         .value;
   }
 
-  void addMedia(String listName, Media original, ItemType type) {
+  void addMedia(String listName, Media original) {
+    final type = original.mediaType;
     final library = getLibraryFromType(type);
 
     if (library.firstWhereOrNull((e) => e.id == original.id) == null) {
@@ -395,8 +396,9 @@ class OfflineStorageController extends GetxController {
     addMediaToList(listName, original.id, mediaType: type);
   }
 
-  void removeMedia(String listName, String id, ItemType type) {
-    removeMediaFromList(listName, id, mediaType: type);
+  void removeMedia(String listName, Media original) {
+    final type = original.mediaType;
+    removeMediaFromList(listName, original.id, mediaType: type);
   }
 
   void addOrUpdateAnime(
@@ -594,6 +596,7 @@ class OfflineStorageController extends GetxController {
   }
 
   void saveEverything() => _saveLibraries();
+  void rebuildDatabase() => _buildCustomListData();
 
   void _saveLibraries() {
     if (_isUpdating) return;

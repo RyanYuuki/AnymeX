@@ -132,14 +132,13 @@ class DiscordRPCController extends GetxController {
       await _loadProfile();
       await connect();
     }
-
-    if (!isMobile) {
-      await connect();
-    }
   }
 
   Future<void> _loadToken() async {
     _token.value = DiscordKeys.token.get('');
+    if (!isMobile) {
+      _token.value = 'DESKTOP';
+    }
   }
 
   Future<void> _saveToken(String token) async {

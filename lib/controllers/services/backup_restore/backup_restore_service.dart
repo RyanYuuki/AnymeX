@@ -6,6 +6,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:file_picker/file_picker.dart';
@@ -31,12 +32,10 @@ class BackupRestoreService extends GetxController {
     return digest.toString().substring(0, 32);
   }
 
-  Future<Map<String, dynamic>> _exportToJson() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    final ver = packageInfo.version;
+  Map<String, dynamic> _buildBackupData() {
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
-      'appVersion': ver,
+      'appVersion': '',
       'username': serviceHandler.onlineService.profileData.value.name ??
           serviceHandler.onlineService.profileData.value.userName,
       'avatar': serviceHandler.onlineService.profileData.value.avatar,
@@ -58,96 +57,85 @@ class BackupRestoreService extends GetxController {
     };
   }
 
-  Future<void> _importFromJson(Map<String, dynamic> json,
-      {bool merge = false}) async {
-    try {
-      final version = json['version'] as String?;
-      Logger.i('Restoring backup version: $version');
-
-      if (!merge) {
-        _storageController.clearCache();
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-
-      final animeList = (json['animeLibrary'] as List?)
-              ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      if (merge) {
-        for (var anime in animeList) {
-          if (_storageController.getAnimeById(anime.id ?? '') == null) {
-            _storageController.animeLibrary.add(anime);
-          }
-        }
-      } else {
-        _storageController.animeLibrary.assignAll(animeList);
-      }
-
-      final mangaList = (json['mangaLibrary'] as List?)
-              ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      if (merge) {
-        for (var manga in mangaList) {
-          if (_storageController.getMangaById(manga.id ?? '') == null) {
-            _storageController.mangaLibrary.add(manga);
-          }
-        }
-      } else {
-        _storageController.mangaLibrary.assignAll(mangaList);
-      }
-
-      final novelList = (json['novelLibrary'] as List?)
-              ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      if (merge) {
-        for (var novel in novelList) {
-          if (_storageController.getNovelById(novel.id ?? '') == null) {
-            _storageController.novelLibrary.add(novel);
-          }
-        }
-      } else {
-        _storageController.novelLibrary.assignAll(novelList);
-      }
-
-      if (!merge) {
-        _storageController.animeCustomLists.value =
-            (json['animeCustomLists'] as List?)
-                    ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
-                    .toList() ??
-                [];
-
-        _storageController.mangaCustomLists.value =
-            (json['mangaCustomLists'] as List?)
-                    ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
-                    .toList() ??
-                [];
-
-        _storageController.novelCustomLists.value =
-            (json['novelCustomLists'] as List?)
-                    ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
-                    .toList() ??
-                [];
-      }
-
-      _storageController.animeLibrary.refresh();
-      _storageController.mangaLibrary.refresh();
-      _storageController.novelLibrary.refresh();
-
-      _storageController.saveEverything();
-
-      Logger.i('Data import completed successfully');
-    } catch (e) {
-      Logger.i('Error importing data: $e');
-      rethrow;
+  void _applyBackupData(Map<String, dynamic> data, {bool merge = false}) {
+    if (!merge) {
+      _storageController.clearCache();
     }
+
+    final animeList = (data['animeLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    if (merge) {
+      for (var anime in animeList) {
+        if (_storageController.getAnimeById(anime.id ?? '') == null) {
+          _storageController.animeLibrary.add(anime);
+        }
+      }
+    } else {
+      _storageController.animeLibrary.assignAll(animeList);
+    }
+
+    final mangaList = (data['mangaLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    if (merge) {
+      for (var manga in mangaList) {
+        if (_storageController.getMangaById(manga.id ?? '') == null) {
+          _storageController.mangaLibrary.add(manga);
+        }
+      }
+    } else {
+      _storageController.mangaLibrary.assignAll(mangaList);
+    }
+
+    final novelList = (data['novelLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    if (merge) {
+      for (var novel in novelList) {
+        if (_storageController.getNovelById(novel.id ?? '') == null) {
+          _storageController.novelLibrary.add(novel);
+        }
+      }
+    } else {
+      _storageController.novelLibrary.assignAll(novelList);
+    }
+
+    if (!merge) {
+      _storageController.animeCustomLists.value =
+          (data['animeCustomLists'] as List?)
+                  ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
+                  .toList() ??
+              [];
+
+      _storageController.mangaCustomLists.value =
+          (data['mangaCustomLists'] as List?)
+                  ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
+                  .toList() ??
+              [];
+
+      _storageController.novelCustomLists.value =
+          (data['novelCustomLists'] as List?)
+                  ?.map((e) => CustomList.fromJson(e as Map<String, dynamic>))
+                  .toList() ??
+              [];
+    }
+
+    _storageController.animeLibrary.refresh();
+    _storageController.mangaLibrary.refresh();
+    _storageController.novelLibrary.refresh();
+
+    _storageController.saveEverything();
+    _storageController.rebuildDatabase();
   }
 
-  String _encryptBackup(Map<String, dynamic> data, String password) {
+  String _encryptData(Map<String, dynamic> data, String password) {
     final key = encrypt.Key.fromUtf8(_generateKey(password));
     final iv = encrypt.IV.fromLength(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
@@ -161,7 +149,7 @@ class BackupRestoreService extends GetxController {
     });
   }
 
-  Map<String, dynamic> _decryptBackup(String encryptedData, String password) {
+  Map<String, dynamic> _decryptData(String encryptedData, String password) {
     try {
       final key = encrypt.Key.fromUtf8(_generateKey(password));
       final parsed = jsonDecode(encryptedData) as Map<String, dynamic>;
@@ -197,118 +185,106 @@ class BackupRestoreService extends GetxController {
     return true;
   }
 
-  Future<Directory> _getBackupDirectory() async {
-    if (Platform.isAndroid) {
-      try {
-        final directory = await getExternalStorageDirectory();
-        if (directory != null) {
-          final pathParts = directory.path.split('/');
-          final baseIndex = pathParts.indexOf('Android');
-          if (baseIndex > 0) {
-            final basePath = pathParts.sublist(0, baseIndex).join('/');
-            final downloadsDir = Directory('$basePath/Download');
-            if (await downloadsDir.exists()) {
-              return downloadsDir;
-            }
-            final documentsDir = Directory('$basePath/Documents');
-            if (await documentsDir.exists()) {
-              return documentsDir;
-            }
-          }
-        }
-      } catch (e) {
-        Logger.i('Failed to get external storage: $e');
-      }
-    }
+  Future<File> _createBackupFile({String? password}) async {
+    final data = _buildBackupData();
 
-    return await getApplicationDocumentsDirectory();
+    final packageInfo = await PackageInfo.fromPlatform();
+    data['appVersion'] = packageInfo.version;
+
+    final content = password != null && password.isNotEmpty
+        ? _encryptData(data, password)
+        : jsonEncode(data);
+
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File(
+      '${dir.path}/anymex_${DateTime.now().millisecondsSinceEpoch}.anymex',
+    );
+    await file.writeAsString(content, flush: true);
+    return file;
   }
 
-  Future<String> createBackup({String? password, String? customPath}) async {
+  Future<String?> exportBackupToExternal({
+    String? password,
+    bool requestPath = true,
+  }) async {
     try {
-      isBackingUp.value = true;
-      backupProgress.value = 0.0;
-      statusMessage.value = 'Preparing backup data...';
-
-      backupProgress.value = 0.2;
-      final data = await _exportToJson();
-
-      statusMessage.value = 'Encrypting data...';
-      backupProgress.value = 0.5;
-
-      final content = password != null && password.isNotEmpty
-          ? _encryptBackup(data, password)
-          : jsonEncode(data);
-
-      statusMessage.value = 'Saving backup file...';
-      backupProgress.value = 0.7;
-
-      String filePath;
-      if (customPath != null) {
-        filePath = customPath;
-      } else {
-        final directory = await getApplicationDocumentsDirectory();
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName = 'anymex_backup_$timestamp.anymex';
-        filePath = '${directory.path}/$fileName';
+      if (Platform.isAndroid && requestPath) {
+        final hasPermission = await _requestStoragePermission();
+        if (!hasPermission) {
+          Logger.i('Storage permission denied');
+          throw Exception('Storage permission is required to save files');
+        }
       }
 
-      final file = File(filePath);
-      await file.writeAsString(content);
+      final backupFile = await _createBackupFile(password: password);
+      final bytes = await backupFile.readAsBytes();
 
-      backupProgress.value = 1.0;
-      statusMessage.value = 'Backup created successfully!';
-      lastBackupPath.value = filePath;
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'anymex_backup_$timestamp.anymex';
 
-      Logger.i('Backup created: $filePath');
-      return filePath;
+      String? outputPath;
+
+      if (requestPath) {
+        outputPath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Save Backup File',
+          fileName: fileName,
+          bytes: bytes,
+          type: FileType.custom,
+          allowedExtensions: ['anymex'],
+        );
+      }
+
+      if (await backupFile.exists()) {
+        await backupFile.delete();
+      }
+
+      if (outputPath != null) {
+        lastBackupPath.value = outputPath;
+        return outputPath;
+      } else {
+        if (Platform.isIOS) {
+          try {
+            final directory = await getApplicationDocumentsDirectory();
+            final fallbackPath = '${directory.path}/$fileName';
+            final fallbackFile = File(fallbackPath);
+            await fallbackFile.writeAsBytes(bytes);
+            Logger.i('Backup saved to iOS sandbox: $fallbackPath');
+            lastBackupPath.value = fallbackPath;
+            return fallbackPath;
+          } catch (fallbackError) {
+            Logger.i('Failed to save to iOS sandbox: $fallbackError');
+            throw Exception('Failed to save backup: $fallbackError');
+          }
+        }
+        return null;
+      }
     } catch (e) {
-      statusMessage.value = 'Backup failed: ${e.toString()}';
-      Logger.i('Backup creation failed: $e');
+      Logger.i('Export backup failed: $e');
       rethrow;
-    } finally {
-      isBackingUp.value = false;
     }
   }
 
   Future<void> restoreBackup(String filePath,
       {String? password, bool merge = false}) async {
     try {
-      isRestoring.value = true;
-      restoreProgress.value = 0.0;
-      statusMessage.value = 'Reading backup file...';
-
       final file = File(filePath);
 
       if (!await file.exists()) {
         throw Exception('Backup file not found');
       }
 
-      restoreProgress.value = 0.2;
       final content = await file.readAsString();
 
-      statusMessage.value = 'Decrypting data...';
-      restoreProgress.value = 0.4;
-
       final data = password != null && password.isNotEmpty
-          ? _decryptBackup(content, password)
+          ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
-      statusMessage.value = 'Importing data...';
-      restoreProgress.value = 0.6;
-
-      await _importFromJson(data, merge: merge);
-
-      restoreProgress.value = 1.0;
-      statusMessage.value = 'Backup restored successfully!';
+      _applyBackupData(data, merge: merge);
 
       Logger.i('Backup restored successfully from: $filePath');
     } catch (e) {
-      statusMessage.value = 'Restore failed: ${e.toString()}';
       Logger.i('Backup restoration failed: $e');
       rethrow;
-    } finally {
-      isRestoring.value = false;
     }
   }
 
@@ -323,8 +299,7 @@ class BackupRestoreService extends GetxController {
       }
 
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['anymex'],
+        type: FileType.any,
         dialogTitle: 'Select Anymex Backup File',
         allowMultiple: false,
       );
@@ -333,6 +308,12 @@ class BackupRestoreService extends GetxController {
         final pickedFile = result.files.first;
 
         if (pickedFile.path != null) {
+          final ext = pickedFile.path?.split('.').last.toLowerCase();
+          if (ext != "anymex") {
+            snackBar('Wrong file retard');
+            return "";
+          }
+
           return pickedFile.path;
         } else if (pickedFile.bytes != null) {
           final tempDir = await getTemporaryDirectory();
@@ -340,33 +321,32 @@ class BackupRestoreService extends GetxController {
           await tempFile.writeAsBytes(pickedFile.bytes!);
           return tempFile.path;
         }
+      } else {
+        if (Platform.isIOS) {
+          try {
+            final directory = await getApplicationDocumentsDirectory();
+            final sandboxFiles = directory
+                .listSync()
+                .where((f) => f.path.endsWith('.anymex'))
+                .toList();
+
+            if (sandboxFiles.isNotEmpty) {
+              sandboxFiles.sort((a, b) =>
+                  b.statSync().modified.compareTo(a.statSync().modified));
+              Logger.i(
+                  'Found backup in iOS sandbox: ${sandboxFiles.first.path}');
+              return sandboxFiles.first.path;
+            }
+          } catch (sandboxError) {
+            Logger.i('Failed to check iOS sandbox: $sandboxError');
+          }
+        }
       }
 
       return null;
     } catch (e) {
       Logger.i('File picker error: $e');
       rethrow;
-    }
-  }
-
-  Future<bool> isValidBackupFile(String filePath, {String? password}) async {
-    try {
-      final file = File(filePath);
-      if (!await file.exists()) return false;
-
-      final content = await file.readAsString();
-
-      final data = password != null && password.isNotEmpty
-          ? _decryptBackup(content, password)
-          : jsonDecode(content) as Map<String, dynamic>;
-
-      return data.containsKey('version') &&
-          data.containsKey('animeLibrary') &&
-          data.containsKey('mangaLibrary') &&
-          data.containsKey('novelLibrary');
-    } catch (e) {
-      Logger.i('Backup validation failed: $e');
-      return false;
     }
   }
 
@@ -379,7 +359,7 @@ class BackupRestoreService extends GetxController {
       final content = await file.readAsString();
 
       final data = password != null && password.isNotEmpty
-          ? _decryptBackup(content, password)
+          ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
       final animeCount = (data['animeLibrary'] as List?)?.length ?? 0;
@@ -430,121 +410,6 @@ class BackupRestoreService extends GetxController {
           parsed.containsKey('data');
     } catch (e) {
       return false;
-    }
-  }
-
-  Future<void> createAutoBackup({String? password}) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final backupDir = Directory('${directory.path}/backups');
-
-      if (!await backupDir.exists()) {
-        await backupDir.create(recursive: true);
-      }
-
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'anymex_auto_backup_$timestamp.anymex';
-      final filePath = '${backupDir.path}/$fileName';
-
-      await createBackup(password: password, customPath: filePath);
-
-      await _cleanOldAutoBackups(backupDir);
-    } catch (e) {
-      Logger.i('Auto backup failed: $e');
-    }
-  }
-
-  Future<void> _cleanOldAutoBackups(Directory backupDir) async {
-    try {
-      final files = backupDir
-          .listSync()
-          .whereType<File>()
-          .where((f) => f.path.contains('anymex_auto_backup'))
-          .toList();
-
-      if (files.length > 5) {
-        files.sort(
-            (a, b) => b.statSync().modified.compareTo(a.statSync().modified));
-
-        for (var i = 5; i < files.length; i++) {
-          await files[i].delete();
-          Logger.i('Deleted old auto backup: ${files[i].path}');
-        }
-      }
-    } catch (e) {
-      Logger.i('Failed to clean old backups: $e');
-    }
-  }
-
-  Future<String?> exportBackupToExternal({
-    String? password,
-    bool requestPath = true,
-  }) async {
-    try {
-      if (Platform.isAndroid && requestPath) {
-        final hasPermission = await _requestStoragePermission();
-        if (!hasPermission) {
-          Logger.i('Storage permission denied');
-          throw Exception('Storage permission is required to save files');
-        }
-      }
-
-      String? savePath;
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'anymex_backup_$timestamp.anymex';
-
-      if (requestPath) {
-        if (Platform.isAndroid || Platform.isIOS) {
-          final tempDir = await getTemporaryDirectory();
-          final tempPath = '${tempDir.path}/$fileName';
-
-          final outputFile = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
-            fileName: fileName,
-            type: FileType.custom,
-            allowedExtensions: ['anymex'],
-          );
-
-          if (outputFile != null) {
-            final tempFile = File(tempPath);
-            final bytes = await tempFile.readAsBytes();
-            final targetFile = File(outputFile);
-            await targetFile.writeAsBytes(bytes);
-            await tempFile.delete();
-            savePath = outputFile;
-          } else {
-            return tempPath;
-          }
-        } else {
-          savePath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
-            fileName: fileName,
-            type: FileType.custom,
-            allowedExtensions: ['anymex'],
-          );
-
-          if (savePath == null) {
-            return null;
-          }
-
-          if (!savePath.endsWith('.anymex')) {
-            savePath = '$savePath.anymex';
-          }
-        }
-      } else {
-        final directory = await _getBackupDirectory();
-        savePath = '${directory.path}/$fileName';
-      }
-
-      final backupPath = await createBackup(
-        password: password,
-        customPath: savePath,
-      );
-
-      return backupPath;
-    } catch (e) {
-      Logger.i('Export backup failed: $e');
-      rethrow;
     }
   }
 
