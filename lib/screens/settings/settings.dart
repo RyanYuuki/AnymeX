@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/screens/other_features.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -28,20 +29,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Glow(
-      child: Scaffold(
-          body: SuperListView(
+        child: Scaffold(
+            body: Column(children: [
+      const NestedHeader(title: 'Settings'),
+      Expanded(
+          child: SuperListView(
         padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-            desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
+            mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+            desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
         children: [
-          const Row(
-            children: [
-              CustomBackButton(),
-              SizedBox(width: 10),
-              Text("Settings",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            ],
-          ),
           const SizedBox(height: 30),
           Container(
             decoration: BoxDecoration(
@@ -151,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
           30.height(),
         ],
       )),
-    );
+    ])));
   }
 }
 
