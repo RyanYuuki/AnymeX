@@ -31,13 +31,15 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
 
       if (type == PolicyType.commentPolicy) {
         // Extract the entire "Comments System & Comment Policy" section
-        // Starts at "## Comments System" and ends at the next "## " (DMCA)
         const startMarker = '## Comments System & Comment Policy';
         final startIndex = content.indexOf(startMarker);
 
         if (startIndex != -1) {
+          // Find the next H2 header to stop (e.g., "\n## DMCA Compliance")
+          // Use "\n## " to strictly match Top Level headers and avoid matching "###"
           final nextHeaderIndex =
-              content.indexOf('## ', startIndex + startMarker.length);
+              content.indexOf('\n## ', startIndex + startMarker.length);
+
           if (nextHeaderIndex != -1) {
             content = content.substring(startIndex, nextHeaderIndex).trim();
           } else {
@@ -45,29 +47,31 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
           }
         }
       } else if (type == PolicyType.commentRules) {
-        // Extract ONLY the "Comment Rules" subsection
-        // Starts at "### Comment Rules" and ends at the next "### " (Moderation)
+        // Extract ONLY the "Comment Rules" subsection (H3)
         const startMarker = '### Comment Rules';
         final startIndex = content.indexOf(startMarker);
 
         if (startIndex != -1) {
-          final nextHeaderIndex =
-              content.indexOf('### ', startIndex + startMarker.length);
-          if (nextHeaderIndex != -1) {
-            content = content.substring(startIndex, nextHeaderIndex).trim();
+          // Find next H3 ("\n### ") or H2 ("\n## ")
+          final nextH3 =
+              content.indexOf('\n### ', startIndex + startMarker.length);
+          final nextH2 =
+              content.indexOf('\n## ', startIndex + startMarker.length);
+
+          int endIndex = -1;
+          if (nextH3 != -1 && nextH2 != -1) {
+            endIndex = (nextH3 < nextH2) ? nextH3 : nextH2;
           } else {
-            // If it's the last H3 in the section, find the next H2
-            final nextMainHeader =
-                content.indexOf('## ', startIndex + startMarker.length);
-            if (nextMainHeader != -1) {
-              content = content.substring(startIndex, nextMainHeader).trim();
-            } else {
-              content = content.substring(startIndex).trim();
-            }
+            endIndex = nextH3 != -1 ? nextH3 : nextH2;
+          }
+
+          if (endIndex != -1) {
+            content = content.substring(startIndex, endIndex).trim();
+          } else {
+            content = content.substring(startIndex).trim();
           }
         } else {
-           // Fallback if marker not found
-           content = "Could not find specific rules section.";
+          content = "Could not find specific rules section.";
         }
       }
 
@@ -194,7 +198,10 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                                   .withOpacity(0.85),
                               fontWeight: FontWeight.w400,
                             ),
-                        h1: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        h1: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
                             ),
