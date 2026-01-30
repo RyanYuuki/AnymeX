@@ -9,6 +9,7 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -575,94 +576,123 @@ class _SegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final availableTypes =
         serviceHandler.serviceType.value == ServicesType.simkl
             ? [ItemType.anime]
             : [ItemType.anime, ItemType.manga, ItemType.novel];
 
+    final totalItems = availableTypes.length;
+
     return Container(
+      height: 54,
       margin: const EdgeInsets.symmetric(horizontal: 0),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: colorScheme.outline.withOpacity(0.1),
           width: 1,
         ),
       ),
-      child: Row(
-        children: availableTypes.map((itemType) {
-          return Obx(() {
-            final isSelected = controller.type.value == itemType;
+      child: Stack(
+        children: [
+          Obx(() {
+            final currentIndex = availableTypes.indexOf(controller.type.value);
 
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => controller.switchCategory(itemType),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOutCubic,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            double alignmentX = 0.0;
+            if (totalItems > 1) {
+              alignmentX = -1.0 + (2.0 * currentIndex / (totalItems - 1));
+            }
+
+            return AnimatedAlign(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutQuint,
+              alignment: Alignment(alignmentX, 0),
+              child: FractionallySizedBox(
+                widthFactor: 1 / totalItems,
+                heightFactor: 1.0,
+                child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : [],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Icon(
-                          _getTypeIcon(itemType),
-                          key: ValueKey('${itemType.name}_icon'),
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : Theme.of(context).colorScheme.onSurfaceVariant,
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 200),
-                          style: TextStyle(
-                            fontFamily: "Poppins-Bold",
-                            fontSize: 14,
-                            color: isSelected
-                                ? Theme.of(context).colorScheme.onPrimary
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                          ),
-                          child: Text(
-                            _getTypeLabel(itemType),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                 ),
               ),
             );
-          });
-        }).toList(),
+          }),
+          Row(
+            children: availableTypes.map((itemType) {
+              return Expanded(
+                child: Obx(() {
+                  final isSelected = controller.type.value == itemType;
+
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (!isSelected) {
+                        HapticFeedback.lightImpact();
+                        controller.switchCategory(itemType);
+                      }
+                    },
+                    child: AnimatedScale(
+                      scale: isSelected ? 1.05 : 1.0,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      child: AnimatedOpacity(
+                        opacity: isSelected ? 1.0 : 0.7,
+                        duration: const Duration(milliseconds: 200),
+                        child: SizedBox.expand(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _getTypeIcon(itemType),
+                                size: 18,
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 200),
+                                  style: TextStyle(
+                                    fontFamily: "Poppins-Bold",
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: isSelected
+                                        ? colorScheme.onPrimary
+                                        : colorScheme.onSurfaceVariant,
+                                  ),
+                                  child: Text(
+                                    _getTypeLabel(itemType),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

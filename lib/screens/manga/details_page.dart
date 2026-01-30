@@ -328,10 +328,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                               child: InkWell(
                                   onTap: () {
                                     showCustomListDialog(
-                                        context,
-                                        anilistData!,
-                                        offlineStorage.mangaCustomLists.value,
-                                        ItemType.manga);
+                                      context,
+                                      anilistData!,
+                                    );
                                   },
                                   borderRadius: BorderRadius.circular(16),
                                   child: const Icon(
@@ -342,11 +341,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
-                                showCustomListDialog(
-                                    context,
-                                    anilistData!,
-                                    offlineStorage.animeCustomLists.value,
-                                    ItemType.anime);
+                                showCustomListDialog(context, anilistData!);
                               },
                               label: 'Add to Library',
                               icon: HugeIcons.strokeRoundedLibrary,
