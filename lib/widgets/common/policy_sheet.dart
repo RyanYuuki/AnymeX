@@ -1,13 +1,25 @@
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-enum PolicyType { tos, commentPolicy }
+enum PolicyType { tos, commentPolicy, commentRules }
 
 Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
-  final String title =
-      type == PolicyType.tos ? "Terms of Service" : "Comment Policy";
-  
+  String title;
+  switch (type) {
+    case PolicyType.tos:
+      title = "Terms of Service";
+      break;
+    case PolicyType.commentPolicy:
+      title = "Comment Policy";
+      break;
+    case PolicyType.commentRules:
+      title = "Comment Rules";
+      break;
+  }
+
   snackBar('Fetching $title...');
 
   try {
@@ -17,24 +29,45 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
     if (response.statusCode == 200) {
       String content = response.body;
 
-      // Logic to extract specific section for Comment Policy
       if (type == PolicyType.commentPolicy) {
+        // Extract the entire "Comments System & Comment Policy" section
+        // Starts at "## Comments System" and ends at the next "## " (DMCA)
         const startMarker = '## Comments System & Comment Policy';
         final startIndex = content.indexOf(startMarker);
 
         if (startIndex != -1) {
-          // Find the next header (##) to end the selection
           final nextHeaderIndex =
               content.indexOf('## ', startIndex + startMarker.length);
-
           if (nextHeaderIndex != -1) {
             content = content.substring(startIndex, nextHeaderIndex).trim();
           } else {
             content = content.substring(startIndex).trim();
           }
+        }
+      } else if (type == PolicyType.commentRules) {
+        // Extract ONLY the "Comment Rules" subsection
+        // Starts at "### Comment Rules" and ends at the next "### " (Moderation)
+        const startMarker = '### Comment Rules';
+        final startIndex = content.indexOf(startMarker);
+
+        if (startIndex != -1) {
+          final nextHeaderIndex =
+              content.indexOf('### ', startIndex + startMarker.length);
+          if (nextHeaderIndex != -1) {
+            content = content.substring(startIndex, nextHeaderIndex).trim();
+          } else {
+            // If it's the last H3 in the section, find the next H2
+            final nextMainHeader =
+                content.indexOf('## ', startIndex + startMarker.length);
+            if (nextMainHeader != -1) {
+              content = content.substring(startIndex, nextMainHeader).trim();
+            } else {
+              content = content.substring(startIndex).trim();
+            }
+          }
         } else {
-          snackBar("Could not find policy section.", duration: 2000);
-          return;
+           // Fallback if marker not found
+           content = "Could not find specific rules section.";
         }
       }
 
@@ -139,17 +172,43 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                   child: SingleChildScrollView(
                     controller: scrollController,
                     padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-                    child: Text(
-                      content,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            height: 1.6,
-                            letterSpacing: 0.2,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.85),
-                            fontWeight: FontWeight.w400,
-                          ),
+                    child: MarkdownBody(
+                      data: content,
+                      selectable: true,
+                      onTapLink: (text, href, title) async {
+                        if (href != null) {
+                          final uri = Uri.parse(href);
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri,
+                                mode: LaunchMode.externalApplication);
+                          }
+                        }
+                      },
+                      styleSheet: MarkdownStyleSheet(
+                        p: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              height: 1.6,
+                              letterSpacing: 0.2,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.85),
+                              fontWeight: FontWeight.w400,
+                            ),
+                        h1: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                        h2: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                        h3: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                        listBullet: TextStyle(
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
                     ),
                   ),
                 ),
