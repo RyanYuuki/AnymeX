@@ -1,4 +1,3 @@
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
@@ -156,13 +155,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  showCustomListDialog(
-                      context,
-                      controller.media.value,
-                      Get.find<OfflineStorageController>()
-                          .novelCustomLists
-                          .value,
-                      ItemType.novel);
+                  showCustomListDialog(context, controller.media.value);
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Row(

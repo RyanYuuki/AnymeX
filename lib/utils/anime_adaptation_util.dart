@@ -45,7 +45,6 @@ class MangaAnimeUtil {
   }
 
   static Future<NextRelease> getNextChapterPrediction(Media media) async {
-    print('getNextChapterPrediction');
     if (media.status.toUpperCase() != 'RELEASING') {
       return NextRelease(error: 'Series is not releasing');
     }
@@ -88,8 +87,6 @@ class MangaAnimeUtil {
         throw Exception('Failed to load release info');
       }
 
-      print(response.body.substring(1, 100));
-
       final RegExp rowRegExp = RegExp(
         r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>[\s\S]*?class="col-1 text text-center">[\s\S]*?</div>\s*<div class="col-1 text text-center">\s*(.*?)\s*</div>',
         caseSensitive: false,
@@ -101,7 +98,7 @@ class MangaAnimeUtil {
 
       for (final match in matches) {
         final dateStr = match.group(1);
-        print("Dates => $dateStr");
+
         final chapterStr = match.group(2);
 
         if (dateStr != null) {
@@ -111,7 +108,6 @@ class MangaAnimeUtil {
                 chapterStr != null &&
                 chapterStr.isNotEmpty) {
               latestChapterStr = chapterStr;
-              print(dateStr);
             }
           } catch (e) {
             print(e);
@@ -127,7 +123,6 @@ class MangaAnimeUtil {
       List<int> intervals = [];
 
       for (int i = 0; i < sampleSize - 1; i++) {
-        print('$i ${releaseDates[i]} ${releaseDates[i + 1]}');
         final diff = releaseDates[i].difference(releaseDates[i + 1]).inDays;
         if (diff > 0 && diff < 365) {
           intervals.add(diff);
@@ -137,8 +132,6 @@ class MangaAnimeUtil {
       if (intervals.isEmpty) {
         return NextRelease(error: 'Irregular release schedule');
       }
-
-      print('Not outta here');
 
       double avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
       int roundedInterval = avgInterval.round();
@@ -163,10 +156,6 @@ class MangaAnimeUtil {
         }
       }
 
-      print('Average interval: $roundedInterval days');
-      print('Next release date: $predictedDate');
-      print('Next chapter name: $nextChapterName');
-
       return NextRelease(
         nextReleaseDate: predictedDate,
         averageIntervalDays: roundedInterval,
@@ -177,30 +166,21 @@ class MangaAnimeUtil {
     }
   }
 
-  // Private helper method to get series data from AniList or MAL ID
   static Future<List<dynamic>?> _getSeriesFromId(Media media) async {
     String endpoint;
 
-    // Determine which endpoint to use based on service type
     switch (media.serviceType) {
       case ServicesType.anilist:
         endpoint = '$_baseUrl/source/anilist/${media.id}';
         break;
       case ServicesType.mal:
-        endpoint = '$_baseUrl/source/my-anime-list/${media.idMal ?? media.id}';
+        endpoint = '$_baseUrl/source/my-anime-list/${media.idMal}';
         break;
       default:
-        // For extensions or other services, try AniList ID if available
-        if (media.id != null) {
-          endpoint = '$_baseUrl/source/anilist/${media.id}';
-        } else {
-          return null;
-        }
+        endpoint = '$_baseUrl/source/anilist/${media.id}';
     }
 
     final response = await http.get(Uri.parse(endpoint));
-
-    print(endpoint);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

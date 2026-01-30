@@ -2,21 +2,16 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class CustomListDialog extends StatefulWidget {
   final Media original;
-  final List<CustomList> customLists;
-  final ItemType type;
 
   const CustomListDialog({
     super.key,
     required this.original,
-    required this.customLists,
-    required this.type,
   });
 
   @override
@@ -28,16 +23,18 @@ class _CustomListDialogState extends State<CustomListDialog> {
   late Map<String, bool> initialState;
   final storage = Get.find<OfflineStorageController>();
   final TextEditingController _searchController = TextEditingController();
+  late List<CustomList> customList =
+      storage.getListFromType(widget.original.mediaType);
   final FocusNode _searchFocus = FocusNode();
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    modifiedLists = widget.customLists;
+    modifiedLists = storage.getListFromType(widget.original.mediaType);
 
     initialState = {
-      for (var list in widget.customLists)
+      for (var list in modifiedLists)
         list.listName ?? '':
             list.mediaIds?.contains(widget.original.id) ?? false
     };
@@ -146,9 +143,11 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
     if (newListName != null && newListName.isNotEmpty) {
       setState(() {
-        storage.addCustomList(newListName, mediaType: widget.type);
+        storage.addCustomList(newListName,
+            mediaType: widget.original.mediaType);
         initialState[newListName] = false;
-        modifiedLists = widget.customLists
+
+        modifiedLists = customList
             .map((list) => CustomList(
                   listName: list.listName,
                   mediaIds: List<String>.from(list.mediaIds ?? []),
@@ -166,9 +165,9 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
       if (wasChecked != isCheckedNow) {
         if (isCheckedNow) {
-          storage.addMedia(listName, widget.original, widget.type);
+          storage.addMedia(listName, widget.original);
         } else {
-          storage.removeMedia(listName, widget.original.id, widget.type);
+          storage.removeMedia(listName, widget.original);
         }
       }
     }
@@ -440,14 +439,11 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 }
 
-void showCustomListDialog(
-    BuildContext context, Media media, List<CustomList> lists, ItemType type) {
+void showCustomListDialog(BuildContext context, Media media) {
   showDialog(
     context: context,
     builder: (context) => CustomListDialog(
       original: media,
-      customLists: lists,
-      type: type,
     ),
   );
 }

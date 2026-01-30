@@ -22,34 +22,6 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     super.dispose();
   }
 
-  Future<void> _showLoadingDialog(Future<void> Function() task) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => LoadingDialog(
-        statusObs: controller.statusMessage,
-        progressObs: controller.isBackingUp.value
-            ? controller.backupProgress
-            : controller.restoreProgress,
-      ),
-    );
-
-    try {
-      await Future.wait([
-        task(),
-        Future.delayed(const Duration(seconds: 2)),
-      ]);
-    } catch (e) {
-      if (mounted) {
-        Navigator.of(context).pop();
-        snackBar("Error: ${e.toString()}");
-      }
-      return;
-    }
-
-    if (mounted) Navigator.of(context).pop();
-  }
-
   Future<void> _handleBackup() async {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
@@ -76,15 +48,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         password = passwordController.text;
       }
 
-      await _showLoadingDialog(() async {
-        final path =
-            await controller.exportBackupToExternal(password: password);
-        if (path != null) {
-          if (mounted) {
-            snackBar("Backup saved successfully!");
-          }
-        }
-      });
+      final path = await controller.exportBackupToExternal(password: password);
+      if (path != null && mounted) {
+        snackBar("Backup saved successfully!");
+      }
     } catch (e) {
       if (mounted) {
         snackBar("Backup failed: ${e.toString()}");
@@ -115,10 +82,19 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-          onConfirm: () {
+          onConfirm: () async {
             Get.back();
-            _showLoadingDialog(() => controller.restoreBackup(path,
-                password: password, merge: false));
+            try {
+              await controller.restoreBackup(path,
+                  password: password, merge: false);
+              if (mounted) {
+                snackBar("Backup restored successfully!");
+              }
+            } catch (e) {
+              if (mounted) {
+                snackBar("Restore failed: ${e.toString()}");
+              }
+            }
           },
         ),
         isScrollControlled: true,
@@ -177,243 +153,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       color: theme.colorScheme.tertiary,
                       onTap: () => _handleRestore(context),
                     ),
-                    const SizedBox(height: 32),
-                    _buildLastBackupInfo(theme),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLastBackupInfo(ThemeData theme) {
-    return Obx(() {
-      if (controller.lastBackupPath.value.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      return GlassContainer(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Icon(Icons.history, color: theme.colorScheme.onSurfaceVariant),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Last Backup Path",
-                        style: TextStyle(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontSize: 12)),
-                    Text(
-                      controller.lastBackupPath.value.split('/').last,
-                      style: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    });
-  }
-}
-
-class BackupPasswordDialog extends StatefulWidget {
-  final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
-  final Function(bool) onUsePasswordChanged;
-
-  const BackupPasswordDialog({
-    super.key,
-    required this.passwordController,
-    required this.confirmPasswordController,
-    required this.onUsePasswordChanged,
-  });
-
-  @override
-  State<BackupPasswordDialog> createState() => BackupPasswordDialogState();
-}
-
-class BackupPasswordDialogState extends State<BackupPasswordDialog> {
-  bool _usePassword = false;
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Dialog(
-      backgroundColor: theme.colorScheme.surfaceContainer,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.backup_rounded,
-                      color: theme.colorScheme.primary, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Backup Options",
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Protect your backup",
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: CheckboxListTile(
-                value: _usePassword,
-                onChanged: (value) {
-                  setState(() {
-                    _usePassword = value ?? false;
-                    widget.onUsePasswordChanged(_usePassword);
-                  });
-                },
-                title: Text(
-                  "Password Protect",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                subtitle: Text(
-                  "Add extra security to your backup",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                controlAffinity: ListTileControlAffinity.trailing,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-            if (_usePassword) ...[
-              const SizedBox(height: 20),
-              TextField(
-                controller: widget.passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  hintText: "Enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.3),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: widget.confirmPasswordController,
-                obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  hintText: "Re-enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscureConfirm = !_obscureConfirm);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.3),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Cancel"),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      "Create Backup",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ],
         ),

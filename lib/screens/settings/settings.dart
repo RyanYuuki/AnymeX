@@ -1,3 +1,4 @@
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
@@ -16,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:anymex/screens/other_features.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -70,13 +70,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () {
                       navigate(() => const BackupRestorePage());
                     }),
-                // CustomTile(
-                //     icon: HugeIcons.strokeRoundedComment01,
-                //     title: "Comments",
-                //     description: "Comment system settings and moderation",
-                //     onTap: () {
-                //       navigate(() => const SettingsComments());
-                //     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,
                     title: "UI",
@@ -132,15 +125,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     navigate(() => const AboutPage());
                   },
                 ),
-                // const SizedBox(height: 10),
-                // CustomTile(
-                //   icon: HugeIcons.strokeRoundedInformationCircle,
-                //   title: "TEST",
-                //   description: "TEST PAGE",
-                //   onTap: () async {
-                //     navigate(() => const TestPage());
-                //   },
-                // ),
               ],
             ),
           ),
