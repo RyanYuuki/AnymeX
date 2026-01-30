@@ -14,7 +14,9 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -42,7 +44,7 @@ class _CalendarState extends State<Calendar>
 
   RxBool isDubMode = false.obs;
   RxBool isFetching = false.obs;
-  Map<String, DubAnimeInfo> dubCache = {};
+  List<DubAnimeInfo> dubCache = [];
 
   @override
   void initState() {
@@ -75,8 +77,12 @@ class _CalendarState extends State<Calendar>
       t.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
   DubAnimeInfo? _getDubInfo(Media m) {
-    String t = _norm(m.title);
-    if (dubCache.containsKey(t)) return dubCache[t];
+    String normalized = _norm(m.title);
+    for (var dub in dubCache) {
+      if (_norm(dub.title) == normalized) {
+        return dub;
+      }
+    }
     return null;
   }
 
@@ -303,7 +309,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
 
   @override
   Widget build(BuildContext context) {
-    final scheduleInfo = widget.dubInfo?.scheduleInfo;
     final streams = widget.dubInfo?.streams ?? [];
 
     return SizedBox(
@@ -353,7 +358,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             ],
           ),
           const SizedBox(height: 5),
-          if (widget.isDubMode && scheduleInfo != null) ...[
+          if (widget.isDubMode && widget.dubInfo != null) ...[
             SizedBox(
               height: 25,
               child: Row(
@@ -363,7 +368,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                       color: Theme.of(context).colorScheme.primary, size: 14),
                   const SizedBox(width: 4),
                   AnymexText(
-                    text: 'EP ${scheduleInfo.episode}',
+                    text: 'EP ${widget.dubInfo!.episode}',
                     size: 11,
                     variant: TextVariant.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -380,7 +385,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: AnymexText(
-                      text: _formatAirTime(scheduleInfo.airDateTime),
+                      text: _formatAirTime(widget.dubInfo!.airDateTime),
                       size: 10,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -388,7 +393,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ],
               ),
             ),
-            if (streams.isNotEmpty)
+            if (widget.dubInfo!.streams.isNotEmpty)
               SizedBox(
                 height: 25,
                 child: Center(
@@ -396,27 +401,36 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: streams.map((s) {
+                      children: widget.dubInfo!.streams.map((s) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
                           child: GestureDetector(
                             onTap: () => _launchUrl(s.url),
                             child: Tooltip(
                               message: s.name,
-                              child: CircleAvatar(
-                                radius: 10,
-                                backgroundColor: Colors.white10,
-                                backgroundImage: (s.icon.isNotEmpty)
-                                    ? NetworkImage(s.icon)
-                                    : null,
-                                child: (s.icon.isEmpty)
-                                    ? Icon(Icons.link,
-                                        size: 12,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary)
-                                    : null,
-                              ),
+                              child: (s.icon.isEmpty)
+                                  ? Icon(Icons.link,
+                                      size: 12,
+                                      color:
+                                          Theme.of(context).colorScheme.primary)
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: s.name
+                                              .toLowerCase()
+                                              .contains('apple')
+                                          ? CachedNetworkImage(
+                                              // color: Colors.white,
+                                              imageUrl:
+                                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
+                                              height: 20,
+                                              width: 20,
+                                              fit: BoxFit.cover)
+                                          : SvgPicture.network(
+                                              s.icon,
+                                              height: 20,
+                                              width: 20,
+                                              fit: BoxFit.contain,
+                                            )),
                             ),
                           ),
                         );

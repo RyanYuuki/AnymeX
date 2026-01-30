@@ -2,7 +2,9 @@ import 'package:anymex/database/model/comment.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -72,7 +74,6 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _handlePostComment() {
-    // Check if user has accepted rules
     final box = Hive.box('themeData');
     final bool hasAccepted =
         box.get('hasAcceptedCommentRules', defaultValue: false);
@@ -96,18 +97,17 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
-              // Show the full rules sheet
+              Navigator.pop(context);
+
               showPolicySheet(context, PolicyType.commentRules);
             },
             child: const Text('Read Full Rules'),
           ),
           FilledButton(
             onPressed: () {
-              // Save acceptance
               Hive.box('themeData').put('hasAcceptedCommentRules', true);
               Navigator.pop(context);
-              // Proceed to post
+
               controller.addComment();
             },
             child: const Text('Accept & Post'),
@@ -197,21 +197,22 @@ class _CommentSectionState extends State<CommentSection> {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  'Comments',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                    letterSpacing: -0.5,
-                  ),
+                child: AnymexText(
+                  text: 'Comments',
+                  variant: TextVariant.semiBold,
+                  color: colorScheme.onSurface,
+                  size: 24,
+                  autoResize: true,
+                  maxLines: 1,
                 ),
               ),
-              Text(
-                _getTotalCommentCount(controller.comments),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
+              5.width(),
+              AnymexText(
+                text: _getTotalCommentCount(controller.comments),
+                color: colorScheme.onSurfaceVariant,
+                size: 13,
+                autoResize: true,
+                maxLines: 1,
               ),
               const SizedBox(width: 4),
               IconButton(
@@ -577,6 +578,7 @@ class _CommentSectionState extends State<CommentSection> {
 
       if (controller.comments.isEmpty) {
         return Container(
+          alignment: Alignment.center,
           padding: const EdgeInsets.all(60),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

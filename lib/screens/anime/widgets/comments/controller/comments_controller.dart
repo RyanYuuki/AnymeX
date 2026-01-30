@@ -7,6 +7,7 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -24,8 +25,8 @@ class CommentSectionController extends GetxController
   bool get isLoggedIn => serviceHandler.onlineService.isLoggedIn.value;
 
   final TextEditingController commentController = TextEditingController();
-  final Rx<TextEditingController> tagController =
-      Rx(TextEditingController(text: 'Episode 1'));
+  late Rx<TextEditingController> tagController = Rx(TextEditingController(
+      text: media.mediaType != ItemType.anime ? 'Chapter 1' : 'Episode 1'));
   final Rx<String> tag = ''.obs;
   final Rx<String> commentContent = ''.obs;
   final FocusNode commentFocusNode = FocusNode();

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:anymex/utils/logger.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
@@ -7,86 +5,26 @@ import 'package:intl/intl.dart';
 
 class DubService {
   static const String animeScheduleUrl = 'https://animeschedule.net/';
-  static const String liveChartUrl = 'https://www.livechart.me/streams/';
-  static const String kuroiruUrl = 'https://kuroiru.co/api/anime';
 
-  static const Map<String, String> _headers = {
-    'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-  };
-
-  static Future<Map<String, DubAnimeInfo>> fetchDubSources() async {
-    final Map<String, DubAnimeInfo> dubMap = {};
+  static Future<List<DubAnimeInfo>> fetchDubSources() async {
+    final List<DubAnimeInfo> dubs = [];
 
     try {
-      final lcResponse =
-          await http.get(Uri.parse(liveChartUrl), headers: _headers);
-      if (lcResponse.statusCode == 200) {
-        var document = html_parser.parse(lcResponse.body);
-
-        var streamLists =
-            document.querySelectorAll('div[data-controller="stream-list"]');
-
-        for (var list in streamLists) {
-          var titleEl = list.querySelector('.grouped-list-heading-title');
-          String serviceName = titleEl?.text.trim() ?? "Unknown";
-
-          var imgEl = list.querySelector('.grouped-list-heading-icon img');
-          String? serviceIcon = imgEl?.attributes['src'];
-          if (serviceIcon != null && serviceIcon.startsWith('/')) {
-            serviceIcon = 'https://u.livechart.me$serviceIcon';
-          }
-
-          var animeItems = list.querySelectorAll('li.grouped-list-item');
-
-          for (var item in animeItems) {
-            String title = item.attributes['data-title'] ?? "";
-            var infoDiv = item.querySelector('.info.text-italic');
-            String infoText = infoDiv?.text ?? "";
-
-            var linkEl = item.querySelector('a.anime-item__action-button');
-            String url = linkEl?.attributes['href'] ?? "";
-
-            if (title.isNotEmpty && infoText.contains("Dub")) {
-              String normalizedTitle = _normalizeTitle(title);
-
-              if (!dubMap.containsKey(normalizedTitle)) {
-                dubMap[normalizedTitle] = DubAnimeInfo(
-                  normalizedTitle: normalizedTitle,
-                  streams: [],
-                );
-              }
-
-              if (!dubMap[normalizedTitle]!
-                  .streams
-                  .any((e) => e.name == serviceName)) {
-                dubMap[normalizedTitle]!.streams.add(StreamingService(
-                      name: serviceName,
-                      url: url,
-                      icon: serviceIcon ?? '',
-                    ));
-              }
-            }
-          }
-        }
-      }
-
       final asResponse = await http.get(Uri.parse(animeScheduleUrl), headers: {
-        ..._headers,
+        "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0",
         "Cookie":
-            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timetableSettingsTimeFormat=24; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub"
+            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timezone=Asia/Kolkata; as_timetableSettingsTimeFormat=12; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub; as_timetableSettingsFilters=%5B%5D; as_timetableSettingsStreamFilters=%5B%22%5C%22crunchyroll-filter%5C%22%22%5D; as_timetableSettingsMediaFilters=%5B%22%5C%22tv-filter%5C%22%22,%22%5C%22ona-filter%5C%22%22,%22%5C%22ova-filter%5C%22%22,%22%5C%22special-filter%5C%22%22,%22%5C%22movie-filter%5C%22%22,%22%5C%22tv-short-filter%5C%22%22%5D; as_timetableSettingsFilterToFilters=%5B%22%5C%22always-show-anime-list-anime-filter%5C%22%22%5D; as_timetableSettingsFilterType=inclusive; as_timetableShowChinese=false; as_timetableSettingsHideDub=; as_disableTimetableImages=false; as_timetableSettingsSortBy=popularity; as_timetableSettingsWeekType=rotating"
       });
+
       if (asResponse.statusCode == 200) {
         var document = html_parser.parse(asResponse.body);
-
         var columns = document.querySelectorAll('.timetable-column');
 
         for (var column in columns) {
           var dateEl = column.querySelector('.timetable-column-date-format');
-          var dayEl = column.querySelector('.timetable-column-day');
 
           String? dateText = dateEl?.text.trim();
-          String? dayText = dayEl?.text.trim();
 
           DateTime? columnDate;
           if (dateText != null && dateText.isNotEmpty) {
@@ -122,6 +60,8 @@ class DubService {
             var timeEl = show.querySelector('.show-air-time');
 
             String title = titleEl?.text.trim() ?? "";
+            print(title);
+
             String link = linkEl?.attributes['href'] ?? "";
             String poster = posterEl?.attributes['src'] ??
                 posterEl?.attributes['data-src'] ??
@@ -167,42 +107,59 @@ class DubService {
               }
             }
 
-            String normalizedTitle = _normalizeTitle(title);
+            List<StreamingService> streamingServices = [];
+            var streamsContainer = show.querySelector('.show-streams');
 
-            // Removed dub check - cookies already filter for dub only
-            if (!dubMap.containsKey(normalizedTitle)) {
-              dubMap[normalizedTitle] = DubAnimeInfo(
-                normalizedTitle: normalizedTitle,
-                streams: [],
-              );
+            if (streamsContainer != null) {
+              var streamLinks =
+                  streamsContainer.querySelectorAll('a.stream-link');
+
+              for (var streamLink in streamLinks) {
+                String streamUrl = streamLink.attributes['href'] ?? "";
+                String streamTitle = streamLink.attributes['title'] ?? "";
+
+                var iconEl = streamLink.querySelector('img.stream-icon');
+                String streamIcon = iconEl?.attributes['data-src'] ??
+                    iconEl?.attributes['src'] ??
+                    "";
+
+                if (streamIcon.startsWith('/')) {
+                  streamIcon = "https://animeschedule.net$streamIcon";
+                }
+
+                if (streamUrl.startsWith('//')) {
+                  streamUrl = 'https:$streamUrl';
+                }
+
+                if (streamTitle.isNotEmpty && streamUrl.isNotEmpty) {
+                  streamingServices.add(StreamingService(
+                    name: streamTitle,
+                    url: streamUrl,
+                    icon: streamIcon,
+                  ));
+                }
+              }
+
+              final Set<String> icons = {};
+              final List<StreamingService> filteredServices = [];
+
+              for (final service in streamingServices) {
+                if (icons.add(service.icon)) {
+                  filteredServices.add(service);
+                }
+              }
+
+              streamingServices = filteredServices;
             }
 
-            var scheduleInfo = AnimeScheduleInfo(
+            dubs.add(DubAnimeInfo(
               title: title,
-              url: link,
+              animeUrl: link,
               poster: poster,
               episode: episode,
               airDateTime: airDateTime,
-              serviceName: 'AnimeSchedule',
-              serviceIcon:
-                  'https://img.animeschedule.net/production/assets/public/img/logos/as-logo-855bacd96c.png',
-            );
-
-            dubMap[normalizedTitle] = DubAnimeInfo(
-              normalizedTitle: normalizedTitle,
-              streams: dubMap[normalizedTitle]!.streams,
-              scheduleInfo: scheduleInfo,
-            );
-
-            if (!dubMap[normalizedTitle]!
-                .streams
-                .any((e) => e.name == 'AnimeSchedule')) {
-              dubMap[normalizedTitle]!.streams.add(StreamingService(
-                    name: 'AnimeSchedule',
-                    url: link,
-                    icon: scheduleInfo.serviceIcon,
-                  ));
-            }
+              streams: streamingServices,
+            ));
           }
         }
       }
@@ -210,79 +167,8 @@ class DubService {
       Logger.i("Error fetching dub data: $e");
     }
 
-    return dubMap;
+    return dubs;
   }
-
-  static Future<List<StreamingService>> fetchKuroiruLinks(String malId) async {
-    if (malId == 'null' || malId.isEmpty) return [];
-
-    try {
-      final response =
-          await http.get(Uri.parse('$kuroiruUrl/$malId'), headers: _headers);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        List<StreamingService> streams = [];
-        if (data['data'] != null && data['data']['streams'] != null) {
-          for (var stream in data['data']['streams']) {
-            streams.add(StreamingService(
-              name: stream['name'] ?? 'Unknown',
-              url: stream['url'] ?? '',
-              icon: '',
-            ));
-          }
-        }
-        return streams;
-      }
-    } catch (e) {
-      Logger.i("Error fetching Kuroiru: $e");
-    }
-    return [];
-  }
-
-  static String _normalizeTitle(String title) {
-    return title.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
-  }
-}
-
-class AnimeScheduleInfo {
-  final String title;
-  final String url;
-  final String poster;
-  final int episode;
-  final DateTime airDateTime;
-  final String serviceName;
-  final String serviceIcon;
-
-  AnimeScheduleInfo({
-    required this.title,
-    required this.url,
-    required this.poster,
-    required this.episode,
-    required this.airDateTime,
-    required this.serviceName,
-    required this.serviceIcon,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'url': url,
-        'poster': poster,
-        'episode': episode,
-        'airDateTime': airDateTime.toIso8601String(),
-        'serviceName': serviceName,
-        'serviceIcon': serviceIcon,
-      };
-
-  factory AnimeScheduleInfo.fromJson(Map<String, dynamic> json) =>
-      AnimeScheduleInfo(
-        title: json['title'],
-        url: json['url'],
-        poster: json['poster'],
-        episode: json['episode'],
-        airDateTime: DateTime.parse(json['airDateTime']),
-        serviceName: json['serviceName'],
-        serviceIcon: json['serviceIcon'],
-      );
 }
 
 class StreamingService {
@@ -311,29 +197,39 @@ class StreamingService {
 }
 
 class DubAnimeInfo {
-  final String normalizedTitle;
+  final String title;
+  final String animeUrl;
+  final String poster;
+  final int episode;
+  final DateTime airDateTime;
   final List<StreamingService> streams;
-  final AnimeScheduleInfo? scheduleInfo;
 
   DubAnimeInfo({
-    required this.normalizedTitle,
+    required this.title,
+    required this.animeUrl,
+    required this.poster,
+    required this.episode,
+    required this.airDateTime,
     required this.streams,
-    this.scheduleInfo,
   });
 
   Map<String, dynamic> toJson() => {
-        'normalizedTitle': normalizedTitle,
+        'title': title,
+        'animeUrl': animeUrl,
+        'poster': poster,
+        'episode': episode,
+        'airDateTime': airDateTime.toIso8601String(),
         'streams': streams.map((s) => s.toJson()).toList(),
-        'scheduleInfo': scheduleInfo?.toJson(),
       };
 
   factory DubAnimeInfo.fromJson(Map<String, dynamic> json) => DubAnimeInfo(
-        normalizedTitle: json['normalizedTitle'],
+        title: json['title'],
+        animeUrl: json['animeUrl'],
+        poster: json['poster'],
+        episode: json['episode'],
+        airDateTime: DateTime.parse(json['airDateTime']),
         streams: (json['streams'] as List)
             .map((s) => StreamingService.fromJson(s))
             .toList(),
-        scheduleInfo: json['scheduleInfo'] != null
-            ? AnimeScheduleInfo.fromJson(json['scheduleInfo'])
-            : null,
       );
 }
