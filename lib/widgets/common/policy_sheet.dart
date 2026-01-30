@@ -4,70 +4,52 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum PolicyType { tos, commentPolicy, commentRules }
+enum PolicyType { tos, commentPolicy, commentsRules }
 
 Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
-  String title;
-  switch (type) {
-    case PolicyType.tos:
-      title = "Terms of Service";
-      break;
-    case PolicyType.commentPolicy:
-      title = "Comment Policy";
-      break;
-    case PolicyType.commentRules:
-      title = "Comment Rules";
-      break;
-  }
-
+  final String title = type == PolicyType.tos 
+      ? "Terms of Service" 
+      : type == PolicyType.commentPolicy 
+        ? "Comment Policy" 
+        : "Comments Rules";
+  
   snackBar('Fetching $title...');
 
   try {
-    final response = await http.get(Uri.parse(
-        'https://raw.githubusercontent.com/RyanYuuki/AnymeX/master/TOS.md'));
+    // All policy types now fetch from the same TOS file
+    final String url = 'https://raw.githubusercontent.com/RyanYuuki/AnymeX/master/TOS.md';
+    
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       String content = response.body;
-
+      
+      // Extract specific sections based on policy type
       if (type == PolicyType.commentPolicy) {
-        // Extract the entire "Comments System & Comment Policy" section
-        // Starts at "## Comments System" and ends at the next "## " (DMCA)
-        const startMarker = '## Comments System & Comment Policy';
+        final startMarker = '## Comments System & Comment Policy';
+        final endMarker = 'All moderation decisions are final.';
+        
         final startIndex = content.indexOf(startMarker);
-
-        if (startIndex != -1) {
-          final nextHeaderIndex =
-              content.indexOf('## ', startIndex + startMarker.length);
-          if (nextHeaderIndex != -1) {
-            content = content.substring(startIndex, nextHeaderIndex).trim();
-          } else {
-            content = content.substring(startIndex).trim();
-          }
+        final endIndex = content.indexOf(endMarker);
+        
+        if (startIndex != -1 && endIndex != -1) {
+          content = content.substring(
+            startIndex, 
+            endIndex + endMarker.length
+          );
         }
-      } else if (type == PolicyType.commentRules) {
-        // Extract ONLY the "Comment Rules" subsection
-        // Starts at "### Comment Rules" and ends at the next "### " (Moderation)
-        const startMarker = '### Comment Rules';
+      } else if (type == PolicyType.commentsRules) {
+        final startMarker = '### Comment Rules';
+        final endMarker = 'Failure to follow these rules may result in comment deletion, temporary restrictions, or permanent bans from the commenting system.';
+        
         final startIndex = content.indexOf(startMarker);
-
-        if (startIndex != -1) {
-          final nextHeaderIndex =
-              content.indexOf('### ', startIndex + startMarker.length);
-          if (nextHeaderIndex != -1) {
-            content = content.substring(startIndex, nextHeaderIndex).trim();
-          } else {
-            // If it's the last H3 in the section, find the next H2
-            final nextMainHeader =
-                content.indexOf('## ', startIndex + startMarker.length);
-            if (nextMainHeader != -1) {
-              content = content.substring(startIndex, nextMainHeader).trim();
-            } else {
-              content = content.substring(startIndex).trim();
-            }
-          }
-        } else {
-           // Fallback if marker not found
-           content = "Could not find specific rules section.";
+        final endIndex = content.indexOf(endMarker);
+        
+        if (startIndex != -1 && endIndex != -1) {
+          content = content.substring(
+            startIndex, 
+            endIndex + endMarker.length
+          );
         }
       }
 
@@ -161,57 +143,56 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
               ),
             ),
             Expanded(
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: Scrollbar(
-                  controller: scrollController,
-                  thumbVisibility: true,
-                  radius: const Radius.circular(8),
-                  thickness: 6,
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-                    child: MarkdownBody(
-                      data: content,
-                      selectable: true,
-                      onTapLink: (text, href, title) async {
-                        if (href != null) {
-                          final uri = Uri.parse(href);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri,
-                                mode: LaunchMode.externalApplication);
-                          }
-                        }
-                      },
-                      styleSheet: MarkdownStyleSheet(
-                        p: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              height: 1.6,
-                              letterSpacing: 0.2,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.85),
-                              fontWeight: FontWeight.w400,
-                            ),
-                        h1: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                        h2: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                        h3: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                        listBullet: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
+              child: Markdown(
+                controller: scrollController,
+                data: content,
+                selectable: true,
+                shrinkWrap: false,
+                styleSheet: MarkdownStyleSheet(
+                  h1: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                    ),
-                  ),
+                  h2: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                  h3: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                  p: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        height: 1.6,
+                        letterSpacing: 0.2,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.85),
+                      ),
+                  listBullet: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                  code: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontFamily: 'monospace',
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                  blockquote: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                 ),
+                onTapLink: (text, href, title) {
+                  if (href != null) {
+                    launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                  }
+                },
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
               ),
             ),
           ],
