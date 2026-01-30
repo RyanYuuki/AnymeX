@@ -459,11 +459,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                               color: Colors.transparent,
                               child: InkWell(
                                   onTap: () {
-                                    showCustomListDialog(
-                                        context,
-                                        anilistData!,
-                                        offlineStorage.animeCustomLists.value,
-                                        ItemType.anime);
+                                    showCustomListDialog(context, anilistData!);
                                   },
                                   borderRadius: BorderRadius.circular(16),
                                   child: const Icon(
@@ -474,11 +470,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
-                                showCustomListDialog(
-                                    context,
-                                    anilistData!,
-                                    offlineStorage.animeCustomLists.value,
-                                    ItemType.anime);
+                                showCustomListDialog(context, anilistData!);
                               },
                               label: 'Add to Library',
                               icon: HugeIcons.strokeRoundedLibrary,
@@ -702,7 +694,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               ResponsiveNavBar(
                   isDesktop: true,
                   currentIndex: selectedPage.value,
-                  fit: true,
                   borderRadius: BorderRadius.circular(20),
                   items: [
                     NavItem(

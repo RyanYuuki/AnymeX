@@ -34,7 +34,7 @@ import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
-import 'package:anymex/widgets/animation/more_page_transitions.dart';
+import 'package:anymex/widgets/common/custom_nav_bar.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
@@ -435,11 +435,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ],
               ))),
-          Expanded(
-              child: SmoothPageEntrance(
-                  style: PageEntranceStyle.slideUpGentle,
-                  key: Key(_selectedIndex.toString()),
-                  child: routes[_selectedIndex])),
+          Expanded(child: routes[_selectedIndex]),
         ],
       ),
     );
@@ -447,41 +443,20 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildAndroidLayout(bool isSimkl) {
     return Scaffold(
-        body: SmoothPageEntrance(
-            style: PageEntranceStyle.slideUpGentle,
-            key: Key(_mobileSelectedIndex.toString()),
-            child: mobileRoutes[_mobileSelectedIndex]),
-        extendBody: true,
-        bottomNavigationBar: ResponsiveNavBar(
-          isDesktop: false,
-          currentIndex: _mobileSelectedIndex,
-          margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
-          items: [
-            NavItem(
-              unselectedIcon: IconlyBold.home,
-              selectedIcon: IconlyBold.home,
-              onTap: _onMobileItemTapped,
-              label: 'Home',
-            ),
-            NavItem(
-              unselectedIcon: Icons.movie_filter_rounded,
-              selectedIcon: Icons.movie_filter_rounded,
-              onTap: _onMobileItemTapped,
-              label: 'Anime',
-            ),
-            NavItem(
-              unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
-              selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-              onTap: _onMobileItemTapped,
-              label: 'Manga',
-            ),
-            NavItem(
-              unselectedIcon: HugeIcons.strokeRoundedLibrary,
-              selectedIcon: HugeIcons.strokeRoundedLibrary,
-              onTap: _onMobileItemTapped,
-              label: 'Library',
-            ),
-          ],
-        ));
+      body: Stack(
+        children: [
+          mobileRoutes[_mobileSelectedIndex],
+          Positioned(
+              bottom: 10,
+              right: 10,
+              left: 10,
+              child: CustomNavBar(
+                selectedIndex: _mobileSelectedIndex,
+                onTap: _onMobileItemTapped,
+              )),
+        ],
+      ),
+      extendBody: true,
+    );
   }
 }
