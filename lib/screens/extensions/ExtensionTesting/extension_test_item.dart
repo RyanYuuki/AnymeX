@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 enum TestState { notStarted, running, completed }
 
@@ -203,7 +204,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return Container(
       decoration: BoxDecoration(

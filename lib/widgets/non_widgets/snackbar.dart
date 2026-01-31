@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +9,14 @@ OverlayEntry? _currentSnackBar;
 
 void snackBar(
   String message, {
-  int duration = 3000,
+  int duration = 2000,
   String? title,
   Color? backgroundColor,
   SnackPosition? snackPosition,
   int? maxLines = 2,
   IconData? icon,
   Color? iconColor,
-  bool showCloseButton = true,
+  bool showCloseButton = false,
   bool showDurationAnimation = true,
 }) {
   final context = Get.context!;
@@ -26,7 +28,7 @@ void snackBar(
   }
 
   _currentSnackBar = OverlayEntry(
-    builder: (context) => _AnymexSnackBar(
+    builder: (context) => _BubbleSnackBar(
       message: message,
       title: title,
       backgroundColor: backgroundColor,
@@ -51,7 +53,7 @@ void snackBar(
   Overlay.of(Get.overlayContext!).insert(_currentSnackBar!);
 }
 
-class _AnymexSnackBar extends StatefulWidget {
+class _BubbleSnackBar extends StatefulWidget {
   final String message;
   final String? title;
   final Color? backgroundColor;
@@ -65,7 +67,7 @@ class _AnymexSnackBar extends StatefulWidget {
   final ThemeData theme;
   final VoidCallback onDismiss;
 
-  const _AnymexSnackBar({
+  const _BubbleSnackBar({
     required this.message,
     this.title,
     this.backgroundColor,
@@ -81,13 +83,16 @@ class _AnymexSnackBar extends StatefulWidget {
   });
 
   @override
-  State<_AnymexSnackBar> createState() => _AnymexSnackBarState();
+  State<_BubbleSnackBar> createState() => _BubbleSnackBarState();
 }
 
-class _AnymexSnackBarState extends State<_AnymexSnackBar>
+class _BubbleSnackBarState extends State<_BubbleSnackBar>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late AnimationController _progressController;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _progressAnimation;
   late Animation<double> _opacityAnimation;
 
   @override
@@ -104,21 +109,51 @@ class _AnymexSnackBarState extends State<_AnymexSnackBar>
       vsync: this,
     );
 
+    _slideAnimation = Tween<double>(
+      begin: widget.snackPosition == SnackPosition.TOP ? -100 : 100,
+      end: 0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+    ));
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.2, 0.8, curve: Curves.easeOutBack),
+    ));
+
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeOut,
+      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
     ));
 
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _progressController,
+      curve: Curves.linear,
+    ));
+
+    // Start animations
     _animationController.forward();
 
     if (widget.showDurationAnimation) {
-      _progressController.forward();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _progressController.forward();
+        }
+      });
     }
 
-    Future.delayed(widget.duration, () {
+    // Auto dismiss
+    Future.delayed(widget.duration + const Duration(milliseconds: 500), () {
       if (mounted) {
         _dismiss();
       }
@@ -143,8 +178,8 @@ class _AnymexSnackBarState extends State<_AnymexSnackBar>
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final topPadding = MediaQuery.of(context).padding.top;
-    final isDesktop = screenWidth > 600;
 
     return Positioned.fill(
       child: AnimatedBuilder(
@@ -154,33 +189,35 @@ class _AnymexSnackBarState extends State<_AnymexSnackBar>
             alignment: widget.snackPosition == SnackPosition.TOP
                 ? Alignment.topCenter
                 : Alignment.bottomCenter,
-            child: FadeTransition(
-              opacity: _opacityAnimation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: Offset(
-                      0, widget.snackPosition == SnackPosition.TOP ? -1 : 1),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                    parent: _animationController, curve: Curves.easeOutQuart)),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: widget.snackPosition == SnackPosition.TOP
-                        ? topPadding + 16
-                        : 0,
-                    bottom:
-                        widget.snackPosition == SnackPosition.BOTTOM ? 32 : 0,
-                    left: 16,
-                    right: 16,
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isDesktop ? 400 : screenWidth,
-                        minWidth: 300,
+            child: Transform.translate(
+              offset: Offset(0, _slideAnimation.value),
+              child: Container(
+                margin: EdgeInsets.only(
+                  top: widget.snackPosition == SnackPosition.TOP
+                      ? topPadding + 20
+                      : 0,
+                  bottom: widget.snackPosition == SnackPosition.BOTTOM ? 40 : 0,
+                  left: 16,
+                  right: 16,
+                ),
+                child: Opacity(
+                  opacity: _opacityAnimation.value,
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: IntrinsicHeight(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: screenWidth *
+                                (getResponsiveSize(context,
+                                    mobileSize: 0.9, desktopSize: 0.4)),
+                            minWidth: 120,
+                            maxHeight: screenHeight * 0.3,
+                          ),
+                          child: _buildContent(),
+                        ),
                       ),
-                      child: _buildProfessionalContent(),
                     ),
                   ),
                 ),
@@ -192,136 +229,163 @@ class _AnymexSnackBarState extends State<_AnymexSnackBar>
     );
   }
 
-  Widget _buildProfessionalContent() {
-    final isDark = widget.theme.brightness == Brightness.dark;
-
-    final bgColor = widget.backgroundColor ??
-        (isDark ? const Color(0xFF1E1E1E) : Colors.white);
-
-    final statusColor = widget.iconColor ?? widget.theme.colorScheme.primary;
-
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  width: 4,
-                  color: statusColor,
+  Widget _buildContent() {
+    return GestureDetector(
+      onTap: () => _dismiss(),
+      onPanEnd: (details) {
+        if (details.velocity.pixelsPerSecond.dx.abs() > 500) {
+          _dismiss();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: widget.backgroundColor ??
+                      widget.theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.icon != null) ...[
-                          Icon(
-                            widget.icon,
-                            color: statusColor,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 14),
-                        ],
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (widget.title != null &&
-                                  widget.title!.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: AnymexText(
-                                    text: widget.title!,
-                                    variant: TextVariant.bold,
-                                    size: 15,
-                                    maxLines: 1,
-                                    color: widget.theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                              AnymexText(
-                                text: widget.message,
-                                size: 14,
-                                maxLines: widget.maxLines,
-                                color: widget.theme.colorScheme.onSurface
-                                    .withOpacity(0.8),
-                              ),
-                            ],
+              ),
+
+              // Duration fill animation
+              if (widget.showDurationAnimation)
+                AnimatedBuilder(
+                  animation: _progressAnimation,
+                  builder: (context, child) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: _progressAnimation.value,
+                        child: Container(
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: (widget.iconColor ??
+                                    widget.theme.colorScheme.primary)
+                                .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        if (widget.showCloseButton) ...[
-                          const SizedBox(width: 8),
-                          InkWell(
-                            onTap: _dismiss,
-                            borderRadius: BorderRadius.circular(20),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Icon(
-                                Icons.close,
-                                size: 18,
-                                color: widget.theme.colorScheme.onSurface
-                                    .withOpacity(0.4),
-                              ),
-                            ),
-                          ),
-                        ]
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
+
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (widget.icon != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: (widget.iconColor ??
+                                  widget.theme.colorScheme.primary)
+                              .withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          widget.icon,
+                          size: 20,
+                          color: widget.iconColor ??
+                              widget.theme.colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.title != null) ...[
+                            AnymexText(
+                              text: widget.title!,
+                              variant: TextVariant.bold,
+                              size: 16,
+                              maxLines: 1,
+                              color: widget.theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                          AnymexText(
+                            text: widget.message,
+                            size: 14,
+                            maxLines: widget.maxLines,
+                            color: widget.theme.colorScheme.onSurfaceVariant
+                                .withOpacity(0.9),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (widget.showCloseButton) ...[
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: _dismiss,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: widget.theme.colorScheme.onSurfaceVariant
+                                .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            size: 16,
+                            color: widget.theme.colorScheme.onSurfaceVariant
+                                .withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
-          if (widget.showDurationAnimation)
-            AnimatedBuilder(
-              animation: _progressController,
-              builder: (context, child) {
-                return LinearProgressIndicator(
-                  value: 1.0 - _progressController.value,
-                  backgroundColor: Colors.transparent,
-                  color: statusColor.withOpacity(0.3),
-                  minHeight: 2,
-                );
-              },
-            ),
-        ],
+        ),
       ),
     );
   }
 }
 
+// Convenience methods
 void successSnackBar(
   String message, {
   String? title,
-  int duration = 3000,
+  int duration = 2000,
   bool showDurationAnimation = true,
 }) {
   snackBar(
     message,
-    title: title ?? "Success",
+    title: title,
     duration: duration,
-    icon: Icons.check_circle_rounded,
-    iconColor: const Color(0xFF2E7D32),
-    showCloseButton: true,
+    icon: Icons.check_circle_outline,
+    iconColor: const Color(0xFF4CAF50),
     showDurationAnimation: showDurationAnimation,
   );
 }
@@ -334,10 +398,10 @@ void errorSnackBar(
 }) {
   snackBar(
     message,
-    title: title ?? "Error",
+    title: title,
     duration: duration,
-    icon: Icons.error_rounded,
-    iconColor: const Color(0xFFD32F2F),
+    icon: Icons.error_outline,
+    iconColor: const Color(0xFFF44336),
     showCloseButton: true,
     showDurationAnimation: showDurationAnimation,
   );
@@ -346,16 +410,15 @@ void errorSnackBar(
 void infoSnackBar(
   String message, {
   String? title,
-  int duration = 3000,
+  int duration = 2000,
   bool showDurationAnimation = true,
 }) {
   snackBar(
     message,
-    title: title ?? "Information",
+    title: title,
     duration: duration,
-    icon: Icons.info_rounded,
-    iconColor: const Color(0xFF0288D1),
-    showCloseButton: true,
+    icon: Icons.info_outline,
+    iconColor: const Color(0xFF2196F3),
     showDurationAnimation: showDurationAnimation,
   );
 }
@@ -363,16 +426,15 @@ void infoSnackBar(
 void warningSnackBar(
   String message, {
   String? title,
-  int duration = 4000,
+  int duration = 3000,
   bool showDurationAnimation = true,
 }) {
   snackBar(
     message,
-    title: title ?? "Warning",
+    title: title,
     duration: duration,
-    icon: Icons.warning_rounded,
-    iconColor: const Color(0xFFED6C02),
-    showCloseButton: true,
+    icon: Icons.warning_amber_outlined,
+    iconColor: const Color(0xFFFF9800),
     showDurationAnimation: showDurationAnimation,
   );
 }

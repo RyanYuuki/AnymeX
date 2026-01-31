@@ -1,5 +1,6 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
@@ -28,9 +29,9 @@ class NovelBottomControls extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Theme.of(context).colorScheme.surface.withOpacity(0.98),
-                  Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                  Theme.of(context).colorScheme.surface.withOpacity(0.85),
+                  context.colors.surface.opaque(0.98),
+                  context.colors.surface.opaque(0.95),
+                  context.colors.surface.opaque(0.85),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.3, 0.7, 1.0],
@@ -69,10 +70,10 @@ class NovelBottomControls extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color:
-                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                context.colors.surfaceContainerHighest.opaque(0.3),
             borderRadius: BorderRadius.circular(isDesktop ? 16 : 12),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              color: context.colors.outline.opaque(0.2),
               width: 1,
             ),
           ),
@@ -89,13 +90,13 @@ class NovelBottomControls extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(0.1),
+                          .opaque(0.1),
                       borderRadius: BorderRadius.circular(isDesktop ? 8 : 6),
                     ),
                     child: Text(
                       'Ch. ${controller.currentChapter.value.number ?? '?'}',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                         fontSize: isDesktop ? 13 : 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
@@ -108,10 +109,9 @@ class NovelBottomControls extends StatelessWidget {
                       controller.currentChapter.value.title ??
                           'Unknown Chapter',
                       style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
+                        color: context.colors
                             .onSurface
-                            .withOpacity(0.8),
+                            .opaque(0.8),
                         fontSize: isDesktop ? 14 : 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -125,7 +125,7 @@ class NovelBottomControls extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.6),
+                          .opaque(0.6),
                       fontSize: isDesktop ? 13 : 11,
                       fontWeight: FontWeight.w500,
                     ),
@@ -159,10 +159,10 @@ class NovelBottomControls extends StatelessWidget {
         vertical: isDesktop ? 12 : 8,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: context.colors.surfaceContainerHighest.opaque(0.3),
         borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: context.colors.outline.opaque(0.2),
           width: 1,
         ),
       ),
@@ -201,7 +201,7 @@ class NovelBottomControls extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color:
-                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                context.colors.primaryContainer.opaque(0.3),
             borderRadius: BorderRadius.circular(isDesktop ? 12 : 10),
           ),
           child: Row(
@@ -224,13 +224,13 @@ class NovelBottomControls extends StatelessWidget {
                   vertical: isDesktop ? 4 : 2,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                   borderRadius: BorderRadius.circular(isDesktop ? 8 : 6),
                 ),
                 child: Text(
                   '${controller.fontSize.value.toInt()}',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: context.colors.onPrimary,
                     fontSize: isDesktop ? 16 : 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -289,8 +289,8 @@ class NovelBottomControls extends StatelessWidget {
               icon,
               size: isDesktop ? 28 : 24,
               color: isEnabled
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  ? context.colors.onSurface
+                  : context.colors.onSurface.opaque(0.3),
             ),
           ),
         ),
@@ -317,7 +317,7 @@ class NovelBottomControls extends StatelessWidget {
             child: Icon(
               icon,
               size: isDesktop ? 20 : 18,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+              color: context.colors.onSurface.opaque(0.8),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
@@ -49,13 +50,13 @@ class NovelContentWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ExpressiveLoadingIndicator(
-            color: Theme.of(context).colorScheme.primary,
+            color: context.colors.primary,
           ),
           const SizedBox(height: 16),
           Text(
             'Loading chapter...',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: context.colors.onSurface.opaque(0.7),
               fontSize: 16,
             ),
           ),
@@ -72,14 +73,14 @@ class NovelContentWidget extends StatelessWidget {
           Icon(
             Icons.book_outlined,
             size: 48,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: context.colors.onSurface.opaque(0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'No content available',
             style: TextStyle(
               fontSize: 18,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: context.colors.onSurface.opaque(0.7),
               fontWeight: FontWeight.w500,
             ),
           ),

@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:ui';
+
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -66,13 +68,13 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         color: theme.colorScheme.surface.withValues(alpha: 0.4),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.1),
+            color: theme.colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
             width: 1,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.05),
+            color: theme.colorScheme.shadow.opaque(0.05, iReallyMeanIt: true),
             offset: const Offset(0, 2),
             blurRadius: 8,
           ),
@@ -88,10 +90,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceVariant
+                      .opaque(0.3, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: theme.colorScheme.outline.withOpacity(0.1),
+                    color: theme.colorScheme.outline
+                        .opaque(0.1, iReallyMeanIt: true),
                   ),
                 ),
                 child: Icon(
@@ -119,7 +123,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                 Text(
                   '${_lists.length} lists • Tap to expand',
                   style: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface
+                        .opaque(0.6, iReallyMeanIt: true),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -136,13 +141,17 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _isReordering
-                      ? theme.colorScheme.primary.withOpacity(0.3)
-                      : theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                      ? theme.colorScheme.primary
+                          .opaque(0.3, iReallyMeanIt: true)
+                      : theme.colorScheme.surfaceVariant
+                          .opaque(0.3, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: _isReordering
-                        ? theme.colorScheme.primary.withOpacity(0.3)
-                        : theme.colorScheme.outline.withOpacity(0.1),
+                        ? theme.colorScheme.primary
+                            .opaque(0.3, iReallyMeanIt: true)
+                        : theme.colorScheme.outline
+                            .opaque(0.1, iReallyMeanIt: true),
                   ),
                 ),
                 child: Icon(
@@ -184,7 +193,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                 elevation: elevation,
                 color: Colors.transparent,
                 shadowColor:
-                    Theme.of(context).colorScheme.shadow.withOpacity(0.3),
+                    context.colors.shadow.opaque(0.3, iReallyMeanIt: true),
                 borderRadius: BorderRadius.circular(24),
                 child: child,
               ),
@@ -208,11 +217,11 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       key: ValueKey('list_$index'),
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 0,
-      color: theme.colorScheme.surface.withOpacity(0.4),
+      color: theme.colorScheme.surface.opaque(0.4, iReallyMeanIt: true),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(
-          color: theme.colorScheme.outline.withOpacity(0.1),
+          color: theme.colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
         ),
       ),
       child: AnimatedContainer(
@@ -225,8 +234,9 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    theme.colorScheme.primary.withOpacity(0.05),
-                    theme.colorScheme.secondary.withOpacity(0.05),
+                    theme.colorScheme.primary.opaque(0.05, iReallyMeanIt: true),
+                    theme.colorScheme.secondary
+                        .opaque(0.05, iReallyMeanIt: true),
                   ],
                 )
               : null,
@@ -249,8 +259,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                             padding: const EdgeInsets.all(4),
                             child: Icon(
                               Icons.drag_handle_rounded,
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.4),
+                              color: theme.colorScheme.onSurface.opaque(0.4),
                               size: 24,
                             ),
                           ),
@@ -274,8 +283,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                             Text(
                               '${listData.listData.length} items',
                               style: TextStyle(
-                                color: theme.colorScheme.onSurface
-                                    .withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.opaque(0.6),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -303,7 +311,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                         duration: const Duration(milliseconds: 300),
                         child: Icon(
                           Icons.keyboard_arrow_down_rounded,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface.opaque(0.6),
                           size: 24,
                         ),
                       ),
@@ -336,14 +344,14 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Divider(
-            color: theme.colorScheme.outline.withOpacity(0.1),
+            color: theme.colorScheme.outline.opaque(0.1),
             height: 1,
           ),
           const SizedBox(height: 16),
           Text(
             'Items in this list',
             style: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.8),
+              color: theme.colorScheme.onSurface.opaque(0.8),
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -363,10 +371,10 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceVariant.opaque(0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.05),
+          color: theme.colorScheme.outline.opaque(0.05),
         ),
       ),
       child: Material(
@@ -404,7 +412,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                         Text(
                           media.type!,
                           style: TextStyle(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.opaque(0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -422,7 +430,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                       padding: const EdgeInsets.all(8),
                       child: Icon(
                         Icons.close_rounded,
-                        color: theme.colorScheme.error.withOpacity(0.7),
+                        color: theme.colorScheme.error.opaque(0.7),
                         size: 18,
                       ),
                     ),
@@ -449,7 +457,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.3),
+            color: color.opaque(0.3, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -472,13 +480,13 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+              color: theme.colorScheme.surfaceVariant.opaque(0.3),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.playlist_add_rounded,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
+              color: theme.colorScheme.onSurface.opaque(0.4),
             ),
           ),
           const SizedBox(height: 24),
@@ -495,7 +503,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             'Create your first custom list to organize\nyour favorite content',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.opaque(0.6),
               fontSize: 16,
             ),
           ),
@@ -509,7 +517,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
     return FloatingActionButton.extended(
       onPressed: _showCreateListDialog,
-      backgroundColor: theme.colorScheme.primary.withOpacity(0.7),
+      backgroundColor: theme.colorScheme.primary.opaque(0.7),
       foregroundColor: theme.colorScheme.onPrimary,
       elevation: 8,
       shape: RoundedRectangleBorder(
@@ -519,8 +527,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       label: Text(
         'New List',
         style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onPrimary),
+            fontWeight: FontWeight.w600, color: context.colors.onPrimary),
       ),
     );
   }
@@ -571,7 +578,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface.withOpacity(0.5),
+        backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
           'Rename List',
@@ -586,12 +593,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           decoration: InputDecoration(
             hintText: 'Enter list name',
             hintStyle: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.opaque(0.5),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
-                color: theme.colorScheme.outline.withOpacity(0.3),
+                color: theme.colorScheme.outline.opaque(0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -599,7 +606,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               borderSide: BorderSide(color: theme.colorScheme.primary),
             ),
             filled: true,
-            fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            fillColor: theme.colorScheme.surfaceVariant.opaque(0.3),
           ),
         ),
         actions: [
@@ -607,8 +614,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7)),
+              style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
           ),
           FilledButton(
@@ -629,7 +635,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               }
             },
             style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary.withOpacity(0.5),
+              backgroundColor: theme.colorScheme.primary.opaque(0.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
@@ -646,7 +652,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface.withOpacity(0.5),
+        backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
           'Delete List',
@@ -657,15 +663,14 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         ),
         content: Text(
           'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
-          style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.8)),
+          style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7)),
+              style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
           ),
           FilledButton(
@@ -679,7 +684,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               HapticFeedback.mediumImpact();
             },
             style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.error.withOpacity(0.5),
+              backgroundColor: theme.colorScheme.error.opaque(0.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
@@ -697,7 +702,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface.withOpacity(0.5),
+        backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
           'Create New List',
@@ -712,12 +717,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           decoration: InputDecoration(
             hintText: 'Enter list name',
             hintStyle: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.opaque(0.5),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
-                color: theme.colorScheme.outline.withOpacity(0.3),
+                color: theme.colorScheme.outline.opaque(0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -725,7 +730,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               borderSide: BorderSide(color: theme.colorScheme.primary),
             ),
             filled: true,
-            fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            fillColor: theme.colorScheme.surfaceVariant.opaque(0.3),
           ),
         ),
         actions: [
@@ -733,8 +738,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7)),
+              style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
           ),
           FilledButton(
@@ -763,7 +767,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             ),
             child: Text(
               'Create',
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              style: TextStyle(color: context.colors.onPrimary),
             ),
           ),
         ],

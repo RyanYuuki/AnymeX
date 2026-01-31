@@ -6,6 +6,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 void searchTypeSheet(BuildContext context) {
@@ -19,7 +20,7 @@ void searchTypeSheet(BuildContext context) {
   }
   showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: context.colors.surface,
       builder: (context) {
         final button1Cover = (isSimkl
                     ? serviceHandler.simklService.trendingMovies

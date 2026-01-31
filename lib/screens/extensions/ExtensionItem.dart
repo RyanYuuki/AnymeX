@@ -15,6 +15,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -84,7 +85,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return Obx(() {
       final updateAvailable = widget.source.hasUpdate ?? false;
@@ -155,7 +156,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.primary.withOpacity(0.1),
+                      color: theme.primary.opaque(0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -172,7 +173,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.tertiary.withOpacity(0.1),
+                      color: theme.tertiary.opaque(0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -190,7 +191,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.opaque(0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(
@@ -225,7 +226,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   Widget _buildMainIcon() {
     return widget.source.iconUrl!.isEmpty
         ? Icon(Icons.extension_rounded,
-            color: Theme.of(context).colorScheme.primary)
+            color: context.colors.primary)
         : widget.source.iconUrl!.startsWith('http')
             ? CachedNetworkImage(
                 imageUrl: widget.source.iconUrl!,
@@ -234,11 +235,11 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                 height: 42,
                 placeholder: (context, url) => Icon(
                   Icons.extension_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
                 errorWidget: (context, url, error) => Icon(
                   Icons.extension_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
               )
             : Image.file(

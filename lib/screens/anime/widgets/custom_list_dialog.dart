@@ -3,6 +3,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -66,7 +67,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 
   Future<void> _showCreateListDialog() async {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final textTheme = Theme.of(context).textTheme;
     final TextEditingController textController = TextEditingController();
     bool isButtonEnabled = false;
@@ -187,7 +188,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final textTheme = Theme.of(context).textTheme;
 
     return Dialog(
@@ -250,7 +251,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                   : Icons.playlist_add_outlined,
                               size: 48,
                               color:
-                                  colorScheme.onSurfaceVariant.withOpacity(0.5),
+                                  colorScheme.onSurfaceVariant.opaque(0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -280,13 +281,13 @@ class _CustomListDialogState extends State<CustomListDialog> {
                             decoration: BoxDecoration(
                               color: isChecked
                                   ? colorScheme.primaryContainer
-                                      .withOpacity(0.3)
-                                  : colorScheme.surfaceVariant.withOpacity(0.3),
+                                      .opaque(0.3)
+                                  : colorScheme.surfaceVariant.opaque(0.3),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isChecked
-                                    ? colorScheme.primary.withOpacity(0.5)
-                                    : colorScheme.outline.withOpacity(0.2),
+                                    ? colorScheme.primary.opaque(0.5)
+                                    : colorScheme.outline.opaque(0.2),
                                 width: 1,
                               ),
                             ),
@@ -360,7 +361,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: colorScheme.primary
-                                                .withOpacity(0.1),
+                                                .opaque(0.1),
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -397,7 +398,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       side: BorderSide(
-                        color: colorScheme.outline.withOpacity(0.5),
+                        color: colorScheme.outline.opaque(0.5),
                       ),
                     ),
                   ),

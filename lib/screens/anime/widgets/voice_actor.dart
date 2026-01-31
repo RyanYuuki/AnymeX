@@ -4,6 +4,7 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -30,7 +31,7 @@ class CharactersCarousel extends StatelessWidget {
               style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: isDesktop ? 20 : 17,
-                  color: Theme.of(context).colorScheme.primary)),
+                  color: context.colors.primary)),
         ),
         const SizedBox(height: 15),
         SizedBox(
@@ -89,7 +90,7 @@ class CharactersCarousel extends StatelessWidget {
                                     Iconsax.heart5,
                                     size: 16,
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                        context.colors.primary,
                                   ),
                                   const SizedBox(width: 3),
                                   Text(
@@ -101,7 +102,7 @@ class CharactersCarousel extends StatelessWidget {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .inverseSurface
-                                            .withOpacity(0.9)),
+                                            .opaque(0.9)),
                                   ),
                                   const SizedBox(width: 3),
                                 ],
@@ -133,7 +134,7 @@ class CharactersCarousel extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: "Poppins-SemiBold",
                     fontSize: 18,
-                    color: Theme.of(context).colorScheme.primary)),
+                    color: context.colors.primary)),
           ),
           const SizedBox(height: 15),
           SizedBox(
@@ -219,7 +220,7 @@ class CharactersCarousel extends StatelessWidget {
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .inverseSurface
-                                                  .withOpacity(0.9)),
+                                                  .opaque(0.9)),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,

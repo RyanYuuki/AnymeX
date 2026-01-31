@@ -2,6 +2,7 @@ import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:outlined_text/outlined_text.dart';
 

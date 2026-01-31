@@ -12,6 +12,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 

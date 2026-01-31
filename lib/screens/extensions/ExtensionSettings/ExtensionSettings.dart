@@ -3,6 +3,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class SourcePreferenceScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).colorScheme;
+    var theme = context.colors;
     return Glow(
       child: Scaffold(
         appBar: AppBar(

@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -73,15 +74,15 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
       minChildSize: 0.3,
       builder: (context, scrollController) => Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: context.colors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+            color: context.colors.outline.opaque(0.12),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.15),
+              color: context.colors.shadow.opaque(0.15),
               blurRadius: 32,
               offset: const Offset(0, -8),
               spreadRadius: 0,
@@ -97,7 +98,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                 height: 5,
                 decoration: BoxDecoration(
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                      context.colors.onSurface.opaque(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
@@ -108,7 +109,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                 border: Border(
                   bottom: BorderSide(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.08),
+                        context.colors.outline.opaque(0.08),
                     width: 1,
                   ),
                 ),
@@ -121,7 +122,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                   ),
                   IconButton(
@@ -131,7 +132,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .opaque(0.7),
                       size: 20,
                     ),
                     splashRadius: 20,
@@ -148,40 +149,37 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                 styleSheet: MarkdownStyleSheet(
                   h1: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                   h2: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                   h3: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                   p: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         height: 1.6,
                         letterSpacing: 0.2,
-                        color: Theme.of(context)
-                            .colorScheme
+                        color: context.colors
                             .onSurface
-                            .withOpacity(0.85),
+                            .opaque(0.85),
                       ),
                   listBullet: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                   code: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontFamily: 'monospace',
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
+                        backgroundColor: context.colors
                             .surfaceContainerHighest,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                   blockquote: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontStyle: FontStyle.italic,
-                        color: Theme.of(context)
-                            .colorScheme
+                        color: context.colors
                             .onSurface
-                            .withOpacity(0.7),
+                            .opaque(0.7),
                       ),
                 ),
                 onTapLink: (text, href, title) {

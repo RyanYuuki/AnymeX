@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AnymexIcon extends StatelessWidget {
@@ -8,14 +9,14 @@ class AnymexIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            theme.primary.withOpacity(0.2),
-            theme.primary.withOpacity(0.1),
+            theme.primary.opaque(0.2, iReallyMeanIt: true),
+            theme.primary.opaque(0.1, iReallyMeanIt: true),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -37,14 +38,14 @@ class AnymexIconWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
     return Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              theme.primary.withOpacity(0.2),
-              theme.primary.withOpacity(0.1),
+              theme.primary.opaque(0.2),
+              theme.primary.opaque(0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

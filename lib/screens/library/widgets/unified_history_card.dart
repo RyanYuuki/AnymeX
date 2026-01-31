@@ -9,6 +9,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class UnifiedHistoryCard extends StatelessWidget {
   final HistoryModel media;
@@ -17,21 +18,21 @@ class UnifiedHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final gradientColors = [
-      Theme.of(context).colorScheme.surface.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+      context.colors.surface.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.8),
     ];
 
     return AnymexCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: colorScheme.primary.withOpacity(0.3),
+            color: colorScheme.primary.opaque(0.3),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16)),
-      color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+      color: context.colors.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
         onTap: media.onTap,
         child: SizedBox(
@@ -122,7 +123,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
-                              color: colorScheme.onSurface.withOpacity(0.7),
+                              color: colorScheme.onSurface.opaque(0.7),
                               overflow: TextOverflow.ellipsis,
                             ),
                           const Spacer(),
@@ -137,7 +138,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                                     text: media.date!,
                                     size: 12,
                                     color:
-                                        colorScheme.onSurface.withOpacity(0.7),
+                                        colorScheme.onSurface.opaque(0.7),
                                   ),
                                   AnymexText(
                                     text: media.progressText ?? '??',
@@ -180,11 +181,11 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     return AnymexCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: colorScheme.primary.withOpacity(0.3),
+          color: colorScheme.primary.opaque(0.3),
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
@@ -263,7 +264,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                       size: 13,
                       maxLines: 1,
                       variant: TextVariant.regular,
-                      color: colorScheme.onSurface.withOpacity(0.7),
+                      color: colorScheme.onSurface.opaque(0.7),
                       overflow: TextOverflow.ellipsis,
                     ),
                   const SizedBox(height: 12),
@@ -309,15 +310,15 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     return AnymexCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: colorScheme.primary.withOpacity(0.3),
+            color: colorScheme.primary.opaque(0.3),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16)),
-      color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+      color: context.colors.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
         onTap: media.onTap,
         child: SizedBox(
@@ -382,7 +383,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                           size: 14,
                           maxLines: 1,
                           variant: TextVariant.regular,
-                          color: colorScheme.onSurface.withOpacity(0.7),
+                          color: colorScheme.onSurface.opaque(0.7),
                           overflow: TextOverflow.ellipsis,
                         ),
                       const Spacer(),
@@ -396,7 +397,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                               AnymexText(
                                 text: media.date!,
                                 size: 12,
-                                color: colorScheme.onSurface.withOpacity(0.7),
+                                color: colorScheme.onSurface.opaque(0.7),
                               ),
                               AnymexText(
                                 text: media.progressText!,

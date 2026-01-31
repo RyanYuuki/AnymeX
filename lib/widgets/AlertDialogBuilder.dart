@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class AlertDialogBuilder {
   final BuildContext context;
@@ -104,7 +105,7 @@ class AlertDialogBuilder {
       });
 
   void show() {
-    var theme = Theme.of(context).colorScheme;
+    var theme = context.colors;
     showDialog(
       context: context,
       barrierDismissible: _cancelable,
@@ -272,7 +273,7 @@ class AlertDialogBuilder {
       );
 
   List<Widget> _buildActions() {
-    var theme = Theme.of(context).colorScheme;
+    var theme = context.colors;
     final actions = <Widget>[];
     if (_neutralButtonTitle != null) {
       actions.add(
