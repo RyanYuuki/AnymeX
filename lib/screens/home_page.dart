@@ -17,6 +17,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                               text:
                                   '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
                               size: 30,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                               variant: TextVariant.bold),
                           const AnymexTextSpan(
                               text: ', what are we doing today?',
@@ -377,7 +378,7 @@ class ImageButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius.multiplyRadius()),
         border: Border.all(
           width: 1,
-          color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.3),
+          color: context.colors.inverseSurface.withOpacity(0.3),
         ),
       ),
       child: Stack(
@@ -410,7 +411,7 @@ class ImageButton extends StatelessWidget {
               padding: EdgeInsets.zero,
               color: Colors.transparent,
               border: BorderSide(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                color: context.colors.primary.withOpacity(0.7),
               ),
               radius: borderRadius,
               child: Column(
@@ -428,7 +429,7 @@ class ImageButton extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Container(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                     height: 2,
                     width: 6 * buttonText.length.toDouble(),
                   )

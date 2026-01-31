@@ -35,6 +35,7 @@ class BigCarousel extends StatelessWidget {
 // import 'package:carousel_slider/carousel_slider.dart';
 // import 'package:flutter/gestures.dart';
 // import 'package:flutter/material.dart';
+// import 'package:anymex/utils/theme_extensions.dart';
 // import 'package:flutter/services.dart';
 // import 'package:iconsax/iconsax.dart';
 // import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -184,7 +185,7 @@ class BigCarousel extends StatelessWidget {
 //                               color: Theme.of(context)
 //                                   .colorScheme
 //                                   .surface
-//                                   .withOpacity(0.5),
+//                                   .opaque(0.5),
 //                               borderRadius: BorderRadius.circular(8),
 //                             ),
 //                             child: GestureDetector(
@@ -211,7 +212,7 @@ class BigCarousel extends StatelessWidget {
 //                                       color: Theme.of(context)
 //                                           .colorScheme
 //                                           .onSurface
-//                                           .withOpacity(0.7),
+//                                           .opaque(0.7),
 //                                       overflow: TextOverflow.ellipsis,
 //                                       stripHtml: true,
 //                                     ),
@@ -223,7 +224,7 @@ class BigCarousel extends StatelessWidget {
 //                                     color: Theme.of(context)
 //                                         .colorScheme
 //                                         .primary
-//                                         .withOpacity(0.7),
+//                                         .opaque(0.7),
 //                                   ),
 //                                 ],
 //                               ),
@@ -264,9 +265,9 @@ class BigCarousel extends StatelessWidget {
 //             effect: WormEffect(
 //               dotHeight: 8,
 //               dotWidth: 8,
-//               activeDotColor: Theme.of(context).colorScheme.primary,
+//               activeDotColor: context.colors.primary,
 //               dotColor:
-//                   Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+//                   context.colors.onSurface.opaque(0.5),
 //             ),
 //           ),
 //         ],
@@ -291,21 +292,21 @@ class BigCarousel extends StatelessWidget {
 //         minChildSize: 0.3,
 //         builder: (context, scrollController) => Container(
 //           decoration: BoxDecoration(
-//             color: Theme.of(context).colorScheme.surface,
+//             color: context.colors.surface,
 //             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
 //             border: Border.all(
-//               color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+//               color: context.colors.outline.opaque(0.12),
 //               width: 1,
 //             ),
 //             boxShadow: [
 //               BoxShadow(
-//                 color: Theme.of(context).colorScheme.shadow.withOpacity(0.15),
+//                 color: context.colors.shadow.opaque(0.15),
 //                 blurRadius: 32,
 //                 offset: const Offset(0, -8),
 //                 spreadRadius: 0,
 //               ),
 //               BoxShadow(
-//                 color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+//                 color: context.colors.primary.opaque(0.05),
 //                 blurRadius: 64,
 //                 offset: const Offset(0, -4),
 //                 spreadRadius: -8,
@@ -323,14 +324,14 @@ class BigCarousel extends StatelessWidget {
 //                     color: Theme.of(context)
 //                         .colorScheme
 //                         .onSurface
-//                         .withOpacity(0.2),
+//                         .opaque(0.2),
 //                     borderRadius: BorderRadius.circular(12),
 //                     boxShadow: [
 //                       BoxShadow(
 //                         color: Theme.of(context)
 //                             .colorScheme
 //                             .primary
-//                             .withOpacity(0.1),
+//                             .opaque(0.1),
 //                         blurRadius: 8,
 //                         spreadRadius: 0,
 //                       ),
@@ -347,7 +348,7 @@ class BigCarousel extends StatelessWidget {
 //                       color: Theme.of(context)
 //                           .colorScheme
 //                           .outline
-//                           .withOpacity(0.08),
+//                           .opaque(0.08),
 //                       width: 1,
 //                     ),
 //                   ),
@@ -366,7 +367,7 @@ class BigCarousel extends StatelessWidget {
 //                               ?.copyWith(
 //                                 fontWeight: FontWeight.w700,
 //                                 letterSpacing: -0.5,
-//                                 color: Theme.of(context).colorScheme.onSurface,
+//                                 color: context.colors.onSurface,
 //                               ),
 //                         ),
 //                         const SizedBox(height: 4),
@@ -376,11 +377,11 @@ class BigCarousel extends StatelessWidget {
 //                           decoration: BoxDecoration(
 //                             gradient: LinearGradient(
 //                               colors: [
-//                                 Theme.of(context).colorScheme.primary,
+//                                 context.colors.primary,
 //                                 Theme.of(context)
 //                                     .colorScheme
 //                                     .primary
-//                                     .withOpacity(0.3),
+//                                     .opaque(0.3),
 //                               ],
 //                             ),
 //                             borderRadius: BorderRadius.circular(1),
@@ -390,20 +391,20 @@ class BigCarousel extends StatelessWidget {
 //                     ),
 //                     Container(
 //                       decoration: BoxDecoration(
-//                         color: Theme.of(context).colorScheme.surface,
+//                         color: context.colors.surface,
 //                         borderRadius: BorderRadius.circular(12),
 //                         border: Border.all(
 //                           color: Theme.of(context)
 //                               .colorScheme
 //                               .outline
-//                               .withOpacity(0.1),
+//                               .opaque(0.1),
 //                         ),
 //                         boxShadow: [
 //                           BoxShadow(
 //                             color: Theme.of(context)
 //                                 .colorScheme
 //                                 .shadow
-//                                 .withOpacity(0.05),
+//                                 .opaque(0.05),
 //                             blurRadius: 8,
 //                             offset: const Offset(0, 2),
 //                           ),
@@ -416,7 +417,7 @@ class BigCarousel extends StatelessWidget {
 //                           color: Theme.of(context)
 //                               .colorScheme
 //                               .onSurface
-//                               .withOpacity(0.7),
+//                               .opaque(0.7),
 //                           size: 20,
 //                         ),
 //                         splashRadius: 20,
@@ -446,20 +447,20 @@ class BigCarousel extends StatelessWidget {
 //                           color: Theme.of(context)
 //                               .colorScheme
 //                               .surface
-//                               .withOpacity(0.3),
+//                               .opaque(0.3),
 //                           borderRadius: BorderRadius.circular(16),
 //                           border: Border.all(
 //                             color: Theme.of(context)
 //                                 .colorScheme
 //                                 .outline
-//                                 .withOpacity(0.06),
+//                                 .opaque(0.06),
 //                           ),
 //                           boxShadow: [
 //                             BoxShadow(
 //                               color: Theme.of(context)
 //                                   .colorScheme
 //                                   .primary
-//                                   .withOpacity(0.02),
+//                                   .opaque(0.02),
 //                               blurRadius: 16,
 //                               offset: const Offset(0, 4),
 //                             ),
@@ -478,7 +479,7 @@ class BigCarousel extends StatelessWidget {
 //                                       color: Theme.of(context)
 //                                           .colorScheme
 //                                           .onSurface
-//                                           .withOpacity(0.3),
+//                                           .opaque(0.3),
 //                                     ),
 //                                     const SizedBox(height: 16),
 //                                     Text(
@@ -490,7 +491,7 @@ class BigCarousel extends StatelessWidget {
 //                                             color: Theme.of(context)
 //                                                 .colorScheme
 //                                                 .onSurface
-//                                                 .withOpacity(0.6),
+//                                                 .opaque(0.6),
 //                                             fontWeight: FontWeight.w500,
 //                                           ),
 //                                     ),
@@ -504,7 +505,7 @@ class BigCarousel extends StatelessWidget {
 //                                             color: Theme.of(context)
 //                                                 .colorScheme
 //                                                 .onSurface
-//                                                 .withOpacity(0.4),
+//                                                 .opaque(0.4),
 //                                           ),
 //                                       textAlign: TextAlign.center,
 //                                     ),
@@ -523,7 +524,7 @@ class BigCarousel extends StatelessWidget {
 //                                       color: Theme.of(context)
 //                                           .colorScheme
 //                                           .onSurface
-//                                           .withOpacity(0.85),
+//                                           .opaque(0.85),
 //                                       fontWeight: FontWeight.w400,
 //                                     ),
 //                               ),

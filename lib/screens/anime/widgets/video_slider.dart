@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class VideoSliderTheme extends StatefulWidget {
   final Slider child;
@@ -18,13 +19,13 @@ class VideoSliderTheme extends StatefulWidget {
 class VideoSliderThemeState extends State<VideoSliderTheme> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     return SliderTheme(
         data: SliderThemeData(
           thumbColor: colorScheme.primary,
           activeTrackColor: widget.color ?? colorScheme.primary,
           inactiveTrackColor: widget.inactiveTrackColor ??
-              Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              context.colors.surface.opaque(0.8),
           secondaryActiveTrackColor: colorScheme.primary.withAlpha(144),
           trackHeight: 6,
           thumbShape: RoundedRectangularThumbShape(

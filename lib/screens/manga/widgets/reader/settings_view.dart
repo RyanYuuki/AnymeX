@@ -3,6 +3,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -25,7 +26,7 @@ class ReaderSettings {
           borderRadius: topCornerRadius,
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: context.colors.surface,
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -66,12 +67,12 @@ class ReaderSettings {
                                     ? Theme.of(context)
                                         .colorScheme
                                         .primary
-                                        .withOpacity(0.2)
+                                        .opaque(0.2)
                                     : Theme.of(context)
                                         .colorScheme
                                         .surfaceContainer,
                                 foregroundColor: layout == currentLayout
-                                    ? Theme.of(context).colorScheme.primary
+                                    ? context.colors.primary
                                     : Theme.of(context).iconTheme.color,
                               ),
                               tooltip: switch (layout) {
@@ -126,12 +127,12 @@ class ReaderSettings {
                                     ? Theme.of(context)
                                         .colorScheme
                                         .primary
-                                        .withOpacity(0.2)
+                                        .opaque(0.2)
                                     : Theme.of(context)
                                         .colorScheme
                                         .surfaceContainer,
                                 foregroundColor: direction == currentDirection
-                                    ? Theme.of(context).colorScheme.primary
+                                    ? context.colors.primary
                                     : Theme.of(context).iconTheme.color,
                               ),
                               icon: switch (direction) {

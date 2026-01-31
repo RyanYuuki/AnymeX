@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:checkmark/checkmark.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,8 @@ class ListTileWithCheckMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tileAlpha = Theme.of(context).brightness == Brightness.dark
-        ? Theme.of(context).colorScheme.secondaryContainer
-        : Theme.of(context).colorScheme.surfaceContainer;
+        ? context.colors.secondaryContainer
+        : context.colors.surfaceContainer;
     final br = BorderRadius.circular(14.0);
     final titleWidgetFinal = Padding(
       padding: EdgeInsets.symmetric(horizontal: dense ? 10.0 : 14),
@@ -78,7 +79,7 @@ class ListTileWithCheckMark extends StatelessWidget {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: color.withOpacity(
+                          color: color.opaque(
                               Theme.of(context).brightness == Brightness.dark
                                   ? 0.3
                                   : 0.6),
@@ -104,7 +105,7 @@ class ListTileWithCheckMark extends StatelessWidget {
               Checkmark(
                 size: 18.0,
                 active: active,
-                activeColor: Theme.of(context).colorScheme.primary,
+                activeColor: context.colors.primary,
               )
             ],
           ),
@@ -135,9 +136,8 @@ class Checkmark extends StatelessWidget {
       height: size,
       child: CheckMark(
         strokeWidth: 2,
-        activeColor: activeColor ?? Theme.of(context).colorScheme.primary,
-        inactiveColor:
-            inactiveColor ?? Theme.of(context).colorScheme.inverseSurface,
+        activeColor: activeColor ?? context.colors.primary,
+        inactiveColor: inactiveColor ?? context.colors.inverseSurface,
         duration: const Duration(milliseconds: 400),
         active: active,
       ),

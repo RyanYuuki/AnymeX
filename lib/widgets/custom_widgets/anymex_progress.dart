@@ -1,5 +1,6 @@
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class AnymexProgressIndicator extends StatelessWidget {
   final double? value;

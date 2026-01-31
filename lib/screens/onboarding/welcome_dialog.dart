@@ -10,6 +10,7 @@ import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -111,7 +112,7 @@ void showWelcomeDialogg(BuildContext context) {
 
       return Obx(() {
         return Material(
-          color: Theme.of(context).colorScheme.surface,
+          color: context.colors.surface,
           child: Center(
             child: Container(
               width: getResponsiveSize(context,
@@ -142,7 +143,7 @@ void showWelcomeDialogg(BuildContext context) {
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24)),
-                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      color: context.colors.surfaceContainer,
                     ),
                     child: const Center(
                       child: Text(
@@ -307,7 +308,7 @@ Widget _buildIcon(BuildContext context, String url) {
       backgroundColor: Colors.transparent,
       child: Image.asset(
         'assets/images/$url',
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
       ),
     ),
   );

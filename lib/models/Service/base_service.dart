@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 abstract class BaseService {

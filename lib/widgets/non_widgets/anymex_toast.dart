@@ -2,6 +2,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnymexToast {
@@ -10,7 +11,7 @@ class AnymexToast {
     Duration duration = const Duration(seconds: 2),
   }) {
     final context = Get.context!;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     Get.showSnackbar(
       GetSnackBar(
@@ -29,7 +30,7 @@ class AnymexToast {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.opaque(0.08),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -43,7 +44,7 @@ class AnymexToast {
                     height: 32,
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.12),
+                      color: colorScheme.primary.opaque(0.12),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: ClipRRect(

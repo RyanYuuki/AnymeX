@@ -1,5 +1,6 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,8 @@ class ReaderBottomControls extends StatelessWidget {
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
               colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                Theme.of(context).colorScheme.surface.withOpacity(0.0),
+                Colors.black.opaque(0.95, iReallyMeanIt: true),
+                Colors.black.opaque(0.0, iReallyMeanIt: true),
               ],
             ),
           ),
@@ -46,18 +47,14 @@ class ReaderBottomControls extends StatelessWidget {
                     desktopSize: MediaQuery.of(context).size.width * 0.4),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: context.colors.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                    color: context.colors.outline.opaque(0.1),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .shadow
-                          .withOpacity(0.05),
+                      color: Theme.of(context).colorScheme.shadow.opaque(0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -93,8 +90,8 @@ class ReaderBottomControls extends StatelessWidget {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.95),
-              Theme.of(context).colorScheme.surface.withOpacity(0.0),
+              context.colors.surface.opaque(0.95),
+              context.colors.surface.opaque(0.0),
             ],
           ),
         ),
@@ -115,12 +112,8 @@ class ReaderBottomControls extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: 1.0,
                         strokeWidth: 8,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withOpacity(0.2),
+                        backgroundColor: context.colors.surfaceContainer,
+                        color: context.colors.outline.opaque(0.2),
                       ),
                     ),
                     SizedBox(
@@ -174,13 +167,13 @@ class ReaderBottomControls extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: context.colors.surfaceContainer,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _getProgressColor(
                         context,
                         controller.overscrollProgress.value,
-                      ).withOpacity(0.3),
+                      ).opaque(0.3),
                     ),
                   ),
                   child: Column(
@@ -192,7 +185,7 @@ class ReaderBottomControls extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .opaque(0.6),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -202,7 +195,7 @@ class ReaderBottomControls extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -222,15 +215,15 @@ class ReaderBottomControls extends StatelessWidget {
   Color _getProgressColor(BuildContext context, double progress) {
     if (progress < 0.5) {
       return Color.lerp(
-        Theme.of(context).colorScheme.primary.withOpacity(0.5),
-        Theme.of(context).colorScheme.primary,
+        context.colors.primary.opaque(0.5),
+        context.colors.primary,
         progress * 2,
       )!;
     } else if (progress < 0.8) {
-      return Theme.of(context).colorScheme.primary;
+      return context.colors.primary;
     } else {
       return Color.lerp(
-        Theme.of(context).colorScheme.primary,
+        context.colors.primary,
         Colors.green,
         (progress - 0.8) * 5,
       )!;
@@ -247,8 +240,7 @@ class ReaderBottomControls extends StatelessWidget {
         style: IconButton.styleFrom(
           padding: const EdgeInsets.all(12),
           minimumSize: const Size(48, 48),
-          backgroundColor:
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          backgroundColor: context.colors.surface.opaque(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -288,8 +280,7 @@ class ReaderBottomControls extends StatelessWidget {
         style: IconButton.styleFrom(
           padding: const EdgeInsets.all(12),
           minimumSize: const Size(48, 48),
-          backgroundColor:
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          backgroundColor: context.colors.surface.opaque(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

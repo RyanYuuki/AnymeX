@@ -14,6 +14,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -89,7 +90,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                 count: newData.length,
                 effect: ScrollingDotsEffect(
                   activeDotColor: colorScheme.primary,
-                  dotColor: colorScheme.onSurface.withOpacity(0.1),
+                  dotColor: colorScheme.onSurface.opaque(0.1),
                   dotHeight: 6,
                   dotWidth: 6,
                   activeDotScale: 1.5,
@@ -163,7 +164,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                           horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
                                         color: colorScheme.primary
-                                            .withOpacity(0.1),
+                                            .opaque(0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -182,7 +183,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      Divider(color: colorScheme.onSurface.withOpacity(0.1)),
+                      Divider(color: colorScheme.onSurface.opaque(0.1)),
                       const SizedBox(height: 16),
                       Text(
                         "Synopsis",
@@ -196,7 +197,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                       AnymexText(
                         text: media.description,
                         size: 14,
-                        color: colorScheme.onSurface.withOpacity(0.8),
+                        color: colorScheme.onSurface.opaque(0.8),
                         stripHtml: true,
                         maxLines: 999,
                       ),
@@ -212,7 +213,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: colorScheme.onSurface.withOpacity(0.2),
+                          color: colorScheme.onSurface.opaque(0.2),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -311,10 +312,14 @@ class _CarouselCardState extends State<_CarouselCard> {
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                          color: colorScheme.onSurface.opaque(0.05, iReallyMeanIt: true),
+                          width: 1,
+                        ),
           boxShadow: widget.isActive
               ? [
                   BoxShadow(
-                    color: colorScheme.primary.withOpacity(0.3),
+                    color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
                     blurRadius: 20,
                     spreadRadius: -5,
                     offset: const Offset(0, 10),
@@ -347,11 +352,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withOpacity(0.7),
-                        border: Border.all(
-                          color: colorScheme.onSurface.withOpacity(0.05),
-                          width: 1,
-                        ),
+                        color: colorScheme.surface.opaque(0.7, iReallyMeanIt: true),
                       ),
                       child: Row(
                         children: [
@@ -398,7 +399,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: colorScheme.onSurface
-                                            .withOpacity(0.7),
+                                            .opaque(0.7),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -414,7 +415,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: colorScheme.onSurface
-                                            .withOpacity(0.5),
+                                            .opaque(0.5),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -437,7 +438,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                                                   TextDecoration.underline,
                                               decorationColor: colorScheme
                                                   .primary
-                                                  .withOpacity(0.5)),
+                                                  .opaque(0.5)),
                                         ),
                                       ),
                                     ),
@@ -464,7 +465,7 @@ class _CarouselCardState extends State<_CarouselCard> {
       width: 3,
       height: 3,
       decoration: BoxDecoration(
-        color: colorScheme.onSurface.withOpacity(0.3),
+        color: colorScheme.onSurface.opaque(0.3),
         shape: BoxShape.circle,
       ),
     );

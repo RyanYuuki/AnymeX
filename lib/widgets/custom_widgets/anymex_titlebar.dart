@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AnymexTitleBar {
@@ -49,7 +50,7 @@ class _TitleBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultColor = Theme.of(context).colorScheme.onSurface;
+    final defaultColor = context.colors.onSurface;
 
     return Material(
       color: Colors.transparent,
@@ -57,10 +58,10 @@ class _TitleBarWidget extends StatelessWidget {
         child: Container(
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.opaque(0.2),
             border: Border(
               bottom: BorderSide(
-                color: defaultColor.withOpacity(0.1),
+                color: defaultColor.opaque(0.1),
                 width: 0.5,
               ),
             ),
@@ -71,7 +72,7 @@ class _TitleBarWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  color: defaultColor.withOpacity(0.1),
+                  color: defaultColor.opaque(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: AnymeXAnimatedLogo(
@@ -202,8 +203,8 @@ class _WindowButtonState extends State<_WindowButton>
             decoration: BoxDecoration(
               color: isHovered
                   ? (widget.isClose
-                      ? Colors.red.withOpacity(0.9)
-                      : widget.buttonColor.withOpacity(isDark ? 0.15 : 0.1))
+                      ? Colors.red.opaque(0.9)
+                      : widget.buttonColor.opaque(isDark ? 0.15 : 0.1))
                   : Colors.transparent,
             ),
             child: Center(
@@ -212,7 +213,7 @@ class _WindowButtonState extends State<_WindowButton>
                 size: widget.isClose ? 18 : 16,
                 color: isHovered && widget.isClose
                     ? Colors.white
-                    : widget.buttonColor.withOpacity(0.9),
+                    : widget.buttonColor.opaque(0.9),
               ),
             ),
           ),

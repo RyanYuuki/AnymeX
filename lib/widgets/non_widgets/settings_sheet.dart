@@ -11,6 +11,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -73,7 +74,7 @@ class SettingsSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: theme.colorScheme.onSurface.withOpacity(0.2),
+                color: theme.colorScheme.onSurface.opaque(0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -86,7 +87,7 @@ class SettingsSheet extends StatelessWidget {
             AnymexText(
               text: "Select your preferred content source",
               size: 14,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.opaque(0.5),
               variant: TextVariant.regular,
             ),
             const SizedBox(height: 25),
@@ -112,9 +113,9 @@ class SettingsSheet extends StatelessWidget {
                           horizontal: 16, vertical: 16),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? primaryColor.withOpacity(0.1)
+                            ? primaryColor.opaque(0.1)
                             : theme.colorScheme.surfaceContainerHighest
-                                .withOpacity(0.3),
+                                .opaque(0.3),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected ? primaryColor : Colors.transparent,
@@ -127,7 +128,7 @@ class SettingsSheet extends StatelessWidget {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? primaryColor.withOpacity(0.2)
+                                  ? primaryColor.opaque(0.2)
                                   : theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -165,7 +166,7 @@ class SettingsSheet extends StatelessWidget {
                                     text: service['desc'] as String,
                                     size: 12,
                                     color: theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
+                                        .opaque(0.6),
                                   ),
                                 ]
                               ],
@@ -211,7 +212,7 @@ class SettingsSheet extends StatelessWidget {
               const SizedBox(width: 5),
               CircleAvatar(
                 radius: 24,
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                backgroundColor: context.colors.surfaceContainer,
                 child: serviceHandler.isLoggedIn.value
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(50),
@@ -226,7 +227,7 @@ class SettingsSheet extends StatelessWidget {
                       )
                     : Icon(
                         Icons.person,
-                        color: Theme.of(context).colorScheme.inverseSurface,
+                        color: context.colors.inverseSurface,
                       ),
               ),
               const SizedBox(width: 15),
@@ -248,7 +249,7 @@ class SettingsSheet extends StatelessWidget {
                       child: Text(
                         serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -263,8 +264,7 @@ class SettingsSheet extends StatelessWidget {
                       snackBar('This feature is not available yet.');
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
+                        backgroundColor: context.colors
                             .surfaceContainerHighest,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),

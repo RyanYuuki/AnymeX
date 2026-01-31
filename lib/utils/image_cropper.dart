@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 /// Fetches an image from [url] using optional [headers], crops the white
 /// margins and returns the cropped bytes.

@@ -1,8 +1,9 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
@@ -38,8 +39,7 @@ class CustomSwitchTile extends StatelessWidget {
             padding: padding,
             child: Row(
               children: [
-                AnymexIcon(icon,
-                    size: 30, color: Theme.of(context).colorScheme.primary),
+                AnymexIcon(icon, size: 30, color: context.colors.primary),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Column(
@@ -50,7 +50,7 @@ class CustomSwitchTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -61,7 +61,7 @@ class CustomSwitchTile extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .opaque(0.6),
                         ),
                       ),
                     ],
@@ -75,9 +75,9 @@ class CustomSwitchTile extends StatelessWidget {
                     child: Switch(
                       value: switchValue,
                       onChanged: (e) {},
-                      activeColor: Theme.of(context).colorScheme.primary,
+                      activeColor: context.colors.primary,
                       inactiveTrackColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                          context.colors.surfaceContainerHighest,
                     ))
               ],
             ),
@@ -93,8 +93,7 @@ class CustomSwitchTile extends StatelessWidget {
         padding: padding,
         child: Row(
           children: [
-            AnymexIcon(icon,
-                size: 30, color: Theme.of(context).colorScheme.primary),
+            AnymexIcon(icon, size: 30, color: context.colors.primary),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -105,7 +104,7 @@ class CustomSwitchTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: context.colors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -113,10 +112,8 @@ class CustomSwitchTile extends StatelessWidget {
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
+                      color:
+                          Theme.of(context).colorScheme.onSurface.opaque(0.6),
                     ),
                   ),
                 ],
@@ -130,9 +127,8 @@ class CustomSwitchTile extends StatelessWidget {
                 child: Switch(
                   value: switchValue,
                   onChanged: onChanged,
-                  activeColor: Theme.of(context).colorScheme.primary,
-                  inactiveTrackColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  activeColor: context.colors.primary,
+                  inactiveTrackColor: context.colors.surfaceContainerHighest,
                 ))
           ],
         ),
@@ -177,8 +173,7 @@ class CustomTile extends StatelessWidget {
           child: Row(
             children: [
               if (prefix == null)
-                AnymexIcon(icon,
-                    size: 30, color: Theme.of(context).colorScheme.primary)
+                AnymexIcon(icon, size: 30, color: context.colors.primary)
               else
                 prefix!,
               const SizedBox(width: 20),
@@ -191,7 +186,7 @@ class CustomTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -205,15 +200,14 @@ class CustomTile extends StatelessWidget {
                             Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.6),
+                                .opaque(0.6, iReallyMeanIt: true),
                       ),
                     ),
                   ],
                 ),
               ),
               if (postFix == null)
-                Icon(IconlyLight.arrow_right_2,
-                    color: Theme.of(context).colorScheme.primary)
+                Icon(IconlyLight.arrow_right_2, color: context.colors.primary)
               else
                 postFix!
             ],
@@ -277,8 +271,7 @@ class CustomSliderTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                AnymexIcon(icon,
-                    size: 30, color: Theme.of(context).colorScheme.primary),
+                AnymexIcon(icon, size: 30, color: context.colors.primary),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Column(
@@ -289,7 +282,7 @@ class CustomSliderTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -300,7 +293,7 @@ class CustomSliderTile extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .opaque(0.6),
                         ),
                       ),
                     ],
@@ -334,7 +327,7 @@ class CustomSliderTile extends StatelessWidget {
                       glowSpreadMultiplier: 1,
                       divisions: divisions?.toInt() ?? (max * 10).toInt(),
                       customValueIndicatorSize: RoundedSliderValueIndicator(
-                          Theme.of(context).colorScheme,
+                          context.colors,
                           width: 40,
                           height: 40,
                           radius: 50),

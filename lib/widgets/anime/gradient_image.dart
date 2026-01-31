@@ -5,6 +5,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
@@ -40,7 +41,7 @@ class GradientPoster extends StatelessWidget {
                 height: 300,
                 width: double.infinity,
                 color: settingsController.liquidMode
-                    ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                    ? context.colors.primary.opaque(0.8)
                     : null,
               );
             }),
@@ -52,7 +53,7 @@ class GradientPoster extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                Theme.of(context).colorScheme.surface,
+                context.colors.surface,
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -90,7 +91,7 @@ class GradientPoster extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.9),
+                        color: Colors.red.opaque(0.9),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: Colors.red, width: 1),
                       ),
@@ -122,7 +123,7 @@ class GradientPoster extends StatelessWidget {
                         style: TextStyle(
                             fontFamily: "Poppins-Bold",
                             fontSize: 16,
-                            color: Theme.of(context).colorScheme.primary)),
+                            color: context.colors.primary)),
                   )
                 ],
               )
@@ -137,7 +138,7 @@ class GradientPoster extends StatelessWidget {
             margin: 0,
             child: IconButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                backgroundColor: context.colors.surfaceContainer,
               ),
               onPressed: Get.back,
               icon: const Icon(Icons.close),

@@ -5,6 +5,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -67,7 +68,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
-                    .withOpacity(0.3)),
+                    .opaque(0.3)),
             child: Column(
               children: [
                 Obx(() => CustomTile(
@@ -103,7 +104,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
-                    .withOpacity(0.3)),
+                    .opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -147,7 +148,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
-                    .withOpacity(0.3)),
+                    .opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -184,7 +185,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
-                    .withOpacity(0.3)),
+                    .opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(

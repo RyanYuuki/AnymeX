@@ -1,6 +1,7 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -25,10 +26,10 @@ class NovelSettingsPanel extends StatelessWidget {
         width: animatedWidth,
         child: Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            color: context.colors.surface.opaque(0.8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.opaque(0.2),
                 blurRadius: 10,
                 offset: const Offset(-2, 0),
               ),
@@ -53,7 +54,7 @@ class NovelSettingsPanel extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: context.colors.outline.opaque(0.2),
           ),
         ),
       ),
@@ -64,7 +65,7 @@ class NovelSettingsPanel extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: context.colors.onSurface,
             ),
           ),
           const Spacer(),
@@ -75,7 +76,7 @@ class NovelSettingsPanel extends StatelessWidget {
             },
             icon: Icon(
               Icons.close_rounded,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: context.colors.onSurface,
             ),
           ),
         ],
@@ -109,7 +110,7 @@ class NovelSettingsPanel extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: context.colors.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -168,7 +169,7 @@ class NovelSettingsPanel extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: context.colors.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -214,7 +215,7 @@ class NovelSettingsPanel extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: context.colors.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -263,12 +264,12 @@ class NovelSettingsPanel extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                ? context.colors.primary.opaque(0.1)
                 : Colors.transparent,
             border: Border.all(
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                  ? context.colors.primary
+                  : context.colors.outline.opaque(0.3),
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -277,8 +278,8 @@ class NovelSettingsPanel extends StatelessWidget {
               Icon(
                 icon,
                 color: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
+                    ? context.colors.primary
+                    : context.colors.onSurface,
               ),
               const SizedBox(height: 4),
               Text(
@@ -286,8 +287,8 @@ class NovelSettingsPanel extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
+                      ? context.colors.primary
+                      : context.colors.onSurface,
                 ),
               ),
             ],
@@ -316,21 +317,21 @@ class NovelSettingsPanel extends StatelessWidget {
               title,
               style: TextStyle(
                 fontSize: 16,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: context.colors.onSurface,
               ),
             ),
             Obx(() => Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     label(value.value),
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -348,9 +349,9 @@ class NovelSettingsPanel extends StatelessWidget {
                 value.value = newValue;
                 controller.novelContent.refresh();
               },
-              activeColor: Theme.of(context).colorScheme.primary,
+              activeColor: context.colors.primary,
               inactiveColor:
-                  Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  context.colors.primary.opaque(0.3),
             )),
       ],
     );
@@ -365,8 +366,8 @@ class NovelSettingsPanel extends StatelessWidget {
           controller.resetSettings();
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          backgroundColor: context.colors.primary,
+          foregroundColor: context.colors.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

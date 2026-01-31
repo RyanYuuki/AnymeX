@@ -7,6 +7,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -51,7 +52,7 @@ class AnimeCard extends StatelessWidget {
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(12.multiplyRadius()),
                         ),
-                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        color: context.colors.secondaryContainer,
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Row(
@@ -61,7 +62,7 @@ class AnimeCard extends StatelessWidget {
                           Icon(
                             Iconsax.star5,
                             size: 16,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
                           AnymexText(
@@ -83,7 +84,7 @@ class AnimeCard extends StatelessWidget {
                           topLeft: Radius.circular(12.multiplyRadius()),
                           bottomRight: Radius.circular(12.multiplyRadius()),
                         ),
-                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        color: context.colors.secondaryContainer,
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Row(
@@ -93,7 +94,7 @@ class AnimeCard extends StatelessWidget {
                           Icon(
                             Iconsax.play5,
                             size: 16,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
                           AnymexText(

@@ -4,6 +4,7 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum SortType {

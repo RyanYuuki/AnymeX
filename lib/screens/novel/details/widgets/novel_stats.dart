@@ -7,6 +7,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class NovelStats extends StatelessWidget {
@@ -56,7 +57,7 @@ class NovelStats extends StatelessWidget {
                 "body": Style(
                   fontSize: FontSize(14.0),
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+                      context.colors.onSurface.opaque(0.9),
                 ),
                 "b": Style(fontWeight: FontWeight.bold),
                 "i": Style(fontStyle: FontStyle.italic),
@@ -113,13 +114,13 @@ class StateItem extends StatelessWidget {
         AnymexText(
           text: label,
           variant: TextVariant.semiBold,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+          color: context.colors.onSurface.opaque(0.9),
         ),
         Expanded(
           child: AnymexText(
             text: value,
             variant: TextVariant.semiBold,
-            color: Theme.of(context).colorScheme.primary,
+            color: context.colors.primary,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
@@ -146,7 +147,7 @@ class AdaptationInfoColumn extends StatelessWidget {
       children: chapters
           .map((chapter) => Text(
                 chapter,
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                style: TextStyle(color: context.colors.primary),
               ))
           .toList(),
     );

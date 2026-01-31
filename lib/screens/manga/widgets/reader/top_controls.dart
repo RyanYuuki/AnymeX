@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -78,14 +79,14 @@ class ReaderTopControls extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: context.colors.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
         onPressed: () => Get.back(),
-        icon:
-            const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+        icon: Icon(Icons.arrow_back_ios_new,
+            color: context.colors.onSurface, size: 18),
       ),
     );
   }
@@ -96,9 +97,9 @@ class ReaderTopControls extends StatelessWidget {
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: context.colors.surfaceContainer,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.15)),
+          border: Border.all(color: context.colors.onSurface.opaque(0.15)),
         ),
         child: Row(
           children: [
@@ -111,7 +112,7 @@ class ReaderTopControls extends StatelessWidget {
                     : (controller.currentPageIndex.value /
                         controller.pageList.length),
                 strokeWidth: 2,
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: context.colors.onSurface.opaque(0.2),
               ),
             ),
             const SizedBox(width: 8),
@@ -122,8 +123,8 @@ class ReaderTopControls extends StatelessWidget {
                 children: [
                   Text(
                     controller.currentChapter.value?.title ?? 'Unknown Chapter',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.colors.onSurface,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -133,7 +134,7 @@ class ReaderTopControls extends StatelessWidget {
                   Text(
                     'Chapter ${controller.currentChapter.value?.number?.round() ?? '-'} of ${controller.chapterList.last.number?.round() ?? '-'}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: context.colors.onSurface.opaque(0.7),
                       fontSize: 10,
                     ),
                   ),
@@ -151,13 +152,14 @@ class ReaderTopControls extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: context.colors.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
         onPressed: () => _showSettings(context),
-        icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 18),
+        icon: Icon(Icons.settings_rounded,
+            color: context.colors.onSurface, size: 18),
       ),
     );
   }
@@ -173,9 +175,9 @@ class ReaderTopControls extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: context.colors.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.15)),
+          border: Border.all(color: context.colors.onSurface.opaque(0.15)),
         ),
         child: Text(
           controller.loadingState.value == LoadingState.loading
@@ -184,7 +186,7 @@ class ReaderTopControls extends StatelessWidget {
                   ? 'Error loading pages'
                   : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
+            color: context.colors.onSurface.opaque(0.9),
             fontSize: 11,
             fontWeight: FontWeight.w500,
           ),

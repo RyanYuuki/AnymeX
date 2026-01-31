@@ -4,6 +4,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -118,7 +119,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.15),
+              color: colorScheme.shadow.opaque(0.15),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
@@ -132,7 +133,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
             Container(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer.withOpacity(0.3),
+                color: colorScheme.surfaceContainer.opaque(0.3),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -198,7 +199,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                       border: Border.all(
                         color: _errorMessage != null
                             ? colorScheme.error
-                            : colorScheme.outline.withOpacity(0.3),
+                            : colorScheme.outline.opaque(0.3),
                         width: 1,
                       ),
                       color: colorScheme.surfaceContainerLowest,
@@ -212,7 +213,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             hintText: 'https://github.com/username/repo.json',
                             hintStyle: TextStyle(
                               color:
-                                  colorScheme.onSurfaceVariant.withOpacity(0.6),
+                                  colorScheme.onSurfaceVariant.opaque(0.6),
                               fontSize: 14,
                             ),
                             prefixIcon: Icon(

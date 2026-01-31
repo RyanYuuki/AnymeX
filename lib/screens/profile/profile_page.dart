@@ -5,6 +5,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
@@ -40,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                           backgroundColor: Theme.of(context)
                               .colorScheme
                               .surfaceContainer
-                              .withOpacity(0.7),
+                              .opaque(0.7),
                         ),
                       ),
                     ),
@@ -53,7 +54,7 @@ class ProfilePage extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 24,
                             backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
+                                context.colors.surfaceContainer,
                             backgroundImage:
                                 NetworkImage(profileData.value.avatar ?? ''),
                           ),
@@ -64,7 +65,7 @@ class ProfilePage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 24,
                             fontFamily: 'Poppins-SemiBold',
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -226,7 +227,7 @@ class ProfilePage extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colors.primary,
               fontFamily: 'Poppins-SemiBold',
             ),
             textAlign: TextAlign.center,
@@ -265,7 +266,7 @@ class StatsRow extends StatelessWidget {
               color: Theme.of(context)
                   .colorScheme
                   .onSecondaryContainer
-                  .withOpacity(0.7),
+                  .opaque(0.7),
             ),
           ),
           Text(

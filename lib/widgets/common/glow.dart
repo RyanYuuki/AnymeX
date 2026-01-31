@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,7 +47,7 @@ class Glow extends StatelessWidget {
               int.parse(color.replaceAll('#', '0xFF')),
             ),
           )
-        : Theme.of(context).colorScheme;
+        : context.colors;
     final isDesktop = Platform.isWindows;
     final ch = isDesktop
         ? Padding(
@@ -103,7 +104,7 @@ class LiquidMode extends StatelessWidget {
             return _CachedColorFilteredImage(
               color: settingsController.retainOriginalColor
                   ? null
-                  : theme.primary.withOpacity(0.6),
+                  : theme.primary.opaque(0.6),
               imagePath: imagePath,
             );
           }),
@@ -151,10 +152,10 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            theme.surface.withOpacity(0.65),
-            theme.surface.withOpacity(0.5),
-            theme.primary.withOpacity(0.4),
-            theme.surface.withOpacity(0.6),
+            theme.surface.opaque(0.65),
+            theme.surface.opaque(0.5),
+            theme.primary.opaque(0.4),
+            theme.surface.opaque(0.6),
           ],
           stops: const [0.0, 0.4, 0.7, 1.0],
         );
@@ -164,10 +165,10 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           center: Alignment.center,
           radius: 1.2,
           colors: [
-            theme.surface.withOpacity(0.2),
-            theme.surface.withOpacity(0.35),
-            theme.surface.withOpacity(0.5),
-            theme.surface.withOpacity(0.6),
+            theme.surface.opaque(0.2),
+            theme.surface.opaque(0.35),
+            theme.surface.opaque(0.5),
+            theme.surface.opaque(0.6),
           ],
           stops: const [0.0, 0.4, 0.7, 1.0],
         );
@@ -177,10 +178,10 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           center: Alignment.center,
           radius: 0.8,
           colors: [
-            theme.surface.withOpacity(0.15),
-            theme.surface.withOpacity(0.3),
-            theme.surface.withOpacity(0.45),
-            theme.surface.withOpacity(0.55),
+            theme.surface.opaque(0.15),
+            theme.surface.opaque(0.3),
+            theme.surface.opaque(0.45),
+            theme.surface.opaque(0.55),
           ],
           stops: const [0.0, 0.35, 0.65, 1.0],
         );
@@ -190,10 +191,10 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.surface.withOpacity(0.5),
-            theme.surface.withOpacity(0.2),
-            theme.surface.withOpacity(0.2),
-            theme.surface.withOpacity(0.5),
+            theme.surface.opaque(0.5),
+            theme.surface.opaque(0.2),
+            theme.surface.opaque(0.2),
+            theme.surface.opaque(0.5),
           ],
           stops: const [0.0, 0.2, 0.8, 1.0],
         );
@@ -203,12 +204,11 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            theme.surface.withOpacity(0.4),
-            Color.lerp(theme.surface, theme.primaryContainer, 0.1)!
-                .withOpacity(0.3),
+            theme.surface.opaque(0.4),
+            Color.lerp(theme.surface, theme.primaryContainer, 0.1)!.opaque(0.3),
             Color.lerp(theme.surface, theme.secondaryContainer, 0.1)!
-                .withOpacity(0.25),
-            theme.surface.withOpacity(0.45),
+                .opaque(0.25),
+            theme.surface.opaque(0.45),
           ],
           stops: const [0.0, 0.25, 0.75, 1.0],
         );
@@ -218,12 +218,12 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
           colors: [
-            theme.surface.withOpacity(0.4),
+            theme.surface.opaque(0.4),
             Color.lerp(theme.surface, theme.primaryContainer, 0.05)!
-                .withOpacity(0.3),
+                .opaque(0.3),
             Color.lerp(theme.surface, theme.tertiaryContainer, 0.05)!
-                .withOpacity(0.25),
-            theme.surface.withOpacity(0.45),
+                .opaque(0.25),
+            theme.surface.opaque(0.45),
           ],
           stops: const [0.0, 0.3, 0.7, 1.0],
         );
@@ -234,11 +234,11 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           startAngle: 0,
           endAngle: 3.14159 * 2,
           colors: [
-            theme.surface.withOpacity(0.4),
-            theme.surface.withOpacity(0.25),
-            theme.surface.withOpacity(0.35),
-            theme.surface.withOpacity(0.3),
-            theme.surface.withOpacity(0.4),
+            theme.surface.opaque(0.4),
+            theme.surface.opaque(0.25),
+            theme.surface.opaque(0.35),
+            theme.surface.opaque(0.3),
+            theme.surface.opaque(0.4),
           ],
           stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
         );
@@ -248,10 +248,10 @@ class _OptimizedGradientOverlay extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.surface.withOpacity(0.3),
-            theme.surface.withOpacity(0.25),
-            theme.surface.withOpacity(0.25),
-            theme.surface.withOpacity(0.3),
+            theme.surface.opaque(0.3),
+            theme.surface.opaque(0.25),
+            theme.surface.opaque(0.25),
+            theme.surface.opaque(0.3),
           ],
           stops: const [0.0, 0.3, 0.7, 1.0],
         );
@@ -283,7 +283,7 @@ class _TexturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = theme.onSurface.withOpacity(0.02)
+      ..color = theme.onSurface.opaque(0.02)
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
@@ -296,11 +296,11 @@ class _TexturePainter extends CustomPainter {
       canvas.drawCircle(
         Offset(x, y),
         radius,
-        paint..color = theme.onSurface.withOpacity(random.nextDouble() * 0.03),
+        paint..color = theme.onSurface.opaque(random.nextDouble() * 0.03),
       );
     }
 
-    paint.color = theme.onSurface.withOpacity(0.2);
+    paint.color = theme.onSurface.opaque(0.2);
     paint.strokeWidth = 0.4;
 
     for (double x = 0; x < size.width; x += 10) {
@@ -373,7 +373,7 @@ class PureGradientGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return RepaintBoundary(
       child: Container(
@@ -382,10 +382,10 @@ class PureGradientGlow extends StatelessWidget {
             center: Alignment.topLeft,
             radius: 2.0,
             colors: [
-              theme.primary.withOpacity(0.15),
-              theme.primaryContainer.withOpacity(0.12),
-              theme.secondary.withOpacity(0.08),
-              theme.surface.withOpacity(0.05),
+              theme.primary.opaque(0.15),
+              theme.primaryContainer.opaque(0.12),
+              theme.secondary.opaque(0.08),
+              theme.surface.opaque(0.05),
               Colors.transparent,
             ],
             stops: const [0.0, 0.3, 0.6, 0.8, 1.0],
@@ -397,10 +397,10 @@ class PureGradientGlow extends StatelessWidget {
               begin: begin,
               end: end,
               colors: [
-                theme.surface.withOpacity(0.85),
-                theme.surface.withOpacity(0.7),
-                theme.primary.withOpacity(0.4),
-                theme.surface.withOpacity(0.6),
+                theme.surface.opaque(0.85),
+                theme.surface.opaque(0.7),
+                theme.primary.opaque(0.4),
+                theme.surface.opaque(0.6),
               ],
               stops: const [0.0, 0.4, 0.7, 1.0],
             ),
@@ -426,17 +426,14 @@ class LightweightGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return Container(
       color: theme.surface,
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              theme.surface.withOpacity(0.3),
-              theme.primary.withOpacity(0.4)
-            ],
+            colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
             begin: begin,
             end: end,
           ),
@@ -453,8 +450,7 @@ BoxShadow glowingShadow(BuildContext context) {
     return const BoxShadow(color: Colors.transparent);
   } else {
     return BoxShadow(
-      color: Theme.of(context).colorScheme.primary.withOpacity(
-          Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.6),
+      color: context.colors.primary.opaque(0.4, iReallyMeanIt: true),
       blurRadius: 50.0.multiplyBlur(),
       spreadRadius: 1.0.multiplyGlow(),
       offset: const Offset(-2.0, 0),
@@ -468,8 +464,8 @@ BoxShadow lightGlowingShadow(BuildContext context) {
     return const BoxShadow(color: Colors.transparent);
   } else {
     return BoxShadow(
-      color: Theme.of(context).colorScheme.primary.withOpacity(
-          Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.6),
+      color: context.colors.primary
+          .opaque(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.6),
       blurRadius: 59.0.multiplyBlur(),
       spreadRadius: 1.0.multiplyGlow(),
       offset: const Offset(-1.0, 0),
@@ -479,12 +475,12 @@ BoxShadow lightGlowingShadow(BuildContext context) {
 
 Shimmer placeHolderWidget(BuildContext context) {
   return Shimmer.fromColors(
-    baseColor: Theme.of(context).colorScheme.surfaceContainer,
-    highlightColor: Theme.of(context).colorScheme.primary,
+    baseColor: context.colors.surfaceContainer,
+    highlightColor: context.colors.primary,
     child: Container(
       width: 80,
       height: 80,
-      color: Theme.of(context).colorScheme.secondaryContainer,
+      color: context.colors.secondaryContainer,
     ),
   );
 }
