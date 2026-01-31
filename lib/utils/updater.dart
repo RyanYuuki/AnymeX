@@ -69,7 +69,7 @@ class UpdateManager {
             downloadUrls,
           );
         } else {
-          print("You're already using the latest version");
+          snackBar("You're already using the latest version!");
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
