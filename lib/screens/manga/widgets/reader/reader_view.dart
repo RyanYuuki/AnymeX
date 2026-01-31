@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -52,7 +52,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     );
     _animation.addListener(() => _photoViewController.scale = _animation.value);
     ever(widget.controller.readingLayout, (_) => setState(() {}));
+    ever(widget.controller.readingLayout, (_) => setState(() {}));
     ever(widget.controller.readingDirection, (_) => setState(() {}));
+    ever(widget.controller.dualPageMode, (_) => setState(() {}));
   }
 
   @override
@@ -84,13 +86,17 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   }
 
   void _handlePointerSignal(PointerSignalEvent event) {
-    if (event is PointerScrollEvent && _isCtrlPressed) {
-      final delta = event.scrollDelta.dy;
-      final currentScale = _photoViewController.scale ?? 1.0;
-      final newScale = (currentScale - (delta * 0.002)).clamp(1.0, 5.0);
+    if (event is PointerScrollEvent) {
+      if (_isCtrlPressed) {
+        final delta = event.scrollDelta.dy;
+        final currentScale = _photoViewController.scale ?? 1.0;
+        final newScale = (currentScale - (delta * 0.002)).clamp(1.0, 5.0);
 
-      if (newScale != currentScale) {
-        _photoViewController.scale = newScale;
+        if (newScale != currentScale) {
+          _photoViewController.scale = newScale;
+        }
+      } else {
+         widget.controller.handleMouseScroll(event.scrollDelta.dy);
       }
     }
   }
@@ -173,16 +179,30 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Listener(
       onPointerSignal: _handlePointerSignal,
-      child: Obx(() {
-        switch (widget.controller.loadingState.value) {
-          case LoadingState.loading:
-            return _buildLoadingView(context);
-          case LoadingState.error:
-            return _buildErrorView(context);
-          case LoadingState.loaded:
-            return _buildContentView(context);
-        }
-      }),
+      onPointerPanZoomUpdate: (event) {
+        widget.controller.handleMouseScroll(-event.panDelta.dy * 4, isTrackpad: true);
+      },
+      onPointerPanZoomEnd: (event) {
+        widget.controller.handleOverscrollEnd();
+      },
+      onPointerUp: widget.controller.onPointerUp,
+      onPointerDown: widget.controller.onPointerDown,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: widget.controller.onScrollNotification,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: widget.controller.onScrollNotification,
+        child: Obx(() {
+          switch (widget.controller.loadingState.value) {
+            case LoadingState.loading:
+              return _buildLoadingView(context);
+            case LoadingState.error:
+              return _buildErrorView(context);
+            case LoadingState.loaded:
+              return _buildContentView(context);
+          }
+        }),
+      ),
+      ),
     );
   }
 
@@ -283,32 +303,25 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
 
   Widget _buildContinuousView() {
     return ScrollablePositionedList.builder(
-      itemCount: widget.controller.pageList.length,
+      itemCount: widget.controller.spreads.length,
       itemScrollController: widget.controller.itemScrollController,
       scrollOffsetController: widget.controller.scrollOffsetController,
       itemPositionsListener: widget.controller.itemPositionsListener,
       scrollOffsetListener: widget.controller.scrollOffsetListener,
       initialScrollIndex: (widget.controller.currentPageIndex.value - 1)
-          .clamp(0, widget.controller.pageList.length - 1),
+          .clamp(0, widget.controller.spreads.length - 1),
       physics: const ClampingScrollPhysics(),
       scrollDirection: widget.controller.readingDirection.value.axis,
       reverse: widget.controller.readingDirection.value.reversed,
       itemBuilder: (context, index) {
-        if (!Platform.isAndroid && !Platform.isIOS) {
-          return Column(
-            children: [
-              _buildImage(context, widget.controller.pageList[index], index),
-            ],
-          );
-        }
-        return _buildImage(context, widget.controller.pageList[index], index);
+        return _buildSpread(context, widget.controller.spreads[index], index);
       },
     );
   }
 
   Widget _buildPagedView() {
     return PreloadPageView.builder(
-      itemCount: widget.controller.pageList.length,
+      itemCount: widget.controller.spreads.length,
       controller: widget.controller.pageController,
       preloadPagesCount: widget.controller.preloadPages.value,
       physics: const ClampingScrollPhysics(),
@@ -316,125 +329,30 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       reverse: widget.controller.readingDirection.value.reversed,
       onPageChanged: widget.controller.onPageChanged,
       itemBuilder: (context, index) {
-        return _buildImageForPaged(
-            context, widget.controller.pageList[index], index);
+        return _buildSpread(
+            context, widget.controller.spreads[index], index);
       },
     );
   }
 
-  Widget _buildImage(BuildContext context, PageUrl page, int index) {
-    final size = MediaQuery.of(context).size;
 
-    return Obx(() {
-      return Container(
-        padding: EdgeInsets.symmetric(
-            vertical: widget.controller.spacedPages.value ? 8.0 : 0),
-        child: widget.controller.cropImages.value
-            ? CroppedNetworkImage(
-                url: page.url,
-                headers: (page.headers?.isEmpty ?? true)
-                    ? {
-                        'Referer':
-                            sourceController.activeMangaSource.value?.baseUrl ??
-                                ''
-                      }
-                    : page.headers,
-                fit: BoxFit.contain,
-                alignment: Alignment.center,
-              )
-            : ExtendedImage.network(
-                page.url,
-                cacheMaxAge: Duration(
-                    days: settingsController.preferences
-                        .get('cache_days', defaultValue: 7)),
-                mode: ExtendedImageMode.none,
-                gaplessPlayback: true,
-                cache: true,
-                headers: (page.headers?.isEmpty ?? true)
-                    ? {
-                        'Referer':
-                            sourceController.activeMangaSource.value?.baseUrl ??
-                                ''
-                      }
-                    : page.headers,
-                fit: BoxFit.contain,
-                alignment: Alignment.center,
-                constraints: BoxConstraints(
-                  maxWidth: 500 * widget.controller.pageWidthMultiplier.value,
-                ),
-                filterQuality: FilterQuality.medium,
-                enableLoadState: true,
-                loadStateChanged: (ExtendedImageState state) {
-                  switch (state.extendedImageLoadState) {
-                    case LoadState.loading:
-                      final progress =
-                          (state.loadingProgress?.cumulativeBytesLoaded ?? 0) /
-                              (state.loadingProgress?.expectedTotalBytes ?? 1)
-                                  .toDouble();
-                      return SizedBox(
-                        width: size.width,
-                        height: 200,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AnymexProgressIndicator(
-                                value: progress,
-                              ),
-                              const SizedBox(height: 8),
-                              Text('Loading page ${index + 1}...'),
-                            ],
-                          ),
-                        ),
-                      );
 
-                    case LoadState.failed:
-                      return Container(
-                        width: size.width,
-                        height: 200,
-                        color: Colors.grey.withOpacity(0.1),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.broken_image_outlined,
-                              size: 48,
-                              color: Colors.grey.withOpacity(0.7),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Failed to load page ${index + 1}',
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                            const SizedBox(height: 8),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                state.reLoadImage();
-                                Logger.i(state.completedWidget.toString());
-                              },
-                              icon: const Icon(Icons.refresh, size: 16),
-                              label: const Text('Retry'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                textStyle: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-
-                    case LoadState.completed:
-                      return state.completedWidget;
-                  }
-                },
-              ),
-      );
-    });
+  Widget _buildSpread(BuildContext context, ReaderPage spread, int index) {
+    if (!spread.isSpread) {
+      return _buildImageForPaged(context, spread.page1!, index);
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(child: _buildImageForPaged(context, spread.page1!, index)),
+        Expanded(child: _buildImageForPaged(context, spread.page2!, index)),
+      ],
+    );
   }
 
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
+    final isContinuous = widget.controller.readingLayout.value == MangaPageViewMode.continuous;
 
     return Obx(() {
       return Padding(
@@ -469,6 +387,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         }
                       : page.headers,
                   fit: BoxFit.contain,
+                  constraints: isContinuous 
+                      ? BoxConstraints(maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
+                      : null,
                   cache: true,
                   alignment: Alignment.center,
                   filterQuality: FilterQuality.medium,
@@ -481,8 +402,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                     0) /
                                 (state.loadingProgress?.expectedTotalBytes ?? 1)
                                     .toDouble();
-                        return SizedBox.fromSize(
-                          size: Size(size.width, size.height),
+                        return SizedBox(
+                          height: size.height,
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -496,8 +417,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         );
 
                       case LoadState.failed:
-                        return SizedBox.fromSize(
-                          size: Size(size.width, size.height),
+                        return SizedBox(
+                          height: size.height,
                           child: Container(
                             color: Colors.grey.withOpacity(0.1),
                             child: Column(
@@ -517,7 +438,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     state.reLoadImage();
-                                    Logger.i(state.completedWidget.toString());
                                   },
                                   icon: const Icon(Icons.refresh, size: 16),
                                   label: const Text('Retry'),

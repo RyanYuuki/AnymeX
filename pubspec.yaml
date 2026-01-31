@@ -100,6 +100,7 @@ dependencies:
     firebase_analytics: ^12.1.1
     background_downloader: ^9.5.2
     auto_size_text: ^3.0.0
+    vibration: ^3.1.5
 
 dev_dependencies:
     build_runner: ^2.4.11
