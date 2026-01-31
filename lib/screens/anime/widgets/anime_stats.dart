@@ -8,10 +8,10 @@ import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnimeStats extends StatelessWidget {
@@ -59,21 +59,6 @@ class AnimeStats extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildInfoCard(
-                  context,
-                  icon: Icons.title_rounded,
-                  title: "English Title",
-                  content: AnymexText(
-                    text: data.title,
-                    variant: TextVariant.semiBold,
-                    size: 15,
-                    maxLines: 3,
-                    autoResize: true,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
               Expanded(
                 child: _buildInfoCard(
                   context,
@@ -184,7 +169,8 @@ class AnimeStats extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+                        color: colorScheme.primary
+                            .opaque(0.15, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -231,7 +217,8 @@ class AnimeStats extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
+                  color: colorScheme.surfaceContainerHighest
+                      .opaque(0.4, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: colorScheme.outline.opaque(0.2),
@@ -243,7 +230,8 @@ class AnimeStats extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+                        color: colorScheme.primary
+                            .opaque(0.15, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -343,14 +331,16 @@ class AnimeStats extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: Get.isDarkMode ? [
-            colorScheme.primaryContainer.opaque(0.3),
-            colorScheme.primary.opaque(0.15),
-          ] : [
-            colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
-            colorScheme.surfaceContainer,
-            colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
-          ],
+          colors: Get.isDarkMode
+              ? [
+                  colorScheme.primaryContainer.opaque(0.3),
+                  colorScheme.primary.opaque(0.15),
+                ]
+              : [
+                  colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
+                  colorScheme.surfaceContainer,
+                  colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

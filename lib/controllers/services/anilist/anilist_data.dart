@@ -30,7 +30,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -174,7 +173,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           if (acceptedLists.contains("Recommended Animes") &&
               settings.homePageCards.keys.contains('Recommended Animes'))
             ReusableCarousel(
-              title: "Recommended Animes",
+              title: "Recommended Anime",
               data: isLoggedIn.value
                   ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
                   : recAnimes,
@@ -183,7 +182,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           if (acceptedLists.contains("Recommended Mangas") &&
               settings.homePageCards.keys.contains('Recommended Mangas'))
             ReusableCarousel(
-              title: "Recommended Mangas",
+              title: "Recommended Manga",
               data: isLoggedIn.value
                   ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
                   : recMangas,
@@ -199,10 +198,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     return [
       buildBigCarousel(trendingAnimes, false),
       buildSection('Recently Updated', recentlyUpdatedAnimes),
-      buildSection('Trending Animes', trendingAnimes),
-      buildSection('Popular Animes', popularAnimes),
+      buildSection('Trending Anime', trendingAnimes),
+      buildSection('Popular Anime', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
-      buildSection('Upcoming Animes', upcomingAnimes),
+      buildSection('Upcoming Anime', upcomingAnimes),
     ].obs;
   }
 
@@ -210,10 +209,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingMangas, true),
-      buildMangaSection('Trending Mangas', trendingMangas),
-      buildMangaSection('Latest Mangas', latestMangas),
-      buildMangaSection('Popular Mangas', popularMangas),
-      buildMangaSection('More Popular Mangas', morePopularMangas),
+      buildMangaSection('Trending Manga', trendingMangas),
+      buildMangaSection('Latest Manga', latestMangas),
+      buildMangaSection('Popular Manga', popularMangas),
+      buildMangaSection('More Popular Manga', morePopularMangas),
 
       // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
