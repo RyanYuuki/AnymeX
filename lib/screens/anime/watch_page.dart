@@ -281,7 +281,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final skipQuery = aniskip.SkipSearchQuery(
         idMAL: widget.anilistData.idMal,
         episodeNumber: currentEpisode.value.number,
-        episodeLength: currentEpisode.value.durationInMilliseconds ~/ 1000);
+        episodeLength: (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000);
 
     aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
       skipTimes = skipTimeResult;
