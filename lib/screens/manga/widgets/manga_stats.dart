@@ -300,6 +300,7 @@ class _MangaStatsState extends State<MangaStats> {
                 text: title,
                 variant: TextVariant.bold,
                 size: 16,
+                autoResize: true,
               ),
             ],
           ),

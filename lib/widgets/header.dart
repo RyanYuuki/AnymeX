@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:provider/provider.dart';
 
 enum PageType { manga, anime, home }
@@ -229,29 +230,35 @@ Uint8List base64ToBytes(String base64) {
 
 class AnymeXImage extends StatelessWidget {
   final String imageUrl;
-  final double width;
+  final double? width;
   final double? height;
   final double radius;
   final BoxFit fit;
   final Alignment alignment;
   final Color? color;
   final String? errorImage;
+  final ValueChanged<Color>? onColorExtracted;
 
   const AnymeXImage({
     super.key,
     required this.imageUrl,
-    required this.width,
+    this.width,
     this.height,
     this.radius = 8,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
     this.color,
     this.errorImage,
+    this.onColorExtracted,
   });
 
   @override
   Widget build(BuildContext context) {
     final isBase64 = isBase64Image(imageUrl);
+
+    if (onColorExtracted != null) {
+      _extractDominantColor(isBase64);
+    }
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -290,6 +297,32 @@ class AnymeXImage extends StatelessWidget {
               },
             ),
     );
+  }
+
+  Future<void> _extractDominantColor(bool isBase64) async {
+    try {
+      ImageProvider imageProvider;
+
+      if (isBase64) {
+        imageProvider = MemoryImage(base64ToBytes(imageUrl));
+      } else {
+        imageProvider = CachedNetworkImageProvider(imageUrl);
+      }
+
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        imageProvider,
+        maximumColorCount: 10,
+      );
+
+      final dominantColor = paletteGenerator.dominantColor?.color ??
+          paletteGenerator.vibrantColor?.color ??
+          paletteGenerator.mutedColor?.color;
+
+      if (dominantColor != null) {
+        onColorExtracted?.call(dominantColor);
+      }
+    } catch (e) {}
   }
 
   Widget _placeholder(BuildContext context) {
