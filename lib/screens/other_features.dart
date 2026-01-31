@@ -1,3 +1,4 @@
+import 'package:anymex/screens/anime/misc/barcode_scanner_page.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
@@ -89,17 +90,36 @@ class OtherFeaturesPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _FeatureCard(
-                  icon: Icons.auto_awesome,
-                  title: 'AI Picks',
-                  description:
-                      'Discover your next favorite manga with AI-powered suggestions',
-                  color: colorScheme.tertiaryContainer,
-                  onColor: colorScheme.onTertiaryContainer,
-                  isFullWidth: true,
-                  onTap: () => navigate(() => const AIRecommendation(
-                        isManga: true,
-                      )),
+                SizedBox(
+                  height: 170,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _FeatureCard(
+                          icon: Icons.auto_awesome,
+                          title: 'AI Picks',
+                          description: 'Smart manga suggestions',
+                          color: colorScheme.tertiaryContainer,
+                          onColor: colorScheme.onTertiaryContainer,
+                          onTap: () => navigate(() => const AIRecommendation(
+                                isManga: true,
+                              )),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _FeatureCard(
+                          icon: Icons.qr_code_scanner_rounded,
+                          title: 'Scanner',
+                          description: 'Scan ISBN barcodes',
+                          color: colorScheme.tertiaryContainer,
+                          onColor: colorScheme.onTertiaryContainer,
+                          onTap: () => navigate(() => const BarcodeScannerPage()),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 100),
               ],
