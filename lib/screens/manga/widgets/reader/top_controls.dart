@@ -5,7 +5,6 @@ import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ReaderTopControls extends StatelessWidget {
   final ReaderController controller;
@@ -283,7 +282,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
       }).toList();
     }
 
-    final currentChapter = controller.currentChapter.value;
+    // final currentChapter = controller.currentChapter.value; (Unused)
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),

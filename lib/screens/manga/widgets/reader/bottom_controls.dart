@@ -104,7 +104,6 @@ class ReaderBottomControls extends StatelessWidget {
             children: [
               Obx(() {
                 final progress = controller.overscrollProgress.value;
-                final isNext = controller.isOverscrollingNext.value;
 
                 return Stack(
                   alignment: Alignment.center,
