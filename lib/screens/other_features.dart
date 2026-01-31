@@ -1,5 +1,6 @@
 import 'package:anymex/screens/anime/misc/barcode_scanner_page.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
+import 'package:anymex/screens/anime/misc/list_exporter.dart'; 
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -71,6 +72,18 @@ class OtherFeaturesPage extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(height: 12),
+                _FeatureCard(
+                  icon: Icons.file_upload_rounded,
+                  title: 'List Exporter',
+                  description: 'Export your Anime list',
+                  color: colorScheme.secondaryContainer,
+                  onColor: colorScheme.onSecondaryContainer,
+                  isFullWidth: true,
+                  onTap: () => navigate(() => const ListExporterPage(isManga: false)),
+                ),
+
+
                 const SizedBox(height: 32),
                 Row(
                   children: [
@@ -115,11 +128,22 @@ class OtherFeaturesPage extends StatelessWidget {
                           description: 'Scan ISBN barcodes',
                           color: colorScheme.tertiaryContainer,
                           onColor: colorScheme.onTertiaryContainer,
-                          onTap: () => navigate(() => const BarcodeScannerPage()),
+                          onTap: () =>
+                              navigate(() => const BarcodeScannerPage()),
                         ),
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 12),
+                _FeatureCard(
+                  icon: Icons.file_upload_rounded,
+                  title: 'List Exporter',
+                  description: 'Export your Manga list',
+                  color: colorScheme.tertiaryContainer,
+                  onColor: colorScheme.onTertiaryContainer,
+                  isFullWidth: true,
+                  onTap: () => navigate(() => const ListExporterPage(isManga: true)),
                 ),
                 const SizedBox(height: 100),
               ],
