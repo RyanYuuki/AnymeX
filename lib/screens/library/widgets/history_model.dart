@@ -8,10 +8,12 @@ import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 
 class HistoryModel {
   OfflineMedia? media;
@@ -47,7 +49,7 @@ class HistoryModel {
 
   factory HistoryModel.fromOfflineMedia(OfflineMedia media, ItemType type) {
     final onTap = type.isManga
-        ? () {
+        ? () async {
             if (media.currentChapter == null) {
               snackBar(
                   "Error: Missing required media. It seems you closed the app directly after reading the chapter!",
@@ -62,9 +64,29 @@ class HistoryModel {
                 snackBar(
                     "Install ${media.currentChapter?.sourceName} First, Then Click");
               } else {
+                var chapters = media.chapters ?? [];
+                if (chapters.length <= 1) {
+                  Get.dialog(const Center(child: AnymexProgressIndicator()));
+                  try {
+                    final mediaModel = convertOfflineToMedia(media);
+                    final details = await source.methods
+                        .getDetail(DMedia.withUrl(mediaModel.id.toString()));
+                    if (details.episodes != null &&
+                        details.episodes!.isNotEmpty) {
+                      chapters = DEpisodeToChapter(
+                          details.episodes!.reversed.toList(),
+                          details.title ?? media.name ?? '');
+                    }
+                  } catch (e) {
+                    Logger.i("Error fetching chapters: $e");
+                  } finally {
+                    if (Get.isDialogOpen == true) Get.back();
+                  }
+                }
+
                 navigate(() => ReadingPage(
                       anilistData: convertOfflineToMedia(media),
-                      chapterList: media.chapters!,
+                      chapterList: chapters,
                       currentChapter: media.currentChapter!,
                       shouldTrack: true,
                     ));

@@ -154,6 +154,42 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
+                    final currentMode = controller.dualPageMode.value;
+                    return CustomTile(
+                      title: 'Dual Page Mode',
+                      description: switch (currentMode) {
+                        DualPageMode.off => 'Standard (Single)',
+                        DualPageMode.auto => 'Auto (Laptop/Tab)',
+                        DualPageMode.force => 'Force (Dual)',
+                      },
+                      icon: Iconsax.book_1,
+                      postFix: Row(
+                        spacing: 4,
+                        children: [
+                          for (final mode in DualPageMode.values)
+                            IconButton.filled(
+                              isSelected: mode == currentMode,
+                              style: IconButton.styleFrom(
+                                backgroundColor: mode == currentMode
+                                    ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                                    : Theme.of(context).colorScheme.surfaceContainer,
+                                foregroundColor: mode == currentMode
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).iconTheme.color,
+                              ),
+                              tooltip: mode.toString(),
+                              icon: Icon(switch (mode) {
+                                DualPageMode.off => Icons.crop_portrait_sharp,
+                                DualPageMode.auto => Icons.devices,
+                                DualPageMode.force => Icons.menu_book_rounded,
+                              }),
+                              onPressed: () => controller.toggleDualPageMode(mode),
+                            )
+                        ],
+                      ),
+                    );
+                  }),
+                  Obx(() {
                     return CustomSwitchTile(
                       icon: Iconsax.pharagraphspacing,
                       title: "Spaced Pages",
@@ -162,16 +198,16 @@ class ReaderSettings {
                       onChanged: (val) => controller.toggleSpacedPages(),
                     );
                   }),
-                  // Obx(() {
-                  //   return CustomSwitchTile(
-                  //     icon: Iconsax.arrow,
-                  //     title: "Overscroll",
-                  //     description: "To Prev/Next Chapter",
-                  //     switchValue: controller.overscrollToChapter.value,
-                  //     onChanged: (val) =>
-                  //         controller.toggleOverscrollToChapter(),
-                  //   );
-                  // }),
+                  Obx(() {
+                    return CustomSwitchTile(
+                      icon: Iconsax.arrow,
+                      title: "Overscroll",
+                      description: "To Prev/Next Chapter",
+                      switchValue: controller.overscrollToChapter.value,
+                      onChanged: (val) =>
+                          controller.toggleOverscrollToChapter(),
+                    );
+                  }),
                   Obx(() {
                     return CustomSwitchTile(
                       icon: Iconsax.eye,
@@ -204,15 +240,19 @@ class ReaderSettings {
                         },
                       );
                     }),
-                  Obx(() {
-                    return CustomSwitchTile(
-                      icon: Icons.crop_rounded,
-                      title: "Crop Borders",
-                      description: "Crop white/black borders from pages",
-                      switchValue: controller.cropImages.value,
-                      onChanged: (val) => controller.toggleCropImages(),
-                    );
-                  }),
+                  IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: CustomSwitchTile(
+                        icon: Icons.crop_rounded,
+                        title: "Crop Borders",
+                        description: "Temporarily disabled for improvement",
+                        switchValue: false, 
+                        onChanged: (val) {},
+                      ),
+                    ),
+                    ),
                   Obx(() {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
