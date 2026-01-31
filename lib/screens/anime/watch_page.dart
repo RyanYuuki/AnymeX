@@ -101,6 +101,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
+  final isRecapSkippedOnce = false.obs;
 
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
@@ -274,9 +275,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     player.setRate(prevRate.value);
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
+    isRecapSkippedOnce.value = false;
+
+    // Use currentEpisode duration for more accurate AniSkip v2 queries
     final skipQuery = aniskip.SkipSearchQuery(
         idMAL: widget.anilistData.idMal,
-        episodeNumber: currentEpisode.value.number);
+        episodeNumber: currentEpisode.value.number,
+        episodeLength: currentEpisode.value.durationInMilliseconds ~/ 1000);
+
     aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
       skipTimes = skipTimeResult;
     }).onError((error, stackTrace) {
@@ -630,9 +636,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void _handleAutoSkip() {
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
       if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) {
-        return;
-      }
-      if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
           currentPosition.value.inSeconds < skipTimes!.op!.end) {
         final skipNeeded = skipTimes!.op!.end - currentPosition.value.inSeconds;
         final duration =
@@ -640,13 +645,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         currentPosition.value = duration;
         player.seek(duration);
         isOPSkippedOnce.value = true;
+        snackBar("Skipped Opening", duration: 2000);
       }
     }
     if (skipTimes?.ed != null && playerSettings.autoSkipED) {
       if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) {
-        return;
-      }
-      if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
           currentPosition.value.inSeconds < skipTimes!.ed!.end) {
         final skipNeeded = skipTimes!.ed!.end - currentPosition.value.inSeconds;
         final duration =
@@ -654,6 +659,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         currentPosition.value = duration;
         player.seek(duration);
         isEDSkippedOnce.value = true;
+        snackBar("Skipped Ending", duration: 2000);
+      }
+    }
+    // NEW: Recap Skip
+    if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
+      if (playerSettings.autoSkipOnce && isRecapSkippedOnce.value) {
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
+          currentPosition.value.inSeconds < skipTimes!.recap!.end) {
+        final skipNeeded =
+            skipTimes!.recap!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isRecapSkippedOnce.value = true;
+        snackBar("Skipped Recap", duration: 2000);
       }
     }
   }
@@ -1574,12 +1596,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     value: currentPosition.value.inMilliseconds
                                         .toDouble(),
                                     max: (currentPosition.value.inMilliseconds >
-                                                episodeDuration
-                                                    .value.inMilliseconds
-                                            ? currentPosition
+                                            episodeDuration
                                                 .value.inMilliseconds
-                                            : episodeDuration
-                                                .value.inMilliseconds)
+                                        ? currentPosition.value.inMilliseconds
+                                        : episodeDuration.value.inMilliseconds)
                                         .toDouble(),
                                     secondaryTrackValue: bufferred
                                         .value.inMilliseconds
@@ -1640,11 +1660,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                       if (episode.value.audios != null &&
                                           episode.value.audios!.isNotEmpty)
                                         _buildIcon(
-                                            onTap: () {
-                                              showAudioSelector();
-                                            },
-                                            icon: HugeIcons
-                                                .strokeRoundedMusicNote01),
+                                          onTap: () {
+                                            showAudioSelector();
+                                          },
+                                          icon: HugeIcons
+                                              .strokeRoundedMusicNote01),
                                     ],
                                   ),
                                 ),
@@ -1737,7 +1757,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   _buildSkipButton(bool invert) {
     return BlurWrapper(
       borderRadius: BorderRadius.circular(20.multiplyRoundness()),
-      child: AnymeXButton(
+      child: AnymexButton(
         height: 50,
         width: 120,
         variant: ButtonVariant.simple,
