@@ -253,6 +253,21 @@ class AboutPage extends StatelessWidget {
                           leading: const Icon(Icons.system_update),
                           title: "Check for Updates",
                         ),
+
+                        // Enable Beta Updates (Toggle)
+                        CustomListTile(
+                          leading: const Icon(Iconsax.toggle_on),
+                          title: "Enable Beta Updates",
+                          subtitle: "Check updates from beta channel",
+                          trailing: Obx(
+                            () => Switch(
+                              value: Get.find<Settings>().enableBetaUpdates.value,
+                              onChanged: (value) {
+                                Get.find<Settings>().saveBetaUpdateToggle(value);
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
