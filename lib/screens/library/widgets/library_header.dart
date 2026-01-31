@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
+import 'package:anymex/screens/library/editor/history_editor.dart';
 import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex/utils/function.dart';
@@ -504,28 +505,31 @@ class ChipTabs extends StatelessWidget {
               novelValue: controller.historyDataNovel.length);
 
           return Row(children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: AnymexIconChip(
-                icon: Row(
-                  children: [
-                    Icon(
-                        controller.selectedListIndex.value == -1
-                            ? Iconsax.clock5
-                            : Iconsax.clock,
-                        color: controller.selectedListIndex.value == -1
-                            ? context.colors.onPrimary
-                            : context.colors.onSurfaceVariant),
-                    5.width(),
-                    AnymexText(text: '($historyCount)')
-                  ],
+            InkWell(
+              onLongPress: () => Get.to(() => const HistoryEditor()),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: AnymexIconChip(
+                  icon: Row(
+                    children: [
+                      Icon(
+                          controller.selectedListIndex.value == -1
+                              ? Iconsax.clock5
+                              : Iconsax.clock,
+                          color: controller.selectedListIndex.value == -1
+                              ? context.colors.onPrimary
+                              : context.colors.onSurfaceVariant),
+                      5.width(),
+                      AnymexText(text: '($historyCount)')
+                    ],
+                  ),
+                  isSelected: controller.selectedListIndex.value == -1,
+                  onSelected: (selected) {
+                    if (selected) {
+                      controller.selectList(-1);
+                    }
+                  },
                 ),
-                isSelected: controller.selectedListIndex.value == -1,
-                onSelected: (selected) {
-                  if (selected) {
-                    controller.selectList(-1);
-                  }
-                },
               ),
             ),
             ...List.generate(
