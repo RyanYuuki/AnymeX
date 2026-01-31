@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BarcodeScannerPage extends StatefulWidget {
   const BarcodeScannerPage({super.key});
@@ -19,7 +20,7 @@ class BarcodeScannerPage extends StatefulWidget {
 class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
   final MobileScannerController controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
-    formats: [BarcodeFormat.ean13], // ISBNs are usually EAN-13
+    formats: [BarcodeFormat.ean13],
   );
   bool isScanning = false;
   bool isFlashOn = false;
@@ -34,32 +35,58 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
     if (isScanning) return;
     setState(() => isScanning = true);
 
+    String? foundTitle;
+
     try {
       snackBar("Searching for ISBN: $isbn...");
-      final url =
-          Uri.parse('https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn');
-      final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+      //Try Google Books API
+      String googleUrl = 'https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn';
+      final apiKey = dotenv.env['GOOGLE_BOOKS_API_KEY'];
+      if (apiKey != null && apiKey.isNotEmpty) {
+        googleUrl += '&key=$apiKey';
+      }
+
+      final googleRes = await http.get(Uri.parse(googleUrl));
+
+      if (googleRes.statusCode == 200) {
+        final data = jsonDecode(googleRes.body);
         if (data['totalItems'] != null && data['totalItems'] > 0) {
-          String title = data['items'][0]['volumeInfo']['title'];
-          // Clean title: "One Piece, Vol. 1" -> "One Piece"
-          title = title.split(',')[0].split('(')[0].trim();
+          foundTitle = data['items'][0]['volumeInfo']['title'];
+        }
+      }
 
-          if (mounted) {
-            Get.off(() => SearchPage(
-                  searchTerm: title,
-                  isManga: true,
-                ));
+      //Fallback to OpenLibrary if Google failed or found nothing
+      if (foundTitle == null) {
+        if (googleRes.statusCode != 200) {
+           snackBar("Google limit reached, trying OpenLibrary...");
+        }
+        
+        final olUrl = Uri.parse('https://openlibrary.org/search.json?isbn=$isbn');
+        final olRes = await http.get(olUrl);
+
+        if (olRes.statusCode == 200) {
+          final data = jsonDecode(olRes.body);
+          if (data['numFound'] != null && data['numFound'] > 0) {
+            foundTitle = data['docs'][0]['title'];
           }
-        } else {
-          snackBar("Book not found for ISBN: $isbn");
-          await Future.delayed(const Duration(seconds: 2));
-          if (mounted) setState(() => isScanning = false);
+        }
+      }
+
+      if (foundTitle != null) {
+        // Clean title: "One Piece, Vol. 1" -> "One Piece"
+        String cleanTitle = foundTitle!.split(',')[0].split('(')[0].trim();
+        
+        if (mounted) {
+          Get.off(() => SearchPage(
+                searchTerm: cleanTitle,
+                isManga: true,
+              ));
         }
       } else {
-        throw Exception("API Error");
+        snackBar("Book not found for ISBN: $isbn");
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) setState(() => isScanning = false);
       }
     } catch (e) {
       snackBar("Error: ${e.toString()}");
@@ -90,12 +117,11 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                 for (final barcode in barcodes) {
                   if (barcode.rawValue != null && !isScanning) {
                     _fetchAndSearch(barcode.rawValue!);
-                    break; 
+                    break;
                   }
                 }
               },
             ),
-
             ColorFiltered(
               colorFilter: ColorFilter.mode(
                 Colors.black.withOpacity(0.5),
@@ -122,20 +148,20 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                 ],
               ),
             ),
-
             SafeArea(
               child: Column(
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
                           backgroundColor: Colors.black45,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white),
                             onPressed: () => Get.back(),
                           ),
                         ),
@@ -150,7 +176,9 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                           child: IconButton(
                             icon: Icon(
                               isFlashOn ? Iconsax.flash_15 : Iconsax.flash_1,
-                              color: isFlashOn ? Colors.yellow : Colors.white,
+                              color: isFlashOn
+                                  ? Colors.yellow
+                                  : Colors.white,
                             ),
                             onPressed: _toggleFlash,
                           ),
@@ -158,14 +186,13 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                       ],
                     ),
                   ),
-                  
                   const Spacer(),
-                  
                   Container(
                     height: 250,
                     width: 300,
                     decoration: BoxDecoration(
-                      border: Border.all(color: colorScheme.primary, width: 3),
+                      border:
+                          Border.all(color: colorScheme.primary, width: 3),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: isScanning
@@ -176,9 +203,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                           )
                         : null,
                   ),
-                  
                   const Spacer(),
-                  
                   Container(
                     margin: const EdgeInsets.only(bottom: 50),
                     padding: const EdgeInsets.symmetric(
