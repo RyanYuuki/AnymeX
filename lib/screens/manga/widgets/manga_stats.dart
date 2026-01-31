@@ -72,21 +72,6 @@ class _MangaStatsState extends State<MangaStats> {
               Expanded(
                 child: _buildInfoCard(
                   context,
-                  icon: Icons.title_rounded,
-                  title: "English Title",
-                  content: AnymexText(
-                    text: widget.data.title,
-                    variant: TextVariant.semiBold,
-                    size: 15,
-                    maxLines: 3,
-                    autoResize: true,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildInfoCard(
-                  context,
                   icon: Icons.language_rounded,
                   title: "Romaji Title",
                   content: AnymexText(

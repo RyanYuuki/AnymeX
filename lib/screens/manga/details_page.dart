@@ -254,6 +254,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
+                    widget.media.serviceType.onlineService.isLoggedIn.value;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=

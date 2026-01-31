@@ -10,11 +10,11 @@ import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -43,10 +43,8 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3)),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -145,10 +143,8 @@ class CustomBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
         style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context)
-                .colorScheme
-                .surfaceContainer
-                .opaque(0.5)),
+            backgroundColor:
+                Theme.of(context).colorScheme.surfaceContainer.opaque(0.5)),
         onPressed: () {
           Navigator.pop(context);
         },

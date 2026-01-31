@@ -65,7 +65,7 @@ class ChapterService {
     final chaptersForChunking =
         (selectedScanIndex != null && selectedScanIndex > 0)
             ? filterChaptersByScanlator(
-                chapters, extractedScanlators, selectedScanIndex)
+                anilistData, chapters, extractedScanlators, selectedScanIndex)
             : chapters;
 
     final chunkedChapters = chaptersForChunking.isNotEmpty
@@ -105,11 +105,13 @@ class ChapterService {
   }
 
   List<List<Chapter>> buildFilteredChunks(
+    Media anilistData,
     List<Chapter> chapters,
     List<String> scanlators,
     int selectedScanIndex,
   ) {
     final filteredChapters = filterChaptersByScanlator(
+      anilistData,
       chapters,
       scanlators,
       selectedScanIndex,
@@ -140,6 +142,7 @@ class ChapterService {
   }
 
   List<Chapter> filterChaptersByScanlator(
+    Media anilistData,
     List<Chapter> chapters,
     List<String> scanlators,
     int selectedScanIndex,
@@ -164,7 +167,9 @@ class ChapterService {
           ));
       return;
     }
-    final shouldTrack = await showTrackingDialog(context);
+    final shouldTrack = anilistData.serviceType == ServicesType.extensions
+        ? false
+        : await showTrackingDialog(context);
 
     if (shouldTrack != null) {
       navigate(() => ReadingPage(
@@ -284,6 +289,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     final selectedChapters = _getSelectedChapters(chapterState);
     final filteredFullChapters = _chapterService.filterChaptersByScanlator(
+      widget.anilistData,
       widget.chapters!,
       chapterState.scanlators,
       _selectedScanIndex.value,

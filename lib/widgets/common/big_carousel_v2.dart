@@ -6,15 +6,16 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/color_extractor.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -163,8 +164,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: colorScheme.primary
-                                            .opaque(0.1),
+                                        color: colorScheme.primary.opaque(0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -312,10 +312,10 @@ class _CarouselCardState extends State<_CarouselCard> {
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                          color: colorScheme.onSurface.opaque(0.05, iReallyMeanIt: true),
-                          width: 1,
-                        ),
+          border: Border.all(
+            color: colorScheme.onSurface.opaque(0.05, iReallyMeanIt: true),
+            width: 1,
+          ),
           boxShadow: widget.isActive
               ? [
                   BoxShadow(
@@ -352,7 +352,8 @@ class _CarouselCardState extends State<_CarouselCard> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.opaque(0.7, iReallyMeanIt: true),
+                        color: colorScheme.surface
+                            .opaque(0.7, iReallyMeanIt: true),
                       ),
                       child: Row(
                         children: [
@@ -398,15 +399,19 @@ class _CarouselCardState extends State<_CarouselCard> {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: colorScheme.onSurface
-                                            .opaque(0.7),
+                                        color:
+                                            colorScheme.onSurface.opaque(0.7),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
                                     _buildDot(colorScheme),
                                     const SizedBox(width: 8),
-                                    Icon(Icons.play_circle_rounded,
-                                        size: 12, color: colorScheme.primary),
+                                    Icon(
+                                        widget.media.mediaType == ItemType.manga
+                                            ? Iconsax.book
+                                            : Icons.play_circle_rounded,
+                                        size: 12,
+                                        color: colorScheme.primary),
                                     const SizedBox(width: 4),
                                     Text(
                                       widget.media.totalEpisodes,
@@ -414,8 +419,8 @@ class _CarouselCardState extends State<_CarouselCard> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: colorScheme.onSurface
-                                            .opaque(0.5),
+                                        color:
+                                            colorScheme.onSurface.opaque(0.5),
                                       ),
                                     ),
                                     const SizedBox(width: 8),

@@ -19,12 +19,12 @@ class ContinueWatchingCard extends StatelessWidget {
     return AnymexCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: colorScheme.outline.opaque(0.1),
+          color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(12.multiplyRadius()),
       ),
-      color: colorScheme.surfaceContainer.withValues(alpha: 0.4),
+      color: colorScheme.surfaceContainer.opaque(0.4),
       child: AnymexOnTap(
         onTap: media.onTap,
         child: Column(
