@@ -1,5 +1,6 @@
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ChapterRanges extends StatelessWidget {
@@ -16,7 +17,7 @@ class ChapterRanges extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -45,13 +46,13 @@ class ChapterRanges extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? colorScheme.primary.withOpacity(0.4)
-                          : colorScheme.surfaceContainerHigh.withOpacity(0.4),
+                          ? colorScheme.primary.opaque(0.4)
+                          : colorScheme.surfaceContainerHigh.opaque(0.4),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
-                            ? colorScheme.primary.withOpacity(0.4)
-                            : colorScheme.outline.withOpacity(0.4),
+                            ? colorScheme.primary.opaque(0.4)
+                            : colorScheme.outline.opaque(0.4),
                         width: 1.5,
                       ),
                     ),

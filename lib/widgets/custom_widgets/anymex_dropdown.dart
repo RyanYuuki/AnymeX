@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AnymexDropdown extends StatefulWidget {
@@ -96,12 +97,10 @@ class _AnymexDropdownState extends State<AnymexDropdown>
     final double spaceBelow = screenHeight - (offset.dy + size.height);
     final double spaceAbove = offset.dy;
 
-    // Check if there's enough space below
     if (spaceBelow >= dropdownMaxHeight + spacing) {
       return false;
     }
 
-    // If not enough space below, check if there's more space above
     if (spaceAbove > spaceBelow) {
       return true;
     }
@@ -153,8 +152,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                   : null,
               width: size.width,
               child: GestureDetector(
-                onTap:
-                    () {}, // Prevent closing when tapping the dropdown itself
+                onTap: () {},
                 child: CompositedTransformFollower(
                   link: _layerLink,
                   showWhenUnlinked: false,
@@ -170,9 +168,10 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                       child: Material(
                         elevation: 12,
                         borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.surface,
-                        shadowColor:
-                            Theme.of(context).shadowColor.withOpacity(0.15),
+                        color: context.colors.surface,
+                        shadowColor: Theme.of(context)
+                            .shadowColor
+                            .opaque(0.15, iReallyMeanIt: true),
                         child: Container(
                           constraints: const BoxConstraints(
                             maxHeight: 320,
@@ -183,7 +182,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                               color: Theme.of(context)
                                   .colorScheme
                                   .outline
-                                  .withOpacity(0.15),
+                                  .opaque(0.15, iReallyMeanIt: true),
                               width: 1,
                             ),
                           ),
@@ -198,7 +197,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .outline
-                                    .withOpacity(0.1),
+                                    .opaque(0.1, iReallyMeanIt: true),
                                 indent: 16,
                                 endIndent: 16,
                               ),
@@ -217,11 +216,11 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                     splashColor: Theme.of(context)
                                         .colorScheme
                                         .primary
-                                        .withOpacity(0.1),
+                                        .opaque(0.1, iReallyMeanIt: true),
                                     highlightColor: Theme.of(context)
                                         .colorScheme
                                         .primary
-                                        .withOpacity(0.05),
+                                        .opaque(0.05, iReallyMeanIt: true),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 20,
@@ -232,12 +231,12 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                             ? Theme.of(context)
                                                 .colorScheme
                                                 .primary
-                                                .withOpacity(0.08)
+                                                .opaque(0.08,
+                                                    iReallyMeanIt: true)
                                             : null,
                                       ),
                                       child: Row(
                                         children: [
-                                          // Leading icon
                                           if (item.leadingIcon != null) ...[
                                             Container(
                                               width: 32,
@@ -248,7 +247,8 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .primaryContainer
-                                                    .withOpacity(0.3),
+                                                    .opaque(0.3,
+                                                        iReallyMeanIt: true),
                                               ),
                                               child: ClipRRect(
                                                 borderRadius:
@@ -258,8 +258,6 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                             ),
                                             const SizedBox(width: 12),
                                           ],
-
-                                          // Text content
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -292,21 +290,19 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                                       color: Theme.of(context)
                                                           .colorScheme
                                                           .onSurface
-                                                          .withOpacity(0.6),
+                                                          .opaque(0.6,
+                                                              iReallyMeanIt:
+                                                                  true),
                                                     ),
                                                   ),
                                                 ],
                                               ],
                                             ),
                                           ),
-
-                                          // Extra widget (if any)
                                           if (item.extra != null) ...[
                                             const SizedBox(width: 8),
                                             item.extra!,
                                           ],
-
-                                          // Trailing icon or check
                                           if (item.trailingIcon != null) ...[
                                             const SizedBox(width: 8),
                                             item.trailingIcon!,
@@ -361,24 +357,18 @@ class _AnymexDropdownState extends State<AnymexDropdown>
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .surfaceContainerHighest
-                .withOpacity(0.3),
+            color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _isOpen
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                  ? context.colors.primary
+                  : context.colors.outline.opaque(0.3, iReallyMeanIt: true),
               width: _isOpen ? 2 : 1,
             ),
             boxShadow: _isOpen
                 ? [
                     BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.opaque(0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -393,7 +383,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                   Icon(
                     widget.icon,
                     size: 20,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -401,7 +391,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -410,7 +400,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                     turns: _rotateAnimation,
                     child: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                       size: 24,
                     ),
                   ),
@@ -424,7 +414,6 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                   Expanded(
                     child: Row(
                       children: [
-                        // Leading icon in main display
                         if (widget.selectedItem?.leadingIcon != null) ...[
                           Container(
                             width: 24,
@@ -449,11 +438,11 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                   color: widget.selectedItem != null
-                                      ? Theme.of(context).colorScheme.onSurface
+                                      ? context.colors.onSurface
                                       : Theme.of(context)
                                           .colorScheme
                                           .onSurface
-                                          .withOpacity(0.6),
+                                          .opaque(0.6, iReallyMeanIt: true),
                                 ),
                               ),
                               if (widget.selectedItem?.subtitle != null) ...[
@@ -466,7 +455,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withOpacity(0.6),
+                                        .opaque(0.6, iReallyMeanIt: true),
                                   ),
                                 ),
                               ],
@@ -499,7 +488,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withOpacity(0.8),
+                                  .opaque(0.8, iReallyMeanIt: true),
                             ),
                           ),
                         ),

@@ -12,6 +12,7 @@ import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
@@ -177,7 +178,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         boxShadow: _searchFocusNode.hasFocus
             ? [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: context.colors.primary.opaque(0.1),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -192,18 +193,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
         decoration: InputDecoration(
           filled: true,
-          fillColor:
-              Theme.of(context).colorScheme.surfaceContainer.withOpacity(.5),
+          fillColor: context.colors.surfaceContainer.opaque(.5),
           hintText:
               'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...',
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: context.colors.onSurface.opaque(0.5),
               ),
           prefixIcon: Icon(
             Iconsax.search_normal,
             color: _searchFocusNode.hasFocus
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ? context.colors.primary
+                : context.colors.onSurface.opaque(0.5),
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -216,10 +216,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   },
                   icon: Icon(
                     Iconsax.close_circle,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                 )
               : serviceHandler.serviceType.value != ServicesType.anilist
@@ -229,11 +226,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       icon: Icon(
                         Iconsax.setting_4,
                         color: _activeFilters.isNotEmpty
-                            ? Theme.of(context).colorScheme.primary
+                            ? context.colors.primary
                             : Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.7),
+                                .opaque(0.7),
                       ),
                     ),
           contentPadding:
@@ -295,13 +292,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+              ? context.colors.primary.opaque(0.1)
+              : context.colors.surfaceContainer.opaque(0.3),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                ? context.colors.primary
+                : context.colors.outline.opaque(0.3),
           ),
         ),
         child: Row(
@@ -311,8 +308,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: isActive
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? context.colors.primary
+                        : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -323,8 +320,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               height: 12,
               decoration: BoxDecoration(
                 color: isActive
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    ? context.colors.primary
+                    : context.colors.outline.opaque(0.3),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: AnimatedAlign(
@@ -336,7 +333,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   height: 8,
                   margin: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: context.colors.surface,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -361,13 +358,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+              ? context.colors.primary.opaque(0.1)
+              : context.colors.surfaceContainer.opaque(0.3),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                ? context.colors.primary
+                : context.colors.outline.opaque(0.3),
           ),
         ),
         child: Row(
@@ -376,17 +373,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Icon(
               icon,
               size: 18,
-              color: isActive
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface,
+              color:
+                  isActive ? context.colors.primary : context.colors.onSurface,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: isActive
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? context.colors.primary
+                        : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -399,10 +395,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   Widget _buildViewModeToggle() {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        color: context.colors.surface.opaque(0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          color: context.colors.outline.opaque(0.3),
         ),
       ),
       child: Row(
@@ -423,17 +419,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isActive
-              ? Theme.of(context).colorScheme.primary
-              : Colors.transparent,
+          color: isActive ? context.colors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           icon,
           size: 20,
-          color: isActive
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
+          color: isActive ? context.colors.onPrimary : context.colors.onSurface,
         ),
       ),
     );
@@ -476,10 +468,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        color: context.colors.primary.opaque(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          color: context.colors.primary.opaque(0.3),
         ),
       ),
       child: Row(
@@ -488,7 +480,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           Text(
             text,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                   fontWeight: FontWeight.w600,
                 ),
           ),
@@ -498,7 +490,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             child: Icon(
               Icons.close,
               size: 16,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              color: context.colors.primary.opaque(0.7),
             ),
           ),
         ],
@@ -548,7 +540,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
                 shape: BoxShape.circle,
               ),
               child: const ExpressiveLoadingIndicator(),
@@ -560,7 +552,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7, iReallyMeanIt: true),
                     fontWeight: FontWeight.w500,
                   ),
             ),
@@ -579,13 +571,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                color: context.colors.error.opaque(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Iconsax.warning_2,
                 size: 48,
-                color: Theme.of(context).colorScheme.error,
+                color: context.colors.error,
               ),
             ),
             const SizedBox(height: 24),
@@ -599,22 +591,18 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Text(
               _errorMessage ?? 'Please try again later',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => _performSearch(),
-              icon: Icon(Iconsax.refresh,
-                  color: Theme.of(context).colorScheme.onPrimary),
+              icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
               label: const Text('Try Again'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: context.colors.primary,
+                foregroundColor: context.colors.onPrimary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -637,16 +625,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceVariant
-                    .withOpacity(0.5),
+                color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Iconsax.search_normal,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -660,10 +645,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             Text(
               'Try adjusting your search terms or filters',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -729,12 +711,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest
-              .withOpacity(0.3),
+          color:
+              Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+            color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
           ),
         ),
         child: Padding(
@@ -751,17 +731,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     imageUrl: media.poster,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      color: context.colors.surfaceVariant,
                       child: Icon(
                         Iconsax.image,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: context.colors.onSurfaceVariant,
                       ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      color: context.colors.surfaceVariant,
                       child: Icon(
                         Iconsax.warning_2,
-                        color: Theme.of(context).colorScheme.error,
+                        color: context.colors.error,
                       ),
                     ),
                   ),
@@ -790,7 +770,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               ),
               Icon(
                 Iconsax.arrow_right_3,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color:
+                    context.colors.onSurface.opaque(0.5, iReallyMeanIt: true),
               ),
             ],
           ),
@@ -803,10 +784,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          color: context.colors.primary.opaque(0.3, iReallyMeanIt: true),
         ),
       ),
       child: Row(
@@ -815,13 +796,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           Icon(
             Iconsax.star5,
             size: 14,
-            color: Theme.of(context).colorScheme.primary,
+            color: context.colors.primary,
           ),
           const SizedBox(width: 4),
           Text(
             rating,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                   fontWeight: FontWeight.w600,
                 ),
           ),
@@ -944,23 +925,18 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     Container(
                       margin: const EdgeInsets.only(right: 5),
                       decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surface
-                            .withOpacity(0.3),
+                        color: context.colors.surface.opaque(0.3),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.3),
+                          color:
+                              Theme.of(context).colorScheme.outline.opaque(0.3),
                         ),
                       ),
                       child: IconButton(
                         onPressed: () => Navigator.of(context).pop(),
                         icon: Icon(
                           Iconsax.arrow_left_2,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                       ),
                     ),
@@ -993,18 +969,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.1),
+                              .opaque(0.1, iReallyMeanIt: true),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '${_searchResults!.length}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: context.colors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                       if (_searchState == SearchState.success) ...[

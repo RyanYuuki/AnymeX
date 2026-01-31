@@ -1,4 +1,5 @@
 import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -39,7 +40,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
 
-  // Data structures
   final Map<String, Map<String, String>> sortOptions = {
     'Score': {
       'desc': 'SCORE_DESC',
@@ -103,7 +103,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     'Supernatural',
   ];
 
-  // Selected values
   String? selectedSortBy;
   String? selectedSortType;
   String? selectedSeason;
@@ -143,7 +142,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     if (widget.currentFilters != null) {
       final filters = widget.currentFilters!;
 
-      // Load sort options
       String? currentSort = filters['sort'];
       if (currentSort != null) {
         for (String sortKey in sortOptions.keys) {
@@ -194,7 +192,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(24)),
                 border: Border.all(
-                  color: colorScheme.primary.withOpacity(0.2),
+                  color: colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
                   width: 1,
                 ),
               ),
@@ -237,7 +235,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: colorScheme.primary.withOpacity(0.1),
+            color: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
             width: 1,
           ),
         ),
@@ -288,7 +286,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.1),
+              color: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -380,10 +378,10 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: colorScheme.primary.withOpacity(0.3),
+              color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
               width: 1,
             ),
-            color: colorScheme.surface.withOpacity(0.5),
+            color: colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -420,7 +418,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         side: BorderSide(
           color: isSelected
               ? colorScheme.primary
-              : colorScheme.outline.withOpacity(0.3),
+              : colorScheme.outline.opaque(0.3),
           width: 1,
         ),
         onSelected: (selected) {
@@ -448,13 +446,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: hasValue
-              ? colorScheme.primary.withOpacity(0.6)
-              : colorScheme.outline.withOpacity(0.3),
+              ? colorScheme.primary.opaque(0.6, iReallyMeanIt: true)
+              : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
           width: hasValue ? 2 : 1,
         ),
         color: hasValue
-            ? colorScheme.primary.withOpacity(0.05)
-            : colorScheme.surface.withOpacity(0.5),
+            ? colorScheme.primary.opaque(0.05, iReallyMeanIt: true)
+            : colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
       ),
       child: Material(
         color: Colors.transparent,
@@ -476,7 +474,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   size: 20,
                   color: hasValue
                       ? colorScheme.primary
-                      : colorScheme.onSurface.withOpacity(0.7),
+                      : colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -486,7 +484,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       Text(
                         hint.toUpperCase(),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.7),
+                          color: colorScheme.onSurface
+                              .opaque(0.7, iReallyMeanIt: true),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
@@ -498,7 +497,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                           fontWeight: FontWeight.w600,
                           color: hasValue
                               ? colorScheme.onSurface
-                              : colorScheme.onSurface.withOpacity(0.5),
+                              : colorScheme.onSurface
+                                  .opaque(0.5, iReallyMeanIt: true),
                         ),
                       ),
                     ],
@@ -506,7 +506,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: colorScheme.onSurface.withOpacity(0.6),
+                  color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
                 ),
               ],
             ),
@@ -528,13 +528,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: hasValue
-              ? colorScheme.primary.withOpacity(0.6)
-              : colorScheme.outline.withOpacity(0.3),
+              ? colorScheme.primary.opaque(0.6, iReallyMeanIt: true)
+              : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
           width: hasValue ? 2 : 1,
         ),
         color: hasValue
-            ? colorScheme.primary.withOpacity(0.05)
-            : colorScheme.surface.withOpacity(0.5),
+            ? colorScheme.primary.opaque(0.05, iReallyMeanIt: true)
+            : colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
       ),
       child: Material(
         color: Colors.transparent,
@@ -550,7 +550,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   size: 20,
                   color: hasValue
                       ? colorScheme.primary
-                      : colorScheme.onSurface.withOpacity(0.7),
+                      : colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -560,7 +560,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       Text(
                         'SORT BY',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.7),
+                          color: colorScheme.onSurface.opaque(0.7),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
@@ -572,7 +572,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                           fontWeight: FontWeight.w600,
                           color: hasValue
                               ? colorScheme.onSurface
-                              : colorScheme.onSurface.withOpacity(0.5),
+                              : colorScheme.onSurface
+                                  .opaque(0.5, iReallyMeanIt: true),
                         ),
                       ),
                     ],
@@ -580,7 +581,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: colorScheme.onSurface.withOpacity(0.6),
+                  color: colorScheme.onSurface.opaque(0.6),
                 ),
               ],
             ),
@@ -601,13 +602,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isActive
-              ? colorScheme.primary.withOpacity(0.6)
-              : colorScheme.outline.withOpacity(0.3),
+              ? colorScheme.primary.opaque(0.6, iReallyMeanIt: true)
+              : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
           width: isActive ? 2 : 1,
         ),
         color: isActive
-            ? colorScheme.primary.withOpacity(0.05)
-            : colorScheme.surface.withOpacity(0.5),
+            ? colorScheme.primary.opaque(0.05, iReallyMeanIt: true)
+            : colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
       ),
       child: Material(
         color: Colors.transparent,
@@ -624,7 +625,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 Text(
                   'ORDER',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurface.withOpacity(0.7),
+                    color:
+                        colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -640,7 +642,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       size: 16,
                       color: isActive
                           ? colorScheme.primary
-                          : colorScheme.onSurface.withOpacity(0.5),
+                          : colorScheme.onSurface
+                              .opaque(0.5, iReallyMeanIt: true),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -649,7 +652,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         fontWeight: FontWeight.w600,
                         color: isActive
                             ? colorScheme.onSurface
-                            : colorScheme.onSurface.withOpacity(0.5),
+                            : colorScheme.onSurface
+                                .opaque(0.5, iReallyMeanIt: true),
                       ),
                     ),
                   ],
@@ -705,7 +709,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         border: Border.all(
           color: isPrimary
               ? colorScheme.primary
-              : colorScheme.outline.withOpacity(0.5),
+              : colorScheme.outline.opaque(0.5, iReallyMeanIt: true),
           width: 2,
         ),
         color: isPrimary ? colorScheme.primary : Colors.transparent,
@@ -780,12 +784,12 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
             color: colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             border: Border.all(
-              color: colorScheme.primary.withOpacity(0.3),
+              color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: colorScheme.primary.withOpacity(0.1),
+                color: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
                 blurRadius: 20,
                 offset: const Offset(0, -5),
               ),
@@ -799,7 +803,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: colorScheme.primary.withOpacity(0.2),
+                      color:
+                          colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
                       width: 1,
                     ),
                   ),
@@ -814,7 +819,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         borderRadius: BorderRadius.circular(3),
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.primary.withOpacity(0.5),
+                            color: colorScheme.primary
+                                .opaque(0.5, iReallyMeanIt: true),
                             blurRadius: 8,
                             spreadRadius: 1,
                           ),
@@ -828,10 +834,12 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: colorScheme.primary.withOpacity(0.1),
+                            color: colorScheme.primary
+                                .opaque(0.1, iReallyMeanIt: true),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: colorScheme.primary.withOpacity(0.3),
+                              color: colorScheme.primary
+                                  .opaque(0.3, iReallyMeanIt: true),
                               width: 1,
                             ),
                           ),

@@ -16,6 +16,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -113,7 +114,7 @@ class _CalendarState extends State<Calendar>
               onPressed: () => Navigator.pop(context),
               icon: Icon(
                 Icons.arrow_back_ios_new,
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
               )),
           actions: [
             Obx(() => IconButton(
@@ -124,7 +125,7 @@ class _CalendarState extends State<Calendar>
                         ? HugeIcons.strokeRoundedMicOff01
                         : HugeIcons.strokeRoundedMic01,
                     color: isDubMode.value
-                        ? Theme.of(context).colorScheme.primary
+                        ? context.colors.primary
                         : null,
                   ),
                 )),
@@ -133,7 +134,7 @@ class _CalendarState extends State<Calendar>
               IconButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainer,
+                        context.colors.surfaceContainer,
                   ),
                   onPressed: () {
                     changeListType();
@@ -146,7 +147,7 @@ class _CalendarState extends State<Calendar>
             IconButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainer,
+                      context.colors.surfaceContainer,
                 ),
                 onPressed: () {
                   changeLayout();
@@ -160,7 +161,7 @@ class _CalendarState extends State<Calendar>
             children: [
               AnymexText(
                 text: "Calendar",
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 variant: TextVariant.semiBold,
                 size: 16,
               ),
@@ -354,7 +355,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                         backgroundColor: Colors.black54,
                         child: Icon(HugeIcons.strokeRoundedMic01,
                             size: 12,
-                            color: Theme.of(context).colorScheme.primary))),
+                            color: context.colors.primary))),
             ],
           ),
           const SizedBox(height: 5),
@@ -365,13 +366,13 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.schedule,
-                      color: Theme.of(context).colorScheme.primary, size: 14),
+                      color: context.colors.primary, size: 14),
                   const SizedBox(width: 4),
                   AnymexText(
                     text: 'EP ${widget.dubInfo!.episode}',
                     size: 11,
                     variant: TextVariant.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   const SizedBox(width: 4),
                   Container(
@@ -381,13 +382,13 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(0.2),
+                          .opaque(0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: AnymexText(
                       text: _formatAirTime(widget.dubInfo!.airDateTime),
                       size: 10,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                     ),
                   ),
                 ],
@@ -412,7 +413,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                   ? Icon(Icons.link,
                                       size: 12,
                                       color:
-                                          Theme.of(context).colorScheme.primary)
+                                          context.colors.primary)
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(50),
                                       child: s.name
@@ -464,7 +465,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                   ? Icon(Icons.link,
                                       size: 12,
                                       color:
-                                          Theme.of(context).colorScheme.primary)
+                                          context.colors.primary)
                                   : null,
                             ),
                           ),
@@ -527,7 +528,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -539,12 +540,12 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
           Icon(
             Iconsax.star5,
             size: 16,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
           AnymexText(
             text: media.rating,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
           ),
@@ -607,9 +608,9 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
   @override
   Widget build(BuildContext context) {
     final gradientColors = [
-      Theme.of(context).colorScheme.surface.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+      context.colors.surface.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.8),
     ];
 
     return AnymexOnTap(
@@ -622,9 +623,9 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
         decoration: BoxDecoration(
           border: Border(
               right: BorderSide(
-                  width: 2, color: Theme.of(context).colorScheme.primary)),
+                  width: 2, color: context.colors.primary)),
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
-          color: Theme.of(context).colorScheme.surface.withAlpha(144),
+          color: context.colors.surface.withAlpha(144),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
@@ -679,7 +680,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                               "Episode ${widget.data.nextAiringEpisode!.episode}",
                           size: 14,
                           maxLines: 2,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: context.colors.primary,
                           variant: TextVariant.bold,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -706,12 +707,12 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   child: AnymexText(
                     text: formatTime(timeLeft.value),
                     size: 12,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: context.colors.onPrimary,
                     variant: TextVariant.bold,
                   ),
                 );

@@ -2,6 +2,7 @@
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -52,10 +53,10 @@ class InlineSearchHistory extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+        color: context.colors.surface.opaque(0.3),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          color: context.colors.outline.opaque(0.1),
           width: 1,
         ),
       ),
@@ -73,16 +74,15 @@ class InlineSearchHistory extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
+                        color: context.colors
                             .primary
-                            .withOpacity(0.15),
+                            .opaque(0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         Iconsax.clock,
                         size: 16,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -93,7 +93,7 @@ class InlineSearchHistory extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.9),
+                          .opaque(0.9),
                     ),
                   ],
                 ),
@@ -104,7 +104,7 @@ class InlineSearchHistory extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color:
-                          Theme.of(context).colorScheme.error.withOpacity(0.1),
+                          context.colors.error.opaque(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -116,7 +116,7 @@ class InlineSearchHistory extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .error
-                              .withOpacity(0.8),
+                              .opaque(0.8),
                         ),
                         const SizedBox(width: 4),
                         AnymexText(
@@ -125,7 +125,7 @@ class InlineSearchHistory extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .error
-                              .withOpacity(0.8),
+                              .opaque(0.8),
                         ),
                       ],
                     ),
@@ -158,13 +158,13 @@ class InlineSearchHistory extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .surfaceVariant
-                              .withOpacity(0.3),
+                              .opaque(0.3),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: Theme.of(context)
                                 .colorScheme
                                 .outline
-                                .withOpacity(0.05),
+                                .opaque(0.05),
                             width: 1,
                           ),
                         ),
@@ -178,7 +178,7 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withOpacity(0.1),
+                                    .opaque(0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -187,7 +187,7 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .withOpacity(0.7),
+                                    .opaque(0.7),
                               ),
                             ),
 
@@ -201,7 +201,7 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .withOpacity(0.8),
+                                    .opaque(0.8),
                               ),
                             ),
 
@@ -215,7 +215,7 @@ class InlineSearchHistory extends StatelessWidget {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
-                                      .withOpacity(0.1),
+                                      .opaque(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -224,7 +224,7 @@ class InlineSearchHistory extends StatelessWidget {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
-                                      .withOpacity(0.6),
+                                      .opaque(0.6),
                                 ),
                               ),
                             ),

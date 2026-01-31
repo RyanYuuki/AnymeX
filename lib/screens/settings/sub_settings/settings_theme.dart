@@ -13,6 +13,7 @@ import 'package:anymex/widgets/dialogs/logo_animation_preview_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -353,7 +354,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                               text: "Custom Themes",
                               size: 16,
                               variant: TextVariant.semiBold,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                             ),
                             const SizedBox(height: 10),
                             SingleChildScrollView(child: _buildColorTemplates())
@@ -376,7 +377,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
       context: context,
       builder: (context) {
         return Dialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: context.colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -403,7 +404,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 7),
                       child: ListTileWithCheckMark(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                         active: isSelected,
                         leading: const Icon(HugeIcons.strokeRoundedColorPicker),
                         title: label,
@@ -428,12 +429,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30)),
                             backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
+                                context.colors.surfaceContainer,
                           ),
                           child: Text('Cancel',
                               style: TextStyle(
                                   fontSize: 14,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: context.colors.primary,
                                   fontWeight: FontWeight.bold)),
                         ),
                       ),
@@ -448,7 +449,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30)),
                             backgroundColor:
-                                Theme.of(context).colorScheme.primaryFixed,
+                                context.colors.primaryFixed,
                           ),
                           child: const Text('Confirm',
                               style: TextStyle(
@@ -475,15 +476,15 @@ class _SettingsThemeState extends State<SettingsTheme> {
       child: Row(
         children: themeModes.map<Widget>((theme) {
           final ColorScheme colorScheme = ColorScheme.fromSeed(
-              seedColor: Theme.of(context).colorScheme.primary,
+              seedColor: context.colors.primary,
               brightness: theme['label'] == "Dark"
                   ? Brightness.dark
                   : Brightness.light);
           final ColorScheme lightScheme = ColorScheme.fromSeed(
-              seedColor: Theme.of(context).colorScheme.primary,
+              seedColor: context.colors.primary,
               brightness: Brightness.light);
           final ColorScheme darkScheme = ColorScheme.fromSeed(
-              seedColor: Theme.of(context).colorScheme.primary,
+              seedColor: context.colors.primary,
               brightness: Brightness.dark);
           bool isSelected = themeMode == theme['label'];
           bool isSystem = theme['label'] == "System";
@@ -505,11 +506,11 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     border: Border.all(
                       width: 3,
                       color: isSelected
-                          ? Theme.of(context).colorScheme.primary
+                          ? context.colors.primary
                           : Colors.transparent,
                     ),
                     color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                        context.colors.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: ClipRRect(
@@ -763,7 +764,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   border: Border.all(
                     width: 3,
                     color: isSelected
-                        ? Theme.of(context).colorScheme.primary
+                        ? context.colors.primary
                         : Colors.transparent,
                   ),
                   boxShadow: isSelected
@@ -772,7 +773,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .primary
-                                .withOpacity(Theme.of(context).brightness ==
+                                .opaque(Theme.of(context).brightness ==
                                         Brightness.dark
                                     ? 0.3
                                     : 0.4),
@@ -782,7 +783,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           ),
                         ]
                       : [],
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: context.colors.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ClipRRect(

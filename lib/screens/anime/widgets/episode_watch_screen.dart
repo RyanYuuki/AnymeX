@@ -17,6 +17,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -271,7 +272,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.opaque(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: AnymexText(
@@ -279,7 +280,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.withOpacity(0.8),
+            color: Colors.red.opaque(0.8),
           ),
         ),
       ],
@@ -332,12 +333,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                     text: e.quality.toUpperCase(),
                     variant: TextVariant.bold,
                     size: 16,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   tileColor: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.5),
+                      .opaque(0.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -363,8 +364,8 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       height: 100,
       decoration: BoxDecoration(
         color: isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
-            : Theme.of(context).colorScheme.secondaryContainer,
+            ? context.colors.primary.opaque(0.6)
+            : context.colors.secondaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -384,7 +385,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                     memCacheWidth: 200, // Optimize memory usage
                     memCacheHeight: 100,
                     errorWidget: (context, url, error) => Container(
-                      color: Theme.of(context).colorScheme.surface,
+                      color: context.colors.surface,
                       child: const Icon(Icons.error),
                     ),
                   ),
@@ -422,8 +423,8 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
-            : Theme.of(context).colorScheme.secondaryContainer,
+            ? context.colors.primary.opaque(0.6)
+            : context.colors.secondaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -449,7 +450,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                       errorWidget: (context, url, error) => Container(
                         width: 170,
                         height: 100,
-                        color: Theme.of(context).colorScheme.surface,
+                        color: context.colors.surface,
                         child: const Icon(Icons.error),
                       ),
                     ),
@@ -501,10 +502,10 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.opaque(0.2),
             border: Border.all(
               width: 2,
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colors.primary,
             ),
             boxShadow: [glowingShadow(context)],
           ),

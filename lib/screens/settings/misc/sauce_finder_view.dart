@@ -9,6 +9,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -101,10 +102,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.4),
+        color: theme.colorScheme.surface.opaque(0.4),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: theme.colorScheme.outline.opaque(0.2),
             width: 1,
           ),
         ),
@@ -119,7 +120,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
             style: IconButton.styleFrom(
               backgroundColor:
-                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  theme.colorScheme.surfaceContainerHighest.opaque(0.3),
               padding: const EdgeInsets.all(12),
             ),
           ),
@@ -140,7 +141,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                 Text(
                   'Find anime sauce by screenshots',
                   style: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.opaque(0.7),
                     fontSize: 12,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -223,7 +224,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           color: colorScheme.surfaceContainerLowest.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: colorScheme.outline.withOpacity(0.2),
+            color: colorScheme.outline.opaque(0.2),
             width: 2,
             style: BorderStyle.solid,
           ),
@@ -259,7 +260,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               'Select an anime screenshot to find its source',
               style: TextStyle(
                 fontSize: 14,
-                color: colorScheme.onSurface.withOpacity(0.6),
+                color: colorScheme.onSurface.opaque(0.6),
               ),
               textAlign: TextAlign.center,
             ),
@@ -275,7 +276,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.15),
+          color: colorScheme.outline.opaque(0.15),
           width: 1,
         ),
       ),
@@ -296,7 +297,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               right: 16,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.opaque(0.6),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: IconButton(
@@ -326,7 +327,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: colorScheme.primary.withOpacity(0.3),
+                color: colorScheme.primary.opaque(0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -466,7 +467,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             'This might take a few seconds',
             style: TextStyle(
               fontSize: 14,
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: colorScheme.onSurface.opaque(0.6),
             ),
           ),
         ],
@@ -479,10 +480,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: colorScheme.errorContainer.withOpacity(0.1),
+        color: colorScheme.errorContainer.opaque(0.1),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colorScheme.error.withOpacity(0.2),
+          color: colorScheme.error.opaque(0.2),
           width: 1,
         ),
       ),
@@ -516,7 +517,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             _errorMessage!,
             style: TextStyle(
               fontSize: 14,
-              color: colorScheme.onSurface.withOpacity(0.7),
+              color: colorScheme.onSurface.opaque(0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -583,7 +584,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             child: Icon(
               Icons.image_search_rounded,
               size: 40,
-              color: colorScheme.onSurface.withOpacity(0.4),
+              color: colorScheme.onSurface.opaque(0.4),
             ),
           ),
           const SizedBox(height: 24),
@@ -592,7 +593,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: colorScheme.onSurface.opaque(0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -600,7 +601,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             'Upload an image to get started',
             style: TextStyle(
               fontSize: 14,
-              color: colorScheme.onSurface.withOpacity(0.4),
+              color: colorScheme.onSurface.opaque(0.4),
             ),
           ),
         ],
@@ -617,7 +618,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
         color: colorScheme.surfaceContainerLowest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.1),
+          color: colorScheme.outline.opaque(0.1),
           width: 1,
         ),
       ),
@@ -642,13 +643,13 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                         Icon(
                           Icons.broken_image_rounded,
                           size: 48,
-                          color: colorScheme.onSurface.withOpacity(0.3),
+                          color: colorScheme.onSurface.opaque(0.3),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Image not available',
                           style: TextStyle(
-                            color: colorScheme.onSurface.withOpacity(0.5),
+                            color: colorScheme.onSurface.opaque(0.5),
                             fontSize: 14,
                           ),
                         ),
@@ -701,7 +702,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.primary.withOpacity(0.3),
+                        color: colorScheme.primary.opaque(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),

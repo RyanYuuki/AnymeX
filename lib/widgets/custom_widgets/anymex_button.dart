@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,7 +57,7 @@ class AnymexButton extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(.05.multiplyGlow()),
+                          .opaque(.05.multiplyGlow(), iReallyMeanIt: true),
                       offset: const Offset(-1, 1),
                       blurRadius: 50.multiplyBlur(),
                       spreadRadius: 2.multiplyGlow(),
@@ -123,9 +124,9 @@ class AnymexButton2 extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
         ),
-        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+        color: context.colors.surfaceContainer.opaque(0.5, iReallyMeanIt: true),
       ),
       child: Material(
         color: Colors.transparent,
@@ -138,7 +139,7 @@ class AnymexButton2 extends StatelessWidget {
               if (icon != null)
                 Icon(
                   icon,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: context.colors.onSurface,
                   size: 20,
                 ),
               const SizedBox(width: 8),
@@ -146,7 +147,7 @@ class AnymexButton2 extends StatelessWidget {
                 Text(
                   label!,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: context.colors.onSurface,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),

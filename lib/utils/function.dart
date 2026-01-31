@@ -12,6 +12,7 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -55,7 +56,7 @@ Future<void> snackString(
   var context = Get.context;
 
   if (context != null && s != null && s.isNotEmpty) {
-    var theme = Theme.of(context).colorScheme;
+    var theme = context.colors;
 
     try {
       final snackBar = SnackBar(

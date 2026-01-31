@@ -34,7 +34,7 @@ import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
-import 'package:anymex/widgets/common/custom_nav_bar.dart';
+import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
@@ -47,6 +47,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -435,7 +436,11 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ],
               ))),
-          Expanded(child: routes[_selectedIndex]),
+          Expanded(
+              child: SmoothPageEntrance(
+                  style: PageEntranceStyle.slideUpGentle,
+                  key: Key(_selectedIndex.toString()),
+                  child: routes[_selectedIndex])),
         ],
       ),
     );
@@ -443,20 +448,41 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildAndroidLayout(bool isSimkl) {
     return Scaffold(
-      body: Stack(
-        children: [
-          mobileRoutes[_mobileSelectedIndex],
-          Positioned(
-              bottom: 10,
-              right: 10,
-              left: 10,
-              child: CustomNavBar(
-                selectedIndex: _mobileSelectedIndex,
-                onTap: _onMobileItemTapped,
-              )),
-        ],
-      ),
-      extendBody: true,
-    );
+        body: SmoothPageEntrance(
+            style: PageEntranceStyle.slideUpGentle,
+            key: Key(_mobileSelectedIndex.toString()),
+            child: mobileRoutes[_mobileSelectedIndex]),
+        extendBody: true,
+        bottomNavigationBar: ResponsiveNavBar(
+          isDesktop: false,
+          currentIndex: _mobileSelectedIndex,
+          margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+          items: [
+            NavItem(
+              unselectedIcon: IconlyBold.home,
+              selectedIcon: IconlyBold.home,
+              onTap: _onMobileItemTapped,
+              label: 'Home',
+            ),
+            NavItem(
+              unselectedIcon: Icons.movie_filter_rounded,
+              selectedIcon: Icons.movie_filter_rounded,
+              onTap: _onMobileItemTapped,
+              label: 'Anime',
+            ),
+            NavItem(
+              unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+              selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+              onTap: _onMobileItemTapped,
+              label: 'Manga',
+            ),
+            NavItem(
+              unselectedIcon: HugeIcons.strokeRoundedLibrary,
+              selectedIcon: HugeIcons.strokeRoundedLibrary,
+              onTap: _onMobileItemTapped,
+              label: 'Library',
+            ),
+          ],
+        ));
   }
 }

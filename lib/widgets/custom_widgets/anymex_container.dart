@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnymexContainer extends StatelessWidget {
@@ -53,7 +54,7 @@ class AnymexContainer extends StatelessWidget {
                     color: Theme.of(context)
                         .colorScheme
                         .primary
-                        .withOpacity(.05.multiplyGlow()),
+                        .opaque(.05.multiplyGlow()),
                     offset: const Offset(-1, 1),
                     blurRadius: 50.multiplyBlur(),
                     spreadRadius: 2.multiplyGlow(),

@@ -39,6 +39,7 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -401,12 +402,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .outline
-                                      .withOpacity(0.2),
+                                      .opaque(0.2),
                                 ),
                                 color: Theme.of(context)
                                     .colorScheme
                                     .surfaceContainer
-                                    .withOpacity(0.5),
+                                    .opaque(0.5),
                               ),
                               child: Material(
                                 color: Colors.transparent,
@@ -448,12 +449,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .outline
-                                    .withOpacity(0.2),
+                                    .opaque(0.2),
                               ),
                               color: Theme.of(context)
                                   .colorScheme
                                   .surfaceContainer
-                                  .withOpacity(0.5),
+                                  .opaque(0.5),
                             ),
                             child: Material(
                               color: Colors.transparent,
@@ -539,13 +540,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+        color: context.colors.surfaceContainer.opaque(0.3),
       ),
       child: Row(
         children: [
           Icon(
             Icons.movie_filter_rounded,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: context.colors.onSurface.opaque(0.7),
             size: 16,
           ),
           const SizedBox(width: 8),
@@ -556,24 +557,24 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 AnymexTextSpan(
                   text: "Episode ",
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: currentAnime.value?.episodeCount?.toString() ?? '0',
                   variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
                 AnymexTextSpan(
                   text: ' of ',
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: anilistData?.totalEpisodes.toString() ??
                       anilistData?.totalEpisodes.toString() ??
                       '??',
                   variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
               ],
             ),
@@ -582,12 +583,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
             ),
             child: Text(
               '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
@@ -674,7 +675,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.2),
+                          .opaque(0.2),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(
@@ -744,7 +745,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   void showListEditorModal(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

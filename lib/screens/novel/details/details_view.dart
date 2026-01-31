@@ -12,6 +12,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -144,12 +145,12 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: context.colors.outline.opaque(0.2),
               ),
               color: Theme.of(context)
                   .colorScheme
                   .surfaceContainer
-                  .withOpacity(0.5),
+                  .opaque(0.5),
             ),
             child: Material(
               color: Colors.transparent,
@@ -163,14 +164,14 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                   children: [
                     Icon(
                       HugeIcons.strokeRoundedLibrary,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: context.colors.onSurface,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Add to Library',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: context.colors.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -213,13 +214,13 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+        color: context.colors.surfaceContainer.opaque(0.3),
       ),
       child: Row(
         children: [
           Icon(
             Iconsax.book_1,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: context.colors.onSurface.opaque(0.7),
             size: 16,
           ),
           const SizedBox(width: 8),
@@ -230,25 +231,25 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                 AnymexTextSpan(
                   text: "Chapter ",
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: controller.offlineMedia.value?.currentChapter?.number
                           .toString() ??
                       '1',
                   variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
                 AnymexTextSpan(
                   text: ' of ',
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: controller.media.value.totalChapters ??
                       controller.media.value.totalEpisodes,
                   variant: TextVariant.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 ),
               ],
             ),
@@ -257,12 +258,12 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: context.colors.primary.opaque(0.1),
             ),
             child: Text(
               '${formatProgress(currentChapter: controller.offlineMedia.value?.currentChapter?.number ?? 1, totalChapters: controller.offlineMedia.value?.totalChapters, altLength: controller.media.value.altMediaContent?.length)}%',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
@@ -284,16 +285,16 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: context.colors.outline.opaque(0.2),
           ),
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+          color: context.colors.primary.opaque(0.5),
         ),
         child: Stack(
           children: [
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.opaque(0.1),
               ),
             ),
             FractionallySizedBox(
@@ -303,8 +304,8 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                   borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(
                     colors: [
-                      Colors.white.withOpacity(0.2),
-                      Colors.white.withOpacity(0.1),
+                      Colors.white.opaque(0.2),
+                      Colors.white.opaque(0.1),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -357,7 +358,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                             Text(
                               'Chapter $currentChapter',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.opaque(0.8),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
                               ),

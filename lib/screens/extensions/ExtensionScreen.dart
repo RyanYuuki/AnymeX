@@ -15,6 +15,7 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
     hide Extension, ExtensionList;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -136,7 +137,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).colorScheme;
+    var theme = context.colors;
     return Glow(
       disabled: widget.disableGlow,
       child: DefaultTabController(
@@ -156,7 +157,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             color:
-                                Theme.of(context).colorScheme.surfaceContainer),
+                                context.colors.surfaceContainer),
                         child: const Icon(Icons.arrow_back_ios_new_rounded)),
                   ),
                 ),

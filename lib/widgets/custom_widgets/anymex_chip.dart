@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnymexChip extends StatelessWidget {
@@ -23,7 +24,7 @@ class AnymexChip extends StatelessWidget {
       return const BoxShadow(color: Colors.transparent);
     } else {
       return BoxShadow(
-        color: Theme.of(context).colorScheme.primary.withOpacity(
+        color: context.colors.primary.opaque(
             Theme.of(context).brightness == Brightness.dark ? 0.1 : 0.2),
         blurRadius: 20.0.multiplyBlur(),
         spreadRadius:
@@ -45,15 +46,15 @@ class AnymexChip extends StatelessWidget {
         label: Text(label),
         labelStyle: TextStyle(
           color: isSelected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurfaceVariant,
+              ? context.colors.onPrimary
+              : context.colors.onSurfaceVariant,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
         checkmarkColor: isSelected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).colorScheme.onSurfaceVariant,
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        selectedColor: Theme.of(context).colorScheme.primary,
+            ? context.colors.onPrimary
+            : context.colors.onSurfaceVariant,
+        backgroundColor: context.colors.secondaryContainer,
+        selectedColor: context.colors.primary,
         side: BorderSide.none,
         showCheckmark: showCheck,
         shape: RoundedRectangleBorder(
@@ -85,16 +86,16 @@ class AnymexIconChip extends StatelessWidget {
       showCheckmark: showCheck,
       label: icon,
       checkmarkColor: isSelected
-          ? Theme.of(context).colorScheme.onPrimary
-          : Theme.of(context).colorScheme.onSurfaceVariant,
+          ? context.colors.onPrimary
+          : context.colors.onSurfaceVariant,
       labelStyle: TextStyle(
         color: isSelected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).colorScheme.onSurfaceVariant,
+            ? context.colors.onPrimary
+            : context.colors.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      selectedColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: context.colors.secondaryContainer,
+      selectedColor: context.colors.primary,
       side: BorderSide.none,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),

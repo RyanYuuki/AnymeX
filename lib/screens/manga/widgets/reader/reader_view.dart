@@ -3,10 +3,12 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/utils/image_cropper.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:anymex/utils/image_cropper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -130,7 +132,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         final currentScale = _photoViewController.scale ?? 1.0;
 
         if (currentScale == _doubleTapScales[0]) {
-          // Zoom in to 2x
           _scalePosition = _computeAlignmentByTapOffset(tapPosition);
 
           if (_scaleAnimationController.isCompleted) {
@@ -151,7 +152,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         }
 
         if (currentScale >= _doubleTapScales[1]) {
-          // Zoom out to 1x
           _animation =
               Tween(begin: currentScale, end: _doubleTapScales[0]).animate(
             CurvedAnimation(
@@ -168,7 +168,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           return;
         }
 
-        // Fallback reset
         _photoViewScaleStateController.reset();
       });
     }
@@ -228,7 +227,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Colors.red.withOpacity(0.7),
+              color: Colors.red.opaque(0.7),
             ),
             const SizedBox(height: 16),
             Text(
@@ -419,14 +418,14 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         return SizedBox(
                           height: size.height,
                           child: Container(
-                            color: Colors.grey.withOpacity(0.1),
+                            color: Colors.grey.opaque(0.1),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   Icons.broken_image_outlined,
                                   size: 48,
-                                  color: Colors.grey.withOpacity(0.7),
+                                  color: Colors.grey.opaque(0.7),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(

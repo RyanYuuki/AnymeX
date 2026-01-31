@@ -1,6 +1,7 @@
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 void showSelectionDialog<T>({
@@ -16,7 +17,7 @@ void showSelectionDialog<T>({
     context: context,
     builder: (context) {
       return Dialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -49,7 +50,7 @@ void showSelectionDialog<T>({
                             child: ListTileWithCheckMark(
                               leading:
                                   leadingIcon != null ? Icon(leadingIcon) : null,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                               active: item == selectedItem.value,
                               title: getTitle(item),
                               onTap: () {

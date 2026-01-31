@@ -4,6 +4,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class RepoBottomSheet extends StatefulWidget {
@@ -105,7 +106,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: context.colors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
@@ -119,7 +120,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                 height: 3,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                  color: context.colors.outline.opaque(0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -133,7 +134,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
               if (isAndroid)
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: context.colors.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(4),
@@ -146,13 +147,13 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: selectedTab == 0
-                                  ? Theme.of(context).colorScheme.surface
+                                  ? context.colors.surface
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               boxShadow: selectedTab == 0
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
+                                        color: Colors.black.opaque(0.1),
                                         blurRadius: 4,
                                         offset: const Offset(0, 1),
                                       ),
@@ -167,7 +168,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                                     ? FontWeight.w600
                                     : FontWeight.w500,
                                 color: selectedTab == 0
-                                    ? Theme.of(context).colorScheme.onSurface
+                                    ? context.colors.onSurface
                                     : Theme.of(context)
                                         .colorScheme
                                         .onSurfaceVariant,
@@ -183,13 +184,13 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: selectedTab == 1
-                                  ? Theme.of(context).colorScheme.surface
+                                  ? context.colors.surface
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               boxShadow: selectedTab == 1
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
+                                        color: Colors.black.opaque(0.1),
                                         blurRadius: 4,
                                         offset: const Offset(0, 1),
                                       ),
@@ -204,7 +205,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                                     ? FontWeight.w600
                                     : FontWeight.w500,
                                 color: selectedTab == 1
-                                    ? Theme.of(context).colorScheme.onSurface
+                                    ? context.colors.onSurface
                                     : Theme.of(context)
                                         .colorScheme
                                         .onSurfaceVariant,
@@ -222,10 +223,10 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                   color: Theme.of(context)
                       .colorScheme
                       .errorContainer
-                      .withOpacity(0.3),
+                      .opaque(0.3),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.error.withOpacity(0.2),
+                    color: context.colors.error.opaque(0.2),
                   ),
                 ),
                 padding: const EdgeInsets.all(12),
@@ -233,7 +234,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                   children: [
                     Icon(
                       Icons.info_outline,
-                      color: Theme.of(context).colorScheme.error,
+                      color: context.colors.error,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
@@ -241,7 +242,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                       child: Text(
                         "Third-party repositories are not officially supported",
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
+                          color: context.colors.onErrorContainer,
                           fontSize: 12,
                         ),
                       ),
@@ -308,7 +309,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: context.colors.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -318,9 +319,9 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
                     child: ElevatedButton(
                       onPressed: handleSave,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: context.colors.primary,
                         foregroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
+                            context.colors.onPrimary,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -360,7 +361,7 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: context.colors.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -372,19 +373,19 @@ class _RepoBottomSheetState extends State<RepoBottomSheet> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
+                color: context.colors.outline,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
+                color: context.colors.outline,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 width: 2,
               ),
             ),

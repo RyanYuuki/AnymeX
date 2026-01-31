@@ -11,6 +11,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class MangaHistoryCard extends StatelessWidget {
@@ -31,21 +32,21 @@ class MangaHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final gradientColors = [
-      Theme.of(context).colorScheme.surface.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+      context.colors.surface.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.8),
     ];
 
     return AnymexCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            color: context.colors.primary.opaque(0.3),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16)),
-      color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(120),
+      color: context.colors.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
         onTap: () {
           if (data.currentChapter == null) {
@@ -161,7 +162,7 @@ class MangaHistoryCard extends StatelessWidget {
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
-                              color: colorScheme.onSurface.withOpacity(0.7),
+                              color: colorScheme.onSurface.opaque(0.7),
                               overflow: TextOverflow.ellipsis,
                             ),
                           const Spacer(),
@@ -217,9 +218,9 @@ class MangaHistoryCard extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
 //     final gradientColors = [
-//       Theme.of(context).colorScheme.surface.withOpacity(0.3),
-//       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-//       Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+//       context.colors.surface.opaque(0.3),
+//       context.colors.primaryContainer.opaque(0.3),
+//       context.colors.primaryContainer.opaque(0.8),
 //     ];
 
 //     return Container(
@@ -228,9 +229,9 @@ class MangaHistoryCard extends StatelessWidget {
 //       decoration: BoxDecoration(
 //         border: Border(
 //             right: BorderSide(
-//                 width: 2, color: Theme.of(context).colorScheme.primary)),
+//                 width: 2, color: context.colors.primary)),
 //         borderRadius: BorderRadius.circular(12.multiplyRadius()),
-//         color: Theme.of(context).colorScheme.surface.withAlpha(144),
+//         color: context.colors.surface.withAlpha(144),
 //       ),
 //       child: AnymexOnTap(
 //         onTap: () {
@@ -309,7 +310,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                               mobileSize: 18, desktopSize: 20),
 //                           variant: TextVariant.bold,
 //                           maxLines: 1,
-//                           color: Theme.of(context).colorScheme.primary,
+//                           color: context.colors.primary,
 //                           overflow: TextOverflow.ellipsis,
 //                         ),
 //                         const SizedBox(height: 4),
@@ -336,13 +337,13 @@ class MangaHistoryCard extends StatelessWidget {
 //                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
 //                     decoration: BoxDecoration(
 //                       borderRadius: BorderRadius.circular((8.multiplyRadius())),
-//                       color: Theme.of(context).colorScheme.primaryContainer,
+//                       color: context.colors.primaryContainer,
 //                     ),
 //                     child: AnymexText(
 //                       text:
 //                           formatTimeAgo(data.currentChapter?.lastReadTime ?? 0),
 //                       size: 12,
-//                       color: Theme.of(context).colorScheme.onPrimaryContainer,
+//                       color: context.colors.onPrimaryContainer,
 //                       variant: TextVariant.bold,
 //                     ),
 //                   ),
@@ -352,13 +353,13 @@ class MangaHistoryCard extends StatelessWidget {
 //                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
 //                     decoration: BoxDecoration(
 //                       borderRadius: BorderRadius.circular((8.multiplyRadius())),
-//                       color: Theme.of(context).colorScheme.primary,
+//                       color: context.colors.primary,
 //                     ),
 //                     child: AnymexText(
 //                       text:
 //                           'PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
 //                       size: 12,
-//                       color: Theme.of(context).colorScheme.onPrimary,
+//                       color: context.colors.onPrimary,
 //                       variant: TextVariant.bold,
 //                     ),
 //                   ),

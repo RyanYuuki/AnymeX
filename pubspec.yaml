@@ -101,6 +101,7 @@ dependencies:
     background_downloader: ^9.5.2
     auto_size_text: ^3.0.0
     vibration: ^3.1.5
+    palette_generator: ^0.3.3+7
 
 dev_dependencies:
     build_runner: ^2.4.11

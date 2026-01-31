@@ -3,6 +3,7 @@ import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -108,7 +109,7 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  color: Colors.black.withOpacity(_overlayAnimation.value),
+                  color: Colors.black.opaque(_overlayAnimation.value),
                 ),
               ),
               Positioned(
@@ -130,13 +131,13 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                         boxShadow: [
                           BoxShadow(
                             color: widget.shadowColor ??
-                                Colors.black.withOpacity(0.3),
+                                Colors.black.opaque(0.3),
                             blurRadius: 20,
                             offset: const Offset(-4, 0),
                           ),
                           BoxShadow(
                             color: context.theme.colorScheme.primary
-                                .withOpacity(0.1),
+                                .opaque(0.1),
                             blurRadius: 30,
                             offset: const Offset(-8, 0),
                           ),
@@ -178,10 +179,10 @@ class EpisodesPane extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color:
-                      context.theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                      context.theme.colorScheme.surfaceVariant.opaque(0.3),
                   border: Border(
                     bottom: BorderSide(
-                      color: context.theme.colorScheme.outline.withOpacity(0.2),
+                      color: context.theme.colorScheme.outline.opaque(0.2),
                     ),
                   ),
                 ),
@@ -201,14 +202,14 @@ class EpisodesPane extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: context.theme.colorScheme.surfaceVariant
-                              .withOpacity(0.3),
+                              .opaque(0.3),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
                           Icons.close,
                           size: 20,
                           color: context.theme.colorScheme.onSurface
-                              .withOpacity(0.7),
+                              .opaque(0.7),
                         ),
                       ),
                     ),
