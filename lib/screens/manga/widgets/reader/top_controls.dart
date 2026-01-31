@@ -240,7 +240,7 @@ class ReaderTopControls extends StatelessWidget {
 
 class ChapterListSheet extends StatefulWidget {
   final ScrollController scrollController;
-  
+
   const ChapterListSheet({super.key, required this.scrollController});
 
   @override
@@ -299,7 +299,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                   // Drag Handle
+                  // Drag Handle
                   Container(
                     height: 5,
                     width: 40,
@@ -310,7 +310,6 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     ),
                   ),
 
-                 
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                     child: Column(
@@ -321,13 +320,16 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                           children: [
                             Text(
                               'Chapters (${chapters.length})',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
                                     fontFamily: 'Poppins-Bold',
                                   ),
                             ),
                             Row(
                               children: [
-                                 IconButton(
+                                IconButton(
                                   onPressed: () {
                                     setState(() {
                                       _isReversed = !_isReversed;
@@ -337,9 +339,11 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                     _isReversed
                                         ? Icons.arrow_upward_rounded
                                         : Icons.arrow_downward_rounded,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
-                                  tooltip: _isReversed ? 'Ascending' : 'Descending',
+                                  tooltip:
+                                      _isReversed ? 'Ascending' : 'Descending',
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -351,7 +355,8 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                     _isGrid
                                         ? Icons.grid_view_rounded
                                         : Icons.view_list_rounded,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                   tooltip: _isGrid ? 'List View' : 'Grid View',
                                 ),
@@ -359,17 +364,20 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                             ),
                           ],
                         ),
-                       
                         TextField(
                           controller: _searchController,
-                          onChanged: (val) => setState(() => _searchQuery = val),
+                          onChanged: (val) =>
+                              setState(() => _searchQuery = val),
                           decoration: InputDecoration(
                             hintText: 'Search chapters...',
                             prefixIcon: const Icon(Icons.search, size: 20),
                             filled: true,
-                            fillColor:
-                                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                            fillColor: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withOpacity(0.5),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 15),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -511,8 +519,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
           : null,
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         dense: true,
         title: Text(
           displayTitle,
