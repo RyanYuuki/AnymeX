@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -40,7 +39,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
     if (serviceHandler.isLoggedIn.value) {
       final currentService = serviceHandler.serviceType.value;
       
-      if (currentService == ServicesType.myanimelist) {
+      if (currentService == ServicesType.mal) {
         _selectedService = ExportService.mal;
       } else {
         _selectedService = ExportService.anilist;
@@ -176,7 +175,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                       onSubmitted: (_) {},
                     ),
                      const SizedBox(height: 10),
-                    AnymexText(
+                    const AnymexText(
                       text: "Note: Your list must be public.",
                       size: 12,
                       color: Colors.grey,
