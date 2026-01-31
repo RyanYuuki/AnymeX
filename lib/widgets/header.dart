@@ -17,9 +17,11 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:provider/provider.dart';
 
 enum PageType { manga, anime, home }
@@ -50,7 +52,7 @@ class Header extends StatelessWidget {
                   Text(profileData.profileData.value.name ?? 'Guest',
                       style: TextStyle(
                           fontFamily: "Poppins-SemiBold",
-                          color: Theme.of(context).colorScheme.primary)),
+                          color: context.colors.primary)),
                 ],
               ),
               const Spacer(),
@@ -59,11 +61,11 @@ class Header extends StatelessWidget {
                     child: CircleAvatar(
                   radius: 24,
                   backgroundColor:
-                      Theme.of(context).colorScheme.secondaryContainer,
+                      context.colors.secondaryContainer,
                   child: IconButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer),
+                              context.colors.secondaryContainer),
                       onPressed: () {
                         Provider.of<ThemeProvider>(context, listen: false)
                             .toggleTheme();
@@ -80,7 +82,7 @@ class Header extends StatelessWidget {
                           backgroundColor: Theme.of(context)
                               .colorScheme
                               .secondaryContainer
-                              .withOpacity(0.50),
+                              .opaque(0.50),
                           child: IconButton(
                               onPressed: () {
                                 final hasNovelExts = sourceController
@@ -132,7 +134,7 @@ class Header extends StatelessWidget {
                     child: AnymeXAnimatedLogo(
                       size: 50,
                       autoPlay: true,
-                      color: Theme.of(context).colorScheme.inverseSurface,
+                      color: context.colors.inverseSurface,
                     )),
                 const Spacer(),
                 _profileIcon(context, profileData)
@@ -155,7 +157,7 @@ class Header extends StatelessWidget {
                         AnymexTextSpan(
                             text:
                                 '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                             variant: TextVariant.bold),
                         const AnymexTextSpan(
                             text: ', what are we doing today?',
@@ -176,7 +178,7 @@ class Header extends StatelessWidget {
                     child: AnymeXAnimatedLogo(
                       size: 80,
                       autoPlay: true,
-                      color: Theme.of(context).colorScheme.inverseSurface,
+                      color: context.colors.inverseSurface,
                     )),
               ],
             ),
@@ -194,7 +196,7 @@ class Header extends StatelessWidget {
       child: CircleAvatar(
         radius: 24,
         backgroundColor:
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.50),
+            context.colors.secondaryContainer.opaque(0.50),
         child: profileData.isLoggedIn.value
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(50),
@@ -208,7 +210,7 @@ class Header extends StatelessWidget {
                 ),
               )
             : Icon(IconlyBold.profile,
-                color: Theme.of(context).colorScheme.onSecondaryContainer),
+                color: context.colors.onSecondaryContainer),
       ),
     );
   }
@@ -229,29 +231,35 @@ Uint8List base64ToBytes(String base64) {
 
 class AnymeXImage extends StatelessWidget {
   final String imageUrl;
-  final double width;
+  final double? width;
   final double? height;
   final double radius;
   final BoxFit fit;
   final Alignment alignment;
   final Color? color;
   final String? errorImage;
+  final ValueChanged<Color>? onColorExtracted;
 
   const AnymeXImage({
     super.key,
     required this.imageUrl,
-    required this.width,
+    this.width,
     this.height,
     this.radius = 8,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
     this.color,
     this.errorImage,
+    this.onColorExtracted,
   });
 
   @override
   Widget build(BuildContext context) {
     final isBase64 = isBase64Image(imageUrl);
+
+    if (onColorExtracted != null) {
+      _extractDominantColor(isBase64);
+    }
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -292,6 +300,32 @@ class AnymeXImage extends StatelessWidget {
     );
   }
 
+  Future<void> _extractDominantColor(bool isBase64) async {
+    try {
+      ImageProvider imageProvider;
+
+      if (isBase64) {
+        imageProvider = MemoryImage(base64ToBytes(imageUrl));
+      } else {
+        imageProvider = CachedNetworkImageProvider(imageUrl);
+      }
+
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        imageProvider,
+        maximumColorCount: 10,
+      );
+
+      final dominantColor = paletteGenerator.dominantColor?.color ??
+          paletteGenerator.vibrantColor?.color ??
+          paletteGenerator.mutedColor?.color;
+
+      if (dominantColor != null) {
+        onColorExtracted?.call(dominantColor);
+      }
+    } catch (e) {}
+  }
+
   Widget _placeholder(BuildContext context) {
     return Container(
       width: width,
@@ -300,7 +334,7 @@ class AnymeXImage extends StatelessWidget {
       color: Theme.of(context)
           .colorScheme
           .surfaceContainerHighest
-          .withOpacity(0.2),
+          .opaque(0.2),
       child: const CircularProgressIndicator(strokeWidth: 2),
     );
   }
@@ -317,8 +351,8 @@ class AnymeXImage extends StatelessWidget {
             Theme.of(context)
                 .colorScheme
                 .surfaceContainerHighest
-                .withOpacity(0.3),
-            Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
+                .opaque(0.3),
+            context.colors.surfaceContainer.opaque(0.5),
           ],
         ),
       ),
@@ -329,7 +363,7 @@ class AnymeXImage extends StatelessWidget {
                 color: Theme.of(context)
                     .colorScheme
                     .onSurfaceVariant
-                    .withOpacity(0.3),
+                    .opaque(0.3),
               ),
         ),
       ),

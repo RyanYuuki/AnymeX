@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -55,7 +56,7 @@ class MediaCard extends StatelessWidget {
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(12.multiplyRadius()),
                         ),
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Row(
@@ -65,13 +66,13 @@ class MediaCard extends StatelessWidget {
                           Icon(
                             Iconsax.star5,
                             size: 16,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: context.colors.onPrimary,
                           ),
                           const SizedBox(width: 3),
                           AnymexText(
                             text: data.rating ?? '0.0',
                             variant: TextVariant.bold,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: context.colors.onPrimary,
                           ),
                           const SizedBox(width: 3),
                         ],
@@ -88,7 +89,7 @@ class MediaCard extends StatelessWidget {
                             topLeft: Radius.circular(12.multiplyRadius()),
                             bottomRight: Radius.circular(12.multiplyRadius()),
                           ),
-                          color: Theme.of(context).colorScheme.primary,
+                          color: context.colors.primary,
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: getExtraData(context)),
@@ -133,13 +134,13 @@ class MediaCard extends StatelessWidget {
           Icon(
             Iconsax.book,
             size: 16,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
           AnymexText(
             text: data.currentChapter?.number.toString() ?? '??',
             variant: TextVariant.bold,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
         ],
@@ -152,13 +153,13 @@ class MediaCard extends StatelessWidget {
           Icon(
             Iconsax.play5,
             size: 16,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
           AnymexText(
             text: data.currentEpisode?.number ?? '??',
             variant: TextVariant.bold,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
         ],

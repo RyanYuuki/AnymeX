@@ -11,6 +11,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnimeStats extends StatelessWidget {
@@ -38,7 +39,7 @@ class AnimeStats extends StatelessWidget {
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
     final isDesktop = MediaQuery.of(context).size.width > 600;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return SingleChildScrollView(
       child: Column(
@@ -97,7 +98,7 @@ class AnimeStats extends StatelessWidget {
             content: AnymexText(
               text: data.description,
               size: 15,
-              color: colorScheme.onSurface.withOpacity(0.9),
+              color: colorScheme.onSurface.opaque(0.9),
               maxLines: 100,
               stripHtml: true,
             ),
@@ -157,7 +158,7 @@ class AnimeStats extends StatelessWidget {
   }
 
   Widget _buildOthersSection(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     return _buildSectionContainer(context,
         icon: Icons.more,
         title: "Others",
@@ -171,10 +172,10 @@ class AnimeStats extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                  color: colorScheme.surfaceContainerHighest.opaque(0.4),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.2),
+                    color: colorScheme.outline.opaque(0.2),
                     width: 1.5,
                   ),
                 ),
@@ -183,7 +184,7 @@ class AnimeStats extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.15),
+                        color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -207,7 +208,7 @@ class AnimeStats extends StatelessWidget {
                             text: "View opening and ending themes",
                             variant: TextVariant.regular,
                             size: 13,
-                            color: colorScheme.onSurface.withOpacity(0.6),
+                            color: colorScheme.onSurface.opaque(0.6),
                           ),
                         ],
                       ),
@@ -215,7 +216,7 @@ class AnimeStats extends StatelessWidget {
                     Icon(
                       Icons.arrow_forward_rounded,
                       size: 20,
-                      color: colorScheme.primary.withOpacity(0.7),
+                      color: colorScheme.primary.opaque(0.7),
                     ),
                   ],
                 ),
@@ -230,10 +231,10 @@ class AnimeStats extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                  color: colorScheme.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.2),
+                    color: colorScheme.outline.opaque(0.2),
                     width: 1.5,
                   ),
                 ),
@@ -242,7 +243,7 @@ class AnimeStats extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.15),
+                        color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -267,7 +268,7 @@ class AnimeStats extends StatelessWidget {
                                 "View the chronological watch order of this anime",
                             variant: TextVariant.regular,
                             size: 13,
-                            color: colorScheme.onSurface.withOpacity(0.6),
+                            color: colorScheme.onSurface.opaque(0.6),
                           ),
                         ],
                       ),
@@ -275,7 +276,7 @@ class AnimeStats extends StatelessWidget {
                     Icon(
                       Icons.arrow_forward_rounded,
                       size: 20,
-                      color: colorScheme.primary.withOpacity(0.7),
+                      color: colorScheme.primary.opaque(0.7),
                     ),
                   ],
                 ),
@@ -336,22 +337,26 @@ class AnimeStats extends StatelessWidget {
   }
 
   Widget _buildCountdownCard(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            colorScheme.primaryContainer.withOpacity(0.3),
-            colorScheme.primary.withOpacity(0.15),
+          colors: Get.isDarkMode ? [
+            colorScheme.primaryContainer.opaque(0.3),
+            colorScheme.primary.opaque(0.15),
+          ] : [
+            colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
+            colorScheme.surfaceContainer,
+            colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.primary.withOpacity(0.3),
+          color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
           width: 1.5,
         ),
       ),
@@ -365,7 +370,7 @@ class AnimeStats extends StatelessWidget {
                       "EPISODE ${data.nextAiringEpisode?.episode} RELEASES IN",
                   variant: TextVariant.bold,
                   size: 13,
-                  color: colorScheme.onSurface.withOpacity(0.7),
+                  color: colorScheme.onSurface.opaque(0.7),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -390,15 +395,15 @@ class AnimeStats extends StatelessWidget {
     required String title,
     required Widget child,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+        color: colorScheme.surfaceContainerHighest.opaque(0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.2),
+          color: colorScheme.outline.opaque(0.2),
           width: 1.5,
         ),
       ),
@@ -410,7 +415,7 @@ class AnimeStats extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.15),
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -440,15 +445,15 @@ class AnimeStats extends StatelessWidget {
     required String title,
     required Widget content,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.35),
+        color: colorScheme.surfaceContainerHighest.opaque(0.35),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.15),
+          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
           width: 1.5,
         ),
       ),
@@ -460,7 +465,7 @@ class AnimeStats extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.15),
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -485,7 +490,7 @@ class AnimeStats extends StatelessWidget {
   }
 
   Widget _buildStatsGrid(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final stats = [
       {
         'label': 'Type',
@@ -552,10 +557,10 @@ class AnimeStats extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.4),
+            color: colorScheme.surface.opaque(0.4),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: colorScheme.primary.withOpacity(0.1),
+              color: colorScheme.primary.opaque(0.1),
               width: 1,
             ),
           ),
@@ -569,14 +574,14 @@ class AnimeStats extends StatelessWidget {
                   Icon(
                     stat['icon'] as IconData,
                     size: 16,
-                    color: colorScheme.primary.withOpacity(0.7),
+                    color: colorScheme.primary.opaque(0.7),
                   ),
                   const SizedBox(width: 6),
                   AnymexText(
                     text: stat['label'].toString(),
                     variant: TextVariant.regular,
                     size: 11,
-                    color: colorScheme.onSurface.withOpacity(0.6),
+                    color: colorScheme.onSurface.opaque(0.6),
                   ),
                 ],
               ),

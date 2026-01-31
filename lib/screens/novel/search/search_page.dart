@@ -7,6 +7,7 @@ import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
@@ -205,7 +206,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
         boxShadow: _searchFocusNode.hasFocus
             ? [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: context.colors.primary.opaque(0.1),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -221,16 +222,16 @@ class _NovelSearchPageState extends State<NovelSearchPage>
         decoration: InputDecoration(
           filled: true,
           fillColor:
-              Theme.of(context).colorScheme.surfaceContainer.withOpacity(.5),
+              context.colors.surfaceContainer.opaque(.5),
           hintText: 'Search Novel...',
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: context.colors.onSurface.opaque(0.5),
               ),
           prefixIcon: Icon(
             Iconsax.search_normal,
             color: _searchFocusNode.hasFocus
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ? context.colors.primary
+                : context.colors.onSurface.opaque(0.5),
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -246,7 +247,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7),
                   ),
                 )
               : null,
@@ -309,13 +310,13 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceVariant
-                    .withOpacity(0.5),
+                    .opaque(0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Iconsax.search_normal,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -332,7 +333,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -351,7 +352,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: context.colors.primary.opaque(0.1),
                 shape: BoxShape.circle,
               ),
               child: const ExpressiveLoadingIndicator(),
@@ -363,7 +364,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7),
                     fontWeight: FontWeight.w500,
                   ),
             ),
@@ -382,13 +383,13 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                color: context.colors.error.opaque(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Iconsax.warning_2,
                 size: 48,
-                color: Theme.of(context).colorScheme.error,
+                color: context.colors.error,
               ),
             ),
             const SizedBox(height: 24),
@@ -405,7 +406,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -413,11 +414,11 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             ElevatedButton.icon(
               onPressed: () => _performSearch(),
               icon: Icon(Iconsax.refresh,
-                  color: Theme.of(context).colorScheme.onPrimary),
+                  color: context.colors.onPrimary),
               label: const Text('Try Again'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: context.colors.primary,
+                foregroundColor: context.colors.onPrimary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -443,13 +444,13 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceVariant
-                    .withOpacity(0.5),
+                    .opaque(0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Iconsax.search_normal,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -466,7 +467,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .opaque(0.7),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -521,23 +522,22 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                     Container(
                       margin: const EdgeInsets.only(right: 5),
                       decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
+                        color: context.colors
                             .surface
-                            .withOpacity(0.3),
+                            .opaque(0.3),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: Theme.of(context)
                               .colorScheme
                               .outline
-                              .withOpacity(0.3),
+                              .opaque(0.3),
                         ),
                       ),
                       child: IconButton(
                         onPressed: () => Navigator.of(context).pop(),
                         icon: Icon(
                           Iconsax.arrow_left_2,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                       ),
                     ),
@@ -567,7 +567,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.1),
+                              .opaque(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -576,7 +576,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                               .textTheme
                               .labelSmall
                               ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: context.colors.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
@@ -592,7 +592,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                             color: Theme.of(context)
                                 .colorScheme
                                 .error
-                                .withOpacity(0.1),
+                                .opaque(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -601,7 +601,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                                 .textTheme
                                 .labelSmall
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
+                                  color: context.colors.error,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),

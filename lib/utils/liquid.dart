@@ -10,6 +10,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
@@ -146,8 +147,8 @@ class Liquid {
           return PopScope(
             canPop: false,
             child: AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+              backgroundColor: context.colors.surface,
+              surfaceTintColor: context.colors.surfaceTint,
               content: Obx(() => Container(
                     padding: const EdgeInsets.all(24),
                     child: Column(
@@ -168,7 +169,7 @@ class Liquid {
                               .textTheme
                               .bodyLarge
                               ?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: context.colors.onSurface,
                               ),
                         ),
                         if (progressController.progress.value > 0)
@@ -181,7 +182,7 @@ class Liquid {
                                   .labelLarge
                                   ?.copyWith(
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                        context.colors.primary,
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
@@ -535,7 +536,7 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.2),
+                    color: colorScheme.outline.opaque(0.2),
                     width: 1,
                   ),
                 ),
@@ -626,7 +627,7 @@ class _ImagePreviewDialogState extends State<_ImagePreviewDialog> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         tileColor: selectedBlurStrength == strength
-                            ? colorScheme.primaryContainer.withOpacity(0.3)
+                            ? colorScheme.primaryContainer.opaque(0.3)
                             : null,
                       ),
                     );

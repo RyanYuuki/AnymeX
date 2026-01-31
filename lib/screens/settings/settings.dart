@@ -14,6 +14,7 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -45,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 color: Theme.of(context)
                     .colorScheme
                     .surfaceContainer
-                    .withOpacity(0.3)),
+                    .opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -147,7 +148,7 @@ class CustomBackButton extends StatelessWidget {
             backgroundColor: Theme.of(context)
                 .colorScheme
                 .surfaceContainer
-                .withOpacity(0.5)),
+                .opaque(0.5)),
         onPressed: () {
           Navigator.pop(context);
         },

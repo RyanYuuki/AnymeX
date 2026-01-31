@@ -3,6 +3,7 @@ import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart'; 
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
 
@@ -165,10 +166,10 @@ class NestedHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.4),
+        color: theme.colorScheme.surface.opaque(0.4),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: theme.colorScheme.outline.opaque(0.2, iReallyMeanIt: true),
             width: 1,
           ),
         ),
@@ -182,8 +183,8 @@ class NestedHeader extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
             style: IconButton.styleFrom(
-              backgroundColor:
-                  theme.colorScheme.surfaceVariant.withOpacity(0.3),
+              backgroundColor: theme.colorScheme.surfaceVariant
+                  .opaque(0.3, iReallyMeanIt: true),
               padding: const EdgeInsets.all(12),
             ),
           ),
@@ -226,7 +227,7 @@ class _FeatureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color.withOpacity(0.3),
+      color: color.opaque(0.3),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -240,7 +241,7 @@ class _FeatureCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.4),
+                  color: color.opaque(0.4),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -263,7 +264,7 @@ class _FeatureCard extends StatelessWidget {
                 description,
                 style: TextStyle(
                   fontSize: isFullWidth ? 14 : 13,
-                  color: onColor.withOpacity(0.8),
+                  color: onColor.opaque(0.8),
                   height: 1.3,
                 ),
                 maxLines: isFullWidth ? 2 : 3,

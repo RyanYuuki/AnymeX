@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'dart:async';
@@ -311,17 +312,17 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withOpacity(0.15),
+                        color: colorScheme.surface.opaque(0.15),
                         border: Border.all(
                           color: colorScheme.primary
-                              .withOpacity(_glowAnimation.value * 0.5),
+                              .opaque(_glowAnimation.value * 0.5),
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
                             color: colorScheme.primary
-                                .withOpacity(_glowAnimation.value * 0.2),
+                                .opaque(_glowAnimation.value * 0.2),
                             blurRadius: 12,
                             spreadRadius: 2,
                             offset: const Offset(0, 0),
@@ -334,7 +335,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           Icon(
                             Icons.fast_forward_rounded,
                             size: 18,
-                            color: colorScheme.primary.withOpacity(0.9),
+                            color: colorScheme.primary.opaque(0.9),
                           ),
                           const SizedBox(width: 10),
                           SizedBox(
@@ -362,8 +363,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                             borderRadius: BorderRadius.circular(20),
                             gradient: LinearGradient(
                               colors: [
-                                colorScheme.primary.withOpacity(0.18),
-                                colorScheme.tertiary.withOpacity(0.18),
+                                colorScheme.primary.opaque(0.18),
+                                colorScheme.tertiary.opaque(0.18),
                               ],
                             ),
                           ),
@@ -402,7 +403,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               begin: isLeft ? Alignment.centerLeft : Alignment.centerRight,
               end: isLeft ? Alignment.center : Alignment.centerLeft,
               colors: [
-                colorScheme.surface.withOpacity(0.15),
+                colorScheme.surface.opaque(0.15),
                 Colors.transparent,
               ],
               stops: const [0.0, 0.7],
@@ -418,7 +419,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.15),
+                    color: colorScheme.shadow.opaque(0.15),
                     blurRadius: 15,
                     offset: const Offset(0, 4),
                   ),
@@ -435,7 +436,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                         height: 60,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: colorScheme.primary.withOpacity(0.15),
+                          color: colorScheme.primary.opaque(0.15),
                         ),
                       ),
                       Icon(
@@ -443,7 +444,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                             ? Icons.fast_rewind_rounded
                             : Icons.fast_forward_rounded,
                         size: 32,
-                        color: colorScheme.primary.withOpacity(1),
+                        color: colorScheme.primary.opaque(1),
                       ),
                     ],
                   ),
@@ -455,7 +456,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                     ),
                     decoration: BoxDecoration(
                       color:
-                          colorScheme.surfaceContainerHighest.withOpacity(0.9),
+                          colorScheme.surfaceContainerHighest.opaque(0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(

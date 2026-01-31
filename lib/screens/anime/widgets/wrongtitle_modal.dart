@@ -5,6 +5,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
@@ -147,7 +148,7 @@ Future<void> showWrongTitleModal(
     {bool isManga = false}) {
   return showModalBottomSheet(
     context: context,
-    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+    backgroundColor: context.colors.surfaceContainer,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12.0),

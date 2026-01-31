@@ -1,5 +1,6 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,9 @@ class ReaderBottomControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // if (controller.isOverscrolling.value) {
-      //   return _buildOverscrollIndicator(context);
-      // }
+      if (controller.isOverscrolling.value) {
+        return _buildOverscrollIndicator(context);
+      }
 
       return AnimatedPositioned(
         duration: const Duration(milliseconds: 300),
@@ -33,8 +34,8 @@ class ReaderBottomControls extends StatelessWidget {
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
               colors: [
-                Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                Theme.of(context).colorScheme.surface.withOpacity(0.0),
+                Colors.black.opaque(0.95, iReallyMeanIt: true),
+                Colors.black.opaque(0.0, iReallyMeanIt: true),
               ],
             ),
           ),
@@ -46,18 +47,14 @@ class ReaderBottomControls extends StatelessWidget {
                     desktopSize: MediaQuery.of(context).size.width * 0.4),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: context.colors.surfaceContainer,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                    color: context.colors.outline.opaque(0.1),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .shadow
-                          .withOpacity(0.05),
+                      color: Theme.of(context).colorScheme.shadow.opaque(0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -93,8 +90,8 @@ class ReaderBottomControls extends StatelessWidget {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.95),
-              Theme.of(context).colorScheme.surface.withOpacity(0.0),
+              context.colors.surface.opaque(0.95),
+              context.colors.surface.opaque(0.0),
             ],
           ),
         ),
@@ -104,7 +101,6 @@ class ReaderBottomControls extends StatelessWidget {
             children: [
               Obx(() {
                 final progress = controller.overscrollProgress.value;
-                final isNext = controller.isOverscrollingNext.value;
 
                 return Stack(
                   alignment: Alignment.center,
@@ -115,38 +111,22 @@ class ReaderBottomControls extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: 1.0,
                         strokeWidth: 8,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withOpacity(0.2),
+                        backgroundColor: context.colors.surfaceContainer,
+                        color: context.colors.outline.opaque(0.2),
                       ),
                     ),
                     SizedBox(
                       width: 40,
                       height: 40,
-                      child: TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 100),
-                        curve: Curves.easeOut,
-                        tween: Tween<double>(
-                          begin: 0,
-                          end: progress,
-                        ),
-                        builder: (context, value, _) {
-                          return CircularProgressIndicator(
-                            value: value,
-                            strokeWidth: 8,
-                            backgroundColor: Colors.transparent,
-                            color: _getProgressColor(context, value),
-                          );
-                        },
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 8,
+                        backgroundColor: Colors.transparent,
+                        color: _getProgressColor(context, progress),
                       ),
                     ),
                     Icon(
-                      isNext
-                          ? Icons.arrow_forward_rounded
-                          : Icons.arrow_back_rounded,
+                      _getOverscrollIcon(),
                       size: 26,
                       color: _getProgressColor(context, progress),
                     ),
@@ -161,12 +141,29 @@ class ReaderBottomControls extends StatelessWidget {
                 final targetIndex =
                     isNext ? currentIndex + 1 : currentIndex - 1;
 
-                if (targetIndex < 0 ||
-                    targetIndex >= controller.chapterList.length) {
-                  return const SizedBox.shrink();
+
+
+                final targetChapter = (targetIndex >= 0 && targetIndex < controller.chapterList.length)
+                    ? controller.chapterList[targetIndex]
+                    : null;
+                
+                String titleText;
+                if (targetChapter != null) {
+                   titleText = targetChapter.title ?? 'Chapter ${targetChapter.number}';
+                } else if (targetIndex < 0) {
+                   titleText = "This is the First Chapter"; 
+                } else {
+                   titleText = "This is the Last Chapter";
                 }
 
-                final targetChapter = controller.chapterList[targetIndex];
+                String subtitleText;
+                if (targetIndex < 0) {
+                  subtitleText = 'Reached Top';
+                } else if (targetIndex >= controller.chapterList.length) {
+                  subtitleText = 'Reached End';
+                } else {
+                  subtitleText = isNext ? 'Next Chapter' : 'Previous Chapter';
+                }
 
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -174,35 +171,34 @@ class ReaderBottomControls extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: context.colors.surfaceContainer,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _getProgressColor(
                         context,
                         controller.overscrollProgress.value,
-                      ).withOpacity(0.3),
+                      ).opaque(0.3),
                     ),
                   ),
                   child: Column(
                     children: [
                       Text(
-                        isNext ? 'Next Chapter' : 'Previous Chapter',
+                        subtitleText,
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .opaque(0.6),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        targetChapter.title ??
-                            'Chapter ${targetChapter.number}',
+                        titleText,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -222,15 +218,15 @@ class ReaderBottomControls extends StatelessWidget {
   Color _getProgressColor(BuildContext context, double progress) {
     if (progress < 0.5) {
       return Color.lerp(
-        Theme.of(context).colorScheme.primary.withOpacity(0.5),
-        Theme.of(context).colorScheme.primary,
+        context.colors.primary.opaque(0.5),
+        context.colors.primary,
         progress * 2,
       )!;
     } else if (progress < 0.8) {
-      return Theme.of(context).colorScheme.primary;
+      return context.colors.primary;
     } else {
       return Color.lerp(
-        Theme.of(context).colorScheme.primary,
+        context.colors.primary,
         Colors.green,
         (progress - 0.8) * 5,
       )!;
@@ -247,8 +243,7 @@ class ReaderBottomControls extends StatelessWidget {
         style: IconButton.styleFrom(
           padding: const EdgeInsets.all(12),
           minimumSize: const Size(48, 48),
-          backgroundColor:
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          backgroundColor: context.colors.surface.opaque(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -288,13 +283,30 @@ class ReaderBottomControls extends StatelessWidget {
         style: IconButton.styleFrom(
           padding: const EdgeInsets.all(12),
           minimumSize: const Size(48, 48),
-          backgroundColor:
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
+          backgroundColor: context.colors.surface.opaque(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
       );
     });
+  }
+
+  IconData _getOverscrollIcon() {
+    final dir = controller.readingDirection.value;
+    final isNext = controller.isOverscrollingNext.value;
+
+    if (dir.axis == Axis.vertical) {
+
+      return isNext ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+    } else {
+    
+      final isRTL = dir.reversed; 
+      if (isRTL) {
+          return isNext ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded;
+      } else {
+          return isNext ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded;
+      }
+    }
   }
 }

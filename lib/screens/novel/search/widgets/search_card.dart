@@ -7,6 +7,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GridNovelCard extends StatelessWidget {
@@ -95,7 +96,7 @@ class GridNovelCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -107,12 +108,12 @@ class GridNovelCard extends StatelessWidget {
           Icon(
             Iconsax.star5,
             size: 16,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
           AnymexText(
             text: media.rating,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
           ),

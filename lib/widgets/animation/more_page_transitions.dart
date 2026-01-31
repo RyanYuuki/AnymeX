@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 // Main page animation wrapper - perfect for entire screens
 class PageAnimationWrapper extends StatefulWidget {
@@ -402,7 +403,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.opaque(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

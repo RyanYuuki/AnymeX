@@ -1,8 +1,10 @@
 import 'dart:math' as math;
+
+import 'package:anymex/models/logo_animation_type.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
-import 'package:anymex/models/logo_animation_type.dart';
 
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
@@ -246,9 +248,11 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   // pulse
   Widget _buildPulseLogo() {
-    final pulseScale = 0.85 + (math.sin(_animation.value * math.pi * 3) * 0.08) + (_animation.value * 0.15);
+    final pulseScale = 0.85 +
+        (math.sin(_animation.value * math.pi * 3) * 0.08) +
+        (_animation.value * 0.15);
     final glowIntensity = math.sin(_animation.value * math.pi * 2) * 0.3;
-    
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -275,8 +279,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Widget _buildGlitchLogo() {
     final phase = (_animation.value * 5) % 1.0;
     final glitchActive = phase > 0.85;
-    final glitchOffset = glitchActive ? (math.Random().nextDouble() - 0.5) * 8 : 0.0;
-    
+    final glitchOffset =
+        glitchActive ? (math.Random().nextDouble() - 0.5) * 8 : 0.0;
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -287,7 +292,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               opacity: 0.4,
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                  Colors.cyan.withOpacity(0.7),
+                  Colors.cyan.opaque(0.7, iReallyMeanIt: true),
                   BlendMode.modulate,
                 ),
                 child: _buildBaseLogo(100),
@@ -301,7 +306,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               opacity: 0.4,
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                  Colors.red.withOpacity(0.7),
+                  Colors.red.opaque(0.7, iReallyMeanIt: true),
                   BlendMode.modulate,
                 ),
                 child: _buildBaseLogo(100),
@@ -337,7 +342,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     final waveAmplitude = (1 - _animation.value) * 12;
     final xOffset = math.sin(wavePhase) * waveAmplitude;
     final yOffset = math.cos(wavePhase * 1.5) * waveAmplitude * 0.5;
-    
+
     return Transform.translate(
       offset: Offset(xOffset, yOffset),
       child: Transform.rotate(
@@ -355,7 +360,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     final spiralAngle = (1 - _animation.value) * math.pi * 3;
     final spiralScale = _animation.value * _animation.value;
     final distance = (1 - _animation.value) * widget.size * 0.3;
-    
+
     return Transform.translate(
       offset: Offset(
         math.cos(spiralAngle) * distance,
@@ -378,7 +383,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Widget _buildParticleConvergenceLogo() {
     // Adjust timing so animation starts after initial delay
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final particlePhase = adjustedProgress.clamp(0.0, 0.5) / 0.5;
     final convergePhase = (adjustedProgress - 0.4).clamp(0.0, 0.5) / 0.5;
     final logoPhase = (adjustedProgress - 0.7).clamp(0.0, 0.3) / 0.3;
@@ -397,9 +402,12 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final currentY = convergePhase < 1.0 ? moveY * (1 - convergePhase) : 0.0;
 
       final colorPhase = (particlePhase + (index / 16)) % 1.0;
-      final particleColor = HSVColor.fromAHSV(1.0, colorPhase * 360, 0.9, 1.0).toColor();
-      final particleSize = 10.0 + (math.sin(particlePhase * math.pi + index) * 4);
-      final particleOpacity = convergePhase < 0.9 ? 1.0 : 1.0 - ((convergePhase - 0.9) / 0.1);
+      final particleColor =
+          HSVColor.fromAHSV(1.0, colorPhase * 360, 0.9, 1.0).toColor();
+      final particleSize =
+          10.0 + (math.sin(particlePhase * math.pi + index) * 4);
+      final particleOpacity =
+          convergePhase < 0.9 ? 1.0 : 1.0 - ((convergePhase - 0.9) / 0.1);
 
       return Positioned(
         left: widget.size / 2 + currentX - particleSize / 2,
@@ -414,7 +422,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: particleColor.withOpacity(0.8),
+                  color: particleColor.opaque(0.8, iReallyMeanIt: true),
                   blurRadius: 12,
                   spreadRadius: 3,
                 ),
@@ -445,7 +453,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Widget _buildParticleExplosionLogo() {
     // Adjust timing
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final initialPhase = (adjustedProgress.clamp(0.0, 0.2) / 0.2);
     final explosionPhase = (adjustedProgress.clamp(0.2, 0.5) / 0.3);
     final reformPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
@@ -463,10 +471,12 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final y = math.sin(angle) * distance * (1 - reformPhase);
 
       final rotation = explosionPhase * math.pi * 6 * (1 - reformPhase);
-      final particleOpacity = adjustedProgress > 0.15 && adjustedProgress < 0.85 ? 1.0 : 0.0;
+      final particleOpacity =
+          adjustedProgress > 0.15 && adjustedProgress < 0.85 ? 1.0 : 0.0;
 
       final colorIndex = (index / 24);
-      final color = HSVColor.fromAHSV(1.0, colorIndex * 360, 0.95, 1.0).toColor();
+      final color =
+          HSVColor.fromAHSV(1.0, colorIndex * 360, 0.95, 1.0).toColor();
       final particleSize = 8.0 + (index % 3) * 3.0;
 
       return Positioned(
@@ -481,12 +491,12 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               height: particleSize,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [color, color.withOpacity(0.6)],
+                  colors: [color, color.opaque(0.6, iReallyMeanIt: true)],
                 ),
                 borderRadius: BorderRadius.circular(2),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.6),
+                    color: color.opaque(0.6, iReallyMeanIt: true),
                     blurRadius: 8,
                     spreadRadius: 2,
                   ),
@@ -517,7 +527,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // ORBITAL RINGS
   Widget _buildOrbitalRingsLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final ringPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
     final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
@@ -553,7 +563,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: colors[index].withOpacity(0.5),
+                    color: colors[index].opaque(0.5, iReallyMeanIt: true),
                     blurRadius: 15,
                     spreadRadius: 3,
                   ),
@@ -596,7 +606,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         final totalPixels = gridSize * gridSize;
         final random = math.Random(pixelIndex);
         final appearTime = (random.nextDouble() * 0.5) + 0.1;
-        final pixelProgress = (assemblyPhase - appearTime).clamp(0.0, 0.3) / 0.3;
+        final pixelProgress =
+            (assemblyPhase - appearTime).clamp(0.0, 0.3) / 0.3;
 
         if (pixelProgress > 0) {
           final pixelSize = widget.size / gridSize;
@@ -632,7 +643,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                       borderRadius: BorderRadius.circular(2),
                       boxShadow: [
                         BoxShadow(
-                          color: color.withOpacity(0.4),
+                          color: color.opaque(0.4, iReallyMeanIt: true),
                           blurRadius: 4,
                         ),
                       ],
@@ -667,7 +678,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // LIQUID MORPH
   Widget _buildLiquidMorphLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final dropPhase = adjustedProgress.clamp(0.0, 0.4) / 0.4;
     final mergePhase = (adjustedProgress - 0.3).clamp(0.0, 0.5) / 0.5;
     final logoPhase = (adjustedProgress - 0.6).clamp(0.0, 0.4) / 0.4;
@@ -680,12 +691,15 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
       final gravity = dropPhase * dropPhase;
       final bounceHeight = startY + (widget.size * 0.4 * gravity);
-      final elasticity = dropPhase > 0.8 ? math.sin((dropPhase - 0.8) * math.pi * 5) * 5 : 0.0;
+      final elasticity =
+          dropPhase > 0.8 ? math.sin((dropPhase - 0.8) * math.pi * 5) * 5 : 0.0;
 
       final currentX = startX * (1 - mergePhase);
       final currentY = (bounceHeight + elasticity) * (1 - mergePhase);
 
-      final dropSize = 12.0 + (mergePhase * 15) + (math.sin(dropPhase * math.pi * 3 + index) * 3);
+      final dropSize = 12.0 +
+          (mergePhase * 15) +
+          (math.sin(dropPhase * math.pi * 3 + index) * 3);
       final opacity = adjustedProgress < 0.75 ? 1.0 : 1.0 - logoPhase;
 
       final colors = [
@@ -712,14 +726,14 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 colors: [
-                  colors[index].withOpacity(0.9),
+                  colors[index].opaque(0.9, iReallyMeanIt: true),
                   colors[index],
                 ],
               ),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: colors[index].withOpacity(0.6),
+                  color: colors[index].opaque(0.6, iReallyMeanIt: true),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),
@@ -749,7 +763,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // GEOMETRIC UNFOLD
   Widget _buildGeometricUnfoldLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final unfoldPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
     final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
@@ -775,7 +789,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
       Widget shape;
       final shapeType = index % 4;
-      
+
       if (shapeType == 0) {
         shape = CustomPaint(
           size: const Size(45, 45),
@@ -790,7 +804,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: shapeColors[index].withOpacity(0.6),
+                color: shapeColors[index].opaque(0.6, iReallyMeanIt: true),
                 blurRadius: 12,
                 spreadRadius: 2,
               ),
@@ -806,7 +820,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: shapeColors[index].withOpacity(0.6),
+                color: shapeColors[index].opaque(0.6, iReallyMeanIt: true),
                 blurRadius: 12,
                 spreadRadius: 2,
               ),
@@ -824,7 +838,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               borderRadius: BorderRadius.circular(4),
               boxShadow: [
                 BoxShadow(
-                  color: shapeColors[index].withOpacity(0.6),
+                  color: shapeColors[index].opaque(0.6, iReallyMeanIt: true),
                   blurRadius: 12,
                   spreadRadius: 2,
                 ),
@@ -869,7 +883,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // MATRIX RAIN
   Widget _buildMatrixRainLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final rainPhase = adjustedProgress.clamp(0.0, 0.6) / 0.6;
     final formPhase = (adjustedProgress - 0.4).clamp(0.0, 0.6) / 0.6;
     final logoPhase = (adjustedProgress - 0.7).clamp(0.0, 0.3) / 0.3;
@@ -878,24 +892,23 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     final rainDrops = List.generate(columns, (col) {
       final drops = <Widget>[];
       final dropsPerColumn = 8;
-      
+
       for (int row = 0; row < dropsPerColumn; row++) {
         final random = math.Random(col * 100 + row);
         final dropDelay = random.nextDouble() * 0.3;
         final dropProgress = (rainPhase - dropDelay).clamp(0.0, 1.0);
-        
+
         if (dropProgress > 0) {
           final x = (col / columns) * widget.size;
           final fallDistance = dropProgress * widget.size * 1.3;
           final y = -20.0 + fallDistance - (row * 25);
-          
-          final opacity = dropProgress < 0.8 
-              ? 1.0 
-              : 1.0 - ((dropProgress - 0.8) / 0.2);
+
+          final opacity =
+              dropProgress < 0.8 ? 1.0 : 1.0 - ((dropProgress - 0.8) / 0.2);
           final fade = formPhase > 0 ? 1.0 - formPhase : 1.0;
-          
+
           final brightness = 1.0 - (row / dropsPerColumn) * 0.6;
-          
+
           drops.add(
             Positioned(
               left: x,
@@ -910,14 +923,17 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.lightGreen.withOpacity(brightness),
-                        Colors.green.withOpacity(brightness * 0.3),
+                        Colors.lightGreen
+                            .opaque(brightness, iReallyMeanIt: true),
+                        Colors.green
+                            .opaque(brightness * 0.3, iReallyMeanIt: true),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.5 * brightness),
+                        color: Colors.green
+                            .opaque(0.5 * brightness, iReallyMeanIt: true),
                         blurRadius: 8,
                         spreadRadius: 1,
                       ),
@@ -927,7 +943,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                     child: Text(
                       String.fromCharCode(33 + random.nextInt(94)),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(brightness),
+                        color: Colors.white
+                            .opaque(brightness, iReallyMeanIt: true),
                         fontSize: 12,
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.bold,
@@ -962,21 +979,24 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // SHATTER
   Widget _buildShatterLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final shatterPhase = adjustedProgress.clamp(0.0, 0.5) / 0.5;
     final reformPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
     final shards = List.generate(20, (index) {
       final angle = (index / 20) * 2 * math.pi;
       final random = math.Random(index);
-      final distance = shatterPhase * widget.size * (0.6 + random.nextDouble() * 0.4);
+      final distance =
+          shatterPhase * widget.size * (0.6 + random.nextDouble() * 0.4);
       final x = math.cos(angle) * distance * (1 - reformPhase);
       final y = math.sin(angle) * distance * (1 - reformPhase);
-      
-      final rotation = shatterPhase * (random.nextDouble() * math.pi * 4 - math.pi * 2) * (1 - reformPhase);
+
+      final rotation = shatterPhase *
+          (random.nextDouble() * math.pi * 4 - math.pi * 2) *
+          (1 - reformPhase);
       final scale = 0.3 + (shatterPhase * 0.7) * (1 - reformPhase * 0.5);
-      
-      final shardOpacity = adjustedProgress < 0.2 
+
+      final shardOpacity = adjustedProgress < 0.2
           ? 1.0 - (adjustedProgress / 0.2)
           : adjustedProgress > 0.8
               ? reformPhase
@@ -1006,17 +1026,17 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                   gradient: LinearGradient(
                     colors: [
                       color,
-                      color.withOpacity(0.3),
+                      color.opaque(0.3, iReallyMeanIt: true),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.opaque(0.5, iReallyMeanIt: true),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.4),
+                      color: color.opaque(0.4, iReallyMeanIt: true),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -1029,7 +1049,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       );
     });
 
-    final logoOpacity = adjustedProgress < 0.15 
+    final logoOpacity = adjustedProgress < 0.15
         ? 1.0 - (adjustedProgress / 0.15)
         : adjustedProgress > 0.7
             ? reformPhase
@@ -1054,18 +1074,19 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // HOLOGRAM
   Widget _buildHologramLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final scanPhase = adjustedProgress.clamp(0.0, 0.6) / 0.6;
     final stabilizePhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
-    
-    final flickerOffset = adjustedProgress < 0.7 
+
+    final flickerOffset = adjustedProgress < 0.7
         ? math.sin(adjustedProgress * math.pi * 30) * 2 * (1 - stabilizePhase)
         : 0.0;
-    
+
     final scanLineY = -widget.size + (scanPhase * widget.size * 2);
-    final glitchActive = adjustedProgress > 0.3 && adjustedProgress < 0.6 && 
-                          ((adjustedProgress * 20) % 1.0) > 0.8;
-    
+    final glitchActive = adjustedProgress > 0.3 &&
+        adjustedProgress < 0.6 &&
+        ((adjustedProgress * 20) % 1.0) > 0.8;
+
     final logoOpacity = adjustedProgress.clamp(0.2, 0.9);
     final hologramColor = Colors.cyan.shade400;
 
@@ -1088,7 +1109,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: hologramColor.withOpacity(0.8),
+                    color: hologramColor.opaque(0.8, iReallyMeanIt: true),
                     blurRadius: 15,
                     spreadRadius: 3,
                   ),
@@ -1096,7 +1117,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               ),
             ),
           ),
-        
         if (glitchActive)
           Transform.translate(
             offset: Offset(flickerOffset * 3, 0),
@@ -1105,7 +1125,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
               child: _buildBaseLogo(logoOpacity * 100),
             ),
           ),
-        
         Transform.translate(
           offset: Offset(flickerOffset, 0),
           child: Stack(
@@ -1128,7 +1147,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                 opacity: logoOpacity * 0.9,
                 child: ColorFiltered(
                   colorFilter: ColorFilter.mode(
-                    hologramColor.withOpacity(0.6),
+                    hologramColor.opaque(0.6, iReallyMeanIt: true),
                     BlendMode.modulate,
                   ),
                   child: _buildBaseLogo(logoOpacity * 100),
@@ -1137,7 +1156,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
             ],
           ),
         ),
-        
         ...List.generate(8, (index) {
           return Positioned(
             top: (index / 8) * widget.size,
@@ -1158,7 +1176,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   // VORTEX
   Widget _buildVortexLogo() {
     final adjustedProgress = (_animation.value - 0.05).clamp(0.0, 0.95) / 0.95;
-    
+
     final vortexPhase = adjustedProgress.clamp(0.0, 0.7) / 0.7;
     final logoPhase = (adjustedProgress - 0.5).clamp(0.0, 0.5) / 0.5;
 
@@ -1167,13 +1185,13 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final ringSize = widget.size * (0.1 + index * 0.08) * progress;
       final depth = (1 - progress) * 0.8;
       final rotation = progress * math.pi * 6 + (index * math.pi / 6);
-      
-      final opacity = progress < 0.8 
-          ? (progress * 1.2).clamp(0.0, 1.0) 
+
+      final opacity = progress < 0.8
+          ? (progress * 1.2).clamp(0.0, 1.0)
           : 1.0 - ((progress - 0.8) / 0.2);
-      
+
       final zDepth = 1.0 - (depth * 0.5);
-      
+
       final colors = [
         Colors.purple.shade400,
         Colors.deepPurple.shade400,
@@ -1199,7 +1217,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.6),
+                    color: color.opaque(0.6, iReallyMeanIt: true),
                     blurRadius: 12 * zDepth,
                     spreadRadius: 2,
                   ),
@@ -1249,7 +1267,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       fillGradientDef = _createFillGradient(colors, fillHeight);
     } else if (widget.color != null) {
       strokeFill = 'url(#logoGradient)';
-      fillGradientDef = _createFillGradient([widget.color!, widget.color!], fillHeight);
+      fillGradientDef =
+          _createFillGradient([widget.color!, widget.color!], fillHeight);
     } else {
       strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([
@@ -1282,7 +1301,8 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     String gradientStops = '';
     for (int i = 0; i < colors.length; i++) {
       final offset = (i / (colors.length - 1)) * 100;
-      gradientStops += '<stop offset="$offset%" stop-color="${_colorToRgba(colors[i], 1.0)}" />';
+      gradientStops +=
+          '<stop offset="$offset%" stop-color="${_colorToRgba(colors[i], 1.0)}" />';
     }
 
     return '''
@@ -1320,7 +1340,7 @@ class _TrianglePainter extends CustomPainter {
       ..close();
 
     canvas.drawPath(path, paint);
-    canvas.drawShadow(path, color.withOpacity(0.5), 10.0, true);
+    canvas.drawShadow(path, color.opaque(0.5, iReallyMeanIt: true), 10.0, true);
   }
 
   @override

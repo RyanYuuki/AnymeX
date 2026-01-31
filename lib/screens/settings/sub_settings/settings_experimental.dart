@@ -8,6 +8,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:io';
@@ -181,7 +182,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
             .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          color: context.colors.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -190,7 +191,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  context.colors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color: Theme.of(context)
@@ -204,7 +205,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
               style: TextStyle(
                 fontFamily: 'monospace',
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 fontSize: 12,
               ),
             ),
@@ -214,7 +215,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
             child: Text(
               description,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: context.colors.onSurface,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -829,14 +830,14 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
                                                                             style:
                                                                                 TextStyle(
                                                                               fontWeight: FontWeight.w600,
-                                                                              color: Theme.of(context).colorScheme.onSurface,
+                                                                              color: context.colors.onSurface,
                                                                             ),
                                                                           ),
                                                                           Text(
                                                                             'Use keyboard shortcuts during playback to switch profiles',
                                                                             style:
                                                                                 TextStyle(
-                                                                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                                                              color: context.colors.onSurface.withValues(alpha: 0.7),
                                                                               fontSize: 12,
                                                                             ),
                                                                           ),

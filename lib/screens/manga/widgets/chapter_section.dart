@@ -8,6 +8,7 @@ import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.da
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -48,7 +49,7 @@ class ChapterSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,12 +59,12 @@ class ChapterSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
-                      .surfaceContainerHighest
-                      .withOpacity(0.3),
+                      .surfaceContainer
+                      .opaque(0.3),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                        context.colors.outline.opaque(0.2, iReallyMeanIt: true),
                     width: 1.5,
                   ),
                   boxShadow: [
@@ -71,7 +72,7 @@ class ChapterSection extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .shadow
-                          .withOpacity(0.08),
+                          .opaque(0.08, iReallyMeanIt: true),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -90,7 +91,7 @@ class ChapterSection extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.6),
+                                  .opaque(0.6),
                             ),
                           AnymexTextSpan(
                             text: searchedTitle.value,
@@ -98,8 +99,8 @@ class ChapterSection extends StatelessWidget {
                             size: 14,
                             color:
                                 searchedTitle.value.contains('No Match Found')
-                                    ? Theme.of(context).colorScheme.error
-                                    : Theme.of(context).colorScheme.primary,
+                                    ? context.colors.error
+                                    : context.colors.primary,
                           )
                         ],
                       ),
@@ -129,13 +130,13 @@ class ChapterSection extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .primaryContainer
-                              .withOpacity(0.4),
+                              .opaque(0.4),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Theme.of(context)
                                 .colorScheme
                                 .outline
-                                .withOpacity(0.3),
+                                .opaque(0.3),
                             width: 1,
                           ),
                         ),
@@ -145,13 +146,13 @@ class ChapterSection extends StatelessWidget {
                             Icon(
                               Icons.swap_horiz_rounded,
                               size: 14,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                             ),
                             const SizedBox(width: 6),
                             AnymexText(
                               text: "Wrong Title?",
                               size: 12,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                             ),
                           ],
                         ),

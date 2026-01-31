@@ -11,6 +11,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -176,7 +177,7 @@ class GridAnimeCard extends StatelessWidget {
                 spans: [
                   AnymexTextSpan(
                       text: "${media.episodeCount} ",
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                       variant: TextVariant.semiBold),
                   if (media.nextEpisode != null)
                     AnymexTextSpan(
@@ -200,7 +201,7 @@ class GridAnimeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -212,12 +213,12 @@ class GridAnimeCard extends StatelessWidget {
           Icon(
             Iconsax.star5,
             size: 16,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
           AnymexText(
             text: media.rating ?? '0.0',
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
           ),
@@ -235,9 +236,9 @@ class BlurAnimeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gradientColors = [
-      Theme.of(context).colorScheme.surface.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+      context.colors.surface.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.3),
+      context.colors.primaryContainer.opaque(0.8),
     ];
 
     return AnymexOnTap(
@@ -249,9 +250,9 @@ class BlurAnimeCard extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
               right: BorderSide(
-                  width: 2, color: Theme.of(context).colorScheme.primary)),
+                  width: 2, color: context.colors.primary)),
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
-          color: Theme.of(context).colorScheme.surface.withAlpha(144),
+          color: context.colors.surface.withAlpha(144),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
@@ -304,7 +305,7 @@ class BlurAnimeCard extends StatelessWidget {
                           text: "Episode ${data.nextAiringEpisode!.episode}",
                           size: 14,
                           maxLines: 2,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: context.colors.primary,
                           variant: TextVariant.bold,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -331,12 +332,12 @@ class BlurAnimeCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   child: AnymexText(
                     text: '',
                     size: 12,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: context.colors.onPrimary,
                     variant: TextVariant.bold,
                   ),
                 );

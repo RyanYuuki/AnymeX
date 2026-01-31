@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class ScrollWrapper extends StatelessWidget {

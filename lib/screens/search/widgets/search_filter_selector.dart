@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class FutureisticOptionTile extends StatefulWidget {
@@ -87,8 +88,10 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
               gradient: widget.isSelected
                   ? LinearGradient(
                       colors: [
-                        widget.colorScheme.primary.withOpacity(0.1),
-                        widget.colorScheme.primary.withOpacity(0.05),
+                        widget.colorScheme.primary
+                            .opaque(0.1, iReallyMeanIt: true),
+                        widget.colorScheme.primary
+                            .opaque(0.05, iReallyMeanIt: true),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -97,14 +100,15 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
               border: Border.all(
                 color: widget.isSelected
                     ? widget.colorScheme.primary
-                    : widget.colorScheme.outline.withOpacity(0.2),
+                    : widget.colorScheme.outline
+                        .opaque(0.2, iReallyMeanIt: true),
                 width: widget.isSelected ? 2 : 1,
               ),
               boxShadow: widget.isSelected
                   ? [
                       BoxShadow(
                         color: widget.colorScheme.primary
-                            .withOpacity(0.3 * _glowAnimation.value),
+                            .opaque(0.3 * _glowAnimation.value),
                         blurRadius: 12 * _glowAnimation.value,
                         spreadRadius: 2 * _glowAnimation.value,
                       ),
@@ -151,8 +155,7 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    widget.colorScheme.primary.withOpacity(0.4),
+                                color: widget.colorScheme.primary.opaque(0.4),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -184,14 +187,14 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
         border: Border.all(
           color: widget.isSelected
               ? widget.colorScheme.primary
-              : widget.colorScheme.outline.withOpacity(0.4),
+              : widget.colorScheme.outline.opaque(0.4),
           width: 2,
         ),
         gradient: widget.isSelected
             ? RadialGradient(
                 colors: [
-                  widget.colorScheme.primary.withOpacity(0.8),
-                  widget.colorScheme.primary.withOpacity(0.2),
+                  widget.colorScheme.primary.opaque(0.8),
+                  widget.colorScheme.primary.opaque(0.2),
                 ],
               )
             : null,
@@ -199,7 +202,7 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
             ? [
                 BoxShadow(
                   color: widget.colorScheme.primary
-                      .withOpacity(0.4 * _glowAnimation.value),
+                      .opaque(0.4 * _glowAnimation.value),
                   blurRadius: 8 * _glowAnimation.value,
                   spreadRadius: 1 * _glowAnimation.value,
                 ),
@@ -216,7 +219,7 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
                   color: widget.colorScheme.primary,
                   boxShadow: [
                     BoxShadow(
-                      color: widget.colorScheme.primary.withOpacity(0.6),
+                      color: widget.colorScheme.primary.opaque(0.6),
                       blurRadius: 4,
                       spreadRadius: 1,
                     ),

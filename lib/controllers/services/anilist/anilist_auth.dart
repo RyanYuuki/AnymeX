@@ -14,6 +14,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,7 @@ class AnilistAuth extends GetxController {
   }
 
   Widget _buildLoginBottomSheet(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return Container(
       decoration: BoxDecoration(
@@ -111,7 +112,7 @@ class AnilistAuth extends GetxController {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: theme.onSurface.withOpacity(0.3),
+                color: theme.onSurface.opaque(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -155,7 +156,7 @@ class AnilistAuth extends GetxController {
     required IconData icon,
     required String label,
   }) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     return Material(
       color: theme.surfaceContainer,
@@ -168,7 +169,7 @@ class AnilistAuth extends GetxController {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.primary.withOpacity(0.2),
+              color: theme.primary.opaque(0.2),
               width: 1,
             ),
           ),
@@ -177,7 +178,7 @@ class AnilistAuth extends GetxController {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: theme.primary.withOpacity(0.15),
+                  color: theme.primary.opaque(0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -201,7 +202,7 @@ class AnilistAuth extends GetxController {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 18,
-                color: theme.onPrimaryContainer.withOpacity(0.5),
+                color: theme.onPrimaryContainer.opaque(0.5),
               ),
             ],
           ),
@@ -212,7 +213,7 @@ class AnilistAuth extends GetxController {
 
   void _showTokenInputDialog(BuildContext context) async {
     final TextEditingController tokenController = TextEditingController();
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
 
     const url =
         'https://anilist.co/api/v2/oauth/authorize?client_id=35224&response_type=token';
@@ -242,7 +243,7 @@ class AnilistAuth extends GetxController {
               'Please paste the token from the browser',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: theme.onSurface.withOpacity(0.7),
+                color: theme.onSurface.opaque(0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -252,7 +253,7 @@ class AnilistAuth extends GetxController {
                 hintText: 'Enter token here',
                 hintStyle: TextStyle(
                   fontFamily: 'Poppins',
-                  color: theme.onSurface.withOpacity(0.5),
+                  color: theme.onSurface.opaque(0.5),
                 ),
                 filled: true,
                 fillColor: theme.surfaceVariant,
@@ -280,7 +281,7 @@ class AnilistAuth extends GetxController {
               'Cancel',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: theme.onSurface.withOpacity(0.7),
+                color: theme.onSurface.opaque(0.7),
               ),
             ),
           ),

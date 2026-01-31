@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class PasswordInputDialog extends StatefulWidget {
@@ -67,7 +68,7 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
                 ),
                 filled: true,
                 fillColor:
-                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    theme.colorScheme.surfaceContainerHighest.opaque(0.3),
               ),
             ),
             const SizedBox(height: 24),
@@ -263,10 +264,10 @@ class RestorePreviewSheet extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer.withOpacity(0.2),
+                      color: theme.colorScheme.errorContainer.opaque(0.2),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: theme.colorScheme.error.withOpacity(0.3),
+                        color: theme.colorScheme.error.opaque(0.3),
                       ),
                     ),
                     child: Row(
@@ -345,7 +346,7 @@ class UserInfoCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  color: theme.colorScheme.primary.opaque(0.3),
                   width: 2,
                 ),
               ),
@@ -480,7 +481,7 @@ class LibraryStatsCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                color: theme.colorScheme.primaryContainer.opaque(0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -493,7 +494,7 @@ class LibraryStatsCard extends StatelessWidget {
                   Container(
                     width: 1,
                     height: 40,
-                    color: theme.colorScheme.outline.withOpacity(0.2),
+                    color: theme.colorScheme.outline.opaque(0.2),
                   ),
                   TotalStat(
                     label: "Custom Lists",
@@ -590,7 +591,7 @@ class CategoryRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -598,7 +599,7 @@ class CategoryRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.opaque(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -665,7 +666,7 @@ class ActionCard extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.opaque(0.1),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(icon, color: color),
@@ -717,7 +718,7 @@ class LibraryDashboard extends StatelessWidget {
                       fontSize: 22, fontWeight: FontWeight.bold)),
               Text(label,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: context.colors.onSurfaceVariant,
                       fontSize: 12)),
             ],
           ),
@@ -765,7 +766,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.opaque(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(Icons.backup_rounded,
@@ -798,7 +799,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
             Container(
               decoration: BoxDecoration(
                 color:
-                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    theme.colorScheme.surfaceContainerHighest.opaque(0.3),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: CheckboxListTile(
@@ -851,7 +852,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                   ),
                   filled: true,
                   fillColor: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.3),
+                      .opaque(0.3),
                 ),
               ),
               const SizedBox(height: 16),
@@ -875,7 +876,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                   ),
                   filled: true,
                   fillColor: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.3),
+                      .opaque(0.3),
                 ),
               ),
             ],
@@ -931,10 +932,10 @@ class GlassContainer extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer.withOpacity(0.4),
+        color: theme.colorScheme.surfaceContainer.opaque(0.4),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-            color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+            color: theme.colorScheme.outlineVariant.opaque(0.5)),
       ),
       child: child,
     );

@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,10 +25,6 @@ class NovelTopControls extends StatelessWidget {
       final topControlsVisiblePosition = statusBarHeight + 8;
       final topControlsHiddenPosition =
           -(statusBarHeight + topControlsHeight + gapBetweenControls + 20);
-
-      final pageInfoVisiblePosition =
-          topControlsVisiblePosition + topControlsHeight + gapBetweenControls;
-      final pageInfoHiddenPosition = statusBarHeight + 8;
 
       return Stack(
         children: [
@@ -62,14 +59,14 @@ class NovelTopControls extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: context.colors.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
         onPressed: () => Get.back(),
-        icon:
-            const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+        icon: Icon(Icons.arrow_back_ios_new,
+            color: context.colors.onSurface, size: 18),
       ),
     );
   }
@@ -80,9 +77,9 @@ class NovelTopControls extends StatelessWidget {
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: context.colors.surfaceContainer,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.15)),
+          border: Border.all(color: context.colors.onSurface.opaque(0.15)),
         ),
         child: Row(
           children: [
@@ -94,7 +91,7 @@ class NovelTopControls extends StatelessWidget {
                     ? 0
                     : controller.progress.value,
                 strokeWidth: 2,
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: context.colors.onSurface.opaque(0.2),
               ),
             ),
             const SizedBox(width: 8),
@@ -105,8 +102,8 @@ class NovelTopControls extends StatelessWidget {
                 children: [
                   Text(
                     controller.currentChapter.value.title ?? 'Unknown Chapter',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.colors.onSurface,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -116,7 +113,7 @@ class NovelTopControls extends StatelessWidget {
                   Text(
                     'Chapter ${controller.currentChapter.value.number?.round() ?? '-'} of ${controller.chapters.last.number?.round() ?? '-'}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: context.colors.onSurface.opaque(0.7),
                       fontSize: 10,
                     ),
                   ),
@@ -134,13 +131,14 @@ class NovelTopControls extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: context.colors.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
         onPressed: () => controller.toggleSettings(),
-        icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 18),
+        icon: Icon(Icons.settings_rounded,
+            color: context.colors.onSurface, size: 18),
       ),
     );
   }
@@ -148,6 +146,7 @@ class NovelTopControls extends StatelessWidget {
 
 // import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 // import 'package:flutter/material.dart';
+// import 'package:anymex/utils/theme_extensions.dart';
 // import 'package:flutter/services.dart';
 // import 'package:get/get.dart';
 
@@ -178,8 +177,8 @@ class NovelTopControls extends StatelessWidget {
 //               begin: Alignment.topCenter,
 //               end: Alignment.bottomCenter,
 //               colors: [
-//                 Theme.of(context).colorScheme.surface.withOpacity(0.95),
-//                 Theme.of(context).colorScheme.surface.withOpacity(0.8),
+//                 context.colors.surface.opaque(0.95),
+//                 context.colors.surface.opaque(0.8),
 //                 Colors.transparent,
 //               ],
 //             ),
@@ -206,7 +205,7 @@ class NovelTopControls extends StatelessWidget {
 //       onPressed: () => Navigator.pop(context),
 //       icon: Icon(
 //         Icons.arrow_back_rounded,
-//         color: Theme.of(context).colorScheme.onSurface,
+//         color: context.colors.onSurface,
 //       ),
 //     );
 //   }
@@ -219,7 +218,7 @@ class NovelTopControls extends StatelessWidget {
 //         Obx(() => Text(
 //               controller.currentChapter.value.title ?? 'Chapter',
 //               style: TextStyle(
-//                 color: Theme.of(context).colorScheme.onSurface,
+//                 color: context.colors.onSurface,
 //                 fontSize: 16,
 //                 fontWeight: FontWeight.w600,
 //               ),
@@ -229,7 +228,7 @@ class NovelTopControls extends StatelessWidget {
 //         Text(
 //           controller.media.title,
 //           style: TextStyle(
-//             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+//             color: context.colors.onSurface.opaque(0.7),
 //             fontSize: 12,
 //           ),
 //           maxLines: 1,
@@ -247,7 +246,7 @@ class NovelTopControls extends StatelessWidget {
 //       },
 //       icon: Icon(
 //         Icons.tune_rounded,
-//         color: Theme.of(context).colorScheme.onSurface,
+//         color: context.colors.onSurface,
 //       ),
 //     );
 //   }

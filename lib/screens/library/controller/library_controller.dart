@@ -4,6 +4,7 @@ import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum SortType {
@@ -89,6 +90,8 @@ class LibraryController extends GetxController {
     initialCustomListData.value = customListData;
     initialCustomListMangaData.value = customListDataManga;
     initialCustomListNovelData.value = customListNovelData;
+
+    validateAndResetListIndex();
   }
 
   void getPreferences() {
@@ -282,32 +285,6 @@ class LibraryController extends GetxController {
     }
   }
 
-  List<OfflineMedia> getCurrentItems() {
-    if (selectedListIndex.value == -1) {
-      if (searchQuery.isNotEmpty) {
-        return typeBuilder(type.value,
-            animeValue: filteredData,
-            mangaValue: filteredDataManga,
-            novelValue: filteredDataNovel);
-      }
-      return getHistoryItems();
-    }
-
-    final lists = typeBuilder(type.value,
-        animeValue: customListData,
-        mangaValue: customListDataManga,
-        novelValue: customListNovelData);
-
-    if (searchQuery.isNotEmpty) {
-      return typeBuilder(type.value,
-          animeValue: filteredData,
-          mangaValue: filteredDataManga,
-          novelValue: filteredDataNovel);
-    }
-
-    return lists.isEmpty ? [] : lists[selectedListIndex.value].listData;
-  }
-
   List<OfflineMedia> getHistoryItems() {
     return typeBuilder(type.value,
         animeValue: historyData,
@@ -324,7 +301,56 @@ class LibraryController extends GetxController {
         animeValue: customListData,
         mangaValue: customListDataManga,
         novelValue: customListNovelData);
+
     final currentIndex = selectedListIndex.value;
-    return lists.isEmpty || lists[currentIndex].listData.isEmpty;
+
+    if (lists.isEmpty || currentIndex >= lists.length) {
+      return true;
+    }
+
+    return lists[currentIndex].listData.isEmpty;
+  }
+
+  void validateAndResetListIndex() {
+    final lists = typeBuilder(type.value,
+        animeValue: customListData,
+        mangaValue: customListDataManga,
+        novelValue: customListNovelData);
+
+    if (selectedListIndex.value >= lists.length) {
+      selectedListIndex.value = lists.isEmpty ? 0 : 0;
+      savePreferences();
+    }
+  }
+
+  List<OfflineMedia> getCurrentItems() {
+    if (selectedListIndex.value == -1) {
+      if (searchQuery.isNotEmpty) {
+        return typeBuilder(type.value,
+            animeValue: filteredData,
+            mangaValue: filteredDataManga,
+            novelValue: filteredDataNovel);
+      }
+      return getHistoryItems();
+    }
+
+    final lists = typeBuilder(type.value,
+        animeValue: customListData,
+        mangaValue: customListDataManga,
+        novelValue: customListNovelData);
+
+    // ADD THIS SAFETY CHECK:
+    if (lists.isEmpty || selectedListIndex.value >= lists.length) {
+      return [];
+    }
+
+    if (searchQuery.isNotEmpty) {
+      return typeBuilder(type.value,
+          animeValue: filteredData,
+          mangaValue: filteredDataManga,
+          novelValue: filteredDataNovel);
+    }
+
+    return lists[selectedListIndex.value].listData;
   }
 }

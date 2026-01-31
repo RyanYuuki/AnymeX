@@ -1,6 +1,7 @@
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnymexDialog extends StatelessWidget {
@@ -36,7 +37,7 @@ class AnymexDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: context.colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -71,12 +72,12 @@ class AnymexDialog extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30)),
                       backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer,
+                          context.colors.surfaceContainer,
                     ),
                     child: AnymexText(
                         text: 'Cancel',
                         size: 14,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                         variant: TextVariant.bold),
                   ),
                 ),
@@ -92,7 +93,7 @@ class AnymexDialog extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30)),
                       backgroundColor:
-                          Theme.of(context).colorScheme.primaryFixed,
+                          context.colors.primaryFixed,
                     ),
                     child: const AnymexText(
                         text: 'Confirm',
@@ -180,7 +181,7 @@ class AnymexDialog extends StatelessWidget {
 //                   },
 //                   child: AnymexText(
 //                     text: confirmText,
-//                     color: Theme.of(context).colorScheme.primary,
+//                     color: context.colors.primary,
 //                   ),
 //                 ),
 //               ],

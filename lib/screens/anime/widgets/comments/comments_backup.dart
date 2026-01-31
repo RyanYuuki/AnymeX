@@ -4,6 +4,7 @@
 // import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 // import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 // import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 // import 'package:get/get.dart';
 // import 'package:timeago/timeago.dart' as timeago;
 
@@ -89,7 +90,7 @@
 //         borderRadius: BorderRadius.circular(24),
 //         boxShadow: [
 //           BoxShadow(
-//             color: colorScheme.shadow.withOpacity(0.05),
+//             color: colorScheme.shadow.opaque(0.05),
 //             blurRadius: 24,
 //             offset: const Offset(0, 8),
 //           ),
@@ -179,14 +180,14 @@
 //             borderRadius: BorderRadius.circular(20),
 //             border: Border.all(
 //               color: controller.commentFocusNode.hasFocus
-//                   ? colorScheme.primary.withOpacity(0.4)
-//                   : colorScheme.outlineVariant.withOpacity(0.3),
+//                   ? colorScheme.primary.opaque(0.4)
+//                   : colorScheme.outlineVariant.opaque(0.3),
 //               width: 1.5,
 //             ),
 //             boxShadow: controller.commentFocusNode.hasFocus
 //                 ? [
 //                     BoxShadow(
-//                       color: colorScheme.primary.withOpacity(0.1),
+//                       color: colorScheme.primary.opaque(0.1),
 //                       blurRadius: 16,
 //                       offset: const Offset(0, 4),
 //                     ),
@@ -208,7 +209,7 @@
 //                         color: colorScheme.surface.withValues(alpha: 0.3),
 //                         borderRadius: BorderRadius.circular(16),
 //                         border: Border.all(
-//                           color: colorScheme.outlineVariant.withOpacity(0.2),
+//                           color: colorScheme.outlineVariant.opaque(0.2),
 //                           width: 1,
 //                         ),
 //                       ),
@@ -227,7 +228,7 @@
 //                             hintText: 'What\'s on your mind?',
 //                             hintStyle: TextStyle(
 //                               color:
-//                                   colorScheme.onSurfaceVariant.withOpacity(0.6),
+//                                   colorScheme.onSurfaceVariant.opaque(0.6),
 //                               fontSize: 16,
 //                               fontWeight: FontWeight.w400,
 //                             ),
@@ -244,7 +245,7 @@
 //               if (controller.isInputExpanded.value) ...[
 //                 const SizedBox(height: 16),
 //                 Divider(
-//                   color: colorScheme.outlineVariant.withOpacity(0.3),
+//                   color: colorScheme.outlineVariant.opaque(0.3),
 //                   height: 1,
 //                 ),
 //                 const SizedBox(height: 16),
@@ -348,14 +349,14 @@
 //                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 //                   decoration: BoxDecoration(
 //                     color: isSelected
-//                         ? colorScheme.primary.withOpacity(0.15)
+//                         ? colorScheme.primary.opaque(0.15)
 //                         : colorScheme.surfaceContainerLow
 //                             .withValues(alpha: 0.3),
 //                     borderRadius: BorderRadius.circular(10),
 //                     border: Border.all(
 //                       color: isSelected
-//                           ? colorScheme.primary.withOpacity(0.4)
-//                           : colorScheme.outlineVariant.withOpacity(0.2),
+//                           ? colorScheme.primary.opaque(0.4)
+//                           : colorScheme.outlineVariant.opaque(0.2),
 //                       width: 1.5,
 //                     ),
 //                   ),
@@ -385,27 +386,27 @@
 //             decoration: InputDecoration(
 //               hintText: 'Or type custom tag...',
 //               hintStyle: TextStyle(
-//                 color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+//                 color: colorScheme.onSurfaceVariant.opaque(0.6),
 //                 fontSize: 14,
 //               ),
 //               filled: true,
-//               fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.15),
+//               fillColor: colorScheme.surfaceContainerHighest.opaque(0.15),
 //               border: OutlineInputBorder(
 //                 borderRadius: BorderRadius.circular(12),
 //                 borderSide: BorderSide(
-//                   color: colorScheme.outlineVariant.withOpacity(0.3),
+//                   color: colorScheme.outlineVariant.opaque(0.3),
 //                 ),
 //               ),
 //               enabledBorder: OutlineInputBorder(
 //                 borderRadius: BorderRadius.circular(12),
 //                 borderSide: BorderSide(
-//                   color: colorScheme.outlineVariant.withOpacity(0.3),
+//                   color: colorScheme.outlineVariant.opaque(0.3),
 //                 ),
 //               ),
 //               focusedBorder: OutlineInputBorder(
 //                 borderRadius: BorderRadius.circular(12),
 //                 borderSide: BorderSide(
-//                   color: colorScheme.primary.withOpacity(0.5),
+//                   color: colorScheme.primary.opaque(0.5),
 //                   width: 1.5,
 //                 ),
 //               ),
@@ -419,15 +420,15 @@
 //   }
 
 //   Widget _buildCurrentTag(BuildContext context, String tag) {
-//     final colorScheme = Theme.of(context).colorScheme;
+//     final colorScheme = context.colors;
 
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
 //       decoration: BoxDecoration(
-//         color: colorScheme.primary.withOpacity(0.1),
+//         color: colorScheme.primary.opaque(0.1),
 //         borderRadius: BorderRadius.circular(10),
 //         border: Border.all(
-//           color: colorScheme.primary.withOpacity(0.2),
+//           color: colorScheme.primary.opaque(0.2),
 //           width: 1,
 //         ),
 //       ),
@@ -462,12 +463,12 @@
 //         shape: BoxShape.circle,
 //         color: colorScheme.surfaceContainer,
 //         border: Border.all(
-//           color: colorScheme.outline.withOpacity(0.1),
+//           color: colorScheme.outline.opaque(0.1),
 //           width: 1,
 //         ),
 //         boxShadow: [
 //           BoxShadow(
-//             color: colorScheme.shadow.withOpacity(0.1),
+//             color: colorScheme.shadow.opaque(0.1),
 //             blurRadius: 8,
 //             offset: const Offset(0, 2),
 //           ),
@@ -572,7 +573,7 @@
 //           height: 1,
 //           margin: const EdgeInsets.only(left: 56, top: 24, bottom: 24),
 //           decoration: BoxDecoration(
-//             color: colorScheme.outlineVariant.withOpacity(0.2),
+//             color: colorScheme.outlineVariant.opaque(0.2),
 //           ),
 //         ),
 //         itemBuilder: (context, index) {
@@ -640,7 +641,7 @@
 //             decoration: BoxDecoration(
 //               border: Border(
 //                 left: BorderSide(
-//                   color: colorScheme.outlineVariant.withOpacity(0.3),
+//                   color: colorScheme.outlineVariant.opaque(0.3),
 //                   width: 2,
 //                 ),
 //               ),
@@ -683,7 +684,7 @@
 //                           ),
 //                           height: 1,
 //                           decoration: BoxDecoration(
-//                             color: colorScheme.outlineVariant.withOpacity(0.15),
+//                             color: colorScheme.outlineVariant.opaque(0.15),
 //                           ),
 //                         ),
 //                     ],
@@ -712,12 +713,12 @@
 //             shape: BoxShape.circle,
 //             color: colorScheme.surfaceContainer,
 //             border: Border.all(
-//               color: colorScheme.outline.withOpacity(0.1),
+//               color: colorScheme.outline.opaque(0.1),
 //               width: 1,
 //             ),
 //             boxShadow: [
 //               BoxShadow(
-//                 color: colorScheme.shadow.withOpacity(0.08),
+//                 color: colorScheme.shadow.opaque(0.08),
 //                 blurRadius: 6,
 //                 offset: const Offset(0, 2),
 //               ),
@@ -761,7 +762,7 @@
 //                     width: 3,
 //                     height: 3,
 //                     decoration: BoxDecoration(
-//                       color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+//                       color: colorScheme.onSurfaceVariant.opaque(0.4),
 //                       shape: BoxShape.circle,
 //                     ),
 //                   ),
@@ -940,8 +941,8 @@
 //               Navigator.pop(context);
 //             },
 //             style: FilledButton.styleFrom(
-//               backgroundColor: Theme.of(context).colorScheme.error,
-//               foregroundColor: Theme.of(context).colorScheme.onError,
+//               backgroundColor: context.colors.error,
+//               foregroundColor: context.colors.onError,
 //             ),
 //             child: const Text('Delete'),
 //           ),
@@ -986,7 +987,7 @@
 //                           style: TextStyle(
 //                             fontSize: 12,
 //                             color:
-//                                 Theme.of(context).colorScheme.onSurfaceVariant,
+//                                 context.colors.onSurfaceVariant,
 //                           ),
 //                         ),
 //                       ],
@@ -1125,7 +1126,7 @@
 //   //               color: Theme.of(context)
 //   //                   .colorScheme
 //   //                   .surfaceContainerHighest
-//   //                   .withOpacity(0.3),
+//   //                   .opaque(0.3),
 //   //               borderRadius: BorderRadius.circular(8),
 //   //             ),
 //   //             child: Column(
@@ -1139,7 +1140,7 @@
 //   //                 Text(
 //   //                   comment.commentText,
 //   //                   style: TextStyle(
-//   //                     color: Theme.of(context).colorScheme.onSurfaceVariant,
+//   //                     color: context.colors.onSurfaceVariant,
 //   //                     fontSize: 12,
 //   //                   ),
 //   //                   maxLines: 2,
@@ -1249,15 +1250,15 @@
 //   }
 
 //   Widget _buildTag(BuildContext context, String tag) {
-//     final colorScheme = Theme.of(context).colorScheme;
+//     final colorScheme = context.colors;
 
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
 //       decoration: BoxDecoration(
-//         color: colorScheme.primary.withOpacity(0.1),
+//         color: colorScheme.primary.opaque(0.1),
 //         borderRadius: BorderRadius.circular(8),
 //         border: Border.all(
-//           color: colorScheme.primary.withOpacity(0.2),
+//           color: colorScheme.primary.opaque(0.2),
 //           width: 1,
 //         ),
 //       ),
@@ -1280,7 +1281,7 @@
 //     required VoidCallback onTap,
 //     required bool isUpvote,
 //   }) {
-//     final colorScheme = Theme.of(context).colorScheme;
+//     final colorScheme = context.colors;
 //     final activeColor = isUpvote ? colorScheme.primary : colorScheme.error;
 
 //     return Material(
@@ -1293,13 +1294,13 @@
 //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 //           decoration: BoxDecoration(
 //             color: isActive
-//                 ? activeColor.withOpacity(0.1)
+//                 ? activeColor.opaque(0.1)
 //                 : colorScheme.surfaceContainer.withValues(alpha: 0.3),
 //             borderRadius: BorderRadius.circular(10),
 //             border: Border.all(
 //               color: isActive
-//                   ? activeColor.withOpacity(0.3)
-//                   : colorScheme.outlineVariant.withOpacity(0.2),
+//                   ? activeColor.opaque(0.3)
+//                   : colorScheme.outlineVariant.opaque(0.2),
 //               width: 1.5,
 //             ),
 //           ),

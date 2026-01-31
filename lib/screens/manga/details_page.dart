@@ -21,6 +21,7 @@ import 'package:anymex/screens/manga/widgets/manga_stats.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
@@ -268,12 +269,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .outline
-                                      .withOpacity(0.2),
+                                      .opaque(0.2),
                                 ),
                                 color: Theme.of(context)
                                     .colorScheme
                                     .surfaceContainer
-                                    .withOpacity(0.5),
+                                    .opaque(0.5),
                               ),
                               child: Material(
                                 color: Colors.transparent,
@@ -316,12 +317,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .outline
-                                    .withOpacity(0.2),
+                                    .opaque(0.2),
                               ),
                               color: Theme.of(context)
                                   .colorScheme
                                   .surfaceContainer
-                                  .withOpacity(0.5),
+                                  .opaque(0.5),
                             ),
                             child: Material(
                               color: Colors.transparent,
@@ -417,14 +418,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color:
-              Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.3),
+          color: context.colors.surfaceContainer.opaque(0.3),
         ),
         child: Row(
           children: [
             Icon(
               Iconsax.book_1,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: context.colors.onSurface.opaque(0.7),
               size: 16,
             ),
             const SizedBox(width: 8),
@@ -434,29 +434,23 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 spans: [
                   AnymexTextSpan(
                     text: "Chapter ",
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                   AnymexTextSpan(
                     text: mangaProgress.value.toString(),
                     variant: TextVariant.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   AnymexTextSpan(
                     text: ' of ',
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                   AnymexTextSpan(
                     text: anilistData?.totalChapters.toString() ??
                         anilistData?.totalChapters.toString() ??
                         '??',
                     variant: TextVariant.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                 ],
               ),
@@ -465,12 +459,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
               ),
               child: Text(
                 '${formatProgress(currentChapter: mangaProgress.value, totalChapters: anilistData?.totalChapters ?? 1, altLength: chapterList?.length ?? 1)}%',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -558,10 +552,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.2),
+                      color:
+                          Theme.of(context).colorScheme.onSurface.opaque(0.2),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(
@@ -635,7 +627,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   // List Editor Modal: START
   void showListEditorModal(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

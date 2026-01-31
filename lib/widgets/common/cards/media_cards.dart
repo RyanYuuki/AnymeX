@@ -7,6 +7,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:blur/blur.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SaikouCard extends CarouselCard {
@@ -141,8 +142,8 @@ class ModernCard extends CarouselCard {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.5),
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.opaque(0.5, iReallyMeanIt: true),
+                        Colors.black.opaque(0.7, iReallyMeanIt: true),
                       ],
                     ),
                   ),
@@ -179,7 +180,7 @@ class ExoticCard extends CarouselCard {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
+    final primaryColor = context.colors.primary;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -188,7 +189,7 @@ class ExoticCard extends CarouselCard {
         borderRadius: BorderRadius.circular(12.multiplyRoundness()),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.15),
+            color: primaryColor.opaque(0.15, iReallyMeanIt: true),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -202,7 +203,7 @@ class ExoticCard extends CarouselCard {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.multiplyRoundness()),
                 border: Border.all(
-                  color: primaryColor.withOpacity(0.3),
+                  color: primaryColor.opaque(0.3, iReallyMeanIt: true),
                   width: 2,
                 ),
               ),
@@ -245,7 +246,7 @@ class ExoticCard extends CarouselCard {
               margin: const EdgeInsets.symmetric(horizontal: 5),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -255,13 +256,13 @@ class ExoticCard extends CarouselCard {
                     AnymexText(
                       text: !type.isAnime ? 'Chapter ' : 'Episode ',
                       size: 12,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       variant: TextVariant.bold,
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
                       text: itemData.source ?? '',
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
                     ),
@@ -270,12 +271,12 @@ class ExoticCard extends CarouselCard {
                       getIconForVariant(
                           itemData.extraData ?? '', variant, type),
                       size: 16,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
                       text: (itemData.extraData ?? '').replaceAll('_', ' '),
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
                     ),
@@ -304,7 +305,7 @@ class MinimalExoticCard extends CarouselCard {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
+    final primaryColor = context.colors.primary;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -313,7 +314,7 @@ class MinimalExoticCard extends CarouselCard {
         borderRadius: BorderRadius.circular(12.multiplyRoundness()),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.15),
+            color: primaryColor.opaque(0.15, iReallyMeanIt: true),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -327,7 +328,7 @@ class MinimalExoticCard extends CarouselCard {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.multiplyRoundness()),
                 border: Border.all(
-                  color: primaryColor.withOpacity(0.3),
+                  color: primaryColor.opaque(0.3, iReallyMeanIt: true),
                   width: 2,
                 ),
               ),
@@ -358,8 +359,8 @@ class MinimalExoticCard extends CarouselCard {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.5),
-                                Colors.black.withOpacity(0.7),
+                                Colors.black.opaque(0.5, iReallyMeanIt: true),
+                                Colors.black.opaque(0.7, iReallyMeanIt: true),
                               ],
                             ),
                           ),
@@ -387,7 +388,7 @@ class MinimalExoticCard extends CarouselCard {
               margin: const EdgeInsets.symmetric(horizontal: 5),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -397,13 +398,13 @@ class MinimalExoticCard extends CarouselCard {
                     AnymexText(
                       text: !type.isAnime ? 'Chapter ' : 'Episode ',
                       size: 12,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       variant: TextVariant.bold,
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
                       text: itemData.source ?? '',
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
                     ),
@@ -416,12 +417,12 @@ class MinimalExoticCard extends CarouselCard {
                           variant,
                           type),
                       size: 16,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                     ),
                     const SizedBox(width: 4),
                     AnymexText(
                       text: (itemData.extraData ?? '').replaceAll('_', ' '),
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: context.colors.onPrimary,
                       size: 12,
                       variant: TextVariant.bold,
                     ),
@@ -475,7 +476,7 @@ class BlurCard extends CarouselCard {
                     height: 50,
                     child: Blur(
                         blur: 5,
-                        blurColor: Theme.of(context).colorScheme.primary,
+                        blurColor: context.colors.primary,
                         colorOpacity: 0.3,
                         child: Container())),
               ),
@@ -518,7 +519,7 @@ class BlurCard extends CarouselCard {
               borderRadius: BorderRadius.circular(20),
               child: Blur(
                   blur: 5,
-                  blurColor: Theme.of(context).colorScheme.surfaceContainer,
+                  blurColor: context.colors.surfaceContainer,
                   colorOpacity: 0.4,
                   child: Container()),
             ),

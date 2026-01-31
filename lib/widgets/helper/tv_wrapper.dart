@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
@@ -61,12 +62,12 @@ class AnymexOnTap extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: isFocused
                       ? (bgColor ??
-                          Theme.of(context).colorScheme.secondaryContainer)
+                          context.colors.secondaryContainer)
                       : Colors.transparent,
                   border: Border.all(
                     color: isFocused
                         ? (focusedBorderColor ??
-                            Theme.of(context).colorScheme.primary)
+                            context.colors.primary)
                         : Colors.transparent,
                     width: borderWidth,
                     strokeAlign: BorderSide.strokeAlignOutside,
@@ -144,12 +145,12 @@ class AnymexOnTapAdv extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: isFocused
-                    ? Theme.of(context).colorScheme.secondaryContainer
+                    ? context.colors.secondaryContainer
                     : Colors.transparent,
                 border: Border.all(
                   color: isFocused
                       ? (focusedBorderColor ??
-                          Theme.of(context).colorScheme.primary)
+                          context.colors.primary)
                       : Colors.transparent,
                   width: borderWidth,
                   strokeAlign: BorderSide.strokeAlignOutside,

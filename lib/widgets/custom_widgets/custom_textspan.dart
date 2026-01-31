@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class AnymexTextSpan {
   final String text;

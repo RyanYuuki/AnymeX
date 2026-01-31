@@ -33,12 +33,30 @@ class BackupRestoreService extends GetxController {
   }
 
   Map<String, dynamic> _buildBackupData() {
+    final animeCount = _storageController.animeCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final mangaCount = _storageController.mangaCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final novelCount = _storageController.novelCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
       'appVersion': '',
       'username': serviceHandler.onlineService.profileData.value.name ??
           serviceHandler.onlineService.profileData.value.userName,
       'avatar': serviceHandler.onlineService.profileData.value.avatar,
+      'animeCount': animeCount,
+      'mangaCount': mangaCount,
+      'novelCount': novelCount,
       'animeLibrary':
           _storageController.animeLibrary.map((e) => e.toJson()).toList(),
       'mangaLibrary':
@@ -130,9 +148,16 @@ class BackupRestoreService extends GetxController {
     _storageController.animeLibrary.refresh();
     _storageController.mangaLibrary.refresh();
     _storageController.novelLibrary.refresh();
+    _storageController.animeCustomLists.refresh();
+    _storageController.mangaCustomLists.refresh();
+    _storageController.novelCustomLists.refresh();
 
     _storageController.saveEverything();
     _storageController.rebuildDatabase();
+
+    _storageController.animeCustomListData.refresh();
+    _storageController.mangaCustomListData.refresh();
+    _storageController.novelCustomListData.refresh();
   }
 
   String _encryptData(Map<String, dynamic> data, String password) {
@@ -362,9 +387,9 @@ class BackupRestoreService extends GetxController {
           ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
-      final animeCount = (data['animeLibrary'] as List?)?.length ?? 0;
-      final mangaCount = (data['mangaLibrary'] as List?)?.length ?? 0;
-      final novelCount = (data['novelLibrary'] as List?)?.length ?? 0;
+      final animeCount = data['animeCount'] ?? 0;
+      final mangaCount = data['mangaCount'] ?? 0;
+      final novelCount = data['novelCount'] ?? 0;
 
       return {
         'date': data['date'],
@@ -414,10 +439,25 @@ class BackupRestoreService extends GetxController {
   }
 
   Map<String, dynamic> getLibraryStats() {
+    final animeCount = _storageController.animeCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final mangaCount = _storageController.mangaCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final novelCount = _storageController.novelCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
     return {
-      'animeCount': _storageController.animeLibrary.length,
-      'mangaCount': _storageController.mangaLibrary.length,
-      'novelCount': _storageController.novelLibrary.length,
+      'animeCount': animeCount,
+      'mangaCount': mangaCount,
+      'novelCount': novelCount,
       'totalMedia': _storageController.animeLibrary.length +
           _storageController.mangaLibrary.length +
           _storageController.novelLibrary.length,

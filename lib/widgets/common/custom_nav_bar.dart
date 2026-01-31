@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -179,7 +180,7 @@ class _NavItemState extends State<_NavItem>
                     size: 20,
                     color: widget.isActive
                         ? context.theme.colorScheme.onPrimary
-                        : context.theme.colorScheme.onSurface.withOpacity(0.5),
+                        : context.theme.colorScheme.onSurface.opaque(0.5),
                   ),
                 ),
                 AnimatedSize(
