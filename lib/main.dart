@@ -305,6 +305,17 @@ class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    
+    // Auto check for updates on app start
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = Get.find<Settings>();
+      settings.checkForUpdates(context);
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
