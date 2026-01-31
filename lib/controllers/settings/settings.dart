@@ -74,10 +74,11 @@ class Settings extends GetxController {
     });
   }
 
+  /// Manual Update check (from About page)
   void checkForUpdates(BuildContext context) {
     UpdateManager().checkForUpdates(
       context,
-      canShowUpdate,
+      RxBool(true), // Always allow manual checks
       isBeta: enableBetaUpdates.value,
     );
   }
