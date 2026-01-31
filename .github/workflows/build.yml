@@ -203,31 +203,35 @@ jobs:
 
           echo "════════════════════════════════════════════"
 
-      - name: Disable Google Services for Beta
+      # =================================================================
+      # Conditionally disable Google Services for beta builds
+      # =================================================================
+      - name: Configure Google Services for Beta
         if: matrix.platform == 'android' && contains(github.ref_name, '-beta')
         shell: bash
         run: |
-          echo "🔵 Disabling Google Services for beta build..."
+          echo "🔵 Beta build detected - Disabling Google Services"
           
-          # Remove google-services.json if it exists
-          if [ -f "android/app/google-services.json" ]; then
-            rm android/app/google-services.json
-            echo "✅ Removed google-services.json"
-          fi
-          
-          # Comment out the Google Services plugin in android/build.gradle
-          if [ -f "android/build.gradle" ]; then
-            sed -i "s/classpath 'com.google.gms:google-services:.*'/\/\/ classpath 'com.google.gms:google-services:4.4.0' \/\/ Disabled for beta/" android/build.gradle
-            echo "✅ Commented out Google Services classpath in android/build.gradle"
-          fi
-          
-          # Comment out the Google Services plugin in android/app/build.gradle
+          # Remove google-services plugin from app/build.gradle
           if [ -f "android/app/build.gradle" ]; then
-            sed -i "s/apply plugin: 'com.google.gms.google-services'/\/\/ apply plugin: 'com.google.gms.google-services' \/\/ Disabled for beta/" android/app/build.gradle
-            echo "✅ Commented out Google Services plugin in android/app/build.gradle"
+            echo "Modifying android/app/build.gradle..."
+            sed -i '/com\.google\.gms\.google-services/d' android/app/build.gradle
+            echo "✅ Removed google-services plugin from app/build.gradle"
           fi
           
-          echo "✅ Google Services disabled for beta build"
+          # Remove google-services classpath from build.gradle
+          if [ -f "android/build.gradle" ]; then
+            echo "Modifying android/build.gradle..."
+            sed -i '/com\.google\.gms:google-services:/d' android/build.gradle
+            echo "✅ Removed google-services classpath from build.gradle"
+          fi
+          
+          # Verify changes
+          echo ""
+          echo "Verification - checking for remaining google-services references:"
+          grep -n "google-services" android/app/build.gradle android/build.gradle || echo "✅ No google-services references found"
+          echo ""
+          echo "Google Services successfully disabled for beta build"
 
       - name: Verify beta configuration (All Platforms)
         if: contains(github.ref_name, '-beta')
