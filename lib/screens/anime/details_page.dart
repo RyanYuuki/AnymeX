@@ -25,6 +25,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
@@ -39,7 +40,6 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -103,10 +103,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       _checkAnimePresence();
     });
     _fetchAnilistData();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      CommentPreloader.to.preloadComments(widget.media);
-    });
   }
 
   Future<void> _syncMediaIds() async {
@@ -177,6 +173,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       });
       DiscordRPCController.instance
           .updateMediaPresence(media: anilistData ?? widget.media);
+      CommentPreloader.to.preloadComments(anilistData!);
       timeLeft.value = tempData.nextAiringEpisode?.airingAt ?? 0;
       if (timeLeft.value != 0) {
         startCountdown(tempData.nextAiringEpisode!.airingAt);
@@ -556,8 +553,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               spans: [
                 AnymexTextSpan(
                   text: "Episode ",
-                  color:
-                      context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: currentAnime.value?.episodeCount?.toString() ?? '0',
@@ -566,8 +562,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ),
                 AnymexTextSpan(
                   text: ' of ',
-                  color:
-                      context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: anilistData?.totalEpisodes.toString() ??
@@ -672,10 +667,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .opaque(0.2),
+                      color:
+                          Theme.of(context).colorScheme.onSurface.opaque(0.2),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(

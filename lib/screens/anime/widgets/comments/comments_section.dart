@@ -801,43 +801,39 @@ class _CommentSectionState extends State<CommentSection> {
                   ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Text(
-                    comment.username,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colorScheme.onSurface,
-                      fontSize: 15,
+                  Flexible(
+                    child: Text(
+                      comment.username,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                        fontSize: 15,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 3,
-                    height: 3,
-                    decoration: BoxDecoration(
-                      color: colorScheme.onSurfaceVariant
-                          .opaque(0.4, iReallyMeanIt: true),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    timeago.format(DateTime.parse(comment.createdAt)),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (comment.tag.isNotEmpty) _buildTag(context, comment.tag),
+                  if (comment.tag.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    _buildTag(context, comment.tag),
+                  ],
                 ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                timeago.format(DateTime.parse(comment.createdAt)),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 12),
               _SpoilerText(

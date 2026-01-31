@@ -77,6 +77,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
+                  buildBigCarousel(trendingManga, false),
                   buildSectionIfNotEmpty("Trending Anime", trendingAnimes),
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
@@ -91,6 +92,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
+                  buildBigCarousel(trendingManga, true),
                   buildSectionIfNotEmpty("Trending Manga", trendingManga,
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
