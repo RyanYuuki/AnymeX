@@ -95,7 +95,10 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: widget.backgroundColor ?? Colors.transparent,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainer
+                            .withValues(alpha: 0.2),
                       ),
                     ),
                   ),
