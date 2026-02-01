@@ -90,7 +90,7 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Comment Policy'),
         content: const Text(
           'To maintain a safe and friendly community, please read and accept our comment policy before posting.\n\nWe do not tolerate spam, harassment, or offensive content.',
@@ -98,7 +98,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               showPolicySheet(context, PolicyType.commentRules);
             },
@@ -107,7 +107,7 @@ class _CommentSectionState extends State<CommentSection> {
           FilledButton(
             onPressed: () {
               Hive.box('themeData').put('hasAcceptedCommentRules', true);
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               controller.addComment();
             },
