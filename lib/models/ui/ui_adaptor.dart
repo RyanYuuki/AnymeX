@@ -100,13 +100,13 @@ class UISettings extends HiveObject {
               "Completed TV": false,
               "Completed Manga": false,
               "Completed Movie": false,
-              "Paused Animes": false,
+              "Paused Anime": false,
               "Paused Manga": false,
-              "Dropped Animes": false,
+              "Dropped Anime": false,
               "Dropped Manga": false,
-              "Planning Animes": false,
+              "Planning Anime": false,
               "Planning Manga": false,
-              "Rewatching Animes": false,
+              "Rewatching Anime": false,
               "Rewatching Manga": false,
             },
         homePageCardsMal = homePageCardsMal ??
@@ -115,20 +115,20 @@ class UISettings extends HiveObject {
               "Continue Reading": true,
               "Completed TV": false,
               "Completed Manga": false,
-              "Paused Animes": false,
+              "Paused Anime": false,
               "Paused Manga": false,
-              "Dropped Animes": false,
+              "Dropped Anime": false,
               "Dropped Manga": false,
-              "Planning Animes": false,
+              "Planning Anime": false,
               "Planning Manga": false,
             };
 
   void normalizeMaps() {
     homePageCards = Map<String, bool>.from(homePageCards);
-    homePageCards.putIfAbsent('Recommended Animes', () => true);
-    homePageCards.putIfAbsent('Recommended Mangas', () => true);
+    homePageCards.putIfAbsent('Recommended Anime', () => true);
+    homePageCards.putIfAbsent('Recommended Manga', () => true);
     homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
-    homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
-    homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+    homePageCardsMal.putIfAbsent('Recommended Anime', () => true);
+    homePageCardsMal.putIfAbsent('Recommended Manga', () => true);
   }
 }
