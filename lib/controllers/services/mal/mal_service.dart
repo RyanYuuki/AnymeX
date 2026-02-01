@@ -255,8 +255,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
               }).toList(),
             )),
       ],
-      buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
-      buildSectionIfNotEmpty("Popular Animes", popularAnimes),
+      buildSectionIfNotEmpty("Trending Anime", trendingAnimes),
+      buildSectionIfNotEmpty("Popular Anime", popularAnimes),
       buildSectionIfNotEmpty("Trending Manga", trendingManga, isManga: true),
       buildSectionIfNotEmpty("Popular Manga", topManga, isManga: true),
     ].obs;
