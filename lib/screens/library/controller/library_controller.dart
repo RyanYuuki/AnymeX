@@ -2,9 +2,9 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum SortType {
@@ -191,6 +191,10 @@ class LibraryController extends GetxController {
       searchQuery.value = '';
     }
     savePreferences();
+
+    if (index == -1 && type.value.isAnime) {
+      snackBar('Hold to access history editor');
+    }
   }
 
   void toggleSearch() {

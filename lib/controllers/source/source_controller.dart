@@ -1,28 +1,28 @@
 // ignore_for_file: unnecessary_null_comparison, invalid_use_of_protected_member
 
-import 'package:anymex/screens/search/source_search_page.dart';
-import 'package:anymex/utils/extension_utils.dart';
-import 'package:anymex/utils/logger.dart';
 import 'dart:async';
 import 'dart:io';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
+import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/storage_provider.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Aniyomi/AniyomiExtensions.dart';
 import 'package:dartotsu_extension_bridge/Mangayomi/MangayomiExtensions.dart';
-import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:get/get.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
 final sourceController = Get.put(SourceController());
@@ -351,12 +351,18 @@ class SourceController extends GetxController implements BaseService {
     }
     Get.put(MangayomiExtensions(), tag: 'MangayomiExtensions');
     for (var type in extenionTypes) {
-      await type
-          .getManager()
-          .fetchAvailableAnimeExtensions([getAnimeRepo(type)]);
-      await type
-          .getManager()
-          .fetchAvailableMangaExtensions([getMangaRepo(type)]);
+      if (getAnimeRepo(type).isNotEmpty) {
+        await type
+            .getManager()
+            .fetchAvailableAnimeExtensions([getAnimeRepo(type)]);
+      }
+
+      if (getMangaRepo(type).isNotEmpty) {
+        await type
+            .getManager()
+            .fetchAvailableMangaExtensions([getMangaRepo(type)]);
+      }
+
       await type.getManager().fetchAvailableNovelExtensions([
         activeNovelRepo,
       ]);

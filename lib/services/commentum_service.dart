@@ -95,7 +95,9 @@ class CommentumService extends GetxController {
         },
         'media_info': {
           "media_id": mediaId,
-          "type": media.mediaType.name,
+          "type": serviceHandler.serviceType.value.isSimkl
+              ? media.id.split('*').last
+              : media.mediaType.name,
           "title": media.title,
           "year": parseYear(media.aired),
           "poster": media.poster,

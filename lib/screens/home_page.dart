@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                         final children = List<Widget>.from(
                             serviceHandler.homeWidgets(context));
                         final data = cacheController.getStoredAnime();
-                        if (children.length > 2) {
+                        if (serviceHandler.isLoggedIn.value) {
                           children.insert(
                             2,
                             Column(

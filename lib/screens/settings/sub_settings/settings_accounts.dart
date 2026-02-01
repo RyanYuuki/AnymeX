@@ -119,11 +119,11 @@ class DiscordTile extends StatelessWidget {
             colors: isLoggedIn
                 ? [
                     colors.primary.withOpacity(0.15),
-                    colors.surfaceContainer,
+                    colors.surfaceContainer.opaque(0.4),
                   ]
                 : [
-                    colors.surfaceContainer,
-                    colors.surfaceContainerHighest,
+                    colors.surfaceContainer.opaque(0.4),
+                    colors.surfaceContainerHighest.opaque(0.4),
                   ],
           ),
           border: Border.all(
@@ -287,7 +287,7 @@ class TrackingServiceCard extends StatelessWidget {
 
       return Container(
         decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
+          color: colors.surfaceContainerLow.withOpacity(0.4),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isLogged

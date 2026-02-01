@@ -66,8 +66,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                   );
                 },
                 options: CarouselOptions(
-                  height: 450,
-                  viewportFraction: 0.75,
+                  height: 400,
+                  viewportFraction: 0.65,
                   enlargeCenterPage: true,
                   enlargeFactor: 0.2,
                   initialPage: 0,
@@ -316,16 +316,6 @@ class _CarouselCardState extends State<_CarouselCard> {
             color: colorScheme.onSurface.opaque(0.05, iReallyMeanIt: true),
             width: 1,
           ),
-          boxShadow: widget.isActive
-              ? [
-                  BoxShadow(
-                    color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
-                    blurRadius: 20,
-                    spreadRadius: -5,
-                    offset: const Offset(0, 10),
-                  )
-                ]
-              : [],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),

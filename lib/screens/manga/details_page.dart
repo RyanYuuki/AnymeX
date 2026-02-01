@@ -12,6 +12,7 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
@@ -139,6 +140,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       });
       DiscordRPCController.instance
           .updateMediaPresence(media: anilistData ?? widget.media);
+      CommentPreloader.to.removePreloadedController(widget.media.id.toString());
+      CommentPreloader.to.preloadComments(anilistData!);
       if (isExtensions) {
         Logger.i("Data Loaded for media => ${widget.media.title}");
         _processExtensionData(tempData);

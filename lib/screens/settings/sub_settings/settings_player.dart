@@ -96,6 +96,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
+    if (decodedConfig.isEmpty) _initializeDefaultButtonLayout();
+
     _leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
     _rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
     _hiddenButtonIds =

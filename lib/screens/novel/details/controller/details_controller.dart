@@ -3,6 +3,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -40,6 +41,7 @@ class NovelDetailsController extends GetxController {
     try {
       final data = await source.methods.getDetail(DMedia(url: initialMedia.id));
       media.value = Media.fromDManga(data, ItemType.novel);
+      CommentPreloader.to.preloadComments(media.value);
       media.value.title = initialMedia.title;
       media.value.poster = initialMedia.poster;
       media.value.season = source.name ?? '';
