@@ -1,4 +1,4 @@
-name: Handle Extension issuesAdd commentMore actions
+name: Handle Extension issues
 on:
   issues:
     types: [opened]
