@@ -1,4 +1,5 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +17,7 @@ class PlayerOverlay extends StatelessWidget {
               colors: controller.showControls.value
                   ? [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.2),
+                      Colors.black.opaque(0.2, iReallyMeanIt: true),
                       Colors.transparent
                     ]
                   : [

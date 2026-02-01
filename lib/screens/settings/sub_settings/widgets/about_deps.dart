@@ -1,4 +1,5 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:flutter/material.dart';
 
@@ -31,13 +32,13 @@ class ProfileInfo extends StatelessWidget {
           version,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontFamily: "Poppins-SemiBold",
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.opaque(0.7),
           ),
         ),
         Text(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+            color: theme.colorScheme.onSurface.opaque(0.5),
           ),
         ),
       ],
@@ -55,10 +56,8 @@ class HeaderSection extends StatelessWidget {
       children: [
         IconButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5)),
+                backgroundColor:
+                    Theme.of(context).colorScheme.primaryContainer.opaque(0.5)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -91,7 +90,7 @@ class ProfileSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Container(
+          const SizedBox(
             width: 80,
             height: 80,
             child: AnymeXAnimatedLogo(
@@ -111,20 +110,20 @@ class ProfileSection extends StatelessWidget {
           Text(
             version,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.opaque(0.7),
             ),
           ),
           Text(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.opaque(0.5),
             ),
           ),
           InfoCard(
             onTap: () async {
               await launchUrlHelper('https://github.com/');
             },
-            leading: CircleAvatar(
+            leading: const CircleAvatar(
               child: AnymeXAnimatedLogo(
                 size: 40,
                 autoPlay: true,
@@ -189,7 +188,7 @@ class InfoCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.opaque(0.7),
                     ),
                   ),
                 ],
@@ -229,7 +228,7 @@ class CustomSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                color: context.colors.surfaceContainerHigh,
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12))),
@@ -252,7 +251,7 @@ class CustomSection extends StatelessWidget {
                           subtitle!,
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.opaque(0.7),
                           ),
                         ),
                       ),
@@ -306,7 +305,7 @@ class CustomListTile extends StatelessWidget {
                   Text(
                     title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.9),
+                        color: theme.colorScheme.onSurface.opaque(0.9),
                         fontFamily: 'Poppins-SemiBold'),
                   ),
                   const SizedBox(height: 1),
@@ -315,7 +314,7 @@ class CustomListTile extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                          color: theme.colorScheme.onSurface.opaque(0.7)),
                     )
                 ],
               ),

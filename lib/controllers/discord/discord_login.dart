@@ -60,9 +60,8 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Custom header
             Container(
-              padding: const EdgeInsets.fromLTRB(8, kToolbarHeight + 12, 8, 12),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
               decoration: BoxDecoration(
                 color: const Color(0xFF2B2D31),
                 boxShadow: [

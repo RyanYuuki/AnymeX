@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class CustomSlider extends StatefulWidget {
   final double? min;

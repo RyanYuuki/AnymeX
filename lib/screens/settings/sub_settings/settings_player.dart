@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/player.dart';
+import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:anymex/screens/other_features.dart';
 
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
@@ -93,6 +95,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     final String jsonString =
         settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+
+    if (decodedConfig.isEmpty) _initializeDefaultButtonLayout();
 
     _leftButtonIds = List<String>.from(decodedConfig['leftButtonIds'] ?? []);
     _rightButtonIds = List<String>.from(decodedConfig['rightButtonIds'] ?? []);
@@ -211,7 +215,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       context: context,
       builder: (context) {
         return Dialog(
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: context.colors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -240,7 +244,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               margin: const EdgeInsets.only(bottom: 7),
                               child: ListTileWithCheckMark(
                                 leading: const Icon(Icons.speed),
-                                color: Theme.of(context).colorScheme.primary,
+                                color: context.colors.primary,
                                 active: speedd == speed.value,
                                 title: '${speedd.toStringAsFixed(2)}x',
                                 onTap: () {
@@ -302,7 +306,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
           title: Text(
             title,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 fontFamily: 'Poppins-SemiBold',
                 fontSize: 20),
           ),
@@ -336,7 +340,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     return Glow(
         child: Scaffold(
             backgroundColor: widget.isModal
-                ? Theme.of(context).colorScheme.surfaceContainer
+                ? context.colors.surfaceContainer
                 : Colors.transparent,
             body: Column(children: [
               if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
@@ -701,8 +705,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       },
                                       onReorder: (oldIndex, newIndex) {
                                         setState(() {
-                                          if (newIndex > oldIndex)
+                                          if (newIndex > oldIndex) {
                                             newIndex -= 1;
+                                          }
                                           final String item =
                                               _leftButtonIds.removeAt(oldIndex);
                                           _leftButtonIds.insert(newIndex, item);
@@ -731,8 +736,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                         setState(() {
                                           _rightButtonIds =
                                               _rightButtonIds.reversed.toList();
-                                          if (newIndex > oldIndex)
+                                          if (newIndex > oldIndex) {
                                             newIndex -= 1;
+                                          }
                                           final String item = _rightButtonIds
                                               .removeAt(oldIndex);
                                           _rightButtonIds.insert(
@@ -781,7 +787,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
           style: Theme.of(context)
               .textTheme
               .titleMedium
-              ?.copyWith(color: Colors.white)),
+              ?.copyWith(fontFamily: 'Poppins-SemiBold')),
     );
   }
 
@@ -789,10 +795,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       {required Key key}) {
     return ListTile(
       key: key,
-      leading: Icon(control.icon, size: 22, color: Colors.white),
-      title: Text(control.name,
-          style: const TextStyle(
-              fontWeight: FontWeight.w500, color: Colors.white)),
+      leading: Icon(control.icon, size: 22),
+      title: AnymexText(
+        text: control.name,
+        variant: TextVariant.semiBold,
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: _buildTrailingButtons(control, position),
@@ -805,14 +812,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       return [
         IconButton(
           tooltip: 'Show on left',
-          icon: const Icon(Icons.visibility_outlined,
-              size: 20, color: Colors.white),
+          icon: const Icon(Icons.visibility_outlined, size: 20),
           onPressed: () => _showButton(control.id, 'left'),
         ),
         IconButton(
           tooltip: 'Show on right',
-          icon: const Icon(Icons.keyboard_arrow_right_rounded,
-              color: Colors.white),
+          icon: const Icon(
+            Icons.keyboard_arrow_right_rounded,
+          ),
           onPressed: () => _showButton(control.id, 'right'),
         ),
       ];
@@ -820,15 +827,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       return [
         IconButton(
           tooltip: 'Hide button',
-          icon: const Icon(Icons.visibility_off_outlined,
-              size: 20, color: Colors.white),
+          icon: const Icon(
+            Icons.visibility_off_outlined,
+            size: 20,
+          ),
           onPressed: () => _hideButton(control.id),
         ),
         if (position == 'left')
           IconButton(
             tooltip: 'Move to right',
-            icon: const Icon(Icons.keyboard_arrow_right_rounded,
-                color: Colors.white),
+            icon: const Icon(
+              Icons.keyboard_arrow_right_rounded,
+            ),
             onPressed: () => _moveButton(control.id, 'right'),
           )
         else

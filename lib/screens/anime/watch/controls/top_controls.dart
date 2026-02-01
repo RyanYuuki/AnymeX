@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class TopControls extends StatelessWidget {
@@ -128,7 +129,7 @@ class TopControls extends StatelessWidget {
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? theme.colorScheme.primary.withOpacity(0.15)
+                              ? theme.colorScheme.primary.opaque(0.15)
                               : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -155,7 +156,7 @@ class TopControls extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? theme.colorScheme.primary.withOpacity(0.15)
+                        ? theme.colorScheme.primary.opaque(0.15)
                         : theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -264,7 +265,7 @@ class TopControls extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: isDark
                                     ? theme.colorScheme.primary
-                                        .withOpacity(0.15)
+                                        .opaque(0.15)
                                     : theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -292,7 +293,7 @@ class TopControls extends StatelessWidget {
                             horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? theme.colorScheme.primary.withOpacity(0.15)
+                              ? theme.colorScheme.primary.opaque(0.15)
                               : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -326,13 +327,13 @@ class TopControls extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: isDark
-                ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                ? theme.colorScheme.surfaceVariant.opaque(0.2)
                 : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isDark
-                  ? theme.colorScheme.outline.withOpacity(0.15)
-                  : theme.colorScheme.outline.withOpacity(0.3),
+                  ? theme.colorScheme.outline.opaque(0.15)
+                  : theme.colorScheme.outline.opaque(0.3),
               width: 0.5,
             ),
           ),
@@ -407,7 +408,7 @@ class _QualityChip extends StatelessWidget {
           horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
       decoration: BoxDecoration(
         color: isDark
-            ? theme.colorScheme.primary.withOpacity(0.15)
+            ? theme.colorScheme.primary.opaque(0.15)
             : theme.colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
       ),
@@ -464,18 +465,18 @@ class _UnlockButtonState extends State<_UnlockButton> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: isDark
-                ? Colors.black.withOpacity(0.55)
+                ? Colors.black.opaque(0.55)
                 : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: isDark
-                  ? theme.colorScheme.primary.withOpacity(0.4)
-                  : theme.colorScheme.primary.withOpacity(0.6),
+                  ? theme.colorScheme.primary.opaque(0.4)
+                  : theme.colorScheme.primary.opaque(0.6),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.10),
+                color: Colors.black.opaque(0.10),
                 blurRadius: 4,
                 offset: const Offset(1, 2),
               ),

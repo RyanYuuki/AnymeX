@@ -5,6 +5,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 import 'extension_test_controller.dart';
@@ -37,7 +38,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
+    final theme = context.colors;
     final sourceController = Get.find<SourceController>();
 
     return Glow(

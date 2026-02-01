@@ -12,6 +12,7 @@ import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
 import 'package:anymex/screens/manga/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -64,7 +65,7 @@ class ChapterService {
     final chaptersForChunking =
         (selectedScanIndex != null && selectedScanIndex > 0)
             ? filterChaptersByScanlator(
-                chapters, extractedScanlators, selectedScanIndex)
+                anilistData, chapters, extractedScanlators, selectedScanIndex)
             : chapters;
 
     final chunkedChapters = chaptersForChunking.isNotEmpty
@@ -104,11 +105,13 @@ class ChapterService {
   }
 
   List<List<Chapter>> buildFilteredChunks(
+    Media anilistData,
     List<Chapter> chapters,
     List<String> scanlators,
     int selectedScanIndex,
   ) {
     final filteredChapters = filterChaptersByScanlator(
+      anilistData,
       chapters,
       scanlators,
       selectedScanIndex,
@@ -139,6 +142,7 @@ class ChapterService {
   }
 
   List<Chapter> filterChaptersByScanlator(
+    Media anilistData,
     List<Chapter> chapters,
     List<String> scanlators,
     int selectedScanIndex,
@@ -163,7 +167,9 @@ class ChapterService {
           ));
       return;
     }
-    final shouldTrack = await showTrackingDialog(context);
+    final shouldTrack = anilistData.serviceType == ServicesType.extensions
+        ? false
+        : await showTrackingDialog(context);
 
     if (shouldTrack != null) {
       navigate(() => ReadingPage(
@@ -283,6 +289,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     final selectedChapters = _getSelectedChapters(chapterState);
     final filteredFullChapters = _chapterService.filterChaptersByScanlator(
+      widget.anilistData,
       widget.chapters!,
       chapterState.scanlators,
       _selectedScanIndex.value,
@@ -434,11 +441,8 @@ class ChapterListItem extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: isSelected
-                ? Theme.of(context).colorScheme.secondary.withAlpha(100)
-                : Theme.of(context)
-                    .colorScheme
-                    .secondaryContainer
-                    .withOpacity(0.4),
+                ? context.colors.secondary.withAlpha(100)
+                : Theme.of(context).colorScheme.secondaryContainer.opaque(0.4),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -471,14 +475,14 @@ class ChapterListItem extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
         boxShadow: [glowingShadow(context)],
       ),
       child: AnymexText(
         text: chapter.number?.toStringAsFixed(0) ?? '',
         variant: TextVariant.bold,
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: context.colors.onPrimary,
       ),
     );
   }
@@ -503,7 +507,7 @@ class ChapterListItem extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: context.colors.surfaceContainerHighest,
             ),
           ),
           SizedBox(
@@ -512,8 +516,7 @@ class ChapterListItem extends StatelessWidget {
             child: AnymexProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor:
-                  Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor: context.colors.surfaceContainer,
             ),
           ),
         ],
@@ -547,8 +550,7 @@ class ChapterListItem extends StatelessWidget {
           child: AnymexText(
             text:
                 '${chapter.releaseDate} • ${Get.find<SourceController>().activeMangaSource.value!.name}',
-            color:
-                Theme.of(context).colorScheme.inverseSurface.withOpacity(0.9),
+            color: context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
             maxLines: 2,
           ),
@@ -565,11 +567,11 @@ class ChapterListItem extends StatelessWidget {
         radius: 12,
         width: 100,
         height: 40,
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         child: AnymexText(
           text: "Read",
           variant: TextVariant.semiBold,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: context.colors.onPrimary,
         ),
       ),
     );
@@ -610,8 +612,7 @@ class ContinueChapterButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               width: 1,
-              color:
-                  Theme.of(context).colorScheme.inverseSurface.withOpacity(0.3),
+              color: context.colors.inverseSurface.opaque(0.3),
             ),
           ),
           child: Stack(
@@ -657,8 +658,8 @@ class ContinueChapterButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.5),
-              Colors.black.withOpacity(0.5),
+              Colors.black.opaque(0.5, iReallyMeanIt: true),
+              Colors.black.opaque(0.5, iReallyMeanIt: true),
             ],
           ),
           borderRadius: BorderRadius.circular(borderRadius),
@@ -690,7 +691,7 @@ class ContinueChapterButton extends StatelessWidget {
             ),
             const SizedBox(height: 3),
             Container(
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colors.primary,
               height: 2,
               width: 6 *
                   'Chapter ${chapter.number}: ${chapter.title}'
@@ -714,7 +715,7 @@ class ContinueChapterButton extends StatelessWidget {
         width: constraints.maxWidth * progressPercentage,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
           borderRadius: BorderRadius.circular(30),
         ),
       ),

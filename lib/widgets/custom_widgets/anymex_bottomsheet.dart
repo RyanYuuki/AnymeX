@@ -26,6 +26,7 @@ class AnymexSheet extends StatelessWidget {
   ) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       // backgroundColor: settingsController.liquidMode
       //     ? Colors.transparent
       //     : context.theme.colorScheme.surface,

@@ -4,6 +4,7 @@ import 'package:anymex/screens/manga/widgets/reader/bottom_controls.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_view.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 

@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -74,19 +75,19 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         hintText: widget.hintText,
         filled: true,
         fillColor:
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+            context.colors.secondaryContainer.opaque(0.5, iReallyMeanIt: true),
         prefixIcon: const Icon(IconlyLight.search),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.multiplyRadius()),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondaryContainer,
+            color: context.colors.secondaryContainer,
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.multiplyRadius()),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondaryContainer,
+            color: context.colors.secondaryContainer,
             width: 1,
           ),
         ),
@@ -148,8 +149,7 @@ class CustomSliderTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                AnymexIcon(icon,
-                    size: 30, color: Theme.of(context).colorScheme.primary),
+                AnymexIcon(icon, size: 30, color: context.colors.primary),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Column(
@@ -160,7 +160,7 @@ class CustomSliderTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: context.colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -171,7 +171,7 @@ class CustomSliderTile extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .opaque(0.6, iReallyMeanIt: true),
                         ),
                       ),
                     ],
@@ -207,7 +207,7 @@ class CustomSliderTile extends StatelessWidget {
                       glowSpreadMultiplier: 1,
                       divisions: divisions?.toInt() ?? (max * 10).toInt(),
                       customValueIndicatorSize: RoundedSliderValueIndicator(
-                          Theme.of(context).colorScheme,
+                          context.colors,
                           width: 40,
                           height: 40,
                           radius: 50),

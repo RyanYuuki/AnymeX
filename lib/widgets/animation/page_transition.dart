@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class SmoothSlideTransition extends PageTransitionsBuilder {
   const SmoothSlideTransition();

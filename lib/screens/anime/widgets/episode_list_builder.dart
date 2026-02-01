@@ -1,13 +1,14 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
 import 'dart:async';
+
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/data_keys/general.dart';
-import 'package:anymex/models/Offline/Hive/video.dart' as hive;
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/general.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/models/Offline/Hive/video.dart' as hive;
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
@@ -15,11 +16,12 @@ import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -470,7 +472,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.opaque(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: AnymexText(
@@ -478,7 +480,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.withOpacity(0.8),
+            color: Colors.red.opaque(0.8),
           ),
         ),
       ],
@@ -540,7 +542,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         ));
                   return;
                 }
-                final shouldTrack = await showTrackingDialog(context);
+                final shouldTrack =
+                    widget.anilistData?.serviceType == ServicesType.extensions
+                        ? false
+                        : await showTrackingDialog(context);
 
                 if (shouldTrack != null) {
                   navigate(() => settingsController.preferences
@@ -573,12 +578,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     text: e.quality.toUpperCase(),
                     variant: TextVariant.bold,
                     size: 16,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                   tileColor: Theme.of(context)
                       .colorScheme
                       .secondaryContainer
-                      .withOpacity(0.4),
+                      .opaque(0.4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -667,8 +672,8 @@ class ContinueEpisodeButton extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      Colors.black.withOpacity(0.5),
-                      Colors.black.withOpacity(0.5),
+                      Colors.black.opaque(0.5, iReallyMeanIt: true),
+                      Colors.black.opaque(0.5, iReallyMeanIt: true),
                     ]),
                     borderRadius: BorderRadius.circular(borderRadius),
                   ),
@@ -704,7 +709,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                               children: [
                                 const SizedBox(height: 3),
                                 Container(
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: context.colors.primary,
                                   height: 2,
                                   width: 6 *
                                       'Episode ${episode.number}: ${episode.title}'
@@ -728,7 +733,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                     width: constraints.maxWidth * progressPercentage,
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
                   ),

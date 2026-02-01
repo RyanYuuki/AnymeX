@@ -5,6 +5,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:install_plugin/install_plugin.dart';
@@ -395,7 +396,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       builder: (context) => AlertDialog(
         icon: Icon(
           Icons.check_circle_outline,
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
           size: 32,
         ),
         title: Text(
@@ -470,7 +471,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.12),
+                    color: colorScheme.primary.opaque(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -515,7 +516,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                         borderRadius: BorderRadius.circular(16),
                         color: colorScheme.surfaceContainerHigh,
                         border: Border.all(
-                          color: colorScheme.outline.withOpacity(0.2),
+                          color: colorScheme.outline.opaque(0.2),
                         ),
                       ),
                       child: Markdown(
@@ -533,8 +534,11 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer.opaque(0.3),
                         borderRadius: BorderRadius.circular(12),
-                        color: colorScheme.primaryContainer.withOpacity(0.35),
+                        border: Border.all(
+                          color: colorScheme.primary.opaque(0.3),
+                        ),
                       ),
                       child: Column(
                         children: [

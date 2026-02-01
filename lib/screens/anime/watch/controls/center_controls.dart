@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 
 class CenterControls extends StatelessWidget {
   const CenterControls({super.key});
@@ -145,6 +145,7 @@ class CenterControls extends StatelessWidget {
                                 : Icons.play_arrow_rounded,
                             key: ValueKey(controller.isPlaying.value),
                             size: 42,
+                            color: Colors.white,
                           ),
                   ),
                 ),

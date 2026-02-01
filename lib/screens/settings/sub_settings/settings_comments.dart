@@ -5,6 +5,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -49,7 +50,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     color: Theme.of(context)
                         .colorScheme
                         .surfaceContainer
-                        .withOpacity(0.3)),
+                        .opaque(0.3)),
                 child: Column(
                   children: [
                     CustomTile(
@@ -448,7 +449,7 @@ class RoleDescription extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: context.colors.surfaceContainer,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(

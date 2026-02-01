@@ -10,6 +10,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ChapterListItem extends StatelessWidget {
@@ -45,11 +46,11 @@ class ChapterListItem extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: isSelected
-                ? Theme.of(context).colorScheme.secondary.withAlpha(100)
+                ? context.colors.secondary.withAlpha(100)
                 : Theme.of(context)
                     .colorScheme
                     .secondaryContainer
-                    .withOpacity(0.4),
+                    .opaque(0.4),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -82,14 +83,14 @@ class ChapterListItem extends StatelessWidget {
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
         boxShadow: [glowingShadow(context)],
       ),
       child: AnymexText(
         text: chapter.number?.toStringAsFixed(0) ?? '',
         variant: TextVariant.bold,
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: context.colors.onPrimary,
       ),
     );
   }
@@ -114,7 +115,7 @@ class ChapterListItem extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: context.colors.surfaceContainerHighest,
             ),
           ),
           SizedBox(
@@ -124,7 +125,7 @@ class ChapterListItem extends StatelessWidget {
               value: progress,
               strokeWidth: 4,
               backgroundColor:
-                  Theme.of(context).colorScheme.surfaceContainerHighest,
+                  context.colors.surfaceContainerHighest,
             ),
           ),
         ],
@@ -158,7 +159,7 @@ class ChapterListItem extends StatelessWidget {
           child: AnymexText(
             text: calcTime(chapter.releaseDate ?? '0'),
             color:
-                Theme.of(context).colorScheme.inverseSurface.withOpacity(0.9),
+                context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
             maxLines: 2,
           ),
@@ -175,11 +176,11 @@ class ChapterListItem extends StatelessWidget {
         radius: 12,
         width: 100,
         height: 40,
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         child: AnymexText(
           text: "Read",
           variant: TextVariant.semiBold,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: context.colors.onPrimary,
         ),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
@@ -87,7 +88,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             return AnymexText(
               text:
                   "AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colors.primary,
             );
           }),
           actions: [
@@ -131,12 +132,12 @@ class _AIRecommendationState extends State<AIRecommendation> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
                 borderRadius: BorderRadius.circular(12.multiplyRadius())),
             child: AnymexText(
               text: "Search",
               variant: TextVariant.semiBold,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: context.colors.onPrimary,
             ),
           ),
         )
@@ -214,7 +215,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                       AnymexText(
                         text: "Grid",
                         variant: TextVariant.bold,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                       ),
                       Switch(
                           value: isGrid.value,
@@ -231,7 +232,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                       AnymexText(
                         text: "18+",
                         variant: TextVariant.bold,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: context.colors.primary,
                       ),
                       Switch(
                           value: isAdult.value,
@@ -264,7 +265,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             color: Theme.of(context)
                 .colorScheme
                 .secondaryContainer
-                .withOpacity(0.5),
+                .opaque(0.5),
             borderRadius: BorderRadius.circular(12.multiplyRoundness())),
         child: Row(
           children: [
@@ -307,14 +308,14 @@ class _AIRecommendationState extends State<AIRecommendation> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: context.colors.primary,
                                 borderRadius:
                                     BorderRadius.circular(8.multiplyRadius()),
                               ),
                               child: AnymexText(
                                 text: e,
                                 variant: TextVariant.semiBold,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                                color: context.colors.onPrimary,
                               ),
                             ))
                         .toList(),

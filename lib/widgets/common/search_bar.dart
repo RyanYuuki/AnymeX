@@ -4,6 +4,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -106,7 +107,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           hintText: widget.hintText,
           filled: true,
           fillColor:
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+              context.colors.secondaryContainer.opaque(0.5),
           prefixIcon: IconButton(
             icon: Icon(widget.prefixIcon),
             onPressed: widget.onPrefixIconPressed,
@@ -121,14 +122,14 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.multiplyRadius()),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              color: context.colors.secondaryContainer,
               width: 1,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.multiplyRadius()),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              color: context.colors.secondaryContainer,
               width: 1,
             ),
           ),
@@ -172,10 +173,10 @@ class TappableSearchBar extends StatelessWidget {
               color: Theme.of(context)
                   .colorScheme
                   .secondaryContainer
-                  .withOpacity(0.5),
+                  .opaque(0.5),
               borderRadius: BorderRadius.circular(16.multiplyRadius()),
               border: Border.all(
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                color: context.colors.secondaryContainer,
                 width: 1,
               ),
             ),

@@ -10,6 +10,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class RecentlyOpenedAnimeCard extends StatelessWidget {
   final Media media;
@@ -36,7 +37,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return AnymexOnTap(
       onTap: () {
@@ -61,7 +62,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
         child: AnymexCard(
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: colorScheme.primary.withOpacity(0.2),
+              color: colorScheme.primary.opaque(0.2),
               width: 1,
             ),
             borderRadius: BorderRadius.circular(12.multiplyRadius()),

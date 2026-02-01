@@ -7,6 +7,7 @@ import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -43,7 +44,7 @@ class _MangaStatsState extends State<MangaStats> {
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
     final isDesktop = MediaQuery.of(context).size.width > 600;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return SingleChildScrollView(
       child: Column(
@@ -68,21 +69,6 @@ class _MangaStatsState extends State<MangaStats> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildInfoCard(
-                  context,
-                  icon: Icons.title_rounded,
-                  title: "English Title",
-                  content: AnymexText(
-                    text: widget.data.title,
-                    variant: TextVariant.semiBold,
-                    size: 15,
-                    maxLines: 3,
-                    autoResize: true,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
               Expanded(
                 child: _buildInfoCard(
                   context,
@@ -216,15 +202,15 @@ class _MangaStatsState extends State<MangaStats> {
     required String title,
     required Widget child,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+        color: colorScheme.surfaceContainer.opaque(0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.2),
+          color: colorScheme.outline.opaque(0.2, iReallyMeanIt: true),
           width: 1.5,
         ),
       ),
@@ -236,7 +222,7 @@ class _MangaStatsState extends State<MangaStats> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.15),
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -266,15 +252,15 @@ class _MangaStatsState extends State<MangaStats> {
     required String title,
     required Widget content,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.35),
+        color: colorScheme.surfaceContainer.opaque(0.35),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.15),
+          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
           width: 1.5,
         ),
       ),
@@ -286,7 +272,7 @@ class _MangaStatsState extends State<MangaStats> {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.15),
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -300,6 +286,7 @@ class _MangaStatsState extends State<MangaStats> {
                 text: title,
                 variant: TextVariant.bold,
                 size: 16,
+                autoResize: true,
               ),
             ],
           ),
@@ -311,7 +298,7 @@ class _MangaStatsState extends State<MangaStats> {
   }
 
   Widget _buildStatsGrid(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final stats = [
       {
         'label': 'Type',
@@ -361,10 +348,10 @@ class _MangaStatsState extends State<MangaStats> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.4),
+            color: colorScheme.surface.opaque(0.4),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: colorScheme.primary.withOpacity(0.1),
+              color: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
               width: 1,
             ),
           ),
@@ -378,14 +365,15 @@ class _MangaStatsState extends State<MangaStats> {
                   Icon(
                     stat['icon'] as IconData,
                     size: 16,
-                    color: colorScheme.primary.withOpacity(0.7),
+                    color: colorScheme.primary.opaque(0.7, iReallyMeanIt: true),
                   ),
                   const SizedBox(width: 6),
                   AnymexText(
                     text: stat['label'].toString(),
                     variant: TextVariant.regular,
                     size: 11,
-                    color: colorScheme.onSurface.withOpacity(0.6),
+                    color:
+                        colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
                   ),
                 ],
               ),
@@ -406,7 +394,7 @@ class _MangaStatsState extends State<MangaStats> {
   }
 
   Widget _buildNextChapterPrediction(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return FutureBuilder<NextRelease>(
       future: _nextReleaseFuture,
@@ -421,15 +409,15 @@ class _MangaStatsState extends State<MangaStats> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  colorScheme.primaryContainer.withOpacity(0.3),
-                  colorScheme.primary.withOpacity(0.15),
+                  colorScheme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
+                  colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: colorScheme.primary.withOpacity(0.3),
+                color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
                 width: 1.5,
               ),
             ),
@@ -443,7 +431,8 @@ class _MangaStatsState extends State<MangaStats> {
                         text: "Next Release",
                         variant: TextVariant.regular,
                         size: 11,
-                        color: colorScheme.onSurface.withOpacity(0.6),
+                        color: colorScheme.onSurface
+                            .opaque(0.6, iReallyMeanIt: true),
                       ),
                       const SizedBox(height: 4),
                       AnymexText(
@@ -470,7 +459,7 @@ class _MangaStatsState extends State<MangaStats> {
     required String label,
     required String value,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     List<String> chapters = value
         .replaceAllMapped(RegExp(r'\s*/\s*'), (match) => ' / ')
         .split(' / ');
@@ -478,10 +467,10 @@ class _MangaStatsState extends State<MangaStats> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: colorScheme.surface.withOpacity(0.3),
+        color: colorScheme.surface.opaque(0.3, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.15),
+          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
           width: 1,
         ),
       ),
@@ -493,7 +482,7 @@ class _MangaStatsState extends State<MangaStats> {
               text: label,
               variant: TextVariant.semiBold,
               size: 13,
-              color: colorScheme.onSurface.withOpacity(0.7),
+              color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
             ),
           ),
           Expanded(

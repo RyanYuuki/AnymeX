@@ -5,6 +5,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -58,7 +59,7 @@ class _AnimeListState extends State<AnimeList> {
               IconButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: isReversed
-                          ? Theme.of(context).colorScheme.surfaceContainer
+                          ? context.colors.surfaceContainer
                           : Colors.transparent),
                   onPressed: () {
                     setState(() {
@@ -80,12 +81,12 @@ class _AnimeListState extends State<AnimeList> {
                 onPressed: () => Navigator.pop(context),
                 icon: Icon(
                   Icons.arrow_back_ios_new,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.colors.primary,
                 )),
             title: Text("$userName's ${widget.title ?? 'Anime'} List",
                 style: TextStyle(
                     fontSize: 16,
-                    color: Theme.of(context).colorScheme.primary)),
+                    color: context.colors.primary)),
             bottom: TabBar(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               physics: const BouncingScrollPhysics(),

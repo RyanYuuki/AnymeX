@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,8 +20,6 @@ class AnymexExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return AnymexCard(
       child: ExpansionTile(
         shape: ShapeBorder.lerp(
@@ -32,7 +31,7 @@ class AnymexExpansionTile extends StatelessWidget {
           text: title,
           size: 16,
           variant: TextVariant.semiBold,
-          color: colorScheme.primary,
+          color: context.colors.primary,
         ),
         initiallyExpanded: initialExpanded,
         onExpansionChanged: (expanded) => _isExpanded.value = expanded,
@@ -59,15 +58,14 @@ class AnymexCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final settings = Get.find<Settings>();
     return Card(
       color: color ??
           (settings.disableGradient
-              ? colorScheme.surfaceContainerLow
-              : colorScheme.surfaceContainerLow.withOpacity(0.3)),
+              ? context.colors.surfaceContainerLow
+              : context.colors.surfaceContainerLow.opaque(0.3)),
       elevation: 2,
-      shadowColor: colorScheme.shadow.withOpacity(0.1),
+      shadowColor: context.colors.shadow.opaque(0.1),
       shape: shape ??
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: enableAnimation

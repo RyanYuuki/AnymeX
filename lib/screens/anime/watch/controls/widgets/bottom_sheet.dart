@@ -1,6 +1,7 @@
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Mangayomi/string_extensions.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -126,17 +127,19 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                     topRight: Radius.circular(24),
                   ),
                   border: Border.all(
-                    color: context.theme.colorScheme.outline.withOpacity(0.2),
+                    color: context.theme.colorScheme.outline
+                        .opaque(0.2, iReallyMeanIt: true),
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: context.theme.colorScheme.primary.withOpacity(0.1),
+                      color: context.theme.colorScheme.primary
+                          .opaque(0.1, iReallyMeanIt: true),
                       blurRadius: 20,
                       offset: const Offset(0, -4),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.opaque(0.3, iReallyMeanIt: true),
                       blurRadius: 30,
                       offset: const Offset(0, -8),
                     ),
@@ -150,8 +153,8 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color:
-                            context.theme.colorScheme.outline.withOpacity(0.3),
+                        color: context.theme.colorScheme.outline
+                            .opaque(0.3, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -179,14 +182,14 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                                 decoration: BoxDecoration(
                                   color: context
                                       .theme.colorScheme.surfaceVariant
-                                      .withOpacity(0.3),
+                                      .opaque(0.3),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
                                   Icons.close,
                                   size: 20,
                                   color: context.theme.colorScheme.onSurface
-                                      .withOpacity(0.7),
+                                      .opaque(0.7, iReallyMeanIt: true),
                                 ),
                               ),
                             ),
@@ -318,28 +321,29 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: widget.isSelected
-                        ? context.theme.colorScheme.primary.withOpacity(0.12)
+                        ? context.theme.colorScheme.primary
+                            .opaque(0.12, iReallyMeanIt: true)
                         : (_isHovered
                             ? context.theme.colorScheme.primary
-                                .withOpacity(0.08)
+                                .opaque(0.08, iReallyMeanIt: true)
                             : Colors.transparent),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: widget.isSelected
-                          ? context.theme.colorScheme.primary.withOpacity(0.3)
+                          ? context.theme.colorScheme.primary
+                              .opaque(0.3, iReallyMeanIt: true)
                           : (_isHovered
                               ? context.theme.colorScheme.primary
-                                  .withOpacity(0.2)
+                                  .opaque(0.2, iReallyMeanIt: true)
                               : Colors.transparent),
                       width: widget.isSelected ? 1.0 : 0.5,
                     ),
                     boxShadow: widget.isSelected || _isHovered
                         ? [
                             BoxShadow(
-                              color:
-                                  context.theme.colorScheme.primary.withOpacity(
-                                widget.isSelected ? 0.2 : 0.1,
-                              ),
+                              color: context.theme.colorScheme.primary.opaque(
+                                  widget.isSelected ? 0.2 : 0.1,
+                                  iReallyMeanIt: true),
                               blurRadius: widget.isSelected ? 12 : 8,
                               offset: const Offset(0, 2),
                             ),
@@ -354,9 +358,9 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                           decoration: BoxDecoration(
                             color: widget.isSelected
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(0.15)
+                                    .opaque(0.15, iReallyMeanIt: true)
                                 : context.theme.colorScheme.surfaceVariant
-                                    .withOpacity(0.3),
+                                    .opaque(0.3, iReallyMeanIt: true),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -365,7 +369,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                             color: widget.isSelected
                                 ? context.theme.colorScheme.primary
                                 : context.theme.colorScheme.onSurface
-                                    .withOpacity(0.7),
+                                    .opaque(0.7, iReallyMeanIt: true),
                           ),
                         ),
                       if (widget.item.icon != null) const SizedBox(width: 12),
@@ -394,7 +398,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                                   style: context.theme.textTheme.bodySmall
                                       ?.copyWith(
                                     color: context.theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
+                                        .opaque(0.6, iReallyMeanIt: true),
                                   ),
                                 ),
                               ),
@@ -408,7 +412,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: context.theme.colorScheme.primary
-                                .withOpacity(0.15),
+                                .opaque(0.15, iReallyMeanIt: true),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(

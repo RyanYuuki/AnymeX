@@ -1,9 +1,10 @@
-import 'package:anymex/utils/logger.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -111,7 +112,7 @@ void showWelcomeDialogg(BuildContext context) {
 
       return Obx(() {
         return Material(
-          color: Theme.of(context).colorScheme.surface,
+          color: context.colors.surface,
           child: Center(
             child: Container(
               width: getResponsiveSize(context,
@@ -122,7 +123,7 @@ void showWelcomeDialogg(BuildContext context) {
                     0.8, // Limit max height
               ),
               decoration: BoxDecoration(
-                color: Theme.of(context).dialogBackgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(
@@ -142,7 +143,7 @@ void showWelcomeDialogg(BuildContext context) {
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24)),
-                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      color: context.colors.surfaceContainer,
                     ),
                     child: const Center(
                       child: Text(
@@ -212,9 +213,6 @@ void showWelcomeDialogg(BuildContext context) {
                             height: 50,
                             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                             decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(12)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -224,7 +222,7 @@ void showWelcomeDialogg(BuildContext context) {
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Theme.of(context)
                                             .colorScheme
-                                            .surfaceContainer,
+                                            .surfaceContainerHighest,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(12))),
@@ -259,7 +257,7 @@ void showWelcomeDialogg(BuildContext context) {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Theme.of(context)
                                           .colorScheme
-                                          .surfaceContainer,
+                                          .surfaceContainerHighest,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(12))),
@@ -307,7 +305,7 @@ Widget _buildIcon(BuildContext context, String url) {
       backgroundColor: Colors.transparent,
       child: Image.asset(
         'assets/images/$url',
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
       ),
     ),
   );

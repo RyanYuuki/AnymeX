@@ -29,6 +29,7 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -624,7 +625,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
               width: 80,
               padding: const EdgeInsets.symmetric(vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.opaque(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -736,7 +737,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
                 duration: const Duration(milliseconds: 300),
                 opacity: showControls.value ? 1 : 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.opaque(0.5),
                 ),
               ),
             ),
@@ -803,7 +804,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.opaque(0.2),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(isLeftSide.value ? 0 : 100),
                       topRight: Radius.circular(isLeftSide.value ? 100 : 0),
@@ -875,7 +876,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
   Color _getFgColor() {
     return settings.playerStyle == 0
         ? Colors.white
-        : Theme.of(context).colorScheme.primary;
+        : context.colors.primary;
   }
 
   Widget _buildControls() {
@@ -989,7 +990,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
                                       text: '${formattedTime.value} ',
                                       variant: TextVariant.semiBold,
                                       color:
-                                          themeFgColor.value.withOpacity(0.8)),
+                                          themeFgColor.value.opaque(0.8)),
                                   AnymexTextSpan(
                                     variant: TextVariant.semiBold,
                                     text: ' /  ${formattedDuration.value}',
@@ -1006,7 +1007,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
                               child: VideoSliderTheme(
                                   color: themeFgColor.value,
                                   inactiveTrackColor:
-                                      _getBgColor().withOpacity(0.1),
+                                      _getBgColor().opaque(0.1),
                                   child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
@@ -1232,7 +1233,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
       context: context,
       builder: (context) {
         return Dialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: context.colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -1284,7 +1285,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
         Navigator.of(context).pop();
       },
       title: '${speed.toStringAsFixed(2)}x',
-      color: Theme.of(context).colorScheme.primary,
+      color: context.colors.primary,
     );
   }
 
@@ -1292,13 +1293,13 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
   Color _getPlayFgColor() {
     return settings.playerStyle == 0
         ? Colors.white
-        : Theme.of(context).colorScheme.onPrimary;
+        : context.colors.onPrimary;
   }
 
   Color _getBgColor() {
     return settings.playerStyle == 0
         ? Colors.transparent
-        : Theme.of(context).colorScheme.primary;
+        : context.colors.primary;
   }
 
   Widget _buildPlaybackButtons() {
@@ -1439,7 +1440,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
             ? color
             : settings.playerStyle == 0
                 ? Colors.transparent
-                : Colors.black.withOpacity(0.5),
+                : Colors.black.opaque(0.5),
         borderRadius: BorderRadius.circular(radius),
         boxShadow: isPlay ? [glowingShadow(context)] : [],
       ),
@@ -1492,7 +1493,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
   void showAudioSelector() {
     showModalBottomSheet(
         context: context,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: context.colors.surface,
         isScrollControlled: true,
         builder: (context) {
           return SingleChildScrollView(
@@ -1552,16 +1553,16 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
             size: 16,
             color: isSelected
                 ? Colors.black
-                : Theme.of(context).colorScheme.primary,
+                : context.colors.primary,
           ),
           tileColor: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceContainer,
+              ? context.colors.primary
+              : context.colors.surfaceContainer,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           trailing: Icon(Iconsax.subtitle5,
               color: isSelected
                   ? Colors.black
-                  : Theme.of(context).colorScheme.primary),
+                  : context.colors.primary),
         ),
       );
     });
@@ -1570,7 +1571,7 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
   void showSubtitleSelector() {
     showModalBottomSheet(
         context: context,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: context.colors.surface,
         isScrollControlled: true,
         builder: (context) {
           return SingleChildScrollView(
@@ -1637,14 +1638,14 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
                             text: 'Add Subtitle',
                             variant: TextVariant.bold,
                             size: 16,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.colors.primary,
                           ),
                           tileColor:
-                              Theme.of(context).colorScheme.surfaceContainer,
+                              context.colors.surfaceContainer,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
                           trailing: Icon(Iconsax.subtitle5,
-                              color: Theme.of(context).colorScheme.primary),
+                              color: context.colors.primary),
                         ),
                       ),
                     ),
@@ -1673,16 +1674,16 @@ class _OfflineWatchPageOldState extends State<OfflineWatchPageOld>
             size: 16,
             color: isSelected
                 ? Colors.black
-                : Theme.of(context).colorScheme.primary,
+                : context.colors.primary,
           ),
           tileColor: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceContainer,
+              ? context.colors.primary
+              : context.colors.surfaceContainer,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           trailing: Icon(Iconsax.subtitle5,
               color: isSelected
                   ? Colors.black
-                  : Theme.of(context).colorScheme.primary),
+                  : context.colors.primary),
         ),
       );
     });

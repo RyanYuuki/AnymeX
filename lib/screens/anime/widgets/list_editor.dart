@@ -3,6 +3,7 @@ import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
@@ -89,7 +90,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +130,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildStatusSection(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +149,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.5),
+              color: colorScheme.outline.opaque(0.5),
             ),
           ),
           child: AnymexDropdown(
@@ -206,7 +207,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildProgressSection(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final bool isForManga = widget.isManga;
 
     bool isUnknownTotal() {
@@ -248,9 +249,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            color: colorScheme.surfaceContainerHighest.opaque(0.3),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.5),
+              color: colorScheme.outline.opaque(0.5),
             ),
           ),
           padding: const EdgeInsets.all(16),
@@ -284,13 +285,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: colorScheme.outline.withOpacity(0.5),
+                              color: colorScheme.outline.opaque(0.5),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: colorScheme.outline.withOpacity(0.5),
+                              color: colorScheme.outline.opaque(0.5),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -352,7 +353,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildDecrementButton(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final bool canDecrement = _localProgress > 0;
 
     return Material(
@@ -378,7 +379,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             Icons.remove_rounded,
             color: canDecrement
                 ? colorScheme.onSecondaryContainer
-                : colorScheme.onSurfaceVariant.withOpacity(0.5),
+                : colorScheme.onSurfaceVariant.opaque(0.5),
             size: 24,
           ),
         ),
@@ -388,7 +389,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildIncrementButton(
       BuildContext context, bool hasKnownLimit, int? maxTotal) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final bool canIncrement =
         !hasKnownLimit || (hasKnownLimit && _localProgress < maxTotal!);
 
@@ -415,7 +416,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             Icons.add_rounded,
             color: canIncrement
                 ? colorScheme.onPrimary
-                : colorScheme.onSurfaceVariant.withOpacity(0.5),
+                : colorScheme.onSurfaceVariant.opaque(0.5),
             size: 24,
           ),
         ),
@@ -425,7 +426,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildProgressIndicator(BuildContext context, bool hasKnownLimit,
       int? maxTotal, String displayTotal) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final double progressPercentage =
         hasKnownLimit ? (_localProgress / maxTotal!).clamp(0.0, 1.0) : 0.0;
 
@@ -479,7 +480,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildScoreSection(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -497,9 +498,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            color: colorScheme.surfaceContainerHighest.opaque(0.3),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.5),
+              color: colorScheme.outline.opaque(0.5),
             ),
           ),
           padding: const EdgeInsets.all(20),
@@ -567,7 +568,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Row(
       children: [

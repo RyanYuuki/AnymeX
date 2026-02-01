@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ControlButton extends StatefulWidget {
@@ -96,9 +97,9 @@ class _ControlButtonState extends State<ControlButton>
                       ? (isDark
                           ? (_isHovered
                               ? context.theme.colorScheme.primary
-                                  .withOpacity(0.15)
+                                  .opaque(0.15)
                               : context.theme.colorScheme.primary
-                                  .withOpacity(0.08))
+                                  .opaque(0.08))
                           : (_isHovered
                               ? context.theme.colorScheme.primaryContainer
                               : context
@@ -106,9 +107,9 @@ class _ControlButtonState extends State<ControlButton>
                       : (isDark
                           ? (_isHovered
                               ? context.theme.colorScheme.primary
-                                  .withOpacity(0.1)
+                                  .opaque(0.1)
                               : context.theme.colorScheme.surfaceVariant
-                                  .withOpacity(0.05))
+                                  .opaque(0.05))
                           : (_isHovered
                               ? context.theme.colorScheme.surfaceContainerHigh
                               : context
@@ -120,25 +121,25 @@ class _ControlButtonState extends State<ControlButton>
                         ? (isDark
                             ? (_isHovered
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(0.4)
+                                    .opaque(0.4)
                                 : context.theme.colorScheme.primary
-                                    .withOpacity(0.2))
+                                    .opaque(0.2))
                             : (_isHovered
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(0.5)
+                                    .opaque(0.5)
                                 : context.theme.colorScheme.outline
-                                    .withOpacity(0.3)))
+                                    .opaque(0.3)))
                         : (isDark
                             ? (_isHovered
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(0.3)
+                                    .opaque(0.3)
                                 : context.theme.colorScheme.outline
-                                    .withOpacity(0.1))
+                                    .opaque(0.1))
                             : (_isHovered
                                 ? context.theme.colorScheme.outline
-                                    .withOpacity(0.4)
+                                    .opaque(0.4)
                                 : context.theme.colorScheme.outline
-                                    .withOpacity(0.3))),
+                                    .opaque(0.3))),
                     width: _isHovered ? 1.0 : 0.5,
                   ),
                   boxShadow: _isHovered
@@ -146,9 +147,9 @@ class _ControlButtonState extends State<ControlButton>
                           BoxShadow(
                             color: widget.isPrimary
                                 ? context.theme.colorScheme.primary
-                                    .withOpacity(isDark ? 0.3 : 0.2)
+                                    .opaque(isDark ? 0.3 : 0.2)
                                 : context.theme.colorScheme.primary
-                                    .withOpacity(isDark ? 0.2 : 0.15),
+                                    .opaque(isDark ? 0.2 : 0.15),
                             blurRadius: widget.isPrimary ? 12 : 8,
                             offset: const Offset(0, 2),
                           ),
@@ -173,7 +174,7 @@ class _ControlButtonState extends State<ControlButton>
                                       : context.theme.colorScheme.onSurface)
                                   : context.theme.colorScheme.onSurface))
                           : context.theme.colorScheme.onSurface
-                              .withOpacity(0.5),
+                              .opaque(0.5),
                     ),
                   ),
                 ),
