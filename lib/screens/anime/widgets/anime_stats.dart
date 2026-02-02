@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
+import 'package:anymex/screens/anime/misc/anime_visuals_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
@@ -192,6 +193,71 @@ class AnimeStats extends StatelessWidget {
                           const SizedBox(height: 4),
                           AnymexText(
                             text: "View opening and ending themes",
+                            variant: TextVariant.regular,
+                            size: 13,
+                            color: colorScheme.onSurface.opaque(0.6),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 20,
+                      color: colorScheme.primary.opaque(0.7),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            10.height(),
+            GestureDetector(
+              onTap: () {
+                navigate(() => AnimeVisualsPage(
+                  animeTitle: data.title,
+                  malId: data.idMal,
+                ));
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest
+                      .opaque(0.4, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outline.opaque(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary
+                            .opaque(0.15, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.image_rounded,
+                        size: 22,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymexText(
+                            text: "Visuals",
+                            variant: TextVariant.bold,
+                            size: 14,
+                          ),
+                          const SizedBox(height: 4),
+                          AnymexText(
+                            text:
+                                "Official posters and key visuals",
                             variant: TextVariant.regular,
                             size: 13,
                             color: colorScheme.onSurface.opaque(0.6),
