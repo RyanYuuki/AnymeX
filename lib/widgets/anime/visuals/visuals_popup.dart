@@ -25,7 +25,10 @@ class VisualsPopup extends StatefulWidget {
     required this.animeTitle,
     required this.malId,
     required this.originalCover,
+    this.isAnime = true,
   });
+
+  final bool isAnime;
 
   @override
   State<VisualsPopup> createState() => _VisualsPopupState();
@@ -45,8 +48,10 @@ class _VisualsPopupState extends State<VisualsPopup> {
   void initState() {
     super.initState();
     images[VisualSource.anilist] = [widget.originalCover];
-    _fetchLiveChartVisuals();
-    _fetchMalVisuals();
+    if (widget.isAnime) {
+      _fetchLiveChartVisuals();
+      _fetchMalVisuals();
+    }
   }
 
   Future<void> _fetchMalVisuals() async {
@@ -148,6 +153,8 @@ class _VisualsPopupState extends State<VisualsPopup> {
       snackBar("Downloading image...", context: context);
       final response = await http.get(Uri.parse(url));
 
+      if (!mounted) return;
+
       if (response.statusCode != 200) {
         snackBar("Failed to download image", context: context);
         return;
@@ -194,6 +201,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             await platform.invokeMethod('scanFile', {'path': file.path});
           } catch(_) {}
 
+          if (!mounted) return;
           snackBar("Saved to Downloads/AnymeX/$fileName", context: context);
           
         } catch (e) {
@@ -241,10 +249,13 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
         final file = File('${saveDir.path}/$fileName');
         await file.writeAsBytes(bytes);
+        if (!mounted) return;
         snackBar("Saved to $path/AnymeX", context: context);
       }
     } catch (e) {
-      snackBar("Error saving image", context: context); 
+      if (mounted) {
+        snackBar("Error saving image", context: context);
+      }
     }
   }
 
@@ -430,10 +441,12 @@ class _VisualsPopupState extends State<VisualsPopup> {
                         children: [
                           _buildSourceButton(
                               "Anilist", VisualSource.anilist, "https://anilist.co/img/icons/android-chrome-192x192.png", const Color(0xFF02A9FF)),
-                          _buildSourceButton(
-                              "LiveChart", VisualSource.livechart, "https://www.livechart.me/favicon_32x32.png", const Color(0xFF5ABF16)),
-                          _buildSourceButton(
-                              "MAL", VisualSource.mal, "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png", const Color(0xFF2E51A2)),
+                          if (widget.isAnime) ...[
+                            _buildSourceButton(
+                                "LiveChart", VisualSource.livechart, "https://www.livechart.me/favicon_32x32.png", const Color(0xFF5ABF16)),
+                            _buildSourceButton(
+                                "MAL", VisualSource.mal, "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png", const Color(0xFF2E51A2)),
+                          ],
                         ],
                       ),
                     ),
