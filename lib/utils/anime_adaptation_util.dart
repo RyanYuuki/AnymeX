@@ -71,7 +71,7 @@ class MangaAnimeUtil {
       }
 
       final archiveUrlRegex = RegExp(
-        r'<a\s+[^>]*href="([^"]+)"[^>]*>\s*<i>\s*<u>Search for all releases of this series</u>\s*</i>\s*</a>',
+        r'<a\s+[^>]*href="([^"]+)"[^>]*>\s*<i>\s*<u>Search for all releases of this series<\/u>\s*<\/i>\s*<\/a>',
         caseSensitive: false,
         multiLine: true,
       );
@@ -137,15 +137,8 @@ class MangaAnimeUtil {
       int roundedInterval = avgInterval.round();
 
       DateTime latestRelease = releaseDates[0];
-
-      DateTime predictedDate = latestRelease.add(Duration(days: roundedInterval));
-      DateTime now = DateTime.now();
-
-      int iterations = 0;
-      while (predictedDate.isBefore(now) && iterations < 10) { 
-        predictedDate = predictedDate.add(Duration(days: roundedInterval));
-        iterations++;
-      }
+      DateTime predictedDate =
+          latestRelease.add(Duration(days: roundedInterval));
 
       String nextChapterName = "Next Chapter";
       if (latestChapterStr != null) {
@@ -154,12 +147,10 @@ class MangaAnimeUtil {
         if (numericMatch != null) {
           double? chNum = double.tryParse(numericMatch.group(1)!);
           if (chNum != null) {
-            double predictedChNum = chNum + (iterations + 1);
-            
-            if (predictedChNum % 1 == 0) {
-              nextChapterName = "Chapter ${predictedChNum.toInt()}";
+            if (chNum % 1 == 0) {
+              nextChapterName = "Chapter ${chNum.toInt() + 1}";
             } else {
-              nextChapterName = "Chapter ${predictedChNum.toStringAsFixed(1)}";
+              nextChapterName = "Chapter ${(chNum + 1).toStringAsFixed(1)}";
             }
           }
         }
