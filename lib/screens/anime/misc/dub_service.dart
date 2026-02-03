@@ -59,6 +59,7 @@ class DubService {
             var timeEl = show.querySelector('.show-air-time');
 
             String title = titleEl?.text.trim() ?? "";
+            print(title);
             String link = linkEl?.attributes['href'] ?? "";
             String poster = posterEl?.attributes['src'] ??
                 posterEl?.attributes['data-src'] ??
