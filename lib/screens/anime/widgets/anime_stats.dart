@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
+
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
@@ -209,6 +210,8 @@ class AnimeStats extends StatelessWidget {
               ),
             ),
             10.height(),
+
+
             GestureDetector(
               onTap: () {
                 navigate(() => WatchOrderPage(title: data.title));

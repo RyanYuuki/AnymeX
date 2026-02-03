@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
+import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class GradientPoster extends StatelessWidget {
   const GradientPoster({
@@ -74,39 +76,55 @@ class GradientPoster extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Stack(children: [
-                Hero(
-                  tag: tag,
-                  child: AnymeXImage(
-                      imageUrl: posterUrl,
-                      radius: 16.multiplyRoundness(),
-                      width: isDesktop ? 150 : 120,
-                      height: isDesktop ? 200 : 180),
-                ),
-                if (data?.isAdult ?? false)
-                  Positioned(
-                    bottom: 7,
-                    right: 7,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red.opaque(0.9),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.red, width: 1),
-                      ),
-                      child: const Text(
-                        '18+',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Poppins-Bold",
+              GestureDetector(
+                onTap: () {
+                  snackBar("come-on man, long press it !!!", context: context);
+                },
+                onLongPress: () {
+                  Get.to(
+                    () => VisualsPopup(
+                      animeTitle: data?.title ?? 'Unknown',
+                      malId: data?.idMal?.toString() ?? data?.id?.toString(),
+                      originalCover: posterUrl,
+                    ),
+                    transition: Transition.fadeIn,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                },
+                child: Stack(children: [
+                  Hero(
+                    tag: tag,
+                    child: AnymeXImage(
+                        imageUrl: posterUrl,
+                        radius: 16.multiplyRoundness(),
+                        width: isDesktop ? 150 : 120,
+                        height: isDesktop ? 200 : 180),
+                  ),
+                  if (data?.isAdult ?? false)
+                    Positioned(
+                      bottom: 7,
+                      right: 7,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red.opaque(0.9),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.red, width: 1),
+                        ),
+                        child: const Text(
+                          '18+',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Poppins-Bold",
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ]),
+                ]),
+              ),
               const SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
