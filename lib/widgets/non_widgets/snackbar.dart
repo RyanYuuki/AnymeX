@@ -9,7 +9,7 @@ OverlayEntry? _currentSnackBar;
 
 void snackBar(
   String message, {
-  int duration = 2000,
+  int duration = 1250,
   String? title,
   Color? backgroundColor,
   SnackPosition? snackPosition,
@@ -18,12 +18,15 @@ void snackBar(
   Color? iconColor,
   bool showCloseButton = false,
   bool showDurationAnimation = true,
+  BuildContext? context,
 }) {
-  final context = Get.context!;
-  final theme = Theme.of(context);
+  final effectiveContext = context ?? Get.context!;
+  final theme = Theme.of(effectiveContext);
 
   if (_currentSnackBar != null) {
-    _currentSnackBar?.remove();
+    if (_currentSnackBar!.mounted) {
+      _currentSnackBar?.remove();
+    }
     _currentSnackBar = null;
   }
 
@@ -50,7 +53,16 @@ void snackBar(
     ),
   );
 
-  Overlay.of(Get.overlayContext!).insert(_currentSnackBar!);
+  OverlayState? overlay = Overlay.of(effectiveContext, rootOverlay: true);
+  
+  if (overlay != null) {
+     overlay.insert(_currentSnackBar!);
+  } else {
+   
+     ScaffoldMessenger.of(effectiveContext).showSnackBar(
+        SnackBar(content: Text(message))
+     );
+  }
 }
 
 class _BubbleSnackBar extends StatefulWidget {
@@ -90,7 +102,7 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late AnimationController _progressController;
-  late Animation<double> _slideAnimation;
+
   late Animation<double> _scaleAnimation;
   late Animation<double> _progressAnimation;
   late Animation<double> _opacityAnimation;
@@ -100,7 +112,7 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
 
@@ -109,20 +121,15 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
       vsync: this,
     );
 
-    _slideAnimation = Tween<double>(
-      begin: widget.snackPosition == SnackPosition.TOP ? -100 : 100,
-      end: 0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-    ));
+
 
     _scaleAnimation = Tween<double>(
-      begin: 0.3,
+      begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutBack),
+      curve: const Interval(0.0, 1.0, curve: Curves.easeOutBack),
+      reverseCurve: Curves.easeInBack,
     ));
 
     _opacityAnimation = Tween<double>(
@@ -130,7 +137,8 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+      reverseCurve: Curves.easeIn,
     ));
 
     _progressAnimation = Tween<double>(
@@ -189,34 +197,32 @@ class _BubbleSnackBarState extends State<_BubbleSnackBar>
             alignment: widget.snackPosition == SnackPosition.TOP
                 ? Alignment.topCenter
                 : Alignment.bottomCenter,
-            child: Transform.translate(
-              offset: Offset(0, _slideAnimation.value),
-              child: Container(
-                margin: EdgeInsets.only(
-                  top: widget.snackPosition == SnackPosition.TOP
-                      ? topPadding + 20
-                      : 0,
-                  bottom: widget.snackPosition == SnackPosition.BOTTOM ? 40 : 0,
-                  left: 16,
-                  right: 16,
-                ),
-                child: Opacity(
-                  opacity: _opacityAnimation.value,
-                  child: Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: IntrinsicHeight(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: screenWidth *
-                                (getResponsiveSize(context,
-                                    mobileSize: 0.9, desktopSize: 0.4)),
-                            minWidth: 120,
-                            maxHeight: screenHeight * 0.3,
-                          ),
-                          child: _buildContent(),
+            child: Container(
+              margin: EdgeInsets.only(
+                top: widget.snackPosition == SnackPosition.TOP
+                    ? topPadding + 20
+                    : 0,
+                bottom: widget.snackPosition == SnackPosition.BOTTOM ? 40 : 0,
+                left: 16,
+                right: 16,
+              ),
+              child: Opacity(
+                opacity: _opacityAnimation.value,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  alignment: Alignment.center,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: IntrinsicHeight(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: screenWidth *
+                              (getResponsiveSize(context,
+                                  mobileSize: 0.9, desktopSize: 0.4)),
+                          minWidth: 120,
+                          maxHeight: screenHeight * 0.3,
                         ),
+                        child: _buildContent(),
                       ),
                     ),
                   ),
