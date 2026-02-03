@@ -1,8 +1,6 @@
 import 'dart:ui';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:extended_image/extended_image.dart';
 
 enum VisualSource { anilist, livechart, mal }
 
@@ -42,7 +38,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
     VisualSource.livechart: [],
     VisualSource.mal: [],
   };
-  bool isLoading = false;
+
   int currentIndex = 0;
 
   @override
@@ -89,7 +85,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
         }
       }
     } catch (e) {
-      
+      Logger.e("MAL Visuals Error", error: e);
     }
   }
 
@@ -143,7 +139,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
         }
       }
     } catch (e) {
-      
+      Logger.e("LiveChart Visuals Error", error: e);
     }
   }
 
@@ -158,7 +154,18 @@ class _VisualsPopupState extends State<VisualsPopup> {
       }
 
       final bytes = response.bodyBytes;
-      final fileName = "anymex_${DateTime.now().millisecondsSinceEpoch}.jpg";
+      
+      String extension = "jpg";
+      try {
+        final uri = Uri.parse(url);
+        final path = uri.path;
+        if (path.contains('.')) {
+          extension = path.split('.').last;
+          if (extension.length > 4 || extension.contains('/')) extension = "jpg";
+        }
+      } catch (_) {}
+      
+      final fileName = "anymex_${DateTime.now().millisecondsSinceEpoch}.$extension";
 
       if (Platform.isAndroid) {
          Future<bool> check(Permission p) async {
