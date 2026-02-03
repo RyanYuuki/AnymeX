@@ -9,7 +9,7 @@ OverlayEntry? _currentSnackBar;
 
 void snackBar(
   String message, {
-  int duration = 1250,
+  int duration = 700,
   String? title,
   Color? backgroundColor,
   SnackPosition? snackPosition,
@@ -53,15 +53,20 @@ void snackBar(
     ),
   );
 
-  OverlayState? overlay = Overlay.of(effectiveContext, rootOverlay: true);
+  OverlayState? overlay = Overlay.maybeOf(effectiveContext, rootOverlay: true);
   
   if (overlay != null) {
      overlay.insert(_currentSnackBar!);
   } else {
    
-     ScaffoldMessenger.of(effectiveContext).showSnackBar(
-        SnackBar(content: Text(message))
-     );
+      ScaffoldMessenger.of(effectiveContext).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: Duration(milliseconds: duration),
+          backgroundColor: backgroundColor,
+          behavior: SnackBarBehavior.floating,
+        )
+      );
   }
 }
 

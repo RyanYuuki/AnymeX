@@ -55,7 +55,7 @@ class MainActivity: FlutterActivity() {
                     if (path != null) {
                         try {
                             android.media.MediaScannerConnection.scanFile(
-                                context,
+                                applicationContext,
                                 arrayOf(path),
                                 null
                             ) { _, _ -> }

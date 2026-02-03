@@ -84,8 +84,9 @@ class GradientPoster extends StatelessWidget {
                   Get.to(
                     () => VisualsPopup(
                       animeTitle: data?.title ?? 'Unknown',
-                      malId: data?.idMal?.toString() ?? data?.id?.toString(),
+                      malId: data?.idMal.toString() ?? data?.id.toString(),
                       originalCover: posterUrl,
+                      isAnime: data?.mediaType.name.toUpperCase() == 'ANIME',
                     ),
                     transition: Transition.fadeIn,
                     duration: const Duration(milliseconds: 300),
