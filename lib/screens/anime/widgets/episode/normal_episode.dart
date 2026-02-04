@@ -66,9 +66,7 @@ class BetterEpisode extends StatelessWidget {
     if (isSelected) {
       return theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true);
     } else if (isFiller) {
-      return layoutType == EpisodeLayoutType.compact
-          ? Colors.orange
-          : Colors.orangeAccent.withAlpha(120);
+      return Colors.orange.withOpacity(0.15);
     } else {
       return theme.colorScheme.secondaryContainer.opaque(
         layoutType == EpisodeLayoutType.compact ? 0.4 : 0.5,
