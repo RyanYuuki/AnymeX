@@ -29,34 +29,27 @@ class GradientPoster extends StatelessWidget {
       children: [
         SizedBox(
           height: isDesktop ? 460 : 400,
-          child: Obx(
-            () => settingsController.enablePosterKenBurns
+          child: Obx(() {
+            final image = AnymeXImage(
+              imageUrl: data?.cover ?? posterUrl,
+              errorImage: data?.poster,
+              radius: 0,
+              height: 300,
+              width: double.infinity,
+              color: settingsController.liquidMode
+                  ? context.colors.primary.opaque(0.8)
+                  : null,
+            );
+
+            return settingsController.enablePosterKenBurns
                 ? KenBurns(
                     maxScale: 1.5,
                     minAnimationDuration: const Duration(milliseconds: 6000),
                     maxAnimationDuration: const Duration(milliseconds: 10000),
-                    child: AnymeXImage(
-                      imageUrl: data?.cover ?? posterUrl,
-                      errorImage: data?.poster,
-                      radius: 0,
-                      height: 300,
-                      width: double.infinity,
-                      color: settingsController.liquidMode
-                          ? context.colors.primary.opaque(0.8)
-                          : null,
-                    ),
+                    child: image,
                   )
-                : AnymeXImage(
-                    imageUrl: data?.cover ?? posterUrl,
-                    errorImage: data?.poster,
-                    radius: 0,
-                    height: 300,
-                    width: double.infinity,
-                    color: settingsController.liquidMode
-                        ? context.colors.primary.opaque(0.8)
-                        : null,
-                  ),
-          ),
+                : image;
+          }),
         ),
         Container(
           height: isDesktop ? 460 : 400,
