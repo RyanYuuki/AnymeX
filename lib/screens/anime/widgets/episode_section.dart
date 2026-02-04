@@ -7,6 +7,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
@@ -63,6 +64,31 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     super.initState();
     if (widget.episodeList != null && widget.episodeList!.isNotEmpty) {
       _episodeFuture.value = Future.value(widget.episodeList!);
+      _fetchFillerInfo();
+    }
+  }
+
+  Future<void> _fetchFillerInfo() async {
+    if (widget.anilistData?.idMal == null) return;
+
+    try {
+      final fillerMap = await JikanService.getFillerEpisodes(widget.anilistData.idMal.toString());
+      
+      if (fillerMap.isNotEmpty && widget.episodeList != null) {
+        bool updated = false;
+        
+        for (var ep in widget.episodeList!) {
+          if (fillerMap.containsKey(ep.number)) {
+             ep.filler = true;
+             updated = true;
+          }
+        }
+
+        if (updated && mounted) {
+           setState(() {});
+        }
+      }
+    } catch (e) {
     }
   }
 
