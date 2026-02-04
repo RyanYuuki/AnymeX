@@ -25,7 +25,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
@@ -195,6 +194,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
@@ -216,6 +216,42 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
           .toList();
     });
+  }
+
+  static void initializePlayerControlsIfNeeded(Settings settings) {
+    final String jsonString =
+        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+
+    if (decodedConfig.isEmpty) {
+      final Map<String, dynamic> defaultConfig = {
+        'leftButtonIds': ['playlist'],
+        'rightButtonIds': [
+          'shaders',
+          'subtitles',
+          'server',
+          'quality',
+          'speed',
+          'audio_track',
+          'orientation',
+          'aspect_ratio'
+        ],
+        'hiddenButtonIds': [],
+        'buttonConfigs': {
+          'playlist': {'visible': true},
+          'shaders': {'visible': true},
+          'subtitles': {'visible': true},
+          'server': {'visible': true},
+          'quality': {'visible': true},
+          'speed': {'visible': true},
+          'audio_track': {'visible': true},
+          'orientation': {'visible': true},
+          'aspect_ratio': {'visible': true},
+        },
+      };
+      settings.preferences
+          .put('bottomControlsSettings', json.encode(defaultConfig));
+    }
   }
 
   Future<void> _updateRpc() async {

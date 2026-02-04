@@ -248,36 +248,41 @@ class BackupRestoreService extends GetxController {
       String? outputPath;
 
       if (requestPath) {
-        // Let the user pick the save location
-        outputPath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Save Backup File',
-          fileName: fileName,
-          type: FileType.custom,
-          allowedExtensions: ['anymex'],
-        );
+        if (Platform.isIOS || Platform.isAndroid) {
+          outputPath = await FilePicker.platform.saveFile(
+            dialogTitle: 'Save Backup File',
+            fileName: fileName,
+            bytes: utf8.encode(content),
+            type: FileType.custom,
+            allowedExtensions: ['anymex'],
+          );
+        } else {
+          outputPath = await FilePicker.platform.saveFile(
+            dialogTitle: 'Save Backup File',
+            fileName: fileName,
+            type: FileType.custom,
+            allowedExtensions: ['anymex'],
+          );
+        }
 
         if (outputPath != null) {
-          // Actually write the file to the selected path
           final outputFile = File(outputPath);
           await outputFile.writeAsString(content, flush: true);
 
-          // Verify the file was written
           if (await outputFile.exists()) {
             final fileSize = await outputFile.length();
             Logger.i(
-                'Backup saved successfully to: $outputPath (${fileSize} bytes)');
+                'Backup saved successfully to: $outputPath ($fileSize bytes)');
             lastBackupPath.value = outputPath;
             return outputPath;
           } else {
             throw Exception('Failed to verify backup file creation');
           }
         } else {
-          // User cancelled the save dialog
           Logger.i('User cancelled backup save');
           return null;
         }
       } else {
-        // Save to default location without asking
         if (Platform.isIOS) {
           try {
             final directory = await getApplicationDocumentsDirectory();

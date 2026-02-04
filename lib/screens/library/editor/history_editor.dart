@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
@@ -59,7 +60,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
     offlineStorage.saveEverything();
     HapticFeedback.lightImpact();
-    snackBar('History item deleted (Restart Required)');
+    snackBar('History item deleted (Change tabs to refresh)');
+    Get.delete<LibraryController>();
   }
 
   void _deleteAllHistory() {
@@ -76,7 +78,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
     offlineStorage.saveEverything();
     HapticFeedback.mediumImpact();
     offlineStorage.animeLibrary.refresh();
-    snackBar('All history cleared (Restart Required)');
+    snackBar('All history cleared (Change tabs to refresh)');
+    Get.delete<LibraryController>();
   }
 
   void _deleteSelectedHistory() {
@@ -98,6 +101,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     offlineStorage.saveEverything();
     HapticFeedback.mediumImpact();
     snackBar('${sortedIndices.length} history items deleted');
+    Get.delete<LibraryController>();
   }
 
   void _toggleSelection(int index) {

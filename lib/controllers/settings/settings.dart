@@ -25,6 +25,10 @@ class Settings extends GetxController {
   late Rx<PlayerSettings> playerSettings;
   late Box preferences;
   final canShowUpdate = true.obs;
+
+  /// Beta Updates Toggle
+  RxBool enableBetaUpdates = false.obs;
+
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
@@ -57,6 +61,11 @@ class Settings extends GetxController {
     selectedShader = preferences.get('selected_shader', defaultValue: '');
     selectedProfile =
         preferences.get('selected_profile', defaultValue: 'MID-END');
+
+    /// Load saved beta toggle preference
+    enableBetaUpdates.value =
+        preferences.get('enable_beta_updates', defaultValue: false);
+
     isTv().then((e) {
       isTV.value = e;
     });
@@ -66,10 +75,19 @@ class Settings extends GetxController {
     });
   }
 
+  /// Manual Update check (from About page)
   void checkForUpdates(BuildContext context) {
-    canShowUpdate.value
-        ? UpdateManager().checkForUpdates(context, canShowUpdate)
-        : null;
+    UpdateManager().checkForUpdates(
+      context,
+      RxBool(true), // Always allow manual checks
+      isBeta: enableBetaUpdates.value,
+    );
+  }
+
+  /// Save beta toggle preference
+  void saveBetaUpdateToggle(bool value) {
+    enableBetaUpdates.value = value;
+    preferences.put('enable_beta_updates', value);
   }
 
   void showWelcomeDialog(BuildContext context) {
