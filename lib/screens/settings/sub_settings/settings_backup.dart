@@ -4,6 +4,7 @@ import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class BackupRestorePage extends StatefulWidget {
@@ -173,7 +174,7 @@ class _SectionHeader extends StatelessWidget {
     return Text(
       title.toUpperCase(),
       style: TextStyle(
-        color: Theme.of(context).colorScheme.primary,
+        color: context.colors.primary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,

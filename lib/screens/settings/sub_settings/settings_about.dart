@@ -1,5 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
@@ -9,9 +11,8 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
-import 'package:url_launcher/url_launcher.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:anymex/screens/other_features.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -48,11 +49,12 @@ class AboutPage extends StatelessWidget {
                             margin: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surfaceContainer
-                                  .withOpacity(0.5),
+                                  .opaque(0.5),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black
+                                      .opaque(0.1, iReallyMeanIt: true),
                                   blurRadius: 10,
                                   offset: const Offset(0, 2),
                                 ),
@@ -115,13 +117,14 @@ class AboutPage extends StatelessWidget {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
+                                    color: Colors.black
+                                        .opaque(0.2, iReallyMeanIt: true),
                                     blurRadius: 10,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
-                              child: AnymeXAnimatedLogo(
+                              child: const AnymeXAnimatedLogo(
                                 size: 70,
                                 autoPlay: true,
                               )),
@@ -133,10 +136,7 @@ class AboutPage extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainer
-                            .withOpacity(0.5),
+                        color: context.colors.surfaceContainer.opaque(0.5),
                         borderRadius: BorderRadius.circular(12)),
                     child: CustomSection(
                       icon: Iconsax.link_circle,
@@ -175,8 +175,7 @@ class AboutPage extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                      color:
-                          theme.colorScheme.surfaceContainer.withOpacity(0.5),
+                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: CustomSection(
@@ -220,8 +219,7 @@ class AboutPage extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                      color:
-                          theme.colorScheme.surfaceContainer.withOpacity(0.5),
+                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: CustomSection(
@@ -252,6 +250,21 @@ class AboutPage extends StatelessWidget {
                           },
                           leading: const Icon(Icons.system_update),
                           title: "Check for Updates",
+                        ),
+
+                        // Enable Beta Updates (Toggle)
+                        CustomListTile(
+                          leading: const Icon(Iconsax.toggle_on),
+                          title: "Enable Beta Updates",
+                          subtitle: "Check updates from beta channel",
+                          trailing: Obx(
+                            () => Switch(
+                              value: Get.find<Settings>().enableBetaUpdates.value,
+                              onChanged: (value) {
+                                Get.find<Settings>().saveBetaUpdateToggle(value);
+                              },
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class MediaIndicatorBuilder extends StatelessWidget {
@@ -47,15 +48,15 @@ class MediaIndicatorBuilder extends StatelessWidget {
                     width: 140,
                     height: 140,
                     decoration: BoxDecoration(
-                      color: colorScheme.surface.withOpacity(0.2),
+                      color: colorScheme.surface.opaque(0.2),
                       borderRadius: BorderRadius.circular(32),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.opaque(0.1),
                         width: 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.opaque(0.1),
                           blurRadius: 20,
                           spreadRadius: 2,
                         ),
@@ -70,7 +71,7 @@ class MediaIndicatorBuilder extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: 1.0,
                             strokeWidth: 8,
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.opaque(0.2),
                             strokeCap: StrokeCap.round,
                           ),
                         ),
@@ -86,8 +87,8 @@ class MediaIndicatorBuilder extends StatelessWidget {
                                 year2023: false,
                                 strokeWidth: 8,
                                 color: isVolumeIndicator
-                                    ? colorScheme.primary.withOpacity(0.9)
-                                    : colorScheme.tertiary.withOpacity(0.9),
+                                    ? colorScheme.primary.opaque(0.9)
+                                    : colorScheme.tertiary.opaque(0.9),
                                 strokeCap: StrokeCap.round,
                               );
                             },
@@ -99,13 +100,13 @@ class MediaIndicatorBuilder extends StatelessWidget {
                             Icon(
                               _getIcon(value),
                               size: 32,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.opaque(0.9),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '${(value * 100).round()}%',
                               style: theme.textTheme.labelMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.opaque(0.9),
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
                               ),

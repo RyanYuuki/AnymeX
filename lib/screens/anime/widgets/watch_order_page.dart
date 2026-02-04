@@ -9,6 +9,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class WatchOrderPage extends StatefulWidget {
   final String title;
@@ -116,7 +117,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   Widget _buildTimelineItem(
       BuildContext context, WatchOrderItem item, int index, bool isLast) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return IntrinsicHeight(
       child: Row(
@@ -132,7 +133,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.4),
+                      color: colorScheme.primary.opaque(0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     )
@@ -154,7 +155,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     decoration: BoxDecoration(
-                      color: colorScheme.outlineVariant.withOpacity(0.5),
+                      color: colorScheme.outlineVariant.opaque(0.5),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -174,7 +175,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
   }
 
   Widget _buildAnimeCard(BuildContext context, WatchOrderItem item) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return GestureDetector(
       onTap: () {
@@ -190,10 +191,10 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.withOpacity(0.5),
+          color: colorScheme.surfaceContainer.opaque(0.5),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: colorScheme.outlineVariant.withOpacity(0.2)),
+              Border.all(color: colorScheme.outlineVariant.opaque(0.2)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Row(
@@ -284,7 +285,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   Widget _buildInfoBadge(BuildContext context, String text, IconData icon,
       {bool isAccent = false}) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final color =
         isAccent ? colorScheme.secondary : colorScheme.onSurfaceVariant;
 

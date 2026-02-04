@@ -5,6 +5,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:install_plugin/install_plugin.dart';
@@ -16,8 +17,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class UpdateManager {
-  static const String _repoUrl =
+  static const String _stableRepoUrl =
       'https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest';
+
+  static const String _betaRepoUrl =
+      'https://api.github.com/repos/Shebyyy/AnymeX/releases/latest';
 
   String getDownloadUrlByArch(List<dynamic> assets, String arch) {
     for (var asset in assets) {
@@ -29,13 +33,17 @@ class UpdateManager {
   }
 
   Future<void> checkForUpdates(
-      BuildContext context, RxBool canShowUpdate) async {
+    BuildContext context,
+    RxBool canShowUpdate, {
+    bool isBeta = false,
+  }) async {
     if (canShowUpdate.value) {
       canShowUpdate.value = false;
 
       try {
         final currentVersion = await _getCurrentVersion();
-        final latestRelease = await _fetchLatestRelease();
+        final latestRelease =
+            await _fetchLatestRelease(isBeta: isBeta);
 
         if (latestRelease == null) {
           snackBar("Failed to check for updates");
@@ -54,10 +62,15 @@ class UpdateManager {
         };
 
         if (_shouldUpdate(currentVersion, latestRelease['tag_name'])) {
-          _showUpdateBottomSheet(context, currentVersion,
-              latestRelease['tag_name'], latestRelease['body'], downloadUrls);
+          _showUpdateBottomSheet(
+            context,
+            currentVersion,
+            latestRelease['tag_name'],
+            latestRelease['body'],
+            downloadUrls,
+          );
         } else {
-          print("You're already using the latest version");
+          snackBar("You're already using the latest version!");
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
@@ -68,7 +81,7 @@ class UpdateManager {
     }
   }
 
-  final bool _currentVersionIncludesHotfix = false;
+  final bool _currentVersionIncludesHotfix = true;
 
   bool _shouldUpdate(String currentVersion, String latestVersion) {
     currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
@@ -81,8 +94,8 @@ class UpdateManager {
     final latestNums = latestSplit[0].split('.').map(int.parse).toList();
 
     for (int i = 0; i < 3; i++) {
-      final c = (i < currentNums.length) ? currentNums[i] : 0;
-      final l = (i < latestNums.length) ? latestNums[i] : 0;
+      final c = i < currentNums.length ? currentNums[i] : 0;
+      final l = i < latestNums.length ? latestNums[i] : 0;
       if (l > c) return true;
       if (l < c) return false;
     }
@@ -91,24 +104,16 @@ class UpdateManager {
     final latestHasTag = latestSplit.length == 2;
 
     if (latestHasTag && latestSplit[1].toLowerCase() == 'hotfix') {
-      if (_currentVersionIncludesHotfix) {
-        return false;
-      }
-
+      if (_currentVersionIncludesHotfix) return false;
       if (currentHasTag && currentSplit[1].toLowerCase() == 'hotfix') {
         return false;
       }
-
       return true;
     }
 
-    if (!currentHasTag && latestHasTag) {
-      return false;
-    }
+    if (!currentHasTag && latestHasTag) return false;
 
-    if (currentHasTag && !latestHasTag) {
-      return true;
-    }
+    if (currentHasTag && !latestHasTag) return true;
 
     if (currentHasTag && latestHasTag) {
       final priority = ['alpha', 'beta', 'rc'];
@@ -132,17 +137,22 @@ class UpdateManager {
     return packageInfo.version;
   }
 
-  Future<Map<String, dynamic>?> _fetchLatestRelease() async {
+  Future<Map<String, dynamic>?> _fetchLatestRelease({
+    bool isBeta = false,
+  }) async {
     try {
+      final url = isBeta ? _betaRepoUrl : _stableRepoUrl;
+
       final response = await http.get(
-        Uri.parse(_repoUrl),
+        Uri.parse(url),
         headers: {'Accept': 'application/vnd.github.v3+json'},
       );
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        Logger.i('Failed to fetch latest release: ${response.statusCode}');
+        Logger.i(
+            'Failed to fetch latest release: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching latest release: $e');
@@ -214,6 +224,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
+
     _pulseAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -275,11 +286,12 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       } else {
         final Uri url = Uri.parse(downloadUrl);
         if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
+          await launchUrl(url,
+              mode: LaunchMode.externalApplication);
         }
       }
     } catch (e) {
-      _showErrorDialog('Download failed: ${e.toString()}');
+      _showErrorDialog('Download failed: $e');
     } finally {
       setState(() {
         _isDownloading = false;
@@ -318,15 +330,19 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
 
     final status = await Permission.requestInstallPackages.request();
     if (!status.isGranted) {
-      snackBar("Install permission is required to update the app");
+      snackBar("Install permission required");
     }
 
-    final result =
-        await InstallPlugin.installApk(savePath, appId: 'com.ryan.anymex');
+    final result = await InstallPlugin.installApk(
+      savePath,
+      appId: 'com.ryan.anymex',
+    );
+
     if (result['isSuccess']) {
       _showSuccessDialog();
     } else {
-      throw Exception('Installation failed: ${result['errorMessage']}');
+      throw Exception(
+          'Installation failed: ${result['errorMessage']}');
     }
   }
 
@@ -361,14 +377,14 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        icon: const Icon(Icons.error_outline, color: Colors.red, size: 32),
+        icon: const Icon(Icons.error_outline, size: 32, color: Colors.red),
         title: const Text('Download Failed'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
-          ),
+          )
         ],
       ),
     );
@@ -380,15 +396,15 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       builder: (context) => AlertDialog(
         icon: Icon(
           Icons.check_circle_outline,
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
           size: 32,
         ),
         title: Text(
             Platform.isAndroid ? 'Installation Started' : 'Download Complete'),
         content: Text(
           Platform.isAndroid
-              ? 'Please follow the installation prompts to update the app.'
-              : 'The installer has been saved to:\n${filePath ?? 'Downloads folder'}',
+              ? 'Please follow installation prompts.'
+              : 'Installer saved to:\n${filePath ?? 'Downloads'}',
         ),
         actions: [
           TextButton(
@@ -397,7 +413,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               Navigator.pop(context);
             },
             child: const Text('OK'),
-          ),
+          )
         ],
       ),
     );
@@ -416,7 +432,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header with gradient
+          // HEADER
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
@@ -426,8 +442,6 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                   colorScheme.primaryContainer,
                   colorScheme.secondaryContainer,
                 ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
               ),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(28)),
@@ -447,10 +461,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Update Available',
+                  "Update Available",
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: colorScheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -458,11 +471,11 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.1),
+                    color: colorScheme.primary.opaque(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'v${widget.currentVersion} → ${widget.newVersion}',
+                    "v${widget.currentVersion} → ${widget.newVersion}",
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colorScheme.primary,
@@ -473,7 +486,6 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
             ),
           ),
 
-          // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -482,68 +494,50 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.new_releases,
-                        color: colorScheme.primary,
-                        size: 20,
-                      ),
+                      Icon(Icons.new_releases,
+                          color: colorScheme.primary, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'What\'s New',
+                        "What's New",
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
 
-                  // Changelog container
+                  // CHANGELOG
                   Expanded(
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(16),
+                        color: colorScheme.surfaceContainerHigh,
                         border: Border.all(
-                          color: colorScheme.outline.withOpacity(0.2),
+                          color: colorScheme.outline.opaque(0.2),
                         ),
                       ),
                       child: Markdown(
                         controller: widget.scrollController,
                         data: widget.changelog,
                         selectable: true,
-                        styleSheet: MarkdownStyleSheet(
-                          p: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            height: 1.5,
-                          ),
-                          h1: theme.textTheme.headlineSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          h2: theme.textTheme.titleLarge?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 24),
 
-                  // Download progress
+                  // DOWNLOAD STATUS
                   if (_isDownloading) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withOpacity(0.3),
+                        color: colorScheme.primaryContainer.opaque(0.3),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: colorScheme.primary.withOpacity(0.3),
+                          color: colorScheme.primary.opaque(0.3),
                         ),
                       ),
                       child: Column(
@@ -558,15 +552,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _downloadStatus,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
+                              Expanded(child: Text(_downloadStatus)),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -574,21 +560,21 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: _downloadProgress,
+                              minHeight: 6,
                               backgroundColor:
                                   colorScheme.surfaceContainerHighest,
-                              valueColor: AlwaysStoppedAnimation<Color>(
+                              valueColor: AlwaysStoppedAnimation(
                                 colorScheme.primary,
                               ),
-                              minHeight: 6,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 16)
                   ],
 
-                  // Action buttons
+                  // ACTION BUTTONS
                   Row(
                     children: [
                       Expanded(
@@ -596,61 +582,22 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                           onPressed: _isDownloading
                               ? null
                               : () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            side: BorderSide(color: colorScheme.outline),
-                          ),
-                          child: Text(
-                            'Later',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
+                          child: const Text("Later"),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         flex: 2,
                         child: FilledButton(
-                          onPressed:
-                              _isDownloading ? null : _downloadAndInstall,
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (!_isDownloading) ...[
-                                Icon(
-                                  Platform.isAndroid
-                                      ? Icons.download_for_offline
-                                      : Icons.download,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-                              Text(
-                                _isDownloading
-                                    ? 'Downloading...'
-                                    : Platform.isAndroid
-                                        ? 'Download & Install'
-                                        : 'Download',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                          onPressed: _isDownloading
+                              ? null
+                              : _downloadAndInstall,
+                          child: Text(
+                            _isDownloading
+                                ? "Downloading..."
+                                : (Platform.isAndroid
+                                    ? "Download & Install"
+                                    : "Download"),
                           ),
                         ),
                       ),

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:anymex/models/animethemes/anime_theme.dart';
 import 'package:anymex/utils/anime_themes_api.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -125,7 +126,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final surfaceColor = colorScheme.surface;
 
     return Scaffold(
@@ -151,7 +152,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                 BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                   child: Container(
-                    color: colorScheme.surface.withOpacity(0.5),
+                    color: colorScheme.surface.opaque(0.5),
                   ),
                 ),
                 Container(
@@ -160,8 +161,8 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withOpacity(0.2),
-                        surfaceColor.withOpacity(0.8),
+                        Colors.black.opaque(0.2),
+                        surfaceColor.opaque(0.8),
                         surfaceColor,
                       ],
                       stops: const [0.0, 0.6, 1.0],
@@ -193,7 +194,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                     borderRadius: BorderRadius.circular(16),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.4),
+                                        color: Colors.black.opaque(0.4),
                                         blurRadius: 20,
                                         offset: const Offset(0, 10),
                                       ),
@@ -235,7 +236,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                       widget.animeDetails.studios?.join(', ') ??
                                           'Unknown Studio',
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.7),
+                                        color: Colors.white.opaque(0.7),
                                         fontSize: 14,
                                       ),
                                       textAlign: TextAlign.center,
@@ -257,7 +258,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                               top: Radius.circular(32)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.opaque(0.1),
                               offset: const Offset(0, -5),
                             ),
                           ],
@@ -273,7 +274,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                 height: 4,
                                 decoration: BoxDecoration(
                                   color: colorScheme.onSurfaceVariant
-                                      .withOpacity(0.3),
+                                      .opaque(0.3),
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
@@ -366,7 +367,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
   Widget _buildThemeTile(int index, BuildContext context) {
     final theme = themes[index];
     final isCurrent = index == currentThemeIndex;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Material(
       color: Colors.transparent,
@@ -461,7 +462,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
   }
 
   Widget _buildBottomPlayer(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final currentTheme = themes[currentThemeIndex];
 
     final double maxDuration = totalDuration.inMilliseconds.toDouble();
@@ -474,14 +475,14 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.withOpacity(0.95),
+            color: colorScheme.surfaceContainer.opaque(0.95),
             border: Border(
               top: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(0.3)),
+                  color: colorScheme.outlineVariant.opaque(0.3)),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.opaque(0.2),
                 blurRadius: 15,
                 offset: const Offset(0, -2),
               ),
@@ -498,10 +499,10 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                   overlayShape:
                       const RoundSliderOverlayShape(overlayRadius: 14.0),
                   activeTrackColor: colorScheme.primary,
-                  inactiveTrackColor: colorScheme.onSurface.withOpacity(0.1),
+                  inactiveTrackColor: colorScheme.onSurface.opaque(0.1),
                   thumbColor: colorScheme.primary,
                   year2023: false,
-                  overlayColor: colorScheme.primary.withOpacity(0.2),
+                  overlayColor: colorScheme.primary.opaque(0.2),
                   trackShape: const RectangularSliderTrackShape(),
                 ),
                 child: Slider(

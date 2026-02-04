@@ -2,6 +2,7 @@ import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'dart:ui';
 
 enum EpisodeLayoutType {
@@ -63,13 +64,13 @@ class BetterEpisode extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (isSelected) {
-      return theme.colorScheme.primary.withOpacity(0.4);
+      return theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true);
     } else if (isFiller) {
       return layoutType == EpisodeLayoutType.compact
           ? Colors.orange
           : Colors.orangeAccent.withAlpha(120);
     } else {
-      return theme.colorScheme.secondaryContainer.withOpacity(
+      return theme.colorScheme.secondaryContainer.opaque(
         layoutType == EpisodeLayoutType.compact ? 0.4 : 0.5,
       );
     }
@@ -193,7 +194,7 @@ class BetterEpisode extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
           borderRadius: BorderRadius.circular(12),
         ),
         height: isCompact ? 4 : 2,
@@ -210,11 +211,11 @@ class BetterEpisode extends StatelessWidget {
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
         ),
         child: Icon(
           Icons.remove_red_eye,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: context.colors.onPrimary,
           size: 16,
         ),
       ),
@@ -233,14 +234,14 @@ class BetterEpisode extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.opaque(0.2),
               border: Border.all(
                 width: 2,
-                color: Theme.of(context).colorScheme.primary,
+                color: context.colors.primary,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  color: context.colors.primary.opaque(0.3),
                   blurRadius: 8,
                   spreadRadius: 2,
                 ),
@@ -268,7 +269,7 @@ class BetterEpisode extends StatelessWidget {
       variant: TextVariant.regular,
       maxLines: 3,
       fontStyle: FontStyle.italic,
-      color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.90),
+      color: context.colors.inverseSurface.opaque(0.90),
       overflow: TextOverflow.ellipsis,
     );
   }

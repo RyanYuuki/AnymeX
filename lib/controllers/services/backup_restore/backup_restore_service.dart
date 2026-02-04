@@ -5,6 +5,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Offline/Hive/custom_list.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:crypto/crypto.dart';
@@ -33,12 +34,30 @@ class BackupRestoreService extends GetxController {
   }
 
   Map<String, dynamic> _buildBackupData() {
+    final animeCount = _storageController.animeCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final mangaCount = _storageController.mangaCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final novelCount = _storageController.novelCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
       'appVersion': '',
       'username': serviceHandler.onlineService.profileData.value.name ??
           serviceHandler.onlineService.profileData.value.userName,
       'avatar': serviceHandler.onlineService.profileData.value.avatar,
+      'animeCount': animeCount,
+      'mangaCount': mangaCount,
+      'novelCount': novelCount,
       'animeLibrary':
           _storageController.animeLibrary.map((e) => e.toJson()).toList(),
       'mangaLibrary':
@@ -127,12 +146,10 @@ class BackupRestoreService extends GetxController {
               [];
     }
 
-    _storageController.animeLibrary.refresh();
-    _storageController.mangaLibrary.refresh();
-    _storageController.novelLibrary.refresh();
-
     _storageController.saveEverything();
     _storageController.rebuildDatabase();
+
+    Get.delete<LibraryController>();
   }
 
   String _encryptData(Map<String, dynamic> data, String password) {
@@ -216,8 +233,14 @@ class BackupRestoreService extends GetxController {
         }
       }
 
-      final backupFile = await _createBackupFile(password: password);
-      final bytes = await backupFile.readAsBytes();
+      // Build the backup data
+      final data = _buildBackupData();
+      final packageInfo = await PackageInfo.fromPlatform();
+      data['appVersion'] = packageInfo.version;
+
+      final content = password != null && password.isNotEmpty
+          ? _encryptData(data, password)
+          : jsonEncode(data);
 
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = 'anymex_backup_$timestamp.anymex';
@@ -225,29 +248,47 @@ class BackupRestoreService extends GetxController {
       String? outputPath;
 
       if (requestPath) {
-        outputPath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Save Backup File',
-          fileName: fileName,
-          bytes: bytes,
-          type: FileType.custom,
-          allowedExtensions: ['anymex'],
-        );
-      }
+        if (Platform.isIOS || Platform.isAndroid) {
+          outputPath = await FilePicker.platform.saveFile(
+            dialogTitle: 'Save Backup File',
+            fileName: fileName,
+            bytes: utf8.encode(content),
+            type: FileType.custom,
+            allowedExtensions: ['anymex'],
+          );
+        } else {
+          outputPath = await FilePicker.platform.saveFile(
+            dialogTitle: 'Save Backup File',
+            fileName: fileName,
+            type: FileType.custom,
+            allowedExtensions: ['anymex'],
+          );
+        }
 
-      if (await backupFile.exists()) {
-        await backupFile.delete();
-      }
+        if (outputPath != null) {
+          final outputFile = File(outputPath);
+          await outputFile.writeAsString(content, flush: true);
 
-      if (outputPath != null) {
-        lastBackupPath.value = outputPath;
-        return outputPath;
+          if (await outputFile.exists()) {
+            final fileSize = await outputFile.length();
+            Logger.i(
+                'Backup saved successfully to: $outputPath ($fileSize bytes)');
+            lastBackupPath.value = outputPath;
+            return outputPath;
+          } else {
+            throw Exception('Failed to verify backup file creation');
+          }
+        } else {
+          Logger.i('User cancelled backup save');
+          return null;
+        }
       } else {
         if (Platform.isIOS) {
           try {
             final directory = await getApplicationDocumentsDirectory();
             final fallbackPath = '${directory.path}/$fileName';
             final fallbackFile = File(fallbackPath);
-            await fallbackFile.writeAsBytes(bytes);
+            await fallbackFile.writeAsString(content, flush: true);
             Logger.i('Backup saved to iOS sandbox: $fallbackPath');
             lastBackupPath.value = fallbackPath;
             return fallbackPath;
@@ -255,8 +296,19 @@ class BackupRestoreService extends GetxController {
             Logger.i('Failed to save to iOS sandbox: $fallbackError');
             throw Exception('Failed to save backup: $fallbackError');
           }
+        } else {
+          // Android - save to downloads or documents
+          final directory = Platform.isAndroid
+              ? Directory('/storage/emulated/0/Download')
+              : await getApplicationDocumentsDirectory();
+
+          final fallbackPath = '${directory.path}/$fileName';
+          final fallbackFile = File(fallbackPath);
+          await fallbackFile.writeAsString(content, flush: true);
+          Logger.i('Backup saved to: $fallbackPath');
+          lastBackupPath.value = fallbackPath;
+          return fallbackPath;
         }
-        return null;
       }
     } catch (e) {
       Logger.i('Export backup failed: $e');
@@ -362,9 +414,9 @@ class BackupRestoreService extends GetxController {
           ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
-      final animeCount = (data['animeLibrary'] as List?)?.length ?? 0;
-      final mangaCount = (data['mangaLibrary'] as List?)?.length ?? 0;
-      final novelCount = (data['novelLibrary'] as List?)?.length ?? 0;
+      final animeCount = data['animeCount'] ?? 0;
+      final mangaCount = data['mangaCount'] ?? 0;
+      final novelCount = data['novelCount'] ?? 0;
 
       return {
         'date': data['date'],
@@ -414,10 +466,25 @@ class BackupRestoreService extends GetxController {
   }
 
   Map<String, dynamic> getLibraryStats() {
+    final animeCount = _storageController.animeCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final mangaCount = _storageController.mangaCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
+    final novelCount = _storageController.novelCustomLists.value.fold<int>(
+      0,
+      (sum, list) => sum + (list.mediaIds?.length ?? 0),
+    );
+
     return {
-      'animeCount': _storageController.animeLibrary.length,
-      'mangaCount': _storageController.mangaLibrary.length,
-      'novelCount': _storageController.novelLibrary.length,
+      'animeCount': animeCount,
+      'mangaCount': mangaCount,
+      'novelCount': novelCount,
       'totalMedia': _storageController.animeLibrary.length +
           _storageController.mangaLibrary.length +
           _storageController.novelLibrary.length,

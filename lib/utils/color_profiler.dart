@@ -9,6 +9,7 @@ import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -301,7 +302,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
             width: 32,
             height: 4,
             decoration: BoxDecoration(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+              color: theme.colorScheme.onSurfaceVariant.opaque(0.4),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -347,7 +348,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.shadow.withOpacity(0.1),
+                  color: theme.colorScheme.shadow.opaque(0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -392,7 +393,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    color: theme.colorScheme.primary.opaque(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -433,8 +434,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.colorScheme.primaryContainer.withOpacity(0.3),
-                  theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                  theme.colorScheme.primaryContainer.opaque(0.3),
+                  theme.colorScheme.secondaryContainer.opaque(0.3),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -490,7 +491,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                     colors: [
                                       theme.colorScheme.primaryContainer,
                                       theme.colorScheme.primaryContainer
-                                          .withOpacity(0.8),
+                                          .opaque(0.8),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -499,7 +500,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                             color: isSelected
                                 ? null
                                 : theme.colorScheme.surfaceVariant
-                                    .withOpacity(0.5),
+                                    .opaque(0.5),
                             borderRadius: BorderRadius.circular(16),
                             border: isSelected
                                 ? Border.all(
@@ -508,14 +509,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                   )
                                 : Border.all(
                                     color: theme.colorScheme.outline
-                                        .withOpacity(0.2),
+                                        .opaque(0.2),
                                     width: 1,
                                   ),
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
                                       color: theme.colorScheme.primary
-                                          .withOpacity(0.2),
+                                          .opaque(0.2),
                                       blurRadius: 12,
                                       offset: const Offset(0, 4),
                                     ),
@@ -593,8 +594,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                theme.colorScheme.primaryContainer.withOpacity(0.3),
-                theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                theme.colorScheme.primaryContainer.opaque(0.3),
+                theme.colorScheme.secondaryContainer.opaque(0.3),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -651,7 +652,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                   colors: [
                                     theme.colorScheme.primaryContainer,
                                     theme.colorScheme.primaryContainer
-                                        .withOpacity(0.8),
+                                        .opaque(0.8),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -660,7 +661,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                           color: isSelected
                               ? null
                               : theme.colorScheme.surfaceVariant
-                                  .withOpacity(0.5),
+                                  .opaque(0.5),
                           borderRadius: BorderRadius.circular(16),
                           border: isSelected
                               ? Border.all(
@@ -669,14 +670,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                 )
                               : Border.all(
                                   color: theme.colorScheme.outline
-                                      .withOpacity(0.2),
+                                      .opaque(0.2),
                                   width: 1,
                                 ),
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
                                     color: theme.colorScheme.primary
-                                        .withOpacity(0.2),
+                                        .opaque(0.2),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -694,7 +695,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                         colors: [
                                           theme.colorScheme.primary,
                                           theme.colorScheme.primary
-                                              .withOpacity(0.8),
+                                              .opaque(0.8),
                                         ],
                                       )
                                     : null,
@@ -706,7 +707,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                     ? [
                                         BoxShadow(
                                           color: theme.colorScheme.primary
-                                              .withOpacity(0.3),
+                                              .opaque(0.3),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -745,7 +746,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: isSelected
                                           ? theme.colorScheme.onPrimaryContainer
-                                              .withOpacity(0.8)
+                                              .opaque(0.8)
                                           : theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
@@ -788,8 +789,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                theme.colorScheme.primaryContainer.withOpacity(0.3),
-                theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                theme.colorScheme.primaryContainer.opaque(0.3),
+                theme.colorScheme.secondaryContainer.opaque(0.3),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -861,12 +862,12 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
         color: theme.colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.1),
+          color: theme.colorScheme.outline.opaque(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.05),
+            color: theme.colorScheme.shadow.opaque(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -891,13 +892,13 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                   gradient: LinearGradient(
                     colors: [
                       theme.colorScheme.primary,
-                      theme.colorScheme.primary.withOpacity(0.8),
+                      theme.colorScheme.primary.opaque(0.8),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      color: theme.colorScheme.primary.opaque(0.3),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

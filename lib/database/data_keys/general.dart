@@ -1,1 +1,1 @@
-enum General { shouldAskForTrack, hideAdultContent }
+enum General { shouldAskForTrack, hideAdultContent, uiScaler }

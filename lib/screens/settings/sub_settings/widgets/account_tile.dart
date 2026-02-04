@@ -6,6 +6,7 @@ import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:iconly/iconly.dart';
 
@@ -23,7 +24,7 @@ class ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Obx(() {
       final isLoggedIn = service.isLoggedIn.value;
@@ -72,8 +73,8 @@ class ProfileTile extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        colorScheme.secondaryContainer.withOpacity(0.6),
-                        colorScheme.surfaceContainerHighest.withOpacity(0.5)
+                        colorScheme.secondaryContainer.opaque(0.6),
+                        colorScheme.surfaceContainerHighest.opaque(0.5)
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -81,7 +82,7 @@ class ProfileTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.shadow.withOpacity(0.1),
+                        color: colorScheme.shadow.opaque(0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -132,8 +133,8 @@ class ProfileTile extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    colorScheme.secondaryContainer.withOpacity(0.6),
-                    colorScheme.surfaceContainerHighest.withOpacity(0.5)
+                    colorScheme.secondaryContainer.opaque(0.6),
+                    colorScheme.surfaceContainerHighest.opaque(0.5)
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -141,7 +142,7 @@ class ProfileTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.1),
+                    color: colorScheme.shadow.opaque(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -193,7 +194,7 @@ class ProfileTile extends StatelessWidget {
                               width: 130,
                               child: AnymexText(
                                 text: 'Connected to $title',
-                                color: Theme.of(context).colorScheme.primary,
+                                color: context.colors.primary,
                                 maxLines: 2,
                               ),
                             )

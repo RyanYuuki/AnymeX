@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class NoSourceSelectedWidget extends StatelessWidget {
   const NoSourceSelectedWidget({
@@ -30,7 +31,7 @@ class NoSourceSelectedWidget extends StatelessWidget {
               "Please select a source to continue.\nIf no sources are installed, you can ${isMobile ? "install one from the Extensions page" : "go back to the Home page."}",
               style: TextStyle(
                 fontSize: 16,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: context.colors.onSurface.opaque(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -55,8 +56,8 @@ class NoSourceSelectedWidget extends StatelessWidget {
                   style: const TextStyle(fontFamily: "Poppins-SemiBold")),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
-                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    context.colors.secondaryContainer,
+                foregroundColor: context.colors.onSurface,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 20,

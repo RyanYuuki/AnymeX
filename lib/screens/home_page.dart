@@ -5,6 +5,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                               text:
                                   '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
                               size: 30,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: context.colors.primary,
                               variant: TextVariant.bold),
                           const AnymexTextSpan(
                               text: ', what are we doing today?',
@@ -146,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                         final children = List<Widget>.from(
                             serviceHandler.homeWidgets(context));
                         final data = cacheController.getStoredAnime();
-                        if (children.length > 2) {
+                        if (serviceHandler.isLoggedIn.value) {
                           children.insert(
                             2,
                             Column(
@@ -377,7 +378,7 @@ class ImageButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius.multiplyRadius()),
         border: Border.all(
           width: 1,
-          color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.3),
+          color: context.colors.inverseSurface.withOpacity(0.3),
         ),
       ),
       child: Stack(
@@ -410,7 +411,7 @@ class ImageButton extends StatelessWidget {
               padding: EdgeInsets.zero,
               color: Colors.transparent,
               border: BorderSide(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                color: context.colors.primary.withOpacity(0.7),
               ),
               radius: borderRadius,
               child: Column(
@@ -428,7 +429,7 @@ class ImageButton extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Container(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                     height: 2,
                     width: 6 * buttonText.length.toDouble(),
                   )

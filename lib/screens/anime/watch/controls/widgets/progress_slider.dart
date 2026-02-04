@@ -1,9 +1,8 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 
 enum SliderStyle {
   regular,
@@ -28,7 +27,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Obx(() {
       final duration = controller.episodeDuration.value.inMilliseconds;
@@ -76,11 +75,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
           ),
           trackShape: ModernSliderTrack(),
           activeTrackColor: colorScheme.primary,
-          inactiveTrackColor:
-              colorScheme.surfaceContainerHighest.withOpacity(0.4),
-          secondaryActiveTrackColor: colorScheme.onSurface.withOpacity(0.3),
+          inactiveTrackColor: colorScheme.surfaceContainerHighest
+              .opaque(0.4, iReallyMeanIt: true),
+          secondaryActiveTrackColor:
+              colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
           thumbColor: colorScheme.primary,
-          overlayColor: colorScheme.primary.withOpacity(0.12),
+          overlayColor: colorScheme.primary.opaque(0.12, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
         );
 
@@ -94,11 +94,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
           ),
           trackShape: ModernSliderTrack(),
           activeTrackColor: colorScheme.primary,
-          inactiveTrackColor:
-              colorScheme.surfaceContainerHighest.withOpacity(0.3),
-          secondaryActiveTrackColor: colorScheme.onSurface.withOpacity(0.25),
+          inactiveTrackColor: colorScheme.surfaceContainerHighest
+              .opaque(0.3, iReallyMeanIt: true),
+          secondaryActiveTrackColor:
+              colorScheme.onSurface.opaque(0.25, iReallyMeanIt: true),
           thumbColor: colorScheme.primary,
-          overlayColor: colorScheme.primary.withOpacity(0.1),
+          overlayColor: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
         );
 
@@ -111,10 +112,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
           ),
           trackShape: MinimalSliderTrack(),
           activeTrackColor: colorScheme.primary,
-          inactiveTrackColor: colorScheme.onSurface.withOpacity(0.2),
-          secondaryActiveTrackColor: colorScheme.onSurface.withOpacity(0.15),
+          inactiveTrackColor:
+              colorScheme.onSurface.opaque(0.2, iReallyMeanIt: true),
+          secondaryActiveTrackColor:
+              colorScheme.onSurface.opaque(0.15, iReallyMeanIt: true),
           thumbColor: colorScheme.surface,
-          overlayColor: colorScheme.primary.withOpacity(0.08),
+          overlayColor: colorScheme.primary.opaque(0.08, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
         );
 
@@ -128,18 +131,18 @@ class _ProgressSliderState extends State<ProgressSlider> {
           ),
           trackShape: CapsuleSliderTrack(),
           activeTrackColor: colorScheme.primary,
-          inactiveTrackColor:
-              colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          secondaryActiveTrackColor: colorScheme.onSurface.withOpacity(0.3),
+          inactiveTrackColor: colorScheme.surfaceContainerHighest
+              .opaque(0.5, iReallyMeanIt: true),
+          secondaryActiveTrackColor:
+              colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
           thumbColor: colorScheme.surface,
-          overlayColor: colorScheme.primary.withOpacity(0.1),
+          overlayColor: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );
     }
   }
 }
 
-// Original circular thumb for regular style
 class CircularSliderThumb extends SliderComponentShape {
   const CircularSliderThumb({
     this.enabledThumbRadius = 8.0,
@@ -177,35 +180,30 @@ class CircularSliderThumb extends SliderComponentShape {
     final double radius = enabledThumbRadius +
         (pressedThumbRadius - enabledThumbRadius) * activationAnimation.value;
 
-    // Shadow
     final Paint shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.3)
+      ..color = Colors.black.opaque(0.3)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
     canvas.drawCircle(center + const Offset(0, 1), radius + 2, shadowPaint);
 
-    // Main thumb
     final Paint thumbPaint = Paint()
       ..color = sliderTheme.thumbColor ?? Colors.red
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius, thumbPaint);
 
-    // Inner highlight
     final Paint highlightPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
+      ..color = Colors.white.opaque(0.3)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(
         center - const Offset(2, 2), radius * 0.4, highlightPaint);
 
-    // Outer ring
     final Paint ringPaint = Paint()
-      ..color = Colors.white.withOpacity(0.8)
+      ..color = Colors.white.opaque(0.8)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawCircle(center, radius - 1, ringPaint);
   }
 }
 
-// Modern line-style thumb
 class ModernLineThumb extends SliderComponentShape {
   const ModernLineThumb({
     this.width = 4.0,
@@ -241,9 +239,8 @@ class ModernLineThumb extends SliderComponentShape {
     final double currentHeight =
         height + (pressedHeight - height) * activationAnimation.value;
 
-    // Shadow
     final Paint shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.2)
+      ..color = Colors.black.opaque(0.2)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
 
     final RRect shadowRect = RRect.fromRectAndRadius(
@@ -256,7 +253,6 @@ class ModernLineThumb extends SliderComponentShape {
     );
     canvas.drawRRect(shadowRect, shadowPaint);
 
-    // Main thumb with gradient
     final Rect thumbRect = Rect.fromCenter(
       center: center,
       width: width,
@@ -268,9 +264,9 @@ class ModernLineThumb extends SliderComponentShape {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Colors.white.withOpacity(0.9),
+          Colors.white.opaque(0.9),
           sliderTheme.thumbColor ?? Colors.white,
-          (sliderTheme.thumbColor ?? Colors.white).withOpacity(0.8),
+          (sliderTheme.thumbColor ?? Colors.white).opaque(0.8),
         ],
         stops: const [0.0, 0.5, 1.0],
       ).createShader(thumbRect);
@@ -281,17 +277,14 @@ class ModernLineThumb extends SliderComponentShape {
     );
     canvas.drawRRect(thumbRRect, thumbPaint);
 
-    // Subtle border
     final Paint borderPaint = Paint()
-      ..color = sliderTheme.thumbColor?.withOpacity(0.3) ??
-          Colors.white.withOpacity(0.3)
+      ..color = sliderTheme.thumbColor?.opaque(0.3) ?? Colors.white.opaque(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.5;
     canvas.drawRRect(thumbRRect, borderPaint);
   }
 }
 
-// Minimal dot-style thumb
 class MinimalThumb extends SliderComponentShape {
   const MinimalThumb({
     this.size = 16.0,
@@ -326,14 +319,12 @@ class MinimalThumb extends SliderComponentShape {
         size + (pressedSize - size) * activationAnimation.value;
     final double radius = currentSize / 2;
 
-    // Outer ring
     final Paint outerPaint = Paint()
       ..color = sliderTheme.activeTrackColor ?? Colors.blue
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
     canvas.drawCircle(center, radius, outerPaint);
 
-    // Inner dot
     final Paint innerPaint = Paint()
       ..color = sliderTheme.thumbColor ?? Colors.white
       ..style = PaintingStyle.fill;
@@ -341,7 +332,6 @@ class MinimalThumb extends SliderComponentShape {
   }
 }
 
-// Capsule-style thumb
 class CapsuleThumb extends SliderComponentShape {
   const CapsuleThumb({
     this.width = 6.0,
@@ -377,9 +367,8 @@ class CapsuleThumb extends SliderComponentShape {
     final double currentHeight =
         height + (pressedHeight - height) * activationAnimation.value;
 
-    // Shadow
     final Paint shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.15)
+      ..color = Colors.black.opaque(0.15)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
 
     final RRect shadowRect = RRect.fromRectAndRadius(
@@ -392,7 +381,6 @@ class CapsuleThumb extends SliderComponentShape {
     );
     canvas.drawRRect(shadowRect, shadowPaint);
 
-    // Main capsule
     final Paint thumbPaint = Paint()
       ..color = sliderTheme.thumbColor ?? Colors.white
       ..style = PaintingStyle.fill;
@@ -407,17 +395,15 @@ class CapsuleThumb extends SliderComponentShape {
     );
     canvas.drawRRect(thumbRRect, thumbPaint);
 
-    // Border
     final Paint borderPaint = Paint()
-      ..color = sliderTheme.activeTrackColor?.withOpacity(0.5) ??
-          Colors.blue.withOpacity(0.5)
+      ..color =
+          sliderTheme.activeTrackColor?.opaque(0.5) ?? Colors.blue.opaque(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawRRect(thumbRRect, borderPaint);
   }
 }
 
-// Track shapes for different styles
 class ModernSliderTrack extends SliderTrackShape {
   @override
   Rect getPreferredRect({
@@ -461,9 +447,8 @@ class ModernSliderTrack extends SliderTrackShape {
     final double trackHeight = sliderTheme.trackHeight ?? 4;
     final double trackRadius = trackHeight / 2;
 
-    // Draw track background
     final Paint inactiveTrackPaint = Paint()
-      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.withOpacity(0.3)
+      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.opaque(0.3)
       ..style = PaintingStyle.fill;
 
     final RRect trackRRect = RRect.fromRectAndRadius(
@@ -472,7 +457,6 @@ class ModernSliderTrack extends SliderTrackShape {
     );
     canvas.drawRRect(trackRRect, inactiveTrackPaint);
 
-    // Draw buffered track
     if (secondaryOffset != null) {
       final double secondaryTrackRight = secondaryOffset.dx;
       final Rect secondaryTrackRect = Rect.fromLTRB(
@@ -483,8 +467,8 @@ class ModernSliderTrack extends SliderTrackShape {
       );
 
       final Paint secondaryTrackPaint = Paint()
-        ..color = sliderTheme.secondaryActiveTrackColor ??
-            Colors.white.withOpacity(0.5)
+        ..color =
+            sliderTheme.secondaryActiveTrackColor ?? Colors.white.opaque(0.5)
         ..style = PaintingStyle.fill;
 
       final RRect secondaryTrackRRect = RRect.fromRectAndRadius(
@@ -494,7 +478,6 @@ class ModernSliderTrack extends SliderTrackShape {
       canvas.drawRRect(secondaryTrackRRect, secondaryTrackPaint);
     }
 
-    // Draw active track with gradient
     final double activeTrackRight = thumbCenter.dx;
     final Rect activeTrackRect = Rect.fromLTRB(
       trackRect.left,
@@ -507,7 +490,7 @@ class ModernSliderTrack extends SliderTrackShape {
       ..shader = LinearGradient(
         colors: [
           sliderTheme.activeTrackColor ?? Colors.red,
-          (sliderTheme.activeTrackColor ?? Colors.red).withOpacity(0.8),
+          (sliderTheme.activeTrackColor ?? Colors.red).opaque(0.8),
         ],
         stops: const [0.0, 1.0],
       ).createShader(activeTrackRect)
@@ -563,9 +546,8 @@ class MinimalSliderTrack extends SliderTrackShape {
 
     final double trackHeight = sliderTheme.trackHeight ?? 2;
 
-    // Simple line tracks for minimal style
     final Paint inactiveTrackPaint = Paint()
-      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.withOpacity(0.2)
+      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.opaque(0.2)
       ..strokeWidth = trackHeight
       ..strokeCap = StrokeCap.round;
 
@@ -575,11 +557,10 @@ class MinimalSliderTrack extends SliderTrackShape {
       inactiveTrackPaint,
     );
 
-    // Buffered track
     if (secondaryOffset != null) {
       final Paint secondaryTrackPaint = Paint()
-        ..color = sliderTheme.secondaryActiveTrackColor ??
-            Colors.white.withOpacity(0.15)
+        ..color =
+            sliderTheme.secondaryActiveTrackColor ?? Colors.white.opaque(0.15)
         ..strokeWidth = trackHeight
         ..strokeCap = StrokeCap.round;
 
@@ -590,7 +571,6 @@ class MinimalSliderTrack extends SliderTrackShape {
       );
     }
 
-    // Active track
     final Paint activeTrackPaint = Paint()
       ..color = sliderTheme.activeTrackColor ?? Colors.blue
       ..strokeWidth = trackHeight
@@ -647,9 +627,8 @@ class CapsuleSliderTrack extends SliderTrackShape {
     final double trackHeight = sliderTheme.trackHeight ?? 8;
     final double trackRadius = trackHeight / 2;
 
-    // Track background with more rounded appearance
     final Paint inactiveTrackPaint = Paint()
-      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.withOpacity(0.5)
+      ..color = sliderTheme.inactiveTrackColor ?? Colors.white.opaque(0.5)
       ..style = PaintingStyle.fill;
 
     final RRect trackRRect = RRect.fromRectAndRadius(
@@ -658,13 +637,12 @@ class CapsuleSliderTrack extends SliderTrackShape {
     );
     canvas.drawRRect(trackRRect, inactiveTrackPaint);
 
-    // Inner shadow effect
     final Paint shadowPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Colors.black.withOpacity(0.1),
+          Colors.black.opaque(0.1),
           Colors.transparent,
         ],
         stops: const [0.0, 0.3],
@@ -683,7 +661,6 @@ class CapsuleSliderTrack extends SliderTrackShape {
       shadowPaint,
     );
 
-    // Buffered track
     if (secondaryOffset != null) {
       final double secondaryTrackRight = secondaryOffset.dx;
       final Rect secondaryTrackRect = Rect.fromLTRB(
@@ -694,8 +671,8 @@ class CapsuleSliderTrack extends SliderTrackShape {
       );
 
       final Paint secondaryTrackPaint = Paint()
-        ..color = sliderTheme.secondaryActiveTrackColor ??
-            Colors.white.withOpacity(0.3)
+        ..color =
+            sliderTheme.secondaryActiveTrackColor ?? Colors.white.opaque(0.3)
         ..style = PaintingStyle.fill;
 
       final RRect secondaryTrackRRect = RRect.fromRectAndRadius(
@@ -705,7 +682,6 @@ class CapsuleSliderTrack extends SliderTrackShape {
       canvas.drawRRect(secondaryTrackRRect, secondaryTrackPaint);
     }
 
-    // Active track
     final double activeTrackRight = thumbCenter.dx;
     final Rect activeTrackRect = Rect.fromLTRB(
       trackRect.left,

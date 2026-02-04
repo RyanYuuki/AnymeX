@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 const Color seedColor = Colors.red;
 

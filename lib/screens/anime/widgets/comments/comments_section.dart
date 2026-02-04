@@ -3,6 +3,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -129,7 +130,7 @@ class _CommentSectionState extends State<CommentSection> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.05),
+            color: colorScheme.shadow.opaque(0.05, iReallyMeanIt: true),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -154,14 +155,16 @@ class _CommentSectionState extends State<CommentSection> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: controller.commentFocusNode.hasFocus
-                      ? colorScheme.primary.withOpacity(0.4)
-                      : colorScheme.outlineVariant.withOpacity(0.3),
+                      ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                      : colorScheme.outlineVariant
+                          .opaque(0.3, iReallyMeanIt: true),
                   width: 1.5,
                 ),
                 boxShadow: controller.commentFocusNode.hasFocus
                     ? [
                         BoxShadow(
-                          color: colorScheme.primary.withOpacity(0.1),
+                          color: colorScheme.primary
+                              .opaque(0.1, iReallyMeanIt: true),
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
@@ -191,7 +194,7 @@ class _CommentSectionState extends State<CommentSection> {
     return Obx(() => Container(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+            color: colorScheme.surfaceContainer.opaque(0.3),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Row(
@@ -266,14 +269,15 @@ class _CommentSectionState extends State<CommentSection> {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: controller.commentFocusNode.hasFocus
-                  ? colorScheme.primary.withOpacity(0.4)
-                  : colorScheme.outlineVariant.withOpacity(0.3),
+                  ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                  : colorScheme.outlineVariant.opaque(0.3, iReallyMeanIt: true),
               width: 1.5,
             ),
             boxShadow: controller.commentFocusNode.hasFocus
                 ? [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.1),
+                      color:
+                          colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -292,10 +296,12 @@ class _CommentSectionState extends State<CommentSection> {
                       height: 50,
                       clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withValues(alpha: 0.3),
+                        color: colorScheme.surface
+                            .opaque(0.3, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: colorScheme.outlineVariant.withOpacity(0.2),
+                          color: colorScheme.outlineVariant
+                              .opaque(0.2, iReallyMeanIt: true),
                           width: 1,
                         ),
                       ),
@@ -313,8 +319,7 @@ class _CommentSectionState extends State<CommentSection> {
                         decoration: InputDecoration(
                             hintText: 'What\'s on your mind?',
                             hintStyle: TextStyle(
-                              color:
-                                  colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              color: colorScheme.onSurfaceVariant.opaque(0.6),
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                             ),
@@ -331,7 +336,7 @@ class _CommentSectionState extends State<CommentSection> {
               if (controller.isInputExpanded.value) ...[
                 const SizedBox(height: 16),
                 Divider(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.opaque(0.3),
                   height: 1,
                 ),
                 const SizedBox(height: 16),
@@ -436,14 +441,13 @@ class _CommentSectionState extends State<CommentSection> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? colorScheme.primary.withOpacity(0.15)
-                        : colorScheme.surfaceContainerLow
-                            .withValues(alpha: 0.3),
+                        ? colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
+                        : colorScheme.surfaceContainerLow.opaque(0.3),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected
-                          ? colorScheme.primary.withOpacity(0.4)
-                          : colorScheme.outlineVariant.withOpacity(0.2),
+                          ? colorScheme.primary.opaque(0.4)
+                          : colorScheme.outlineVariant.opaque(0.2),
                       width: 1.5,
                     ),
                   ),
@@ -473,27 +477,27 @@ class _CommentSectionState extends State<CommentSection> {
             decoration: InputDecoration(
               hintText: 'Or type custom tag...',
               hintStyle: TextStyle(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                color: colorScheme.onSurfaceVariant.opaque(0.6),
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.15),
+              fillColor: colorScheme.surfaceContainerHighest.opaque(0.15),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.opaque(0.3),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.opaque(0.3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: colorScheme.primary.withOpacity(0.5),
+                  color: colorScheme.primary.opaque(0.5),
                   width: 1.5,
                 ),
               ),
@@ -515,12 +519,12 @@ class _CommentSectionState extends State<CommentSection> {
         shape: BoxShape.circle,
         color: colorScheme.surfaceContainer,
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.1),
+          color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.opaque(0.1, iReallyMeanIt: true),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -626,7 +630,7 @@ class _CommentSectionState extends State<CommentSection> {
           height: 1,
           margin: const EdgeInsets.only(left: 56, top: 24, bottom: 24),
           decoration: BoxDecoration(
-            color: colorScheme.outlineVariant.withOpacity(0.2),
+            color: colorScheme.outlineVariant.opaque(0.2),
           ),
         ),
         itemBuilder: (context, index) {
@@ -693,7 +697,8 @@ class _CommentSectionState extends State<CommentSection> {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant
+                      .opaque(0.3, iReallyMeanIt: true),
                   width: 2,
                 ),
               ),
@@ -736,7 +741,8 @@ class _CommentSectionState extends State<CommentSection> {
                           ),
                           height: 1,
                           decoration: BoxDecoration(
-                            color: colorScheme.outlineVariant.withOpacity(0.15),
+                            color: colorScheme.outlineVariant
+                                .opaque(0.15, iReallyMeanIt: true),
                           ),
                         ),
                     ],
@@ -766,12 +772,12 @@ class _CommentSectionState extends State<CommentSection> {
             shape: BoxShape.circle,
             color: colorScheme.surfaceContainer,
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.1),
+              color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: colorScheme.shadow.withOpacity(0.08),
+                color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -795,42 +801,39 @@ class _CommentSectionState extends State<CommentSection> {
                   ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Text(
-                    comment.username,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colorScheme.onSurface,
-                      fontSize: 15,
+                  Flexible(
+                    child: Text(
+                      comment.username,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                        fontSize: 15,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 3,
-                    height: 3,
-                    decoration: BoxDecoration(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.4),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    timeago.format(DateTime.parse(comment.createdAt)),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (comment.tag.isNotEmpty) _buildTag(context, comment.tag),
+                  if (comment.tag.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    _buildTag(context, comment.tag),
+                  ],
                 ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                timeago.format(DateTime.parse(comment.createdAt)),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 12),
               _SpoilerText(
@@ -908,7 +911,7 @@ class _CommentSectionState extends State<CommentSection> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+          color: colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -976,8 +979,8 @@ class _CommentSectionState extends State<CommentSection> {
               Navigator.pop(context);
             },
             style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
+              backgroundColor: context.colors.error,
+              foregroundColor: context.colors.onError,
             ),
             child: const Text('Delete'),
           ),
@@ -1056,15 +1059,15 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildTag(BuildContext context, String tag) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: colorScheme.primary.withOpacity(0.1),
+        color: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: colorScheme.primary.withOpacity(0.2),
+          color: colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
           width: 1,
         ),
       ),
@@ -1087,7 +1090,7 @@ class _CommentSectionState extends State<CommentSection> {
     required VoidCallback onTap,
     required bool isUpvote,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
     final activeColor = isUpvote ? colorScheme.primary : colorScheme.error;
 
     return Material(
@@ -1100,13 +1103,13 @@ class _CommentSectionState extends State<CommentSection> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: isActive
-                ? activeColor.withOpacity(0.1)
+                ? activeColor.opaque(0.1, iReallyMeanIt: true)
                 : colorScheme.surfaceContainer.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isActive
-                  ? activeColor.withOpacity(0.3)
-                  : colorScheme.outlineVariant.withOpacity(0.2),
+                  ? activeColor.opaque(0.3, iReallyMeanIt: true)
+                  : colorScheme.outlineVariant.opaque(0.2, iReallyMeanIt: true),
               width: 1.5,
             ),
           ),
@@ -1183,7 +1186,7 @@ class _SpoilerTextState extends State<_SpoilerText> {
         decoration: BoxDecoration(
           color: _isRevealed
               ? Colors.transparent
-              : widget.colorScheme.surfaceContainerHighest.withOpacity(0.8),
+              : widget.colorScheme.surfaceContainerHighest.opaque(0.8),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
@@ -1196,7 +1199,7 @@ class _SpoilerTextState extends State<_SpoilerText> {
             fontWeight: FontWeight.w400,
             backgroundColor: _isRevealed
                 ? Colors.transparent
-                : widget.colorScheme.surfaceContainerHighest.withOpacity(0.8),
+                : widget.colorScheme.surfaceContainerHighest.opaque(0.8),
           ),
         ),
       ),

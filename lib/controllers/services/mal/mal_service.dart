@@ -77,10 +77,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
-                  buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
-                  buildSectionIfNotEmpty("Popular Animes", popularAnimes),
-                  buildSectionIfNotEmpty("Top Animes", topAnimes),
-                  buildSectionIfNotEmpty("Upcoming Animes", upcomingAnimes),
+                  buildBigCarousel(trendingAnimes, false),
+                  buildSectionIfNotEmpty("Trending Anime", trendingAnimes),
+                  buildSectionIfNotEmpty("Popular Anime", popularAnimes),
+                  buildSectionIfNotEmpty("Top Anime", topAnimes),
+                  buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
                 ],
               )),
       ].obs;
@@ -91,6 +92,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             ? const Center(child: AnymexProgressIndicator())
             : Column(
                 children: [
+                  buildBigCarousel(trendingManga, true),
                   buildSectionIfNotEmpty("Trending Manga", trendingManga,
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
@@ -175,97 +177,88 @@ class MalService extends GetxController implements BaseService, OnlineService {
         .map<String>((entry) => entry.key)
         .toList();
     return [
-      Obx(() => Column(
+      if (isLoggedIn.value) ...[
+        LayoutBuilder(builder: (context, constraints) {
+          final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
+          final overflow = constraints.maxWidth < 900;
+          final overflowSecond =
+              !isDesktop ? false : constraints.maxWidth < 600;
+          return Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 15,
             children: [
-              if (isLoggedIn.value) ...[
-                LayoutBuilder(builder: (context, constraints) {
-                  final width =
-                      isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
-                  final overflow = constraints.maxWidth < 900;
-                  final overflowSecond =
-                      !isDesktop ? false : constraints.maxWidth < 600;
-                  return Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 15,
-                    children: [
-                      ImageButton(
-                        width: width,
-                        height: !isDesktop ? 70 : 90,
-                        buttonText: "ANIME LIST",
-                        backgroundImage: trendingAnimes.isEmpty
-                            ? ''
-                            : trendingAnimes
-                                    .firstWhere((e) => e.cover != null)
-                                    .cover ??
-                                '',
-                        borderRadius: 16.multiplyRadius(),
-                        onPressed: () {
-                          navigate(() => const AnimeList());
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
-                        child: ImageButton(
-                          width: width,
-                          height: !isDesktop ? 70 : 90,
-                          buttonText: "MANGA LIST",
-                          borderRadius: 16.multiplyRadius(),
-                          backgroundImage: trendingMangas
-                                  .firstWhere((e) => e.cover != null)
-                                  .cover ??
-                              '',
-                          onPressed: () {
-                            navigate(() => const AnilistMangaList());
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
-                        child: ImageButton(
-                          width: width,
-                          height: !isDesktop ? 70 : 90,
-                          buttonText: "OTHER",
-                          borderRadius: 16.multiplyRadius(),
-                          backgroundImage: [
-                                ...popularAnimes,
-                                ...popularMangas,
-                                ...trendingMangas,
-                                ...trendingAnimes
-                              ].where((e) => e.cover != null).last.cover ??
-                              '',
-                          onPressed: () {
-                            navigate(() => const OtherFeaturesPage());
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-                const SizedBox(height: 10),
-                Obx(() => Column(
-                      children: acceptedLists.map((e) {
-                        return ReusableCarousel(
-                          data: filterListByLabel(
-                              e.contains("Manga") || e.contains("Reading")
-                                  ? mangaList
-                                  : animeList,
-                              e),
-                          title: e,
-                          variant: DataVariant.anilist,
-                          type: e.contains("Manga") || e.contains("Reading")
-                              ? ItemType.manga
-                              : ItemType.anime,
-                        );
-                      }).toList(),
-                    )),
-              ],
-              buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
-              buildSectionIfNotEmpty("Popular Animes", popularAnimes),
-              buildSectionIfNotEmpty("Trending Manga", trendingManga,
-                  isManga: true),
-              buildSectionIfNotEmpty("Popular Manga", topManga, isManga: true),
+              ImageButton(
+                width: width,
+                height: !isDesktop ? 70 : 90,
+                buttonText: "ANIME LIST",
+                backgroundImage: trendingAnimes.isEmpty
+                    ? ''
+                    : trendingAnimes.firstWhere((e) => e.cover != null).cover ??
+                        '',
+                borderRadius: 16.multiplyRadius(),
+                onPressed: () {
+                  navigate(() => const AnimeList());
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
+                child: ImageButton(
+                  width: width,
+                  height: !isDesktop ? 70 : 90,
+                  buttonText: "MANGA LIST",
+                  borderRadius: 16.multiplyRadius(),
+                  backgroundImage:
+                      trendingMangas.firstWhere((e) => e.cover != null).cover ??
+                          '',
+                  onPressed: () {
+                    navigate(() => const AnilistMangaList());
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
+                child: ImageButton(
+                  width: width,
+                  height: !isDesktop ? 70 : 90,
+                  buttonText: "OTHER",
+                  borderRadius: 16.multiplyRadius(),
+                  backgroundImage: [
+                        ...popularAnimes,
+                        ...popularMangas,
+                        ...trendingMangas,
+                        ...trendingAnimes
+                      ].where((e) => e.cover != null).last.cover ??
+                      '',
+                  onPressed: () {
+                    navigate(() => const OtherFeaturesPage());
+                  },
+                ),
+              ),
             ],
-          )),
+          );
+        }),
+        const SizedBox(height: 10),
+        Obx(() => Column(
+              children: acceptedLists.map((e) {
+                return ReusableCarousel(
+                  data: filterListByLabel(
+                      e.contains("Manga") || e.contains("Reading")
+                          ? mangaList
+                          : animeList,
+                      e),
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: e.contains("Manga") || e.contains("Reading")
+                      ? ItemType.manga
+                      : ItemType.anime,
+                );
+              }).toList(),
+            )),
+      ],
+      buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
+      buildSectionIfNotEmpty("Popular Animes", popularAnimes),
+      buildSectionIfNotEmpty("Trending Manga", trendingManga, isManga: true),
+      buildSectionIfNotEmpty("Popular Manga", topManga, isManga: true),
     ].obs;
   }
 

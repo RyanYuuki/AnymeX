@@ -5,6 +5,7 @@
 // import 'package:anymex/widgets/non_widgets/snackbar.dart';
 // import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 // import 'package:get/get.dart';
 // import 'package:anymex/screens/downloader/model/download_item.dart';
 // import 'package:background_downloader/background_downloader.dart';
@@ -40,7 +41,7 @@
 //                     Container(
 //                       padding: const EdgeInsets.all(20),
 //                       decoration: BoxDecoration(
-//                         color: colorScheme.primary.withOpacity(0.1),
+//                         color: colorScheme.primary.opaque(0.1),
 //                         borderRadius: BorderRadius.circular(20),
 //                       ),
 //                       child: CircularProgressIndicator(
@@ -113,10 +114,10 @@
 //     return Container(
 //       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
 //       decoration: BoxDecoration(
-//         color: theme.colorScheme.surface.withOpacity(0.4),
+//         color: theme.colorScheme.surface.opaque(0.4),
 //         border: Border(
 //           bottom: BorderSide(
-//             color: theme.colorScheme.outline.withOpacity(0.2),
+//             color: theme.colorScheme.outline.opaque(0.2),
 //             width: 1,
 //           ),
 //         ),
@@ -131,7 +132,7 @@
 //             ),
 //             style: IconButton.styleFrom(
 //               backgroundColor:
-//                   theme.colorScheme.surfaceVariant.withOpacity(0.3),
+//                   theme.colorScheme.surfaceVariant.opaque(0.3),
 //               padding: const EdgeInsets.all(12),
 //             ),
 //           ),
@@ -157,7 +158,7 @@
 //             ),
 //             style: IconButton.styleFrom(
 //               backgroundColor:
-//                   theme.colorScheme.surfaceVariant.withOpacity(0.3),
+//                   theme.colorScheme.surfaceVariant.opaque(0.3),
 //               padding: const EdgeInsets.all(12),
 //             ),
 //           )
@@ -174,16 +175,16 @@
 //           Container(
 //             padding: const EdgeInsets.all(32),
 //             decoration: BoxDecoration(
-//               color: colorScheme.surfaceVariant.withOpacity(0.3),
+//               color: colorScheme.surfaceVariant.opaque(0.3),
 //               borderRadius: BorderRadius.circular(24),
 //               border: Border.all(
-//                 color: colorScheme.outline.withOpacity(0.2),
+//                 color: colorScheme.outline.opaque(0.2),
 //               ),
 //             ),
 //             child: Icon(
 //               Iconsax.document_download,
 //               size: 64,
-//               color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+//               color: colorScheme.onSurfaceVariant.opaque(0.6),
 //             ),
 //           ),
 //           const SizedBox(height: 24),
@@ -215,7 +216,7 @@
 //           Container(
 //             padding: const EdgeInsets.all(8),
 //             decoration: BoxDecoration(
-//               color: iconColor.withOpacity(0.15),
+//               color: iconColor.opaque(0.15),
 //               borderRadius: BorderRadius.circular(10),
 //             ),
 //             child: Icon(icon, size: 18, color: iconColor),
@@ -233,7 +234,7 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: colorScheme.primary.withOpacity(0.15),
+//               color: colorScheme.primary.opaque(0.15),
 //               borderRadius: BorderRadius.circular(12),
 //             ),
 //             child: Text(
@@ -258,18 +259,18 @@
 //       decoration: BoxDecoration(
 //         borderRadius: BorderRadius.circular(20),
 //         color: isActive
-//             ? colorScheme.primary.withOpacity(0.05)
-//             : colorScheme.surfaceVariant.withOpacity(0.3),
+//             ? colorScheme.primary.opaque(0.05)
+//             : colorScheme.surfaceVariant.opaque(0.3),
 //         border: Border.all(
 //           color: isActive
-//               ? colorScheme.primary.withOpacity(0.2)
-//               : colorScheme.outline.withOpacity(0.15),
+//               ? colorScheme.primary.opaque(0.2)
+//               : colorScheme.outline.opaque(0.15),
 //           width: isActive ? 1.5 : 1,
 //         ),
 //         boxShadow: isActive
 //             ? [
 //                 BoxShadow(
-//                   color: colorScheme.primary.withOpacity(0.1),
+//                   color: colorScheme.primary.opaque(0.1),
 //                   blurRadius: 8,
 //                   offset: const Offset(0, 2),
 //                 ),
@@ -287,9 +288,9 @@
 //                     height: 78,
 //                     decoration: BoxDecoration(
 //                       borderRadius: BorderRadius.circular(12),
-//                       color: colorScheme.primary.withOpacity(0.1),
+//                       color: colorScheme.primary.opaque(0.1),
 //                       border: Border.all(
-//                         color: colorScheme.primary.withOpacity(0.2),
+//                         color: colorScheme.primary.opaque(0.2),
 //                       ),
 //                     ),
 //                     clipBehavior: Clip.antiAlias,
@@ -368,10 +369,10 @@
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
 //       decoration: BoxDecoration(
-//         color: colorScheme.secondary.withOpacity(0.15),
+//         color: colorScheme.secondary.opaque(0.15),
 //         borderRadius: BorderRadius.circular(12),
 //         border: Border.all(
-//           color: colorScheme.secondary.withOpacity(0.2),
+//           color: colorScheme.secondary.opaque(0.2),
 //         ),
 //       ),
 //       child: Row(
@@ -404,7 +405,7 @@
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
 //       decoration: BoxDecoration(
-//         color: statusColor.withOpacity(0.15),
+//         color: statusColor.opaque(0.15),
 //         borderRadius: BorderRadius.circular(12),
 //       ),
 //       child: Row(
@@ -451,7 +452,7 @@
 //         Container(
 //           height: 6,
 //           decoration: BoxDecoration(
-//             color: colorScheme.surfaceVariant.withOpacity(0.5),
+//             color: colorScheme.surfaceVariant.opaque(0.5),
 //             borderRadius: BorderRadius.circular(3),
 //           ),
 //           child: ClipRRect(
@@ -477,7 +478,7 @@
 //             icon: Iconsax.pause,
 //             label: 'Pause',
 //             onPressed: () => _controller.pauseDownload(item.id),
-//             backgroundColor: colorScheme.secondaryContainer.withOpacity(0.5),
+//             backgroundColor: colorScheme.secondaryContainer.opaque(0.5),
 //             foregroundColor: colorScheme.onSecondaryContainer,
 //           )
 //         else if (item.canResume)
@@ -485,7 +486,7 @@
 //             icon: Iconsax.play,
 //             label: 'Resume',
 //             onPressed: () => _controller.resumeDownload(item.id),
-//             backgroundColor: colorScheme.primaryContainer.withOpacity(0.5),
+//             backgroundColor: colorScheme.primaryContainer.opaque(0.5),
 //             foregroundColor: colorScheme.onPrimaryContainer,
 //           )
 //         else if (item.isFailed || item.isCanceled)
@@ -493,7 +494,7 @@
 //             icon: Iconsax.refresh,
 //             label: 'Retry',
 //             onPressed: () => _controller.retryDownload(item.id),
-//             backgroundColor: colorScheme.primaryContainer.withOpacity(0.5),
+//             backgroundColor: colorScheme.primaryContainer.opaque(0.5),
 //             foregroundColor: colorScheme.onPrimaryContainer,
 //           ),
 //         const Spacer(),
@@ -501,7 +502,7 @@
 //           icon: Iconsax.trash,
 //           label: 'Delete',
 //           onPressed: () => _showDeleteConfirmation(item),
-//           backgroundColor: colorScheme.errorContainer.withOpacity(0.5),
+//           backgroundColor: colorScheme.errorContainer.opaque(0.5),
 //           foregroundColor: colorScheme.onErrorContainer,
 //         ),
 //       ],
@@ -604,7 +605,7 @@
 //             Container(
 //               padding: const EdgeInsets.all(8),
 //               decoration: BoxDecoration(
-//                 color: colorScheme.errorContainer.withOpacity(0.5),
+//                 color: colorScheme.errorContainer.opaque(0.5),
 //                 borderRadius: BorderRadius.circular(12),
 //               ),
 //               child: Icon(
@@ -697,7 +698,7 @@
 //                   Container(
 //                     padding: const EdgeInsets.all(8),
 //                     decoration: BoxDecoration(
-//                       color: colorScheme.primary.withOpacity(0.15),
+//                       color: colorScheme.primary.opaque(0.15),
 //                       borderRadius: BorderRadius.circular(12),
 //                     ),
 //                     child: Icon(
@@ -766,10 +767,10 @@
 //                       width: double.infinity,
 //                       padding: const EdgeInsets.all(16),
 //                       decoration: BoxDecoration(
-//                         color: colorScheme.errorContainer.withOpacity(0.3),
+//                         color: colorScheme.errorContainer.opaque(0.3),
 //                         borderRadius: BorderRadius.circular(16),
 //                         border: Border.all(
-//                           color: colorScheme.error.withOpacity(0.2),
+//                           color: colorScheme.error.opaque(0.2),
 //                         ),
 //                       ),
 //                       child: Column(
@@ -802,7 +803,7 @@
 //                               style: OutlinedButton.styleFrom(
 //                                 foregroundColor: colorScheme.error,
 //                                 side: BorderSide(
-//                                   color: colorScheme.error.withOpacity(0.5),
+//                                   color: colorScheme.error.opaque(0.5),
 //                                 ),
 //                                 padding:
 //                                     const EdgeInsets.symmetric(vertical: 12),
@@ -854,10 +855,10 @@
 //     return Container(
 //       margin: const EdgeInsets.only(bottom: 12),
 //       decoration: BoxDecoration(
-//         color: colorScheme.surfaceVariant.withOpacity(0.3),
+//         color: colorScheme.surfaceVariant.opaque(0.3),
 //         borderRadius: BorderRadius.circular(16),
 //         border: Border.all(
-//           color: colorScheme.outline.withOpacity(0.2),
+//           color: colorScheme.outline.opaque(0.2),
 //         ),
 //       ),
 //       child: Column(
@@ -867,7 +868,7 @@
 //             leading: Container(
 //               padding: const EdgeInsets.all(8),
 //               decoration: BoxDecoration(
-//                 color: colorScheme.primary.withOpacity(0.15),
+//                 color: colorScheme.primary.opaque(0.15),
 //                 borderRadius: BorderRadius.circular(10),
 //               ),
 //               child: Icon(
@@ -931,10 +932,10 @@
 //     return Container(
 //       margin: const EdgeInsets.only(bottom: 12),
 //       decoration: BoxDecoration(
-//         color: colorScheme.surfaceVariant.withOpacity(0.3),
+//         color: colorScheme.surfaceVariant.opaque(0.3),
 //         borderRadius: BorderRadius.circular(16),
 //         border: Border.all(
-//           color: colorScheme.outline.withOpacity(0.2),
+//           color: colorScheme.outline.opaque(0.2),
 //         ),
 //       ),
 //       child: ListTile(
@@ -942,7 +943,7 @@
 //         leading: Container(
 //           padding: const EdgeInsets.all(8),
 //           decoration: BoxDecoration(
-//             color: colorScheme.primary.withOpacity(0.15),
+//             color: colorScheme.primary.opaque(0.15),
 //             borderRadius: BorderRadius.circular(10),
 //           ),
 //           child: Icon(
@@ -997,7 +998,7 @@
 //             Container(
 //               padding: const EdgeInsets.all(8),
 //               decoration: BoxDecoration(
-//                 color: colorScheme.errorContainer.withOpacity(0.5),
+//                 color: colorScheme.errorContainer.opaque(0.5),
 //                 borderRadius: BorderRadius.circular(12),
 //               ),
 //               child: Icon(

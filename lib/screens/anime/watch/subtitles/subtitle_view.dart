@@ -9,6 +9,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum SubtitleSearchView { search, seasons, episodes, subtitles }
@@ -149,7 +150,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: context.colors.error,
         ),
       );
     }
@@ -254,7 +255,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                     _buildContent(theme, colorScheme),
                     if (_isLoading)
                       Container(
-                        color: colorScheme.surface.withOpacity(0.8),
+                        color: colorScheme.surface.opaque(0.8),
                         child: _buildFullScreenLoader(theme, colorScheme),
                       ),
                   ],
@@ -287,7 +288,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.1),
+              color: colorScheme.shadow.opaque(0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -373,7 +374,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                       )
                     : Icon(Icons.search, color: colorScheme.onSurfaceVariant),
                 filled: true,
-                fillColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                fillColor: colorScheme.surfaceVariant.opaque(0.5),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -486,9 +487,9 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceVariant.withOpacity(0.3),
+              color: colorScheme.surfaceVariant.opaque(0.3),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+              border: Border.all(color: colorScheme.outline.opaque(0.2)),
             ),
             child: InkWell(
               onTap: _isLoading
@@ -588,9 +589,9 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceVariant.opaque(0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(color: colorScheme.outline.opaque(0.2)),
       ),
       child: InkWell(
         onTap: _isLoading
@@ -726,9 +727,9 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceVariant.opaque(0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(color: colorScheme.outline.opaque(0.2)),
       ),
       child: InkWell(
         onTap: _isLoading
@@ -788,9 +789,9 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceVariant.opaque(0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(color: colorScheme.outline.opaque(0.2)),
       ),
       child: InkWell(
         onTap: _isLoading
@@ -927,7 +928,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon,
-                size: 64, color: colorScheme.onSurfaceVariant.withOpacity(0.5)),
+                size: 64, color: colorScheme.onSurfaceVariant.opaque(0.5)),
             const SizedBox(height: 16),
             Text(
               title,
@@ -939,7 +940,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
             Text(
               subtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.opaque(0.7),
               ),
               textAlign: TextAlign.center,
             ),

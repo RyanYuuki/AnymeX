@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -227,13 +228,13 @@ class BottomControls extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               color: isDark
-                  ? theme.colorScheme.surfaceVariant.withOpacity(0.2)
+                  ? theme.colorScheme.surfaceVariant.opaque(0.2)
                   : theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isDark
-                    ? theme.colorScheme.outline.withOpacity(0.15)
-                    : theme.colorScheme.outline.withOpacity(0.3),
+                    ? theme.colorScheme.outline.opaque(0.15)
+                    : theme.colorScheme.outline.opaque(0.3),
                 width: 0.5,
               ),
             ),
@@ -275,7 +276,7 @@ class BottomControls extends StatelessWidget {
                     border: Border.all(
                       color: isDark
                           ? theme.colorScheme.outline
-                          : theme.colorScheme.outline.withOpacity(0.5),
+                          : theme.colorScheme.outline.opaque(0.5),
                       width: 0.5,
                     ),
                   ),
@@ -283,7 +284,7 @@ class BottomControls extends StatelessWidget {
                     text: '+${controller.playerSettings.skipDuration}',
                     variant: TextVariant.semiBold,
                     color: controller.isLocked.value
-                        ? theme.colorScheme.onSurface.withOpacity(0.4)
+                        ? theme.colorScheme.onSurface.opaque(0.4)
                         : null,
                   ),
                 ),
@@ -306,13 +307,13 @@ class BottomControls extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
+                          ? theme.colorScheme.surfaceVariant.opaque(0.3)
                           : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isDark
-                            ? theme.colorScheme.outline.withOpacity(0.2)
-                            : theme.colorScheme.outline.withOpacity(0.4),
+                            ? theme.colorScheme.outline.opaque(0.2)
+                            : theme.colorScheme.outline.opaque(0.4),
                         width: 0.5,
                       ),
                     ),
@@ -339,13 +340,13 @@ class BottomControls extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
+                          ? theme.colorScheme.surfaceVariant.opaque(0.3)
                           : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isDark
-                            ? theme.colorScheme.outline.withOpacity(0.2)
-                            : theme.colorScheme.outline.withOpacity(0.4),
+                            ? theme.colorScheme.outline.opaque(0.2)
+                            : theme.colorScheme.outline.opaque(0.4),
                         width: 0.5,
                       ),
                     ),

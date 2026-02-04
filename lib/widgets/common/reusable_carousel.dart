@@ -15,6 +15,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
@@ -84,7 +85,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
         style: TextStyle(
           fontFamily: "Poppins-SemiBold",
           fontSize: 17,
-          color: Theme.of(context).colorScheme.primary,
+          color: context.colors.primary,
         ),
       ),
     );

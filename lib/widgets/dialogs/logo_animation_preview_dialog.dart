@@ -1,6 +1,7 @@
 /// Logo Animation Preview Dialog
 
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 
@@ -41,7 +42,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
     final isLandscape = screenWidth > screenHeight;
     
     return Dialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: context.colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -94,13 +95,13 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                        backgroundColor: context.colors.surfaceContainer,
                       ),
                       child: Text(
                         'Cancel',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: context.colors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -119,7 +120,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.primaryFixed,
+                        backgroundColor: context.colors.primaryFixed,
                       ),
                       child: const Text(
                         'Apply',
@@ -153,7 +154,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
               Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  color: context.colors.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -215,7 +216,7 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                 Container(
                   height: 200,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: context.colors.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -275,8 +276,8 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
           margin: const EdgeInsets.only(bottom: 8),
           child: Material(
             color: isSelected 
-                ? Theme.of(context).colorScheme.primaryContainer
-                : Theme.of(context).colorScheme.surfaceContainer,
+                ? context.colors.primaryContainer
+                : context.colors.surfaceContainer,
             borderRadius: BorderRadius.circular(12),
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
@@ -295,8 +296,8 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                           ? Icons.radio_button_checked 
                           : Icons.radio_button_unchecked,
                       color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurface,
+                          ? context.colors.primary
+                          : context.colors.onSurface,
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -310,8 +311,8 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               color: isSelected
-                                  ? Theme.of(context).colorScheme.onPrimaryContainer
-                                  : Theme.of(context).colorScheme.onSurface,
+                                  ? context.colors.onPrimaryContainer
+                                  : context.colors.onSurface,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -320,8 +321,8 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
                             style: TextStyle(
                               fontSize: 11,
                               color: isSelected
-                                  ? Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
-                                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                  ? context.colors.onPrimaryContainer.opaque(0.7)
+                                  : context.colors.onSurface.opaque(0.7),
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 class AnymexSegmentedButton extends StatelessWidget {
   final VoidCallback? onTap;
@@ -29,13 +30,13 @@ class AnymexSegmentedButton extends StatelessWidget {
             padding: padding,
             decoration: BoxDecoration(
               color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.surface,
+                  ? context.colors.primary
+                  : context.colors.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.grey.withOpacity(0.5),
+                    ? context.colors.primary
+                    : Colors.grey.opaque(0.5),
                 width: 1,
               ),
             ),
@@ -46,7 +47,7 @@ class AnymexSegmentedButton extends StatelessWidget {
                     Icon(
                       icon,
                       color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
+                          ? context.colors.onPrimary
                           : Colors.grey,
                     ),
                     const SizedBox(width: 8),
@@ -56,7 +57,7 @@ class AnymexSegmentedButton extends StatelessWidget {
                         fontFamily: "Poppins-Bold",
                         fontSize: 16,
                         color: isSelected
-                            ? Theme.of(context).colorScheme.onPrimary
+                            ? context.colors.onPrimary
                             : Colors.grey,
                       ),
                     ),

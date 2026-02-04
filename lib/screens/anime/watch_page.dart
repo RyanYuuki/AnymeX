@@ -33,6 +33,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -814,7 +815,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               width: 80,
               padding: const EdgeInsets.symmetric(vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.opaque(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -959,7 +960,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 duration: const Duration(milliseconds: 300),
                 opacity: showControls.value ? 1 : 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.opaque(0.5),
                 ),
               ),
             ),
@@ -1081,7 +1082,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.opaque(0.2),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(isLeftSide.value ? 0 : 100),
                       topRight: Radius.circular(isLeftSide.value ? 100 : 0),
@@ -1152,7 +1153,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   showAudioSelector() {
     showModalBottomSheet(
         context: context,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: context.colors.surface,
         builder: (context) {
           return SuperListView(
             padding: const EdgeInsets.all(20.0),
@@ -1193,10 +1194,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                 size: 16,
                                 color: isSelected
                                     ? Colors.black
-                                    : Theme.of(context).colorScheme.primary,
+                                    : context.colors.primary,
                               ),
                               tileColor: isSelected
-                                  ? Theme.of(context).colorScheme.primary
+                                  ? context.colors.primary
                                   : Theme.of(context)
                                       .colorScheme
                                       .surfaceContainer,
@@ -1207,7 +1208,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                 Iconsax.music,
                                 color: isSelected
                                     ? Colors.black
-                                    : Theme.of(context).colorScheme.primary,
+                                    : context.colors.primary,
                               ),
                             ),
                           ),
@@ -1222,7 +1223,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   showTrackSelector() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: context.colors.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
@@ -1272,11 +1273,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             size: 16,
                             color: isSelected
                                 ? Colors.black
-                                : Theme.of(context).colorScheme.primary,
+                                : context.colors.primary,
                           ),
                           tileColor: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.surfaceContainer,
+                              ? context.colors.primary
+                              : context.colors.surfaceContainer,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -1284,7 +1285,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             Iconsax.play5,
                             color: isSelected
                                 ? Colors.black
-                                : Theme.of(context).colorScheme.primary,
+                                : context.colors.primary,
                           ),
                         ),
                       ),
@@ -1302,7 +1303,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   void showSubtitleSelector() {
     showModalBottomSheet(
         context: context,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: context.colors.surface,
         isScrollControlled: true,
         builder: (context) {
           return SingleChildScrollView(
@@ -1390,16 +1391,16 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           variant: TextVariant.bold,
           size: 16,
           color:
-              isSelected ? Colors.black : Theme.of(context).colorScheme.primary,
+              isSelected ? Colors.black : context.colors.primary,
         ),
         tileColor: isSelected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surfaceContainer,
+            ? context.colors.primary
+            : context.colors.surfaceContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         trailing: Icon(icon,
             color: isSelected
                 ? Colors.black
-                : Theme.of(context).colorScheme.primary),
+                : context.colors.primary),
       ),
     );
   }
@@ -1408,7 +1409,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Color _getFgColor() {
     return settings.playerStyle == 0
         ? Colors.white
-        : Theme.of(context).colorScheme.primary;
+        : context.colors.primary;
   }
 
   Widget _buildControls() {
@@ -1478,7 +1479,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                   AnymexText(
                                     text: anilistData.value.title.toUpperCase(),
                                     variant: TextVariant.bold,
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: Colors.white.opaque(0.8),
                                   ),
                                 ],
                               ),
@@ -1570,7 +1571,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                       text: '${formattedTime.value} ',
                                       variant: TextVariant.semiBold,
                                       color:
-                                          themeFgColor.value.withOpacity(0.8)),
+                                          themeFgColor.value.opaque(0.8)),
                                   AnymexTextSpan(
                                     variant: TextVariant.semiBold,
                                     text: ' /  ${formattedDuration.value}',
@@ -1587,7 +1588,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               child: VideoSliderTheme(
                                   color: themeFgColor.value,
                                   inactiveTrackColor:
-                                      _getBgColor().withOpacity(0.1),
+                                      _getBgColor().opaque(0.1),
                                   child: Slider(
                                     focusNode: FocusNode(
                                         canRequestFocus: false,
@@ -1823,7 +1824,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       context: context,
       builder: (context) {
         return Dialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: context.colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -1875,7 +1876,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         Navigator.of(context).pop();
       },
       title: '${speed.toStringAsFixed(2)}x',
-      color: Theme.of(context).colorScheme.primary,
+      color: context.colors.primary,
     );
   }
 
@@ -1883,13 +1884,13 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Color _getPlayFgColor() {
     return settings.playerStyle == 0
         ? Colors.white
-        : Theme.of(context).colorScheme.onPrimary;
+        : context.colors.onPrimary;
   }
 
   Color _getBgColor() {
     return settings.playerStyle == 0
         ? Colors.transparent
-        : Theme.of(context).colorScheme.primary;
+        : context.colors.primary;
   }
 
   Widget _buildPlaybackButtons() {
@@ -2055,7 +2056,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
             ? color
             : settings.playerStyle == 0
                 ? Colors.transparent
-                : Colors.black.withOpacity(0.5),
+                : Colors.black.opaque(0.5),
         borderRadius: BorderRadius.circular(radius),
         boxShadow: isPlay ? [glowingShadow(context)] : [],
       ),

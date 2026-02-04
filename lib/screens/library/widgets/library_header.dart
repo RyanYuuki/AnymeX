@@ -1,8 +1,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
+import 'package:anymex/screens/library/editor/history_editor.dart';
 import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
@@ -69,7 +71,7 @@ class LibraryHeader extends StatelessWidget {
                   'Discover your favorite series',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                   ),
                 ),
               ],
@@ -100,14 +102,12 @@ class LibraryHeader extends StatelessWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: context.colors.primary,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.3),
+                          color:
+                              Theme.of(context).colorScheme.primary.opaque(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -116,7 +116,7 @@ class LibraryHeader extends StatelessWidget {
                     child: IconButton(
                       onPressed: controller.toggleSearch,
                       icon: Icon(Icons.arrow_back_ios_new,
-                          color: Theme.of(context).colorScheme.onPrimary),
+                          color: context.colors.onPrimary),
                       constraints: const BoxConstraints(
                         minHeight: 40,
                         minWidth: 40,
@@ -158,14 +158,11 @@ class LibraryHeader extends StatelessWidget {
                   key: const ValueKey('searchButton'),
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: context.colors.primary,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.3),
+                        color: context.colors.primary.opaque(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -174,18 +171,18 @@ class LibraryHeader extends StatelessWidget {
                   child: IconButton(
                     onPressed: controller.toggleSearch,
                     icon: Icon(IconlyLight.search,
-                        color: Theme.of(context).colorScheme.onPrimary),
+                        color: context.colors.onPrimary),
                   ),
                 )
               : const SizedBox(key: ValueKey('emptySearch'), width: 0),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: context.colors.primary,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                color: context.colors.primary.opaque(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
@@ -193,8 +190,7 @@ class LibraryHeader extends StatelessWidget {
           ),
           child: IconButton(
             onPressed: () => _showSortingSettings(context),
-            icon: Icon(Icons.sort,
-                color: Theme.of(context).colorScheme.onPrimary),
+            icon: Icon(Icons.sort, color: context.colors.onPrimary),
           ),
         ),
       ],
@@ -378,13 +374,15 @@ class _SortBox extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             elevation: isSelected ? 3 : 0,
             shadowColor: isSelected
-                ? theme.colorScheme.primary.withOpacity(0.4)
+                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             child: InkWell(
               onTap: onTap,
-              splashColor: theme.colorScheme.primary.withOpacity(0.15),
-              highlightColor: theme.colorScheme.primary.withOpacity(0.05),
+              splashColor:
+                  theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+              highlightColor:
+                  theme.colorScheme.primary.opaque(0.05, iReallyMeanIt: true),
               child: Container(
                 decoration: BoxDecoration(
                   gradient: isSelected
@@ -392,19 +390,22 @@ class _SortBox extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.15),
+                            theme.colorScheme.primary
+                                .opaque(0.15, iReallyMeanIt: true),
                             theme.colorScheme.primaryContainer,
                           ],
                         )
                       : null,
                   color: isSelected
                       ? null
-                      : theme.colorScheme.surfaceVariant.withOpacity(0.7),
+                      : theme.colorScheme.surfaceVariant
+                          .opaque(0.7, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
                         ? theme.colorScheme.primary
-                        : theme.colorScheme.outline.withOpacity(0.2),
+                        : theme.colorScheme.outline
+                            .opaque(0.2, iReallyMeanIt: true),
                     width: isSelected ? 1.5 : 0.5,
                   ),
                 ),
@@ -421,8 +422,8 @@ class _SortBox extends StatelessWidget {
                             height: 42,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color:
-                                  theme.colorScheme.primary.withOpacity(0.12),
+                              color: theme.colorScheme.primary
+                                  .opaque(0.12, iReallyMeanIt: true),
                             ),
                           ),
                         Icon(
@@ -504,28 +505,31 @@ class ChipTabs extends StatelessWidget {
               novelValue: controller.historyDataNovel.length);
 
           return Row(children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: AnymexIconChip(
-                icon: Row(
-                  children: [
-                    Icon(
-                        controller.selectedListIndex.value == -1
-                            ? Iconsax.clock5
-                            : Iconsax.clock,
-                        color: controller.selectedListIndex.value == -1
-                            ? Theme.of(context).colorScheme.onPrimary
-                            : Theme.of(context).colorScheme.onSurfaceVariant),
-                    5.width(),
-                    AnymexText(text: '($historyCount)')
-                  ],
+            InkWell(
+              onLongPress: () => Get.to(() => const HistoryEditor()),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: AnymexIconChip(
+                  icon: Row(
+                    children: [
+                      Icon(
+                          controller.selectedListIndex.value == -1
+                              ? Iconsax.clock5
+                              : Iconsax.clock,
+                          color: controller.selectedListIndex.value == -1
+                              ? context.colors.onPrimary
+                              : context.colors.onSurfaceVariant),
+                      5.width(),
+                      AnymexText(text: '($historyCount)')
+                    ],
+                  ),
+                  isSelected: controller.selectedListIndex.value == -1,
+                  onSelected: (selected) {
+                    if (selected) {
+                      controller.selectList(-1);
+                    }
+                  },
                 ),
-                isSelected: controller.selectedListIndex.value == -1,
-                onSelected: (selected) {
-                  if (selected) {
-                    controller.selectList(-1);
-                  }
-                },
               ),
             ),
             ...List.generate(
@@ -549,8 +553,7 @@ class ChipTabs extends StatelessWidget {
               child: AnymexIconChip(
                 icon: Row(
                   children: [
-                    Icon(Iconsax.edit,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    Icon(Iconsax.edit, color: context.colors.onSurfaceVariant),
                     5.width(),
                     const AnymexText(text: 'Edit')
                   ],
@@ -576,7 +579,7 @@ class _SegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     final availableTypes =
         serviceHandler.serviceType.value == ServicesType.simkl
@@ -590,10 +593,10 @@ class _SegmentedControl extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 0),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+        color: colorScheme.surfaceContainerHighest.opaque(0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.1),
+          color: colorScheme.outline.opaque(0.1),
           width: 1,
         ),
       ),
@@ -620,7 +623,7 @@ class _SegmentedControl extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.primary.withOpacity(0.3),
+                        color: colorScheme.primary.opaque(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

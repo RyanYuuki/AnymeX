@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 mixin ScrollAwareAppBarMixin<T extends StatefulWidget> on State<T> {
   ScrollController get scrollController;

@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum ButtonVariant { simple, outline }
@@ -124,7 +125,7 @@ class BlurWrapper extends StatelessWidget {
                     border: Border.all(
                         color: controller.playerStyle == 0
                             ? Colors.transparent
-                            : theme.colorScheme.primary.withOpacity(0.1))),
+                            : theme.colorScheme.primary.opaque(0.1))),
                 child: child),
           ],
         ));

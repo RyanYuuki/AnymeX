@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
@@ -13,17 +14,17 @@ class ContinueWatchingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colors;
 
     return AnymexCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: colorScheme.outline.withOpacity(0.1),
+          color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(12.multiplyRadius()),
       ),
-      color: colorScheme.surfaceContainer.withValues(alpha: 0.4),
+      color: colorScheme.surfaceContainer.opaque(0.4),
       child: AnymexOnTap(
         onTap: media.onTap,
         child: Column(
@@ -58,8 +59,8 @@ class ContinueWatchingCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.2),
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.opaque(0.2, iReallyMeanIt: true),
+                          Colors.black.opaque(0.7, iReallyMeanIt: true),
                         ],
                         stops: const [0.6, 0.8, 1.0],
                       ),
@@ -73,22 +74,22 @@ class ContinueWatchingCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: context.colors.primary
+                          .opaque(0.8, iReallyMeanIt: true),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Colors.white12, width: 0.5),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.timelapse_rounded,
-                            size: 10, color: Colors.white70),
+                        Icon(Icons.timelapse_rounded,
+                            size: 10, color: context.colors.onPrimary),
                         const SizedBox(width: 4),
                         AnymexText(
-                          text: media.date ?? '',
-                          size: 10,
-                          variant: TextVariant.bold,
-                          color: Colors.white,
-                        ),
+                            text: media.date ?? '',
+                            size: 10,
+                            variant: TextVariant.bold,
+                            color: context.colors.onPrimary),
                       ],
                     ),
                   ),
@@ -98,13 +99,14 @@ class ContinueWatchingCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: context.colors.primary
+                            .opaque(0.8, iReallyMeanIt: true),
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white24),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.play_arrow_rounded,
-                        color: Colors.white,
+                        color: context.colors.onPrimary,
                         size: 24,
                       ),
                     ),
@@ -125,7 +127,7 @@ class ContinueWatchingCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.opaque(0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             )
@@ -150,7 +152,7 @@ class ContinueWatchingCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     year2023: false,
                     value: media.calculatedProgress,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.opaque(0.2),
                     color: colorScheme.primary,
                     minHeight: 3,
                   ),
@@ -182,7 +184,7 @@ class ContinueWatchingCard extends StatelessWidget {
                               size: 11,
                               maxLines: 1,
                               variant: TextVariant.regular,
-                              color: colorScheme.onSurface.withOpacity(0.6),
+                              color: colorScheme.onSurface.opaque(0.6),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
