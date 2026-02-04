@@ -35,12 +35,13 @@ class JikanService {
           page++;
           
           await Future.delayed(const Duration(milliseconds: 300));
+        } else if (response.statusCode == 429) {
+          return fillerMap;
         } else {
           break;
         }
       }
     } catch (e) {
-      print("Jikan API Error: $e");
     }
     
     return fillerMap;
