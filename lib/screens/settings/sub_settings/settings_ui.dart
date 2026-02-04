@@ -78,7 +78,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                     icon: Iconsax.image,
                                     title: "Enable Ken Burns",
                                     description:
-                                        "Enable Ken Burns effect on posters. Can cause performance issues.",
+                                        "Enable background animations on anime/manga posters",
                                     switchValue: settings.enablePosterKenBurns,
                                     onChanged: (val) {
                                       settings.enablePosterKenBurns = val;
