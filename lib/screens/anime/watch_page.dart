@@ -104,11 +104,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final isEDSkippedOnce = false.obs;
   final isRecapSkippedOnce = false.obs;
 
-  // Skip Button Visibility State
-  final showSkipButton = false.obs;
-  final skipButtonText = "".obs;
-  Duration? _targetSkipTime;
-
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
   final RxBool _brightnessIndicator = false.obs;
@@ -287,13 +282,10 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     final skipQuery = aniskip.SkipSearchQuery(
         idMAL: widget.anilistData.idMal,
         episodeNumber: currentEpisode.value.number,
-        episodeLength:
-            (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000);
+        episodeLength: (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000);
 
     aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
       skipTimes = skipTimeResult;
-      // Force UI update to show colored segments on slider
-      if (mounted) setState(() {});
     }).onError((error, stackTrace) {
       debugPrint("An error occurred: $error");
       debugPrint("Stack trace: $stackTrace");
@@ -327,7 +319,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         }
 
         if (isPlaying.value && skipTimes != null && !isSwitchingEpisode) {
-          _handleAutoSkipAndSkipButton();
+          _handleAutoSkip();
         }
       }
 
@@ -642,69 +634,51 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     }
   }
 
-  void _handleAutoSkipAndSkipButton() {
-    bool inSkipZone = false;
-    String skipType = "";
-    Duration? skipTarget;
-
-    final currentSec = currentPosition.value.inSeconds;
-
-    if (skipTimes?.op != null) {
-      if (currentSec > skipTimes!.op!.start && currentSec < skipTimes!.op!.end) {
-        inSkipZone = true;
-        skipType = "Opening";
-        skipTarget = Duration(seconds: skipTimes!.op!.end);
-        
-        if (playerSettings.autoSkipOP && (!playerSettings.autoSkipOnce || !isOPSkippedOnce.value)) {
-          _performSkip(skipTarget, "Opening");
-          isOPSkippedOnce.value = true;
-          return;
-        }
+  void _handleAutoSkip() {
+    if (skipTimes?.op != null && playerSettings.autoSkipOP) {
+      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) {
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+          currentPosition.value.inSeconds < skipTimes!.op!.end) {
+        final skipNeeded = skipTimes!.op!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isOPSkippedOnce.value = true;
+        snackBar("Skipped Opening", duration: 2000);
       }
     }
-
-    if (!inSkipZone && skipTimes?.ed != null) {
-      if (currentSec > skipTimes!.ed!.start && currentSec < skipTimes!.ed!.end) {
-        inSkipZone = true;
-        skipType = "Ending";
-        skipTarget = Duration(seconds: skipTimes!.ed!.end);
-
-        if (playerSettings.autoSkipED && (!playerSettings.autoSkipOnce || !isEDSkippedOnce.value)) {
-          _performSkip(skipTarget, "Ending");
-          isEDSkippedOnce.value = true;
-          return;
-        }
+    if (skipTimes?.ed != null && playerSettings.autoSkipED) {
+      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) {
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+          currentPosition.value.inSeconds < skipTimes!.ed!.end) {
+        final skipNeeded = skipTimes!.ed!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isEDSkippedOnce.value = true;
+        snackBar("Skipped Ending", duration: 2000);
       }
     }
-
-    if (!inSkipZone && skipTimes?.recap != null) {
-      if (currentSec > skipTimes!.recap!.start && currentSec < skipTimes!.recap!.end) {
-        inSkipZone = true;
-        skipType = "Recap";
-        skipTarget = Duration(seconds: skipTimes!.recap!.end);
-
-        if (playerSettings.autoSkipRecap && (!playerSettings.autoSkipOnce || !isRecapSkippedOnce.value)) {
-           _performSkip(skipTarget, "Recap");
-           isRecapSkippedOnce.value = true;
-           return;
-        }
+    // NEW: Recap Skip
+    if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
+      if (playerSettings.autoSkipOnce && isRecapSkippedOnce.value) {
+        // Do nothing
+      } else if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
+          currentPosition.value.inSeconds < skipTimes!.recap!.end) {
+        final skipNeeded =
+            skipTimes!.recap!.end - currentPosition.value.inSeconds;
+        final duration =
+            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        currentPosition.value = duration;
+        player.seek(duration);
+        isRecapSkippedOnce.value = true;
+        snackBar("Skipped Recap", duration: 2000);
       }
     }
-
-    // Update UI state for skip button
-    if (inSkipZone) {
-      showSkipButton.value = true;
-      skipButtonText.value = "Skip $skipType";
-      _targetSkipTime = skipTarget;
-    } else {
-      showSkipButton.value = false;
-    }
-  }
-
-  void _performSkip(Duration target, String type) {
-    player.seek(target);
-    currentPosition.value = target;
-    snackBar("Skipped $type", duration: 2000);
   }
 
   void toggleControls({bool? val}) {
@@ -823,34 +797,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
               _buildBrightnessSlider(),
               _buildVolumeSlider(),
             ],
-            // Custom Skip Button Overlay
-            Obx(() {
-               if (showSkipButton.value && !isLocked.value) {
-                 return Positioned(
-                   bottom: 120, // Position above progress bar
-                   right: 20,
-                   child: AnymexButton(
-                     onTap: () {
-                       if (_targetSkipTime != null) {
-                         _performSkip(_targetSkipTime!, "Manual Skip");
-                       }
-                     },
-                     child: Row(
-                       mainAxisSize: MainAxisSize.min,
-                       children: [
-                         Icon(Icons.skip_next, color: Colors.white),
-                         SizedBox(width: 8),
-                         Text(skipButtonText.value, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                       ],
-                     ),
-                     borderRadius: BorderRadius.circular(8),
-                     color: context.colors.primary.withOpacity(0.8),
-                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                   ),
-                 );
-               }
-               return SizedBox.shrink();
-            }),
             Obx(() => isBuffering.value && !showControls.value
                 ? _buildBufferingIndicator()
                 : const SizedBox.shrink()),
@@ -932,8 +878,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                     episodeTracks.value = streamList;
                     currentEpisode.value = selectedEpisode;
                     _initPlayer(false);
-                    isEpisodeDialogOpen.value =
-                        false;
                   },
                 ),
               ),
@@ -1511,8 +1455,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     Get.back();
                                   },
                                   icon: const Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    color: Colors.white)),
+                                      Icons.arrow_back_ios_new_rounded,
+                                      color: Colors.white)),
                             ),
                             const SizedBox(width: 8),
                             Container(
@@ -1641,53 +1585,50 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                             ignoring: isLocked.value,
                             child: SizedBox(
                               height: 27,
-                              child: CustomVideoSliderTheme(
-                                color: themeFgColor.value,
-                                skipTimes: skipTimes,
-                                duration: episodeDuration.value,
-                                inactiveTrackColor:
-                                    _getBgColor().opaque(0.1),
-                                child: Slider(
-                                  focusNode: FocusNode(
-                                      canRequestFocus: false,
-                                      skipTraversal: true),
-                                  min: 0,
-                                  value: currentPosition.value.inMilliseconds
-                                      .toDouble(),
-                                  max: (currentPosition.value.inMilliseconds >
-                                          episodeDuration
-                                              .value.inMilliseconds
-                                      ? currentPosition.value.inMilliseconds
-                                      : episodeDuration.value.inMilliseconds)
-                                      .toDouble(),
-                                  secondaryTrackValue: bufferred
-                                      .value.inMilliseconds
-                                      .toDouble(),
-                                  onChangeStart: (_) {
-                                    startSeeking();
-                                  },
-                                  onChangeEnd: (val) async {
-                                    if (episodeDuration.value.inMilliseconds
-                                            .toDouble() !=
-                                        0.0) {
-                                      final newPosition =
-                                          Duration(milliseconds: val.toInt());
-                                      player.seek(newPosition);
-                                      endSeeking(newPosition);
-                                    }
-                                  },
-                                  onChanged: (val) {
-                                    if (episodeDuration.value.inMilliseconds
-                                            .toDouble() !=
-                                        0.0) {
-                                      currentPosition.value =
-                                          Duration(milliseconds: val.toInt());
-                                      formattedTime.value = formatDuration(
-                                          currentPosition.value);
-                                    }
-                                  },
-                                ),
-                              ),
+                              child: VideoSliderTheme(
+                                  color: themeFgColor.value,
+                                  inactiveTrackColor:
+                                      _getBgColor().opaque(0.1),
+                                  child: Slider(
+                                    focusNode: FocusNode(
+                                        canRequestFocus: false,
+                                        skipTraversal: true),
+                                    min: 0,
+                                    value: currentPosition.value.inMilliseconds
+                                        .toDouble(),
+                                    max: (currentPosition.value.inMilliseconds >
+                                            episodeDuration
+                                                .value.inMilliseconds
+                                        ? currentPosition.value.inMilliseconds
+                                        : episodeDuration.value.inMilliseconds)
+                                        .toDouble(),
+                                    secondaryTrackValue: bufferred
+                                        .value.inMilliseconds
+                                        .toDouble(),
+                                    onChangeStart: (_) {
+                                      startSeeking();
+                                    },
+                                    onChangeEnd: (val) async {
+                                      if (episodeDuration.value.inMilliseconds
+                                              .toDouble() !=
+                                          0.0) {
+                                        final newPosition =
+                                            Duration(milliseconds: val.toInt());
+                                        player.seek(newPosition);
+                                        endSeeking(newPosition);
+                                      }
+                                    },
+                                    onChanged: (val) {
+                                      if (episodeDuration.value.inMilliseconds
+                                              .toDouble() !=
+                                          0.0) {
+                                        currentPosition.value =
+                                            Duration(milliseconds: val.toInt());
+                                        formattedTime.value = formatDuration(
+                                            currentPosition.value);
+                                      }
+                                    },
+                                  )),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -1720,11 +1661,11 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                       if (episode.value.audios != null &&
                                           episode.value.audios!.isNotEmpty)
                                         _buildIcon(
-                                            onTap: () {
-                                              showAudioSelector();
-                                            },
-                                            icon: HugeIcons
-                                                .strokeRoundedMusicNote01),
+                                          onTap: () {
+                                            showAudioSelector();
+                                          },
+                                          icon: HugeIcons
+                                              .strokeRoundedMusicNote01),
                                     ],
                                   ),
                                 ),
@@ -1817,7 +1758,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   _buildSkipButton(bool invert) {
     return BlurWrapper(
       borderRadius: BorderRadius.circular(20.multiplyRoundness()),
-      child: AnymexButton(
+      child: AnymeXButton(
         height: 50,
         width: 120,
         variant: ButtonVariant.simple,
@@ -2195,129 +2136,5 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         },
       ),
     );
-  }
-}
-
-// Custom Video Slider Theme to Support Colored Segments
-class CustomVideoSliderTheme extends StatelessWidget {
-  final Widget child;
-  final Color color;
-  final aniskip.EpisodeSkipTimes? skipTimes;
-  final Duration duration;
-  final Color inactiveTrackColor;
-
-  const CustomVideoSliderTheme({
-    super.key,
-    required this.child,
-    required this.color,
-    this.skipTimes,
-    required this.duration,
-    required this.inactiveTrackColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SliderTheme(
-      data: SliderThemeData(
-        activeTrackColor: color,
-        inactiveTrackColor: inactiveTrackColor,
-        thumbColor: color,
-        overlayColor: color.withOpacity(0.1),
-        trackHeight: 4.0,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 14.0),
-        trackShape: CustomTrackShape(
-            skipTimes: skipTimes, duration: duration, baseColor: color),
-      ),
-      child: child,
-    );
-  }
-}
-
-class CustomTrackShape extends RoundedRectSliderTrackShape {
-  final aniskip.EpisodeSkipTimes? skipTimes;
-  final Duration duration;
-  final Color baseColor;
-
-  CustomTrackShape({
-    this.skipTimes,
-    required this.duration,
-    required this.baseColor,
-  });
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset offset, {
-    required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
-    required Animation<double> enableAnimation,
-    required TextDirection textDirection,
-    required Offset thumbCenter,
-    Offset? secondaryOffset,
-    bool isDiscrete = false,
-    bool isEnabled = false,
-    double additionalActiveTrackHeight = 2,
-  }) {
-    super.paint(context, offset,
-        parentBox: parentBox,
-        sliderTheme: sliderTheme,
-        enableAnimation: enableAnimation,
-        textDirection: textDirection,
-        thumbCenter: thumbCenter,
-        secondaryOffset: secondaryOffset,
-        isDiscrete: isDiscrete,
-        isEnabled: isEnabled,
-        additionalActiveTrackHeight: additionalActiveTrackHeight);
-
-    if (duration.inSeconds <= 0 || skipTimes == null) return;
-
-    final Rect trackRect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-      isEnabled: isEnabled,
-      isDiscrete: isDiscrete,
-    );
-
-    final Paint paint = PaintingContext.getPaint(context.canvas, trackRect, color: baseColor);
-
-    // Draw Op
-    _drawSegment(context.canvas, trackRect, skipTimes!.op, Colors.green, paint);
-    // Draw Ed
-    _drawSegment(context.canvas, trackRect, skipTimes!.ed, Colors.blue, paint);
-    // Draw Recap
-    _drawSegment(context.canvas, trackRect, skipTimes!.recap, Colors.purple, paint);
-  }
-
-  void _drawSegment(Canvas canvas, Rect trackRect, aniskip.SkipIntervals? interval,
-      Color color, Paint paint) {
-    if (interval == null) return;
-    
-    final double totalSeconds = duration.inSeconds.toDouble();
-    if (totalSeconds <= 0) return;
-
-    final double startPercent = interval.start / totalSeconds;
-    final double endPercent = interval.end / totalSeconds;
-    
-    final double startPx = trackRect.left + (trackRect.width * startPercent);
-    final double widthPx = (trackRect.width * (endPercent - startPercent));
-    
-    if (widthPx <= 0) return;
-
-    // Draw the colored segment
-    paint.color = color.withOpacity(0.7);
-    canvas.drawRect(
-      Rect.fromLTWH(startPx, trackRect.top, widthPx, trackRect.height),
-      paint,
-    );
-
-    // Draw Start Dot
-    paint.color = Colors.white;
-    canvas.drawCircle(Offset(startPx, trackRect.center.dy), 3, paint);
-
-    // Draw End Dot
-    final double endPx = startPx + widthPx;
-    canvas.drawCircle(Offset(endPx, trackRect.center.dy), 3, paint);
   }
 }
