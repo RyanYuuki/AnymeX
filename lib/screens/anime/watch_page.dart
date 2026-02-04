@@ -1861,7 +1861,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   _buildSkipButton(bool invert) {
     return BlurWrapper(
       borderRadius: BorderRadius.circular(20.multiplyRoundness()),
-      child: AnymexButton(
+      child: AnymeXButton(
         height: 50,
         width: 120,
         variant: ButtonVariant.simple,
