@@ -188,6 +188,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool isOverscrolling = false.obs;
   final RxDouble overscrollProgress = 0.0.obs;
   final RxBool isOverscrollingNext = true.obs;
+   static const double _dragRate = 0.5; 
+  static const int _dragDivider = 5; 
+
+  double get _maxDistance => Get.height / _dragDivider;
 
   bool _isNavigating = false;
 
@@ -564,41 +568,95 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  double _virtualOverscrollPixels = 0.0;
+
   bool onScrollNotification(ScrollNotification notification) {
     if (!overscrollToChapter.value || _isNavigating) {
       return false;
     }
 
+   
+    if (!isOverscrolling.value) {
+      bool isUserDrag = false;
+      if (notification is ScrollUpdateNotification && notification.dragDetails != null) {
+        isUserDrag = true;
+      } else if (notification is OverscrollNotification && notification.dragDetails != null) {
+        isUserDrag = true;
+      }
+      
+      if (!isUserDrag) return false;
+    }
+
     final metrics = notification.metrics;
-    const maxDistance = 120.0;
 
+   
     if (metrics.pixels > metrics.maxScrollExtent) {
-      final delta = metrics.pixels - metrics.maxScrollExtent;
-      final progress = (delta / maxDistance).clamp(0.0, 1.0);
-      _handleOverscrollUpdate(progress, true);
+       // Bo
+       final delta = metrics.pixels - metrics.maxScrollExtent;
+       _virtualOverscrollPixels = delta * _dragRate;
+       _updateOverscrollProgress(true);
+       return false;
     } else if (metrics.pixels < metrics.minScrollExtent) {
-      final delta = (metrics.pixels - metrics.minScrollExtent).abs();
-      final progress = (delta / maxDistance).clamp(0.0, 1.0);
-      _handleOverscrollUpdate(progress, false);
-    } else if (notification is OverscrollNotification &&
-        notification.overscroll != 0) {
+       // Top 
+       final delta = (metrics.pixels - metrics.minScrollExtent).abs();
+       _virtualOverscrollPixels = delta * _dragRate;
+       _updateOverscrollProgress(false);
+       return false;
+    }
+
+    if (notification is OverscrollNotification && notification.overscroll != 0) {
+      
       final ovs = notification.overscroll;
-      final isNext = ovs > 0;
+      final isNext = ovs > 0; 
+      
+     
+      if (isOverscrolling.value && isOverscrollingNext.value != isNext) {
+         _resetOverscroll();
+         return false;
+      }
+      
+      _virtualOverscrollPixels += ovs.abs() * _dragRate;
+      _updateOverscrollProgress(isNext);
+      
+    } else if (notification is ScrollUpdateNotification && notification.scrollDelta != null && isOverscrolling.value) {
+   
+      
+      final delta = notification.scrollDelta!;
+      
+     
+      if (isOverscrollingNext.value) {
+         
+         _virtualOverscrollPixels += delta * _dragRate;
+      } else {
+         
+         _virtualOverscrollPixels -= delta * _dragRate;
+      }
 
-      double current =
-          isOverscrollingNext.value == isNext ? overscrollProgress.value : 0.0;
-      double add = (ovs.abs() / maxDistance);
-
-      double newProgress = (current + add).clamp(0.0, 1.0);
-      _handleOverscrollUpdate(newProgress, isNext);
+      
+      if (_virtualOverscrollPixels < 0) _virtualOverscrollPixels = 0;
+      _updateOverscrollProgress(isOverscrollingNext.value);
+    }
+    
+    
+    if (isOverscrolling.value && 
+        _virtualOverscrollPixels <= 0.1 && 
+        metrics.pixels >= metrics.minScrollExtent && 
+        metrics.pixels <= metrics.maxScrollExtent) {
+       _resetOverscroll();
     }
 
     return false;
   }
 
+  void _updateOverscrollProgress(bool isNext) {
+     final progress = (_virtualOverscrollPixels / _maxDistance).clamp(0.0, 1.0);
+     _handleOverscrollUpdate(progress, isNext);
+  }
+
   void onPointerDown(PointerDownEvent event) {
     isOverscrolling.value = false;
     overscrollProgress.value = 0.0;
+    _virtualOverscrollPixels = 0.0;
   }
 
   void onPointerUp(PointerUpEvent event) {
@@ -618,11 +676,13 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void _handleOverscrollUpdate(double progress, bool isNext) {
     if (!isOverscrolling.value) {
-      isOverscrolling.value = true;
-      isOverscrollingNext.value = isNext;
-      if (showControls.value) showControls.value = false;
+        if (progress <= 0.05) return;
+        
+        isOverscrolling.value = true;
+        isOverscrollingNext.value = isNext;
+        if (showControls.value) showControls.value = false;
 
-      HapticFeedback.selectionClick();
+        HapticFeedback.selectionClick();
     }
 
     if ((progress - overscrollProgress.value).abs() > 0.01 ||
@@ -646,16 +706,37 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final isNext = delta > 0;
 
     bool atEdge = false;
-    if (isNext) {
-      if (pageController != null && pageController!.hasClients) {
-        if (pageController!.page! >= spreads.length - 1) {
-          atEdge = true;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final positions = itemPositionsListener?.itemPositions.value;
+      if (positions != null && positions.isNotEmpty) {
+        if (isNext) {
+          final last = positions
+              .where((p) => p.index == spreads.length - 1)
+              .fold<ItemPosition?>(null, (prev, curr) => curr);
+          if (last != null && last.itemTrailingEdge <= 1.0) {
+            atEdge = true;
+          }
+        } else {
+          final first = positions
+              .where((p) => p.index == 0)
+              .fold<ItemPosition?>(null, (prev, curr) => curr);
+          if (first != null && first.itemLeadingEdge >= 0.0) {
+            atEdge = true;
+          }
         }
       }
     } else {
-      if (pageController != null && pageController!.hasClients) {
-        if (pageController!.page! <= 0) {
-          atEdge = true;
+      if (isNext) {
+        if (pageController != null && pageController!.hasClients) {
+          if (pageController!.page! >= spreads.length - 1) {
+            atEdge = true;
+          }
+        }
+      } else {
+        if (pageController != null && pageController!.hasClients) {
+          if (pageController!.page! <= 0) {
+            atEdge = true;
+          }
         }
       }
     }
@@ -671,7 +752,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       HapticFeedback.selectionClick();
     }
 
-    final sensitivity = isTrackpad ? 0.005 : 0.01;
+    final sensitivity = isTrackpad ? 0.005 : 0.002;
     final add = (delta.abs() * sensitivity).clamp(0.0, 1.0);
     double newProgress = overscrollProgress.value + add;
 
@@ -704,9 +785,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void handleOverscrollEnd() {
     if (overscrollProgress.value >= 1.0) {
       if (isOverscrollingNext.value) {
-        if (canGoNext.value) chapterNavigator(true);
+         chapterNavigator(true);
       } else {
-        if (canGoPrev.value) chapterNavigator(false);
+         chapterNavigator(false);
       }
     }
     _resetOverscroll();
@@ -715,8 +796,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _resetOverscroll() {
     isOverscrolling.value = false;
     overscrollProgress.value = 0.0;
+    _virtualOverscrollPixels = 0.0;
     _mouseResetTimer?.cancel();
   }
+
 
   void _onPositionChanged() async {
     if (itemPositionsListener == null || pageList.isEmpty) return;
@@ -887,6 +970,30 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final newIndex = next ? index + 1 : index - 1;
     if (newIndex >= 0 && newIndex < chapterList.length) {
       navigateToChapter(newIndex);
+    } else {
+      if (next) {
+        Get.snackbar(
+          "Last Chapter",
+          "There are no more chapters.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black.withOpacity(0.8),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(20),
+          duration: const Duration(seconds: 2),
+          isDismissible: true,
+        );
+      } else {
+        Get.snackbar(
+          "First Chapter",
+          "This is the first chapter.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black.withOpacity(0.8),
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(20),
+          duration: const Duration(seconds: 2),
+          isDismissible: true,
+        );
+      }
     }
   }
 
