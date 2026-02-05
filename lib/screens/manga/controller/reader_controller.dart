@@ -267,7 +267,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           curve: Curves.easeOut);
     } else {
       pageController?.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
@@ -280,7 +280,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           curve: Curves.easeOut);
     } else {
       pageController?.previousPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
@@ -699,12 +699,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _onScrollChanged(double offset) {}
 
   Timer? _mouseResetTimer;
+  double _mouseWheelAccumulator = 0.0;
+  int _lastMouseTurnTime = 0;
 
   void handleMouseScroll(double delta, {bool isTrackpad = false}) {
     if (!overscrollToChapter.value || _isNavigating) return;
 
+    
     final isNext = delta > 0;
-
+    
+  
     bool atEdge = false;
     if (readingLayout.value == MangaPageViewMode.continuous) {
       final positions = itemPositionsListener?.itemPositions.value;
@@ -741,7 +745,36 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-    if (!atEdge) return;
+    if (!atEdge) {
+      if (readingLayout.value == MangaPageViewMode.continuous) {
+         if (readingDirection.value.axis == Axis.horizontal) {
+            scrollOffsetController?.animateScroll(
+                offset: delta * scrollSpeedMultiplier.value * 2.2,
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeOut
+            );
+         }
+      } else {
+         _mouseWheelAccumulator += delta;
+         
+         const double threshold = 40.0;
+         
+         if (_mouseWheelAccumulator.abs() > threshold) {
+            final now = DateTime.now().millisecondsSinceEpoch;
+            
+            if (now - _lastMouseTurnTime > 100) {
+               if (_mouseWheelAccumulator > 0) {
+                  _navigateForward();
+               } else {
+                  _navigateBackward();
+               }
+               _lastMouseTurnTime = now;
+            }
+            _mouseWheelAccumulator = 0.0;
+         }
+      }
+      return;
+    }
 
     _mouseResetTimer?.cancel();
 
