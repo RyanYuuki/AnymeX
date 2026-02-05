@@ -38,7 +38,9 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
     String? foundTitle;
 
     try {
-      snackBar("Searching for ISBN: $isbn...");
+      try {
+         snackBar("Searching for ISBN: $isbn...");
+      } catch (_) {}
 
       //Try Google Books API
       String googleUrl = 'https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn';
@@ -47,10 +49,17 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
         googleUrl += '&key=$apiKey';
       }
 
-      final googleRes = await http.get(Uri.parse(googleUrl));
+      http.Response? googleRes;
+      try {
+        googleRes = await http
+            .get(Uri.parse(googleUrl))
+            .timeout(const Duration(seconds: 5));
+      } catch (_) {
+        googleRes = null;
+      }
 
-      if (googleRes.statusCode == 200) {
-        final data = jsonDecode(googleRes.body);
+      if (googleRes?.statusCode == 200) {
+        final data = jsonDecode(googleRes!.body);
         if (data['totalItems'] != null && data['totalItems'] > 0) {
           foundTitle = data['items'][0]['volumeInfo']['title'];
         }
@@ -58,12 +67,12 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
 
       //Fallback to OpenLibrary if Google failed or found nothing
       if (foundTitle == null) {
-        if (googleRes.statusCode != 200) {
-           snackBar("Google limit reached, trying OpenLibrary...");
+        if (googleRes == null || googleRes.statusCode != 200) {
+           try { snackBar("Google limit reached, trying OpenLibrary..."); } catch (_) {}
         }
         
         final olUrl = Uri.parse('https://openlibrary.org/search.json?isbn=$isbn');
-        final olRes = await http.get(olUrl);
+        final olRes = await http.get(olUrl).timeout(const Duration(seconds: 5));
 
         if (olRes.statusCode == 200) {
           final data = jsonDecode(olRes.body);
@@ -84,13 +93,13 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
               ));
         }
       } else {
-        snackBar("Book not found for ISBN: $isbn");
-        await Future.delayed(const Duration(seconds: 2));
+        try { snackBar("Book not found for ISBN: $isbn"); } catch (_) {}
+        await Future.delayed(const Duration(seconds: 3));
         if (mounted) setState(() => isScanning = false);
       }
     } catch (e) {
-      snackBar("Error: ${e.toString()}");
-      await Future.delayed(const Duration(seconds: 2));
+      try { snackBar("Error: ${e.toString()}"); } catch (_) {}
+      await Future.delayed(const Duration(seconds: 3));
       if (mounted) setState(() => isScanning = false);
     }
   }
@@ -148,6 +157,23 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                 ],
               ),
             ),
+            Center(
+              child: Container(
+                height: 250,
+                width: 300,
+                decoration: BoxDecoration(
+                  border: Border.all(color: colorScheme.primary, width: 3),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: isScanning
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: colorScheme.primary,
+                        ),
+                      )
+                    : null,
+              ),
+            ),
             SafeArea(
               child: Column(
                 children: [
@@ -176,9 +202,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                           child: IconButton(
                             icon: Icon(
                               isFlashOn ? Iconsax.flash_15 : Iconsax.flash_1,
-                              color: isFlashOn
-                                  ? Colors.yellow
-                                  : Colors.white,
+                              color: isFlashOn ? Colors.yellow : Colors.white,
                             ),
                             onPressed: _toggleFlash,
                           ),
@@ -187,22 +211,6 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    height: 250,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      border:
-                          Border.all(color: colorScheme.primary, width: 3),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: isScanning
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: colorScheme.primary,
-                            ),
-                          )
-                        : null,
-                  ),
                   const Spacer(),
                   Container(
                     margin: const EdgeInsets.only(bottom: 50),

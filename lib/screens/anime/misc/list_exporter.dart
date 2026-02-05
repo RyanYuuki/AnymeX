@@ -54,7 +54,9 @@ class _ListExporterPageState extends State<ListExporterPage> {
   Future<void> _exportList() async {
     final username = _usernameController.text.trim();
     if (username.isEmpty) {
-      snackBar("Please enter a username");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a username")),
+      );
       return;
     }
 
@@ -74,7 +76,9 @@ class _ListExporterPageState extends State<ListExporterPage> {
         'update_on_import': 'on',
       };
 
-      snackBar("Generating XML list... this may take a moment.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Generating XML list... this may take a moment.")),
+      );
       final response = await http.post(
         Uri.parse('https://malscraper.azurewebsites.net/scrape'),
         body: body,
@@ -101,12 +105,20 @@ class _ListExporterPageState extends State<ListExporterPage> {
           text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list.',
         );
         
-        snackBar("Export ready! Choose where to save it.");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Export ready! Choose where to save it.")),
+          );
+        }
       } else {
         throw Exception("Server error: ${response.statusCode}");
       }
     } catch (e) {
-      snackBar("Export Failed: ${e.toString()}");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Export Failed: ${e.toString()}")),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
