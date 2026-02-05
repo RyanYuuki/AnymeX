@@ -27,6 +27,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -359,7 +360,6 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
           if (currentSkipInterval.value != foundInterval) {
             currentSkipInterval.value = foundInterval;
             currentSkipLabel.value = label;
-          }
         }
       }
 
@@ -1602,9 +1602,9 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Skip Button above the timeline
-                          if (currentSkipInterval.value != null && !isLocked.value)
-                            Align(
+                         
+                          Obx(() => currentSkipInterval.value != null && !isLocked.value
+                            ? Align(
                               alignment: Alignment.centerRight,
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
@@ -1618,7 +1618,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                     },
                                     color: Colors.transparent,
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    borderRadius: 12,
+                                    radius: 12,
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -1639,7 +1639,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                            ),
+                            )
+                            : const SizedBox.shrink()),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1668,24 +1669,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  // Custom Painter for OP/ED/Recap highlights
-                                  if (skipTimes != null &&
-                                      episodeDuration.value.inMilliseconds > 0)
-                                    Positioned.fill(
-                                      child: Padding(
-                                        // Align with slider's internal padding (approx)
-                                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                                        child: CustomPaint(
-                                          painter: SkipTimelinePainter(
-                                            skipTimes: skipTimes!,
-                                            totalDuration: episodeDuration.value,
-                                            opColor: const Color(0xFFEBC125), // Yellowish
-                                            edColor: const Color(0xFFEBC125), // Yellowish
-                                            recapColor: const Color(0xFF4CAF50), // Greenish
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                 
                                   VideoSliderTheme(
                                       color: themeFgColor.value,
                                       inactiveTrackColor:
@@ -1730,7 +1714,23 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
                                           }
                                         },
                                       )),
+                                  if (skipTimes != null &&
+                                      episodeDuration.value.inMilliseconds > 0)
+                                    Positioned.fill(
+                                      child: IgnorePointer(
+                                        child: CustomPaint(
+                                          painter: SkipTimelinePainter(
+                                            skipTimes: skipTimes!,
+                                            totalDuration: episodeDuration.value,
+                                            opColor: const Color(0xFFEBC125), 
+                                            edColor: const Color(0xFFEBC125), 
+                                            recapColor: const Color(0xFF4CAF50), 
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                 ],
+
                               ),
                             ),
                           ),
@@ -2263,7 +2263,7 @@ class SkipTimelinePainter extends CustomPainter {
 
     final double widthPerSecond = size.width / totalDuration.inSeconds;
     final Paint paint = Paint()..style = PaintingStyle.fill;
-    final double markerHeight = 4.0; // Same as default slider track height
+    final double markerHeight = 6.0; 
     final double yOffset = (size.height - markerHeight) / 2;
 
     void drawInterval(aniskip.SkipIntervals? interval, Color color) {

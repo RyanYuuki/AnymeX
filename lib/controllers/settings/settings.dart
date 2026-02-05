@@ -267,6 +267,10 @@ class Settings extends GetxController {
   set autoSkipOnce(bool value) =>
       _setPlayerSetting((s) => s?.autoSkipOnce = value);
 
+  bool get autoSkipRecap => _getPlayerSetting((s) => s.autoSkipRecap);
+  set autoSkipRecap(bool value) =>
+      _setPlayerSetting((s) => s?.autoSkipRecap = value);
+
   bool get enableSwipeControls =>
       _getPlayerSetting((s) => s.enableSwipeControls);
   set enableSwipeControls(bool value) =>
