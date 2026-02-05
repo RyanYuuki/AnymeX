@@ -60,6 +60,7 @@ dependencies:
             url: https://github.com/Schnitzel5/media-kit.git
             path: libs/universal/media_kit_libs_video
 
+    mobile_scanner: ^6.0.4
     package_info_plus: any
     path: ^1.9.0
     path_provider: any
