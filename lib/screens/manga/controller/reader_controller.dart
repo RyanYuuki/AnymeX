@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
@@ -15,10 +16,13 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import '../../../models/reader/tap_zones.dart';
+import '../../../repositories/tap_zone_repository.dart';
 
 enum LoadingState { loading, loaded, error }
 
@@ -98,7 +102,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   ItemScrollController? itemScrollController;
   ScrollOffsetController? scrollOffsetController;
   ItemPositionsListener? itemPositionsListener;
+
+  // Tap Zones
+  final TapZoneRepository _tapRepo = TapZoneRepository();
+  final Rx<TapZoneLayout> pagedProfile = TapZoneLayout.defaultPaged.obs;
+  final Rx<TapZoneLayout> pagedVerticalProfile = TapZoneLayout.defaultPagedVertical.obs;
+  final Rx<TapZoneLayout> webtoonHorizontalProfile = TapZoneLayout.defaultWebtoonHorizontal.obs;
+
+  final Rx<TapZoneLayout> webtoonProfile = TapZoneLayout.defaultWebtoon.obs;
+  final RxBool tapZonesEnabled = true.obs;
   ScrollOffsetListener? scrollOffsetListener;
+  PhotoViewController? photoViewController;
 
   PreloadPageController? pageController;
   final RxBool spacedPages = false.obs;
@@ -215,6 +229,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     });
 
     ever(readingLayout, (_) => _computeSpreads());
+    _loadTapZones();
+  }
+
+  void _loadTapZones() {
+    pagedProfile.value = _tapRepo.getPagedLayout();
+    pagedVerticalProfile.value = _tapRepo.getPagedVerticalLayout();
+    webtoonProfile.value = _tapRepo.getWebtoonLayout();
+    webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
+    tapZonesEnabled.value = _tapRepo.getTapZonesEnabled();
   }
 
   void _enableVolumeKeys() {
@@ -900,6 +923,14 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
+    
+    pagedProfile.value = _tapRepo.getPagedLayout();
+    pagedVerticalProfile.value = _tapRepo.getPagedVerticalLayout();
+    webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
+
+    webtoonProfile.value = _tapRepo.getWebtoonLayout();
+    tapZonesEnabled.value = _tapRepo.getTapZonesEnabled();
+
     DiscordRPCController.instance.updateMangaPresence(
         manga: media,
         chapter: currentChapter.value!,
@@ -1127,4 +1158,118 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       }
     } catch (_) {}
   }
+
+  void toggleTapZones(bool value) {
+    tapZonesEnabled.value = value;
+    _tapRepo.saveTapZonesEnabled(value);
+  }
+
+  void handleTap(Offset position) {
+    if (showControls.value) {
+      toggleControls();
+      return;
+    }
+
+    if (!Platform.isAndroid && !Platform.isIOS) {
+       toggleControls(); 
+       return;
+    }
+
+    if (!tapZonesEnabled.value) {
+      toggleControls();
+      return;
+    }
+
+    final size = Get.size;
+    if (size.isEmpty) return;
+
+    final normalized = Offset(
+        (position.dx / size.width).clamp(0.0, 1.0),
+        (position.dy / size.height).clamp(0.0, 1.0)
+    );
+
+    TapZoneLayout layout;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      if (readingDirection.value.axis == Axis.horizontal) {
+        layout = webtoonHorizontalProfile.value;
+      } else {
+        layout = webtoonProfile.value;
+      }
+    } else {
+      if (readingDirection.value.axis == Axis.vertical) {
+        layout = pagedVerticalProfile.value;
+      } else {
+        layout = pagedProfile.value;
+      }
+    }
+
+    final action = layout.getAction(normalized);
+    executeAction(action);
+  }
+
+  void executeAction(ReaderAction action) {
+    switch (action) {
+      case ReaderAction.nextPage:
+        _navNextPage();
+        break;
+      case ReaderAction.prevPage:
+        _navPrevPage();
+        break;
+      case ReaderAction.toggleMenu:
+        toggleControls();
+        break;
+      case ReaderAction.scrollUp:
+        _scrollUp();
+        break;
+      case ReaderAction.scrollDown:
+        _scrollDown();
+        break;
+      case ReaderAction.nextChapter:
+        _navNextChapter();
+        break;
+      case ReaderAction.prevChapter:
+        _navPrevChapter();
+        break;
+      case ReaderAction.none:
+        break;
+    }
+  }
+
+  void _navNextChapter() {
+    chapterNavigator(true);
+  }
+
+  void _navPrevChapter() {
+    chapterNavigator(false);
+  }
+
+  void _navNextPage() {
+    navigateToPage(currentPageIndex.value);
+  }
+
+  void _navPrevPage() {
+    navigateToPage(currentPageIndex.value - 2);
+  }
+
+  void _scrollUp() {
+    if (scrollOffsetController != null) {
+      scrollOffsetController!.animateScroll(
+        offset: -Get.height * 0.75,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
+      );
+    }
+  }
+
+  void _scrollDown() {
+    if (scrollOffsetController != null) {
+      scrollOffsetController!.animateScroll(
+        offset: Get.height * 0.75,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
+      );
+    }
+  }
+
+
 }

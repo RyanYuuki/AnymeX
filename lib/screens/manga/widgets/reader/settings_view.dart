@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,16 @@ class ReaderSettings {
                       ),
                     );
                   }),
+                  if (Platform.isAndroid || Platform.isIOS)
+                    CustomTile(
+                      title: 'Tap Zones',
+                      description: 'Customize gestures',
+                      icon: Icons.touch_app_rounded,
+                      onTap: () {
+                        Navigator.pop(context); 
+                        navigate(() => const TapZoneSettingsScreen());
+                      },
+                    ),
                   Obx(() {
                     final currentDirection = controller.readingDirection.value;
                     return CustomTile(

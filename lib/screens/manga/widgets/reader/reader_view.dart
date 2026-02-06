@@ -4,7 +4,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/image_cropper.dart';
-import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -39,6 +39,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   late AnimationController _scaleAnimationController;
   late Animation<double> _animation;
   final List<double> _doubleTapScales = [1.0, 2.0];
+  Offset? _lastTapPosition;
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       CurvedAnimation(curve: Curves.ease, parent: _scaleAnimationController),
     );
     _animation.addListener(() => _photoViewController.scale = _animation.value);
+    widget.controller.photoViewController = _photoViewController;
     ever(widget.controller.readingLayout, (_) => setState(() {}));
     ever(widget.controller.readingLayout, (_) => setState(() {}));
     ever(widget.controller.readingDirection, (_) => setState(() {}));
@@ -280,7 +282,12 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         onScaleEnd: _onScaleEnd,
         gestureDetectorBehavior: HitTestBehavior.translucent,
         child: GestureDetector(
-          onTap: () => widget.controller.toggleControls(),
+          onTapDown: (details) => _lastTapPosition = details.globalPosition,
+          onTap: () {
+            if (_lastTapPosition != null) {
+              widget.controller.handleTap(_lastTapPosition!);
+            }
+          },
           onDoubleTapDown: (details) {
             _toggleScale(details.globalPosition);
           },
