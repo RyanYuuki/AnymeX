@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
-/// Fetches an image from [url] using optional [headers], crops the white
+/// Fetches an image from [url] using optional [headers], crops the white/black
 /// margins and returns the cropped bytes.
 Future<Uint8List> fetchAndCropImageBytes(
   String url, {
   Map<String, String>? headers,
   Duration? timeout,
+  int threshold = 10,
 }) async {
   try {
     final uri = Uri.parse(url);
@@ -19,8 +19,11 @@ Future<Uint8List> fetchAndCropImageBytes(
         await http.get(uri, headers: headers).timeout(effectiveTimeout);
     if (response.statusCode == 200) {
       final original = response.bodyBytes;
-      // Reuse the existing cropper to trim any white/black borders.
-      final cropped = await cropImageBorders(original);
+    
+      final cropped = await compute(_cropImageIsolate, {
+        'bytes': original,
+        'threshold': threshold,
+      });
       return cropped;
     }
   } catch (_) {
@@ -30,10 +33,20 @@ Future<Uint8List> fetchAndCropImageBytes(
   return Uint8List(0);
 }
 
-/// Simple in-memory cropping image widget for network images.
-/// When cropping is used, this widget will fetch the image, crop it using
-/// [fetchAndCropImageBytes], and render it from memory. If cropping fails,
-/// it falls back to a regular network load by the caller.
+Uint8List _cropImageIsolate(Map<String, dynamic> data) {
+  final bytes = data['bytes'] as Uint8List;
+  final threshold = data['threshold'] as int;
+
+  img.Image? image = img.decodeImage(bytes);
+  if (image == null) return bytes;
+
+  image = _applyCrop(image, isWhite: true, threshold: threshold);
+  image = _applyCrop(image, isWhite: false, threshold: threshold);
+
+  return Uint8List.fromList(img.encodePng(image));
+}
+
+
 class CroppedNetworkImage extends StatefulWidget {
   final String url;
   final Map<String, String>? headers;
@@ -42,9 +55,10 @@ class CroppedNetworkImage extends StatefulWidget {
   final double? width;
   final double? height;
   final Widget? placeholder;
+  final int cropThreshold;
 
   const CroppedNetworkImage({
-    Key? key,
+    super.key,
     required this.url,
     this.headers,
     this.fit = BoxFit.contain,
@@ -52,10 +66,11 @@ class CroppedNetworkImage extends StatefulWidget {
     this.width,
     this.height,
     this.placeholder,
-  }) : super(key: key);
+    this.cropThreshold = 10,
+  });
 
   @override
-  _CroppedNetworkImageState createState() => _CroppedNetworkImageState();
+  State<CroppedNetworkImage> createState() => _CroppedNetworkImageState();
 }
 
 class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
@@ -67,18 +82,33 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
     super.initState();
     _futureBytes = _loadBytes();
   }
+  
+  @override
+  void didUpdateWidget(CroppedNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url || oldWidget.cropThreshold != widget.cropThreshold) {
+      _futureBytes = _loadBytes();
+    }
+  }
 
   Future<Uint8List> _loadBytes() async {
-    // Include headers in the cache key to support different header sets per request
+  
     final headersKey =
         widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';') ??
             '';
-    final cacheKey = '${widget.url}#$headersKey';
+    // Cache key now includes threshold so changing slider updates image
+    final cacheKey = '${widget.url}#$headersKey#${widget.cropThreshold}';
+    
     if (_cache.containsKey(cacheKey)) {
       return _cache[cacheKey]!;
     }
-    final bytes =
-        await fetchAndCropImageBytes(widget.url, headers: widget.headers);
+    
+    final bytes = await fetchAndCropImageBytes(
+      widget.url, 
+      headers: widget.headers,
+      threshold: widget.cropThreshold
+    );
+    
     if (bytes.isNotEmpty) {
       _cache[cacheKey] = bytes;
     }
@@ -104,103 +134,121 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
             alignment: widget.alignment,
           );
         }
-        // Fallback: show nothing or a placeholder
         return widget.placeholder ?? const SizedBox.shrink();
       },
     );
   }
 }
 
-/// Crops the white borders from an image. Kept here to be used by fetcher.
-Future<Uint8List> cropImageBorders(Uint8List imageBytes) async {
-  return await tryCrop(imageBytes);
-}
-
-Future<Uint8List> tryCrop(Uint8List bytes) async {
-  final cmd = img.Command();
-  cmd.decodeImage(bytes);
-  cmd.executeThread();
-
-  img.Image? image = await cmd.getImage();
-  if (image == null) return bytes;
-
-  image = _applyCrop(image, isWhite: true);
-
-  image = _applyCrop(image, isWhite: false);
-
-  return img.encodePng(image);
-}
-
-img.Image _applyCrop(img.Image image, {required bool isWhite}) {
+img.Image _applyCrop(img.Image image, {required bool isWhite, required int threshold}) {
   int width = image.width;
   int height = image.height;
   int left = 0;
   int top = 0;
   int right = width - 1;
   int bottom = height - 1;
-  int threshold = 10;
 
+  final hasPalette = image.hasPalette;
+  final palette = image.palette;
+
+// Note, 
+  // Dantotsu uses a similar approach with a strict threshold.
+  // but i am using sum of RGB channels (max 765).
+  // White: Brightness < (255 - threshold)
+  // Black: Brightness > threshold
+  
   bool isPixelContent(int x, int y) {
-    var pixel = image.getPixel(x, y);
-    num r = pixel.r;
-    num g = pixel.g;
-    num b = pixel.b;
-    num brightness = r + g + b;
+    final pixel = image.getPixel(x, y);
+    num r, g, b;
+
+    if (hasPalette && palette != null) {
+    
+      final index = pixel.r.toInt();
+     
+      if (index >= 0 && index < palette.numColors) {
+         r = palette.getRed(index);
+         g = palette.getGreen(index);
+         b = palette.getBlue(index);
+      } else {
+         r = g = b = 0; 
+      }
+    } else {
+      r = pixel.r;
+      g = pixel.g;
+      b = pixel.b;
+    }
+
+    final brightness = r + g + b;
 
     if (isWhite) {
-      return brightness < (765 - (threshold * 3));
+   
+      return brightness < (255 - threshold);
     } else {
-      return brightness > (threshold * 3);
+    
+      return brightness > threshold;
     }
   }
 
-  for (int x = 0; x < width; x++) {
-    bool stop = false;
-    for (int y = 0; y < height; y++) {
-      if (isPixelContent(x, y)) {
-        left = x;
-        stop = true;
-        break;
-      }
-    }
-    if (stop) break;
-  }
 
-  for (int x = width - 1; x >= left; x--) {
-    bool stop = false;
-    for (int y = 0; y < height; y++) {
-      if (isPixelContent(x, y)) {
-        right = x;
-        stop = true;
-        break;
-      }
-    }
-    if (stop) break;
-  }
-
+  // Top
   for (int y = 0; y < height; y++) {
-    bool stop = false;
-    for (int x = left; x <= right; x++) {
+    bool rowHasContent = false;
+    for (int x = 0; x < width; x++) {
       if (isPixelContent(x, y)) {
-        top = y;
-        stop = true;
+        rowHasContent = true;
         break;
       }
     }
-    if (stop) break;
+    if (rowHasContent) {
+      top = y;
+      break;
+    }
+  }
+  // Bottom
+  for (int y = height - 1; y >= top; y--) {
+    bool rowHasContent = false;
+    for (int x = 0; x < width; x++) {
+      if (isPixelContent(x, y)) {
+        rowHasContent = true;
+        break;
+      }
+    }
+    if (rowHasContent) {
+      bottom = y;
+      break;
+    }
   }
 
-  for (int y = height - 1; y >= top; y--) {
-    bool stop = false;
-    for (int x = left; x <= right; x++) {
+  // Left
+  for (int x = 0; x < width; x++) {
+    bool colHasContent = false;
+    for (int y = 0; y < height; y++) {
       if (isPixelContent(x, y)) {
-        bottom = y;
-        stop = true;
+        colHasContent = true;
         break;
       }
     }
-    if (stop) break;
+    if (colHasContent) {
+      left = x;
+      break;
+    }
   }
+
+  // Right
+  for (int x = width - 1; x >= left; x--) {
+    bool colHasContent = false;
+    for (int y = 0; y < height; y++) {
+      if (isPixelContent(x, y)) {
+        colHasContent = true;
+        break;
+      }
+    }
+    if (colHasContent) {
+      right = x;
+      break;
+    }
+  }
+
 
   if (left > 0 || top > 0 || right < width - 1 || bottom < height - 1) {
     int w = right - left + 1;

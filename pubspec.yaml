@@ -73,6 +73,7 @@ dependencies:
     share_plus: ^11.0.0
     url_launcher: any
     volume_controller: ^3.4.0
+    wakelock_plus: ^1.4.0
     screen_brightness: ^2.1.7
     window_manager: ^0.4.3
     app_links: ^6.4.0

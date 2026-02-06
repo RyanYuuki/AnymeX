@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -173,9 +174,10 @@ class ReaderTopControls extends StatelessWidget {
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.5,
-          minChildSize: 0.4,
+          minChildSize: 0.3,
           maxChildSize: 0.9,
           snap: true,
+          snapSizes: const [0.5],
           expand: false,
           builder: (context, scrollController) {
             return ChapterListSheet(scrollController: scrollController);
@@ -253,6 +255,29 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   bool _isReversed = false;
   bool _isGrid = false;
   String _searchQuery = '';
+  late List<Chapter> _cachedChapters;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateCachedChapters();
+  }
+
+  void _updateCachedChapters() {
+    var chapters = List.from(controller.chapterList);
+    if (_isReversed) {
+      chapters = chapters.reversed.toList();
+    }
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      chapters = chapters.where((c) {
+        final title = (c.title ?? '').toLowerCase();
+        final num = (c.number?.toString() ?? '').toLowerCase();
+        return title.contains(query) || num.contains(query);
+      }).toList();
+    }
+    _cachedChapters = List<Chapter>.from(chapters);
+  }
 
   @override
   void dispose() {
@@ -267,35 +292,17 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    var chapters = List.from(controller.chapterList);
-
-    if (_isReversed) {
-      chapters = chapters.reversed.toList();
-    }
-
-    if (_searchQuery.isNotEmpty) {
-      final query = _searchQuery.toLowerCase();
-      chapters = chapters.where((c) {
-        final title = (c.title ?? '').toLowerCase();
-        final num = (c.number?.toString() ?? '').toLowerCase();
-        return title.contains(query) || num.contains(query);
-      }).toList();
-    }
-
-    // final currentChapter = controller.currentChapter.value; (Unused)
-
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: CustomScrollView(
-          controller: widget.scrollController,
-          slivers: [
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: CustomScrollView(
+            controller: widget.scrollController,
+            slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
@@ -319,7 +326,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Chapters (${chapters.length})',
+                              'Chapters (${_cachedChapters.length})',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge
@@ -333,6 +340,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                   onPressed: () {
                                     setState(() {
                                       _isReversed = !_isReversed;
+                                      _updateCachedChapters();
                                     });
                                   },
                                   icon: Icon(
@@ -366,8 +374,12 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         ),
                         TextField(
                           controller: _searchController,
-                          onChanged: (val) =>
-                              setState(() => _searchQuery = val),
+                          onChanged: (val) {
+                            setState(() {
+                              _searchQuery = val;
+                              _updateCachedChapters();
+                            });
+                          },
                           decoration: InputDecoration(
                             hintText: 'Search chapters...',
                             prefixIcon: const Icon(Icons.search, size: 20),
@@ -387,7 +399,10 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                     icon: const Icon(Icons.clear, size: 18),
                                     onPressed: () {
                                       _searchController.clear();
-                                      setState(() => _searchQuery = '');
+                                      setState(() {
+                                        _searchQuery = '';
+                                        _updateCachedChapters();
+                                      });
                                     },
                                   )
                                 : null,
@@ -401,7 +416,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 ],
               ),
             ),
-            _buildContentSlivers(chapters),
+            _buildContentSlivers(_cachedChapters),
           ],
         ),
       ),
