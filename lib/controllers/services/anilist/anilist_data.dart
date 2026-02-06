@@ -292,6 +292,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          extraLarge
         }
       }
     }
@@ -513,6 +514,7 @@ averageScore
         bannerImage
         coverImage {
           large
+          extraLarge
         }
         type
 averageScore
