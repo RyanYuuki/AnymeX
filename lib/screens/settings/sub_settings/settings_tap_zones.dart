@@ -379,13 +379,7 @@ class VisualZoneEditor extends StatelessWidget {
             ),
 
            
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _GridPainter(
-                   color: Theme.of(context).dividerColor.withOpacity(0.05),
-                ),
-              ),
-            ),
+
 
             // Zones 
             ...layout.zones.asMap().entries.map((entry) {

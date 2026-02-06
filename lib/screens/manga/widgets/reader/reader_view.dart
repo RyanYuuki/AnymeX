@@ -376,6 +376,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                       : page.headers,
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
+                  cropThreshold: 30, // idk i hardcoded it cause , it wasn't good for AnymeX 
                 )
               : ExtendedImage.network(
                   page.url,

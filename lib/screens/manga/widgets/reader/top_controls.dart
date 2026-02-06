@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -254,7 +255,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   bool _isReversed = false;
   bool _isGrid = false;
   String _searchQuery = '';
-  late List _cachedChapters;
+  late List<Chapter> _cachedChapters;
 
   @override
   void initState() {
@@ -275,7 +276,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
         return title.contains(query) || num.contains(query);
       }).toList();
     }
-    _cachedChapters = chapters;
+    _cachedChapters = List<Chapter>.from(chapters);
   }
 
   @override

@@ -122,16 +122,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
-  final RxBool cropImages = false.obs;
-
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
   final Rx<MangaPageViewDirection> readingDirection =
       MangaPageViewDirection.down.obs;
   final Rx<DualPageMode> dualPageMode = DualPageMode.off.obs;
-
-  final RxBool showControls = true.obs;
+ 
+  final RxBool cropImages = false.obs;
+  
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
+
+  final RxBool showControls = true.obs;
 
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
