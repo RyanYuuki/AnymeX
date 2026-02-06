@@ -238,7 +238,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            backgroundColor: Colors.transparent,
+            // backgroundColor: Colors.transparent,
             body: Column(children: [
               const NestedHeader(title: 'Experimental Settings'),
               Expanded(
