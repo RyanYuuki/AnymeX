@@ -6,7 +6,6 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -74,6 +73,15 @@ class _SettingsUiState extends State<SettingsUi> {
                                     switchValue: settings.enableAnimation,
                                     onChanged: (val) {
                                       settings.enableAnimation = val;
+                                    }),
+                                CustomSwitchTile(
+                                    icon: Iconsax.image,
+                                    title: "Enable Ken Burns",
+                                    description:
+                                        "Enable background animations on anime/manga posters",
+                                    switchValue: settings.enablePosterKenBurns,
+                                    onChanged: (val) {
+                                      settings.enablePosterKenBurns = val;
                                     }),
                                 CustomSwitchTile(
                                     icon: Icons.colorize,

@@ -70,6 +70,9 @@ class UISettings extends HiveObject {
   @HiveField(21)
   bool usePosterColor;
 
+  @HiveField(22)
+  bool enablePosterKenBurns;
+
   UISettings({
     this.glowMultiplier = 1.0,
     this.radiusMultiplier = 1.0,
@@ -93,6 +96,7 @@ class UISettings extends HiveObject {
     this.retainOriginalColor = false,
     this.liquidBackgroundPath = '',
     this.usePosterColor = false,
+    this.enablePosterKenBurns = true,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
