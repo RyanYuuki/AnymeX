@@ -587,6 +587,7 @@ jobs:
           MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
           MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
           CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
+          GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -596,6 +597,7 @@ jobs:
           MAL_CLIENT_ID=$MAL_CLIENT_ID
           MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET
           CALLBACK_SCHEME=$CALLBACK_SCHEME
+          GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
           EOF
       
       # =================================================================

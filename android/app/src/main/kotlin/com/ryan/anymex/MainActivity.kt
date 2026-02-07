@@ -48,6 +48,29 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.ryan.anymex/utils").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "scanFile" -> {
+                    val path = call.argument<String>("path")
+                    if (path != null) {
+                        try {
+                            android.media.MediaScannerConnection.scanFile(
+                                applicationContext,
+                                arrayOf(path),
+                                null
+                            ) { _, _ -> }
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("SCAN_FAILED", e.message, null)
+                        }
+                    } else {
+                        result.error("INVALID_PATH", "Path cannot be null", null)
+                    }
+                }
+                else -> result.notImplemented()
+            }
+        }
+
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_EVENTS).setStreamHandler(
             object : EventChannel.StreamHandler {
                 override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
