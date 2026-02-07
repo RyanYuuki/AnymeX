@@ -491,15 +491,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                               settings.autoSkipOnce = val),
                                       CustomSwitchTile(
                                           padding: const EdgeInsets.all(10),
-                                          icon: Icons.fast_forward_outlined,
-                                          title: "Auto Skip Recap",
-                                          description:
-                                              "Auto skip the recap section",
-                                          switchValue: settings.autoSkipRecap,
-                                          onChanged: (val) =>
-                                              settings.autoSkipRecap = val),
-                                      CustomSwitchTile(
-                                          padding: const EdgeInsets.all(10),
                                           icon: Icons.play_disabled_rounded,
                                           title: "Enable Swipe Controls",
                                           description:
@@ -561,7 +552,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       ),
                                     ],
                                   )),
-                              // Subtitles
+                              // Subtitle Color
                               AnymexExpansionTile(
                                   title: 'Subtitles',
                                   content: Column(
