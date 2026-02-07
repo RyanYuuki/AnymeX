@@ -93,5 +93,5 @@ body:
           required: true
         - label: I am using the **[latest](https://github.com/RyanYuuki/AnymeX/releases/latest)** version of AnymeX. If not, I have provided a reason for not updating.
           required: true
-        - label: If this is an issue with an extension, I should be opening an issue in the extension's repository.
+        - label: If this is an issue with an extension, I should be opening an issue in the extension's repository. [Will Close This Issue Automatically]
           required: false

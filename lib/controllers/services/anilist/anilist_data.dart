@@ -170,8 +170,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       ],
       Column(
         children: [
-          if (acceptedLists.contains("Recommended Animes") &&
-              settings.homePageCards.keys.contains('Recommended Animes'))
+          if (acceptedLists.contains("Recommended Anime") &&
+              settings.homePageCards.keys.contains('Recommended Anime'))
             ReusableCarousel(
               title: "Recommended Anime",
               data: isLoggedIn.value

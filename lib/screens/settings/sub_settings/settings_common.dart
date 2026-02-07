@@ -32,8 +32,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
     uniScrapper = settingsController.preferences
         .get('universal_scrapper', defaultValue: false);
     homePageCards = isMal ? settings.homePageCardsMal : settings.homePageCards;
-    homePageCards.putIfAbsent('Recommended Animes', () => true);
-    homePageCards.putIfAbsent('Recommended Mangas', () => true);
+    homePageCards.putIfAbsent('Recommended Anime', () => true);
+    homePageCards.putIfAbsent('Recommended Manga', () => true);
   }
 
   @override
