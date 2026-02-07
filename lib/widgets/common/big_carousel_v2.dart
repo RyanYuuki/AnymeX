@@ -326,7 +326,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                 tag: tag,
                 child: AnymeXImage(
                   imageUrl: getResponsiveValue(context,
-                      mobileValue: widget.media.poster,
+                      mobileValue: widget.media.largePoster,
                       desktopValue: widget.media.cover),
                   fit: BoxFit.cover,
                 ),
