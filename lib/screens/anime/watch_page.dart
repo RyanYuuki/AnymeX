@@ -21,6 +21,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
@@ -102,6 +103,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
+  final RxString translatedSubtitle = "".obs;
 
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
@@ -363,8 +365,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       playbackSpeed.value = e;
     });
 
-    player.stream.subtitle.listen((e) {
+    player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
+      if (settings.playerSettings.value.autoTranslate && e.isNotEmpty) {
+        final target = settings.playerSettings.value.translateTo;
+        translatedSubtitle.value = await SubtitleTranslator.translate(e.join("\n"), target);
+      } else {
+        translatedSubtitle.value = "";
+      }
     });
   }
 
@@ -971,58 +979,63 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Obx _buildSubtitle() {
-    return Obx(() => AnimatedPositioned(
-          right: 0,
-          left: 0,
-          top: 0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: AnimatedOpacity(
-              opacity: subtitleText[0].isEmpty ? 0.0 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: subtitleText[0].isEmpty
-                      ? Colors.transparent
-                      : colorOptions[settings.subtitleBackgroundColor],
-                  borderRadius: BorderRadius.circular(12.multiplyRadius()),
-                ),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  switchInCurve: Curves.easeIn,
-                  switchOutCurve: Curves.easeOut,
-                  child: OutlinedText(
-                    text: Text(
-                      [
-                        for (final line in subtitleText)
-                          if (line.trim().isNotEmpty) line.trim(),
-                      ].join('\n'),
-                      key: ValueKey(subtitleText.join()),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: fontColorOptions[settings.subtitleColor],
-                        fontSize: settings.subtitleSize.toDouble(),
-                        fontFamily: "Poppins-Bold",
-                      ),
+    return Obx(() {
+      final isTransOn = settings.playerSettings.value.autoTranslate;
+      final rawTextList = subtitleText;
+      final rawFullText = rawTextList.join('\n');
+      
+      final displayText = (isTransOn && translatedSubtitle.value.isNotEmpty)
+          ? translatedSubtitle.value
+          : rawFullText;
+
+      return AnimatedPositioned(
+        right: 0,
+        left: 0,
+        top: 0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: AnimatedOpacity(
+            opacity: displayText.isEmpty ? 0.0 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: displayText.isEmpty
+                    ? Colors.transparent
+                    : colorOptions[settings.subtitleBackgroundColor],
+                borderRadius: BorderRadius.circular(12.multiplyRadius()),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                child: OutlinedText(
+                  text: Text(
+                    displayText,
+                    key: ValueKey(displayText),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: fontColorOptions[settings.subtitleColor],
+                      fontSize: settings.subtitleSize.toDouble(),
+                      fontFamily: "Poppins-Bold",
                     ),
-                    strokes: [
-                      OutlinedTextStroke(
-                          color:
-                              fontColorOptions[settings.subtitleOutlineColor]!,
-                          width: settings.subtitleOutlineWidth.toDouble())
-                    ],
                   ),
+                  strokes: [
+                    OutlinedTextStroke(
+                        color: fontColorOptions[settings.subtitleOutlineColor]!,
+                        width: settings.subtitleOutlineWidth.toDouble())
+                  ],
                 ),
               ),
             ),
           ),
-        ));
+        ),
+      );
+    });
   }
 
   Widget _buildRippleEffect() {
@@ -1390,6 +1403,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         : context.colors.primary;
   }
 
+  void _toggleAutoTranslate() {
+    final current = settings.playerSettings.value;
+    current.autoTranslate = !current.autoTranslate;
+    settings.playerSettings.value = current;
+    settings.playerSettings.refresh();
+    snackBar(current.autoTranslate ? "Translation On" : "Translation Off");
+  }
+  
   Widget _buildControls() {
     return Obx(() {
       final themeFgColor = _getFgColor().obs;
