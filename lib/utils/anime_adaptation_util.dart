@@ -139,6 +139,13 @@ class MangaAnimeUtil {
       DateTime latestRelease = releaseDates[0];
       DateTime predictedDate =
           latestRelease.add(Duration(days: roundedInterval));
+      DateTime now = DateTime.now();
+      
+      int chaptersToAdd = 1;
+      while (predictedDate.isBefore(now)) {
+        predictedDate = predictedDate.add(Duration(days: roundedInterval));
+        chaptersToAdd++;
+      }
 
       String nextChapterName = "Next Chapter";
       if (latestChapterStr != null) {
@@ -147,10 +154,11 @@ class MangaAnimeUtil {
         if (numericMatch != null) {
           double? chNum = double.tryParse(numericMatch.group(1)!);
           if (chNum != null) {
-            if (chNum % 1 == 0) {
-              nextChapterName = "Chapter ${chNum.toInt() + 1}";
+            double nextChNum = chNum + chaptersToAdd;
+            if (nextChNum % 1 == 0) {
+              nextChapterName = "Chapter ${nextChNum.toInt()}";
             } else {
-              nextChapterName = "Chapter ${(chNum + 1).toStringAsFixed(1)}";
+              nextChapterName = "Chapter ${nextChNum.toStringAsFixed(1)}";
             }
           }
         }
