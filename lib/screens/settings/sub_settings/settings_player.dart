@@ -339,9 +339,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            backgroundColor: widget.isModal
-                ? context.colors.surfaceContainer
-                : Colors.transparent,
+            //	backgroundColor: widget.isModal
+            //  ? context.colors.surfaceContainer
+            //  : Colors.transparent,
             body: Column(children: [
               if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
               Expanded(
