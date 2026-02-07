@@ -16,6 +16,7 @@ class Media {
   String romajiTitle;
   String description;
   String poster;
+  String largePoster;
   String? cover;
   String totalEpisodes;
   String type;
@@ -57,6 +58,7 @@ class Media {
       this.romajiTitle = '?',
       this.description = '?',
       this.poster = '?',
+      this.largePoster = '?',
       this.cover,
       this.totalEpisodes = '?',
       this.type = '?',
@@ -337,6 +339,7 @@ class Media {
       isAdult: json['isAdult'] ?? false,
       totalEpisodes: json['episodes']?.toString() ?? '?',
       poster: json['coverImage']?['large'] ?? '?',
+      largePoster: json['coverImage']?['extraLarge'] ?? '?',
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       type: isManga ? 'MANGA' : 'ANIME',
