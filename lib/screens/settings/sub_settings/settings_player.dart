@@ -5,6 +5,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/player.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -335,6 +336,22 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
+  void _showTranslationLanguageDialog() {
+    showSelectionDialog<String>(
+      title: "Translation Language",
+      items: SubtitleTranslator.languages.keys.toList(),
+      selectedItem: settings.playerSettings.value.translateTo.obs,
+      getTitle: (code) => SubtitleTranslator.languages[code]!,
+      onItemSelected: (code) {
+        final current = settings.playerSettings.value;
+        current.translateTo = code;
+        settings.playerSettings.value = current;
+        settings.playerSettings.refresh();
+        setState(() {});
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
@@ -474,6 +491,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                               settings.autoSkipOnce = val),
                                       CustomSwitchTile(
                                           padding: const EdgeInsets.all(10),
+                                          icon: Icons.fast_forward_outlined,
+                                          title: "Auto Skip Recap",
+                                          description:
+                                              "Auto skip the recap section",
+                                          switchValue: settings.autoSkipRecap,
+                                          onChanged: (val) =>
+                                              settings.autoSkipRecap = val),
+                                      CustomSwitchTile(
+                                          padding: const EdgeInsets.all(10),
                                           icon: Icons.play_disabled_rounded,
                                           title: "Enable Swipe Controls",
                                           description:
@@ -535,7 +561,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       ),
                                     ],
                                   )),
-                              // Subtitle Color
+                              // Subtitles
                               AnymexExpansionTile(
                                   title: 'Subtitles',
                                   content: Column(
@@ -551,6 +577,36 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                           onChanged: (e) {
                                             settings.transitionSubtitle = e;
                                           }),
+                                      CustomSwitchTile(
+                                        icon: HugeIcons.strokeRoundedTranslate,
+                                        title: 'Auto Translate Subtitles',
+                                        description:
+                                            'Use AI to translate soft-subtitles live',
+                                        switchValue: settings.playerSettings
+                                            .value.autoTranslate,
+                                        onChanged: (val) {
+                                          final current =
+                                              settings.playerSettings.value;
+                                          current.autoTranslate = val;
+                                          settings.playerSettings.value =
+                                              current;
+                                          settings.playerSettings.refresh();
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomTile(
+                                        icon: Icons.language,
+                                        title: 'Translate To',
+                                        description: SubtitleTranslator
+                                                .languages[settings
+                                                    .playerSettings
+                                                    .value
+                                                    .translateTo] ??
+                                            'Select Language',
+                                        onTap: () {
+                                          _showTranslationLanguageDialog();
+                                        },
+                                      ),
                                       CustomTile(
                                         padding: 10,
                                         description: 'Change subtitle colors',
