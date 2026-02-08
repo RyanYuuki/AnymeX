@@ -58,6 +58,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
   final RxInt _requestCounter = 0.obs;
   final Rx<Future<List<Episode>>?> _episodeFuture =
       Rx<Future<List<Episode>>?>(null);
+  Worker? _episodeListListener;
+  bool _fillerFetched = false;
 
   @override
   void initState() {
@@ -66,13 +68,39 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       _episodeFuture.value = Future.value(widget.episodeList!);
       _fetchFillerInfo();
     }
+   
+    if (widget.episodeList != null) {
+      _episodeListListener = ever(widget.episodeList!, (episodes) {
+        if (episodes.isNotEmpty && !_fillerFetched) {
+          _fetchFillerInfo();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _episodeListListener?.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchFillerInfo() async {
-    if (widget.anilistData?.idMal == null) return;
+    if (_fillerFetched) return;
+    
+    if (widget.episodeList != null && widget.episodeList!.isNotEmpty) {
+      if (widget.episodeList!.any((ep) => ep.filler == true)) {
+        _fillerFetched = true;
+        return;
+      }
+    }
+    
+    final malId = widget.anilistData?.idMal;
+    if (malId == null) return;
+
+    _fillerFetched = true;
 
     try {
-      final fillerMap = await JikanService.getFillerEpisodes(widget.anilistData.idMal.toString());
+      final fillerMap = await JikanService.getFillerEpisodes(malId.toString());
       
       if (fillerMap.isNotEmpty && widget.episodeList != null) {
         bool updated = false;
@@ -84,12 +112,9 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           }
         }
 
-        if (updated && mounted) {
-           setState(() {});
-        }
+        if (updated && mounted) setState(() {});
       }
-    } catch (e) {
-    }
+    } catch (_) {}
   }
 
   Future<List<Episode>> _fetchEpisodes(int requestId) async {
@@ -100,7 +125,13 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         throw Exception('Request cancelled');
       }
 
-      return widget.episodeList?.value ?? [];
+    
+      final episodes = widget.episodeList?.value ?? [];
+      if (episodes.isNotEmpty) {
+        _fetchFillerInfo();
+      }
+
+      return episodes;
     } catch (e) {
       if (_requestCounter.value == requestId) {
         widget.episodeError.value = true;

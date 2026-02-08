@@ -474,6 +474,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                               settings.autoSkipOnce = val),
                                       CustomSwitchTile(
                                           padding: const EdgeInsets.all(10),
+                                          icon: Icons.skip_next_rounded,
+                                          title: "Auto Skip Filler",
+                                          description:
+                                              "Automatically skip filler episodes when going to next episode",
+                                          switchValue: settings.autoSkipFiller,
+                                          onChanged: (val) =>
+                                              settings.autoSkipFiller = val),
+                                      CustomSwitchTile(
+                                          padding: const EdgeInsets.all(10),
                                           icon: Icons.play_disabled_rounded,
                                           title: "Enable Swipe Controls",
                                           description:
