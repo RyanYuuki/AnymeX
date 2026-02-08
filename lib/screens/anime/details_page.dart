@@ -6,6 +6,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
+import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -79,6 +80,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   RxBool episodeError = false.obs;
 
+ // for fast parallel filler fetching 
+  Map<String, bool> fillerEpisodes = {};
+
   PageController controller = PageController();
 
   final sourceController = Get.find<SourceController>();
@@ -116,6 +120,35 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     } catch (e) {
       Logger.i("Media Syncer Failed => $e");
     }
+  }
+
+ 
+  Future<void> _fetchFillerInfo() async {
+    final malId = anilistData?.idMal ?? widget.media.idMal;
+    if (malId == null) return;
+
+    try {
+      final data = await JikanService.getFillerEpisodes(malId.toString());
+      if (data.isNotEmpty) {
+        fillerEpisodes = data;
+        _applyFillerInfo();
+      }
+    } catch (_) {}
+  }
+
+
+  void _applyFillerInfo() {
+    if (fillerEpisodes.isEmpty || episodeList.isEmpty) return;
+    
+    bool updated = false;
+    for (var ep in episodeList) {
+      if (fillerEpisodes.containsKey(ep.number)) {
+        ep.filler = true;
+        updated = true;
+      }
+    }
+    
+    if (updated && mounted) setState(() {});
   }
 
   @override
@@ -186,7 +219,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         _processExtensionData(tempData);
       } else {
-        Future.wait([_mapToService(), _syncMediaIds()]);
+    
+        Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
     } catch (e) {
       if (e.toString().contains('author')) {
@@ -236,6 +270,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       rawEpisodes.value = _createRawEpisodes(episodes);
       episodeList.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
+      _applyFillerInfo(); 
       if (mounted) {
         setState(() {});
       }
@@ -257,6 +292,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       showAnify.value = false;
     }
     episodeList.value = newEps;
+    _applyFillerInfo(); 
     if (mounted) {
       setState(() {});
     }
