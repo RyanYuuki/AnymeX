@@ -30,7 +30,6 @@ class MangaStats extends StatefulWidget {
 class _MangaStatsState extends State<MangaStats> {
   late final Future<AnimeAdaptation> _animeAdaptationFuture;
   late final Future<NextRelease> _nextReleaseFuture;
-  // 1. Add future to State
   late final Future<List<NewsItem>> _newsFuture;
 
   @override
@@ -39,7 +38,6 @@ class _MangaStatsState extends State<MangaStats> {
 
     _animeAdaptationFuture = MangaAnimeUtil.getAnimeAdaptation(widget.data);
     _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data);
-    // Fetch Manga/Novel News
     _newsFuture = MangaAnimeUtil.getMangaNovelNews(widget.data);
   }
 
@@ -196,102 +194,28 @@ class _MangaStatsState extends State<MangaStats> {
               },
             ),
           ),
-          // 2. Add News section below Genres
           const SizedBox(height: 16),
           FutureBuilder<List<NewsItem>>(
             future: _newsFuture,
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.isEmpty)
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const SizedBox.shrink();
-              return Column(
-                children: [
-                  _buildSectionContainer(
-                    context,
-                    icon: Icons.newspaper_rounded,
-                    title: "Related News",
-                    child: buildNewsSection(context, snapshot.data!),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              );
+              }
+              return _buildMangaOthersSection(context, snapshot.data!);
             },
           ),
-          // Add Others Section for Manga consistency
-          _buildMangaOthersSection(context),
           const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  Widget _buildMangaOthersSection(BuildContext context) {
-    final colorScheme = context.colors;
+  Widget _buildMangaOthersSection(BuildContext context, List<NewsItem> news) {
     return _buildSectionContainer(
       context,
-      icon: Icons.more_horiz,
-      title: "Others",
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              // Note: You can change the search term to find related music/content
-              snackString("Feature coming soon!");
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.opaque(0.4),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: colorScheme.outline.opaque(0.2),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.opaque(0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.book_rounded,
-                      size: 22,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AnymexText(
-                          text: "Official Site",
-                          variant: TextVariant.bold,
-                          size: 14,
-                        ),
-                        const SizedBox(height: 4),
-                        AnymexText(
-                          text: "Visit the official publisher website",
-                          variant: TextVariant.regular,
-                          size: 13,
-                          color: colorScheme.onSurface.opaque(0.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 20,
-                    color: colorScheme.primary.opaque(0.7),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+      icon: Icons.newspaper_rounded,
+      title: "Related News",
+      child: buildNewsSection(context, news),
     );
   }
 
