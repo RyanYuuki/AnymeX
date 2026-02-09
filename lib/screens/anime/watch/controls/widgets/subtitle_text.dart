@@ -23,10 +23,16 @@ class SubtitleText extends StatelessWidget {
           ? 100
           : (30 + controller.settings.bottomMargin);
 
-      final subtitle = [
-        for (final line in controller.subtitleText)
-          if (line.trim().isNotEmpty) line.trim(),
-      ].join('\n');
+     
+      final useTranslation = controller.playerSettings.autoTranslate && 
+          controller.translatedSubtitle.value.isNotEmpty;
+      
+      final subtitle = useTranslation
+          ? controller.translatedSubtitle.value
+          : [
+              for (final line in controller.subtitleText)
+                if (line.trim().isNotEmpty) line.trim(),
+            ].join('\n');
 
       final content = OutlinedText(
         key: ValueKey(controller.subtitleText.join()),
