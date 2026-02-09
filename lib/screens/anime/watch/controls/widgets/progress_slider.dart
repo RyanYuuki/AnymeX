@@ -34,6 +34,10 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final position = controller.currentPosition.value.inMilliseconds;
       final buffer = controller.bufferred.value.inMilliseconds;
       final fullDuration = Duration(milliseconds: duration);
+      
+      final maxValue = duration > 0 ? duration.toDouble() : 1.0;
+      final clampedPosition = position.toDouble().clamp(0.0, maxValue);
+      final clampedBuffer = buffer.toDouble().clamp(0.0, maxValue);
 
       return SizedBox(
         height: 27,
@@ -49,9 +53,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
                     : Duration(milliseconds: duration).inSeconds ~/ 10,
             focusNode: FocusNode(canRequestFocus: false, skipTraversal: true),
             min: 0,
-            value: position.toDouble(),
-            max: duration.toDouble(),
-            secondaryTrackValue: buffer.toDouble(),
+            value: clampedPosition,
+            max: maxValue,
+            secondaryTrackValue: clampedBuffer,
             onChangeStart: (v) => controller.isSeeking.value = true,
             onChanged: (v) =>
                 controller.seekTo(Duration(milliseconds: v.toInt())),
