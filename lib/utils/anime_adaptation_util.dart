@@ -26,7 +26,7 @@ class MangaAnimeUtil {
   static Future<List<NewsItem>> getAnimeNews(Media media) async {
     try {
       // kuroiru uses MAL ID
-      final malId = media.idMal ?? media.id;
+      final malId = media.idMal.isEmpty ? media.id : media.idMal;
       final response =
           await http.get(Uri.parse('https://kuroiru.co/api/anime/$malId'));
 
@@ -34,7 +34,9 @@ class MangaAnimeUtil {
         final data = json.decode(response.body);
         final List<dynamic>? newsData = data['news'];
         if (newsData == null) return [];
-        return newsData.map((json) => NewsItem.fromKuroiru(json)).toList();
+        final newsList = newsData.map((json) => NewsItem.fromKuroiru(json)).toList();
+        newsList.sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
+        return newsList;
       }
       return [];
     } catch (_) {

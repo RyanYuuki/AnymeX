@@ -2,6 +2,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
+import 'package:anymex/screens/news/news_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
@@ -195,6 +196,7 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
           const SizedBox(height: 16),
+
           FutureBuilder<List<NewsItem>>(
             future: _newsFuture,
             builder: (context, snapshot) {
@@ -210,14 +212,7 @@ class _MangaStatsState extends State<MangaStats> {
     );
   }
 
-  Widget _buildMangaOthersSection(BuildContext context, List<NewsItem> news) {
-    return _buildSectionContainer(
-      context,
-      icon: Icons.newspaper_rounded,
-      title: "Related News",
-      child: buildNewsSection(context, news),
-    );
-  }
+
 
   Widget _buildSectionContainer(
     BuildContext context, {
@@ -318,6 +313,77 @@ class _MangaStatsState extends State<MangaStats> {
         ],
       ),
     );
+  }
+
+  Widget _buildMangaOthersSection(BuildContext context, List<NewsItem> news) {
+  final colorScheme = context.colors;
+  
+  return _buildSectionContainer(
+    context, 
+    icon: Icons.more,
+    title: "Others", 
+    child: Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            navigate(() => NewsPage(media: widget.data, news: news));
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.opaque(0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: colorScheme.outline.opaque(0.2),
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.newspaper_rounded,
+                    size: 22,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymexText(
+                        text: "Recent News",
+                        variant: TextVariant.bold,
+                        size: 14,
+                      ),
+                      const SizedBox(height: 4),
+                      AnymexText(
+                        text: "Read latest updates about this manga",
+                        variant: TextVariant.regular,
+                        size: 13,
+                        color: colorScheme.onSurface.opaque(0.6),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 20,
+                  color: colorScheme.primary.opaque(0.7),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    )
+  );
   }
 
   Widget _buildStatsGrid(BuildContext context) {
