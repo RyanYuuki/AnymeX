@@ -1,20 +1,26 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:anymex/utils/logger.dart';
 
 class SubtitleTranslator {
   static final Map<String, String> _cache = {};
 
   static Future<String> translate(String text, String targetLang) async {
-    if (text.isEmpty || targetLang == 'none') return text;
+    if (text.isEmpty || targetLang == 'none') {
+      return text;
+    }
     
     final cacheKey = '$targetLang:$text';
-    if (_cache.containsKey(cacheKey)) return _cache[cacheKey]!;
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey]!;
+    }
 
     try {
       final url = Uri.parse(
           "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=$targetLang&dt=t&q=${Uri.encodeComponent(text)}");
 
       final response = await http.get(url);
+    
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         String translated = "";
@@ -27,9 +33,11 @@ class SubtitleTranslator {
         
         _cache[cacheKey] = translated;
         return translated;
+      } else {
+        Logger.e('[SubtitleTranslator] API returned ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
-      print("Translation Error: $e");
+      Logger.e('[SubtitleTranslator] Translation Error: $e');
     }
     return text;
   }
