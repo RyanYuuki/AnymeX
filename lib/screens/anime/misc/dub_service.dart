@@ -9,7 +9,7 @@ class DubService {
 
   static Future<List<DubAnimeInfo>> fetchDubSources() async {
     final List<DubAnimeInfo> dubs = [];
-    
+
     try {
       final asResponse = await http.get(Uri.parse(animeScheduleUrl), headers: {
         "User-Agent":
@@ -164,7 +164,6 @@ class DubService {
         headers: {
           'User-Agent':
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Cookie': 'lc_time_zone=$localTz;'
         },
       );
 
@@ -175,8 +174,7 @@ class DubService {
         for (var column in streamColumns) {
           var serviceNameEl =
               column.querySelector('.grouped-list-heading-title');
-          String serviceName =
-              serviceNameEl?.text.trim() ?? "Unknown Service";
+          String serviceName = serviceNameEl?.text.trim() ?? "Unknown Service";
 
           var serviceIconEl =
               column.querySelector('.grouped-list-heading-icon img');
@@ -231,9 +229,7 @@ class DubService {
                     dubs.indexWhere((element) => element.title == title);
 
                 StreamingService newService = StreamingService(
-                    name: serviceName,
-                    url: watchLink,
-                    icon: serviceIcon);
+                    name: serviceName, url: watchLink, icon: serviceIcon);
 
                 if (existingIndex != -1) {
                   if (!dubs[existingIndex]
