@@ -1,1 +1,1 @@
-enum PlayerKeys { useLibass }
+enum PlayerKeys { useLibass, useBetterPlayer }

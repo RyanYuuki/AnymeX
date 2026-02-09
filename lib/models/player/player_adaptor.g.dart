@@ -93,7 +93,7 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
       ..writeByte(21)
       ..write(obj.autoTranslate)
       ..writeByte(22)
-      ..write(obj.translateTo);
+      ..write(obj.translateTo)
       ..writeByte(23)
       ..write(obj.autoSkipFiller);
   }
