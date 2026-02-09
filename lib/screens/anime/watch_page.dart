@@ -367,11 +367,47 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
 
     player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
-      if (settings.playerSettings.value.autoTranslate && e.isNotEmpty) {
-        final target = settings.playerSettings.value.translateTo;
-        translatedSubtitle.value = await SubtitleTranslator.translate(e.join("\n"), target);
+      
+     
+      translatedSubtitle.value = "";
+      
+      if (settings.playerSettings.value.autoTranslate) {
+        
+        final cleanedText = [
+          for (final line in e)
+            if (line.trim().isNotEmpty) line.trim(),
+        ].join('\n');
+        
+        if (cleanedText.isNotEmpty) {
+          final target = settings.playerSettings.value.translateTo;
+          translatedSubtitle.value = await SubtitleTranslator.translate(cleanedText, target);
+        }
       } else {
-        translatedSubtitle.value = "";
+        Logger.d('[Subtitle] Auto-translate is OFF');
+      }
+    });
+
+   
+    player.stream.tracks.listen((tracks) {
+      Logger.i('[Subtitle] Detected ${tracks.subtitle.length} embedded subtitle tracks');
+      
+    
+      if (subtitles.isEmpty && tracks.subtitle.length > 1) {
+        
+        for (var track in tracks.subtitle.skip(1)) {
+          final title = (track.title ?? track.language ?? '').toLowerCase();
+          if (title.contains('eng') || title.contains('english')) {
+            Logger.i('[Subtitle] Auto-selecting embedded track: ${track.title ?? track.language}');
+            player.setSubtitleTrack(track);
+            return;
+          }
+        }
+ 
+        if (tracks.subtitle.length > 1) {
+          final firstTrack = tracks.subtitle[1];
+          Logger.i('[Subtitle] Auto-selecting first embedded track: ${firstTrack.title ?? firstTrack.language}');
+          player.setSubtitleTrack(firstTrack);
+        }
       }
     });
   }
@@ -981,8 +1017,12 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   Obx _buildSubtitle() {
     return Obx(() {
       final isTransOn = settings.playerSettings.value.autoTranslate;
-      final rawTextList = subtitleText;
-      final rawFullText = rawTextList.join('\n');
+      
+   
+      final rawFullText = [
+        for (final line in subtitleText)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
       
       final displayText = (isTransOn && translatedSubtitle.value.isNotEmpty)
           ? translatedSubtitle.value
@@ -1403,13 +1443,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         : context.colors.primary;
   }
 
-  void _toggleAutoTranslate() {
-    final current = settings.playerSettings.value;
-    current.autoTranslate = !current.autoTranslate;
-    settings.playerSettings.value = current;
-    settings.playerSettings.refresh();
-    snackBar(current.autoTranslate ? "Translation On" : "Translation Off");
-  }
+
   
   Widget _buildControls() {
     return Obx(() {
