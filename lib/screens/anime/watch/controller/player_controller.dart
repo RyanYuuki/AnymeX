@@ -736,9 +736,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       await _trackLocally();
       if (!isOffline.value) {
-        await _trackOnline((currentPosition.value).inMilliseconds /
-                episodeDuration.value.inMilliseconds >=
-            settings.markAsCompleted);
+        final durationMs = episodeDuration.value.inMilliseconds;
+        final hasCrossedLimit = durationMs > 0
+            ? (currentPosition.value.inMilliseconds / durationMs >=
+                settings.markAsCompleted)
+            : false;
+        await _trackOnline(hasCrossedLimit);
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -993,11 +996,41 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void navigator(bool forward) {
     if (forward) {
-      changeEpisode(nextEpisode!);
-    } else if (hasNextEpisode) {
+    
+      if (playerSettings.autoSkipFiller) {
+        final targetEpisode = _getNextNonFillerEpisode();
+        if (targetEpisode != null) {
+          changeEpisode(targetEpisode);
+        } else if (hasNextEpisode) {
+          changeEpisode(nextEpisode!);
+        }
+      } else {
+        changeEpisode(nextEpisode!);
+      }
+    } else if (hasPreviousEpisode) {
       changeEpisode(previousEpisode!);
     }
     onUserInteraction();
+  }
+
+  
+  Episode? _getNextNonFillerEpisode() {
+    final currentIndex = currentEpisodeIndex;
+    int skippedCount = 0;
+    
+    for (int i = currentIndex + 1; i < episodeList.length; i++) {
+      final episode = episodeList[i];
+      if (episode.filler != true) {
+        if (skippedCount > 0) {
+          snackBar('Skipped $skippedCount filler episode${skippedCount > 1 ? 's' : ''}');
+        }
+        return episode;
+      }
+      skippedCount++;
+    }
+    
+   
+    return nextEpisode;
   }
 
   void updateNavigatorState() {
