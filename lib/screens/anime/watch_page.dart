@@ -21,7 +21,9 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
+
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
@@ -103,11 +105,15 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
-  final RxString translatedSubtitle = "".obs;
+
 
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
   final RxBool _brightnessIndicator = false.obs;
+  
+  final RxString translatedSubtitle = "".obs;
+  RxList<String> subtitleText = [''].obs;
+  int _subtitleRequestId = 0;
   Timer? _volumeTimer;
   Timer? _brightnessTimer;
   var _volumeInterceptEventStream = false;
@@ -117,7 +123,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   late AnimationController _rightAnimationController;
   RxInt skipDuration = 10.obs;
   final isLocked = false.obs;
-  RxList<String> subtitleText = [''].obs;
+
   RxInt subtitleDelay = 0.obs;
 
   final doubleTapLabel = 0.obs;
@@ -297,6 +303,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
   StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<List<String>>? _subtitleSubscription;
   bool _isSeeking = false;
   int lastProcessedSecond = -1;
   Duration _lastPosition = Duration.zero;
@@ -365,29 +372,48 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       playbackSpeed.value = e;
     });
 
-    player.stream.subtitle.listen((e) async {
+
+
+   
+    
+    _subtitleSubscription = player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
+      final currentId = ++_subtitleRequestId;
       
-     
-      translatedSubtitle.value = "";
+      final cleanedText = [
+        for (final line in e)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
       
-      if (settings.playerSettings.value.autoTranslate) {
-        
-        final cleanedText = [
-          for (final line in e)
-            if (line.trim().isNotEmpty) line.trim(),
-        ].join('\n');
-        
-        if (cleanedText.isNotEmpty) {
+      if (!settings.playerSettings.value.autoTranslate) {
+         translatedSubtitle.value = "";
+         return;
+      }
+      
+      if (cleanedText.isNotEmpty) {
           final target = settings.playerSettings.value.translateTo;
-          translatedSubtitle.value = await SubtitleTranslator.translate(cleanedText, target);
-        }
+          
+       
+          final lookupKey = cleanedText.trim();
+          final cached = SubtitlePreTranslator.lookup(lookupKey);
+          
+          if (cached != null) {
+            translatedSubtitle.value = cached;
+            return;
+          }
+          
+          try {
+             final translated = await SubtitleTranslator.translate(cleanedText, target);
+             if (currentId == _subtitleRequestId && translated.isNotEmpty) {
+               translatedSubtitle.value = translated;
+               SubtitlePreTranslator.manualAdd(lookupKey, translated);
+             }
+          } catch (_) {}
       } else {
-        Logger.d('[Subtitle] Auto-translate is OFF');
+        translatedSubtitle.value = "";
       }
     });
 
-   
     player.stream.tracks.listen((tracks) {
       Logger.i('[Subtitle] Detected ${tracks.subtitle.length} embedded subtitle tracks');
       
@@ -732,6 +758,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _hideControlsTimer?.cancel();
     doubleTapTimeout?.cancel();
     _positionSubscription?.cancel();
+    _subtitleSubscription?.cancel();
 
     trackEpisode(
         currentPosition.value, episodeDuration.value, currentEpisode.value,
