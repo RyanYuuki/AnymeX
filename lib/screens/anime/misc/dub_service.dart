@@ -2,7 +2,6 @@ import 'package:anymex/utils/logger.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 
 class DubService {
   static const String animeScheduleUrl = 'https://animeschedule.net/';
@@ -10,16 +9,13 @@ class DubService {
 
   static Future<List<DubAnimeInfo>> fetchDubSources() async {
     final List<DubAnimeInfo> dubs = [];
-    final String localTz;
-    final timezoneInfo = await FlutterTimezone.getLocalTimezone();
-    localTz = timezoneInfo.identifier;
     
     try {
       final asResponse = await http.get(Uri.parse(animeScheduleUrl), headers: {
         "User-Agent":
             "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0",
         "Cookie":
-            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timezone=$localTz; as_timetableSettingsTimeFormat=12; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub; as_timetableSettingsFilters=%5B%5D; as_timetableSettingsStreamFilters=%5B%22%5C%22crunchyroll-filter%5C%22%22%5D; as_timetableSettingsMediaFilters=%5B%22%5C%22tv-filter%5C%22%22,%22%5C%22ona-filter%5C%22%22,%22%5C%22ova-filter%5C%22%22,%22%5C%22special-filter%5C%22%22,%22%5C%22movie-filter%5C%22%22,%22%5C%22tv-short-filter%5C%22%22%5D; as_timetableSettingsFilterToFilters=%5B%22%5C%22always-show-anime-list-anime-filter%5C%22%22%5D; as_timetableSettingsFilterType=inclusive; as_timetableShowChinese=false; as_timetableSettingsHideDub=; as_disableTimetableImages=false; as_timetableSettingsSortBy=popularity; as_timetableSettingsWeekType=rotating"
+            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timetableSettingsTimeFormat=12; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub; as_timetableSettingsFilters=%5B%5D; as_timetableSettingsStreamFilters=%5B%22%5C%22crunchyroll-filter%5C%22%22%5D; as_timetableSettingsMediaFilters=%5B%22%5C%22tv-filter%5C%22%22,%22%5C%22ona-filter%5C%22%22,%22%5C%22ova-filter%5C%22%22,%22%5C%22special-filter%5C%22%22,%22%5C%22movie-filter%5C%22%22,%22%5C%22tv-short-filter%5C%22%22%5D; as_timetableSettingsFilterToFilters=%5B%22%5C%22always-show-anime-list-anime-filter%5C%22%22%5D; as_timetableSettingsFilterType=inclusive; as_timetableShowChinese=false; as_timetableSettingsHideDub=; as_disableTimetableImages=false; as_timetableSettingsSortBy=popularity; as_timetableSettingsWeekType=rotating"
       });
 
       if (asResponse.statusCode == 200) {
