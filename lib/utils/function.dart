@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:html/parser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -530,10 +532,12 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: news
         .take(5)
-        .map((item) => Padding(
+        .map((item) {
+          final decodedTitle = parse(item.title).body?.text ?? item.title;
+          return Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: InkWell(
-                onTap: () => launchUrls(item.url),
+                onTap: () => launchUrl(Uri.parse(item.url)),
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -546,7 +550,7 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
                     children: [
                       Expanded(
                         child: AnymexText(
-                          text: item.title,
+                          text: decodedTitle,
                           size: 13,
                           maxLines: 2,
                           variant: TextVariant.semiBold,
@@ -558,7 +562,8 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
                   ),
                 ),
               ),
-            ))
+            );
+        })
         .toList(),
   );
 }
