@@ -2,7 +2,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class DubService {
   static const String animeScheduleUrl = 'https://animeschedule.net/';
@@ -10,7 +10,9 @@ class DubService {
 
   static Future<List<DubAnimeInfo>> fetchDubSources() async {
     final List<DubAnimeInfo> dubs = [];
-    final localTz = await FlutterNativeTimezone.getLocalTimezone();
+    final String localTz;
+    final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+    localTz = timezoneInfo.identifier;
     
     try {
       final asResponse = await http.get(Uri.parse(animeScheduleUrl), headers: {

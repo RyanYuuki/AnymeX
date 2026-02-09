@@ -50,6 +50,10 @@ class _MangaStatsState extends State<MangaStats> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if ((widget.data.status.toUpperCase()) == 'RELEASING') ...[
+            _buildNextChapterPrediction(context),
+            const SizedBox(height: 16),
+          ],
           _buildSectionContainer(
             context,
             icon: Icons.analytics_outlined,
@@ -58,10 +62,6 @@ class _MangaStatsState extends State<MangaStats> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildStatsGrid(context),
-                if ((widget.data.status.toUpperCase()) == 'RELEASING') ...[
-                  const SizedBox(height: 16),
-                  _buildNextChapterPrediction(context),
-                ],
               ],
             ),
           ),
@@ -341,7 +341,7 @@ class _MangaStatsState extends State<MangaStats> {
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        mainAxisExtent: 75,
+        mainAxisExtent: 85,
       ),
       itemBuilder: (context, index) {
         final stat = stats[index];
