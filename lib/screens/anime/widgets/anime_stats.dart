@@ -318,25 +318,25 @@ class AnimeStats extends StatelessWidget {
                       desktopValue: MainAxisAlignment.center),
                   children: filteredRelations
                       .map((relation) => Expanded(
-                              child: ImageButton(
-                            height: getResponsiveSize(context,
-                                mobileSize: 60, desktopSize: 80),
-                            buttonText: relation.relationType,
-                            onPressed: () {
-                              navigate(
-                                () => AnimeDetailsPage(
-                                    media: Media(
-                                        id: relation.id.toString(),
-                                        title: relation.title,
-                                        poster: relation.poster,
-                                        cover: relation.cover,
-                                        serviceType: ServicesType.anilist),
-                                    tag: relation.id.toString()),
-                              );
-                            },
-                            backgroundImage: relation.cover.isNotEmpty
-                                ? relation.cover
-                                : relation.poster,
+                            child: ImageButton(
+                              height: getResponsiveSize(context,
+                                  mobileSize: 60, desktopSize: 80),
+                              buttonText: relation.relationType,
+                              onPressed: () {
+                                navigate(
+                                  () => AnimeDetailsPage(
+                                      media: Media(
+                                          id: relation.id.toString(),
+                                          title: relation.title,
+                                          poster: relation.poster,
+                                          cover: relation.cover,
+                                          serviceType: ServicesType.anilist),
+                                      tag: relation.id.toString()),
+                                );
+                              },
+                              backgroundImage: relation.cover.isNotEmpty
+                                  ? relation.cover
+                                  : relation.poster,
                           )))
                       .toList(),
                 ),
