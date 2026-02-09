@@ -40,13 +40,14 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
         markAsCompleted: fields[19] ?? 90,
         transitionSubtitle: fields[20] ?? true,
         autoTranslate: fields[21] ?? false,
-        translateTo: fields[22] ?? 'en');
+        translateTo: fields[22] ?? 'en',
+        autoSkipFiller: fields[23] ?? false);
   }
 
   @override
   void write(BinaryWriter writer, PlayerSettings obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.speed)
       ..writeByte(1)
@@ -93,6 +94,8 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
       ..write(obj.autoTranslate)
       ..writeByte(22)
       ..write(obj.translateTo);
+      ..writeByte(23)
+      ..write(obj.autoSkipFiller);
   }
 
   @override

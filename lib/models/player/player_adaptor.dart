@@ -50,6 +50,8 @@ class PlayerSettings {
   bool autoTranslate;
   @HiveField(22)
   String translateTo;
+  @HiveField(23)
+  bool autoSkipFiller;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -74,5 +76,6 @@ class PlayerSettings {
       this.markAsCompleted = 90,
       this.autoTranslate = false,
       this.translateTo = 'en',
-      this.transitionSubtitle = true});
+      this.transitionSubtitle = true,
+      this.autoSkipFiller = false});
 }

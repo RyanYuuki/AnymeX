@@ -175,6 +175,11 @@ class Settings extends GetxController {
   bool get saikouLayout => _getUISetting((s) => s.saikouLayout);
   set saikouLayout(bool value) => _setUISetting((s) => s?.saikouLayout = value);
 
+  bool get enablePosterKenBurns =>
+      _getUISetting((s) => s.enablePosterKenBurns);
+  set enablePosterKenBurns(bool value) =>
+      _setUISetting((s) => s?.enablePosterKenBurns = value);
+
   double get tabBarHeight => _getUISetting((s) => s.tabBarHeight);
   set tabBarHeight(double value) =>
       _setUISetting((s) => s?.tabBarHeight = value);
@@ -266,6 +271,10 @@ class Settings extends GetxController {
   bool get autoSkipOnce => _getPlayerSetting((s) => s.autoSkipOnce);
   set autoSkipOnce(bool value) =>
       _setPlayerSetting((s) => s?.autoSkipOnce = value);
+
+  bool get autoSkipFiller => _getPlayerSetting((s) => s.autoSkipFiller);
+  set autoSkipFiller(bool value) =>
+      _setPlayerSetting((s) => s?.autoSkipFiller = value);
 
   bool get enableSwipeControls =>
       _getPlayerSetting((s) => s.enableSwipeControls);
