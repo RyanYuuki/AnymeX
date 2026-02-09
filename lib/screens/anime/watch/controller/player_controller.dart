@@ -18,6 +18,8 @@ import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart'
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
+import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
@@ -53,6 +55,10 @@ extension PlayerControllerExtensions on PlayerController {
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
+  static final _htmlRx = RegExp(r'<[^>]*>');
+  static final _assRx = RegExp(r'\{[^}]*\}');
+  static final _newlineRx = RegExp(r'\\[nN]');
+
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
   final List<Episode> episodeList;
   final anymex.Media anilistData;
@@ -131,6 +137,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
   final RxList<String> subtitleText = RxList([]);
+  final RxString translatedSubtitle = ''.obs;
+  final RxBool isPreTranslating = false.obs;
+  final RxString preTranslateProgress = ''.obs;
   Timer? _seekDebounce;
 
   Timer? _autoHideTimer;
@@ -458,6 +467,32 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _initializeListeners() {
+    // Listen for auto-translate toggle
+    
+    bool? _lastAutoTranslate;
+    String? _lastTranslateTo;
+
+    _subscriptions.add(settingsController.playerSettings.listen((settings) {
+      final bool autoTranslate = settings.autoTranslate;
+      final String? translateTo = (settings as dynamic).translateTo;
+
+      final bool autoWasEnabled = _lastAutoTranslate == true;
+      final bool autoNowEnabled = autoTranslate == true;
+
+      final bool autoTurnedOn = (!autoWasEnabled && autoNowEnabled);
+      final bool autoTurnedOff = (autoWasEnabled && !autoNowEnabled);
+      final bool translateToChangedWhileEnabled = autoNowEnabled && _lastTranslateTo != null && _lastTranslateTo != translateTo;
+
+      if (autoTurnedOn || translateToChangedWhileEnabled) {
+        triggerPreTranslation();
+      } else if (autoTurnedOff) {
+        translatedSubtitle.value = '';
+      }
+
+      _lastAutoTranslate = autoTranslate;
+      _lastTranslateTo = translateTo;
+    }));
+
     _subscriptions.add(player.stream.position
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
@@ -525,8 +560,58 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(player.stream.subtitle.listen((e) {
+    
+    int subtitleTranslateRequestId = 0;
+
+    _subscriptions.add(player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
+      final int currentRequestId = ++subtitleTranslateRequestId;
+      
+     
+      final cleanedText = [
+        for (final line in e)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
+      
+
+      if (!playerSettings.autoTranslate) {
+        translatedSubtitle.value = '';
+        return;
+      }
+      
+      if (cleanedText.isEmpty && playerSettings.autoTranslate) {
+        translatedSubtitle.value = "";
+        return;
+      }
+      
+      if (playerSettings.autoTranslate && cleanedText.isNotEmpty) {
+       
+        final lookupKey = cleanedText
+            .replaceAll(_htmlRx, '')
+            .replaceAll(_assRx, '')
+            .replaceAll(_newlineRx, '\n')
+            .trim();
+            
+      
+        final cached = SubtitlePreTranslator.lookup(lookupKey);
+        if (cached != null) {
+          translatedSubtitle.value = cached;
+          return;
+        }
+         
+
+        try {
+          final translated = await SubtitleTranslator.translate(
+            cleanedText,
+            playerSettings.translateTo,
+          );
+          
+          if (currentRequestId == subtitleTranslateRequestId && translated.isNotEmpty) {
+            translatedSubtitle.value = translated;
+            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+          }
+        } catch (_) {}
+      }
     }));
 
     _subscriptions.add(player.stream.height.listen((height) {
@@ -945,6 +1030,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (track == null) {
       selectedExternalSub.value = model.Track();
       setSubtitleTrack(SubtitleTrack.no());
+      SubtitlePreTranslator.clearCache();
       return;
     }
     if (track.file?.isEmpty ?? true) {
@@ -953,6 +1039,51 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     selectedExternalSub.value = track;
     setSubtitleTrack(SubtitleTrack.uri(track.file!, title: track.label));
+    
+
+    if (playerSettings.autoTranslate && track.file != null) {
+      startPreTranslation(track.file!);
+    }
+  }
+  
+
+  void triggerPreTranslation() {
+    final subtitleUrl = selectedExternalSub.value.file;
+    if (subtitleUrl != null && subtitleUrl.isNotEmpty && playerSettings.autoTranslate) {
+      startPreTranslation(subtitleUrl);
+    }
+  }
+  
+
+  void startPreTranslation(String subtitleUrl) async {
+    
+    if (isPreTranslating.value) {
+      return;
+    }
+    
+    isPreTranslating.value = true;
+    preTranslateProgress.value = 'Starting translation...';
+    snackBar('Pre-translating subtitles...');
+    
+    try {
+    
+      final success = await SubtitlePreTranslator.preTranslateFromUrl(
+        subtitleUrl,
+        playerSettings.translateTo,
+      );
+      
+      if (success) {
+        snackBar('Subtitles translated! (${SubtitlePreTranslator.totalEntries} entries)');
+      } else {
+        snackBar('Pre-translation failed, using real-time fallback');
+      }
+    } catch (e) {
+      Logger.e('[PlayerController] Pre-translation error: $e');
+      snackBar('Pre-translation error, using real-time fallback');
+    }
+    
+    isPreTranslating.value = false;
+    preTranslateProgress.value = '';
   }
 
   void setServerTrack(model.Video track) async {

@@ -5,16 +5,17 @@ import 'package:intl/intl.dart';
 
 class DubService {
   static const String animeScheduleUrl = 'https://animeschedule.net/';
+  static const String liveChartUrl = 'https://www.livechart.me';
 
   static Future<List<DubAnimeInfo>> fetchDubSources() async {
     final List<DubAnimeInfo> dubs = [];
-
+    
     try {
       final asResponse = await http.get(Uri.parse(animeScheduleUrl), headers: {
         "User-Agent":
             "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0",
         "Cookie":
-            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timezone=Asia/Kolkata; as_timetableSettingsTimeFormat=12; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub; as_timetableSettingsFilters=%5B%5D; as_timetableSettingsStreamFilters=%5B%22%5C%22crunchyroll-filter%5C%22%22%5D; as_timetableSettingsMediaFilters=%5B%22%5C%22tv-filter%5C%22%22,%22%5C%22ona-filter%5C%22%22,%22%5C%22ova-filter%5C%22%22,%22%5C%22special-filter%5C%22%22,%22%5C%22movie-filter%5C%22%22,%22%5C%22tv-short-filter%5C%22%22%5D; as_timetableSettingsFilterToFilters=%5B%22%5C%22always-show-anime-list-anime-filter%5C%22%22%5D; as_timetableSettingsFilterType=inclusive; as_timetableShowChinese=false; as_timetableSettingsHideDub=; as_disableTimetableImages=false; as_timetableSettingsSortBy=popularity; as_timetableSettingsWeekType=rotating"
+            "as_cachedBaseCSS=baseMobile-c234a32dbf.min.css; as_timetableSettingsTimeFormat=12; as_timetableSettingsLayoutMode=large-tile; as_timetableSettingsVisible=false; as_timetableSettingsHideRaw=dub; as_timetableSettingsHideSub=dub; as_timetableSettingsAirTime=dub; as_timetableSettingsFilters=%5B%5D; as_timetableSettingsStreamFilters=%5B%22%5C%22crunchyroll-filter%5C%22%22%5D; as_timetableSettingsMediaFilters=%5B%22%5C%22tv-filter%5C%22%22,%22%5C%22ona-filter%5C%22%22,%22%5C%22ova-filter%5C%22%22,%22%5C%22special-filter%5C%22%22,%22%5C%22movie-filter%5C%22%22,%22%5C%22tv-short-filter%5C%22%22%5D; as_timetableSettingsFilterToFilters=%5B%22%5C%22always-show-anime-list-anime-filter%5C%22%22%5D; as_timetableSettingsFilterType=inclusive; as_timetableShowChinese=false; as_timetableSettingsHideDub=; as_disableTimetableImages=false; as_timetableSettingsSortBy=popularity; as_timetableSettingsWeekType=rotating"
       });
 
       if (asResponse.statusCode == 200) {
@@ -23,9 +24,7 @@ class DubService {
 
         for (var column in columns) {
           var dateEl = column.querySelector('.timetable-column-date-format');
-
           String? dateText = dateEl?.text.trim();
-
           DateTime? columnDate;
           if (dateText != null && dateText.isNotEmpty) {
             try {
@@ -36,7 +35,6 @@ class DubService {
                 columnDate.month,
                 columnDate.day,
               );
-
               if (columnDate.isBefore(
                   DateTime.now().subtract(const Duration(days: 180)))) {
                 columnDate = DateTime(
@@ -51,7 +49,6 @@ class DubService {
           }
 
           var shows = column.querySelectorAll('.timetable-column-show');
-
           for (var show in shows) {
             var titleEl = show.querySelector('.show-title-bar');
             var linkEl = show.querySelector('a.show-link');
@@ -61,7 +58,6 @@ class DubService {
 
             String title = titleEl?.text.trim() ?? "";
             print(title);
-
             String link = linkEl?.attributes['href'] ?? "";
             String poster = posterEl?.attributes['src'] ??
                 posterEl?.attributes['data-src'] ??
@@ -117,7 +113,6 @@ class DubService {
               for (var streamLink in streamLinks) {
                 String streamUrl = streamLink.attributes['href'] ?? "";
                 String streamTitle = streamLink.attributes['title'] ?? "";
-
                 var iconEl = streamLink.querySelector('img.stream-icon');
                 String streamIcon = iconEl?.attributes['data-src'] ??
                     iconEl?.attributes['src'] ??
@@ -126,7 +121,6 @@ class DubService {
                 if (streamIcon.startsWith('/')) {
                   streamIcon = "https://animeschedule.net$streamIcon";
                 }
-
                 if (streamUrl.startsWith('//')) {
                   streamUrl = 'https:$streamUrl';
                 }
@@ -139,16 +133,13 @@ class DubService {
                   ));
                 }
               }
-
               final Set<String> icons = {};
               final List<StreamingService> filteredServices = [];
-
               for (final service in streamingServices) {
                 if (icons.add(service.icon)) {
                   filteredServices.add(service);
                 }
               }
-
               streamingServices = filteredServices;
             }
 
@@ -164,7 +155,108 @@ class DubService {
         }
       }
     } catch (e) {
-      Logger.i("Error fetching dub data: $e");
+      Logger.i("Error fetching AnimeSchedule data: $e");
+    }
+
+    try {
+      final lcResponse = await http.get(
+        Uri.parse('$liveChartUrl/streams?hide_unavailable=false'),
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Cookie': 'lc_time_zone=$localTz;'
+        },
+      );
+
+      if (lcResponse.statusCode == 200) {
+        var document = html_parser.parse(lcResponse.body);
+        var streamColumns = document.querySelectorAll('.column-block');
+
+        for (var column in streamColumns) {
+          var serviceNameEl =
+              column.querySelector('.grouped-list-heading-title');
+          String serviceName =
+              serviceNameEl?.text.trim() ?? "Unknown Service";
+
+          var serviceIconEl =
+              column.querySelector('.grouped-list-heading-icon img');
+          String serviceIcon =
+              serviceIconEl?.attributes['srcset']?.split(' ').first ??
+                  serviceIconEl?.attributes['src'] ??
+                  "";
+
+          if (serviceIcon.isNotEmpty && !serviceIcon.startsWith('http')) {
+            if (serviceIcon.startsWith('//')) {
+              serviceIcon = 'https:$serviceIcon';
+            } else if (serviceIcon.startsWith('/')) {
+              serviceIcon = '$liveChartUrl$serviceIcon';
+            }
+          }
+
+          var animeItems = column.querySelectorAll('.anime-item');
+
+          for (var item in animeItems) {
+            String title = item.attributes['data-title'] ?? "";
+            if (title.isEmpty) {
+              title = item
+                      .querySelector('.anime-item__body__title strong a')
+                      ?.text
+                      .trim() ??
+                  "";
+            }
+
+            var infoText =
+                item.querySelector('.info.text-italic')?.text.trim() ?? "";
+            bool isDub = infoText.toLowerCase().contains("dub");
+
+            if (isDub) {
+              String poster = item
+                      .querySelector('.anime-item__poster-wrap img')
+                      ?.attributes['src'] ??
+                  "";
+              if (poster.isNotEmpty && !poster.startsWith('http')) {
+                if (poster.startsWith('//')) {
+                  poster = 'https:$poster';
+                } else if (poster.startsWith('/')) {
+                  poster = '$liveChartUrl$poster';
+                }
+              }
+
+              var watchLinkEl =
+                  item.querySelector('.anime-item__action-button');
+              String watchLink = watchLinkEl?.attributes['href'] ?? "";
+
+              if (watchLink.isNotEmpty) {
+                int existingIndex =
+                    dubs.indexWhere((element) => element.title == title);
+
+                StreamingService newService = StreamingService(
+                    name: serviceName,
+                    url: watchLink,
+                    icon: serviceIcon);
+
+                if (existingIndex != -1) {
+                  if (!dubs[existingIndex]
+                      .streams
+                      .any((s) => s.name == serviceName)) {
+                    dubs[existingIndex].streams.add(newService);
+                  }
+                } else {
+                  dubs.add(DubAnimeInfo(
+                      title: title,
+                      animeUrl: watchLink,
+                      poster: poster,
+                      episode: 1,
+                      airDateTime: DateTime.now(),
+                      streams: [newService]));
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i("Error fetching LiveChart data: $e");
     }
 
     return dubs;

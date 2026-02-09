@@ -21,6 +21,9 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/subtitle_pre_translator.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
+
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
@@ -103,9 +106,14 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
 
+
   // Player Seek Related
   final RxBool _volumeIndicator = false.obs;
   final RxBool _brightnessIndicator = false.obs;
+  
+  final RxString translatedSubtitle = "".obs;
+  RxList<String> subtitleText = [''].obs;
+  int _subtitleRequestId = 0;
   Timer? _volumeTimer;
   Timer? _brightnessTimer;
   var _volumeInterceptEventStream = false;
@@ -115,7 +123,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   late AnimationController _rightAnimationController;
   RxInt skipDuration = 10.obs;
   final isLocked = false.obs;
-  RxList<String> subtitleText = [''].obs;
+
   RxInt subtitleDelay = 0.obs;
 
   final doubleTapLabel = 0.obs;
@@ -295,6 +303,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   int lastProcessedMinute = 0;
   bool isSwitchingEpisode = false;
   StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<List<String>>? _subtitleSubscription;
   bool _isSeeking = false;
   int lastProcessedSecond = -1;
   Duration _lastPosition = Duration.zero;
@@ -363,8 +372,69 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
       playbackSpeed.value = e;
     });
 
-    player.stream.subtitle.listen((e) {
+
+
+   
+    
+    _subtitleSubscription = player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
+      final currentId = ++_subtitleRequestId;
+      
+      final cleanedText = [
+        for (final line in e)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
+      
+      if (!settings.playerSettings.value.autoTranslate) {
+         translatedSubtitle.value = "";
+         return;
+      }
+      
+      if (cleanedText.isNotEmpty) {
+          final target = settings.playerSettings.value.translateTo;
+          
+       
+          final lookupKey = cleanedText.trim();
+          final cached = SubtitlePreTranslator.lookup(lookupKey);
+          
+          if (cached != null) {
+            translatedSubtitle.value = cached;
+            return;
+          }
+          
+          try {
+             final translated = await SubtitleTranslator.translate(cleanedText, target);
+             if (currentId == _subtitleRequestId && translated.isNotEmpty) {
+               translatedSubtitle.value = translated;
+               SubtitlePreTranslator.manualAdd(lookupKey, translated);
+             }
+          } catch (_) {}
+      } else {
+        translatedSubtitle.value = "";
+      }
+    });
+
+    player.stream.tracks.listen((tracks) {
+      Logger.i('[Subtitle] Detected ${tracks.subtitle.length} embedded subtitle tracks');
+      
+    
+      if (subtitles.isEmpty && tracks.subtitle.length > 1) {
+        
+        for (var track in tracks.subtitle.skip(1)) {
+          final title = (track.title ?? track.language ?? '').toLowerCase();
+          if (title.contains('eng') || title.contains('english')) {
+            Logger.i('[Subtitle] Auto-selecting embedded track: ${track.title ?? track.language}');
+            player.setSubtitleTrack(track);
+            return;
+          }
+        }
+ 
+        if (tracks.subtitle.length > 1) {
+          final firstTrack = tracks.subtitle[1];
+          Logger.i('[Subtitle] Auto-selecting first embedded track: ${firstTrack.title ?? firstTrack.language}');
+          player.setSubtitleTrack(firstTrack);
+        }
+      }
     });
   }
 
@@ -688,6 +758,7 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
     _hideControlsTimer?.cancel();
     doubleTapTimeout?.cancel();
     _positionSubscription?.cancel();
+    _subtitleSubscription?.cancel();
 
     trackEpisode(
         currentPosition.value, episodeDuration.value, currentEpisode.value,
@@ -971,58 +1042,67 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
   }
 
   Obx _buildSubtitle() {
-    return Obx(() => AnimatedPositioned(
-          right: 0,
-          left: 0,
-          top: 0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: AnimatedOpacity(
-              opacity: subtitleText[0].isEmpty ? 0.0 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: subtitleText[0].isEmpty
-                      ? Colors.transparent
-                      : colorOptions[settings.subtitleBackgroundColor],
-                  borderRadius: BorderRadius.circular(12.multiplyRadius()),
-                ),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  switchInCurve: Curves.easeIn,
-                  switchOutCurve: Curves.easeOut,
-                  child: OutlinedText(
-                    text: Text(
-                      [
-                        for (final line in subtitleText)
-                          if (line.trim().isNotEmpty) line.trim(),
-                      ].join('\n'),
-                      key: ValueKey(subtitleText.join()),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: fontColorOptions[settings.subtitleColor],
-                        fontSize: settings.subtitleSize.toDouble(),
-                        fontFamily: "Poppins-Bold",
-                      ),
+    return Obx(() {
+      final isTransOn = settings.playerSettings.value.autoTranslate;
+      
+   
+      final rawFullText = [
+        for (final line in subtitleText)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
+      
+      final displayText = (isTransOn && translatedSubtitle.value.isNotEmpty)
+          ? translatedSubtitle.value
+          : rawFullText;
+
+      return AnimatedPositioned(
+        right: 0,
+        left: 0,
+        top: 0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        bottom: showControls.value ? 100 : (30 + settings.bottomMargin),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: AnimatedOpacity(
+            opacity: displayText.isEmpty ? 0.0 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: displayText.isEmpty
+                    ? Colors.transparent
+                    : colorOptions[settings.subtitleBackgroundColor],
+                borderRadius: BorderRadius.circular(12.multiplyRadius()),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                child: OutlinedText(
+                  text: Text(
+                    displayText,
+                    key: ValueKey(displayText),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: fontColorOptions[settings.subtitleColor],
+                      fontSize: settings.subtitleSize.toDouble(),
+                      fontFamily: "Poppins-Bold",
                     ),
-                    strokes: [
-                      OutlinedTextStroke(
-                          color:
-                              fontColorOptions[settings.subtitleOutlineColor]!,
-                          width: settings.subtitleOutlineWidth.toDouble())
-                    ],
                   ),
+                  strokes: [
+                    OutlinedTextStroke(
+                        color: fontColorOptions[settings.subtitleOutlineColor]!,
+                        width: settings.subtitleOutlineWidth.toDouble())
+                  ],
                 ),
               ),
             ),
           ),
-        ));
+        ),
+      );
+    });
   }
 
   Widget _buildRippleEffect() {
@@ -1390,6 +1470,8 @@ class _WatchPageState extends State<WatchPage> with TickerProviderStateMixin {
         : context.colors.primary;
   }
 
+
+  
   Widget _buildControls() {
     return Obx(() {
       final themeFgColor = _getFgColor().obs;

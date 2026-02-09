@@ -5,6 +5,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/player.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -335,13 +336,29 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
+  void _showTranslationLanguageDialog() {
+    showSelectionDialog<String>(
+      title: "Translation Language",
+      items: SubtitleTranslator.languages.keys.toList(),
+      selectedItem: settings.playerSettings.value.translateTo.obs,
+      getTitle: (code) => SubtitleTranslator.languages[code]!,
+      onItemSelected: (code) {
+        final current = settings.playerSettings.value;
+        current.translateTo = code;
+        settings.playerSettings.value = current;
+        settings.playerSettings.refresh();
+        setState(() {});
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            backgroundColor: widget.isModal
-                ? context.colors.surfaceContainer
-                : Colors.transparent,
+            //	backgroundColor: widget.isModal
+            //  ? context.colors.surfaceContainer
+            //  : Colors.transparent,
             body: Column(children: [
               if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
               Expanded(
@@ -547,19 +564,53 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               // Subtitle Color
                               AnymexExpansionTile(
                                   title: 'Subtitles',
-                                  content: Column(
-                                    children: [
-                                      CustomSwitchTile(
-                                          padding: const EdgeInsets.all(10),
-                                          icon: Icons.lightbulb,
-                                          title: 'Transition Subtitle',
-                                          description:
-                                              'By disabling this you can avoid the transition between subtitles.',
-                                          switchValue:
-                                              settings.transitionSubtitle,
-                                          onChanged: (e) {
-                                            settings.transitionSubtitle = e;
-                                          }),
+                                      content: Column(
+                                        children: [
+                                          CustomSwitchTile(
+                                              padding: const EdgeInsets.all(10),
+                                              icon: Icons.lightbulb,
+                                              title: 'Transition Subtitle',
+                                              description:
+                                                  'By disabling this you can avoid the transition between subtitles.',
+                                              switchValue:
+                                                  settings.transitionSubtitle,
+                                              onChanged: (e) {
+                                                settings.transitionSubtitle = e;
+                                              }),
+                                          CustomSwitchTile(
+                                            padding: const EdgeInsets.all(10),
+                                            icon: HugeIcons.strokeRoundedTranslate,
+                                            title: 'Auto Translate Subtitles',
+                                            description:
+                                                'Use AI to translate soft-subtitles live',
+                                            switchValue: settings.playerSettings
+                                                .value.autoTranslate,
+                                            onChanged: (val) {
+                                              final current =
+                                                  settings.playerSettings.value;
+                                              current.autoTranslate = val;
+                                              settings.playerSettings.value =
+                                                  current;
+                                              settings.playerSettings.refresh();
+                                              setState(() {});
+                                            },
+                                          ),
+                                          if (!widget.isModal)
+                                            CustomTile(
+                                              padding: 10.0,
+                                              icon: Icons.language,
+                                              title: 'Translate To',
+                                              description: SubtitleTranslator
+                                                      .languages[settings
+                                                          .playerSettings
+                                                          .value
+                                                          .translateTo] ??
+                                                  'Select Language',
+                                              onTap: () {
+                                                _showTranslationLanguageDialog();
+                                              },
+                                            ),
+
                                       CustomTile(
                                         padding: 10,
                                         description: 'Change subtitle colors',
@@ -861,15 +912,5 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     }
   }
 
-  static List<Shadow> outlinedText(
-      {int strokeWidth = 2, Color strokeColor = Colors.black}) {
-    return List.generate(
-      strokeWidth,
-      (index) => Shadow(
-        offset: Offset(index * 0.5, index * 0.5),
-        blurRadius: index.toDouble(),
-        color: strokeColor,
-      ),
-    );
-  }
+
 }

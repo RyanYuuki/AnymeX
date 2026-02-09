@@ -596,10 +596,10 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
       seconds %= 60;
 
       List<String> parts = [];
-      if (days > 0) parts.add("$days days");
-      if (hours > 0) parts.add("$hours hours");
-      if (minutes > 0) parts.add("$minutes minutes");
-      if (seconds > 0 || parts.isEmpty) parts.add("$seconds seconds");
+      if (days > 0) parts.add("${days}D");
+      if (hours > 0) parts.add("${hours}H");
+      if (minutes > 0) parts.add("${minutes}M");
+      if (seconds > 0 || parts.isEmpty) parts.add("${seconds}S");
 
       return parts.join(" ");
     }
