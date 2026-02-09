@@ -5,6 +5,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
+import 'package:anymex/models/mangaupdates/news_item.dart';
+import 'package:anymex/utils/anime_adaptation_util.dart';
 
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
@@ -136,6 +138,23 @@ class AnimeStats extends StatelessWidget {
           const SizedBox(height: 16),
           _buildSeasons(context),
           const SizedBox(height: 16),
+          FutureBuilder<List<NewsItem>>(
+              future: MangaAnimeUtil.getAnimeNews(data),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty)
+                  return const SizedBox.shrink();
+                return Column(
+                  children: [
+                    _buildSectionContainer(
+                      context,
+                      icon: Icons.newspaper_rounded,
+                      title: "Related News",
+                      child: buildNewsSection(context, snapshot.data!),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }),
           _buildOthersSection(context),
           const SizedBox(height: 16),
         ],
@@ -210,8 +229,6 @@ class AnimeStats extends StatelessWidget {
               ),
             ),
             10.height(),
-
-
             GestureDetector(
               onTap: () {
                 navigate(() => WatchOrderPage(title: data.title));
@@ -301,26 +318,26 @@ class AnimeStats extends StatelessWidget {
                       desktopValue: MainAxisAlignment.center),
                   children: filteredRelations
                       .map((relation) => Expanded(
-                            child: ImageButton(
-                              height: getResponsiveSize(context,
-                                  mobileSize: 60, desktopSize: 80),
-                              buttonText: relation.relationType,
-                              onPressed: () {
-                                navigate(
-                                  () => AnimeDetailsPage(
-                                      media: Media(
-                                          id: relation.id.toString(),
-                                          title: relation.title,
-                                          poster: relation.poster,
-                                          serviceType: ServicesType.anilist),
-                                      tag: relation.id.toString()),
-                                );
-                              },
-                              backgroundImage: relation.cover.isNotEmpty
-                                  ? relation.cover
-                                  : relation.poster,
-                            ),
-                          ))
+                              child: ImageButton(
+                            height: getResponsiveSize(context,
+                                mobileSize: 60, desktopSize: 80),
+                            buttonText: relation.relationType,
+                            onPressed: () {
+                              navigate(
+                                () => AnimeDetailsPage(
+                                    media: Media(
+                                        id: relation.id.toString(),
+                                        title: relation.title,
+                                        poster: relation.poster,
+                                        cover: relation.cover,
+                                        serviceType: ServicesType.anilist),
+                                    tag: relation.id.toString()),
+                              );
+                            },
+                            backgroundImage: relation.cover.isNotEmpty
+                                ? relation.cover
+                                : relation.poster,
+                          )))
                       .toList(),
                 ),
               ],
@@ -543,7 +560,7 @@ class AnimeStats extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        mainAxisExtent: 75,
+        maxLines: 75,
       ),
       itemBuilder: (context, index) {
         final stat = stats[index];
