@@ -468,14 +468,29 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializeListeners() {
     // Listen for auto-translate toggle
-    _subscriptions.add(settingsController.playerSettings.listen((settings) {
-      if (settings.autoTranslate) {
+    
+    bool? _lastAutoTranslate;
+    String? _lastTranslateTo;
 
+    _subscriptions.add(settingsController.playerSettings.listen((settings) {
+      final bool autoTranslate = settings.autoTranslate;
+      final String? translateTo = (settings as dynamic).translateTo;
+
+      final bool autoWasEnabled = _lastAutoTranslate == true;
+      final bool autoNowEnabled = autoTranslate == true;
+
+      final bool autoTurnedOn = (!autoWasEnabled && autoNowEnabled);
+      final bool autoTurnedOff = (autoWasEnabled && !autoNowEnabled);
+      final bool translateToChangedWhileEnabled = autoNowEnabled && _lastTranslateTo != null && _lastTranslateTo != translateTo;
+
+      if (autoTurnedOn || translateToChangedWhileEnabled) {
         triggerPreTranslation();
-      } else {
-     
+      } else if (autoTurnedOff) {
         translatedSubtitle.value = '';
       }
+
+      _lastAutoTranslate = autoTranslate;
+      _lastTranslateTo = translateTo;
     }));
 
     _subscriptions.add(player.stream.position
@@ -545,8 +560,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
+    
+    int subtitleTranslateRequestId = 0;
+
     _subscriptions.add(player.stream.subtitle.listen((e) async {
       subtitleText.value = e;
+      final int currentRequestId = ++subtitleTranslateRequestId;
       
      
       final cleanedText = [
@@ -586,9 +605,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             cleanedText,
             playerSettings.translateTo,
           );
-          if (translated.isNotEmpty) {
+          
+          if (currentRequestId == subtitleTranslateRequestId && translated.isNotEmpty) {
             translatedSubtitle.value = translated;
-
             SubtitlePreTranslator.manualAdd(lookupKey, translated);
           }
         } catch (_) {}

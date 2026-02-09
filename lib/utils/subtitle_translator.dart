@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:anymex/utils/logger.dart';
@@ -19,7 +20,7 @@ class SubtitleTranslator {
       final url = Uri.parse(
           "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=$targetLang&dt=t&q=${Uri.encodeComponent(text)}");
 
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
     
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);

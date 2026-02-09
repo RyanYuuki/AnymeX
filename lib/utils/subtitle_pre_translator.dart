@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/utils/logger.dart';
 import 'package:http/http.dart' as http;
@@ -24,24 +25,30 @@ class SubtitlePreTranslator {
     translatedEntries = 0;
   }
   
+  static String _normalizeKey(String text) => text.trim();
 
   static String? lookup(String originalText) {
-    final normalized = originalText.trim();
-    return _translationCache[normalized];
+    return _translationCache[_normalizeKey(originalText)];
   }
   
   static void manualAdd(String original, String translated) {
-    if (original.isNotEmpty) {
-      _translationCache[original] = translated;
+    final normalized = _normalizeKey(original);
+    if (normalized.isNotEmpty) {
+      _translationCache[normalized] = translated;
     }
   }
 
  
   static Future<bool> preTranslateFromUrl(String url, String targetLang) async {
     try {
-      if (isPreTranslating && _currentUrl == url) {
-        Logger.i('[PreTranslator] Already translating this URL, resuming...');
-        return true;
+      if (isPreTranslating) {
+        if (_currentUrl == url) {
+           Logger.i('[PreTranslator] Already translating this URL, resuming...');
+           return true; 
+        }
+        
+        Logger.w('[PreTranslator] Another translation in progress, skipping...');
+        return false;
       }
       _currentUrl = url;
       
@@ -51,8 +58,9 @@ class SubtitlePreTranslator {
       }
       
       isPreTranslating = true;
+      Logger.i('[PreTranslator] Starting download from: $url');
       
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
       if (response.statusCode != 200) {
         Logger.e('[PreTranslator] Failed to download subtitle: ${response.statusCode}');
         isPreTranslating = false;
@@ -73,10 +81,17 @@ class SubtitlePreTranslator {
       
       
      
-      const batchSize = 30;
+      const batchSize = 30; 
       for (var i = 0; i < entries.length; i += batchSize) {
+        if (!isPreTranslating) break; 
+        
         final batch = entries.skip(i).take(batchSize).toList();
-        await _translateBatch(batch, targetLang);
+        try {
+            await _translateBatch(batch, targetLang);
+        } catch (e) {
+            Logger.e('[PreTranslator] Batch translation failed: $e');
+            
+        }
         translatedEntries = (i + batch.length).clamp(0, entries.length);
 
       }
