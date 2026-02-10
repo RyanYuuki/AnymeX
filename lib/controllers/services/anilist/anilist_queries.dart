@@ -153,3 +153,49 @@ query (\$page: Int, \$perPage: Int, \$airingAtGreater: Int, \$airingAtLesser: In
   }
 }
 ''';
+
+const notificationQuery = '''
+query (\$page: Int, \$perPage: Int) {
+  Page(page: \$page, perPage: \$perPage) {
+    pageInfo {
+      hasNextPage
+      total
+    }
+    notifications(type_in: [AIRING, RELATED_MEDIA_ADDITION], resetNotificationCount: false) {
+      ... on AiringNotification {
+        id
+        type
+        episode
+        contexts
+        createdAt
+        media {
+          id
+          title {
+            userPreferred
+          }
+          coverImage {
+            large
+          }
+          type
+        }
+      }
+      ... on RelatedMediaAdditionNotification {
+        id
+        type
+        context
+        createdAt
+        media {
+          id
+          title {
+            userPreferred
+          }
+          coverImage {
+            large
+          }
+          type
+        }
+      }
+    }
+  }
+}
+''';

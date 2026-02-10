@@ -43,6 +43,8 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/notification_service.dart';
+import 'package:anymex/utils/background_service.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:anymex/controllers/notification/notification_controller.dart';
 import 'package:app_links/app_links.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -112,6 +114,23 @@ void main(List<String> args) async {
     initializeDateFormatting();
     MediaKit.ensureInitialized();
     await NotificationService.init();
+    
+    // Initialize Workmanager for background tasks
+    if (Platform.isAndroid) {
+      await Workmanager().initialize(
+        callbackDispatcher,
+        isInDebugMode: false, // Set to true for debugging frequency
+      );
+      await Workmanager().registerPeriodicTask(
+        "fetchEpisodeTask", 
+        fetchBackgroundEpisodeTask,
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected, 
+        ),
+      );
+    }
+
     if (!Platform.isAndroid && !Platform.isIOS) {
       await windowManager.ensureInitialized();
       if (Platform.isWindows) {
