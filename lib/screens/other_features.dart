@@ -43,7 +43,7 @@ class OtherFeaturesPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 170,
+                  height: 190,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -105,7 +105,7 @@ class OtherFeaturesPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 170,
+                  height: 190,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

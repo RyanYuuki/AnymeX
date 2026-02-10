@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
+import 'package:anymex/screens/notifications/notification_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
@@ -279,7 +280,8 @@ class SettingsSheet extends StatelessWidget {
               AnymexOnTap(
                 child: IconButton(
                     onPressed: () {
-                      snackBar('This feature is not available yet.');
+                      Get.back();
+                      navigate(() => const NotificationPage());
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: context.colors.surfaceContainerHighest,
