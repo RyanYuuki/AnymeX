@@ -1,20 +1,21 @@
-import 'package:anymex/utils/logger.dart';
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:anymex/utils/abi_checker.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:install_plugin/install_plugin.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class UpdateManager {
   static const String _stableRepoUrl =
@@ -42,8 +43,7 @@ class UpdateManager {
 
       try {
         final currentVersion = await _getCurrentVersion();
-        final latestRelease =
-            await _fetchLatestRelease(isBeta: isBeta);
+        final latestRelease = await _fetchLatestRelease(isBeta: isBeta);
 
         if (latestRelease == null) {
           snackBar("Failed to check for updates");
@@ -70,7 +70,7 @@ class UpdateManager {
             downloadUrls,
           );
         } else {
-          snackBar("You're already using the latest version!");
+          debugPrint("You are already using the latest version!");
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
@@ -151,8 +151,7 @@ class UpdateManager {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        Logger.i(
-            'Failed to fetch latest release: ${response.statusCode}');
+        Logger.i('Failed to fetch latest release: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching latest release: $e');
@@ -286,8 +285,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       } else {
         final Uri url = Uri.parse(downloadUrl);
         if (await canLaunchUrl(url)) {
-          await launchUrl(url,
-              mode: LaunchMode.externalApplication);
+          await launchUrl(url, mode: LaunchMode.externalApplication);
         }
       }
     } catch (e) {
@@ -341,8 +339,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
     if (result['isSuccess']) {
       _showSuccessDialog();
     } else {
-      throw Exception(
-          'Installation failed: ${result['errorMessage']}');
+      throw Exception('Installation failed: ${result['errorMessage']}');
     }
   }
 
@@ -589,9 +586,8 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                       Expanded(
                         flex: 2,
                         child: FilledButton(
-                          onPressed: _isDownloading
-                              ? null
-                              : _downloadAndInstall,
+                          onPressed:
+                              _isDownloading ? null : _downloadAndInstall,
                           child: Text(
                             _isDownloading
                                 ? "Downloading..."

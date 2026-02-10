@@ -1,4 +1,3 @@
-
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -7,17 +6,17 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -72,11 +71,9 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     );
   }
 
-  // Computed properties
   bool get _isEmptyOrOffline =>
       widget.data.isEmpty && widget.variant == DataVariant.offline;
 
-  // Header title section
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
@@ -91,7 +88,6 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     );
   }
 
-  // Offline placeholder display
   Widget _buildOfflinePlaceholder() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +118,6 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     );
   }
 
-  // Main carousel list builder
   Widget _buildCarouselList() {
     final List<CarouselData> processedData =
         convertData(widget.data, variant: widget.variant);
