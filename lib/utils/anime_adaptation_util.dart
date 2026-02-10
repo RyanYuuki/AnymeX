@@ -3,7 +3,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
-import 'package:anymex/models/mangaupdates/news_item.dart'; // Ensure this import exists
+import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:http/http.dart' as http;
 
 class MangaAnimeUtil {
