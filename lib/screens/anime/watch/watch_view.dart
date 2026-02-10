@@ -46,7 +46,8 @@ class _WatchScreenState extends State<WatchScreen> {
         widget.currentEpisode,
         widget.episodeList,
         widget.anilistData,
-        widget.episodeTracks));
+        widget.episodeTracks,
+        shouldTrack: widget.shouldTrack));
   }
 
   @override

@@ -416,7 +416,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       return true;
     }
 
-    return !PlayerKeys.useBetterPlayer.get<bool>(false);
+    return PlayerKeys.useMediaKit.get<bool>(false);
   }
 
   void _initializePlayer() {
@@ -430,7 +430,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
 
     if (useMediaKit) {
-      _basePlayer = MediaKitPlayer(configuration: config);
+      _basePlayer = MediaKitPlayer(
+        configuration: config,
+      );
     } else {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
@@ -1229,6 +1231,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void toggleVideoFit() {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
+    _basePlayer.toggleVideoFit(videoFit.value);
     AnymexToast.show(
         message: videoFit.value.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
