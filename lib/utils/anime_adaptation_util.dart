@@ -14,11 +14,20 @@ class MangaAnimeUtil {
       final seriesData = await _getSeriesFromId(media);
       if (seriesData == null || seriesData.isEmpty) return [];
 
-      final List<dynamic>? newsData = seriesData[0]['news'];
-      if (newsData == null) return [];
+      final int bakaId = seriesData[0]['id'];
 
-      return newsData.map((json) => NewsItem.fromMangaBaka(json)).toList();
-    } catch (_) {
+      final response = await http.get(Uri.parse('$_baseUrl/series/$bakaId/news'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic>? newsData = data['data'];
+        if (newsData == null) return [];
+        
+        return newsData.map((json) => NewsItem.fromMangaBaka(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("MangaBaka News Error: $e");
       return [];
     }
   }
