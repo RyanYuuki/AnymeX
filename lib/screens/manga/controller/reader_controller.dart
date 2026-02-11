@@ -414,9 +414,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       Logger.i('Performing final save');
       _saveTracking();
-      
       if (!shouldTrack) return;
-      
       final chapter = currentChapter.value;
       if (chapter != null &&
           chapter.pageNumber != null &&
