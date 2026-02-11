@@ -216,7 +216,7 @@ class Media {
   factory Media.fromSmallSimkl(Map<String?, dynamic> json, bool isMovie) {
     ItemType type = ItemType.anime;
     return Media(
-        id: 
+        id:
             '${json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
         title: json['title'] ?? 'Unknown Title',
         poster: json['poster'] != null
