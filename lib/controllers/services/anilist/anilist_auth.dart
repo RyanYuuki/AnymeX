@@ -390,6 +390,14 @@ class AnilistAuth extends GetxController {
           meanScore
         }
       }
+      favourites {
+        anime {
+          pageInfo { total }
+        }
+        manga {
+          pageInfo { total }
+        }
+      }
     }
   }
   ''';
@@ -416,7 +424,6 @@ class AnilistAuth extends GetxController {
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else {
         Logger.i('Failed to load user profile: ${response.statusCode}');
@@ -437,11 +444,11 @@ class AnilistAuth extends GetxController {
 
     const query = '''
   query(\$userId: Int!) {
-    Follower(userId: \$userId) {
-      id
+    followers: Page {
+      pageInfo { total }
     }
-    Following(userId: \$userId) {
-      id
+    following: Page {
+      pageInfo { total }
     }
   }
   ''';
@@ -462,14 +469,12 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        Logger.i(data.toString());
-
-        final followersList = data['data']['followers'] as List<dynamic>;
-        final followingList = data['data']['following'] as List<dynamic>;
+        final followersCount = data['data']['followers']['pageInfo']['total'] as int;
+        final followingCount = data['data']['following']['pageInfo']['total'] as int;
 
         final updatedProfile = profileData.value
-          ..followers = followersList.length
-          ..following = followingList.length;
+          ..followers = followersCount
+          ..following = followingCount;
 
         profileData.value = updatedProfile;
       } else {
@@ -568,8 +573,6 @@ class AnilistAuth extends GetxController {
               .toList()
               .removeDupes();
 
-          currentlyWatching.value = currentlyWatching.value.removeDupes();
-
           animeList.value = animeListt
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
@@ -582,7 +585,6 @@ class AnilistAuth extends GetxController {
         }
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
-        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Failed to load anime list: $e');
@@ -836,7 +838,6 @@ class AnilistAuth extends GetxController {
         }
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
-        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Failed to load manga list: $e');
@@ -889,7 +890,6 @@ class AnilistAuth extends GetxController {
         Logger.i('Anime status updated successfully: ${response.body}');
       } else {
         Logger.i('Failed to update anime status: ${response.statusCode}');
-        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Error while updating anime status: $e');
@@ -942,10 +942,46 @@ class AnilistAuth extends GetxController {
         Logger.i('Manga status updated successfully: ${response.body}');
       } else {
         Logger.i('Failed to update manga status: ${response.statusCode}');
-        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Error while updating manga status: $e');
+    }
+  }
+
+  Future<bool> toggleFavorite({required int id, required String type}) async {
+    final token = await storage.get('auth_token');
+    if (token == null) return false;
+
+    const mutation = r'''
+    mutation ($id: Int, $type: FavouriteType) {
+      ToggleFavourite(characterId: $id, staffId: $id) {
+        characters {
+          nodes { id }
+        }
+        staff {
+          nodes { id }
+        }
+      }
+    }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i("Error toggling favorite: $e");
+      return false;
     }
   }
 
