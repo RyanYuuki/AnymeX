@@ -414,22 +414,32 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       Logger.i('Performing final save');
       _saveTracking();
+      
       if (!shouldTrack) return;
+      
       final chapter = currentChapter.value;
       if (chapter != null &&
           chapter.pageNumber != null &&
           chapter.totalPages != null &&
           chapter.number != null &&
-          chapter.pageNumber == chapter.totalPages &&
-          chapterList.isNotEmpty &&
-          chapterList.last.number != null &&
-          chapterList.last.number! < chapter.number!) {
-        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-            listId: media.id,
-            status: "CURRENT",
-            progress: chapter.number!.toInt() + 1,
-            syncIds: [media.idMal],
-            isAnime: false));
+          chapter.pageNumber == chapter.totalPages) {
+        
+        final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.chapterCount ?? '0') ?? 0;
+        
+        final int newProgress = chapter.number!.toInt();
+
+        if (newProgress > currentOnlineProgress) {
+          serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+              listId: media.id,
+              status: "CURRENT",
+              progress: newProgress,
+              syncIds: [media.idMal],
+              isAnime: false));
+          
+          Logger.i('Manga tracking updated online to chapter: $newProgress');
+        } else {
+          Logger.i('Manga tracking skipped: existing progress ($currentOnlineProgress) is ahead of current chapter ($newProgress)');
+        }
       }
     } catch (e) {
       Logger.i('Error during final save: ${e.toString()}');
