@@ -29,8 +29,9 @@ class BetterPlayerImpl extends BasePlayer {
   Timer? _bufferTimer;
   bool _isDisposed = false;
 
-  BetterPlayerImpl({PlayerConfiguration? configuration})
-      : config = configuration ??
+  BetterPlayerImpl({
+    PlayerConfiguration? configuration,
+  }) : config = configuration ??
             PlayerConfiguration(playerType: PlayerType.betterPlayer);
 
   @override
@@ -72,7 +73,7 @@ class BetterPlayerImpl extends BasePlayer {
   @override
   Future<void> initialize() async {
     final betterPlayerConfiguration = BetterPlayerConfiguration(
-      autoPlay: false,
+      autoPlay: true,
       autoDetectFullscreenDeviceOrientation: true,
       controlsConfiguration: const BetterPlayerControlsConfiguration(
         showControls: false,
@@ -107,8 +108,10 @@ class BetterPlayerImpl extends BasePlayer {
         _bufferingController.add(true);
         break;
       case BetterPlayerEventType.bufferingEnd:
-        _state = _state.copyWith(isBuffering: false);
-        _bufferingController.add(false);
+        if (_controller.isVideoInitialized() == true) {
+          _state = _state.copyWith(isBuffering: false);
+          _bufferingController.add(false);
+        }
         break;
       case BetterPlayerEventType.exception:
         _errorController.add(event.parameters?.toString() ?? 'Unknown error');
@@ -122,6 +125,9 @@ class BetterPlayerImpl extends BasePlayer {
   }
 
   void _onInitialized() {
+    _state = _state.copyWith(isBuffering: false);
+    _bufferingController.add(false);
+
     final videoPlayerController = _controller.videoPlayerController;
     if (videoPlayerController != null) {
       final duration = videoPlayerController.value.duration ?? Duration.zero;
@@ -228,10 +234,16 @@ class BetterPlayerImpl extends BasePlayer {
     Map<String, String>? headers,
     Duration? startPosition,
   }) async {
+    _state = _state.copyWith(isBuffering: true);
+    _bufferingController.add(true);
+
     _currentDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       url,
       headers: headers,
+      videoFormat: url.contains('.mp4')
+          ? BetterPlayerVideoFormat.other
+          : BetterPlayerVideoFormat.hls,
       bufferingConfiguration: BetterPlayerBufferingConfiguration(
         minBufferMs: config.bufferSize ~/ 1000,
         maxBufferMs: config.bufferSize ~/ 500,
@@ -358,12 +370,8 @@ class BetterPlayerImpl extends BasePlayer {
     double? width,
     double? height,
   }) {
-    return AspectRatio(
-      aspectRatio:
-          _controller.videoPlayerController?.value.aspectRatio ?? 16 / 9,
-      child: BetterPlayer(
-        controller: _controller,
-      ),
+    return BetterPlayer(
+      controller: _controller,
     );
   }
 
@@ -390,6 +398,11 @@ class BetterPlayerImpl extends BasePlayer {
   }
 
   BetterPlayerController get nativeController => _controller;
+
+  @override
+  Future<void> toggleVideoFit(BoxFit fit) async {
+    _controller.setOverriddenFit(fit);
+  }
 }
 
 extension BetterPlayerDataSourceExtension on BetterPlayerDataSource {

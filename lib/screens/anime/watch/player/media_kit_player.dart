@@ -285,10 +285,13 @@ class MediaKitPlayer extends base.BasePlayer {
     double? height,
   }) {
     return Video(
+      filterQuality: FilterQuality.medium,
+      controls: null,
       controller: _videoController,
       fit: fit ?? BoxFit.contain,
-      width: width,
-      height: height,
+      resumeUponEnteringForegroundMode: true,
+      subtitleViewConfiguration:
+          const SubtitleViewConfiguration(visible: false),
     );
   }
 
@@ -316,4 +319,9 @@ class MediaKitPlayer extends base.BasePlayer {
   Player get nativePlayer => _player;
 
   VideoController get nativeVideoController => _videoController;
+
+  @override
+  Future<void> toggleVideoFit(BoxFit fit) {
+    return Future.value();
+  }
 }

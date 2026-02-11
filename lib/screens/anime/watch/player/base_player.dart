@@ -53,6 +53,8 @@ abstract class BasePlayer {
 
   Future<void> setSubtitleTrack(SubtitleTrack track);
 
+  Future<void> toggleVideoFit(BoxFit fit);
+
   Future<Uint8List?> screenshot({
     bool includeSubtitles = true,
     String format = 'image/png',
@@ -84,7 +86,7 @@ class PlayerState {
     this.duration = Duration.zero,
     this.buffer = Duration.zero,
     this.isPlaying = false,
-    this.isBuffering = false,
+    this.isBuffering = true,
     this.volume = 1.0,
     this.rate = 1.0,
     this.videoHeight,

@@ -393,11 +393,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     title: "Use Old Player",
                                     description:
                                         "Pick wisely! (OLD -> FEATURES, NEW -> PERFORMANCE)",
-                                    switchValue: !PlayerKeys.useBetterPlayer
-                                        .get<bool>(true),
+                                    switchValue:
+                                        PlayerKeys.useMediaKit.get<bool>(false),
                                     onChanged: (val) {
-                                      PlayerKeys.useBetterPlayer
-                                          .set<bool>(!val);
+                                      PlayerKeys.useMediaKit.set<bool>(val);
                                       setState(() {});
                                     }),
                               CustomSwitchTile(

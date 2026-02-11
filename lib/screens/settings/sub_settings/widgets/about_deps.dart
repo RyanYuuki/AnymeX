@@ -228,7 +228,7 @@ class CustomSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
             decoration: BoxDecoration(
-                color: context.colors.surfaceContainerHigh,
+                color: context.colors.surfaceContainerHigh.opaque(0.6),
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12))),
