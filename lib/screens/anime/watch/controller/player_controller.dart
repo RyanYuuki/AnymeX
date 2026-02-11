@@ -14,11 +14,16 @@ import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
+import 'package:anymex/screens/anime/watch/player/base_player.dart';
+import 'package:anymex/screens/anime/watch/player/better_player.dart';
+import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/subtitle_pre_translator.dart';
+import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -27,8 +32,6 @@ import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -53,6 +56,10 @@ extension PlayerControllerExtensions on PlayerController {
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
+  static final _htmlRx = RegExp(r'<[^>]*>');
+  static final _assRx = RegExp(r'\{[^}]*\}');
+  static final _newlineRx = RegExp(r'\\[nN]');
+
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
   final List<Episode> episodeList;
   final anymex.Media anilistData;
@@ -62,13 +69,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? folderName;
   final String? itemName;
   final String? offlineVideoPath;
+  final bool shouldTrack;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
       {bool offline = false,
       this.folderName,
       this.itemName,
-      this.offlineVideoPath}) {
+      this.offlineVideoPath,
+      this.shouldTrack = false}) {
     selectedVideo.value = video;
     currentEpisode.value = episode;
     episodeTracks.value = episodes;
@@ -103,8 +112,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
   }
 
-  late Player player;
-  late VideoController playerController;
+  late BasePlayer _basePlayer;
+
+  Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
       anilistData.id, currentEpisode.value.number);
@@ -131,6 +141,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
   final RxList<String> subtitleText = RxList([]);
+  final RxString translatedSubtitle = ''.obs;
+  final RxBool isPreTranslating = false.obs;
+  final RxString preTranslateProgress = ''.obs;
   Timer? _seekDebounce;
 
   Timer? _autoHideTimer;
@@ -174,8 +187,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
 
-  void applySavedProfile() => ColorProfileManager()
-      .applyColorProfile(currentVisualProfile.value, player);
+  void applySavedProfile() {
+    if (_basePlayer is MediaKitPlayer) {
+      ColorProfileManager().applyColorProfile(currentVisualProfile.value,
+          (_basePlayer as MediaKitPlayer).nativePlayer);
+    } else {
+      snackBar('Color profiles only available with Old player');
+    }
+  }
 
   final settings = Get.find<Settings>();
   Timer? _volumeTimer;
@@ -355,7 +374,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         final duration =
             Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
         currentPosition.value = duration;
-        player.seek(duration);
+        _basePlayer.seek(duration);
         isOPSkippedOnce.value = true;
       }
     }
@@ -369,7 +388,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         final duration =
             Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
         currentPosition.value = duration;
-        player.seek(duration);
+        _basePlayer.seek(duration);
         isEDSkippedOnce.value = true;
       }
     }
@@ -392,31 +411,52 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
   }
 
-  void _initializePlayer() {
-    player = Player(
-        configuration: PlayerConfiguration(
-            bufferSize: 1024 * 1024 * 32,
-            libass: PlayerKeys.useLibass.get(false)));
-    playerController = VideoController(player,
-        configuration: VideoControllerConfiguration(
-            hwdec: 'no',
-            androidAttachSurfaceAfterVideoParameters:
-                Platform.isAndroid ? true : null));
-
-    if (isOffline.value && offlineVideoPath != null) {
-      final stamp = settingsController.preferences
-          .get(offlineVideoPath, defaultValue: null);
-      player.open(
-          Media(offlineVideoPath!, start: Duration(milliseconds: stamp ?? 0)));
-    } else {
-      player.open(Media(selectedVideo.value!.url,
-          httpHeaders: selectedVideo.value!.headers,
-          start: Duration(
-              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0)));
+  bool _shouldUseMediaKit() {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return true;
     }
 
-    _performInitialTracking();
-    applySavedProfile();
+    return PlayerKeys.useMediaKit.get<bool>(false);
+  }
+
+  void _initializePlayer() {
+    final useMediaKit = _shouldUseMediaKit();
+
+    final config = PlayerConfiguration(
+      bufferSize: 1024 * 1024 * 32,
+      useLibass: PlayerKeys.useLibass.get(false),
+      hwdec: 'no',
+      playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
+    );
+
+    if (useMediaKit) {
+      _basePlayer = MediaKitPlayer(
+        configuration: config,
+      );
+    } else {
+      _basePlayer = BetterPlayerImpl(configuration: config);
+    }
+
+    _basePlayer.initialize().then((_) {
+      if (isOffline.value && offlineVideoPath != null) {
+        final stamp = settingsController.preferences
+            .get(offlineVideoPath, defaultValue: null);
+        _basePlayer.open(
+          offlineVideoPath!,
+          startPosition: Duration(milliseconds: stamp ?? 0),
+        );
+      } else {
+        _basePlayer.open(
+          selectedVideo.value!.url,
+          headers: selectedVideo.value!.headers,
+          startPosition: Duration(
+              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0),
+        );
+      }
+
+      _performInitialTracking();
+      applySavedProfile();
+    });
   }
 
   void _initializeAniSkip() {
@@ -458,7 +498,33 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _initializeListeners() {
-    _subscriptions.add(player.stream.position
+    bool? lastAutoTranslate;
+    String? lastTranslateTo;
+
+    _subscriptions.add(settingsController.playerSettings.listen((settings) {
+      final bool autoTranslate = settings.autoTranslate;
+      final String? translateTo = (settings as dynamic).translateTo;
+
+      final bool autoWasEnabled = lastAutoTranslate == true;
+      final bool autoNowEnabled = autoTranslate == true;
+
+      final bool autoTurnedOn = (!autoWasEnabled && autoNowEnabled);
+      final bool autoTurnedOff = (autoWasEnabled && !autoNowEnabled);
+      final bool translateToChangedWhileEnabled = autoNowEnabled &&
+          lastTranslateTo != null &&
+          lastTranslateTo != translateTo;
+
+      if (autoTurnedOn || translateToChangedWhileEnabled) {
+        triggerPreTranslation();
+      } else if (autoTurnedOff) {
+        translatedSubtitle.value = '';
+      }
+
+      lastAutoTranslate = autoTranslate;
+      lastTranslateTo = translateTo;
+    }));
+
+    _subscriptions.add(_basePlayer.positionStream
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
       if (isSeeking.value) return;
@@ -476,19 +542,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(player.stream.duration.listen((dur) {
+    _subscriptions.add(_basePlayer.durationStream.listen((dur) {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
     }));
 
-    _subscriptions.add(player.stream.buffer
+    _subscriptions.add(_basePlayer.bufferStream
         .throttleTime(const Duration(seconds: 1))
         .listen((buf) {
       bufferred.value = buf;
     }));
 
-    _subscriptions.add(player.stream.playing.listen((e) {
+    _subscriptions.add(_basePlayer.playingStream.listen((e) {
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
@@ -504,36 +570,81 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(player.stream.buffering.listen((e) {
+    _subscriptions.add(_basePlayer.bufferingStream.listen((e) {
       isBuffering.value = e;
     }));
 
-    _subscriptions.add(player.stream.tracks.listen((e) {
+    _subscriptions.add(_basePlayer.tracksStream.listen((e) {
       embeddedAudioTracks.value = e.audio;
       embeddedSubs.value = e.subtitle;
       embeddedQuality.value = e.video;
     }));
 
-    _subscriptions.add(player.stream.rate.listen((e) {
+    _subscriptions.add(_basePlayer.rateStream.listen((e) {
       playbackSpeed.value = e;
     }));
 
-    _subscriptions.add(player.stream.error.listen((e) {
+    _subscriptions.add(_basePlayer.errorStream.listen((e) {
       Logger.i(e);
       if (e.toString().contains('Failed to open')) {
         snackBar('Failed, Dont Bother..');
       }
     }));
 
-    _subscriptions.add(player.stream.subtitle.listen((e) {
+    int subtitleTranslateRequestId = 0;
+
+    _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
       subtitleText.value = e;
+      final int currentRequestId = ++subtitleTranslateRequestId;
+
+      final cleanedText = [
+        for (final line in e)
+          if (line.trim().isNotEmpty) line.trim(),
+      ].join('\n');
+
+      if (!playerSettings.autoTranslate) {
+        translatedSubtitle.value = '';
+        return;
+      }
+
+      if (cleanedText.isEmpty && playerSettings.autoTranslate) {
+        translatedSubtitle.value = "";
+        return;
+      }
+
+      if (playerSettings.autoTranslate && cleanedText.isNotEmpty) {
+        final lookupKey = cleanedText
+            .replaceAll(_htmlRx, '')
+            .replaceAll(_assRx, '')
+            .replaceAll(_newlineRx, '\n')
+            .trim();
+
+        final cached = SubtitlePreTranslator.lookup(lookupKey);
+        if (cached != null) {
+          translatedSubtitle.value = cached;
+          return;
+        }
+
+        try {
+          final translated = await SubtitleTranslator.translate(
+            cleanedText,
+            playerSettings.translateTo,
+          );
+
+          if (currentRequestId == subtitleTranslateRequestId &&
+              translated.isNotEmpty) {
+            translatedSubtitle.value = translated;
+            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+          }
+        } catch (_) {}
+      }
     }));
 
-    _subscriptions.add(player.stream.height.listen((height) {
+    _subscriptions.add(_basePlayer.heightStream.listen((height) {
       videoHeight.value = height;
     }));
 
-    _subscriptions.add(player.stream.completed.listen((e) {
+    _subscriptions.add(_basePlayer.completedStream.listen((e) {
       if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
@@ -726,8 +837,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
-    await player.open(Media(''));
-    await player.open(Media(url, httpHeaders: headers, start: startPosition));
+    await _basePlayer.open('');
+    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
   @override
@@ -736,9 +847,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       await _trackLocally();
       if (!isOffline.value) {
-        await _trackOnline((currentPosition.value).inMilliseconds /
-                episodeDuration.value.inMilliseconds >=
-            settings.markAsCompleted);
+        final durationMs = episodeDuration.value.inMilliseconds;
+        final hasCrossedLimit = durationMs > 0
+            ? (currentPosition.value.inMilliseconds / durationMs >=
+                settings.markAsCompleted)
+            : false;
+        await _trackOnline(hasCrossedLimit);
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -752,7 +866,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
-    player.dispose();
+    await _basePlayer.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
     _volumeTimer?.cancel();
@@ -787,21 +901,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void _seekTo(Duration pos) async => await player.seek(pos);
+  void _seekTo(Duration pos) async => await _basePlayer.seek(pos);
 
   void play() {
-    player.play();
+    _basePlayer.play();
     onUserInteraction();
   }
 
   void pause() {
-    player.pause();
+    _basePlayer.pause();
     onUserInteraction();
   }
 
   void setRate(double rate) {
     playbackSpeed.value = rate;
-    player.setRate(rate);
+    _basePlayer.setRate(rate);
   }
 
   void megaSeek(int seconds) {
@@ -809,15 +923,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setVideoTrack(VideoTrack track) {
-    player.setVideoTrack(track);
+    _basePlayer.setVideoTrack(track);
   }
 
   void setAudioTrack(AudioTrack track) {
-    player.setAudioTrack(track);
+    _basePlayer.setAudioTrack(track);
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
-    player.setSubtitleTrack(track);
+    _basePlayer.setSubtitleTrack(track);
   }
 
   void toggleControls({bool? val}) {
@@ -828,12 +942,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void togglePlayPause() {
-    player.playOrPause();
+    _basePlayer.playOrPause();
     onUserInteraction();
   }
 
   void toggleMute() {
-    player.setVolume(player.state.volume == 0 ? 1 : 0);
+    final currentVolume = _basePlayer.state.volume;
+    _basePlayer.setVolume(currentVolume == 0 ? 1 : 0);
     onUserInteraction();
   }
 
@@ -898,6 +1013,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> setVolume(double value, {bool isDragging = false}) async {
     try {
       VolumeController.instance.setVolume(value);
+      _basePlayer.setVolume(value);
     } catch (_) {}
     volume.value = value;
     volumeIndicator.value = true;
@@ -942,6 +1058,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (track == null) {
       selectedExternalSub.value = model.Track();
       setSubtitleTrack(SubtitleTrack.no());
+      SubtitlePreTranslator.clearCache();
       return;
     }
     if (track.file?.isEmpty ?? true) {
@@ -950,6 +1067,49 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     selectedExternalSub.value = track;
     setSubtitleTrack(SubtitleTrack.uri(track.file!, title: track.label));
+
+    if (playerSettings.autoTranslate && track.file != null) {
+      startPreTranslation(track.file!);
+    }
+  }
+
+  void triggerPreTranslation() {
+    final subtitleUrl = selectedExternalSub.value.file;
+    if (subtitleUrl != null &&
+        subtitleUrl.isNotEmpty &&
+        playerSettings.autoTranslate) {
+      startPreTranslation(subtitleUrl);
+    }
+  }
+
+  void startPreTranslation(String subtitleUrl) async {
+    if (isPreTranslating.value) {
+      return;
+    }
+
+    isPreTranslating.value = true;
+    preTranslateProgress.value = 'Starting translation...';
+    snackBar('Pre-translating subtitles...');
+
+    try {
+      final success = await SubtitlePreTranslator.preTranslateFromUrl(
+        subtitleUrl,
+        playerSettings.translateTo,
+      );
+
+      if (success) {
+        snackBar(
+            'Subtitles translated! (${SubtitlePreTranslator.totalEntries} entries)');
+      } else {
+        snackBar('Pre-translation failed, using real-time fallback');
+      }
+    } catch (e) {
+      Logger.e('[PlayerController] Pre-translation error: $e');
+      snackBar('Pre-translation error, using real-time fallback');
+    }
+
+    isPreTranslating.value = false;
+    preTranslateProgress.value = '';
   }
 
   void setServerTrack(model.Video track) async {
@@ -961,7 +1121,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     selectedVideo.value = track;
     _extractSubtitles();
     await _switchMedia(track.url, track.headers,
-        startPosition: player.state.position);
+        startPosition: _basePlayer.state.position);
   }
 
   void setExternalAudio(model.Track track) {
@@ -993,11 +1153,39 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void navigator(bool forward) {
     if (forward) {
-      changeEpisode(nextEpisode!);
-    } else if (hasNextEpisode) {
+      if (playerSettings.autoSkipFiller) {
+        final targetEpisode = _getNextNonFillerEpisode();
+        if (targetEpisode != null) {
+          changeEpisode(targetEpisode);
+        } else if (hasNextEpisode) {
+          changeEpisode(nextEpisode!);
+        }
+      } else {
+        changeEpisode(nextEpisode!);
+      }
+    } else if (hasPreviousEpisode) {
       changeEpisode(previousEpisode!);
     }
     onUserInteraction();
+  }
+
+  Episode? _getNextNonFillerEpisode() {
+    final currentIndex = currentEpisodeIndex;
+    int skippedCount = 0;
+
+    for (int i = currentIndex + 1; i < episodeList.length; i++) {
+      final episode = episodeList[i];
+      if (episode.filler != true) {
+        if (skippedCount > 0) {
+          snackBar(
+              'Skipped $skippedCount filler episode${skippedCount > 1 ? 's' : ''}');
+        }
+        return episode;
+      }
+      skippedCount++;
+    }
+
+    return nextEpisode;
   }
 
   void updateNavigatorState() {
@@ -1014,7 +1202,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     isEpisodePaneOpened.value = false;
     resetListeners();
-    player.open(Media(''));
+    _basePlayer.open('');
     setExternalSub(null);
     currentEpisode.value = episode;
 
@@ -1032,12 +1220,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void openColorProfileBottomSheet(BuildContext context) {
-    ColorProfileBottomSheet.showColorProfileSheet(context, this, player);
+    if (_basePlayer is MediaKitPlayer) {
+      ColorProfileBottomSheet.showColorProfileSheet(
+          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+    } else {
+      snackBar('Color profiles only available with MediaKit player');
+    }
   }
 
   void toggleVideoFit() {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
+    _basePlayer.toggleVideoFit(videoFit.value);
     AnymexToast.show(
         message: videoFit.value.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
@@ -1058,8 +1252,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (currentTimestamp == null) return;
       if (episodeDuration.value.inMinutes < 1) return;
 
-      final Uint8List? screenshot = await player.screenshot(
-        includeLibassSubtitles: true,
+      final screenshot = await _basePlayer.screenshot(
+        includeSubtitles: true,
         format: 'image/png',
       );
 
@@ -1107,64 +1301,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // Future<void> _trackLocally() async {
-  //   if (isOffline.value) {
-  //     settingsController.preferences
-  //         .put(offlineVideoPath, currentPosition.value.inMilliseconds);
-  //     return;
-  //   }
-  //   try {
-  //     final currentTimestamp = currentEpisode.value.timeStampInMilliseconds;
-  //     final totalDuration = episodeDuration.value.inMilliseconds;
-  //     final thumbnail = await player.screenshot(
-  //         includeLibassSubtitles: true, format: 'image/png');
-
-  //     if (currentTimestamp == null) return;
-  //     if (episodeDuration.value.inMinutes < 1) return;
-
-  //     if (currentTimestamp > 0 && currentTimestamp < totalDuration) {
-  //       if (thumbnail != null) {
-  //         currentEpisode.value.thumbnail = base64Encode(thumbnail);
-  //         print('Thumbnail saved for episode ${currentEpisode.value.number}');
-  //         print(
-  //             'Thumbnail  ${currentEpisode.value.thumbnail!.substring(0, 20)}...');
-  //       }
-  //       offlineStorage.addOrUpdateAnime(
-  //           anilistData, episodeList, currentEpisode.value);
-  //       offlineStorage.addOrUpdateWatchedEpisode(
-  //           anilistData.id, currentEpisode.value);
-  //       currentEpisode.value.currentTrack = selectedVideo.value;
-  //       currentEpisode.value.videoTracks = episodeTracks;
-
-  //       Logger.i(
-  //           'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
-  //     } else {
-  //       final episodeToSave = currentEpisode.value;
-  //       episodeToSave.timeStampInMilliseconds = 0;
-
-  //       if (thumbnail != null) {
-  //         episodeToSave.thumbnail = base64Encode(thumbnail);
-  //         print('Thumbnail saved for episode ${currentEpisode.value.number}');
-
-  //         print(
-  //             'Thumbnail  ${currentEpisode.value.thumbnail!.substring(0, 20)}...');
-  //       }
-
-  //       offlineStorage.addOrUpdateAnime(
-  //           anilistData, episodeList, episodeToSave);
-  //       offlineStorage.addOrUpdateWatchedEpisode(anilistData.id, episodeToSave);
-  //       episodeToSave.currentTrack = selectedVideo.value;
-  //       episodeToSave.videoTracks = episodeTracks;
-
-  //       Logger.i(
-  //           'Local tracking completed for episode ${currentEpisode.value.number} with timestamp: ${currentTimestamp}ms, duration: ${totalDuration}ms');
-  //     }
-  //   } catch (e) {
-  //     Logger.i('Failed to track locally: $e');
-  //   }
-  // }
-
   Future<void> _trackOnline(bool hasCrossedLimit) async {
+    if (!shouldTrack) return;
     if (isOffline.value) {
       Logger.i('Offline mode: skipping online tracking');
       return;

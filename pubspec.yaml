@@ -45,6 +45,7 @@ dependencies:
     dartotsu_extension_bridge:
         git:
             url: https://github.com/aayush2622/DartotsuExtensionBridge.git
+            ref: 239ef59
 
     outlined_text: ^1.0.1
     media_kit:
@@ -73,6 +74,7 @@ dependencies:
     share_plus: ^11.0.0
     url_launcher: any
     volume_controller: ^3.4.0
+    wakelock_plus: ^1.4.0
     screen_brightness: ^2.1.7
     window_manager: ^0.4.3
     app_links: ^6.4.0
@@ -80,7 +82,7 @@ dependencies:
 
     archive: any
     image: any
-    flutter_widget_from_html: ^0.17.0
+    flutter_widget_from_html: ^0.15.3
     timeago: ^3.7.1
     flutter_staggered_animations: ^1.1.1
     material_symbols_icons: ^4.2867.0
@@ -103,6 +105,7 @@ dependencies:
     auto_size_text: ^3.0.0
     vibration: ^3.1.5
     palette_generator: ^0.3.3+7
+    better_player_plus: any
 
 dev_dependencies:
     build_runner: ^2.4.11

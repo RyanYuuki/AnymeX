@@ -1,12 +1,12 @@
 import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:dartotsu_extension_bridge/Mangayomi/string_extensions.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DynamicBottomSheet extends StatefulWidget {
@@ -495,9 +495,9 @@ class PlayerBottomSheets {
       items: [
         const BottomSheetItem(
             title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
-        ...tracks.where((e) => e.samplerate != null).map((entry) {
+        ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
-            title: (entry.title ?? entry.language ?? entry.uri.toString())
+            title: (entry.title ?? entry.language ?? entry.url ?? "")
                 .toUpperCase(),
             subtitle: 'Audio Track',
             icon: Icons.audiotrack,
@@ -536,7 +536,7 @@ class PlayerBottomSheets {
             .where((e) => e.title != null && e.language != null)
             .map((entry) {
           return BottomSheetItem(
-            title: (entry.language ?? entry.title ?? entry.uri.toString())
+            title: (entry.language ?? entry.title ?? entry.url.toString())
                 .toUpperCase(),
             subtitle: 'Subtitle Track',
             icon: Icons.closed_caption_rounded,
@@ -633,9 +633,13 @@ class PlayerBottomSheets {
     return show<String>(
       context: context,
       title: 'Video Quality',
-      items: qualities.where((e) => e.h != null && e.w != null).map((quality) {
+      items: qualities
+          .where((e) => e.height != null && e.width != null)
+          .map((quality) {
         return BottomSheetItem(
-          title: quality.h == 0 ? 'Auto' : '${quality.w}x${quality.h}',
+          title: quality.height == 0
+              ? 'Auto'
+              : '${quality.width}x${quality.height}',
           subtitle: 'Quality Setting',
           icon: Icons.high_quality,
         );

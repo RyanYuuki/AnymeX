@@ -10,7 +10,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/models/Offline/Hive/video.dart' as hive;
 import 'package:anymex/screens/anime/watch/watch_view.dart';
-import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart';
@@ -523,23 +522,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
               onTap: () async {
                 Get.back();
                 if (General.shouldAskForTrack.get(true) == false) {
-                  navigate(() => settingsController.preferences
-                          .get('useOldPlayer', defaultValue: false)
-                      ? WatchPage(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                          shouldTrack: true,
-                        )
-                      : WatchScreen(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                        ));
+                  navigate(() => WatchScreen(
+                        episodeSrc: e,
+                        episodeList: widget.episodeList,
+                        anilistData: widget.anilistData!,
+                        currentEpisode: selectedEpisode.value,
+                        episodeTracks: streamList,
+                      ));
                   return;
                 }
                 final shouldTrack =
@@ -548,24 +537,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         : await showTrackingDialog(context);
 
                 if (shouldTrack != null) {
-                  navigate(() => settingsController.preferences
-                          .get('useOldPlayer', defaultValue: false)
-                      ? WatchPage(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                          shouldTrack: shouldTrack,
-                        )
-                      : WatchScreen(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                          shouldTrack: shouldTrack,
-                        ));
+                  navigate(() => WatchScreen(
+                        episodeSrc: e,
+                        episodeList: widget.episodeList,
+                        anilistData: widget.anilistData!,
+                        currentEpisode: selectedEpisode.value,
+                        episodeTracks: streamList,
+                        shouldTrack: shouldTrack,
+                      ));
                 }
               },
               child: Padding(

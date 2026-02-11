@@ -38,13 +38,16 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
         autoSkipOnce: fields[17] ?? false,
         enableSwipeControls: fields[18] ?? true,
         markAsCompleted: fields[19] ?? 90,
-        transitionSubtitle: fields[20] ?? true);
+        transitionSubtitle: fields[20] ?? true,
+        autoTranslate: fields[21] ?? false,
+        translateTo: fields[22] ?? 'en',
+        autoSkipFiller: fields[23] ?? false);
   }
 
   @override
   void write(BinaryWriter writer, PlayerSettings obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.speed)
       ..writeByte(1)
@@ -86,7 +89,13 @@ class PlayerSettingsAdapter extends TypeAdapter<PlayerSettings> {
       ..writeByte(19)
       ..write(obj.markAsCompleted)
       ..writeByte(20)
-      ..write(obj.transitionSubtitle);
+      ..write(obj.transitionSubtitle)
+      ..writeByte(21)
+      ..write(obj.autoTranslate)
+      ..writeByte(22)
+      ..write(obj.translateTo)
+      ..writeByte(23)
+      ..write(obj.autoSkipFiller);
   }
 
   @override

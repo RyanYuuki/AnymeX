@@ -4,17 +4,15 @@ import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/bottom_controls.dart';
 import 'package:anymex/screens/anime/watch/controls/center_controls.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/top_controls.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 
 class WatchScreen extends StatefulWidget {
   final model.Video episodeSrc;
@@ -48,7 +46,8 @@ class _WatchScreenState extends State<WatchScreen> {
         widget.currentEpisode,
         widget.episodeList,
         widget.anilistData,
-        widget.episodeTracks));
+        widget.episodeTracks,
+        shouldTrack: widget.shouldTrack));
   }
 
   @override
@@ -64,15 +63,16 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
-          return Video(
-            filterQuality: FilterQuality.medium,
-            controls: null,
-            controller: controller.playerController,
-            fit: controller.videoFit.value,
-            resumeUponEnteringForegroundMode: true,
-            subtitleViewConfiguration:
-                const SubtitleViewConfiguration(visible: false),
-          );
+          return controller.videoWidget;
+          // return Video(
+          //   filterQuality: FilterQuality.medium,
+          //   controls: null,
+          //   controller: controller.playerController,
+          //   fit: controller.videoFit.value,
+          //   resumeUponEnteringForegroundMode: true,
+          //   subtitleViewConfiguration:
+          //       const SubtitleViewConfiguration(visible: false),
+          // );
         }),
         PlayerOverlay(controller: controller),
         SubtitleText(controller: controller),

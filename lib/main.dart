@@ -198,7 +198,6 @@ void _initializeGetxController() async {
   Get.put(CommentumService());
   Get.put(CommentPreloader());
   Get.lazyPut(() => CacheController());
-  // DownloadManagerBinding.initializeDownloadManager();
 }
 
 class MainApp extends StatefulWidget {
@@ -214,7 +213,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    // Show animated splash for 3 seconds, then main app
+
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
@@ -308,11 +307,11 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Auto check for updates on app start
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Get.find<Settings>();
       settings.checkForUpdates(context);
+      settings.showWelcomeDialog(context);
     });
   }
 

@@ -1,19 +1,16 @@
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
-import 'package:anymex/screens/anime/watch_page.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 
 class HistoryModel {
   OfflineMedia? media;
@@ -114,22 +111,13 @@ class HistoryModel {
                     snackBar(
                         "Install ${media.currentEpisode?.source} First, Then Click");
                   } else {
-                    navigate(() => settingsController.preferences
-                            .get('useOldPlayer', defaultValue: false)
-                        ? WatchPage(
-                            episodeSrc: media.currentEpisode!.currentTrack!,
-                            episodeList: media.episodes!,
-                            anilistData: convertOfflineToMedia(media),
-                            currentEpisode: media.currentEpisode!,
-                            episodeTracks: media.currentEpisode!.videoTracks!,
-                          )
-                        : WatchScreen(
-                            episodeSrc: media.currentEpisode!.currentTrack!,
-                            episodeList: media.episodes!,
-                            anilistData: convertOfflineToMedia(media),
-                            currentEpisode: media.currentEpisode!,
-                            episodeTracks: media.currentEpisode!.videoTracks!,
-                          ));
+                    navigate(() => WatchScreen(
+                          episodeSrc: media.currentEpisode!.currentTrack!,
+                          episodeList: media.episodes!,
+                          anilistData: convertOfflineToMedia(media),
+                          currentEpisode: media.currentEpisode!,
+                          episodeTracks: media.currentEpisode!.videoTracks!,
+                        ));
                   }
                 }
               }
