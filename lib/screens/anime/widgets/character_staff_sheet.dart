@@ -4,6 +4,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -80,16 +81,21 @@ void showCharacterStaffSheet(BuildContext context, {required dynamic item, bool 
                                         IconButton(
                                           onPressed: () async {
                                             if (!anilistAuth.isLoggedIn.value) {
-                                              Get.snackbar("Error", "Please login to heart characters");
+                                              snackBar("Please login to favorite!");
                                               return;
                                             }
-                                            // Toggle Logic
+                                            
+                                            // Call the API
                                             bool success = await anilistAuth.toggleFavorite(
-                                              id: item.id,
-                                              type: isCharacter ? "CHARACTER" : "STAFF",
+                                              id: int.parse(item.id.toString()), 
+                                              type: isCharacter ? "CHARACTER" : "STAFF"
                                             );
+
                                             if (success) {
                                               isFav.value = !isFav.value;
+                                              snackBar(isFav.value ? "Added to Favorites" : "Removed from Favorites");
+                                            } else {
+                                              snackBar("Failed to update AniList");
                                             }
                                           },
                                           icon: Icon(
@@ -97,8 +103,9 @@ void showCharacterStaffSheet(BuildContext context, {required dynamic item, bool 
                                             color: isFav.value ? Colors.red : theme.onSurface,
                                           ),
                                         ),
+                                        const SizedBox(width: 10),
                                         AnymexText(
-                                          text: "${item.favourites ?? 0} Likes",
+                                          text: "${item.favourites ?? 0} Favorites",
                                           size: 14,
                                           color: theme.onSurface.withOpacity(0.7),
                                         ),
