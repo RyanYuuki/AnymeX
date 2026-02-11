@@ -385,10 +385,26 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                           .opaque(0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: AnymexText(
-                      text: _formatAirTime(widget.dubInfo!.airDateTime),
-                      size: 10,
-                      color: context.colors.primary,
+                    child: Builder(
+                      builder: (context) {
+                       
+                        if (widget.data.nextAiringEpisode != null) {
+                           final nextEp = widget.data.nextAiringEpisode!;
+                           final airDate = DateTime.fromMillisecondsSinceEpoch(nextEp.airingAt * 1000);
+                           return AnymexText(
+                              text: _formatAirTime(airDate),
+                              size: 10,
+                              color: context.colors.primary,
+                           );
+                        }
+                        
+                        
+                        return AnymexText(
+                          text: _formatAirTime(widget.dubInfo!.airDateTime),
+                          size: 10,
+                          color: context.colors.primary,
+                        );
+                      }
                     ),
                   ),
                 ],
@@ -570,7 +586,12 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
   @override
   void initState() {
     super.initState();
-    timeLeft.value = widget.data.nextAiringEpisode!.timeUntilAiring;
+   
+    if (widget.data.nextAiringEpisode != null) {
+       timeLeft.value = widget.data.nextAiringEpisode!.timeUntilAiring;
+    } else {
+       timeLeft.value = widget.data.nextAiringEpisode?.timeUntilAiring ?? 0;
+    }
     startCountdown();
   }
 
