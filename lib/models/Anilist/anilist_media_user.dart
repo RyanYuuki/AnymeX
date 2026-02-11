@@ -16,8 +16,6 @@ class TrackedMedia {
   String? type;
   String? mediaListId;
   ServicesType servicesType;
-
-  // Social/User specific fields
   String? userName;
   String? userAvatar;
   int? userProgress;
