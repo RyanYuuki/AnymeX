@@ -1,13 +1,57 @@
 import 'dart:convert';
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
+import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:http/http.dart' as http;
 
 class MangaAnimeUtil {
   static const String _baseUrl = 'https://api.mangabaka.dev/v1';
+
+  static Future<List<NewsItem>> getMangaNovelNews(Media media) async {
+    try {
+      final seriesData = await _getSeriesFromId(media);
+      if (seriesData == null || seriesData.isEmpty) return [];
+
+      final int bakaId = seriesData[0]['id'];
+
+      final response = await http.get(Uri.parse('$_baseUrl/series/$bakaId/news'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic>? newsData = data['data'];
+        if (newsData == null) return [];
+        
+        return newsData.map((json) => NewsItem.fromMangaBaka(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("MangaBaka News Error: $e");
+      return [];
+    }
+  }
+
+  static Future<List<NewsItem>> getAnimeNews(Media media) async {
+    try {
+      // kuroiru uses MAL ID
+      final malId = media.idMal.isEmpty ? media.id : media.idMal;
+      final response =
+          await http.get(Uri.parse('https://kuroiru.co/api/anime/$malId'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic>? newsData = data['news'];
+        if (newsData == null) return [];
+        final newsList = newsData.map((json) => NewsItem.fromKuroiru(json)).toList();
+        newsList.sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
+        return newsList;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
 
   /// Get anime adaptation details using AniList or MAL ID
   static Future<AnimeAdaptation> getAnimeAdaptation(Media media) async {
@@ -98,7 +142,6 @@ class MangaAnimeUtil {
 
       for (final match in matches) {
         final dateStr = match.group(1);
-
         final chapterStr = match.group(2);
 
         if (dateStr != null) {
