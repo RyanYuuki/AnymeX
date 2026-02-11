@@ -260,11 +260,14 @@ class ExoticCard extends CarouselCard {
                       variant: TextVariant.bold,
                     ),
                     const SizedBox(width: 4),
-                    AnymexText(
-                      text: itemData.source ?? '',
-                      color: context.colors.onPrimary,
-                      size: 12,
-                      variant: TextVariant.bold,
+                    Flexible(
+                      child: AnymexText(
+                        text: itemData.source ?? '',
+                        color: context.colors.onPrimary,
+                        size: 12,
+                        variant: TextVariant.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ] else ...[
                     Icon(
@@ -274,11 +277,14 @@ class ExoticCard extends CarouselCard {
                       color: context.colors.onPrimary,
                     ),
                     const SizedBox(width: 4),
-                    AnymexText(
-                      text: (itemData.extraData ?? '').replaceAll('_', ' '),
-                      color: context.colors.onPrimary,
-                      size: 12,
-                      variant: TextVariant.bold,
+                    Flexible(
+                      child: AnymexText(
+                        text: (itemData.extraData ?? '').replaceAll('_', ' '),
+                        color: context.colors.onPrimary,
+                        size: 12,
+                        variant: TextVariant.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ]
                 ],
@@ -402,11 +408,14 @@ class MinimalExoticCard extends CarouselCard {
                       variant: TextVariant.bold,
                     ),
                     const SizedBox(width: 4),
-                    AnymexText(
-                      text: itemData.source ?? '',
-                      color: context.colors.onPrimary,
-                      size: 12,
-                      variant: TextVariant.bold,
+                    Flexible(
+                      child: AnymexText(
+                        text: itemData.source ?? '',
+                        color: context.colors.onPrimary,
+                        size: 12,
+                        variant: TextVariant.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ] else ...[
                     Icon(
@@ -420,11 +429,14 @@ class MinimalExoticCard extends CarouselCard {
                       color: context.colors.onPrimary,
                     ),
                     const SizedBox(width: 4),
-                    AnymexText(
-                      text: (itemData.extraData ?? '').replaceAll('_', ' '),
-                      color: context.colors.onPrimary,
-                      size: 12,
-                      variant: TextVariant.bold,
+                    Flexible(
+                      child: AnymexText(
+                        text: (itemData.extraData ?? '').replaceAll('_', ' '),
+                        color: context.colors.onPrimary,
+                        size: 12,
+                        variant: TextVariant.bold,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ]
                 ],

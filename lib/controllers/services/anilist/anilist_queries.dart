@@ -114,3 +114,88 @@ averageScore
       }
     }
   ''';
+
+const airingScheduleQuery = '''
+query (\$page: Int, \$perPage: Int, \$airingAtGreater: Int, \$airingAtLesser: Int) {
+  Page(page: \$page, perPage: \$perPage) {
+    pageInfo {
+      hasNextPage
+      total
+    }
+    airingSchedules(
+      airingAt_greater: \$airingAtGreater
+      airingAt_lesser: \$airingAtLesser
+      sort: TIME_DESC
+    ) {
+      id
+      episode
+      airingAt
+      media {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          extraLarge
+          large
+          medium
+          color
+        }
+        type
+        format
+        averageScore
+        favourites
+        isAdult
+      }
+    }
+  }
+}
+''';
+
+const notificationQuery = '''
+query (\$page: Int, \$perPage: Int) {
+  Page(page: \$page, perPage: \$perPage) {
+    pageInfo {
+      hasNextPage
+      total
+    }
+    notifications(type_in: [AIRING, RELATED_MEDIA_ADDITION], resetNotificationCount: false) {
+      ... on AiringNotification {
+        id
+        type
+        episode
+        contexts
+        createdAt
+        media {
+          id
+          title {
+            userPreferred
+          }
+          coverImage {
+            large
+          }
+          type
+        }
+      }
+      ... on RelatedMediaAdditionNotification {
+        id
+        type
+        context
+        createdAt
+        media {
+          id
+          title {
+            userPreferred
+          }
+          coverImage {
+            large
+          }
+          type
+        }
+      }
+    }
+  }
+}
+''';

@@ -44,6 +44,7 @@ class Media {
   DateTime? createdAt;
   bool? isAdult;
   String? sourceName;
+  String? extraData;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -82,6 +83,7 @@ class Media {
       this.mediaContent,
       required this.serviceType,
       this.sourceName,
+      this.extraData,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
