@@ -2,10 +2,10 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
-import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
@@ -36,8 +36,6 @@ class Media {
   List<String> genres;
   List<String>? studios;
   List<Character>? characters;
-  List<Staff>? staff;
-  List<TrackedMedia>? friendsWatching;
   List<Relation>? relations;
   List<Media> recommendations;
   NextAiringEpisode? nextAiringEpisode;
@@ -46,7 +44,9 @@ class Media {
   DateTime? createdAt;
   bool? isAdult;
   String? sourceName;
+  List<TrackedMedia>? friendsWatching;
 
+  // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
 
   Media(
@@ -75,8 +75,6 @@ class Media {
       this.genres = const [],
       this.studios,
       this.characters,
-      this.staff,
-      this.friendsWatching,
       this.altMediaContent,
       this.relations,
       this.recommendations = const [],
@@ -85,6 +83,7 @@ class Media {
       this.mediaContent,
       required this.serviceType,
       this.sourceName,
+      this.friendsWatching,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -286,16 +285,16 @@ class Media {
         : json['type'] == "MANGA"
             ? ItemType.manga
             : ItemType.novel;
-            
+    
     var media = Media(
       id: json['id'].toString(),
       idMal: json['idMal'].toString(),
-      romajiTitle: json['title']?['romaji'] ?? '?',
-      title: json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      romajiTitle: json['title']['romaji'] ?? '?',
+      title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '?',
-      poster: json['coverImage']?['large'] ?? '?',
+      poster: json['coverImage']['large'] ?? '?',
       isAdult: json['isAdult'] ?? false,
-      color: json['coverImage']?['color'] ?? '',
+      color: json['coverImage']['color'] ?? '',
       cover: json['bannerImage'],
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
       type: json['type'] ?? '?',
@@ -309,37 +308,40 @@ class Media {
       aired: _parseDateRange(json['startDate'], json['endDate']),
       totalChapters: json['chapters']?.toString() ?? '?',
       genres: List<String>.from(json['genres'] ?? []),
-      studios: (json['studios']?['nodes'] as List?)
-          ?.map((el) => el['name'].toString())
+      studios: (json['studios']['nodes'] as List)
+          .map((el) => el['name'].toString())
           .toList(),
-      characters: (json['characters']?['edges'] as List?)
+      characters: (json['characters']['edges'] as List?)
           ?.map((character) => Character.fromJson(character))
           .toList(),
-      staff: (json['staffPreview']?['edges'] as List?)
-          ?.map((staff) => Staff.fromEdge(staff))
+      relations: (json['relations']['edges'] as List)
+          .map((relation) => Relation.fromJson(relation))
           .toList(),
-      relations: (json['relations']?['edges'] as List?)
-          ?.map((relation) => Relation.fromJson(relation))
+      recommendations: (json['recommendations']['edges'] as List)
+          .map((recommendation) => Media.fromRecs(recommendation))
           .toList(),
-      recommendations: (json['recommendations']?['edges'] as List?)
-          ?.map((recommendation) => Media.fromRecs(recommendation))
-          .toList() ?? [],
       nextAiringEpisode: json['nextAiringEpisode'] != null
           ? NextAiringEpisode.fromJson(json['nextAiringEpisode'])
           : null,
-      rankings: (json['rankings'] as List?)
-          ?.map((ranking) => Ranking.fromJson(ranking))
-          .toList() ?? [],
+      rankings: (json['rankings'] as List)
+          .map((ranking) => Ranking.fromJson(ranking))
+          .toList(),
       mediaType: type,
       serviceType: ServicesType.anilist,
     );
 
-    if (pageJson != null && pageJson['mediaList'] != null) {
-      media.friendsWatching = (pageJson['mediaList'] as List)
-          .map((e) => TrackedMedia.fromSocialJson(e))
+    if (json['staffPreview'] != null) {
+      media.staff = (json['staffPreview']['edges'] as List?)
+          ?.map((e) => Staff.fromJson(e))
           .toList();
     }
-    
+
+    if (pageJson != null) {
+      media.friendsWatching = (pageJson['mediaList'] as List?)
+          ?.map((e) => TrackedMedia.fromSocialJson(e))
+          .toList();
+    }
+
     return media;
   }
 
@@ -347,8 +349,8 @@ class Media {
       {bool isMal = false}) {
     return Media(
       id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
-      romajiTitle: json['title']?['romaji'] ?? '?',
-      title: json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      romajiTitle: json['title']['romaji'] ?? '?',
+      title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',
       isAdult: json['isAdult'] ?? false,
       totalEpisodes: json['episodes']?.toString() ?? '?',
@@ -373,14 +375,22 @@ class Media {
   }
 
   factory Media.fromRecs(Map<String, dynamic> json) {
-    final rec = json['node']?['mediaRecommendation'];
     return Media(
-        id: rec != null ? rec['id'].toString() : '',
-        title: rec != null
-            ? rec['title']['english'] ?? rec['title']['romaji']
+        id: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['id'].toString()
             : '',
-        poster: rec != null ? rec['coverImage']['large'] : '',
-        rating: ((rec != null ? rec['averageScore'] ?? 0 : 0) / 10).toString(),
+        title: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['title']['english'] ??
+                json['node']['mediaRecommendation']['title']['romaji']
+            : '',
+        poster: json['node']['mediaRecommendation'] != null
+            ? json['node']['mediaRecommendation']['coverImage']['large']
+            : '',
+        rating: ((json['node']['mediaRecommendation'] != null
+                    ? json['node']['mediaRecommendation']['averageScore'] ?? 0
+                    : 0) /
+                10)
+            .toString(),
         serviceType: ServicesType.anilist);
   }
 
@@ -406,7 +416,6 @@ class Media {
       genres: offline.genres ?? const [],
       studios: offline.studios,
       characters: null,
-      staff: null,
       relations: null,
       recommendations: const [],
       nextAiringEpisode: null,
