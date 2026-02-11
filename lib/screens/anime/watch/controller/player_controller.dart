@@ -1308,16 +1308,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    if (currentEpisode.value.number.toString() ==
-        anilistData.serviceType.onlineService.currentMedia.value.episodeCount) {
-      return;
-    }
     try {
-      final currEpisodeNum = currentEpisode.value.number.toInt();
       final service = anilistData.serviceType.onlineService;
+      final currEpisodeNum = currentEpisode.value.number.toInt();
+      
+      final int newProgress = hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
+
+      final int previousProgress = int.tryParse(service.currentMedia.value.episodeCount ?? '0') ?? 0;
+
+      if (newProgress <= previousProgress) {
+        Logger.i('Skipping online tracking: New progress ($newProgress) is not greater than existing progress ($previousProgress)');
+        return;
+      }
+
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,
-          progress: hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1,
+          progress: newProgress,
           isAnime: true,
           status: hasCrossedLimit &&
                   anilistData.status == 'COMPLETED' &&
@@ -1325,11 +1331,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
               ? 'COMPLETED'
               : 'CURRENT',
           syncIds: [anilistData.idMal]));
+          
       service.setCurrentMedia(anilistData.id.toString());
       Logger.i(
-          'Online tracking completed for episode ${currentEpisode.value.number}, progress: ${hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1}');
+          'Online tracking completed for episode ${currentEpisode.value.number}, progress updated to: $newProgress');
     } catch (e) {
       Logger.i('Failed to track online: $e');
     }
   }
-}
