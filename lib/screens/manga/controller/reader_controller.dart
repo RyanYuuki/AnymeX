@@ -422,7 +422,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           chapter.number != null &&
           chapter.pageNumber == chapter.totalPages) {
         
-        final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.chapterCount ?? '0') ?? 0;
+        final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
         
         final int newProgress = chapter.number!.toInt();
 
@@ -433,10 +433,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
               progress: newProgress,
               syncIds: [media.idMal],
               isAnime: false));
-          
-          Logger.i('Manga tracking updated online to chapter: $newProgress');
-        } else {
-          Logger.i('Manga tracking skipped: existing progress ($currentOnlineProgress) is ahead of current chapter ($newProgress)');
         }
       }
     } catch (e) {
@@ -965,12 +961,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
-      serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-          listId: media.id,
-          status: "CURRENT",
-          progress: chapterNumber,
-          syncIds: [media.idMal],
-          isAnime: false));
+      final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
+      
+      if (chapterNumber > currentOnlineProgress) {
+        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+            listId: media.id,
+            status: "CURRENT",
+            progress: chapterNumber,
+            syncIds: [media.idMal],
+            isAnime: false));
+      }
     }
   }
 

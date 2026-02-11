@@ -1317,7 +1317,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final int previousProgress = int.tryParse(service.currentMedia.value.episodeCount ?? '0') ?? 0;
 
       if (newProgress <= previousProgress) {
-        Logger.i('Skipping online tracking: New progress ($newProgress) is not greater than existing progress ($previousProgress)');
         return;
       }
 
