@@ -573,6 +573,8 @@ class AnilistAuth extends GetxController {
               .toList()
               .removeDupes();
 
+          currentlyWatching.value = currentlyWatching.value.removeDupes();
+
           animeList.value = animeListt
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
@@ -585,6 +587,7 @@ class AnilistAuth extends GetxController {
         }
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Failed to load anime list: $e');
@@ -838,6 +841,7 @@ class AnilistAuth extends GetxController {
         }
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Failed to load manga list: $e');
@@ -890,6 +894,7 @@ class AnilistAuth extends GetxController {
         Logger.i('Anime status updated successfully: ${response.body}');
       } else {
         Logger.i('Failed to update anime status: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Error while updating anime status: $e');
@@ -942,6 +947,7 @@ class AnilistAuth extends GetxController {
         Logger.i('Manga status updated successfully: ${response.body}');
       } else {
         Logger.i('Failed to update manga status: ${response.statusCode}');
+        Logger.i('Response body: ${response.body}');
       }
     } catch (e) {
       Logger.i('Error while updating manga status: $e');
