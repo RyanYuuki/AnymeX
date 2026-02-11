@@ -8,6 +8,7 @@ const detailsQuery = '''
           romaji
           english
           native
+          userPreferred
         }
         description
         coverImage {
@@ -26,6 +27,7 @@ const detailsQuery = '''
         chapters
         format
         popularity
+        favourites
         startDate {
           year
           month
@@ -37,25 +39,50 @@ const detailsQuery = '''
           day
         }
         genres
-        studios {
+        studios(isMain: true) {
           nodes {
+            id
             name
+            siteUrl
           }
         }
-        characters {
+        characters(sort: [ROLE, FAVOURITES_DESC], perPage: 25, page: 1) {
           edges {
+            role
             node {
+              id
               name {
                 full
+                userPreferred
               }
               favourites
               image {
                 large
               }
+              description
+              isFavourite
             }
             voiceActors(language: JAPANESE) {
+              id
               name {
                 full
+                userPreferred
+              }
+              image {
+                large
+              }
+              languageV2
+            }
+          }
+        }
+        staffPreview: staff(perPage: 25, sort: [RELEVANCE, ID]) {
+          edges {
+            role
+            node {
+              id
+              name {
+                full
+                userPreferred
               }
               image {
                 large
@@ -65,39 +92,38 @@ const detailsQuery = '''
         }
         relations {
           edges {
-            relationType
+            relationType(version: 2)
             node {
               id
+              idMal
               title {
                 romaji
                 english
+                userPreferred
               }
               coverImage {
                 large
               }
-              bannerImage
               type
-              status
+              status(version: 2)
               averageScore
-
             }
           }
         }
-        recommendations {
-          edges {
-            node {
-              mediaRecommendation {
-                id
-                title {
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                }
-                type
-averageScore
+        recommendations(sort: RATING_DESC) {
+          nodes {
+            mediaRecommendation {
+              id
+              title {
+                romaji
+                english
+                userPreferred
               }
+              coverImage {
+                large
+              }
+              type
+              averageScore
             }
           }
         }
@@ -110,6 +136,25 @@ averageScore
           rank
           type
           year
+        }
+        externalLinks {
+          url
+          site
+        }
+      }
+      Page(page: 1) {
+        mediaList(isFollowing: true, sort: [STATUS], mediaId: \$id) {
+          id
+          status
+          score(format: POINT_100)
+          progress
+          user {
+            id
+            name
+            avatar {
+              large
+            }
+          }
         }
       }
     }
