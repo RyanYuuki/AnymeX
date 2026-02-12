@@ -47,14 +47,14 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   final RxList<Video> streamList = <Video>[].obs;
   final sourceController = Get.find<SourceController>();
   final Rx<Episode> chosenEpisode = Episode(number: '1').obs;
-  final auth = Get.find<ServiceHandler>(); // Add this
+  final auth = Get.find<ServiceHandler>();
 
   // Cache for expensive calculations
   List<List<Episode>>? _cachedChunkedEpisodes;
   int? _lastEpisodeListLength;
   int? _cachedUserProgress;
   bool? _cachedIsAnify;
-  bool _initializedChunk = false; // Add this flag
+  bool _initializedChunk = false;
 
   @override
   void initState() {
@@ -70,17 +70,14 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     _computeChunkedEpisodes();
   }
 
-  // Add this method to get user progress from tracking service
   int _getUserProgress() {
     if (auth.isLoggedIn.value &&
         auth.serviceType.value != ServicesType.extensions) {
-      // Get from tracking service (AniList/MAL)
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
       return trackedMedia?.episodeCount?.toInt() ?? 
              widget.currentEpisode.number.toInt();
     } else {
-      // Get from offline storage
       final offlineStorage = Get.find<OfflineStorageController>();
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
       return savedAnime?.currentEpisode?.number.toInt() ?? 
@@ -94,7 +91,6 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           widget.episodeList, calculateChunkSize(widget.episodeList));
       _lastEpisodeListLength = widget.episodeList.length;
       
-      // Set initial chunk index based on user progress
       if (!_initializedChunk && _cachedChunkedEpisodes != null) {
         final progress = _cachedUserProgress ?? 1;
         final chunkIndex = findChunkIndexFromProgress(
