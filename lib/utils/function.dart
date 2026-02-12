@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:html/parser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -15,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:anymex/models/mangaupdates/news_item.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 extension StringExtensions on String {
   String get getUrlWithoutDomain {
@@ -520,4 +524,48 @@ String getRandomTag({String? addition}) {
     return '$addition-${DateTime.now().millisecond}';
   }
   return DateTime.now().millisecond.toString();
+}
+
+Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
+  if (news.isEmpty) return const SizedBox.shrink();
+  final colorScheme = context.colors;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: news
+        .take(5)
+        .map((item) {
+          final decodedTitle = parse(item.title).body?.text ?? item.title;
+          return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: InkWell(
+                onTap: () => launchUrl(Uri.parse(item.url)),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface.opaque(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: colorScheme.outline.opaque(0.1)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AnymexText(
+                          text: decodedTitle,
+                          size: 13,
+                          maxLines: 2,
+                          variant: TextVariant.semiBold,
+                        ),
+                      ),
+                      Icon(Icons.open_in_new,
+                          size: 16, color: colorScheme.primary),
+                    ],
+                  ),
+                ),
+              ),
+            );
+        })
+        .toList(),
+  );
 }
