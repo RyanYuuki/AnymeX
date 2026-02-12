@@ -283,30 +283,58 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _navigateForward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? -offset : offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
-  void _navigateBackward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: -offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+void _navigateBackward() {
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? offset : -offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.previousPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
   void toggleVolumeKeys() {
     volumeKeysEnabled.value = !volumeKeysEnabled.value;
