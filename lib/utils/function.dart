@@ -519,6 +519,17 @@ extension SizedBoxExt on num {
   }
 }
 
+extension RemoveDuplicates<T extends Media> on List<T> {
+  List<T> removeDupes() {
+    final seenIds = <String>{};
+    return where((media) {
+      final isDuplicate = seenIds.contains(media.id);
+      seenIds.add(media.id);
+      return !isDuplicate;
+    }).toList();
+  }
+}
+
 String getRandomTag({String? addition}) {
   if (addition != null) {
     return '$addition-${DateTime.now().millisecond}';
