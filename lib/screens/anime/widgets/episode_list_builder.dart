@@ -522,13 +522,16 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
               onTap: () async {
                 Get.back();
                 if (General.shouldAskForTrack.get(true) == false) {
-                  navigate(() => WatchScreen(
+                  await navigate(() => WatchScreen(
                         episodeSrc: e,
                         episodeList: widget.episodeList,
                         anilistData: widget.anilistData!,
                         currentEpisode: selectedEpisode.value,
                         episodeTracks: streamList,
                       ));
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {});
+                  });
                   return;
                 }
                 final shouldTrack =
@@ -537,7 +540,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         : await showTrackingDialog(context);
 
                 if (shouldTrack != null) {
-                  navigate(() => WatchScreen(
+                  await navigate(() => WatchScreen(
                         episodeSrc: e,
                         episodeList: widget.episodeList,
                         anilistData: widget.anilistData!,
@@ -545,6 +548,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         episodeTracks: streamList,
                         shouldTrack: shouldTrack,
                       ));
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {});
+                  });
                 }
               },
               child: Padding(

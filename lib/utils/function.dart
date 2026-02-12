@@ -505,8 +505,8 @@ Future<bool> isTv() async {
   return isTV;
 }
 
-void navigate(dynamic page) {
-  Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
+Future<void> navigate(dynamic page) async {
+  await Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
 }
 
 extension SizedBoxExt on num {
