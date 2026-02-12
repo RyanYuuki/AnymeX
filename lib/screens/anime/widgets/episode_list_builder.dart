@@ -56,19 +56,24 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
+  bool _initializedChunk = false; // Add this flag
 
   @override
   void initState() {
     super.initState();
-    _initEpisodes();
-    Future.delayed(Duration(milliseconds: 300), () {
-      _initUserProgress();
-    });
+    _initUserProgress();
     _initEpisodes();
 
     ever(auth.isLoggedIn, (_) => _initUserProgress());
-    ever(userProgress, (_) => _initEpisodes());
-    ever(auth.currentMedia, (_) => {_initUserProgress(), _initEpisodes()});
+    ever(userProgress, (_) => {
+      _initEpisodes(),
+      _updateChunkIndex() // Add this
+    });
+    ever(auth.currentMedia, (_) => {
+      _initUserProgress(), 
+      _initEpisodes(),
+      _updateChunkIndex() // Add this
+    });
 
     offlineStorage.addListener(() {
       final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
@@ -76,6 +81,27 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         savedEpisode.value = savedData!.currentEpisode!;
         offlineEpisodes = savedData.episodes ?? [];
         _initEpisodes();
+        _updateChunkIndex(); // Add this
+      }
+    });
+  }
+
+  // Add this new method to update chunk index based on progress
+  void _updateChunkIndex() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      
+      final chunkedEpisodes = chunkEpisodes(
+          widget.episodeList, calculateChunkSize(widget.episodeList));
+      
+      if (chunkedEpisodes.length > 1 && !_initializedChunk) {
+        final progress = userProgress.value;
+        final chunkIndex = findChunkIndexFromProgress(
+          progress,
+          chunkedEpisodes,
+        );
+        selectedChunkIndex.value = chunkIndex.clamp(1, chunkedEpisodes.length - 1);
+        _initializedChunk = true;
       }
     });
   }
@@ -83,13 +109,18 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   void _initUserProgress() {
     final isExtensions = auth.serviceType.value == ServicesType.extensions;
     isLogged.value = isExtensions ? false : auth.isLoggedIn.value;
-    final progress = isLogged.value
-        ? auth.currentMedia.value.episodeCount?.toInt()
-        : offlineStorage
-            .getAnimeById(widget.anilistData!.id)
-            ?.currentEpisode
-            ?.number
-            .toInt();
+    
+    int? progress;
+    if (isLogged.value) {
+      // Get from tracking service
+      final trackedMedia = auth.onlineService.animeList
+          .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
+      progress = trackedMedia?.episodeCount?.toInt();
+    } else {
+      // Get from offline storage
+      final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
+      progress = savedAnime?.currentEpisode?.number.toInt();
+    }
 
     userProgress.value = !isLogged.value && progress != null && progress > 1
         ? progress - 1
@@ -133,20 +164,29 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   Widget build(BuildContext context) {
     final chunkedEpisodes = chunkEpisodes(
         widget.episodeList, calculateChunkSize(widget.episodeList));
+    
+    // Ensure chunk index is valid
+    if (selectedChunkIndex.value >= chunkedEpisodes.length) {
+      selectedChunkIndex.value = chunkedEpisodes.length - 1;
+    }
 
-    final isAnify = (widget.episodeList[0].thumbnail?.isNotEmpty ?? false).obs;
+    final isAnify = (widget.episodeList.isNotEmpty && 
+        widget.episodeList[0].thumbnail?.isNotEmpty ?? false).obs;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Obx(_buildContinueButton),
+          child: Obx(() => _buildContinueButton()),
         ),
         EpisodeChunkSelector(
           chunks: chunkedEpisodes,
           selectedChunkIndex: selectedChunkIndex,
-          onChunkSelected: (index) => setState(() {}),
+          onChunkSelected: (index) {
+            selectedChunkIndex.value = index;
+            setState(() {});
+          },
         ),
         Obx(() {
           final selectedEpisodes = chunkedEpisodes.isNotEmpty
