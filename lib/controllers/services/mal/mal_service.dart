@@ -61,6 +61,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     return (data['data'] as List<dynamic>)
         .map((e) => Media.fromMAL(e))
         .toList();
+        .removeDupes();
   }
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
