@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/database/comments_db.dart';
-import 'package:anymex/database/model/comment.dart';
+import 'package:anymex/database/comments/comments_db.dart';
+import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 

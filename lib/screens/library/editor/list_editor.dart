@@ -2,7 +2,7 @@
 import 'dart:ui';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';

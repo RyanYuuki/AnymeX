@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';

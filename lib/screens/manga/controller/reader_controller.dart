@@ -8,8 +8,8 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -21,6 +21,7 @@ import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../../../models/reader/tap_zones.dart';
 import '../../../repositories/tap_zone_repository.dart';
 
@@ -106,8 +107,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   // Tap Zones
   final TapZoneRepository _tapRepo = TapZoneRepository();
   final Rx<TapZoneLayout> pagedProfile = TapZoneLayout.defaultPaged.obs;
-  final Rx<TapZoneLayout> pagedVerticalProfile = TapZoneLayout.defaultPagedVertical.obs;
-  final Rx<TapZoneLayout> webtoonHorizontalProfile = TapZoneLayout.defaultWebtoonHorizontal.obs;
+  final Rx<TapZoneLayout> pagedVerticalProfile =
+      TapZoneLayout.defaultPagedVertical.obs;
+  final Rx<TapZoneLayout> webtoonHorizontalProfile =
+      TapZoneLayout.defaultWebtoonHorizontal.obs;
 
   final Rx<TapZoneLayout> webtoonProfile = TapZoneLayout.defaultWebtoon.obs;
   final RxBool tapZonesEnabled = true.obs;
@@ -126,9 +129,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final Rx<MangaPageViewDirection> readingDirection =
       MangaPageViewDirection.down.obs;
   final Rx<DualPageMode> dualPageMode = DualPageMode.off.obs;
- 
+
   final RxBool cropImages = false.obs;
-  
+
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
 
@@ -203,8 +206,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool isOverscrolling = false.obs;
   final RxDouble overscrollProgress = 0.0.obs;
   final RxBool isOverscrollingNext = true.obs;
-   static const double _dragRate = 0.5; 
-  static const int _dragDivider = 5; 
+  static const double _dragRate = 0.5;
+  static const int _dragDivider = 5;
 
   double get _maxDistance => Get.height / _dragDivider;
 
@@ -221,12 +224,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _performSave(reason: 'Page opened');
 
-    _rpcWorker = ever(currentPageIndex, (e) {
+    _rpcWorker = ever(currentChapter, (_) {
       DiscordRPCController.instance.updateMangaPresence(
           manga: media,
           chapter: currentChapter.value!,
           totalChapters: chapterList.length.toString(),
-          currentPage: e);
+          currentPage: 1);
     });
 
     ever(readingLayout, (_) => _computeSpreads());
@@ -599,82 +602,75 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       return false;
     }
 
-   
     if (!isOverscrolling.value) {
       bool isUserDrag = false;
-      if (notification is ScrollUpdateNotification && notification.dragDetails != null) {
+      if (notification is ScrollUpdateNotification &&
+          notification.dragDetails != null) {
         isUserDrag = true;
-      } else if (notification is OverscrollNotification && notification.dragDetails != null) {
+      } else if (notification is OverscrollNotification &&
+          notification.dragDetails != null) {
         isUserDrag = true;
       }
-      
+
       if (!isUserDrag) return false;
     }
 
     final metrics = notification.metrics;
 
-   
     if (metrics.pixels > metrics.maxScrollExtent) {
-       // Bo
-       final delta = metrics.pixels - metrics.maxScrollExtent;
-       _virtualOverscrollPixels = delta * _dragRate;
-       _updateOverscrollProgress(true);
-       return false;
+      // Bo
+      final delta = metrics.pixels - metrics.maxScrollExtent;
+      _virtualOverscrollPixels = delta * _dragRate;
+      _updateOverscrollProgress(true);
+      return false;
     } else if (metrics.pixels < metrics.minScrollExtent) {
-       // Top 
-       final delta = (metrics.pixels - metrics.minScrollExtent).abs();
-       _virtualOverscrollPixels = delta * _dragRate;
-       _updateOverscrollProgress(false);
-       return false;
+      // Top
+      final delta = (metrics.pixels - metrics.minScrollExtent).abs();
+      _virtualOverscrollPixels = delta * _dragRate;
+      _updateOverscrollProgress(false);
+      return false;
     }
 
-    if (notification is OverscrollNotification && notification.overscroll != 0) {
-      
+    if (notification is OverscrollNotification &&
+        notification.overscroll != 0) {
       final ovs = notification.overscroll;
-      final isNext = ovs > 0; 
-      
-     
+      final isNext = ovs > 0;
+
       if (isOverscrolling.value && isOverscrollingNext.value != isNext) {
-         _resetOverscroll();
-         return false;
-      }
-      
-      _virtualOverscrollPixels += ovs.abs() * _dragRate;
-      _updateOverscrollProgress(isNext);
-      
-    } else if (notification is ScrollUpdateNotification && notification.scrollDelta != null && isOverscrolling.value) {
-   
-      
-      final delta = notification.scrollDelta!;
-      
-     
-      if (isOverscrollingNext.value) {
-         
-         _virtualOverscrollPixels += delta * _dragRate;
-      } else {
-         
-         _virtualOverscrollPixels -= delta * _dragRate;
+        _resetOverscroll();
+        return false;
       }
 
-      
+      _virtualOverscrollPixels += ovs.abs() * _dragRate;
+      _updateOverscrollProgress(isNext);
+    } else if (notification is ScrollUpdateNotification &&
+        notification.scrollDelta != null &&
+        isOverscrolling.value) {
+      final delta = notification.scrollDelta!;
+
+      if (isOverscrollingNext.value) {
+        _virtualOverscrollPixels += delta * _dragRate;
+      } else {
+        _virtualOverscrollPixels -= delta * _dragRate;
+      }
+
       if (_virtualOverscrollPixels < 0) _virtualOverscrollPixels = 0;
       _updateOverscrollProgress(isOverscrollingNext.value);
     }
-    
-    
-    if (isOverscrolling.value && 
-        _virtualOverscrollPixels <= 0.1 && 
-        metrics.pixels >= metrics.minScrollExtent && 
+
+    if (isOverscrolling.value &&
+        _virtualOverscrollPixels <= 0.1 &&
+        metrics.pixels >= metrics.minScrollExtent &&
         metrics.pixels <= metrics.maxScrollExtent) {
-       _resetOverscroll();
+      _resetOverscroll();
     }
 
     return false;
   }
 
   void _updateOverscrollProgress(bool isNext) {
-     final progress = (_virtualOverscrollPixels / _maxDistance).clamp(0.0, 1.0);
-     _handleOverscrollUpdate(progress, isNext);
+    final progress = (_virtualOverscrollPixels / _maxDistance).clamp(0.0, 1.0);
+    _handleOverscrollUpdate(progress, isNext);
   }
 
   void onPointerDown(PointerDownEvent event) {
@@ -700,13 +696,13 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void _handleOverscrollUpdate(double progress, bool isNext) {
     if (!isOverscrolling.value) {
-        if (progress <= 0.05) return;
-        
-        isOverscrolling.value = true;
-        isOverscrollingNext.value = isNext;
-        if (showControls.value) showControls.value = false;
+      if (progress <= 0.05) return;
 
-        HapticFeedback.selectionClick();
+      isOverscrolling.value = true;
+      isOverscrollingNext.value = isNext;
+      if (showControls.value) showControls.value = false;
+
+      HapticFeedback.selectionClick();
     }
 
     if ((progress - overscrollProgress.value).abs() > 0.01 ||
@@ -729,10 +725,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void handleMouseScroll(double delta, {bool isTrackpad = false}) {
     if (!overscrollToChapter.value || _isNavigating) return;
 
-    
     final isNext = delta > 0;
-    
-  
+
     bool atEdge = false;
     if (readingLayout.value == MangaPageViewMode.continuous) {
       final positions = itemPositionsListener?.itemPositions.value;
@@ -771,31 +765,30 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (!atEdge) {
       if (readingLayout.value == MangaPageViewMode.continuous) {
-         if (readingDirection.value.axis == Axis.horizontal) {
-            scrollOffsetController?.animateScroll(
-                offset: delta * scrollSpeedMultiplier.value * 2.2,
-                duration: const Duration(milliseconds: 100),
-                curve: Curves.easeOut
-            );
-         }
+        if (readingDirection.value.axis == Axis.horizontal) {
+          scrollOffsetController?.animateScroll(
+              offset: delta * scrollSpeedMultiplier.value * 2.2,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOut);
+        }
       } else {
-         _mouseWheelAccumulator += delta;
-         
-         const double threshold = 40.0;
-         
-         if (_mouseWheelAccumulator.abs() > threshold) {
-            final now = DateTime.now().millisecondsSinceEpoch;
-            
-            if (now - _lastMouseTurnTime > 100) {
-               if (_mouseWheelAccumulator > 0) {
-                  _navigateForward();
-               } else {
-                  _navigateBackward();
-               }
-               _lastMouseTurnTime = now;
+        _mouseWheelAccumulator += delta;
+
+        const double threshold = 40.0;
+
+        if (_mouseWheelAccumulator.abs() > threshold) {
+          final now = DateTime.now().millisecondsSinceEpoch;
+
+          if (now - _lastMouseTurnTime > 100) {
+            if (_mouseWheelAccumulator > 0) {
+              _navigateForward();
+            } else {
+              _navigateBackward();
             }
-            _mouseWheelAccumulator = 0.0;
-         }
+            _lastMouseTurnTime = now;
+          }
+          _mouseWheelAccumulator = 0.0;
+        }
       }
       return;
     }
@@ -842,9 +835,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void handleOverscrollEnd() {
     if (overscrollProgress.value >= 1.0) {
       if (isOverscrollingNext.value) {
-         chapterNavigator(true);
+        chapterNavigator(true);
       } else {
-         chapterNavigator(false);
+        chapterNavigator(false);
       }
     }
     _resetOverscroll();
@@ -856,7 +849,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _virtualOverscrollPixels = 0.0;
     _mouseResetTimer?.cancel();
   }
-
 
   void _onPositionChanged() async {
     if (itemPositionsListener == null || pageList.isEmpty) return;
@@ -924,7 +916,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
-    
+
     pagedProfile.value = _tapRepo.getPagedLayout();
     pagedVerticalProfile.value = _tapRepo.getPagedVerticalLayout();
     webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
@@ -942,7 +934,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _initTracking() {
+  void _initTracking() async {
     final chapter = currentChapter.value;
     if (chapter == null || chapter.number == null) return;
 
@@ -1114,6 +1106,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             navigateToPage(saved.pageNumber! - 1);
           }
         }
+        print("INTIAL CHAPTER ${currentChapter.value?.toJson()}");
       } else {
         throw Exception('No pages found for this chapter');
       }
@@ -1172,8 +1165,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
 
     if (!Platform.isAndroid && !Platform.isIOS) {
-       toggleControls(); 
-       return;
+      toggleControls();
+      return;
     }
 
     if (!tapZonesEnabled.value) {
@@ -1184,10 +1177,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final size = Get.size;
     if (size.isEmpty) return;
 
-    final normalized = Offset(
-        (position.dx / size.width).clamp(0.0, 1.0),
-        (position.dy / size.height).clamp(0.0, 1.0)
-    );
+    final normalized = Offset((position.dx / size.width).clamp(0.0, 1.0),
+        (position.dy / size.height).clamp(0.0, 1.0));
 
     TapZoneLayout layout;
     if (readingLayout.value == MangaPageViewMode.continuous) {
@@ -1271,6 +1262,4 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       );
     }
   }
-
-
 }

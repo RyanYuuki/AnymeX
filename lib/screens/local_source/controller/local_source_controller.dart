@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/utils/logger.dart';
@@ -15,7 +15,6 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as path;

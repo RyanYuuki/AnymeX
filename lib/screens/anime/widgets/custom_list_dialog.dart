@@ -1,11 +1,14 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
+import 'package:isar_community/isar.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+
+import '../../../database/isar_models/custom_list.dart';
 
 class CustomListDialog extends StatefulWidget {
   final Media original;
@@ -24,27 +27,42 @@ class _CustomListDialogState extends State<CustomListDialog> {
   late Map<String, bool> initialState;
   final storage = Get.find<OfflineStorageController>();
   final TextEditingController _searchController = TextEditingController();
-  late List<CustomList> customList =
-      storage.getListFromType(widget.original.mediaType);
+  late List<CustomList> customList;
   final FocusNode _searchFocus = FocusNode();
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    modifiedLists = storage.getListFromType(widget.original.mediaType);
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+    _init();
+  }
+
+  void _init() {
+    final raw = isar.customLists
+        .filter()
+        .mediaTypeIndexEqualTo(widget.original.mediaType.index)
+        .findAllSync();
+
+    customList = raw
+        .map((l) => CustomList(
+              listName: l.listName,
+              mediaIds: List<String>.from(l.mediaIds ?? []),
+              mediaTypeIndex: l.mediaTypeIndex,
+            )..id = l.id)
+        .toList();
+
+    modifiedLists = customList;
 
     initialState = {
       for (var list in modifiedLists)
         list.listName ?? '':
             list.mediaIds?.contains(widget.original.id) ?? false
     };
-
-    _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text.toLowerCase();
-      });
-    });
   }
 
   @override
@@ -143,17 +161,11 @@ class _CustomListDialogState extends State<CustomListDialog> {
     );
 
     if (newListName != null && newListName.isNotEmpty) {
-      setState(() {
-        storage.addCustomList(newListName,
-            mediaType: widget.original.mediaType);
-        initialState[newListName] = false;
+      await storage.addCustomList(newListName,
+          mediaType: widget.original.mediaType);
 
-        modifiedLists = customList
-            .map((list) => CustomList(
-                  listName: list.listName,
-                  mediaIds: List<String>.from(list.mediaIds ?? []),
-                ))
-            .toList();
+      setState(() {
+        _init();
       });
     }
   }
@@ -250,8 +262,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                   ? Icons.search_off_outlined
                                   : Icons.playlist_add_outlined,
                               size: 48,
-                              color:
-                                  colorScheme.onSurfaceVariant.opaque(0.5),
+                              color: colorScheme.onSurfaceVariant.opaque(0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -280,8 +291,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                             margin: const EdgeInsets.only(bottom: 8),
                             decoration: BoxDecoration(
                               color: isChecked
-                                  ? colorScheme.primaryContainer
-                                      .opaque(0.3)
+                                  ? colorScheme.primaryContainer.opaque(0.3)
                                   : colorScheme.surfaceVariant.opaque(0.3),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
@@ -360,8 +370,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: colorScheme.primary
-                                                .opaque(0.1),
+                                            color:
+                                                colorScheme.primary.opaque(0.1),
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),

@@ -1,691 +1,535 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
-import 'package:anymex/models/Offline/Hive/offline_storage.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:isar_community/isar.dart';
+
+enum MediaLibraryType {
+  anime,
+  manga,
+  novel,
+}
 
 class OfflineStorageController extends GetxController {
-  var animeLibrary = <OfflineMedia>[].obs;
-  var mangaLibrary = <OfflineMedia>[].obs;
-  var novelLibrary = <OfflineMedia>[].obs;
-  Rx<List<CustomList>> animeCustomLists = Rx([]);
-  Rx<List<CustomList>> mangaCustomLists = Rx([]);
-  Rx<List<CustomList>> novelCustomLists = Rx([]);
-  Rx<List<CustomListData>> animeCustomListData = Rx([]);
-  Rx<List<CustomListData>> mangaCustomListData = Rx([]);
-  Rx<List<CustomListData>> novelCustomListData = Rx([]);
+  Stream<List<OfflineMedia>> watchAnimeLibrary() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(1)
+        .watch(fireImmediately: true);
+  }
 
-  late Box<OfflineStorage> _offlineStorageBox;
-  late Box storage;
+  Stream<List<OfflineMedia>> watchMangaLibrary() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(0)
+        .watch(fireImmediately: true);
+  }
 
-  bool _isUpdating = false;
+  Stream<List<OfflineMedia>> watchNovelLibrary() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(2)
+        .watch(fireImmediately: true);
+  }
 
-  @override
-  Future<void> onInit() async {
-    super.onInit();
-    try {
-      _offlineStorageBox = await Hive.openBox<OfflineStorage>('offlineStorage');
-      storage = await Hive.openBox('storage');
-      _loadLibraries();
-    } catch (e) {
-      Logger.i('Error opening Hive box: $e');
+  Stream<OfflineMedia?> watchMediaById(String mediaId) {
+    return isar.offlineMedias
+        .filter()
+        .mediaIdEqualTo(mediaId)
+        .watch(fireImmediately: true)
+        .map((list) => list.isNotEmpty ? list.first : null);
+  }
+
+  Stream<List<CustomList>> watchCustomLists(ItemType mediaType) {
+    return isar.customLists.where().watch(fireImmediately: true);
+  }
+
+  Stream<CustomListData> watchCustomListData(
+      String listName, ItemType mediaType) async* {
+    await for (final customList in isar.customLists
+        .filter()
+        .listNameEqualTo(listName)
+        .and()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .watch(fireImmediately: true)) {
+      if (customList.isEmpty) {
+        yield CustomListData(listName: listName, listData: []);
+        continue;
+      }
+
+      final list = customList.first;
+      final mediaIds = list.mediaIds ?? [];
+
+      if (mediaIds.isEmpty) {
+        yield CustomListData(listName: listName, listData: []);
+        continue;
+      }
+
+      final mediaItems = await isar.offlineMedias
+          .filter()
+          .anyOf(
+              mediaIds,
+              (q, String id) => q
+                  .mediaIdEqualTo(id)
+                  .and()
+                  .mediaTypeIndexEqualTo(mediaType.index))
+          .findAll();
+
+      yield CustomListData(
+        listName: listName,
+        listData: mediaItems,
+      );
     }
   }
 
-  void _loadLibraries() {
-    if (_isUpdating) return;
-
-    final offlineStorage =
-        _offlineStorageBox.get('storage') ?? OfflineStorage();
-
-    animeLibrary.assignAll(offlineStorage.animeLibrary ?? []);
-    mangaLibrary.assignAll(offlineStorage.mangaLibrary ?? []);
-    novelLibrary.assignAll(offlineStorage.novelLibrary ?? []);
-    animeCustomLists.value
-        .assignAll(offlineStorage.animeCustomList ?? [CustomList()]);
-    mangaCustomLists.value
-        .assignAll(offlineStorage.mangaCustomList ?? [CustomList()]);
-    novelCustomLists.value
-        .assignAll(offlineStorage.novelCustomList ?? [CustomList()]);
-
-    _refreshListData();
+  Future<List<OfflineMedia>> getAnimeLibrary(
+      {int offset = 0, int limit = 50}) async {
+    return await isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(1)
+        .offset(offset)
+        .limit(limit)
+        .findAll();
   }
 
-  void _refreshListData() {
-    if (_isUpdating) return;
-
-    _removeDuplicateMediaIds();
-    _buildCustomListData();
-    animeCustomLists.refresh();
-    mangaCustomLists.refresh();
-    novelCustomLists.refresh();
+  Future<List<OfflineMedia>> getMangaLibrary(
+      {int offset = 0, int limit = 50}) async {
+    return await isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(0)
+        .offset(offset)
+        .limit(limit)
+        .findAll();
   }
 
-  void _removeDuplicateMediaIds() {
-    for (var list in animeCustomLists.value) {
-      if (list.mediaIds != null) {
-        list.mediaIds = list.mediaIds!.toSet().toList();
-        list.mediaIds!.removeWhere((id) => id == '0' || id.isEmpty);
-      }
-    }
-
-    for (var list in mangaCustomLists.value) {
-      if (list.mediaIds != null) {
-        list.mediaIds = list.mediaIds!.toSet().toList();
-        list.mediaIds!.removeWhere((id) => id == '0' || id.isEmpty);
-      }
-    }
-
-    for (var list in novelCustomLists.value) {
-      if (list.mediaIds != null) {
-        list.mediaIds = list.mediaIds!.toSet().toList();
-        list.mediaIds!.removeWhere((id) => id == '0' || id.isEmpty);
-      }
-    }
+  Future<List<OfflineMedia>> getNovelLibrary(
+      {int offset = 0, int limit = 50}) async {
+    return await isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(2)
+        .offset(offset)
+        .limit(limit)
+        .findAll();
   }
 
-  void _buildCustomListData() {
-    mangaCustomListData.value.clear();
-    animeCustomListData.value.clear();
-    novelCustomListData.value.clear();
-
-    for (var customList in animeCustomLists.value) {
-      final mediaList = <OfflineMedia>[];
-
-      if (customList.mediaIds != null) {
-        for (var mediaId in customList.mediaIds!) {
-          final media = getAnimeById(mediaId);
-          if (media != null) {
-            mediaList.add(media);
-          }
-        }
-      }
-
-      animeCustomListData.value.add(CustomListData(
-          listData: mediaList,
-          listName: customList.listName ?? 'Unnamed List'));
-    }
-
-    for (var customList in mangaCustomLists.value) {
-      final mediaList = <OfflineMedia>[];
-
-      if (customList.mediaIds != null) {
-        for (var mediaId in customList.mediaIds!) {
-          final media = getMangaById(mediaId);
-          if (media != null) {
-            mediaList.add(media);
-          }
-        }
-      }
-
-      mangaCustomListData.value.add(CustomListData(
-          listData: mediaList,
-          listName: customList.listName ?? 'Unnamed List'));
-    }
-
-    for (var customList in novelCustomLists.value) {
-      final mediaList = <OfflineMedia>[];
-
-      if (customList.mediaIds != null) {
-        for (var mediaId in customList.mediaIds!) {
-          final media = getNovelById(mediaId);
-          if (media != null) {
-            mediaList.add(media);
-          }
-        }
-      }
-
-      novelCustomListData.value.add(CustomListData(
-          listData: mediaList,
-          listName: customList.listName ?? 'Unnamed List'));
-    }
+  Future<List<OfflineMedia>> getLibraryFromType(
+    ItemType mediaType, {
+    int offset = 0,
+    int limit = 50,
+  }) async {
+    return await isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .offset(offset)
+        .limit(limit)
+        .findAll();
   }
 
-  void addCustomList(String listName, {ItemType mediaType = ItemType.anime}) {
+  Future<List<CustomList>> getCustomListsFromType(ItemType type) async {
+    return await isar.customLists
+        .filter()
+        .mediaTypeIndexEqualTo(type.index)
+        .findAll();
+  }
+
+  Future<List<OfflineMedia>> searchMedia(
+    String query,
+    ItemType mediaType,
+  ) async {
+    return await isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .group((q) => q
+            .nameContains(query, caseSensitive: false)
+            .or()
+            .jnameContains(query, caseSensitive: false)
+            .or()
+            .englishContains(query, caseSensitive: false))
+        .findAll();
+  }
+
+  OfflineMedia? getMediaById(String mediaId) {
+    return isar.offlineMedias.filter().mediaIdEqualTo(mediaId).findFirstSync();
+  }
+
+  OfflineMedia? getAnimeById(String id) => getMediaById(id);
+  OfflineMedia? getMangaById(String id) => getMediaById(id);
+  OfflineMedia? getNovelById(String id) => getMediaById(id);
+
+  Future<List<CustomList>> getCustomListsByType(ItemType type) async {
+    return await isar.customLists
+        .filter()
+        .mediaTypeIndexEqualTo(type.index)
+        .findAll();
+  }
+
+  Future<CustomList?> getCustomListByName(String listName,
+      {ItemType? mediaType}) async {
+    var query = isar.customLists.filter().listNameEqualTo(listName);
+    if (mediaType != null) {
+      return await query.mediaTypeIndexEqualTo(mediaType.index).findFirst();
+    }
+    return await query.findFirst();
+  }
+
+  Future<void> addCustomList(String listName,
+      {ItemType mediaType = ItemType.anime}) async {
     if (listName.isEmpty) return;
 
-    final targetLists = mediaType == ItemType.anime
-        ? animeCustomLists
-        : mediaType == ItemType.manga
-            ? mangaCustomLists
-            : novelCustomLists;
-
-    if (targetLists.value.any((list) => list.listName == listName)) {
+    final existing = await getCustomListByName(listName, mediaType: mediaType);
+    if (existing != null) {
       Logger.i('List with name "$listName" already exists');
       return;
     }
 
-    targetLists.value.add(CustomList(listName: listName, mediaIds: []));
-    _refreshListData();
-    _saveLibraries();
+    await isar.writeTxn(() async {
+      await isar.customLists.put(CustomList(
+        listName: listName,
+        mediaIds: [],
+        mediaTypeIndex: mediaType.index,
+      ));
+    });
+
+    Logger.i('Created custom list: $listName');
   }
 
-  void removeCustomList(String listName,
-      {ItemType mediaType = ItemType.anime}) {
+  Future<void> removeCustomList(String listName,
+      {required ItemType mediaType}) async {
     if (listName.isEmpty) return;
 
-    final targetLists = mediaType == ItemType.anime
-        ? animeCustomLists
-        : mediaType == ItemType.manga
-            ? mangaCustomLists
-            : novelCustomLists;
-    final beforeLength = targetLists.value.length;
-    targetLists.value.removeWhere((e) => e.listName == listName);
-    final afterLength = targetLists.value.length;
+    final list = await getCustomListByName(listName, mediaType: mediaType);
+    if (list == null) return;
 
-    if (beforeLength != afterLength) {
-      _refreshListData();
-      _saveLibraries();
-    }
+    await isar.writeTxn(() async {
+      await isar.customLists.delete(list.id);
+    });
+
+    Logger.i('Removed custom list: $listName');
   }
 
-  void renameCustomList(String oldName, String newName,
-      {ItemType mediaType = ItemType.anime}) {
+  Future<void> renameCustomList(String oldName, String newName,
+      {required ItemType mediaType}) async {
     if (oldName.isEmpty || newName.isEmpty || oldName == newName) return;
 
-    final targetLists = mediaType == ItemType.anime
-        ? animeCustomLists
-        : mediaType == ItemType.manga
-            ? mangaCustomLists
-            : novelCustomLists;
-
-    if (targetLists.value.any((list) => list.listName == newName)) {
+    final existing = await getCustomListByName(newName, mediaType: mediaType);
+    if (existing != null) {
       Logger.i('List with name "$newName" already exists');
       return;
     }
 
-    final listToRename =
-        targetLists.value.firstWhereOrNull((list) => list.listName == oldName);
-    if (listToRename != null) {
-      listToRename.listName = newName;
-      _refreshListData();
-      _saveLibraries();
-    }
+    final list = await getCustomListByName(oldName, mediaType: mediaType);
+    if (list == null) return;
+
+    await isar.writeTxn(() async {
+      list.listName = newName;
+      await isar.customLists.put(list);
+    });
+
+    Logger.i('Renamed list: $oldName -> $newName');
   }
 
-  void addMediaToList(String listName, String mediaId,
-      {ItemType mediaType = ItemType.anime}) {
+  Future<void> addMediaToList(String listName, String mediaId,
+      {ItemType? mediaType}) async {
     if (listName.isEmpty || mediaId.isEmpty) return;
 
-    final targetLists = mediaType == ItemType.anime
-        ? animeCustomLists
-        : mediaType == ItemType.manga
-            ? mangaCustomLists
-            : novelCustomLists;
-    final targetList =
-        targetLists.value.firstWhereOrNull((list) => list.listName == listName);
-
-    if (targetList != null) {
-      Logger.i('Adding Media to List => $listName  $mediaId');
-      targetList.mediaIds ??= [];
-      targetList.mediaIds!.add(mediaId);
-      _refreshListData();
-      _saveLibraries();
+    final list = await getCustomListByName(listName, mediaType: mediaType);
+    if (list == null) {
+      Logger.i('List not found: $listName');
+      return;
     }
+
+    await isar.writeTxn(() async {
+      list.mediaIds = List<String>.from(list.mediaIds ?? []);
+      if (!list.mediaIds!.contains(mediaId)) {
+        list.mediaIds!.add(mediaId);
+        await isar.customLists.put(list);
+        Logger.i('Added media $mediaId to list $listName');
+      }
+    });
   }
 
-  void removeMediaFromList(String listName, String mediaId,
-      {ItemType mediaType = ItemType.anime}) {
+  Future<void> removeMediaFromList(
+    String listName,
+    String mediaId, {
+    ItemType? mediaType,
+  }) async {
     if (listName.isEmpty || mediaId.isEmpty) return;
 
-    final targetLists = mediaType == ItemType.anime
-        ? animeCustomLists
-        : mediaType == ItemType.manga
-            ? mangaCustomLists
-            : novelCustomLists;
-    final targetList =
-        targetLists.value.firstWhereOrNull((list) => list.listName == listName);
+    final list = await getCustomListByName(listName, mediaType: mediaType);
+    if (list == null) return;
 
-    if (targetList != null && targetList.mediaIds != null) {
-      final beforeLength = targetList.mediaIds!.length;
-      targetList.mediaIds!.removeWhere((id) => id == mediaId);
-      final afterLength = targetList.mediaIds!.length;
+    await isar.writeTxn(() async {
+      list.mediaIds = List<String>.from(list.mediaIds ?? []);
+      list.mediaIds!.remove(mediaId);
+      await isar.customLists.put(list);
+      Logger.i('Removed media $mediaId from list $listName');
+    });
+  }
 
-      if (mediaType == ItemType.anime) {
-        animeLibrary.removeWhere((media) => media.id == mediaId);
-      } else if (mediaType == ItemType.manga) {
-        mangaLibrary.removeWhere((media) => media.id == mediaId);
-      } else if (mediaType == ItemType.novel) {
-        novelLibrary.removeWhere((media) => media.id == mediaId);
-      }
-
-      if (beforeLength != afterLength) {
-        _refreshListData();
-        _saveLibraries();
-      }
+  Future<List<OfflineMedia>> getMediaFromCustomList(String listName,
+      {ItemType? mediaType}) async {
+    final list = await getCustomListByName(listName, mediaType: mediaType);
+    if (list == null || list.mediaIds == null || list.mediaIds!.isEmpty) {
+      return [];
     }
+
+    return await isar.offlineMedias
+        .filter()
+        .anyOf(list.mediaIds!, (q, String id) => q.mediaIdEqualTo(id))
+        .findAll();
   }
 
-  void batchUpdateCustomList(
-      {required String listName,
-      String? newListName,
-      List<String>? mediaIds,
-      ItemType mediaType = ItemType.anime}) {
-    if (listName.isEmpty) return;
+  Future<void> addMediaToLibrary(OfflineMedia original) async {
+    final existing = getMediaById(original.mediaId ?? "");
 
-    _isUpdating = true;
+    if (existing != null) return;
 
-    try {
-      final targetLists = mediaType == ItemType.anime
-          ? animeCustomLists
-          : mediaType == ItemType.manga
-              ? mangaCustomLists
-              : novelCustomLists;
-      final targetList = targetLists.value
-          .firstWhereOrNull((list) => list.listName == listName);
-
-      if (targetList != null) {
-        if (newListName != null &&
-            newListName.isNotEmpty &&
-            newListName != listName) {
-          if (!targetLists.value.any((list) => list.listName == newListName)) {
-            targetList.listName = newListName;
-          }
-        }
-
-        if (mediaIds != null) {
-          targetList.mediaIds = mediaIds
-              .where((id) => id.isNotEmpty && id != '0')
-              .toSet()
-              .toList();
-        }
-
-        _refreshListData();
-        _saveLibraries();
-      }
-    } finally {
-      _isUpdating = false;
-    }
+    await isar.writeTxn(() async {
+      await isar.offlineMedias.put(original);
+    });
   }
 
-  List<CustomListData> getEditableCustomListData(
-      {ItemType mediaType = ItemType.anime}) {
-    final sourceData = mediaType == ItemType.anime
-        ? animeCustomListData.value
-        : mediaType == ItemType.manga
-            ? mangaCustomListData.value
-            : novelCustomListData.value;
-
-    return sourceData
-        .map((listData) => CustomListData(
-            listName: listData.listName,
-            listData: List<OfflineMedia>.from(listData.listData)))
-        .toList();
-  }
-
-  void applyCustomListChanges(List<CustomListData> editedData,
-      {ItemType mediaType = ItemType.anime}) {
-    if (editedData.isEmpty) return;
-
-    _isUpdating = true;
-
-    try {
-      final targetList = mediaType == ItemType.anime
-          ? animeCustomLists
-          : mediaType == ItemType.manga
-              ? mangaCustomLists
-              : novelCustomLists;
-      final targetData = mediaType == ItemType.anime
-          ? animeCustomListData
-          : mediaType == ItemType.manga
-              ? mangaCustomListData
-              : novelCustomListData;
-
-      final newLists = <CustomList>[];
-
-      for (var listData in editedData) {
-        final mediaIds = listData.listData
-            .map((media) => media.id ?? '')
-            .where((id) => id.isNotEmpty)
-            .toList();
-        newLists
-            .add(CustomList(listName: listData.listName, mediaIds: mediaIds));
-      }
-
-      targetList.value = newLists;
-      targetData.value = editedData;
-
-      targetList.refresh();
-      targetData.refresh();
-      _saveLibraries();
-    } finally {
-      _isUpdating = false;
-    }
-  }
-
-  List<OfflineMedia> getLibraryFromType(ItemType mediaType) {
-    return (mediaType == ItemType.anime
-        ? animeLibrary
-        : mediaType == ItemType.manga
-            ? mangaLibrary
-            : novelLibrary);
-  }
-
-  List<CustomList> getListFromType(ItemType mediaType) {
-    return (mediaType == ItemType.anime
-            ? animeCustomLists
-            : mediaType == ItemType.manga
-                ? mangaCustomLists
-                : novelCustomLists)
-        .value;
-  }
-
-  void addMedia(String listName, Media original) {
+  Future<void> addMedia(String listName, Media original) async {
     final type = original.mediaType;
-    final library = getLibraryFromType(type);
+    final existing = getMediaById(original.id);
 
-    if (library.firstWhereOrNull((e) => e.id == original.id) == null) {
-      if (type == ItemType.manga || type == ItemType.novel) {
-        final chapter = Chapter(number: 1);
-        library.insert(
-            0, _createOfflineMedia(original, null, null, chapter, null));
+    if (existing == null) {
+      await isar.writeTxn(() async {
+        if (type == ItemType.manga || type == ItemType.novel) {
+          final chapter = Chapter(number: 1);
+          await isar.offlineMedias.put(
+            _createOfflineMedia(original, null, null, chapter, null),
+          );
+        } else {
+          final episode = Episode(number: '1');
+          await isar.offlineMedias.put(
+            _createOfflineMedia(original, null, null, null, episode),
+          );
+        }
+      });
+    }
+
+    await addMediaToList(listName, original.id, mediaType: type);
+  }
+
+  Future<void> removeMedia(String listName, Media original) async {
+    await removeMediaFromList(listName, original.id,
+        mediaType: original.mediaType);
+  }
+
+  Future<void> addOrUpdateAnime(
+    Media original,
+    List<Episode>? episodes,
+    Episode? currentEpisode,
+  ) async {
+    final existingAnime = getAnimeById(original.id);
+
+    await isar.writeTxn(() async {
+      if (existingAnime != null) {
+        existingAnime.episodes = episodes;
+        if (currentEpisode != null) {
+          currentEpisode.source = sourceController.activeSource.value?.name;
+        }
+        existingAnime.currentEpisode = currentEpisode;
+        await isar.offlineMedias.put(existingAnime);
+        Logger.i('Updated anime: ${existingAnime.name}');
       } else {
-        final episode = Episode(number: '1');
-        library.insert(
-            0, _createOfflineMedia(original, null, null, null, episode));
+        await isar.offlineMedias.put(
+          _createOfflineMedia(original, null, episodes, null, currentEpisode),
+        );
+        Logger.i('Added new anime: ${original.title}');
       }
-    }
-
-    addMediaToList(listName, original.id, mediaType: type);
+    });
   }
 
-  void removeMedia(String listName, Media original) {
-    final type = original.mediaType;
-    removeMediaFromList(listName, original.id, mediaType: type);
-  }
+  Future<void> addOrUpdateManga(
+    Media original,
+    List<Chapter>? chapters,
+    Chapter? currentChapter,
+  ) async {
+    final existingManga = getMangaById(original.id);
 
-  void addOrUpdateAnime(
-      Media original, List<Episode>? episodes, Episode? currentEpisode) {
-    OfflineMedia? existingAnime = getAnimeById(original.id);
-
-    if (existingAnime != null) {
-      existingAnime.episodes = episodes;
-      currentEpisode?.source = sourceController.activeSource.value?.name;
-      existingAnime.currentEpisode = currentEpisode;
-
-      Logger.i('Updated anime: ${existingAnime.name}');
-      animeLibrary.remove(existingAnime);
-      animeLibrary.insert(0, existingAnime);
-    } else {
-      animeLibrary.insert(0,
-          _createOfflineMedia(original, null, episodes, null, currentEpisode));
-      Logger.i('Added new anime: ${original.title}');
-    }
-
-    _saveLibraries();
-
-    if (!_isUpdating) {
-      _refreshListData();
-    }
-  }
-
-  void addOrUpdateManga(
-      Media original, List<Chapter>? chapters, Chapter? currentChapter) {
-    OfflineMedia? existingManga = getMangaById(original.id);
-
-    if (existingManga != null) {
-      existingManga.chapters = chapters;
-      currentChapter?.sourceName =
-          sourceController.activeMangaSource.value?.name;
-      existingManga.currentChapter = currentChapter;
-      Logger.i('Updated manga: ${existingManga.name}');
-      mangaLibrary.remove(existingManga);
-      mangaLibrary.insert(0, existingManga);
-    } else {
-      mangaLibrary.insert(0,
-          _createOfflineMedia(original, chapters, null, currentChapter, null));
-      Logger.i('Added new manga: ${original.title}');
-    }
-
-    _saveLibraries();
-
-    if (!_isUpdating) {
-      _refreshListData();
-    }
-  }
-
-  void addOrUpdateNovel(Media original, List<Chapter>? chapters,
-      Chapter? currentChapter, Source source) {
-    OfflineMedia? existingNovel = getNovelById(original.id);
-
-    if (existingNovel != null) {
-      existingNovel.chapters = chapters;
-      currentChapter?.sourceName = source.name;
-      existingNovel.currentChapter = currentChapter;
-      Logger.i('Updated novel: ${existingNovel.name}');
-      novelLibrary.remove(existingNovel);
-      novelLibrary.insert(0, existingNovel);
-    } else {
-      novelLibrary.insert(0,
-          _createOfflineMedia(original, chapters, null, currentChapter, null));
-      Logger.i('Added new novel: ${original.title}');
-    }
-
-    _saveLibraries();
-
-    if (!_isUpdating) {
-      _refreshListData();
-    }
-  }
-
-  void addOrUpdateReadChapter(String mangaId, Chapter chapter,
-      {Source? source}) {
-    OfflineMedia? existingManga = getMangaById(mangaId);
-    existingManga ??= getNovelById(mangaId);
-    if (existingManga != null) {
-      existingManga.readChapters ??= [];
-      chapter.sourceName =
-          source?.name ?? sourceController.activeMangaSource.value?.name;
-      int index = existingManga.readChapters!
-          .indexWhere((c) => c.number == chapter.number);
-
-      if (index != -1) {
-        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
-        existingManga.readChapters![index] = chapter;
-        Logger.i(
-            'Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
-        Logger.i(
-            'Page number => ${chapter.pageNumber} / ${chapter.totalPages}');
+    await isar.writeTxn(() async {
+      if (existingManga != null) {
+        existingManga.chapters = chapters;
+        if (currentChapter != null) {
+          currentChapter.sourceName =
+              sourceController.activeMangaSource.value?.name;
+        }
+        existingManga.currentChapter = currentChapter;
+        await isar.offlineMedias.put(existingManga);
+        Logger.i('Updated manga: ${existingManga.name}');
       } else {
-        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
-        existingManga.readChapters!.add(chapter);
-        Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
+        await isar.offlineMedias.put(
+          _createOfflineMedia(original, chapters, null, currentChapter, null),
+        );
+        Logger.i('Added new manga: ${original.title}');
       }
-    } else {
+    });
+  }
+
+  Future<void> addOrUpdateNovel(
+    Media original,
+    List<Chapter>? chapters,
+    Chapter? currentChapter,
+    Source source,
+  ) async {
+    final existingNovel = getNovelById(original.id);
+
+    await isar.writeTxn(() async {
+      if (existingNovel != null) {
+        existingNovel.chapters = chapters;
+        if (currentChapter != null) {
+          currentChapter.sourceName = source.name;
+        }
+        existingNovel.currentChapter = currentChapter;
+        await isar.offlineMedias.put(existingNovel);
+        Logger.i('Updated novel: ${existingNovel.name}');
+      } else {
+        await isar.offlineMedias.put(
+          _createOfflineMedia(original, chapters, null, currentChapter, null),
+        );
+        Logger.i('Added new novel: ${original.title}');
+      }
+    });
+  }
+
+  Future<void> addOrUpdateWatchedEpisode(
+      String animeId, Episode episode) async {
+    final existingAnime = getAnimeById(animeId);
+    if (existingAnime == null) {
       Logger.i(
-          'Manga with ID: $mangaId not found. Unable to add/update chapter.');
+          'Anime with ID: $animeId not found. Unable to add/update episode.');
+      return;
     }
-    _saveLibraries();
-  }
 
-  void addOrUpdateNovelChapter(String novelId, Chapter chapter) {
-    OfflineMedia? existingNovel = getNovelById(novelId);
-    if (existingNovel != null) {
-      existingNovel.readChapters ??= [];
-      chapter.sourceName = sourceController.activeNovelSource.value?.name;
-      int index = existingNovel.readChapters!
-          .indexWhere((c) => c.number == chapter.number);
-
-      if (index != -1) {
-        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
-        existingNovel.readChapters![index] = chapter;
-        Logger.i(
-            'Overwritten chapter: ${chapter.title} for novel ID: $novelId');
-        Logger.i(
-            'Page number => ${chapter.pageNumber} / ${chapter.totalPages}');
-      } else {
-        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
-        existingNovel.readChapters!.add(chapter);
-        Logger.i('Added new chapter: ${chapter.title} for novel ID: $novelId');
-      }
-    } else {
-      Logger.i(
-          'Novel with ID: $novelId not found. Unable to add/update chapter.');
-    }
-    _saveLibraries();
-  }
-
-  void addOrUpdateWatchedEpisode(String animeId, Episode episode) {
-    OfflineMedia? existingAnime = getAnimeById(animeId);
-    if (existingAnime != null) {
+    await isar.writeTxn(() async {
       existingAnime.watchedEpisodes ??= [];
-      int index = existingAnime.watchedEpisodes!
-          .indexWhere((e) => e.number == episode.number);
       episode.source = sourceController.activeSource.value?.name;
+      episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
+
+      final index = existingAnime.watchedEpisodes!
+          .indexWhere((e) => e.number == episode.number);
+      existingAnime.watchedEpisodes =
+          List<Episode>.from(existingAnime.watchedEpisodes!);
 
       if (index != -1) {
-        episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
         existingAnime.watchedEpisodes![index] = episode;
         Logger.i(
             'Overwritten episode: ${episode.number} for anime ID: $animeId');
       } else {
-        episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
         existingAnime.watchedEpisodes!.add(episode);
         Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
       }
-    } else {
+
+      await isar.offlineMedias.put(existingAnime);
+    });
+  }
+
+  Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
+    final anime = getAnimeById(anilistId);
+    if (anime?.watchedEpisodes == null) return null;
+
+    return anime!.watchedEpisodes!
+        .firstWhereOrNull((e) => e.number == episodeNumber);
+  }
+
+  Future<void> addOrUpdateReadChapter(
+    String mangaId,
+    Chapter chapter, {
+    Source? source,
+  }) async {
+    print(chapter.toJson());
+    OfflineMedia? existingManga = getMangaById(mangaId);
+    existingManga ??= getNovelById(mangaId);
+
+    if (existingManga == null) {
       Logger.i(
-          'Anime with ID: $animeId not found. Unable to add/update episode.');
+          'Manga with ID: $mangaId not found. Unable to add/update chapter.');
+      return;
     }
-    _saveLibraries();
-  }
 
-  OfflineMedia _createOfflineMedia(
-      Media original,
-      List<Chapter>? chapters,
-      List<Episode>? episodes,
-      Chapter? currentChapter,
-      Episode? currentEpisode) {
-    final handler = Get.find<ServiceHandler>();
-    return OfflineMedia(
-        id: original.id,
-        jname: original.romajiTitle,
-        name: original.title,
-        english: original.title,
-        japanese: original.romajiTitle,
-        description: original.description,
-        poster: original.poster,
-        cover: original.cover,
-        totalEpisodes: original.totalEpisodes,
-        type: original.type,
-        season: original.season,
-        premiered: original.premiered,
-        duration: original.duration,
-        status: original.status,
-        rating: original.rating,
-        popularity: original.popularity,
-        format: original.format,
-        aired: original.aired,
-        totalChapters: original.totalChapters,
-        genres: original.genres,
-        studios: original.studios,
-        chapters: chapters,
-        episodes: episodes,
-        currentEpisode: currentEpisode,
-        currentChapter: currentChapter,
-        watchedEpisodes: episodes ?? [],
-        readChapters: chapters ?? [],
-        serviceIndex: handler.serviceType.value.index);
-  }
+    await isar.writeTxn(() async {
+      existingManga!.readChapters ??= [];
+      chapter.sourceName =
+          source?.name ?? sourceController.activeMangaSource.value?.name;
+      chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
 
-  void saveEverything() => _saveLibraries();
-  void rebuildDatabase() => _buildCustomListData();
-
-  void _saveLibraries() {
-    if (_isUpdating) return;
-
-    final updatedStorage = OfflineStorage(
-        animeLibrary: animeLibrary.toList(),
-        mangaLibrary: mangaLibrary.toList(),
-        novelLibrary: novelLibrary.toList(),
-        animeCustomList: animeCustomLists.value,
-        mangaCustomList: mangaCustomLists.value,
-        novelCustomList: novelCustomLists.value);
-
-    try {
-      _offlineStorageBox.put('storage', updatedStorage);
-      Logger.i("Anime/Manga/Novel Successfully Saved!");
-    } catch (e) {
-      Logger.i('Error saving libraries: $e');
-    }
-  }
-
-  OfflineMedia? getAnimeById(String id) {
-    return animeLibrary.firstWhereOrNull((anime) => anime.id == id);
-  }
-
-  OfflineMedia? getMangaById(String id) {
-    return mangaLibrary.firstWhereOrNull((manga) => manga.id == id);
-  }
-
-  OfflineMedia? getNovelById(String id) {
-    return novelLibrary.firstWhereOrNull((novel) => novel.id == id);
-  }
-
-  Episode? getWatchedEpisode(String anilistId, String episodeOrChapterNumber) {
-    OfflineMedia? anime = getAnimeById(anilistId);
-    if (anime != null) {
-      Episode? episode = anime.watchedEpisodes
-          ?.firstWhereOrNull((e) => e.number == episodeOrChapterNumber);
-      if (episode != null) {
-        Logger.i("Found Episode! Episode Number is ${episode.number}");
-        Logger.i(episode.timeStampInMilliseconds.toString());
-        return episode;
-      } else {
+      final index = existingManga.readChapters!
+          .indexWhere((c) => c.number == chapter.number);
+      existingManga.readChapters =
+          List<Chapter>.from(existingManga.readChapters!);
+      if (index != -1) {
+        existingManga.readChapters![index] = chapter;
         Logger.i(
-            'No watched episode with number $episodeOrChapterNumber found for anime with ID: $anilistId');
-        return null;
+            'Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
+      } else {
+        existingManga.readChapters!.add(chapter);
+        Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
       }
-    }
-    return null;
+
+      await isar.offlineMedias.put(existingManga);
+    });
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
-    OfflineMedia? manga = getMangaById(anilistId);
-    if (manga != null) {
-      Chapter? chapter =
-          manga.readChapters?.firstWhereOrNull((c) => c.number == number);
-      if (chapter != null) {
-        return chapter;
-      } else {
-        Logger.i(
-            'No read chapter with number $number found for manga with ID: $anilistId');
-      }
+    final manga = getMangaById(anilistId);
+    if (manga?.readChapters == null) return null;
+
+    return manga!.readChapters!.firstWhereOrNull((c) => c.number == number);
+  }
+
+  Future<void> addOrUpdateNovelChapter(String novelId, Chapter chapter) async {
+    final existingNovel = getNovelById(novelId);
+    if (existingNovel == null) {
+      Logger.i(
+          'Novel with ID: $novelId not found. Unable to add/update chapter.');
+      return;
     }
-    return null;
-  }
 
-  Chapter? getReadNovelChapter(String novelId, double number) {
-    OfflineMedia? novel = getNovelById(novelId);
-    if (novel != null) {
-      Chapter? chapter =
-          novel.readChapters?.firstWhereOrNull((c) => c.number == number);
-      if (chapter != null) {
-        return chapter;
-      } else {
+    await isar.writeTxn(() async {
+      existingNovel.readChapters ??= [];
+      chapter.sourceName = sourceController.activeNovelSource.value?.name;
+      chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
+
+      final index = existingNovel.readChapters!
+          .indexWhere((c) => c.number == chapter.number);
+      existingNovel.readChapters =
+          List<Chapter>.from(existingNovel.readChapters!);
+      if (index != -1) {
+        existingNovel.readChapters![index] = chapter;
         Logger.i(
-            'No read chapter with number $number found for novel with ID: $novelId');
+            'Overwritten chapter: ${chapter.title} for novel ID: $novelId');
+      } else {
+        existingNovel.readChapters!.add(chapter);
+        Logger.i('Added new chapter: ${chapter.title} for novel ID: $novelId');
       }
-    }
-    return null;
+
+      await isar.offlineMedias.put(existingNovel);
+    });
   }
 
-  List<OfflineMedia> getNovelsFromCustomList(String listName) {
-    final customListData = novelCustomListData.value
-        .firstWhereOrNull((list) => list.listName == listName);
-    return customListData?.listData ?? [];
-  }
-
-  double getNovelReadingProgress(String novelId) {
+  Future<Chapter?> getReadNovelChapter(String novelId, double number) async {
     final novel = getNovelById(novelId);
-    if (novel == null || novel.chapters == null || novel.chapters!.isEmpty) {
+    if (novel?.readChapters == null) return null;
+
+    return novel!.readChapters!.firstWhereOrNull((c) => c.number == number);
+  }
+
+  Future<List<OfflineMedia>> getNovelsFromCustomList(String listName) async {
+    return await getMediaFromCustomList(listName);
+  }
+
+  Future<double> getNovelReadingProgress(String novelId) async {
+    final novel = getNovelById(novelId);
+    if (novel?.chapters == null || novel!.chapters!.isEmpty) {
       return 0.0;
     }
 
@@ -695,44 +539,50 @@ class OfflineStorageController extends GetxController {
     return readChapters / totalChapters;
   }
 
-  Chapter? getLatestReadNovelChapter(String novelId) {
+  Future<Chapter?> getLatestReadNovelChapter(String novelId) async {
     final novel = getNovelById(novelId);
     if (novel?.readChapters == null || novel!.readChapters!.isEmpty) {
       return null;
     }
 
-    novel.readChapters!
-        .sort((a, b) => (b.lastReadTime ?? 0).compareTo(a.lastReadTime ?? 0));
+    final sorted = List<Chapter>.from(novel.readChapters!);
+    sorted.sort((a, b) => (b.lastReadTime ?? 0).compareTo(a.lastReadTime ?? 0));
 
-    return novel.readChapters!.first;
+    return sorted.first;
   }
 
-  void markNovelChapterAsRead(String novelId, double chapterNumber) {
+  Future<void> markNovelChapterAsRead(
+      String novelId, double chapterNumber) async {
     final novel = getNovelById(novelId);
     if (novel == null) return;
 
-    novel.readChapters ??= [];
+    await isar.writeTxn(() async {
+      novel.readChapters ??= [];
 
-    final existingIndex =
-        novel.readChapters!.indexWhere((c) => c.number == chapterNumber);
+      final existingIndex =
+          novel.readChapters!.indexWhere((c) => c.number == chapterNumber);
+      novel.readChapters = List<Chapter>.from(novel.readChapters!);
 
-    if (existingIndex != -1) {
-      novel.readChapters![existingIndex].lastReadTime =
-          DateTime.now().millisecondsSinceEpoch;
-    } else {
-      final readChapter = Chapter(
-        number: chapterNumber,
-        lastReadTime: DateTime.now().millisecondsSinceEpoch,
-        sourceName: sourceController.activeNovelSource.value?.name,
-      );
-      novel.readChapters!.add(readChapter);
-    }
+      if (existingIndex != -1) {
+        novel.readChapters![existingIndex].lastReadTime =
+            DateTime.now().millisecondsSinceEpoch;
+      } else {
+        final readChapter = Chapter(
+          number: chapterNumber,
+          lastReadTime: DateTime.now().millisecondsSinceEpoch,
+          sourceName: sourceController.activeNovelSource.value?.name,
+        );
 
-    _saveLibraries();
-    Logger.i('Marked chapter $chapterNumber as read for novel: ${novel.name}');
+        novel.readChapters!.add(readChapter);
+      }
+
+      await isar.offlineMedias.put(novel);
+      Logger.i(
+          'Marked chapter $chapterNumber as read for novel: ${novel.name}');
+    });
   }
 
-  Chapter? getNextUnreadNovelChapter(String novelId) {
+  Future<Chapter?> getNextUnreadNovelChapter(String novelId) async {
     final novel = getNovelById(novelId);
     if (novel?.chapters == null || novel!.chapters!.isEmpty) {
       return null;
@@ -750,7 +600,7 @@ class OfflineStorageController extends GetxController {
     return null;
   }
 
-  bool isNovelChapterRead(String novelId, double chapterNumber) {
+  Future<bool> isNovelChapterRead(String novelId, double chapterNumber) async {
     final novel = getNovelById(novelId);
     if (novel?.readChapters == null) return false;
 
@@ -758,19 +608,27 @@ class OfflineStorageController extends GetxController {
         .any((chapter) => chapter.number == chapterNumber);
   }
 
-  Map<String, dynamic> getNovelStats() {
-    final totalNovels = novelLibrary.length;
-    final completedNovels = novelLibrary.where((novel) {
-      if (novel.chapters == null || novel.chapters!.isEmpty) return false;
+  Future<Map<String, dynamic>> getNovelStats() async {
+    final allNovels =
+        await isar.offlineMedias.filter().mediaTypeIndexEqualTo(2).findAll();
+
+    int completedNovels = 0;
+    int readingNovels = 0;
+
+    for (final novel in allNovels) {
+      if (novel.chapters == null || novel.chapters!.isEmpty) continue;
+
       final totalChapters = novel.chapters!.length;
       final readChapters = novel.readChapters?.length ?? 0;
-      return readChapters >= totalChapters;
-    }).length;
 
-    final readingNovels = novelLibrary.where((novel) {
-      final readChapters = novel.readChapters?.length ?? 0;
-      return readChapters > 0 && readChapters < (novel.chapters?.length ?? 0);
-    }).length;
+      if (readChapters >= totalChapters) {
+        completedNovels++;
+      } else if (readChapters > 0) {
+        readingNovels++;
+      }
+    }
+
+    final totalNovels = allNovels.length;
 
     return {
       'total': totalNovels,
@@ -780,17 +638,132 @@ class OfflineStorageController extends GetxController {
     };
   }
 
-  void clearCache() {
-    _offlineStorageBox.clear();
-    animeLibrary.clear();
-    mangaLibrary.clear();
-    novelLibrary.clear();
-    animeCustomLists.value.clear();
-    mangaCustomLists.value.clear();
-    novelCustomLists.value.clear();
-    animeCustomListData.value.clear();
-    mangaCustomListData.value.clear();
-    novelCustomListData.value.clear();
+  OfflineMedia _createOfflineMedia(
+    Media original,
+    List<Chapter>? chapters,
+    List<Episode>? episodes,
+    Chapter? currentChapter,
+    Episode? currentEpisode,
+  ) {
+    final handler = Get.find<ServiceHandler>();
+    return OfflineMedia(
+      mediaId: original.id,
+      jname: original.romajiTitle,
+      name: original.title,
+      english: original.title,
+      japanese: original.romajiTitle,
+      description: original.description,
+      poster: original.poster,
+      cover: original.cover,
+      totalEpisodes: original.totalEpisodes,
+      type: original.type,
+      season: original.season,
+      premiered: original.premiered,
+      duration: original.duration,
+      status: original.status,
+      rating: original.rating,
+      popularity: original.popularity,
+      format: original.format,
+      aired: original.aired,
+      totalChapters: original.totalChapters,
+      genres: original.genres,
+      studios: original.studios,
+      chapters: chapters,
+      episodes: episodes,
+      currentEpisode: currentEpisode,
+      currentChapter: currentChapter,
+      watchedEpisodes: [],
+      readChapters: [],
+      serviceIndex: handler.serviceType.value.index,
+      mediaTypeIndex: original.mediaType.index,
+    );
+  }
+
+  Future<void> clearCache() async {
+    await isar.writeTxn(() async {
+      await isar.offlineMedias.clear();
+      await isar.customLists.clear();
+    });
+
+    Logger.i('Cache cleared successfully');
+  }
+
+  List<CustomListData> getEditableCustomListData(
+      {required ItemType mediaType}) {
+    final lists = isar.customLists
+        .filter()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .findAllSync();
+
+    return lists.map((list) {
+      final mediaIds = list.mediaIds ?? [];
+
+      if (mediaIds.isEmpty) {
+        return CustomListData(listName: list.listName ?? '', listData: []);
+      }
+
+      final mediaItems = isar.offlineMedias
+          .filter()
+          .anyOf(
+            mediaIds,
+            (q, String id) => q
+                .mediaIdEqualTo(id)
+                .and()
+                .mediaTypeIndexEqualTo(mediaType.index),
+          )
+          .findAllSync();
+
+      return CustomListData(
+        listName: list.listName ?? '',
+        listData: mediaItems,
+      );
+    }).toList();
+  }
+
+  Future<void> applyCustomListChanges(
+    List<CustomListData> updatedLists, {
+    required ItemType mediaType,
+  }) async {
+    final existingLists = await getCustomListsByType(mediaType);
+
+    final existingListsMap = {
+      for (var list in existingLists) list.listName: list
+    };
+
+    await isar.writeTxn(() async {
+      for (var existingList in existingLists) {
+        final stillExists = updatedLists.any(
+          (updated) => updated.listName == existingList.listName,
+        );
+        if (!stillExists) {
+          await isar.customLists.delete(existingList.id);
+        }
+      }
+
+      for (var updatedListData in updatedLists) {
+        final existingList = existingListsMap[updatedListData.listName];
+
+        if (existingList != null) {
+          existingList.listName = updatedListData.listName;
+          existingList.mediaIds = updatedListData.listData
+              .map((media) => media.mediaId ?? '')
+              .where((id) => id.isNotEmpty)
+              .toList();
+          await isar.customLists.put(existingList);
+        } else {
+          await isar.customLists.put(CustomList(
+            listName: updatedListData.listName,
+            mediaIds: updatedListData.listData
+                .map((media) => media.mediaId ?? '')
+                .where((id) => id.isNotEmpty)
+                .toList(),
+            mediaTypeIndex: mediaType.index,
+          ));
+        }
+      }
+    });
+
+    Logger.i('Applied custom list changes for ${mediaType.name}');
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -47,10 +47,7 @@ class ChapterListItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? context.colors.secondary.withAlpha(100)
-                : Theme.of(context)
-                    .colorScheme
-                    .secondaryContainer
-                    .opaque(0.4),
+                : Theme.of(context).colorScheme.secondaryContainer.opaque(0.4),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -124,8 +121,7 @@ class ChapterListItem extends StatelessWidget {
             child: AnymexProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor:
-                  context.colors.surfaceContainerHighest,
+              backgroundColor: context.colors.surfaceContainerHighest,
             ),
           ),
         ],
@@ -158,8 +154,7 @@ class ChapterListItem extends StatelessWidget {
               mobileSize: Get.width * 0.4, desktopSize: 200),
           child: AnymexText(
             text: calcTime(chapter.releaseDate ?? '0'),
-            color:
-                context.colors.inverseSurface.opaque(0.9),
+            color: context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
             maxLines: 2,
           ),

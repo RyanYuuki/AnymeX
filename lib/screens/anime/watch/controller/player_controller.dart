@@ -8,9 +8,9 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/player.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/video.dart' as model;
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
@@ -36,6 +36,8 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
+
+import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode =>
@@ -93,10 +95,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     required anymex.Media anilistData,
   }) {
     final offlineVideo = model.Video(
-      videoPath,
-      'Offline',
-      videoPath,
-      headers: {},
+      url: videoPath,
+      quality: 'Offline',
+      originalUrl: videoPath,
+      headerKeys: [],
+      headerValues: [],
     );
 
     return PlayerController(
@@ -117,7 +120,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
-      anilistData.id, currentEpisode.value.number);
+      anilistData.id, currentEpisode.value.number.toString());
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -437,6 +440,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
+    print('Video: ${selectedVideo.value?.toJson()}');
+
     _basePlayer.initialize().then((_) {
       if (isOffline.value && offlineVideoPath != null) {
         final stamp = settingsController.preferences
@@ -447,7 +452,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         );
       } else {
         _basePlayer.open(
-          selectedVideo.value!.url,
+          selectedVideo.value!.url ?? "",
           headers: selectedVideo.value!.headers,
           startPosition: Duration(
               milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0),
@@ -729,8 +734,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       PlayerBottomSheets.showLoader();
       final data = await sourceController.activeSource.value!.methods
-          .getVideoList(
-              d.DEpisode(episodeNumber: episode.number, url: episode.link));
+          .getVideoList(d.DEpisode(
+              episodeNumber: episode.number.toString(), url: episode.link));
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
       final previousTrack = selectedVideo.value;
@@ -738,7 +743,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           _findBestMatchingTrack(episodeTracks, previousTrack);
       _extractSubtitles();
       await _switchMedia(
-          selectedVideo.value!.url, selectedVideo.value?.headers);
+          selectedVideo.value!.url ?? "", selectedVideo.value?.headers);
       PlayerBottomSheets.hideLoader();
     } catch (e) {
       Logger.i(e.toString());
@@ -756,8 +761,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final scoredTracks = <Map<String, dynamic>>[];
     for (final track in tracks) {
       int score = 0;
-      final quality = track.quality.toLowerCase();
-      final prevQuality = previousTrack.quality.toLowerCase();
+      final quality = track.quality!.toLowerCase();
+      final prevQuality = previousTrack.quality!.toLowerCase();
       final isDub = prevQuality.contains('dub');
 
       if ((isDub && quality.contains('dub')) ||
@@ -1113,14 +1118,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setServerTrack(model.Video track) async {
-    if (track.url.isEmpty) {
+    if (track.url?.isEmpty ?? true) {
       snackBar('Corrupted Quality!');
       return;
     }
 
     selectedVideo.value = track;
     _extractSubtitles();
-    await _switchMedia(track.url, track.headers,
+    await _switchMedia(track.url.toString(), track.headers,
         startPosition: _basePlayer.state.position);
   }
 
@@ -1313,7 +1318,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       return;
     }
     try {
-      final currEpisodeNum = currentEpisode.value.number.toInt();
+      final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
       final service = anilistData.serviceType.onlineService;
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,

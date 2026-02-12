@@ -4,8 +4,8 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
@@ -204,13 +204,11 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final _isInitialized = false.obs;
 
   late final ServiceHandler _auth;
-  late final OfflineStorageController _offlineStorage;
 
   @override
   void initState() {
     super.initState();
     _auth = Get.find<ServiceHandler>();
-    _offlineStorage = Get.find<OfflineStorageController>();
     _initializeChapterState();
   }
 
@@ -274,7 +272,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     return Obx(() {
       _auth.currentMedia.value;
-      _offlineStorage.mangaLibrary.value;
 
       return _buildChapterList();
     });

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -294,15 +294,15 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: CustomScrollView(
-            controller: widget.scrollController,
-            slivers: [
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: CustomScrollView(
+          controller: widget.scrollController,
+          slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
