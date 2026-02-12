@@ -29,7 +29,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   final chunkedChapters = <List<Chapter>>[].obs;
   final filteredChapters = <Chapter>[].obs;
   final selectedChunkIndex = 1.obs;
-  bool _initializedChunk = false; // Add this flag
+  bool _initializedChunk = false;
 
   @override
   void initState() {
@@ -61,11 +61,9 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
           chaptersForChunking, calculateChapterChunkSize(chaptersForChunking));
 
       if (chunkedChapters.isNotEmpty && !_initializedChunk) {
-        // Get user progress from tracking service
         final auth = Get.find<ServiceHandler>();
         final userProgress = _getUserProgress(auth, widget.controller.media.id);
         
-        // Set chunk index based on progress
         final chunkIndex = findChapterChunkIndexFromProgress(
           userProgress,
           chunkedChapters.value,
@@ -83,7 +81,6 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
     }
   }
 
-  // Helper method to get user progress
   int _getUserProgress(ServiceHandler auth, String mediaId) {
     if (auth.isLoggedIn.value && 
         auth.serviceType.value != ServicesType.extensions) {
