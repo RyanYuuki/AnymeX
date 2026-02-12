@@ -1,9 +1,9 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
-import 'package:anymex/database/isar_models/chapter.dart';
-import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/utils/logger.dart';
@@ -380,7 +380,7 @@ class Media {
 
   factory Media.fromOfflineMedia(OfflineMedia offline, ItemType type) {
     return Media(
-      id: offline.id?.toString() ?? '0',
+      id: offline.mediaId.toString(),
       title: offline.name ?? offline.english ?? offline.jname ?? '?',
       romajiTitle: offline.jname ?? '?',
       description: offline.description ?? '?',
