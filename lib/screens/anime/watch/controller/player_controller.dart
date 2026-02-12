@@ -1058,23 +1058,35 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setExternalSub(model.Track? track) {
-    if (track == null) {
-      selectedExternalSub.value = model.Track();
-      setSubtitleTrack(SubtitleTrack.no());
-      SubtitlePreTranslator.clearCache();
-      return;
-    }
-    if (track.file?.isEmpty ?? true) {
-      snackBar('Corrupted Subtitle!');
-      return;
-    }
-    selectedExternalSub.value = track;
-    setSubtitleTrack(SubtitleTrack.uri(track.file!, title: track.label));
+    if (track == null) {
+      selectedExternalSub.value = model.Track();
 
-    if (playerSettings.autoTranslate && track.file != null) {
-      startPreTranslation(track.file!);
-    }
-  }
+      selectedSubsTrack.value = null;
+      _basePlayer.setSubtitleTrack(SubtitleTrack.no());
+
+      subtitleText.clear();
+      translatedSubtitle.value = '';
+  
+      SubtitlePreTranslator.clearCache();
+      return;
+    }
+  
+    if (track.file?.isEmpty ?? true) {
+      snackBar('Corrupted Subtitle!');
+      return;
+    }
+  
+    selectedExternalSub.value = track;
+    final subtitleTrack =
+        SubtitleTrack.uri(track.file!, title: track.label);
+  
+    selectedSubsTrack.value = subtitleTrack;
+    _basePlayer.setSubtitleTrack(subtitleTrack);
+  
+    if (playerSettings.autoTranslate && track.file != null) {
+      startPreTranslation(track.file!);
+    }
+  }
 
   void triggerPreTranslation() {
     final subtitleUrl = selectedExternalSub.value.file;
