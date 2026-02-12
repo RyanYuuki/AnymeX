@@ -56,7 +56,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
-  bool _initializedChunk = false; // Add this flag
+  bool _initializedChunk = false;
 
   @override
   void initState() {
@@ -67,12 +67,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     ever(auth.isLoggedIn, (_) => _initUserProgress());
     ever(userProgress, (_) => {
       _initEpisodes(),
-      _updateChunkIndex() // Add this
+      _updateChunkIndex()
     });
     ever(auth.currentMedia, (_) => {
       _initUserProgress(), 
       _initEpisodes(),
-      _updateChunkIndex() // Add this
+      _updateChunkIndex()
     });
 
     offlineStorage.addListener(() {
@@ -81,12 +81,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         savedEpisode.value = savedData!.currentEpisode!;
         offlineEpisodes = savedData.episodes ?? [];
         _initEpisodes();
-        _updateChunkIndex(); // Add this
+        _updateChunkIndex();
       }
     });
   }
 
-  // Add this new method to update chunk index based on progress
   void _updateChunkIndex() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -112,12 +111,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     
     int? progress;
     if (isLogged.value) {
-      // Get from tracking service
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
       progress = trackedMedia?.episodeCount?.toInt();
     } else {
-      // Get from offline storage
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
       progress = savedAnime?.currentEpisode?.number.toInt();
     }
@@ -165,7 +162,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final chunkedEpisodes = chunkEpisodes(
         widget.episodeList, calculateChunkSize(widget.episodeList));
     
-    // Ensure chunk index is valid
     if (selectedChunkIndex.value >= chunkedEpisodes.length) {
       selectedChunkIndex.value = chunkedEpisodes.length - 1;
     }
