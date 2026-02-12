@@ -202,7 +202,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final _chapterService = ChapterService();
 
   final _isInitialized = false.obs;
-  bool _initializedChunk = false; // Add this flag
+  bool _initializedChunk = false;
 
   late final ServiceHandler _auth;
   late final OfflineStorageController _offlineStorage;
@@ -242,7 +242,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     final progress = chapterState.continueChapter?.number?.toInt() ?? 1;
     
-    // Set chunk index based on progress using the new utility function
     if (!_initializedChunk && chapterState.chunkedChapters.isNotEmpty) {
       final chunkIndex = findChapterChunkIndexFromProgress(
         progress,
