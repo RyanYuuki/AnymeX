@@ -1040,10 +1040,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     refresh();
   }
 
-  void _hideVolumeIndicatorAfterDelay() {
-    _volumeTimer?.cancel();
-    _volumeTimer = Timer(const Duration(milliseconds: 500), () {
-      volumeIndicator.value = false;
+  void _hideBrightnessIndicatorAfterDelay() {
+    _brightnessTimer?.cancel();
+    _brightnessTimer = Timer(const Duration(milliseconds: 500), () {
+      brightnessIndicator.value = false;
     });
   }
 
