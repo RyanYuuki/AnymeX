@@ -714,11 +714,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVideoTap() {
-    toggleControls();
-    if (showControls.value) {
-      _resetAutoHideTimer();
-    }
-  }
+  brightnessIndicator.value = false;
+  volumeIndicator.value = false;
+  toggleControls();
+  if (showControls.value) {
+    _resetAutoHideTimer();
+  }
+}
+
 
   Future<void> fetchEpisode(Episode episode) async {
     if (isOffline.value) {
@@ -971,31 +974,30 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) {
-    if (!settings.enableSwipeControls) return;
+    if (!settings.enableSwipeControls) return;
 
-    final size = MediaQuery.of(context).size;
-    final position = e.localPosition;
-    if (position.dy < size.height * 0.2 || position.dy > size.height * 0.8) {
-      return;
-    }
+    final size = MediaQuery.of(context).size;
+    final position = e.localPosition;
+    if (position.dy < size.height * 0.2 || position.dy > size.height * 0.8) {
+      return;
+    }
 
-    const sensitivity = 200.0;
-    final delta = e.delta.dy;
+    const sensitivity = 200.0;
 
-    if (position.dx <= size.width / 2) {
-      brightnessIndicator.value = true;
-      final bright = brightness.value - delta / sensitivity;
-      setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
-    } else {
-      volumeIndicator.value = true;
-      final vol = (volume.value - delta / sensitivity).toPrecision(2);
-      if (volume.value != vol) {
-        volume.value = vol.clamp(0.0, 1.0);
-        Future.microtask(
-            () => VolumeController.instance.setVolume(volume.value));
-      }
-    }
-  }
+    final delta = e.delta.dy;
+    if (position.dx <= size.width / 2) {
+      final bright = brightness.value - delta / sensitivity;
+      setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
+    } else {
+      final vol = (volume.value - delta / sensitivity).toPrecision(2);
+      if (volume.value != vol) {
+        volume.value = vol.clamp(0.0, 1.0);
+        volumeIndicator.value = true;
+        Future.microtask(
+            () => VolumeController.instance.setVolume(volume.value));
+      }
+    }
+  }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
     if (settings.enableSwipeControls) {
