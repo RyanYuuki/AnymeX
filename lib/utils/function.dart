@@ -299,16 +299,14 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
   ];
 }
 
-/// Finds the appropriate chunk index based on user's progress
 int findChunkIndexFromProgress(
   int userProgress,
   List<List<Episode>> chunks, {
   bool isManga = false,
 }) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
-  if (userProgress <= 0) return 1; // Default to first chunk (excluding "All")
+  if (userProgress <= 0) return 1;
   
-  // Skip the "All" chunk (index 0) and find which chunk contains the progress
   for (int i = 1; i < chunks.length; i++) {
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
@@ -321,11 +319,9 @@ int findChunkIndexFromProgress(
     }
   }
   
-  // Default to last chunk if progress is beyond all chunks
   return chunks.length - 1;
 }
 
-/// Finds the appropriate chapter chunk index based on user's progress
 int findChapterChunkIndexFromProgress(
   int userProgress,
   List<List<Chapter>> chunks,
