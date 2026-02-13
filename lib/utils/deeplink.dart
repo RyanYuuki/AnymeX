@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -291,11 +292,32 @@ class Deeplink {
       handler.changeService(target.serviceType);
     }
 
-    final media = Media(
+    _openHydratedMediaTarget(target);
+  }
+
+  static Future<void> _openHydratedMediaTarget(
+      _MediaDeepLinkTarget target) async {
+    Media media = Media(
       id: target.mediaId,
       serviceType: target.serviceType,
       mediaType: target.isManga ? ItemType.manga : ItemType.anime,
     );
+
+    try {
+      final fetchedMedia = await target.serviceType.service.fetchDetails(
+        FetchDetailsParams(
+          id: target.mediaId,
+          isManga: target.isManga,
+        ),
+      );
+
+      fetchedMedia.serviceType = target.serviceType;
+      fetchedMedia.mediaType = target.isManga ? ItemType.manga : ItemType.anime;
+      media = fetchedMedia;
+    } catch (_) {
+      // Fallback to minimal media payload if details request fails.
+    }
+
     final tag = 'deep-link-${DateTime.now().millisecondsSinceEpoch}';
 
     if (target.isManga) {
@@ -304,13 +326,14 @@ class Deeplink {
             tag: tag,
             initialTabIndex: target.initialTabIndex,
           ));
-    } else {
-      navigate(() => AnimeDetailsPage(
-            media: media,
-            tag: tag,
-            initialTabIndex: target.initialTabIndex,
-          ));
+      return;
     }
+
+    navigate(() => AnimeDetailsPage(
+          media: media,
+          tag: tag,
+          initialTabIndex: target.initialTabIndex,
+        ));
   }
 
   static bool _isHost(String host, String domain) {
