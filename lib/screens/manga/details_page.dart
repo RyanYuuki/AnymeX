@@ -45,7 +45,12 @@ import 'package:iconsax/iconsax.dart';
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
-  const MangaDetailsPage({super.key, required this.media, required this.tag});
+  final int initialTabIndex;
+  const MangaDetailsPage(
+      {super.key,
+      required this.media,
+      required this.tag,
+      this.initialTabIndex = 0});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -76,7 +81,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   RxString mangaStatus = "".obs;
 
   // Tracker's Controller
-  PageController controller = PageController();
+  late final PageController controller;
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
@@ -91,6 +96,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   void initState() {
     super.initState();
+    final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
+    selectedPage.value = initialPage;
+    controller = PageController(initialPage: initialPage);
     mediaService = widget.media.serviceType;
     Future.delayed(const Duration(milliseconds: 300), () {
       _checkMangaPresence();

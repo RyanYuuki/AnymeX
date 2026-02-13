@@ -1,13 +1,38 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/extensions.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:get/get.dart';
 
 class Deeplink {
+  static const Set<String> _supportedCustomSchemes = {
+    'anymex',
+    'dar',
+    'sugoireads',
+    'mangayomi',
+    'tachiyomi',
+    'aniyomi',
+  };
+
   static void handleDeepLink(Uri uri) {
-    if (uri.host != 'add-repo') return;
+    if (_handleRepoDeepLink(uri)) return;
+
+    final mediaTarget = _parseMediaTarget(uri);
+    if (mediaTarget == null) return;
+
+    _openMediaTarget(mediaTarget);
+  }
+
+  static bool _handleRepoDeepLink(Uri uri) {
+    if (uri.host.toLowerCase() != 'add-repo') return false;
+
     ExtensionType extType;
     String? repoUrl;
     String? mangaUrl;
@@ -56,5 +81,261 @@ class Deeplink {
     } else {
       snackBar("Missing required parameters in the link.");
     }
+
+    return true;
   }
+
+  static _MediaDeepLinkTarget? _parseMediaTarget(Uri uri) {
+    final webTarget = _parseWebTarget(uri);
+    if (webTarget != null) return webTarget;
+    return _parseCustomTarget(uri);
+  }
+
+  static _MediaDeepLinkTarget? _parseWebTarget(Uri uri) {
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme != 'https' && scheme != 'http') return null;
+
+    final host = uri.host.toLowerCase();
+    final segments = _compactSegments(uri.pathSegments);
+
+    if (_isHost(host, 'anilist.co')) {
+      return _parseAnimeMangaTarget(
+        uri: uri,
+        segments: segments,
+        serviceType: ServicesType.anilist,
+      );
+    }
+
+    if (_isHost(host, 'myanimelist.net')) {
+      return _parseAnimeMangaTarget(
+        uri: uri,
+        segments: segments,
+        serviceType: ServicesType.mal,
+      );
+    }
+
+    if (_isHost(host, 'simkl.com')) {
+      return _parseSimklTarget(uri: uri, segments: segments);
+    }
+
+    return null;
+  }
+
+  static _MediaDeepLinkTarget? _parseCustomTarget(Uri uri) {
+    if (!_supportedCustomSchemes.contains(uri.scheme.toLowerCase())) {
+      return null;
+    }
+
+    if (uri.host.toLowerCase() == 'callback' ||
+        uri.host.toLowerCase() == 'add-repo') {
+      return null;
+    }
+
+    final segments = _compactSegments(uri.pathSegments);
+    ServicesType? serviceType = _serviceFromToken(uri.host);
+    int offset = 0;
+
+    if (serviceType == null && segments.isNotEmpty) {
+      serviceType = _serviceFromToken(segments.first);
+      if (serviceType != null) {
+        offset = 1;
+      }
+    }
+
+    if (serviceType == null) return null;
+
+    final mediaSegments = segments.skip(offset).toList();
+
+    if (serviceType == ServicesType.simkl) {
+      return _parseSimklTarget(uri: uri, segments: mediaSegments);
+    }
+
+    return _parseAnimeMangaTarget(
+      uri: uri,
+      segments: mediaSegments,
+      serviceType: serviceType,
+    );
+  }
+
+  static _MediaDeepLinkTarget? _parseAnimeMangaTarget({
+    required Uri uri,
+    required List<String> segments,
+    required ServicesType serviceType,
+  }) {
+    if (segments.isEmpty) return null;
+
+    final first = segments.first.toLowerCase();
+
+    if ((first == 'anime.php' || first == 'manga.php') &&
+        uri.queryParameters.containsKey('id')) {
+      final isManga = first == 'manga.php';
+      final id = _extractNumericId(uri.queryParameters['id']!);
+      if (id == null) return null;
+
+      return _MediaDeepLinkTarget(
+        serviceType: serviceType,
+        isManga: isManga,
+        mediaId: id,
+        initialTabIndex: _parseInitialTabIndex(uri.fragment),
+      );
+    }
+
+    if (segments.length == 1) {
+      final id = _extractNumericId(segments.first);
+      if (id != null) {
+        final queryType = uri.queryParameters['type']?.toLowerCase();
+        final isManga = queryType == 'manga' || queryType == 'read';
+        return _MediaDeepLinkTarget(
+          serviceType: serviceType,
+          isManga: isManga,
+          mediaId: id,
+          initialTabIndex: _parseInitialTabIndex(uri.fragment),
+        );
+      }
+    }
+
+    if (segments.length < 2) return null;
+
+    final type = first;
+    final isAnimePath = {'anime', 'animes', 'title'}.contains(type);
+    final isMangaPath = {'manga', 'mangas'}.contains(type);
+    if (!isAnimePath && !isMangaPath) return null;
+
+    final id = _extractNumericId(segments[1]);
+    if (id == null) return null;
+
+    return _MediaDeepLinkTarget(
+      serviceType: serviceType,
+      isManga: isMangaPath,
+      mediaId: id,
+      initialTabIndex: _parseInitialTabIndex(uri.fragment),
+    );
+  }
+
+  static _MediaDeepLinkTarget? _parseSimklTarget({
+    required Uri uri,
+    required List<String> segments,
+  }) {
+    if (segments.length < 2) return null;
+
+    final type = segments.first.toLowerCase();
+    final isMovie = {'movie', 'movies', 'film', 'films'}.contains(type);
+    final isSeries = {'anime', 'tv', 'series', 'show', 'shows'}.contains(type);
+
+    if (!isMovie && !isSeries) return null;
+
+    final id = _extractNumericId(segments[1]);
+    if (id == null) return null;
+
+    return _MediaDeepLinkTarget(
+      serviceType: ServicesType.simkl,
+      isManga: false,
+      mediaId: '$id*${isMovie ? 'MOVIE' : 'SERIES'}',
+      initialTabIndex: _parseInitialTabIndex(uri.fragment),
+    );
+  }
+
+  static ServicesType? _serviceFromToken(String raw) {
+    final token = raw.toLowerCase();
+    if (token.contains('anilist')) return ServicesType.anilist;
+    if (token.contains('myanimelist') || token == 'mal') {
+      return ServicesType.mal;
+    }
+    if (token.contains('simkl')) return ServicesType.simkl;
+
+    switch (token) {
+      case 'anilist':
+      case 'al':
+        return ServicesType.anilist;
+      case 'mal':
+      case 'myanimelist':
+        return ServicesType.mal;
+      case 'simkl':
+        return ServicesType.simkl;
+      default:
+        return null;
+    }
+  }
+
+  static int _parseInitialTabIndex(String fragment) {
+    var tab = fragment.trim().toLowerCase();
+    tab = tab.replaceFirst(RegExp(r'^/+'), '');
+
+    switch (tab) {
+      case 'watch':
+      case 'read':
+        return 1;
+      case 'comment':
+      case 'comments':
+        return 2;
+      case 'details':
+      default:
+        return 0;
+    }
+  }
+
+  static void _openMediaTarget(
+    _MediaDeepLinkTarget target, {
+    int attempts = 0,
+  }) {
+    if (!Get.isRegistered<ServiceHandler>() || Get.context == null) {
+      if (attempts >= 300) return;
+      Future.delayed(const Duration(milliseconds: 200), () {
+        _openMediaTarget(target, attempts: attempts + 1);
+      });
+      return;
+    }
+
+    final handler = Get.find<ServiceHandler>();
+    if (handler.serviceType.value != target.serviceType) {
+      handler.changeService(target.serviceType);
+    }
+
+    final media = Media(
+      id: target.mediaId,
+      serviceType: target.serviceType,
+      mediaType: target.isManga ? ItemType.manga : ItemType.anime,
+    );
+    final tag = 'deep-link-${DateTime.now().millisecondsSinceEpoch}';
+
+    if (target.isManga) {
+      navigate(() => MangaDetailsPage(
+            media: media,
+            tag: tag,
+            initialTabIndex: target.initialTabIndex,
+          ));
+    } else {
+      navigate(() => AnimeDetailsPage(
+            media: media,
+            tag: tag,
+            initialTabIndex: target.initialTabIndex,
+          ));
+    }
+  }
+
+  static bool _isHost(String host, String domain) {
+    return host == domain || host.endsWith('.$domain');
+  }
+
+  static List<String> _compactSegments(List<String> segments) {
+    return segments.where((s) => s.trim().isNotEmpty).toList();
+  }
+
+  static String? _extractNumericId(String raw) {
+    return RegExp(r'\d+').firstMatch(raw)?.group(0);
+  }
+}
+
+class _MediaDeepLinkTarget {
+  final ServicesType serviceType;
+  final bool isManga;
+  final String mediaId;
+  final int initialTabIndex;
+
+  const _MediaDeepLinkTarget({
+    required this.serviceType,
+    required this.isManga,
+    required this.mediaId,
+    required this.initialTabIndex,
+  });
 }

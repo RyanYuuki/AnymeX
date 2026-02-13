@@ -49,7 +49,12 @@ import 'package:iconsax/iconsax.dart';
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
-  const AnimeDetailsPage({super.key, required this.media, required this.tag});
+  final int initialTabIndex;
+  const AnimeDetailsPage(
+      {super.key,
+      required this.media,
+      required this.tag,
+      this.initialTabIndex = 0});
 
   @override
   State<AnimeDetailsPage> createState() => _AnimeDetailsPageState();
@@ -83,7 +88,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   // for fast parallel filler fetching
   Map<String, bool> fillerEpisodes = {};
 
-  PageController controller = PageController();
+  late final PageController controller;
 
   final sourceController = Get.find<SourceController>();
 
@@ -100,6 +105,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void initState() {
     super.initState();
+    final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
+    selectedPage.value = initialPage;
+    controller = PageController(initialPage: initialPage);
     if (sourceController.installedExtensions.isEmpty) {
       showAnify.value = false;
     }
