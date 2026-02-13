@@ -23,16 +23,12 @@ class Deeplink {
   };
 
   static void handleDeepLink(Uri uri) {
-    if (_handleRepoDeepLink(uri)) return;
-
-    final mediaTarget = _parseMediaTarget(uri);
-    if (mediaTarget == null) return;
-
-    _openMediaTarget(mediaTarget);
-  }
-
-  static bool _handleRepoDeepLink(Uri uri) {
-    if (uri.host.toLowerCase() != 'add-repo') return false;
+    if (uri.host != 'add-repo') {
+      final mediaTarget = _parseMediaTarget(uri);
+      if (mediaTarget == null) return;
+      _openMediaTarget(mediaTarget);
+      return;
+    }
 
     ExtensionType extType;
     String? repoUrl;
@@ -82,8 +78,6 @@ class Deeplink {
     } else {
       snackBar("Missing required parameters in the link.");
     }
-
-    return true;
   }
 
   static _MediaDeepLinkTarget? _parseMediaTarget(Uri uri) {
