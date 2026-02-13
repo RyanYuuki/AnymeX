@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
@@ -105,12 +105,10 @@ class BottomControls extends StatelessWidget {
 
   Widget _buildLayout(BuildContext context) {
     final controller = Get.find<PlayerController>();
-    final settings = Get.find<Settings>();
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final String jsonString =
-        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final String jsonString = PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     final List<String> leftButtonIds =

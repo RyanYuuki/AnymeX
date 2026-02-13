@@ -1,9 +1,8 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
@@ -250,7 +249,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     );
 
     final progress = chapterState.continueChapter?.number?.toInt() ?? 1;
-    
+
     if (!_initializedChunk && chapterState.chunkedChapters.isNotEmpty) {
       final chunkIndex = findChapterChunkIndexFromProgress(
         progress,

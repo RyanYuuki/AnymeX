@@ -7,6 +7,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -25,7 +26,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 
 class SimklService extends GetxController
@@ -35,7 +35,6 @@ class SimklService extends GetxController
   Rx<Media> detailsData = Media(
     serviceType: ServicesType.simkl,
   ).obs;
-  final storage = Hive.box('auth');
 
   RxList<TrackedMedia> continueWatchingMovies = <TrackedMedia>[].obs;
   RxList<TrackedMedia> continueWatchingSeries = <TrackedMedia>[].obs;
@@ -278,7 +277,7 @@ class SimklService extends GetxController
           ? Simkl.alToSimklMovie(status ?? '')
           : Simkl.alToSimklShow(status ?? '');
 
-      final token = await storage.get('simkl_auth_token');
+      final token = AuthKeys.simklAuthToken.get<String?>();
       final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
 
       if (token == null || apiKey == null) {
@@ -339,7 +338,7 @@ class SimklService extends GetxController
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async {
     final isMovie = listId.split('*').last == 'MOVIE';
     final id = listId.split('*').first;
-    final token = await storage.get('simkl_auth_token');
+    final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/history/remove');
     final response = await post(url,
@@ -440,7 +439,7 @@ class SimklService extends GetxController
     if (req.statusCode == 200) {
       final data = json.decode(req.body);
       final token = data['access_token'];
-      await storage.put('simkl_auth_token', token);
+      AuthKeys.simklAuthToken.set(token);
       isLoggedIn.value = true;
       await fetchUserInfo();
       snackBar("Simkl Logined Successfully!");
@@ -451,7 +450,7 @@ class SimklService extends GetxController
   }
 
   Future<void> fetchUserInfo() async {
-    final token = await storage.get('simkl_auth_token');
+    final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/users/settings');
     final response = await post(url, headers: {
@@ -491,7 +490,7 @@ class SimklService extends GetxController
   }
 
   Future<void> fetchUserMovieList() async {
-    final token = await storage.get('simkl_auth_token');
+    final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/all-items/movies');
     final response = await get(url, headers: {
@@ -513,7 +512,7 @@ class SimklService extends GetxController
   }
 
   Future<void> fetchUserSeriesList() async {
-    final token = await storage.get('simkl_auth_token');
+    final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/all-items/shows');
     final response = await get(url, headers: {
@@ -535,14 +534,14 @@ class SimklService extends GetxController
 
   @override
   Future<void> logout() async {
-    await storage.delete('simkl_auth_token');
+    AuthKeys.simklAuthToken.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
   }
 
   @override
   Future<void> autoLogin() async {
-    final token = await storage.get('simkl_auth_token');
+    final token = AuthKeys.simklAuthToken.get<String?>();
     if (token != null) {
       await fetchUserInfo();
     }

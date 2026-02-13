@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -40,41 +41,34 @@ class LibraryController extends GetxController {
   }
 
   void getPreferences() {
-    final savedType = settingsController.preferences
-        .get('library_last_type', defaultValue: ItemType.anime.index);
+    final savedType =
+        LibraryKeys.libraryLastType.get<int>(ItemType.anime.index);
     type.value = ItemType.values[savedType];
 
-    final savedListIndex = settingsController.preferences
-        .get('library_last_list_index_${type.value.name}', defaultValue: 0);
+    final savedListIndex =
+        DynamicKeys.libraryLastListIndex.get<int>(type.value.name, 0);
     selectedListIndex.value = savedListIndex;
 
-    currentSort = SortType.values[settingsController.preferences.get(
-        '${type.value.name}_sort_type',
-        defaultValue: SortType.lastAdded.index)];
-    isAscending = settingsController.preferences
-        .get('${type.value.name}_sort_order', defaultValue: false);
-    gridCount.value = settingsController.preferences
-        .get('${type.value.name}_grid_size', defaultValue: 3);
+    currentSort = SortType.values[
+        DynamicKeys.librarySortType.get<int>(type.value.name, SortType.lastAdded.index)];
+    isAscending = DynamicKeys.librarySortOrder.get<bool>(type.value.name, false);
+    gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 3);
   }
 
   void savePreferences() {
-    settingsController.preferences
-        .put('${type.value.name}_sort_type', currentSort.index);
-    settingsController.preferences
-        .put('${type.value.name}_sort_order', isAscending);
-    settingsController.preferences
-        .put('${type.value.name}_grid_size', gridCount.value);
+    DynamicKeys.librarySortType.set(type.value.name, currentSort.index);
+    DynamicKeys.librarySortOrder.set(type.value.name, isAscending);
+    DynamicKeys.libraryGridSize.set(type.value.name, gridCount.value);
 
-    settingsController.preferences.put('library_last_type', type.value.index);
-    settingsController.preferences.put(
-        'library_last_list_index_${type.value.name}', selectedListIndex.value);
+    LibraryKeys.libraryLastType.set(type.value.index);
+    DynamicKeys.libraryLastListIndex
+        .set(type.value.name, selectedListIndex.value);
   }
 
   void switchCategory(ItemType typ) {
     type.value = typ;
 
-    settingsController.preferences
-        .put('library_last_list_index_${type.value.name}', type.value.index);
+    DynamicKeys.libraryLastListIndex.set(type.value.name, type.value.index);
 
     if (searchQuery.isNotEmpty) {
       searchController.clear();

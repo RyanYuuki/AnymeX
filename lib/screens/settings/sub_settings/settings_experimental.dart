@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
@@ -51,14 +52,13 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
   }
 
   void getSavedSettings() {
-    _enableShaders.value =
-        settings.preferences.get('shaders_enabled', defaultValue: false);
-    _cacheDays.value = settings.preferences.get('cache_days', defaultValue: 7);
+    _enableShaders.value = PlayerUiKeys.shadersEnabled.get<bool>(false);
+    _cacheDays.value = PlayerUiKeys.cacheDays.get<int>(7);
   }
 
   void saveSettings() {
-    settings.preferences.put('shaders_enabled', _enableShaders.value);
-    settings.preferences.put('cache_days', _cacheDays.value);
+    PlayerUiKeys.shadersEnabled.set(_enableShaders.value);
+    PlayerUiKeys.cacheDays.set(_cacheDays.value);
   }
 
   void _initializeAnimations() {
@@ -240,734 +240,620 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
         child: Scaffold(
             //	backgroundColor: Colors.transparent,
             body: Column(children: [
-              const NestedHeader(title: 'Experimental Settings'),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: getResponsiveValue(context,
-                        mobileValue:
-                            const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                        desktopValue:
-                            const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
-                    child: Column(
+      const NestedHeader(title: 'Experimental Settings'),
+      Expanded(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: getResponsiveValue(context,
+                mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                desktopValue:
+                    const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              // AnymexExpansionTile(
+              //     title: 'Common',
+              //     content: Column(
+              //       children: [
+              //         CustomSliderTile(
+              //             icon: Icons.dangerous,
+              //             title: "Ui Scaling",
+              //             label: "${uiScaler.toStringAsFixed(2)}x",
+              //             description:
+              //                 "Backup the library before you proceed (App might break)",
+              //             sliderValue: uiScaler,
+              //             divisions: 10,
+              //             onChanged: (double value) {
+              //               setState(() {
+              //                 uiScaler = value;
+              //               });
+              //               General.uiScaler.set(value);
+              //             },
+              //             max: 1)
+              //       ],
+              //     )),
+              Obx(() => AnymexExpansionTile(
+                    title: "Reader",
+                    initialExpanded: true,
+                    content: Column(
+                      children: [
+                        CustomSliderTile(
+                            icon: Icons.extension,
+                            title: "Cache Duration",
+                            label: "${_cacheDays.value} days",
+                            description:
+                                "When should the image cache be cleared?",
+                            sliderValue: _cacheDays.value.toDouble(),
+                            divisions: 30,
+                            onChanged: (double value) {
+                              _cacheDays.value = value.toInt();
+                              saveSettings();
+                            },
+                            max: 30)
+                      ],
+                    ),
+                  )),
+              Obx(() {
+                settings.animationDuration;
+                return AnymexExpansionTile(
+                  title: 'Player',
+                  initialExpanded: true,
+                  content: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // AnymexExpansionTile(
-                          //     title: 'Common',
-                          //     content: Column(
-                          //       children: [
-                          //         CustomSliderTile(
-                          //             icon: Icons.dangerous,
-                          //             title: "Ui Scaling",
-                          //             label: "${uiScaler.toStringAsFixed(2)}x",
-                          //             description:
-                          //                 "Backup the library before you proceed (App might break)",
-                          //             sliderValue: uiScaler,
-                          //             divisions: 10,
-                          //             onChanged: (double value) {
-                          //               setState(() {
-                          //                 uiScaler = value;
-                          //               });
-                          //               General.uiScaler.set(value);
-                          //             },
-                          //             max: 1)
-                          //       ],
-                          //     )),
-                          Obx(() => AnymexExpansionTile(
-                                title: "Reader",
-                                initialExpanded: true,
-                                content: Column(
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                      .withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Iconsax.eye,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    CustomSliderTile(
-                                        icon: Icons.extension,
-                                        title: "Cache Duration",
-                                        label: "${_cacheDays.value} days",
-                                        description:
-                                            "When should the image cache be cleared?",
-                                        sliderValue:
-                                            _cacheDays.value.toDouble(),
-                                        divisions: 30,
-                                        onChanged: (double value) {
-                                          _cacheDays.value = value.toInt();
-                                          saveSettings();
-                                        },
-                                        max: 30)
+                                    Text(
+                                      'Anime 4K Enhancement',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Real-time 4K upscaling for anime content',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.7),
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              )),
-                          Obx(() {
-                            settings.animationDuration;
-                            return AnymexExpansionTile(
-                              title: 'Player',
-                              initialExpanded: true,
-                              content: Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHighest
-                                        .withValues(alpha: 0.4),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .outline
-                                          .withValues(alpha: 0.2),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Obx(
+                            () {
+                              return Column(
+                                children: [
+                                  if (_isDownloading.value) ...[
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer
+                                            .withValues(alpha: 0.3),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Column(
                                         children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primaryContainer
-                                                  .withValues(alpha: 0.5),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Icon(
-                                              Iconsax.eye,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Anime 4K Enhancement',
+                                          Row(
+                                            children: [
+                                              AnimatedBuilder(
+                                                animation: _pulseAnimation,
+                                                builder: (context, child) {
+                                                  return Transform.scale(
+                                                    scale:
+                                                        _pulseAnimation.value,
+                                                    child: Icon(
+                                                      Iconsax.document_download,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      size: 16,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  _currentStatus.value,
                                                   style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16,
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .onSurface,
+                                                    fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
-                                                Text(
-                                                  'Real-time 4K upscaling for anime content',
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface
-                                                        .withValues(alpha: 0.7),
-                                                    fontSize: 12,
-                                                  ),
+                                              ),
+                                              Text(
+                                                '${(_downloadProgress * 100).toInt()}%',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
-                                              ],
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                          LinearProgressIndicator(
+                                            value: _downloadProgress.value,
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .outline
+                                                .withValues(alpha: 0.2),
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
                                             ),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 16),
-                                      Obx(
-                                        () {
-                                          return Column(
+                                    ),
+                                  ] else if (_shadersDownloaded.value) ...[
+                                    Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer
+                                                .withValues(alpha: 0.3),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Row(
                                             children: [
-                                              if (_isDownloading.value) ...[
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(16),
-                                                  decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primaryContainer
-                                                        .withValues(alpha: 0.3),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          AnimatedBuilder(
-                                                            animation:
-                                                                _pulseAnimation,
-                                                            builder: (context,
-                                                                child) {
-                                                              return Transform
-                                                                  .scale(
-                                                                scale:
-                                                                    _pulseAnimation
-                                                                        .value,
-                                                                child: Icon(
-                                                                  Iconsax
-                                                                      .document_download,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary,
-                                                                  size: 16,
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 8),
-                                                          Expanded(
-                                                            child: Text(
-                                                              _currentStatus
-                                                                  .value,
-                                                              style: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onSurface,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '${(_downloadProgress * 100).toInt()}%',
-                                                            style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 12),
-                                                      LinearProgressIndicator(
-                                                        value: _downloadProgress
-                                                            .value,
-                                                        backgroundColor:
-                                                            Theme.of(context)
-                                                                .colorScheme
-                                                                .outline
-                                                                .withValues(
-                                                                    alpha: 0.2),
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ] else if (_shadersDownloaded
-                                                  .value) ...[
-                                                Column(
+                                              Icon(
+                                                Iconsax.play,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      decoration: BoxDecoration(
+                                                    Text(
+                                                      'Enable Shaders',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                         color: Theme.of(context)
                                                             .colorScheme
-                                                            .primaryContainer
-                                                            .withValues(
-                                                                alpha: 0.3),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                        border: Border.all(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.3),
-                                                        ),
+                                                            .onSurface,
                                                       ),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                            Iconsax.play,
+                                                    ),
+                                                    Text(
+                                                      getResponsiveValue(
+                                                          context,
+                                                          mobileValue:
+                                                              'if Enabled the Shaders will be applied to the player through hdr menu',
+                                                          desktopValue:
+                                                              'if Enabled the Shaders will be applied to the player through keybindings'),
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface
+                                                            .withValues(
+                                                                alpha: 0.7),
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Obx(() {
+                                                return Switch(
+                                                  value: _enableShaders.value,
+                                                  onChanged: (value) {
+                                                    _enableShaders.value =
+                                                        value;
+                                                    saveSettings();
+                                                  },
+                                                );
+                                              })
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer
+                                                .withValues(alpha: 0.3),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Iconsax.play,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    size: 20,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Choose Shader Profile',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .primary,
-                                                            size: 20,
+                                                                .onSurface,
                                                           ),
-                                                          const SizedBox(
-                                                              width: 12),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  'Enable Shaders',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onSurface,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  getResponsiveValue(
-                                                                      context,
-                                                                      mobileValue:
-                                                                          'if Enabled the Shaders will be applied to the player through hdr menu',
-                                                                      desktopValue:
-                                                                          'if Enabled the Shaders will be applied to the player through keybindings'),
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onSurface
-                                                                        .withValues(
-                                                                            alpha:
-                                                                                0.7),
-                                                                    fontSize:
-                                                                        12,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                        ),
+                                                        Text(
+                                                          'Choose accordingly to your system specs.\nMid End = Eg. GTX 980, GTX 1060, RX 570\nHigh End = Eg. GTX 1080, RTX 2070, RTX 3060, RX 590, Vega 56',
+                                                          style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onSurface
+                                                                .withValues(
+                                                                    alpha: 0.7),
+                                                            fontSize: 12,
                                                           ),
-                                                          Obx(() {
-                                                            return Switch(
-                                                              value:
-                                                                  _enableShaders
-                                                                      .value,
-                                                              onChanged:
-                                                                  (value) {
-                                                                _enableShaders
-                                                                        .value =
-                                                                    value;
-                                                                saveSettings();
-                                                              },
-                                                            );
-                                                          })
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    const SizedBox(height: 8),
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      decoration: BoxDecoration(
+                                                  ),
+                                                ],
+                                              ),
+                                              Obx(() {
+                                                List<String> availProfiles = [
+                                                  'MID-END',
+                                                  'HIGH-END'
+                                                ];
+
+                                                return Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 20.0),
+                                                  child: AnymexDropdown(
+                                                      items: availProfiles
+                                                          .map((e) =>
+                                                              DropdownItem(
+                                                                  text: e,
+                                                                  value: e))
+                                                          .toList(),
+                                                      selectedItem: DropdownItem(
+                                                          text: settingsController
+                                                              .selectedProfile,
+                                                          value: settingsController
+                                                              .selectedProfile),
+                                                      label: "SELECT PROFILE",
+                                                      icon: Iconsax.play,
+                                                      onChanged: (e) =>
+                                                          settingsController
+                                                                  .selectedProfile =
+                                                              e.text),
+                                                );
+                                              })
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        AnimatedContainer(
+                                          width:
+                                              _enableShaders.value ? null : 0,
+                                          curve: Curves.easeInOut,
+                                          height:
+                                              _enableShaders.value ? null : 0,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          padding: EdgeInsets.all(
+                                              _enableShaders.value ? 16 : 0),
+                                          margin:
+                                              const EdgeInsets.only(bottom: 8),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .errorContainer
+                                                .withValues(alpha: 0.3),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Iconsax.info_circle,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Warning',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                         color: Theme.of(context)
                                                             .colorScheme
-                                                            .primaryContainer
+                                                            .onSurface,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      getResponsiveValue(
+                                                          context,
+                                                          mobileValue:
+                                                              'you might get black screen or it may not work.',
+                                                          desktopValue:
+                                                              'will lag like hell on older gpus'),
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onErrorContainer
                                                             .withValues(
-                                                                alpha: 0.3),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                        border: Border.all(
+                                                                alpha: 0.7),
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        getResponsiveValue(
+                                          context,
+                                          mobileValue: const SizedBox.shrink(),
+                                          strictMode: true,
+                                          desktopValue: Obx(() {
+                                            return AnimatedOpacity(
+                                              opacity: _enableShaders.value
+                                                  ? 1
+                                                  : 0.3,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primaryContainer
+                                                      .withValues(alpha: 0.3),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withValues(alpha: 0.3),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Iconsax.keyboard,
                                                           color:
                                                               Theme.of(context)
                                                                   .colorScheme
-                                                                  .primary
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.3),
+                                                                  .primary,
+                                                          size: 20,
                                                         ),
-                                                      ),
-                                                      child: Column(
-                                                        children: [
-                                                          Row(
+                                                        const SizedBox(
+                                                            width: 12),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
                                                             children: [
-                                                              Icon(
-                                                                Iconsax.play,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary,
-                                                                size: 20,
+                                                              Text(
+                                                                'Shader Profiles Initialized',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: context
+                                                                      .colors
+                                                                      .onSurface,
+                                                                ),
                                                               ),
-                                                              const SizedBox(
-                                                                  width: 12),
-                                                              Expanded(
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Text(
-                                                                      'Choose Shader Profile',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .onSurface,
-                                                                      ),
-                                                                    ),
-                                                                    Text(
-                                                                      'Choose accordingly to your system specs.\nMid End = Eg. GTX 980, GTX 1060, RX 570\nHigh End = Eg. GTX 1080, RTX 2070, RTX 3060, RX 590, Vega 56',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .onSurface
-                                                                            .withValues(alpha: 0.7),
-                                                                        fontSize:
-                                                                            12,
-                                                                      ),
-                                                                    ),
-                                                                  ],
+                                                              Text(
+                                                                'Use keyboard shortcuts during playback to switch profiles',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: context
+                                                                      .colors
+                                                                      .onSurface
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              0.7),
+                                                                  fontSize: 12,
                                                                 ),
                                                               ),
                                                             ],
                                                           ),
-                                                          Obx(() {
-                                                            List<String>
-                                                                availProfiles =
-                                                                [
-                                                              'MID-END',
-                                                              'HIGH-END'
-                                                            ];
-
-                                                            return Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      top:
-                                                                          20.0),
-                                                              child: AnymexDropdown(
-                                                                  items: availProfiles
-                                                                      .map((e) => DropdownItem(
-                                                                          text:
-                                                                              e,
-                                                                          value:
-                                                                              e))
-                                                                      .toList(),
-                                                                  selectedItem: DropdownItem(
-                                                                      text: settingsController
-                                                                          .selectedProfile,
-                                                                      value: settingsController
-                                                                          .selectedProfile),
-                                                                  label:
-                                                                      "SELECT PROFILE",
-                                                                  icon: Iconsax
-                                                                      .play,
-                                                                  onChanged: (e) =>
-                                                                      settingsController
-                                                                              .selectedProfile =
-                                                                          e.text),
-                                                            );
-                                                          })
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    const SizedBox(height: 8),
-                                                    AnimatedContainer(
-                                                      width:
-                                                          _enableShaders.value
-                                                              ? null
-                                                              : 0,
-                                                      curve: Curves.easeInOut,
-                                                      height:
-                                                          _enableShaders.value
-                                                              ? null
-                                                              : 0,
-                                                      duration: const Duration(
-                                                          milliseconds: 300),
-                                                      padding: EdgeInsets.all(
-                                                          _enableShaders.value
-                                                              ? 16
-                                                              : 0),
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                              bottom: 8),
-                                                      decoration: BoxDecoration(
+                                                    const SizedBox(height: 16),
+                                                    Text(
+                                                      'Available Keybindings:',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                         color: Theme.of(context)
                                                             .colorScheme
-                                                            .errorContainer
-                                                            .withValues(
-                                                                alpha: 0.3),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                        border: Border.all(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.3),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                            Iconsax.info_circle,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .primary,
-                                                            size: 20,
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 12),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  'Warning',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onSurface,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  getResponsiveValue(
-                                                                      context,
-                                                                      mobileValue:
-                                                                          'you might get black screen or it may not work.',
-                                                                      desktopValue:
-                                                                          'will lag like hell on older gpus'),
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onErrorContainer
-                                                                        .withValues(
-                                                                            alpha:
-                                                                                0.7),
-                                                                    fontSize:
-                                                                        12,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
+                                                            .onSurface,
+                                                        fontSize: 13,
                                                       ),
                                                     ),
-                                                    getResponsiveValue(
-                                                      context,
-                                                      mobileValue:
-                                                          const SizedBox
-                                                              .shrink(),
-                                                      strictMode: true,
-                                                      desktopValue: Obx(() {
-                                                        return AnimatedOpacity(
-                                                          opacity:
-                                                              _enableShaders
-                                                                      .value
-                                                                  ? 1
-                                                                  : 0.3,
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300),
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(16),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .primaryContainer
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.3),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12),
-                                                              border:
-                                                                  Border.all(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary
-                                                                    .withValues(
-                                                                        alpha:
-                                                                            0.3),
-                                                              ),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Icon(
-                                                                      Iconsax
-                                                                          .keyboard,
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .primary,
-                                                                      size: 20,
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        width:
-                                                                            12),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text(
-                                                                            'Shader Profiles Initialized',
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontWeight: FontWeight.w600,
-                                                                              color: context.colors.onSurface,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            'Use keyboard shortcuts during playback to switch profiles',
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: context.colors.onSurface.withValues(alpha: 0.7),
-                                                                              fontSize: 12,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                Text(
-                                                                  'Available Keybindings:',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onSurface,
-                                                                    fontSize:
-                                                                        13,
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 12),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 1',
-                                                                    'Anime4K: Mode A (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 2',
-                                                                    'Anime4K: Mode B (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 3',
-                                                                    'Anime4K: Mode C (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 4',
-                                                                    'Anime4K: Mode A+A (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 5',
-                                                                    'Anime4K: Mode B+B (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 6',
-                                                                    'Anime4K: Mode C+A (Fast)'),
-                                                                _buildKeybindingItem(
-                                                                    'CTRL + 0',
-                                                                    'Reset (Clear Shaders)'),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }),
-                                                    ),
+                                                    const SizedBox(height: 12),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 1',
+                                                        'Anime4K: Mode A (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 2',
+                                                        'Anime4K: Mode B (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 3',
+                                                        'Anime4K: Mode C (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 4',
+                                                        'Anime4K: Mode A+A (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 5',
+                                                        'Anime4K: Mode B+B (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 6',
+                                                        'Anime4K: Mode C+A (Fast)'),
+                                                    _buildKeybindingItem(
+                                                        'CTRL + 0',
+                                                        'Reset (Clear Shaders)'),
                                                   ],
-                                                )
-                                              ] else ...[
-                                                SizedBox(
-                                                  width: double.infinity,
-                                                  child: FilledButton.icon(
-                                                    onPressed: _downloadShaders,
-                                                    icon: const Icon(Iconsax
-                                                        .document_download),
-                                                    label: const Text(
-                                                        'Download 4K Shaders'),
-                                                    style:
-                                                        FilledButton.styleFrom(
-                                                      backgroundColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary
-                                                              .withValues(
-                                                                  alpha: 0.9),
-                                                      foregroundColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .onPrimary,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 16),
-                                                    ),
-                                                  ),
                                                 ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  'Download size: ~4MB',
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface
-                                                        .withValues(alpha: 0.6),
-                                                    fontSize: 11,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
-                                            ],
-                                          );
-                                        },
-                                      )
-                                    ],
-                                  )),
-                            );
-                          }),
-                        ]),
-                  ),
-                ),
-              ),
-            ])));
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    )
+                                  ] else ...[
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton.icon(
+                                        onPressed: _downloadShaders,
+                                        icon: const Icon(
+                                            Iconsax.document_download),
+                                        label:
+                                            const Text('Download 4K Shaders'),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(alpha: 0.9),
+                                          foregroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Download size: ~4MB',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          )
+                        ],
+                      )),
+                );
+              }),
+            ]),
+          ),
+        ),
+      ),
+    ])));
   }
 }

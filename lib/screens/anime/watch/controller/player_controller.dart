@@ -7,7 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/player.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
@@ -251,7 +251,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
     final String jsonString =
-        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+        PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     if (decodedConfig.isEmpty) {
@@ -280,8 +280,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'aspect_ratio': {'visible': true},
         },
       };
-      settings.preferences
-          .put('bottomControlsSettings', json.encode(defaultConfig));
+      PlayerUiKeys.bottomControlsSettings.set(json.encode(defaultConfig));
     }
   }
 
@@ -324,10 +323,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     seekDuration.value = settings.seekDuration;
     skipDuration.value = settings.skipDuration;
     playbackSpeed.value = settings.speed;
-    currentVisualProfile.value = settings.preferences
-        .get('currentVisualProfile', defaultValue: 'natural');
-    customSettings.value = (settings.preferences
-            .get('currentVisualSettings', defaultValue: {}) as Map)
+    currentVisualProfile.value =
+        PlayerUiKeys.currentVisualProfile.get<String>('natural');
+    customSettings.value = (PlayerUiKeys.currentVisualSettings
+            .get<Map<String, dynamic>>({}) as Map)
         .cast<String, int>();
   }
 
@@ -436,7 +435,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     final config = PlayerConfiguration(
       bufferSize: 1024 * 1024 * 32,
-      useLibass: PlayerKeys.useLibass.get(false),
+      useLibass: PlayerKeys.useLibass.get<bool>(false),
       hwdec: 'no',
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
     );
@@ -452,8 +451,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _basePlayer.initialize().then((_) {
       if (isOffline.value && offlineVideoPath != null) {
-        final stamp = settingsController.preferences
-            .get(offlineVideoPath, defaultValue: null);
+        final stamp =
+            DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
         _basePlayer.open(
           offlineVideoPath!,
           startPosition: Duration(milliseconds: stamp ?? 0),
@@ -1273,8 +1272,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _trackLocally() async {
     if (isOffline.value) {
-      settingsController.preferences
-          .put(offlineVideoPath, currentPosition.value.inMilliseconds);
+      DynamicKeys.offlineVideoProgress.set(
+          offlineVideoPath, currentPosition.value.inMilliseconds);
       return;
     }
 

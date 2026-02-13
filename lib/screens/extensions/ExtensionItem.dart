@@ -11,7 +11,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -284,13 +283,15 @@ class _ExtensionIcon extends StatelessWidget {
             Positioned(
               top: 1,
               right: 1,
-              child: AnymeXImage(
-                radius: 50,
-                imageUrl: isMangayomi
-                    ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                    : 'https://aniyomi.org/img/logo-128px.png',
-                height: 13,
-                width: 13,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                  isMangayomi
+                      ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                      : 'https://aniyomi.org/img/logo-128px.png',
+                  height: 13,
+                  width: 13,
+                ),
               ),
             ),
           ],

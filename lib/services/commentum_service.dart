@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -21,8 +22,8 @@ class CommentumService extends GetxController {
   String? get currentUserAvatar => currentUser?.avatar;
 
   Future<String?> get _authToken async {
-    final storage = Get.find<AnilistAuth>().storage;
-    return await storage.get('auth_token');
+    Get.find<AnilistAuth>();
+    return AuthKeys.authToken.get<String?>();
   }
 
   String get _clientType => serviceHandler.serviceType.value.name;
