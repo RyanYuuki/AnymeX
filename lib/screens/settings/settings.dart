@@ -14,6 +14,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -131,6 +132,47 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       )),
     ])));
+  }
+}
+
+extension SourceToMSource on Source {
+  MSource toMSource({
+    String sourceCode = '',
+    String sourceCodeUrl = '',
+    String typeSource = 'HLS',
+    String headers = '',
+  }) {
+    return MSource(
+      sourceId: id,
+      name: name,
+      baseUrl: baseUrl,
+      apiUrl: baseUrl,
+      lang: lang,
+      iconUrl: iconUrl,
+      version: version,
+      versionLast: versionLast,
+      itemType: itemType ?? ItemType.manga,
+      isManga: (itemType ?? ItemType.manga) == ItemType.manga,
+      isNsfw: isNsfw ?? false,
+      isActive: true,
+      isAdded: true,
+      isPinned: false,
+      isFullData: false,
+      hasCloudflare: false,
+      lastUsed: false,
+      sourceCode: sourceCode,
+      sourceCodeUrl: sourceCodeUrl,
+      typeSource: typeSource,
+      headers: headers,
+      isLocal: false,
+      isObsolete: isObsolete ?? false,
+      repo: repo,
+      sourceCodeLanguage: SourceCodeLanguage.dart,
+      dateFormat: '',
+      dateFormatLocale: '',
+      additionalParams: '',
+      appMinVerReq: '',
+    );
   }
 }
 

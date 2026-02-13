@@ -1,24 +1,24 @@
 import 'dart:io';
-import 'package:html/parser.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
-import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
-import 'package:anymex/models/mangaupdates/news_item.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 extension StringExtensions on String {
   String get getUrlWithoutDomain {
@@ -396,7 +396,7 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
 
 Media convertOfflineToMedia(OfflineMedia offlineMedia) {
   return Media(
-      id: offlineMedia.id ?? '0',
+      id: offlineMedia.mediaId ?? '0',
       romajiTitle: offlineMedia.jname ?? '',
       title: offlineMedia.english ?? offlineMedia.name ?? '',
       description: offlineMedia.description ?? '',
@@ -550,8 +550,8 @@ Future<bool> isTv() async {
   return isTV;
 }
 
-void navigate(dynamic page) {
-  Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
+Future<void> navigate(dynamic page) async {
+  await Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
 }
 
 extension SizedBoxExt on num {
@@ -588,40 +588,36 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
-    children: news
-        .take(5)
-        .map((item) {
-          final decodedTitle = parse(item.title).body?.text ?? item.title;
-          return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: InkWell(
-                onTap: () => launchUrl(Uri.parse(item.url)),
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface.opaque(0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colorScheme.outline.opaque(0.1)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AnymexText(
-                          text: decodedTitle,
-                          size: 13,
-                          maxLines: 2,
-                          variant: TextVariant.semiBold,
-                        ),
-                      ),
-                      Icon(Icons.open_in_new,
-                          size: 16, color: colorScheme.primary),
-                    ],
+    children: news.take(5).map((item) {
+      final decodedTitle = parse(item.title).body?.text ?? item.title;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: InkWell(
+          onTap: () => launchUrl(Uri.parse(item.url)),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.surface.opaque(0.3),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colorScheme.outline.opaque(0.1)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AnymexText(
+                    text: decodedTitle,
+                    size: 13,
+                    maxLines: 2,
+                    variant: TextVariant.semiBold,
                   ),
                 ),
-              ),
-            );
-        })
-        .toList(),
+                Icon(Icons.open_in_new, size: 16, color: colorScheme.primary),
+              ],
+            ),
+          ),
+        ),
+      );
+    }).toList(),
   );
 }

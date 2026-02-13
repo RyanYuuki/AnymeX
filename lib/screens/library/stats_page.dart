@@ -1,8 +1,9 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
@@ -28,11 +29,17 @@ class StatisticsPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Obx(() => _buildLibrarySection(
+            StreamBuilder<List<OfflineMedia>>(
+              stream: controller.watchAnimeLibrary(),
+              builder: (context, snapshot) {
+                final library = snapshot.data ?? [];
+                return _buildLibrarySection(
                   context,
-                  'Anime Count: ${controller.animeLibrary.length}',
-                  controller.animeLibrary,
-                )),
+                  'Anime Count: ${library.length}',
+                  library,
+                );
+              },
+            ),
             const SizedBox(height: 24),
 
             // Manga Library Section
@@ -41,11 +48,36 @@ class StatisticsPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Obx(() => _buildLibrarySection(
+            StreamBuilder<List<OfflineMedia>>(
+              stream: controller.watchMangaLibrary(),
+              builder: (context, snapshot) {
+                final library = snapshot.data ?? [];
+                return _buildLibrarySection(
                   context,
-                  'Manga Count: ${controller.mangaLibrary.length}',
-                  controller.mangaLibrary,
-                )),
+                  'Manga Count: ${library.length}',
+                  library,
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // Novel Library Section
+            const Text(
+              'Novel Library',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            StreamBuilder<List<OfflineMedia>>(
+              stream: controller.watchNovelLibrary(),
+              builder: (context, snapshot) {
+                final library = snapshot.data ?? [];
+                return _buildLibrarySection(
+                  context,
+                  'Novel Count: ${library.length}',
+                  library,
+                );
+              },
+            ),
             const SizedBox(height: 24),
 
             // Anime Custom Lists Section
@@ -54,10 +86,16 @@ class StatisticsPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Obx(() => _buildCustomListsSection(
-                  context,
-                  controller.animeCustomListData,
-                )),
+            StreamBuilder<List<CustomList>>(
+              stream: controller.watchCustomLists(ItemType.anime),
+              builder: (context, snapshot) {
+                final lists = snapshot.data
+                        ?.where((l) => l.mediaTypeIndex == ItemType.anime.index)
+                        .toList() ??
+                    [];
+                return _buildCustomListsSection(context, lists, controller);
+              },
+            ),
             const SizedBox(height: 24),
 
             // Manga Custom Lists Section
@@ -66,10 +104,34 @@ class StatisticsPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Obx(() => _buildCustomListsSection(
-                  context,
-                  controller.mangaCustomListData,
-                )),
+            StreamBuilder<List<CustomList>>(
+              stream: controller.watchCustomLists(ItemType.manga),
+              builder: (context, snapshot) {
+                final lists = snapshot.data
+                        ?.where((l) => l.mediaTypeIndex == ItemType.manga.index)
+                        .toList() ??
+                    [];
+                return _buildCustomListsSection(context, lists, controller);
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // Novel Custom Lists Section
+            const Text(
+              'Novel Custom Lists',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            StreamBuilder<List<CustomList>>(
+              stream: controller.watchCustomLists(ItemType.novel),
+              builder: (context, snapshot) {
+                final lists = snapshot.data
+                        ?.where((l) => l.mediaTypeIndex == ItemType.novel.index)
+                        .toList() ??
+                    [];
+                return _buildCustomListsSection(context, lists, controller);
+              },
+            ),
           ],
         ),
       ),
@@ -104,7 +166,7 @@ class StatisticsPage extends StatelessWidget {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('ID: ${media.id}'),
+                          Text('ID: ${media.mediaId}'),
                           if (media.type != null) Text('Type: ${media.type}'),
                           if (media.genres != null && media.genres!.isNotEmpty)
                             Text('Genres: ${media.genres!.join(', ')}'),
@@ -121,16 +183,19 @@ class StatisticsPage extends StatelessWidget {
   }
 
   Widget _buildCustomListsSection(
-      BuildContext context, Rx<List<CustomListData>> customLists) {
+    BuildContext context,
+    List<CustomList> customLists,
+    OfflineStorageController controller,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Total Lists: ${customLists.value.length}',
+          'Total Lists: ${customLists.length}',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        customLists.value.isEmpty
+        customLists.isEmpty
             ? const Text(
                 'No custom lists available.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -138,28 +203,38 @@ class StatisticsPage extends StatelessWidget {
             : ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: customLists.value.length,
+                itemCount: customLists.length,
                 itemBuilder: (context, index) {
-                  final customList = customLists.value[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    child: ExpansionTile(
-                      title: Text(customList.listName),
-                      subtitle: Text('Items: ${customList.listData.length}'),
-                      children: customList.listData.isEmpty
-                          ? [
-                              const Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text('No media in this list.'),
-                              )
-                            ]
-                          : customList.listData.map((media) {
-                              return ListTile(
-                                title: Text(media.name ?? 'Unnamed Media'),
-                                subtitle: Text('ID: ${media.id}'),
-                              );
-                            }).toList(),
-                    ),
+                  final customList = customLists[index];
+                  final listName = customList.listName ?? '';
+
+                  return StreamBuilder<CustomListData>(
+                    stream: controller.watchCustomListData(
+                        listName, ItemType.values[customList.mediaTypeIndex]),
+                    builder: (context, snapshot) {
+                      final listData = snapshot.data?.listData ?? [];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ExpansionTile(
+                          title: Text(listName),
+                          subtitle: Text('Items: ${listData.length}'),
+                          children: listData.isEmpty
+                              ? [
+                                  const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Text('No media in this list.'),
+                                  )
+                                ]
+                              : listData.map((media) {
+                                  return ListTile(
+                                    title: Text(media.name ?? 'Unnamed Media'),
+                                    subtitle: Text('ID: ${media.mediaId}'),
+                                  );
+                                }).toList(),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

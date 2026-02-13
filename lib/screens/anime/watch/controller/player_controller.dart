@@ -440,6 +440,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
+    print('Video: ${selectedVideo.value?.toJson()}');
+
     _basePlayer.initialize().then((_) {
       if (isOffline.value && offlineVideoPath != null) {
         final stamp = settingsController.preferences
@@ -1138,14 +1140,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setServerTrack(model.Video track) async {
-    if (track.url.isEmpty) {
+    if (track.url?.isEmpty ?? true) {
       snackBar('Corrupted Quality!');
       return;
     }
 
     selectedVideo.value = track;
     _extractSubtitles();
-    await _switchMedia(track.url, track.headers,
+    await _switchMedia(track.url.toString(), track.headers,
         startPosition: _basePlayer.state.position);
   }
 

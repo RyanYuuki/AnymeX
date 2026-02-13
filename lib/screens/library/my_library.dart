@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
@@ -20,7 +20,6 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class MyLibrary extends StatelessWidget {
@@ -57,20 +56,121 @@ class _LibraryContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      controller.selectedListIndex.value;
-      if (controller.selectedListIndex.value != -1) {
-        return controller.isListEmpty
-            ? const SliverToBoxAdapter(child: EmptyLibrary())
-            : _buildGridView(context);
-      } else {
+      if (controller.selectedListIndex.value == -1) {
         return _buildHistoryView(context);
+      } else {
+        return _buildCustomListView(context);
       }
     });
   }
 
-  Widget _buildGridView(BuildContext context) {
-    final items = controller.getCurrentItems();
+  Widget _buildCustomListView(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: controller.getCustomListNames(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
+        final listNames = snapshot.data!;
+        if (listNames.isEmpty ||
+            controller.selectedListIndex.value >= listNames.length) {
+          return const SliverToBoxAdapter(child: EmptyLibrary());
+        }
+
+        final selectedListName = listNames[controller.selectedListIndex.value];
+
+        return Obx(() {
+          final searchQuery = controller.searchQuery.value;
+          final sortType = controller.currentSort;
+          final isAscending = controller.isAscending;
+
+          return StreamBuilder<List<OfflineMedia>>(
+            stream: controller.getCustomListStream(
+                selectedListName, controller.type.value),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              var items = snapshot.data!;
+
+              if (items.isEmpty) {
+                return const SliverToBoxAdapter(child: EmptyLibrary());
+              }
+
+              items = controller.applySearch(items, searchQuery);
+              items = controller.applySorting(items);
+
+              return _buildGridView(context, items);
+            },
+          );
+        });
+      },
+    );
+  }
+
+  Widget _buildHistoryView(BuildContext context) {
+    return Obx(() {
+      final searchQuery = controller.searchQuery.value;
+
+      return StreamBuilder<List<OfflineMedia>>(
+        stream: controller.getHistoryStream(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const SliverToBoxAdapter(
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          var data = snapshot.data!;
+          data = controller.applySearch(data, searchQuery);
+
+          if (data.isEmpty) {
+            return const SliverToBoxAdapter(child: EmptyLibrary());
+          }
+
+          return SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width - 120,
+                  itemWidth: 400,
+                ),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 0,
+                mainAxisExtent: getHistoryCardHeight(
+                  HistoryCardStyle.values[settingsController.historyCardStyle],
+                  context,
+                ),
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, i) {
+                  final historyModel = HistoryModel.fromOfflineMedia(
+                    data[i],
+                    controller.type.value,
+                  );
+                  return HistoryCardGate(
+                    data: historyModel,
+                    cardStyle: HistoryCardStyle
+                        .values[settingsController.historyCardStyle],
+                  );
+                },
+                childCount: data.length,
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Widget _buildGridView(BuildContext context, List<OfflineMedia> items) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 130),
       sliver: SliverGrid(
@@ -84,45 +184,15 @@ class _LibraryContent extends StatelessWidget {
               scale: 1,
               onTap: () => _handleItemTap(context, item, items, i, tag),
               child: MediaCardGate(
-                  itemData: items[i],
-                  tag: '${getRandomTag()}-$i',
-                  variant: DataVariant.library,
-                  type: controller.type.value,
-                  cardStyle: CardStyle.values[settingsController.cardStyle]),
+                itemData: items[i],
+                tag: '${getRandomTag()}-$i',
+                variant: DataVariant.library,
+                type: controller.type.value,
+                cardStyle: CardStyle.values[settingsController.cardStyle],
+              ),
             );
           },
           childCount: items.length,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHistoryView(BuildContext context) {
-    final data = controller.getHistoryItems();
-
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width - 120,
-                itemWidth: 400),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 0,
-            mainAxisExtent: getHistoryCardHeight(
-                HistoryCardStyle.values[settingsController.historyCardStyle],
-                context)),
-        delegate: SliverChildBuilderDelegate(
-          (context, i) {
-            final historyModel =
-                HistoryModel.fromOfflineMedia(data[i], controller.type.value);
-            return HistoryCardGate(
-              data: historyModel,
-              cardStyle:
-                  HistoryCardStyle.values[settingsController.historyCardStyle],
-            );
-          },
-          childCount: data.length,
         ),
       ),
     );
@@ -133,21 +203,26 @@ class _LibraryContent extends StatelessWidget {
     if (controller.gridCount.value == 0) {
       if (getPlatform(context)) {
         return SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width - 120,
-                itemWidth: 170),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 20,
-            mainAxisExtent: _getCardHeight(
-                context, CardStyle.values[settingsController.cardStyle]));
+          crossAxisCount: getResponsiveCrossAxisVal(
+            MediaQuery.of(context).size.width - 120,
+            itemWidth: 170,
+          ),
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 20,
+          mainAxisExtent: _getCardHeight(
+            context,
+            CardStyle.values[settingsController.cardStyle],
+          ),
+        );
       }
     }
 
     return SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: controller.gridCount.value,
-        crossAxisSpacing: 0,
-        mainAxisSpacing: 10,
-        childAspectRatio: 2 / 3);
+      crossAxisCount: controller.gridCount.value,
+      crossAxisSpacing: 0,
+      mainAxisSpacing: 10,
+      childAspectRatio: 2 / 3,
+    );
   }
 
   double _getCardHeight(BuildContext context, CardStyle style) {

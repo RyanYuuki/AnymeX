@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/novel/reader/novel_reader.dart';

@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:anymex/main.dart' show isar;
+import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/key_value.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:dartotsu_extension_bridge/Mangayomi/Eval/dart/model/source_preference.dart';
-// import 'package:dartotsu_extension_bridge/Services/Mangayomi/Eval/dart/model/source_preference.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
     hide isar;
 import 'package:isar_community/isar.dart';
@@ -10,7 +11,35 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class StorageProvider {
+import '../main.dart';
+
+class Database {
+  Future<void> init() async {
+    Directory? dir;
+    dir = await getDatabaseDirectory();
+
+    isar = Isar.openSync(
+      [
+        // BS START
+        MSourceSchema,
+        SourcePreferenceSchema,
+        SourcePreferenceStringValueSchema,
+        BridgeSettingsSchema,
+        // BS END
+
+        // ANYMEX STUFFS
+        KeyValueSchema,
+        OfflineMediaSchema,
+        CustomListSchema
+      ],
+      directory: dir!.path,
+      name: 'AnymeX',
+      inspector: true,
+    );
+
+    await DartotsuExtensionBridge().init(isar, 'AnymeX');
+  }
+
   Future<bool> requestPermission() async {
     Permission permission = Permission.manageExternalStorage;
     if (Platform.isAndroid) {
@@ -39,25 +68,6 @@ class StorageProvider {
   }
 
   Future<Isar> initDB(String? path, {bool inspector = false}) async {
-    Directory? dir;
-    if (path == null) {
-      dir = await getDatabaseDirectory();
-    } else {
-      dir = Directory(path);
-    }
-
-    isar = Isar.openSync(
-      [
-        MSourceSchema,
-        SourcePreferenceSchema,
-        SourcePreferenceStringValueSchema,
-        BridgeSettingsSchema
-      ],
-      directory: dir!.path,
-      name: 'AnymeX',
-      inspector: false,
-    );
-
     return isar;
   }
 }
