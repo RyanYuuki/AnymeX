@@ -95,6 +95,16 @@
             <data android:scheme="aniyomi" android:host="add-repo" />
         </intent-filter>  
 
+        <intent-filter android:label="Open Media Link">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="anymex" android:host="anilist" />
+            <data android:scheme="anymex" android:host="mal" />
+            <data android:scheme="anymex" android:host="myanimelist" />
+            <data android:scheme="anymex" android:host="simkl" />
+        </intent-filter>
+
         <intent-filter android:label="Open Tracking Service Link">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
