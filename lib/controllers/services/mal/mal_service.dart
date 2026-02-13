@@ -60,7 +60,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
     return (data['data'] as List<dynamic>)
         .map((e) => Media.fromMAL(e))
-        .toList();
+        .toList()
+        .removeDupes();
   }
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
@@ -108,23 +109,23 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<void> fetchHomePage() async {
     try {
-      trendingAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15');
-      popularAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15');
-      topAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15');
-      upcomingAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15');
-
-      trendingManga.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15');
-      topManga.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15');
-      topManhwa.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15');
-      topManhua.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15');
+      trendingAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15')).removeDupes();
+      popularAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15')).removeDupes();
+      topAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15')).removeDupes();
+      upcomingAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15')).removeDupes();
+      
+      trendingManga.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15')).removeDupes();
+      topManga.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15')).removeDupes();
+      topManhwa.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15')).removeDupes();
+      topManhua.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15')).removeDupes();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
     }
@@ -592,7 +593,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),

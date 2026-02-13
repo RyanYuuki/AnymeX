@@ -1,4 +1,5 @@
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/function.dart';
 
 dynamic fallbackAnilistData = {
   "data": {
@@ -1007,13 +1008,13 @@ dynamic fallbackAnilistData = {
 
 final data = fallbackAnilistData['data'];
 
-final upcomingAnimes = parseMediaList(data['upcomingAnimes']['media']);
-final popularAnimes = parseMediaList(data['popularAnimes']['media']);
-final trendingAnimes = parseMediaList(data['trendingAnimes']['media']);
-final latestAnimes = parseMediaList(data['latestAnimes']['media']);
-final top10Today = parseMediaList(data['top10Today']['media']);
-final top10Week = parseMediaList(data['top10Week']['media']);
-final top10Month = parseMediaList(data['top10Month']['media']);
+final upcomingAnimes = parseMediaList(data['upcomingAnimes']['media']).removeDupes();
+final popularAnimes = parseMediaList(data['popularAnimes']['media']).removeDupes();
+final trendingAnimes = parseMediaList(data['trendingAnimes']['media']).removeDupes();
+final latestAnimes = parseMediaList(data['latestAnimes']['media']).removeDupes();
+final top10Today = parseMediaList(data['top10Today']['media']).removeDupes();
+final top10Week = parseMediaList(data['top10Week']['media']).removeDupes();
+final top10Month = parseMediaList(data['top10Month']['media']).removeDupes();
 
 List<Media> parseMediaList(List<dynamic> mediaList) {
   return mediaList.map((media) {

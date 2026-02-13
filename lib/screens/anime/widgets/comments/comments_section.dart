@@ -1,4 +1,4 @@
-import 'package:anymex/database/model/comment.dart';
+import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';

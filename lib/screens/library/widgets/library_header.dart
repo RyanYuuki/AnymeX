@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/screens/library/editor/history_editor.dart';
@@ -495,77 +496,103 @@ class ChipTabs extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Obx(() {
-          final lists = controller.typeBuilder(controller.type.value,
-              animeValue: controller.customListData,
-              mangaValue: controller.customListDataManga,
-              novelValue: controller.customListNovelData);
-          final historyCount = controller.typeBuilder(controller.type.value,
-              animeValue: controller.historyData.length,
-              mangaValue: controller.historyDataManga.length,
-              novelValue: controller.historyDataNovel.length);
+          controller.selectedListIndex.value;
+          return StreamBuilder<List<dynamic>>(
+            stream: controller.offlineStorage
+                .watchCustomLists(controller.type.value)
+                .map((lists) => lists
+                    .where(
+                        (l) => l.mediaTypeIndex == controller.type.value.index)
+                    .toList()),
+            builder: (context, customListSnapshot) {
+              return StreamBuilder<List<dynamic>>(
+                stream: controller.getHistoryStream(),
+                builder: (context, historySnapshot) {
+                  final customLists = customListSnapshot.data ?? [];
+                  final historyCount = historySnapshot.data?.length ?? 0;
 
-          return Row(children: [
-            InkWell(
-              onLongPress: () => Get.to(() => const HistoryEditor()),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: AnymexIconChip(
-                  icon: Row(
-                    children: [
-                      Icon(
-                          controller.selectedListIndex.value == -1
-                              ? Iconsax.clock5
-                              : Iconsax.clock,
-                          color: controller.selectedListIndex.value == -1
-                              ? context.colors.onPrimary
-                              : context.colors.onSurfaceVariant),
-                      5.width(),
-                      AnymexText(text: '($historyCount)')
-                    ],
-                  ),
-                  isSelected: controller.selectedListIndex.value == -1,
-                  onSelected: (selected) {
-                    if (selected) {
-                      controller.selectList(-1);
-                    }
-                  },
-                ),
-              ),
-            ),
-            ...List.generate(
-              lists.length,
-              (index) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: AnymexChip(
-                  label:
-                      '${lists[index].listName} (${lists[index].listData.length})',
-                  isSelected: controller.selectedListIndex.value == index,
-                  onSelected: (selected) {
-                    if (selected) {
-                      controller.selectList(index);
-                    }
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: AnymexIconChip(
-                icon: Row(
-                  children: [
-                    Icon(Iconsax.edit, color: context.colors.onSurfaceVariant),
-                    5.width(),
-                    const AnymexText(text: 'Edit')
-                  ],
-                ),
-                isSelected: false,
-                onSelected: (selected) {
-                  navigate(
-                      () => CustomListsEditor(type: controller.type.value));
+                  return Row(children: [
+                    InkWell(
+                      onLongPress: () => Get.to(() => const HistoryEditor()),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: AnymexIconChip(
+                          icon: Row(
+                            children: [
+                              Icon(
+                                  controller.selectedListIndex.value == -1
+                                      ? Iconsax.clock5
+                                      : Iconsax.clock,
+                                  color:
+                                      controller.selectedListIndex.value == -1
+                                          ? context.colors.onPrimary
+                                          : context.colors.onSurfaceVariant),
+                              5.width(),
+                              AnymexText(text: '($historyCount)')
+                            ],
+                          ),
+                          isSelected: controller.selectedListIndex.value == -1,
+                          onSelected: (selected) {
+                            if (selected) {
+                              controller.selectList(-1);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    ...List.generate(
+                      customLists.length,
+                      (index) {
+                        final list = customLists[index];
+                        final listName = list.listName ?? '';
+
+                        return StreamBuilder<CustomListData>(
+                          stream: controller.offlineStorage.watchCustomListData(
+                              listName, controller.type.value),
+                          builder: (context, listDataSnapshot) {
+                            final itemCount =
+                                listDataSnapshot.data?.listData.length ?? 0;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: AnymexChip(
+                                label: '$listName ($itemCount)',
+                                isSelected:
+                                    controller.selectedListIndex.value == index,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    controller.selectList(index);
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: AnymexIconChip(
+                        icon: Row(
+                          children: [
+                            Icon(Iconsax.edit,
+                                color: context.colors.onSurfaceVariant),
+                            5.width(),
+                            const AnymexText(text: 'Edit')
+                          ],
+                        ),
+                        isSelected: false,
+                        onSelected: (selected) {
+                          navigate(() =>
+                              CustomListsEditor(type: controller.type.value));
+                        },
+                      ),
+                    ),
+                  ]);
                 },
-              ),
-            ),
-          ]);
+              );
+            },
+          );
         }),
       ),
     );

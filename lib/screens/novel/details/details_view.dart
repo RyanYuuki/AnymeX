@@ -5,6 +5,7 @@ import 'package:anymex/screens/novel/details/controller/details_controller.dart'
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/screens/novel/details/widgets/novel_stats.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -12,7 +13,6 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -40,16 +40,14 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     controller = Get.put(NovelDetailsController(
         source: widget.source, initialMedia: widget.media));
 
-    ever(controller.offlineStorage.novelLibrary, (_) {
-      final novel =
-          controller.offlineStorage.getNovelById(controller.initialMedia.id);
-      if (novel != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.offlineMedia.value = novel;
-          controller.offlineMedia.refresh();
-        });
-      }
-    });
+    final novel =
+        controller.offlineStorage.getNovelById(controller.initialMedia.id);
+    if (novel != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.offlineMedia.value = novel;
+        controller.offlineMedia.refresh();
+      });
+    }
   }
 
   @override
@@ -147,10 +145,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
               border: Border.all(
                 color: context.colors.outline.opaque(0.2),
               ),
-              color: Theme.of(context)
-                  .colorScheme
-                  .surfaceContainer
-                  .opaque(0.5),
+              color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
             ),
             child: Material(
               color: Colors.transparent,
@@ -230,8 +225,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
               spans: [
                 AnymexTextSpan(
                   text: "Chapter ",
-                  color:
-                      context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: controller.offlineMedia.value?.currentChapter?.number
@@ -242,8 +236,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                 ),
                 AnymexTextSpan(
                   text: ' of ',
-                  color:
-                      context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.opaque(0.7),
                 ),
                 AnymexTextSpan(
                   text: controller.media.value.totalChapters ??

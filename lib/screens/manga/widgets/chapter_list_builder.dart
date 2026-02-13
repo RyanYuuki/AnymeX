@@ -4,8 +4,8 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
@@ -156,15 +156,22 @@ class ChapterService {
         .toList();
   }
 
-  void navigateToReading(Media anilistData, List<Chapter> chapterList,
-      Chapter currentChapter, BuildContext context) async {
+  Future<void> navigateToReading(
+      Media anilistData,
+      List<Chapter> chapterList,
+      Chapter currentChapter,
+      BuildContext context,
+      VoidCallback onReturn) async {
     if (General.shouldAskForTrack.get(true) == false) {
-      navigate(() => ReadingPage(
+      await navigate(() => ReadingPage(
             anilistData: anilistData,
             chapterList: chapterList,
             currentChapter: currentChapter,
             shouldTrack: true,
           ));
+      Future.delayed(const Duration(seconds: 1), () {
+        onReturn();
+      });
       return;
     }
     final shouldTrack = anilistData.serviceType == ServicesType.extensions
@@ -172,12 +179,16 @@ class ChapterService {
         : await showTrackingDialog(context);
 
     if (shouldTrack != null) {
-      navigate(() => ReadingPage(
+      await navigate(() => ReadingPage(
             anilistData: anilistData,
             chapterList: chapterList,
             currentChapter: currentChapter,
             shouldTrack: shouldTrack,
           ));
+      Future.delayed(const Duration(seconds: 1), () {
+        onReturn();
+      });
+      onReturn();
     }
   }
 }
@@ -202,15 +213,14 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final _chapterService = ChapterService();
 
   final _isInitialized = false.obs;
+  bool _initializedChunk = false;
 
   late final ServiceHandler _auth;
-  late final OfflineStorageController _offlineStorage;
 
   @override
   void initState() {
     super.initState();
     _auth = Get.find<ServiceHandler>();
-    _offlineStorage = Get.find<OfflineStorageController>();
     _initializeChapterState();
   }
 
@@ -227,7 +237,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
   void _onScanIndex() {
     _selectedChunkIndex.value = 1;
-
     if (mounted) {
       setState(() {});
     }
@@ -240,26 +249,20 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       selectedScanIndex: _selectedScanIndex.value,
     );
 
-    final progress = chapterState.continueChapter?.number;
-    if (progress != null && chapterState.chunkedChapters.isNotEmpty) {
-      List<List<int>> ranges = [];
-      final newList =
-          chapterState.chunkedChapters.map((e) => e.toList()).toList();
-      if (newList.isNotEmpty) {
-        newList.removeAt(0);
+    final progress = chapterState.continueChapter?.number?.toInt() ?? 1;
+    
+    if (!_initializedChunk && chapterState.chunkedChapters.isNotEmpty) {
+      final chunkIndex = findChapterChunkIndexFromProgress(
+        progress,
+        chapterState.chunkedChapters,
+      );
+      final maxIndex = chapterState.chunkedChapters.length - 1;
+      if (maxIndex < 1) {
+        _selectedChunkIndex.value = 0;
+      } else {
+        _selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
       }
-
-      for (var e in newList) {
-        if (e.isNotEmpty && e.first.number != null && e.last.number != null) {
-          ranges.add([e.first.number!.toInt(), e.last.number!.toInt()]);
-        }
-      }
-
-      final chunkIndex =
-          ranges.indexWhere((e) => progress >= e[0] && progress <= e[1]) + 1;
-      if (chunkIndex > 0) {
-        _selectedChunkIndex.value = chunkIndex;
-      }
+      _initializedChunk = true;
     }
   }
 
@@ -274,7 +277,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     return Obx(() {
       _auth.currentMedia.value;
-      _offlineStorage.mangaLibrary.value;
 
       return _buildChapterList();
     });
@@ -350,7 +352,11 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ContinueChapterButton(
         onPressed: () => _chapterService.navigateToReading(
-            widget.anilistData, filteredFullChapters, continueChapter, context),
+            widget.anilistData,
+            filteredFullChapters,
+            continueChapter,
+            context,
+            () => setState(() {})),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
         chapter: continueChapter,
@@ -401,8 +407,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       anilistData: widget.anilistData,
       readChapter: chapterState.readChapter,
       continueChapter: chapterState.continueChapter,
-      onTap: () => _chapterService.navigateToReading(
-          widget.anilistData, filteredFullChapters, chapter, context),
+      onTap: () => _chapterService.navigateToReading(widget.anilistData,
+          filteredFullChapters, chapter, context, () => setState(() {})),
     );
   }
 }
@@ -432,31 +438,32 @@ class ChapterListItem extends StatelessWidget {
     final isSelected = chapter.link == currentChapterLink;
     final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
         ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
-
     return AnymexOnTap(
-      onTap: onTap,
-      child: Opacity(
-        opacity: alreadyRead ? 0.5 : 1,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? context.colors.secondary.withAlpha(100)
-                : Theme.of(context).colorScheme.secondaryContainer.opaque(0.4),
-            borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Opacity(
+          opacity: alreadyRead ? 0.5 : 1,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? context.colors.secondary.withAlpha(100)
+                  : Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .opaque(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                _buildChapterProgress(context, savedChaps ?? Chapter()),
+                const SizedBox(width: 15),
+                _buildChapterInfo(context, savedChaps),
+                const Spacer(),
+                _buildReadButton(context),
+              ],
+            ),
           ),
-          child: Row(
-            children: [
-              _buildChapterProgress(context, savedChaps ?? Chapter()),
-              const SizedBox(width: 15),
-              _buildChapterInfo(context, savedChaps),
-              const Spacer(),
-              _buildReadButton(context),
-            ],
-          ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildChapterProgress(BuildContext context, Chapter savedChap) {

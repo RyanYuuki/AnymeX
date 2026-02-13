@@ -1,41 +1,23 @@
-import 'package:hive/hive.dart';
+import 'package:isar_community/isar.dart';
 
 part 'chapter.g.dart';
 
-@HiveType(typeId: 6)
-class Chapter extends HiveObject {
-  @HiveField(0)
+@embedded
+class Chapter {
   String? link;
-
-  @HiveField(1)
   String? title;
-
-  @HiveField(2)
   String? releaseDate;
-
-  @HiveField(3)
   String? scanlator;
-
-  @HiveField(4)
   double? number;
-
-  @HiveField(5)
   int? pageNumber;
-
-  @HiveField(6)
   int? totalPages;
-
-  @HiveField(7)
   int? lastReadTime;
-
-  @HiveField(8)
   double? currentOffset;
-
-  @HiveField(9)
   double? maxOffset;
-
-  @HiveField(10)
   String? sourceName;
+
+  List<String>? headerKeys;
+  List<String>? headerValues;
 
   Chapter(
       {this.link,
@@ -48,7 +30,9 @@ class Chapter extends HiveObject {
       this.totalPages,
       this.currentOffset,
       this.maxOffset,
-      this.sourceName});
+      this.sourceName,
+      this.headerKeys,
+      this.headerValues});
 
   Map<String, dynamic> toJson() {
     return {
@@ -63,6 +47,8 @@ class Chapter extends HiveObject {
       'currentOffset': currentOffset,
       'maxOffset': maxOffset,
       'sourceName': sourceName,
+      'headerKeys': headerKeys,
+      'headerValues': headerValues
     };
   }
 
@@ -79,6 +65,8 @@ class Chapter extends HiveObject {
       currentOffset: (json['currentOffset'] as num?)?.toDouble(),
       maxOffset: (json['maxOffset'] as num?)?.toDouble(),
       sourceName: json['sourceName'] as String?,
+      headerKeys: json['headerKeys'] as List<String>?,
+      headerValues: json['headerValues'] as List<String>?,
     );
   }
 }

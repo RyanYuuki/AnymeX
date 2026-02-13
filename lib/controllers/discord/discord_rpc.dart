@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';

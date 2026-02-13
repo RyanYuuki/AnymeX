@@ -1,5 +1,5 @@
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/widgets/bottom_controls.dart';
 import 'package:anymex/screens/novel/reader/widgets/novel_content.dart';

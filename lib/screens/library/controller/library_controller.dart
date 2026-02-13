@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
@@ -24,74 +24,19 @@ class LibraryController extends GetxController {
   final type = ItemType.anime.obs;
   final isSearchActive = false.obs;
 
-  final customListData = <CustomListData>[].obs;
-  final initialCustomListData = <CustomListData>[].obs;
-  final filteredData = <OfflineMedia>[].obs;
-  final historyData = <OfflineMedia>[].obs;
-
-  final customListDataManga = <CustomListData>[].obs;
-  final initialCustomListMangaData = <CustomListData>[].obs;
-  final filteredDataManga = <OfflineMedia>[].obs;
-  final historyDataManga = <OfflineMedia>[].obs;
-
-  final customListNovelData = <CustomListData>[].obs;
-  final initialCustomListNovelData = <CustomListData>[].obs;
-  final filteredDataNovel = <OfflineMedia>[].obs;
-  final historyDataNovel = <OfflineMedia>[].obs;
-
   SortType currentSort = SortType.lastAdded;
   bool isAscending = false;
 
   @override
   void onInit() {
     super.onInit();
-    initLibraryData();
     getPreferences();
-
-    ever(offlineStorage.animeCustomLists, (_) => initLibraryData());
-    ever(offlineStorage.mangaCustomLists, (_) => initLibraryData());
-    ever(offlineStorage.novelCustomLists, (_) => initLibraryData());
   }
 
   @override
   void onClose() {
     searchController.dispose();
     super.onClose();
-  }
-
-  void initLibraryData() {
-    customListData.value = offlineStorage.animeCustomListData.value
-        .map((e) => CustomListData(
-              listName: e.listName,
-              listData: e.listData.toList(),
-            ))
-        .toList();
-
-    customListDataManga.value = offlineStorage.mangaCustomListData.value
-        .map((e) => CustomListData(
-              listName: e.listName,
-              listData: e.listData.toList(),
-            ))
-        .toList();
-
-    customListNovelData.value = offlineStorage.novelCustomListData.value
-        .map((e) => CustomListData(
-              listName: e.listName,
-              listData: e.listData.toList(),
-            ))
-        .toList();
-
-    historyData.value = offlineStorage.animeLibrary
-        .where((e) => e.currentEpisode?.currentTrack != null)
-        .toList();
-    historyDataManga.value = offlineStorage.mangaLibrary.toList();
-    historyDataNovel.value = offlineStorage.novelLibrary.toList();
-
-    initialCustomListData.value = customListData;
-    initialCustomListMangaData.value = customListDataManga;
-    initialCustomListNovelData.value = customListNovelData;
-
-    validateAndResetListIndex();
   }
 
   void getPreferences() {
@@ -125,51 +70,6 @@ class LibraryController extends GetxController {
         'library_last_list_index_${type.value.name}', selectedListIndex.value);
   }
 
-  void search(String val) {
-    searchQuery.value = val;
-    final currentIndex = selectedListIndex.value;
-
-    if (currentIndex == -1) {
-      if (type.value.isAnime) {
-        filteredData.value = historyData
-            .where((e) =>
-                e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-            .toList();
-      } else if (type.value.isManga) {
-        filteredDataManga.value = historyDataManga
-            .where((e) =>
-                e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-            .toList();
-      } else if (type.value.isNovel) {
-        filteredDataNovel.value = historyDataNovel
-            .where((e) =>
-                e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-            .toList();
-      }
-      return;
-    }
-
-    if (type.value.isAnime) {
-      final initialData = customListData[currentIndex].listData;
-      filteredData.value = initialData
-          .where(
-              (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-          .toList();
-    } else if (type.value.isManga) {
-      final initialData = customListDataManga[currentIndex].listData;
-      filteredDataManga.value = initialData
-          .where(
-              (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-          .toList();
-    } else if (type.value.isNovel) {
-      final initialData = customListNovelData[currentIndex].listData;
-      filteredDataNovel.value = initialData
-          .where(
-              (e) => e.name?.toLowerCase().contains(val.toLowerCase()) ?? false)
-          .toList();
-    }
-  }
-
   void switchCategory(ItemType typ) {
     type.value = typ;
 
@@ -181,7 +81,6 @@ class LibraryController extends GetxController {
       searchQuery.value = '';
     }
     savePreferences();
-    print(type.value == typ);
   }
 
   void selectList(int index) {
@@ -205,6 +104,10 @@ class LibraryController extends GetxController {
     }
   }
 
+  void search(String query) {
+    searchQuery.value = query;
+  }
+
   void handleSortChange(SortType sortType) {
     if (currentSort == sortType) {
       isAscending = !isAscending;
@@ -213,29 +116,17 @@ class LibraryController extends GetxController {
       isAscending = false;
     }
     savePreferences();
-    applySorting();
   }
 
-  void applySorting() {
-    final lists = typeBuilder(type.value,
-        animeValue: customListData,
-        mangaValue: customListDataManga,
-        novelValue: customListNovelData);
+  List<OfflineMedia> applySorting(List<OfflineMedia> items) {
+    final sorted = List<OfflineMedia>.from(items);
 
-    if (lists.isEmpty || selectedListIndex.value >= lists.length) return;
-
-    final currentList = lists[selectedListIndex.value];
-    final initialList = typeBuilder(type.value,
-        animeValue: initialCustomListData[selectedListIndex.value],
-        mangaValue: initialCustomListMangaData[selectedListIndex.value],
-        novelValue: initialCustomListNovelData[selectedListIndex.value]);
-
-    currentList.listData.sort((a, b) {
+    sorted.sort((a, b) {
       int comparison = 0;
 
       switch (currentSort) {
         case SortType.title:
-          comparison = a.name.compareTo(b.name);
+          comparison = (a.name ?? '').compareTo(b.name ?? '');
           break;
         case SortType.lastRead:
           final aTime = type.value.isAnime
@@ -252,109 +143,64 @@ class LibraryController extends GetxController {
           comparison = aRating.compareTo(bRating);
           break;
         case SortType.lastAdded:
-          break;
+        // return isAscending ? items.reversed.toList() : items;
       }
 
       return isAscending ? comparison : -comparison;
     });
 
-    if (currentSort == SortType.lastAdded) {
-      if (isAscending) {
-        currentList.listData = initialList.listData.reversed.toList();
-      } else {
-        currentList.listData = initialList.listData;
-      }
-    }
-
-    if (type.value.isAnime) {
-      customListData.refresh();
-    } else if (type.value.isManga) {
-      customListDataManga.refresh();
-    } else if (type.value.isNovel) {
-      customListNovelData.refresh();
-    }
+    return sorted;
   }
 
-  dynamic typeBuilder(ItemType type,
-      {required dynamic animeValue,
-      required dynamic mangaValue,
-      required dynamic novelValue}) {
-    switch (type) {
+  List<OfflineMedia> applySearch(List<OfflineMedia> items, String query) {
+    if (query.isEmpty) return items;
+
+    return items
+        .where(
+            (e) => e.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
+  }
+
+  Stream<List<OfflineMedia>> getLibraryStream() {
+    switch (type.value) {
       case ItemType.anime:
-        return animeValue;
+        return offlineStorage.watchAnimeLibrary();
       case ItemType.manga:
-        return mangaValue;
+        return offlineStorage.watchMangaLibrary();
       case ItemType.novel:
-        return novelValue;
+        return offlineStorage.watchNovelLibrary();
     }
   }
 
-  List<OfflineMedia> getHistoryItems() {
-    return typeBuilder(type.value,
-        animeValue: historyData,
-        mangaValue: historyDataManga,
-        novelValue: historyDataNovel);
-  }
-
-  bool get isListEmpty {
-    if (selectedListIndex.value == -1) {
-      return getHistoryItems().isEmpty;
-    }
-
-    final lists = typeBuilder(type.value,
-        animeValue: customListData,
-        mangaValue: customListDataManga,
-        novelValue: customListNovelData);
-
-    final currentIndex = selectedListIndex.value;
-
-    if (lists.isEmpty || currentIndex >= lists.length) {
-      return true;
-    }
-
-    return lists[currentIndex].listData.isEmpty;
-  }
-
-  void validateAndResetListIndex() {
-    final lists = typeBuilder(type.value,
-        animeValue: customListData,
-        mangaValue: customListDataManga,
-        novelValue: customListNovelData);
-
-    if (selectedListIndex.value >= lists.length) {
-      selectedListIndex.value = lists.isEmpty ? 0 : 0;
-      savePreferences();
-    }
-  }
-
-  List<OfflineMedia> getCurrentItems() {
-    if (selectedListIndex.value == -1) {
-      if (searchQuery.isNotEmpty) {
-        return typeBuilder(type.value,
-            animeValue: filteredData,
-            mangaValue: filteredDataManga,
-            novelValue: filteredDataNovel);
+  Stream<List<OfflineMedia>> getHistoryStream() {
+    return getLibraryStream().map((items) {
+      if (type.value.isAnime) {
+        return items
+            .where((e) => e.currentEpisode?.currentTrack != null)
+            .toList();
       }
-      return getHistoryItems();
-    }
 
-    final lists = typeBuilder(type.value,
-        animeValue: customListData,
-        mangaValue: customListDataManga,
-        novelValue: customListNovelData);
+      if (type.value.isManga) {
+        return items.where((e) => e.currentChapter?.link != null).toList();
+      }
 
-    // ADD THIS SAFETY CHECK:
-    if (lists.isEmpty || selectedListIndex.value >= lists.length) {
-      return [];
-    }
+      if (type.value.isNovel) {
+        return items.where((e) => e.currentChapter?.link != null).toList();
+      }
 
-    if (searchQuery.isNotEmpty) {
-      return typeBuilder(type.value,
-          animeValue: filteredData,
-          mangaValue: filteredDataManga,
-          novelValue: filteredDataNovel);
-    }
+      return items;
+    });
+  }
 
-    return lists[selectedListIndex.value].listData;
+  Future<List<String>> getCustomListNames() async {
+    final lists = await offlineStorage.getCustomListsByType(type.value);
+    return lists.map((l) => l.listName ?? '').toList();
+  }
+
+  Stream<List<OfflineMedia>> getCustomListStream(
+      String listName, ItemType type) {
+    return offlineStorage
+        .watchCustomListData(listName, type)
+        .map((data) => data.listData);
   }
 }

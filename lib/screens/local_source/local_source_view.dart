@@ -4,12 +4,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/models/Offline/Hive/video.dart' as h;
+import 'package:anymex/database/isar_models/video.dart' as h;
 import 'package:anymex/screens/local_source/controller/local_source_controller.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
-import 'package:anymex/screens/local_source/player/offline_player_old.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -1168,23 +1166,12 @@ class _WatchOfflineState extends State<WatchOffline> {
         if (isDirectory) {
           controller.navigateToFolder(item.path);
         } else {
-          if (settingsController.preferences
-              .get('useOldPlayer', defaultValue: false)) {
-            navigate(() => OfflineWatchPageOld(
-                  episodePath: LocalEpisode(
-                      path: item.path,
-                      name: itemName,
-                      folderName: path.basename(controller.currentPath.value)),
-                  episodesList: const [],
-                ));
-          } else {
-            navigate(() => OfflineWatchPage(
-                episodeList: const [],
-                episode: LocalEpisode(
-                    path: item.path,
-                    name: itemName,
-                    folderName: path.basename(controller.currentPath.value))));
-          }
+          navigate(() => OfflineWatchPage(
+              episodeList: const [],
+              episode: LocalEpisode(
+                  path: item.path,
+                  name: itemName,
+                  folderName: path.basename(controller.currentPath.value))));
         }
       },
       child: Container(

@@ -5,16 +5,16 @@ import 'dart:convert';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/database/comments_db.dart';
+import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -954,7 +954,7 @@ class AnilistAuth extends GetxController {
         .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
   }
 
-  void setCurrentMedia(String id, {bool isManga = false}) {
+  void setCurrentMedia(String id, {bool isManga = false}) async {
     if (isManga) {
       final savedManga = offlineStorage.getMangaById(id);
       final number = savedManga?.currentChapter?.number?.toInt() ?? 0;
@@ -965,7 +965,7 @@ class AnilistAuth extends GetxController {
               ));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
       currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),
