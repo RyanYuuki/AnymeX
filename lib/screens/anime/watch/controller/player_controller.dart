@@ -1310,7 +1310,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final service = anilistData.serviceType.onlineService;
-      final currEpisodeNum = currentEpisode.value.number.toInt();
+      final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
       
       final int newProgress = hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
 
