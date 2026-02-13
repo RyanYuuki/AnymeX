@@ -65,14 +65,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     _initEpisodes();
 
     ever(auth.isLoggedIn, (_) => _initUserProgress());
-    ever(userProgress, (_) => {
-      _initEpisodes(),
-      _updateChunkIndex()
+    ever(userProgress, (_) {
+      _initEpisodes();
+      _updateChunkIndex();
     });
-    ever(auth.currentMedia, (_) => {
-      _initUserProgress(), 
-      _initEpisodes(),
-      _updateChunkIndex()
+    ever(auth.currentMedia, (_) {
+      _initUserProgress(); 
+      _initEpisodes();
+      _updateChunkIndex();
     });
 
     offlineStorage.addListener(() {
@@ -84,25 +84,35 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         _updateChunkIndex();
       }
     });
+
+   
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _updateChunkIndex();
+    });
   }
 
   void _updateChunkIndex() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+    if (!mounted) return;
+    
+    final chunkedEpisodes = chunkEpisodes(
+        widget.episodeList, calculateChunkSize(widget.episodeList));
+    
+    if (chunkedEpisodes.length > 1) {
+     
+      final progress = continueEpisode.value.number.toInt();
       
-      final chunkedEpisodes = chunkEpisodes(
-          widget.episodeList, calculateChunkSize(widget.episodeList));
-      
-      if (chunkedEpisodes.length > 1 && !_initializedChunk) {
-        final progress = userProgress.value;
-        final chunkIndex = findChunkIndexFromProgress(
-          progress,
-          chunkedEpisodes,
-        );
-        selectedChunkIndex.value = chunkIndex.clamp(1, chunkedEpisodes.length - 1);
-        _initializedChunk = true;
+      final chunkIndex = findChunkIndexFromProgress(
+        progress,
+        chunkedEpisodes,
+      );
+      final maxIndex = chunkedEpisodes.length - 1;
+      if (maxIndex < 1) {
+        selectedChunkIndex.value = 0;
+      } else {
+        selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
       }
-    });
+      _initializedChunk = true;
+    }
   }
 
   void _initUserProgress() {
@@ -167,7 +177,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     }
 
     final isAnify = (widget.episodeList.isNotEmpty && 
-        widget.episodeList[0].thumbnail?.isNotEmpty ?? false).obs;
+        (widget.episodeList[0].thumbnail?.isNotEmpty ?? false)).obs;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

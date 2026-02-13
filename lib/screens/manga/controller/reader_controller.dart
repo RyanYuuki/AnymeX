@@ -266,15 +266,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (event == 'up') {
       if (invertVolumeKeys.value) {
-        _navigateForward();
+        navigateForward();
       } else {
-        _navigateBackward();
+        navigateBackward();
       }
     } else if (event == 'down') {
       if (invertVolumeKeys.value) {
-        _navigateBackward();
+        navigateBackward();
       } else {
-        _navigateForward();
+        navigateForward();
       }
     }
   }
@@ -285,7 +285,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _volumeSubscription = null;
   }
 
-  void _navigateForward() {
+  void navigateForward() {
   final isReversed = readingDirection.value.reversed;
 
   if (readingLayout.value == MangaPageViewMode.continuous) {
@@ -312,7 +312,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 }
 
-void _navigateBackward() {
+  void navigateBackward() {
   final isReversed = readingDirection.value.reversed;
 
   if (readingLayout.value == MangaPageViewMode.continuous) {
@@ -809,9 +809,9 @@ void _navigateBackward() {
 
           if (now - _lastMouseTurnTime > 100) {
             if (_mouseWheelAccumulator > 0) {
-              _navigateForward();
+              navigateForward();
             } else {
-              _navigateBackward();
+              navigateBackward();
             }
             _lastMouseTurnTime = now;
           }

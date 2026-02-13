@@ -295,7 +295,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     Logger.i('Applied ${profileName.toUpperCase()} profile');
   }
 
-  void _applyCustomSettings() async {
+  Future<void> _applyCustomSettings() async {
     setState(() => _selectedProfile = 'custom');
     await ColorProfileManager()
         .applyCustomSettings(_customSettings, widget.player);
@@ -304,12 +304,12 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     _showProfileAppliedFeedback('Custom');
   }
 
-  void _resetShaderToDefault() async {
+  Future<void> _resetShaderToDefault() async {
     setState(() {
       _selectedShader = "Default";
     });
     await ColorProfileManager().resetShader(widget.player);
-    settingsController.selectedShader.value = "Default";
+    settingsController.selectedShader = "Default";
     settingsController.preferences.put('selectedShader', "Default");
     HapticFeedback.lightImpact();
     Logger.i('Shader reset to Default');
@@ -689,9 +689,9 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     );
   }
 
-  void setShaders(String message, {bool backOut = true}) async {
+  Future<void> setShaders(String message, {bool backOut = true}) async {
     await PlayerShaders.setShaders(widget.player, message);
-    settingsController.selectedShader.value = message == "Default" ? "" : message;
+    settingsController.selectedShader = message == "Default" ? "" : message;
     settingsController.preferences.put('selectedShader', 
         message == "Default" ? "" : message);
     setState(() {

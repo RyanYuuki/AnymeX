@@ -460,13 +460,6 @@ class Ranking {
   }
 }
 
-extension RemoveDupes on List<Media> {
-  List<Media> removeDupes() {
-    final seen = <String>{};
-    return where((media) => seen.add(media.id)).toList();
-  }
-}
-
 extension RemoveDupesOnTM on List<TrackedMedia> {
   List<TrackedMedia> removeDupes() {
     final seen = <String>{};

@@ -311,10 +311,13 @@ int findChunkIndexFromProgress(
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
     
-    final firstEp = chunk.first.number.toInt();
-    final lastEp = chunk.last.number.toInt();
+    final firstEp = double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
+    final lastEp = double.tryParse(chunk.last.number.toString())?.toInt() ?? 0;
     
-    if (userProgress >= firstEp && userProgress <= lastEp) {
+    final minEp = firstEp < lastEp ? firstEp : lastEp;
+    final maxEp = firstEp > lastEp ? firstEp : lastEp;
+    
+    if (userProgress >= minEp && userProgress <= maxEp) {
       return i;
     }
   }
@@ -336,7 +339,10 @@ int findChapterChunkIndexFromProgress(
     final firstChapter = chunk.first.number?.toInt() ?? 0;
     final lastChapter = chunk.last.number?.toInt() ?? 0;
     
-    if (userProgress >= firstChapter && userProgress <= lastChapter) {
+    final minCh = firstChapter < lastChapter ? firstChapter : lastChapter;
+    final maxCh = firstChapter > lastChapter ? firstChapter : lastChapter;
+    
+    if (userProgress >= minCh && userProgress <= maxCh) {
       return i;
     }
   }

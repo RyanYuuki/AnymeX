@@ -40,21 +40,30 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
-  bool get hasNextEpisode =>
-      episodeList.indexOf(currentEpisode.value) < episodeList.length - 1;
-  bool get hasPreviousEpisode => episodeList.indexOf(currentEpisode.value) > 0;
+  bool get hasNextEpisode {
+    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    return index != -1 && index < episodeList.length - 1;
+  }
+
+  bool get hasPreviousEpisode {
+    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    return index > 0;
+  }
 
   Episode? get nextEpisode {
-    final index = episodeList.indexOf(currentEpisode.value);
-    return index < episodeList.length - 1 ? episodeList[index + 1] : null;
+    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    if (index == -1 || index >= episodeList.length - 1) return null;
+    return episodeList[index + 1];
   }
 
   Episode? get previousEpisode {
-    final index = episodeList.indexOf(currentEpisode.value);
-    return index > 0 ? episodeList[index - 1] : null;
+    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    if (index <= 0) return null;
+    return episodeList[index - 1];
   }
 
-  int get currentEpisodeIndex => episodeList.indexOf(currentEpisode.value);
+  int get currentEpisodeIndex =>
+      episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
@@ -440,7 +449,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
-    print('Video: ${selectedVideo.value?.toJson()}');
 
     _basePlayer.initialize().then((_) {
       if (isOffline.value && offlineVideoPath != null) {
@@ -726,7 +734,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _resetAutoHideTimer();
     }
   }
-
   Future<void> fetchEpisode(Episode episode) async {
     if (isOffline.value) return;
 
@@ -752,7 +759,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedVideo.value = matched;
       _extractSubtitles();
 
-      await _switchMedia(matched.url, matched.headers);
+      await _switchMedia(matched.url ?? "", matched.headers);
     } catch (e) {
       snackBar('Failed to load episode. Check your connection.');
     } finally {

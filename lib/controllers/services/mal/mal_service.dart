@@ -60,7 +60,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
     return (data['data'] as List<dynamic>)
         .map((e) => Media.fromMAL(e))
-        .toList();
+        .toList()
         .removeDupes();
   }
 

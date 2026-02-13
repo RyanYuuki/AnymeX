@@ -256,10 +256,12 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         progress,
         chapterState.chunkedChapters,
       );
-      _selectedChunkIndex.value = chunkIndex.clamp(
-        1, 
-        chapterState.chunkedChapters.length - 1
-      );
+      final maxIndex = chapterState.chunkedChapters.length - 1;
+      if (maxIndex < 1) {
+        _selectedChunkIndex.value = 0;
+      } else {
+        _selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
+      }
       _initializedChunk = true;
     }
   }

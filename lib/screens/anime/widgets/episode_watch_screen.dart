@@ -98,7 +98,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           progress,
           _cachedChunkedEpisodes!,
         );
-        selectedChunkIndex.value = chunkIndex.clamp(1, _cachedChunkedEpisodes!.length - 1);
+        final maxIndex = _cachedChunkedEpisodes!.length - 1;
+        if (maxIndex < 1) {
+          selectedChunkIndex.value = 0;
+        } else {
+          selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
+        }
         _initializedChunk = true;
       }
     }
