@@ -266,15 +266,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (event == 'up') {
       if (invertVolumeKeys.value) {
-        _navigateForward();
+        navigateForward();
       } else {
-        _navigateBackward();
+        navigateBackward();
       }
     } else if (event == 'down') {
       if (invertVolumeKeys.value) {
-        _navigateBackward();
+        navigateBackward();
       } else {
-        _navigateForward();
+        navigateForward();
       }
     }
   }
@@ -285,31 +285,59 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _volumeSubscription = null;
   }
 
-  void _navigateForward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+  void navigateForward() {
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? -offset : offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
-  void _navigateBackward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: -offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+  void navigateBackward() {
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? offset : -offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.previousPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
   void toggleVolumeKeys() {
     volumeKeysEnabled.value = !volumeKeysEnabled.value;
@@ -781,9 +809,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
           if (now - _lastMouseTurnTime > 100) {
             if (_mouseWheelAccumulator > 0) {
-              _navigateForward();
+              navigateForward();
             } else {
-              _navigateBackward();
+              navigateBackward();
             }
             _lastMouseTurnTime = now;
           }

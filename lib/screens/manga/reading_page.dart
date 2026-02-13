@@ -57,21 +57,33 @@ class _ReadingPageState extends State<ReadingPage> {
       final currentPage = controller.currentPageIndex.value;
       final totalPages = controller.pageList.length;
 
-      switch (event.logicalKey) {
-        case LogicalKeyboardKey.arrowRight:
-        case LogicalKeyboardKey.arrowDown:
+
+        final isReversed = controller.readingDirection.value.reversed;
+        bool isNext = false;
+        bool isPrev = false;
+
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          isNext = true;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          isPrev = true;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          isNext = !isReversed;
+          isPrev = isReversed;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          isNext = isReversed;
+          isPrev = !isReversed;
+        }
+
+        if (isNext) {
           if (currentPage < totalPages) {
             controller.navigateToPage(currentPage);
           }
-          break;
-
-        case LogicalKeyboardKey.arrowLeft:
-        case LogicalKeyboardKey.arrowUp:
+        } else if (isPrev) {
           if (currentPage > 1) {
             controller.navigateToPage(currentPage - 2);
           }
-          break;
-      }
+        }
+
     }
   }
 

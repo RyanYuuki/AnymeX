@@ -213,6 +213,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final _chapterService = ChapterService();
 
   final _isInitialized = false.obs;
+  bool _initializedChunk = false;
 
   late final ServiceHandler _auth;
 
@@ -236,7 +237,6 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
   void _onScanIndex() {
     _selectedChunkIndex.value = 1;
-
     if (mounted) {
       setState(() {});
     }
@@ -249,26 +249,20 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       selectedScanIndex: _selectedScanIndex.value,
     );
 
-    final progress = chapterState.continueChapter?.number;
-    if (progress != null && chapterState.chunkedChapters.isNotEmpty) {
-      List<List<int>> ranges = [];
-      final newList =
-          chapterState.chunkedChapters.map((e) => e.toList()).toList();
-      if (newList.isNotEmpty) {
-        newList.removeAt(0);
+    final progress = chapterState.continueChapter?.number?.toInt() ?? 1;
+    
+    if (!_initializedChunk && chapterState.chunkedChapters.isNotEmpty) {
+      final chunkIndex = findChapterChunkIndexFromProgress(
+        progress,
+        chapterState.chunkedChapters,
+      );
+      final maxIndex = chapterState.chunkedChapters.length - 1;
+      if (maxIndex < 1) {
+        _selectedChunkIndex.value = 0;
+      } else {
+        _selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
       }
-
-      for (var e in newList) {
-        if (e.isNotEmpty && e.first.number != null && e.last.number != null) {
-          ranges.add([e.first.number!.toInt(), e.last.number!.toInt()]);
-        }
-      }
-
-      final chunkIndex =
-          ranges.indexWhere((e) => progress >= e[0] && progress <= e[1]) + 1;
-      if (chunkIndex > 0) {
-        _selectedChunkIndex.value = chunkIndex;
-      }
+      _initializedChunk = true;
     }
   }
 
