@@ -14,13 +14,8 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
+import 'package:anymex/database/database.dart';
 import 'package:anymex/firebase_options.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/models/Offline/Hive/custom_list.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
-import 'package:anymex/models/Offline/Hive/offline_storage.dart';
-import 'package:anymex/models/Offline/Hive/video.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/anime/home_page.dart';
@@ -103,6 +98,7 @@ void main(List<String> args) async {
       ['dar', 'anymex', 'sugoireads', 'mangayomi']
           .forEach(registerProtocolHandler);
     }
+    Database().init();
     initDeepLinkListener();
     HttpOverrides.global = MyHttpoverrides();
     await initializeHive();
@@ -167,15 +163,8 @@ void initDeepLinkListener() async {
 
 Future<void> initializeHive() async {
   await Hive.initFlutter('AnymeX');
-  Hive.registerAdapter(VideoAdapter());
-  Hive.registerAdapter(TrackAdapter());
   Hive.registerAdapter(UISettingsAdapter());
   Hive.registerAdapter(PlayerSettingsAdapter());
-  Hive.registerAdapter(OfflineStorageAdapter());
-  Hive.registerAdapter(OfflineMediaAdapter());
-  Hive.registerAdapter(CustomListAdapter());
-  Hive.registerAdapter(ChapterAdapter());
-  Hive.registerAdapter(EpisodeAdapter());
   await Hive.openBox('themeData');
   await Hive.openBox('loginData');
   await Hive.openBox('auth');

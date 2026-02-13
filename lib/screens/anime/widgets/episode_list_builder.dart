@@ -6,9 +6,9 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/video.dart' as hive;
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/video.dart' as hive;
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
@@ -522,13 +522,16 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
               onTap: () async {
                 Get.back();
                 if (General.shouldAskForTrack.get(true) == false) {
-                  navigate(() => WatchScreen(
+                  await navigate(() => WatchScreen(
                         episodeSrc: e,
                         episodeList: widget.episodeList,
                         anilistData: widget.anilistData!,
                         currentEpisode: selectedEpisode.value,
                         episodeTracks: streamList,
                       ));
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {});
+                  });
                   return;
                 }
                 final shouldTrack =
@@ -537,7 +540,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         : await showTrackingDialog(context);
 
                 if (shouldTrack != null) {
-                  navigate(() => WatchScreen(
+                  await navigate(() => WatchScreen(
                         episodeSrc: e,
                         episodeList: widget.episodeList,
                         anilistData: widget.anilistData!,
@@ -545,6 +548,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         episodeTracks: streamList,
                         shouldTrack: shouldTrack,
                       ));
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {});
+                  });
                 }
               },
               child: Padding(
@@ -554,7 +560,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
                   title: AnymexText(
-                    text: e.quality.toUpperCase(),
+                    text: e.quality?.toUpperCase() ?? "Unknown",
                     variant: TextVariant.bold,
                     size: 16,
                     color: context.colors.primary,

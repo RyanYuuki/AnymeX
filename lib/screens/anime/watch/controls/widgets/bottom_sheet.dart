@@ -1,4 +1,4 @@
-import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
@@ -579,7 +579,7 @@ class PlayerBottomSheets {
           icon: Icons.subtitles_off,
         ),
         ...tracks.map((e) => BottomSheetItem(
-              title: e.label ?? 'No Title',
+              title: e?.label ?? 'No Title',
               subtitle: 'Local Subtitle Track',
               icon: Icons.subtitles,
             )),
@@ -612,7 +612,7 @@ class PlayerBottomSheets {
       title: 'Video Servers',
       items: qualities.map((quality) {
         return BottomSheetItem(
-          title: quality.quality,
+          title: quality.quality ?? 'Auto',
           subtitle: 'Server',
           icon: Icons.high_quality,
         );
@@ -703,7 +703,7 @@ class PlayerBottomSheets {
       title: 'Episodes',
       isExpanded: true,
       content: ScrollablePositionedList.separated(
-        initialScrollIndex: selectedEpisode.value.number.toInt() - 1,
+        initialScrollIndex: selectedEpisode.value.number!.toInt() - 1,
         separatorBuilder: (context, i) => const SizedBox(height: 8),
         itemCount: episodes.length,
         itemBuilder: (context, index) {

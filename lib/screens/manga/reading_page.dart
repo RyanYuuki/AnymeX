@@ -8,7 +8,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 
 class ReadingPage extends StatefulWidget {
   final Media anilistData;
