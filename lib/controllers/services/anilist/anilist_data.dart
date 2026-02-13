@@ -229,15 +229,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _initFallback() {
     if (trendingAnimes.isEmpty) {
-      upcomingAnimes.value = fb.upcomingAnimes;
-      popularAnimes.value = fb.popularAnimes;
-      trendingAnimes.value = fb.trendingAnimes;
-      latestAnimes.value = fb.latestAnimes;
+      upcomingAnimes.value = fb.upcomingAnimes.removeDupes(); 
+      popularAnimes.value = fb.popularAnimes.removeDupes();
+      trendingAnimes.value = fb.trendingAnimes.removeDupes();
+      latestAnimes.value = fb.latestAnimes.removeDupes();
 
-      popularMangas.value = fbm.popularMangas;
-      latestMangas.value = fbm.latestMangas;
-      topOngoingMangas.value = fbm.trendingMangas;
-      trendingMangas.value = fbm.trendingMangas;
+      popularMangas.value = fbm.popularMangas.removeDupes();
+      latestMangas.value = fbm.latestMangas.removeDupes();
+      topOngoingMangas.value = fbm.trendingMangas.removeDupes();
+      trendingMangas.value = fbm.trendingMangas.removeDupes();
     }
   }
 

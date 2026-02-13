@@ -299,6 +299,57 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
   ];
 }
 
+int findChunkIndexFromProgress(
+  int userProgress,
+  List<List<Episode>> chunks, {
+  bool isManga = false,
+}) {
+  if (chunks.isEmpty || chunks.length <= 1) return 0;
+  if (userProgress <= 0) return 1;
+  
+  for (int i = 1; i < chunks.length; i++) {
+    final chunk = chunks[i];
+    if (chunk.isEmpty) continue;
+    
+    final firstEp = double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
+    final lastEp = double.tryParse(chunk.last.number.toString())?.toInt() ?? 0;
+    
+    final minEp = firstEp < lastEp ? firstEp : lastEp;
+    final maxEp = firstEp > lastEp ? firstEp : lastEp;
+    
+    if (userProgress >= minEp && userProgress <= maxEp) {
+      return i;
+    }
+  }
+  
+  return chunks.length - 1;
+}
+
+int findChapterChunkIndexFromProgress(
+  int userProgress,
+  List<List<Chapter>> chunks,
+) {
+  if (chunks.isEmpty || chunks.length <= 1) return 0;
+  if (userProgress <= 0) return 1;
+  
+  for (int i = 1; i < chunks.length; i++) {
+    final chunk = chunks[i];
+    if (chunk.isEmpty) continue;
+    
+    final firstChapter = chunk.first.number?.toInt() ?? 0;
+    final lastChapter = chunk.last.number?.toInt() ?? 0;
+    
+    final minCh = firstChapter < lastChapter ? firstChapter : lastChapter;
+    final maxCh = firstChapter > lastChapter ? firstChapter : lastChapter;
+    
+    if (userProgress >= minCh && userProgress <= maxCh) {
+      return i;
+    }
+  }
+  
+  return chunks.length - 1;
+}
+
 enum DataVariant {
   regular,
   recommendation,
@@ -516,6 +567,17 @@ extension SizedBoxExt on num {
 
   SizedBox height() {
     return SizedBox(height: toDouble());
+  }
+}
+
+extension RemoveDuplicates<T extends Media> on List<T> {
+  List<T> removeDupes() {
+    final seenIds = <String>{};
+    return where((media) {
+      final isDuplicate = seenIds.contains(media.id);
+      seenIds.add(media.id);
+      return !isDuplicate;
+    }).toList();
   }
 }
 

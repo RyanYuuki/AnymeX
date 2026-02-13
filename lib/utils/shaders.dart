@@ -140,7 +140,7 @@ class PlayerShaders {
     return shaderFiles.map((file) => '$shaderFolderPath$file').toList();
   }
 
-  static void setShaders(dynamic player, String shader) async {
+  static Future<void> setShaders(dynamic player, String shader) async {
     if (Platform.isLinux || Platform.isAndroid || Platform.isIOS) {
       await setShadersAlternative(player, shader);
       return;

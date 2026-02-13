@@ -1,3 +1,5 @@
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
@@ -26,7 +28,8 @@ class ChapterSliverSection extends StatefulWidget {
 class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   final chunkedChapters = <List<Chapter>>[].obs;
   final filteredChapters = <Chapter>[].obs;
-  final selectedChunkIndex = 0.obs;
+  final selectedChunkIndex = 1.obs;
+  bool _initializedChunk = false;
 
   @override
   void initState() {
@@ -57,9 +60,37 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
       chunkedChapters.value = chunkChapter(
           chaptersForChunking, calculateChapterChunkSize(chaptersForChunking));
 
+      if (chunkedChapters.isNotEmpty && !_initializedChunk) {
+        final auth = Get.find<ServiceHandler>();
+        final userProgress = _getUserProgress(auth, widget.controller.media.value.id);
+        
+        final chunkIndex = findChapterChunkIndexFromProgress(
+          userProgress,
+          chunkedChapters.value,
+        );
+        selectedChunkIndex.value = chunkIndex.clamp(
+          1,
+          chunkedChapters.value.length - 1
+        );
+        _initializedChunk = true;
+      }
+
       if (chunkedChapters.isNotEmpty) {
         filteredChapters.value = chunkedChapters[selectedChunkIndex.value];
       }
+    }
+  }
+
+  int _getUserProgress(ServiceHandler auth, String mediaId) {
+    if (auth.isLoggedIn.value && 
+        auth.serviceType.value != ServicesType.extensions) {
+      final tracked = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id == mediaId);
+      return tracked?.chapterCount?.toInt() ?? 1;
+    } else {
+      final offlineStorage = Get.find<OfflineStorageController>();
+      final saved = offlineStorage.getMangaById(mediaId);
+      return saved?.currentChapter?.number?.toInt() ?? 1;
     }
   }
 
@@ -103,7 +134,9 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
 
               return ChapterRanges(
                 selectedChunkIndex: selectedChunkIndex,
-                onChunkSelected: (v) {},
+                onChunkSelected: (v) {
+                  selectedChunkIndex.value = v;
+                },
                 chunks: chunkedChapters.value,
               );
             }),
