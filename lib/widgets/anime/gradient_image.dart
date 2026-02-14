@@ -159,6 +159,27 @@ class GradientPoster extends StatelessWidget {
         ),
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
+          left: 20,
+          child: AnymexOnTap(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true)
+                  .popUntil((route) => route.isFirst);
+            },
+            margin: 0,
+            child: IconButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.colors.surfaceContainer,
+              ),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true)
+                    .popUntil((route) => route.isFirst);
+              },
+              icon: const Icon(Icons.home),
+            ),
+          ),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 8,
           right: 20,
           child: AnymexOnTap(
             onTap: Get.back,
