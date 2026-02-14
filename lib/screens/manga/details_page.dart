@@ -8,6 +8,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -160,8 +161,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Future<void> _mapToService() async {
     final key =
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
-    final savedTitle =
-        settingsController.preferences.get(key, defaultValue: null);
+    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(formatTitles(anilistData!), searchedTitle,
         savedTitle: savedTitle);
     if (mappedData != null) {

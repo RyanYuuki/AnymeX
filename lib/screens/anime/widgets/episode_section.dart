@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -366,7 +367,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                           });
                           final key =
                               '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
-                          settingsController.preferences.put(key, manga.title);
+                          DynamicKeys.mappedMediaTitle.set(key, manga.title);
                         },
                       );
                     },

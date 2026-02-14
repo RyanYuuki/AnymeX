@@ -8,6 +8,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
@@ -266,15 +267,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (event == 'up') {
       if (invertVolumeKeys.value) {
-        _navigateForward();
+        navigateForward();
       } else {
-        _navigateBackward();
+        navigateBackward();
       }
     } else if (event == 'down') {
       if (invertVolumeKeys.value) {
-        _navigateBackward();
+        navigateBackward();
       } else {
-        _navigateForward();
+        navigateForward();
       }
     }
   }
@@ -285,31 +286,59 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _volumeSubscription = null;
   }
 
-  void _navigateForward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+  void navigateForward() {
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? -offset : offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
-  void _navigateBackward() {
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
-      scrollOffsetController?.animateScroll(
-          offset: -offset,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut);
+  void navigateBackward() {
+  final isReversed = readingDirection.value.reversed;
+
+  if (readingLayout.value == MangaPageViewMode.continuous) {
+    final double offset =
+        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+
+    scrollOffsetController?.animateScroll(
+      offset: isReversed ? offset : -offset,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  } else {
+    if (isReversed) {
+      pageController?.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       pageController?.previousPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
+}
 
   void toggleVolumeKeys() {
     volumeKeysEnabled.value = !volumeKeysEnabled.value;
@@ -521,36 +550,31 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void _getPreferences() {
     readingLayout.value = MangaPageViewMode.values[
-        settingsController.preferences.get('reading_layout', defaultValue: 0)];
-    readingDirection.value = MangaPageViewDirection.values[settingsController
-        .preferences
-        .get('reading_direction', defaultValue: 1)];
-    pageWidthMultiplier.value =
-        settingsController.preferences.get('image_width') ?? 1;
+        ReaderKeys.readingLayout.get<int>(0)];
+    readingDirection.value = MangaPageViewDirection.values[
+        ReaderKeys.readingDirection.get<int>(1)];
+    pageWidthMultiplier.value = ReaderKeys.imageWidth.get<double>(1);
     scrollSpeedMultiplier.value =
-        settingsController.preferences.get('scroll_speed') ?? 1;
-    spacedPages.value =
-        settingsController.preferences.get('spaced_pages', defaultValue: false);
-    overscrollToChapter.value = settingsController.preferences
-        .get('overscroll_to_chapter', defaultValue: true);
-    preloadPages.value =
-        settingsController.preferences.get('preload_pages', defaultValue: 3);
-    showPageIndicator.value = settingsController.preferences
-        .get('show_page_indicator', defaultValue: false);
+        ReaderKeys.scrollSpeed.get<double>(1);
+    spacedPages.value = ReaderKeys.spacedPages.get<bool>(false);
+    overscrollToChapter.value =
+        ReaderKeys.overscrollToChapter.get<bool>(true);
+    preloadPages.value = ReaderKeys.preloadPages.get<int>(3);
+    showPageIndicator.value =
+        ReaderKeys.showPageIndicator.get<bool>(false);
     // Both features: crop images AND volume keys
-    cropImages.value =
-        settingsController.preferences.get('crop_images', defaultValue: false);
-    volumeKeysEnabled.value = settingsController.preferences
-        .get('volume_keys_enabled', defaultValue: false);
-    invertVolumeKeys.value = settingsController.preferences
-        .get('invert_volume_keys', defaultValue: false);
+    cropImages.value = ReaderKeys.cropImages.get<bool>(false);
+    volumeKeysEnabled.value =
+        ReaderKeys.volumeKeysEnabled.get<bool>(false);
+    invertVolumeKeys.value =
+        ReaderKeys.invertVolumeKeys.get<bool>(false);
 
-    final dualPageVal = settingsController.preferences.get('dual_page_mode');
+    final dualPageVal = ReaderKeys.dualPageMode.get<int?>();
     if (dualPageVal != null) {
       dualPageMode.value = DualPageMode.values[dualPageVal];
     }
 
-    final modeIndex = settingsController.preferences.get('reading_layout');
+    final modeIndex = ReaderKeys.readingLayout.get<int?>();
     if (modeIndex != null) {
       readingLayout.value = MangaPageViewMode.values[modeIndex];
     }
@@ -561,29 +585,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _savePreferences() {
-    settingsController.preferences
-        .put('reading_layout', readingLayout.value.index);
-    settingsController.preferences
-        .put('reading_direction', readingDirection.value.index);
-    settingsController.preferences
-        .put('image_width', pageWidthMultiplier.value);
-    settingsController.preferences
-        .put('scroll_speed', scrollSpeedMultiplier.value);
-    settingsController.preferences.put('spaced_pages', spacedPages.value);
-    settingsController.preferences
-        .put('overscroll_to_chapter', overscrollToChapter.value);
-    settingsController.preferences.put('preload_pages', preloadPages.value);
-    settingsController.preferences
-        .put('show_page_indicator', showPageIndicator.value);
+    ReaderKeys.readingLayout.set(readingLayout.value.index);
+    ReaderKeys.readingDirection.set(readingDirection.value.index);
+    ReaderKeys.imageWidth.set(pageWidthMultiplier.value);
+    ReaderKeys.scrollSpeed.set(scrollSpeedMultiplier.value);
+    ReaderKeys.spacedPages.set(spacedPages.value);
+    ReaderKeys.overscrollToChapter.set(overscrollToChapter.value);
+    ReaderKeys.preloadPages.set(preloadPages.value);
+    ReaderKeys.showPageIndicator.set(showPageIndicator.value);
     // Both features: crop images AND volume keys
-    settingsController.preferences.put('crop_images', cropImages.value);
-
-    settingsController.preferences
-        .put('volume_keys_enabled', volumeKeysEnabled.value);
-    settingsController.preferences
-        .put('invert_volume_keys', invertVolumeKeys.value);
-    settingsController.preferences
-        .put('dual_page_mode', dualPageMode.value.index);
+    ReaderKeys.cropImages.set(cropImages.value);
+    ReaderKeys.volumeKeysEnabled.set(volumeKeysEnabled.value);
+    ReaderKeys.invertVolumeKeys.set(invertVolumeKeys.value);
+    ReaderKeys.dualPageMode.set(dualPageMode.value.index);
   }
 
   void _setupPositionListener() {
@@ -785,9 +799,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
           if (now - _lastMouseTurnTime > 100) {
             if (_mouseWheelAccumulator > 0) {
-              _navigateForward();
+              navigateForward();
             } else {
-              _navigateBackward();
+              navigateBackward();
             }
             _lastMouseTurnTime = now;
           }

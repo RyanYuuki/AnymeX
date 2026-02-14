@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
@@ -58,8 +58,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   LogoAnimationType _getStoredAnimationType() {
     try {
-      final box = Hive.box('themeData');
-      final index = box.get('logoAnimationType', defaultValue: 0);
+      final index = ThemeKeys.logoAnimationType.get<int>(0);
       return LogoAnimationType.fromIndex(index);
     } catch (e) {
       return LogoAnimationType.bottomToTop;

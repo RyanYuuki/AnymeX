@@ -1,4 +1,5 @@
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
@@ -9,7 +10,6 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentSection extends StatefulWidget {
@@ -75,9 +75,8 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _handlePostComment() {
-    final box = Hive.box('themeData');
     final bool hasAccepted =
-        box.get('hasAcceptedCommentRules', defaultValue: false);
+        General.hasAcceptedCommentRules.get<bool>(false);
 
     if (hasAccepted) {
       controller.addComment();
@@ -106,7 +105,7 @@ class _CommentSectionState extends State<CommentSection> {
           ),
           FilledButton(
             onPressed: () {
-              Hive.box('themeData').put('hasAcceptedCommentRules', true);
+              General.hasAcceptedCommentRules.set(true);
               Navigator.pop(context);
 
               controller.addComment();

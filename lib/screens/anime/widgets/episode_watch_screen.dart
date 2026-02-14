@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors
 import 'dart:ui';
 
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart';
@@ -47,12 +48,14 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   final RxList<Video> streamList = <Video>[].obs;
   final sourceController = Get.find<SourceController>();
   final Rx<Episode> chosenEpisode = Episode(number: '1').obs;
+  final auth = Get.find<ServiceHandler>();
 
   // Cache for expensive calculations
   List<List<Episode>>? _cachedChunkedEpisodes;
   int? _lastEpisodeListLength;
   int? _cachedUserProgress;
   bool? _cachedIsAnify;
+  bool _initializedChunk = false;
 
   @override
   void initState() {
@@ -60,23 +63,27 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     _precomputeValues();
   }
 
-  // 2. PERFORMANCE: Precompute expensive values
   void _precomputeValues() {
-    final auth = Get.find<AnilistAuth>();
-    _cachedUserProgress =
-        auth.returnAvailAnime(widget.anilistData!.id.toString()).episodeCount ==
-                null
-            ? widget.currentEpisode.number.toInt()
-            : auth
-                .returnAvailAnime(widget.anilistData!.id.toString())
-                .episodeCount!
-                .toInt();
-
+    _cachedUserProgress = _getUserProgress();
     _cachedIsAnify = widget.episodeList.isNotEmpty &&
         widget.episodeList[0].thumbnail != null &&
         widget.episodeList[0].thumbnail!.isNotEmpty;
-
     _computeChunkedEpisodes();
+  }
+
+  int _getUserProgress() {
+    if (auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions) {
+      final trackedMedia = auth.onlineService.animeList
+          .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
+      return trackedMedia?.episodeCount?.toInt() ??
+          widget.currentEpisode.number.toInt();
+    } else {
+      final offlineStorage = Get.find<OfflineStorageController>();
+      final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
+      return savedAnime?.currentEpisode?.number.toInt() ??
+          widget.currentEpisode.number.toInt();
+    }
   }
 
   void _computeChunkedEpisodes() {
@@ -84,6 +91,21 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       _cachedChunkedEpisodes = chunkEpisodes(
           widget.episodeList, calculateChunkSize(widget.episodeList));
       _lastEpisodeListLength = widget.episodeList.length;
+
+      if (!_initializedChunk && _cachedChunkedEpisodes != null) {
+        final progress = _cachedUserProgress ?? 1;
+        final chunkIndex = findChunkIndexFromProgress(
+          progress,
+          _cachedChunkedEpisodes!,
+        );
+        final maxIndex = _cachedChunkedEpisodes!.length - 1;
+        if (maxIndex < 1) {
+          selectedChunkIndex.value = 0;
+        } else {
+          selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
+        }
+        _initializedChunk = true;
+      }
     }
   }
 

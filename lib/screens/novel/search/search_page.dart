@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/utils/function.dart';
@@ -9,7 +10,6 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/common/glow.dart';
 
@@ -78,8 +78,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
 
   void _initializeData() {
     _searchController.text = '';
-    _searchedTerms.value = Hive.box('preferences')
-        .get('novel_searched_queries', defaultValue: <String>[]);
+    _searchedTerms.value = SearchKeys.novelSearchedQueries.get<List<String>>([]);
 
     // Set initial state - don't perform search automatically
     setState(() {
@@ -90,10 +89,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
   }
 
   void _saveHistory() {
-    Hive.box('preferences').put(
-      'novel_searched_queries',
-      _searchedTerms.toList(),
-    );
+    SearchKeys.novelSearchedQueries.set(_searchedTerms.toList());
   }
 
   Future<void> _performSearch({
