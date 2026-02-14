@@ -201,9 +201,9 @@ class SimklService extends GetxController
           // TappableSearchBar(
           //   onSubmitted: () {
           //     // navigate(() => const SearchPage(
-          //     //           searchTerm: "",
-          //     //           isManga: false,
-          //     //         ));
+          //     //       searchTerm: "",
+          //     //       isManga: false,
+          //     //     ));
           //     searchTypeSheet(context, "");
           //   },
           //   chipLabel: ("MOVIES"),
@@ -344,6 +344,7 @@ class SimklService extends GetxController
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
+      // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
