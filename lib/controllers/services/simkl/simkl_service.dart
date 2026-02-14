@@ -201,9 +201,9 @@ class SimklService extends GetxController
           // TappableSearchBar(
           //   onSubmitted: () {
           //     // navigate(() => const SearchPage(
-          //     //       searchTerm: "",
-          //     //       isManga: false,
-          //     //     ));
+          //     //           searchTerm: "",
+          //     //           isManga: false,
+          //     //         ));
           //     searchTypeSheet(context, "");
           //   },
           //   chipLabel: ("MOVIES"),
@@ -288,15 +288,13 @@ class SimklService extends GetxController
       final alrExist =
           (isMovie ? animeList : mangaList).any((e) => e.id == listId);
 
-      final url = Uri.parse(alrExist
-          ? 'https://api.simkl.com/sync/history'
-          : 'https://api.simkl.com/sync/add-to-list');
+      final url = Uri.parse('https://api.simkl.com/sync/add-to-list');
 
       final body = isMovie
           ? {
               'movies': [
                 {
-                  if (!alrExist) 'to': newStatus,
+                  'to': newStatus,
                   'ids': {'simkl': id},
                 }
               ]
@@ -304,11 +302,8 @@ class SimklService extends GetxController
           : {
               'shows': [
                 {
-                  if (!alrExist) 'to': newStatus,
+                  'to': newStatus,
                   'ids': {'simkl': id},
-                  'episodes': [
-                    for (int i = 1; i <= (progress ?? 1); i++) {'number': i}
-                  ]
                 }
               ]
             };
@@ -322,11 +317,33 @@ class SimklService extends GetxController
         },
         body: jsonEncode(body),
       );
+      
+      if (progress != null && progress > 0 && status != 'PLANNING') {
+         final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+         final historyBody = isMovie ? null : {
+           'shows': [
+             {
+               'ids': {'simkl': id},
+               'episodes': [
+                 for (int i = 1; i <= progress; i++) {'number': i}
+               ]
+             }
+           ]
+         };
+         
+         if(historyBody != null) {
+            await post(historyUrl, headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            }, body: jsonEncode(historyBody));
+         }
+      }
+
       Logger.i(response.body);
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
-      // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
