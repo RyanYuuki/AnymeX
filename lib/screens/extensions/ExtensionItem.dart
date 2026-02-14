@@ -182,7 +182,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     return SizedBox(
-      width: updateAvailable ? 150 : 100,
+      width: updateAvailable ? 150 : 100, // Adjusted width to accommodate extra button
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -213,7 +213,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: AnymexOnTap(
-              onTap: () => _onActionTap(false),
+              onTap: () => _onActionTap(false), // Pass false to trigger delete logic
               child: IconButton(
                 onPressed: () => _onActionTap(false),
                 icon: Icon(
