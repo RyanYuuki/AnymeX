@@ -175,11 +175,25 @@ class Deeplink {
       );
     }
 
+    if (segments.length == 1) {
+      final id = _extractNumericId(segments.first);
+      if (id != null) {
+        final queryType = uri.queryParameters['type']?.toLowerCase();
+        final isManga = queryType == 'manga' || queryType == 'read';
+        return _MediaDeepLinkTarget(
+          serviceType: serviceType,
+          isManga: isManga,
+          mediaId: id,
+          initialTabIndex: _parseInitialTabIndex(uri.fragment),
+        );
+      }
+    }
+
     if (segments.length < 2) return null;
 
     final type = first;
-    final isAnimePath = type == 'anime';
-    final isMangaPath = type == 'manga';
+    final isAnimePath = {'anime', 'animes', 'title'}.contains(type);
+    final isMangaPath = {'manga', 'mangas'}.contains(type);
     if (!isAnimePath && !isMangaPath) return null;
 
     final id = _extractNumericId(segments[1]);
