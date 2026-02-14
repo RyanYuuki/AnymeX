@@ -113,40 +113,44 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                 );
               }
             }),
-            getResponsiveValue(context,
-                strictMode: true,
-                mobileValue: getResponsiveValue(context,
-                    mobileValue: _buildFlex(
-                      widget.items,
-                      widget.isDesktop,
-                      const Key('normalItems'),
-                    ),
-                    desktopValue: settings.isTV.value
-                        ? _buildFlex(
-                            widget.items,
-                            widget.isDesktop,
-                            const Key('normalItems'),
-                          )
-                        : SingleChildScrollView(
-                            child: _buildFlex(
-                              widget.items,
-                              widget.isDesktop,
-                              const Key('normalItems'),
-                            ),
-                          )),
-                desktopValue: !Platform.isIOS && !Platform.isAndroid
-                    ? _buildFlex(
+            // FIXED: Wrapped the flex builder in Center/Align to ensure Y-axis centering in horizontal mode
+            Align(
+              alignment: Alignment.center,
+              child: getResponsiveValue(context,
+                  strictMode: true,
+                  mobileValue: getResponsiveValue(context,
+                      mobileValue: _buildFlex(
                         widget.items,
                         widget.isDesktop,
                         const Key('normalItems'),
-                      )
-                    : SingleChildScrollView(
-                        child: _buildFlex(
+                      ),
+                      desktopValue: settings.isTV.value
+                          ? _buildFlex(
+                              widget.items,
+                              widget.isDesktop,
+                              const Key('normalItems'),
+                            )
+                          : SingleChildScrollView(
+                              child: _buildFlex(
+                                widget.items,
+                                widget.isDesktop,
+                                const Key('normalItems'),
+                              ),
+                            )),
+                  desktopValue: !Platform.isIOS && !Platform.isAndroid
+                      ? _buildFlex(
                           widget.items,
                           widget.isDesktop,
                           const Key('normalItems'),
-                        ),
-                      )),
+                        )
+                      : SingleChildScrollView(
+                          child: _buildFlex(
+                            widget.items,
+                            widget.isDesktop,
+                            const Key('normalItems'),
+                          ),
+                        )),
+            ),
           ],
         ),
       ),
@@ -158,6 +162,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
       key: key,
       direction: isDesktop ? Axis.vertical : Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center, // Added explicit cross-axis centering
       mainAxisSize: widget.fit ? MainAxisSize.min : MainAxisSize.max,
       children: items.asMap().entries.map((entry) {
         final index = entry.key;
@@ -324,6 +329,7 @@ class _NavBarItemState extends State<NavBarItem>
             )
           : Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center, // Added to ensure vertical centering inside the item column
               children: [
                 InkWell(
                   onTap: widget.onTap,
