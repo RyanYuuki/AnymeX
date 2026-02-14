@@ -2,6 +2,7 @@
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/shaders.dart';
@@ -241,11 +242,11 @@ class ColorProfileBottomSheet extends StatefulWidget {
         player: player,
         onProfileSelected: (profile) {
           controller.currentVisualProfile.value = profile;
-          controller.settings.preferences.put('currentVisualProfile', profile);
+          PlayerUiKeys.currentVisualProfile.set(profile);
         },
         onCustomSettingsChanged: (sett) {
           controller.customSettings.value = sett;
-          controller.settings.preferences.put('currentVisualSettings', sett);
+          PlayerUiKeys.currentVisualSettings.set(sett);
         },
       ),
     );
@@ -310,7 +311,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     });
     await ColorProfileManager().resetShader(widget.player);
     settingsController.selectedShader = "Default";
-    settingsController.preferences.put('selectedShader', "Default");
+    PlayerUiKeys.selectedShader.set("Default");
     HapticFeedback.lightImpact();
     Logger.i('Shader reset to Default');
     if (mounted) {
@@ -507,8 +508,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   Widget _buildShadersTab(ThemeData theme) {
-    bool enableShaders = (settingsController.preferences
-        .get('shaders_enabled', defaultValue: false));
+    bool enableShaders = PlayerUiKeys.shadersEnabled.get<bool>(false);
     return Column(
       children: [
         Expanded(
@@ -692,8 +692,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   Future<void> setShaders(String message, {bool backOut = true}) async {
     await PlayerShaders.setShaders(widget.player, message);
     settingsController.selectedShader = message == "Default" ? "" : message;
-    settingsController.preferences.put('selectedShader', 
-        message == "Default" ? "" : message);
+    PlayerUiKeys.selectedShader.set(message == "Default" ? "" : message);
     setState(() {
       _selectedShader = message;
     });

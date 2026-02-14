@@ -1,9 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors
 import 'dart:ui';
 
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -76,13 +76,13 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         auth.serviceType.value != ServicesType.extensions) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      return trackedMedia?.episodeCount?.toInt() ?? 
-             widget.currentEpisode.number.toInt();
+      return trackedMedia?.episodeCount?.toInt() ??
+          widget.currentEpisode.number.toInt();
     } else {
       final offlineStorage = Get.find<OfflineStorageController>();
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
-      return savedAnime?.currentEpisode?.number.toInt() ?? 
-             widget.currentEpisode.number.toInt();
+      return savedAnime?.currentEpisode?.number.toInt() ??
+          widget.currentEpisode.number.toInt();
     }
   }
 
@@ -91,7 +91,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       _cachedChunkedEpisodes = chunkEpisodes(
           widget.episodeList, calculateChunkSize(widget.episodeList));
       _lastEpisodeListLength = widget.episodeList.length;
-      
+
       if (!_initializedChunk && _cachedChunkedEpisodes != null) {
         final progress = _cachedUserProgress ?? 1;
         final chunkIndex = findChunkIndexFromProgress(

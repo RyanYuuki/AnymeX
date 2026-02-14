@@ -5,6 +5,7 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
@@ -21,7 +22,6 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
     hide isar;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:isar_community/isar.dart';
 
 import '../../main.dart';
@@ -77,7 +77,6 @@ class SourceController extends GetxController implements BaseService {
   ];
 
   final _repos = <String, String>{};
-  late final Box _box;
 
   final _pendingRebuilds = <ItemType>{};
   Timer? _rebuildTimer;
@@ -101,7 +100,7 @@ class SourceController extends GetxController implements BaseService {
   void _persistRepo(String key, String value) {
     if (_repos[key] == value) return;
     _repos[key] = value;
-    _box.put(key, value);
+    _setStringKey(key, value);
     _refreshVisibility();
   }
 
@@ -133,7 +132,6 @@ class SourceController extends GetxController implements BaseService {
   @override
   void onInit() {
     super.onInit();
-    _box = Hive.box('themeData');
 
     ever(installedExtensions, (_) => _scheduleRebuild(ItemType.anime));
     ever(installedMangaExtensions, (_) => _scheduleRebuild(ItemType.manga));
@@ -249,10 +247,10 @@ class SourceController extends GetxController implements BaseService {
 
   void _loadRepos() {
     for (final key in _allRepoKeys) {
-      _repos[key] = _box.get(key, defaultValue: '') as String;
+      _repos[key] = _getStringKey(key);
     }
     isExtensionsServiceAllowed.value =
-        _box.get('extensionsServiceAllowed', defaultValue: false);
+        SourceKeys.extensionsServiceAllowed.get<bool>(false);
   }
 
   void _restoreActiveSources() {
@@ -264,7 +262,7 @@ class SourceController extends GetxController implements BaseService {
   }
 
   Source? _restore(RxList<Source> list, String key) {
-    final id = _box.get(key, defaultValue: '') as String;
+    final id = _getStringKey(key);
     return (id.isNotEmpty
             ? list.firstWhereOrNull((s) => s.id.toString() == id)
             : null) ??
@@ -279,7 +277,7 @@ class SourceController extends GetxController implements BaseService {
       _ => (activeSource, 'activeSourceId', 'ANIME'),
     };
     rx.value = source;
-    _box.put(key, source.id);
+    _setStringKey(key, source.id.toString());
     lastUpdatedSource.value = tag;
   }
 
@@ -312,11 +310,58 @@ class SourceController extends GetxController implements BaseService {
     );
     if (match != null) {
       rx.value = match;
-      _box.put(key, match.id);
+      _setStringKey(key, match.id.toString());
       return match;
     }
     lastUpdatedSource.value = tag;
     return null;
+  }
+
+  String _getStringKey(String key) {
+    return switch (key) {
+      _kAnimeRepo => SourceKeys.activeAnimeRepo.get<String>(""),
+      _kMangaRepo => SourceKeys.activeMangaRepo.get<String>(""),
+      _kNovelRepo => SourceKeys.activeNovelRepo.get<String>(""),
+      _kAniyomiAnimeRepo =>
+        SourceKeys.activeAniyomiAnimeRepo.get<String>(""),
+      _kAniyomiMangaRepo =>
+        SourceKeys.activeAniyomiMangaRepo.get<String>(""),
+      'activeSourceId' => SourceKeys.activeSourceId.get<String>(""),
+      'activeMangaSourceId' =>
+        SourceKeys.activeMangaSourceId.get<String>(""),
+      'activeNovelSourceId' =>
+        SourceKeys.activeNovelSourceId.get<String>(""),
+      _ => '',
+    };
+  }
+
+  void _setStringKey(String key, String value) {
+    switch (key) {
+      case _kAnimeRepo:
+        SourceKeys.activeAnimeRepo.set(value);
+        break;
+      case _kMangaRepo:
+        SourceKeys.activeMangaRepo.set(value);
+        break;
+      case _kNovelRepo:
+        SourceKeys.activeNovelRepo.set(value);
+        break;
+      case _kAniyomiAnimeRepo:
+        SourceKeys.activeAniyomiAnimeRepo.set(value);
+        break;
+      case _kAniyomiMangaRepo:
+        SourceKeys.activeAniyomiMangaRepo.set(value);
+        break;
+      case 'activeSourceId':
+        SourceKeys.activeSourceId.set(value);
+        break;
+      case 'activeMangaSourceId':
+        SourceKeys.activeMangaSourceId.set(value);
+        break;
+      case 'activeNovelSourceId':
+        SourceKeys.activeNovelSourceId.set(value);
+        break;
+    }
   }
 
   Future<void> fetchRepos() async {

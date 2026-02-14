@@ -1,11 +1,9 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 
 class InlineSearchHistory extends StatelessWidget {
@@ -35,11 +33,10 @@ class InlineSearchHistory extends StatelessWidget {
   }
 
   void _saveToDatabase(List<String> terms) {
-    Hive.box('preferences').put(
-        isManga
-            ? 'manga_searched_queries_${serviceHandler.serviceType.value.name}'
-            : 'anime_searched_queries__${serviceHandler.serviceType.value.name}',
-        terms);
+    DynamicKeys.searchHistory.set(
+      '${isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
+      terms,
+    );
   }
 
   @override
@@ -133,8 +130,6 @@ class InlineSearchHistory extends StatelessWidget {
               ],
             ),
           ),
-
-          // Search terms
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -169,7 +164,6 @@ class InlineSearchHistory extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            // Search icon
                             Container(
                               width: 28,
                               height: 28,
@@ -189,10 +183,7 @@ class InlineSearchHistory extends StatelessWidget {
                                     .opaque(0.7, iReallyMeanIt: true),
                               ),
                             ),
-
                             const SizedBox(width: 12),
-
-                            // Search term
                             Expanded(
                               child: AnymexText(
                                 text: term,
@@ -203,8 +194,6 @@ class InlineSearchHistory extends StatelessWidget {
                                     .opaque(0.8, iReallyMeanIt: true),
                               ),
                             ),
-
-                            // Delete button
                             GestureDetector(
                               onTap: () => _deleteTerm(term),
                               child: Container(

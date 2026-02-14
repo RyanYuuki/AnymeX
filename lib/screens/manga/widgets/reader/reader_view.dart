@@ -2,6 +2,7 @@
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/image_cropper.dart';
 
@@ -381,8 +382,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               : ExtendedImage.network(
                   page.url,
                   cacheMaxAge: Duration(
-                      days: settingsController.preferences
-                          .get('cache_days', defaultValue: 7)),
+                      days: PlayerUiKeys.cacheDays.get<int>(7)),
                   mode: ExtendedImageMode.none,
                   gaplessPlayback: true,
                   headers: (page.headers?.isEmpty ?? true)

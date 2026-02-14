@@ -12,6 +12,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -239,8 +240,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _mapToService() async {
     final key =
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
-    final savedTitle =
-        settingsController.preferences.get(key, defaultValue: null);
+    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
         formatTitles(widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);

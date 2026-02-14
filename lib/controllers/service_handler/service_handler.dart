@@ -4,6 +4,7 @@ import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -13,7 +14,6 @@ import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 
 enum ServicesType {
   anilist,
@@ -127,9 +127,8 @@ class ServiceHandler extends GetxController {
   }
 
   Future<void> _initServices() async {
-    final box = Hive.box('themeData');
-    serviceType.value =
-        ServicesType.values[box.get("serviceType", defaultValue: 0)];
+    serviceType.value = ServicesType.values[
+        ServiceKeys.serviceType.get<int>(0)];
     await fetchHomePage();
     await autoLogin();
   }
@@ -153,8 +152,7 @@ class ServiceHandler extends GetxController {
       service.search(params);
 
   void changeService(ServicesType type) {
-    final box = Hive.box('themeData');
-    box.put("serviceType", type.index);
+    ServiceKeys.serviceType.set(type.index);
     serviceType.value = type;
     fetchHomePage();
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/utils/function.dart';
@@ -12,7 +13,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -227,8 +227,7 @@ void showWelcomeDialogg(BuildContext context) {
                                             borderRadius:
                                                 BorderRadius.circular(12))),
                                     onPressed: () {
-                                      Hive.box('themeData')
-                                          .put('isFirstTime', false);
+                                      General.isFirstTime.set(false);
                                       Navigator.of(context).pop();
                                       navigate(() => const SettingsAccounts());
                                     },
@@ -262,8 +261,7 @@ void showWelcomeDialogg(BuildContext context) {
                                           borderRadius:
                                               BorderRadius.circular(12))),
                                   onPressed: () {
-                                    Hive.box('themeData')
-                                        .put('isFirstTime', false);
+                                    General.isFirstTime.set(false);
                                     Get.back();
                                   },
                                   label: Text(

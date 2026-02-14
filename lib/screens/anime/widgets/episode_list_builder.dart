@@ -3,9 +3,8 @@ import 'dart:async';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
 import 'package:anymex/models/Media/media.dart';
@@ -70,7 +69,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       _updateChunkIndex();
     });
     ever(auth.currentMedia, (_) {
-      _initUserProgress(); 
+      _initUserProgress();
       _initEpisodes();
       _updateChunkIndex();
     });
@@ -85,7 +84,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       }
     });
 
-   
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _updateChunkIndex();
     });
@@ -93,14 +91,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   void _updateChunkIndex() {
     if (!mounted) return;
-    
+
     final chunkedEpisodes = chunkEpisodes(
         widget.episodeList, calculateChunkSize(widget.episodeList));
-    
+
     if (chunkedEpisodes.length > 1) {
-     
       final progress = continueEpisode.value.number.toInt();
-      
+
       final chunkIndex = findChunkIndexFromProgress(
         progress,
         chunkedEpisodes,
@@ -118,7 +115,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   void _initUserProgress() {
     final isExtensions = auth.serviceType.value == ServicesType.extensions;
     isLogged.value = isExtensions ? false : auth.isLoggedIn.value;
-    
+
     int? progress;
     if (isLogged.value) {
       final trackedMedia = auth.onlineService.animeList
@@ -171,13 +168,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   Widget build(BuildContext context) {
     final chunkedEpisodes = chunkEpisodes(
         widget.episodeList, calculateChunkSize(widget.episodeList));
-    
+
     if (selectedChunkIndex.value >= chunkedEpisodes.length) {
       selectedChunkIndex.value = chunkedEpisodes.length - 1;
     }
 
-    final isAnify = (widget.episodeList.isNotEmpty && 
-        (widget.episodeList[0].thumbnail?.isNotEmpty ?? false)).obs;
+    final isAnify = (widget.episodeList.isNotEmpty &&
+            (widget.episodeList[0].thumbnail?.isNotEmpty ?? false))
+        .obs;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,8 +269,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: settingsController.preferences
-                  .get('universal_scrapper', defaultValue: false)
+          child: General.universalScrapper.get<bool>(false)
               ? _buildUniversalScraper(ep.link!)
               : FutureBuilder<List<Video>>(
                   future: sourceController.activeSource.value!.methods

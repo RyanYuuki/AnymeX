@@ -1,6 +1,7 @@
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/liquid.dart';
@@ -15,7 +16,6 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -87,11 +87,10 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   void _initializeDbVars() {
     final provider = Provider.of<ThemeProvider>(context, listen: false);
-    final box = Hive.box("themeData");
     defaultTheme = provider.currentThemeMode == "default";
     materialTheme = provider.currentThemeMode == "material";
     customTheme = provider.currentThemeMode == "custom";
-    selectedColorIndex = box.get("customColorIndex", defaultValue: 0);
+    selectedColorIndex = ThemeKeys.customColorIndex.get<int>(0);
     isOled = provider.isOled;
     themeMode = provider.isSystemMode
         ? "System"
@@ -102,8 +101,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void _initializeLogoAnimation() {
-    final box = Hive.box("themeData");
-    final animationIndex = box.get('logoAnimationType', defaultValue: 0);
+    final animationIndex = ThemeKeys.logoAnimationType.get<int>(0);
     selectedLogoAnimation = LogoAnimationType.fromIndex(animationIndex);
   }
 
@@ -116,8 +114,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
           setState(() {
             selectedLogoAnimation = animationType;
           });
-          final box = Hive.box("themeData");
-          box.put('logoAnimationType', animationType.index);
+          ThemeKeys.logoAnimationType.set(animationType.index);
         },
       ),
     );
