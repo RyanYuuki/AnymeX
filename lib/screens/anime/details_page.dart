@@ -25,6 +25,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -101,6 +102,41 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     selectedPage.value = index;
     controller.animateToPage(index,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  Future<void> _showShareOptions() async {
+    await MediaShare.showOptions(
+      context: context,
+      baseMedia: widget.media,
+      hydratedMedia: anilistData,
+      isManga: false,
+    );
+  }
+
+  Widget _buildActionIconButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.opaque(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
   }
 
   @override
@@ -478,34 +514,26 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                             ),
                           ),
                           const SizedBox(width: 7),
-                          Container(
-                            height: 50,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .opaque(0.2),
-                              ),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .opaque(0.5),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                  onTap: () {
-                                    showCustomListDialog(context, anilistData!);
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: const Icon(
-                                      HugeIcons.strokeRoundedLibrary)),
-                            ),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: HugeIcons.strokeRoundedLibrary,
+                            onTap: () {
+                              showCustomListDialog(context, anilistData!);
+                            },
                           ),
                         ] else ...[
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
