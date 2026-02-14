@@ -92,7 +92,7 @@ class ChapterService {
         _auth.serviceType.value != ServicesType.extensions) {
       final temp = _auth.onlineService.mangaList
           .firstWhereOrNull((e) => e.id == anilistData.id);
-      return temp?.episodeCount?.toInt() ?? 1;
+      return double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 1;
     } else {
       return _offlineStorage
               .getMangaById(anilistData.id)
