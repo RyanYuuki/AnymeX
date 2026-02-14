@@ -452,16 +452,20 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           chapter.pageNumber != null &&
           chapter.totalPages != null &&
           chapter.number != null &&
-          chapter.pageNumber == chapter.totalPages &&
-          chapterList.isNotEmpty &&
-          chapterList.last.number != null &&
-          chapterList.last.number! < chapter.number!) {
-        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-            listId: media.id,
-            status: "CURRENT",
-            progress: chapter.number!.toInt() + 1,
-            syncIds: [media.idMal],
-            isAnime: false));
+          chapter.pageNumber == chapter.totalPages) {
+        
+        final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
+        
+        final int newProgress = chapter.number!.toInt();
+
+        if (newProgress > currentOnlineProgress) {
+          serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+              listId: media.id,
+              status: "CURRENT",
+              progress: newProgress,
+              syncIds: [media.idMal],
+              isAnime: false));
+        }
       }
     } catch (e) {
       Logger.i('Error during final save: ${e.toString()}');
@@ -963,12 +967,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
-      serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-          listId: media.id,
-          status: "CURRENT",
-          progress: chapterNumber,
-          syncIds: [media.idMal],
-          isAnime: false));
+      final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
+      
+      if (chapterNumber > currentOnlineProgress) {
+        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+            listId: media.id,
+            status: "CURRENT",
+            progress: chapterNumber,
+            syncIds: [media.idMal],
+            isAnime: false));
+      }
     }
   }
 
