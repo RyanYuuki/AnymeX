@@ -959,9 +959,11 @@ class AnilistAuth extends GetxController {
     final token = await storage.get('auth_token');
     if (token == null) return false;
 
-    const mutation = r'''
-    mutation ($id: Int, $type: FavouriteType) {
-      ToggleFavourite(characterId: $id, staffId: $id) {
+   
+    final String idField = type == "CHARACTER" ? "characterId" : "staffId";
+    final mutation = '''
+    mutation (\$id: Int) {
+      ToggleFavourite($idField: \$id) {
         characters {
           nodes { id }
         }
