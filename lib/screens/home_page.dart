@@ -144,19 +144,17 @@ class _HomePageState extends State<HomePage> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: SizedBox(
-                                      height: 100,
+                                      height: 110, // Increased height to prevent vertical overflow
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
                                         padding: const EdgeInsets.symmetric(horizontal: 15),
                                         itemCount: data.length,
                                         itemBuilder: (context, i) {
                                           final media = data[i];
-                                          // FIXED: Added ClipRRect around the card to prevent bar overflow
+                                          // Constraints added here to prevent horizontal overflow in bar
                                           return Container(
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
+                                            width: 280, 
+                                            margin: const EdgeInsets.only(right: 10),
                                             child: RecentlyOpenedAnimeCard(
                                                 media: media),
                                           );
@@ -176,19 +174,16 @@ class _HomePageState extends State<HomePage> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: SizedBox(
-                                      height: 100,
+                                      height: 110, // Increased height to prevent vertical overflow
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
                                         padding: const EdgeInsets.symmetric(horizontal: 15),
                                         itemCount: data.length,
                                         itemBuilder: (context, i) {
                                           final media = data[i];
-                                          // FIXED: Added ClipRRect around the card to prevent bar overflow
                                           return Container(
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
+                                            width: 280,
+                                            margin: const EdgeInsets.only(right: 10),
                                             child: RecentlyOpenedAnimeCard(
                                                 media: media),
                                           );
