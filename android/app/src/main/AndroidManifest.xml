@@ -95,32 +95,46 @@
             <data android:scheme="aniyomi" android:host="add-repo" />
         </intent-filter>  
 
-        <intent-filter android:label="Open Media Link">
+        <intent-filter android:label="Open AniList Link">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="anymex" android:host="anilist" />
-            <data android:scheme="anymex" android:host="mal" />
-            <data android:scheme="anymex" android:host="myanimelist" />
-            <data android:scheme="anymex" android:host="simkl" />
+            <data android:scheme="https" />
+            <data android:scheme="anymex" />
+            <data android:host="anilist.co" />
+            <data android:host="www.anilist.co" />
+            <data android:host="anilist" />
+            <data android:pathPrefix="/anime/" />
+            <data android:pathPrefix="/manga/" />
         </intent-filter>
 
-        <intent-filter android:label="Open Tracking Service Link">
+        <intent-filter android:label="Open MAL Link">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" android:host="anilist.co" />
-            <data android:scheme="https" android:host="www.anilist.co" />
-            <data android:scheme="http" android:host="anilist.co" />
-            <data android:scheme="http" android:host="www.anilist.co" />
-            <data android:scheme="https" android:host="myanimelist.net" />
-            <data android:scheme="https" android:host="www.myanimelist.net" />
-            <data android:scheme="http" android:host="myanimelist.net" />
-            <data android:scheme="http" android:host="www.myanimelist.net" />
-            <data android:scheme="https" android:host="simkl.com" />
-            <data android:scheme="https" android:host="www.simkl.com" />
-            <data android:scheme="http" android:host="simkl.com" />
-            <data android:scheme="http" android:host="www.simkl.com" />
+            <data android:scheme="https" />
+            <data android:scheme="anymex" />
+            <data android:host="myanimelist.net" />
+            <data android:host="www.myanimelist.net" />
+            <data android:host="myanimelist" />
+            <data android:host="mal" />
+            <data android:pathPrefix="/anime/" />
+            <data android:pathPrefix="/manga/" />
+        </intent-filter>
+
+        <intent-filter android:label="Open Simkl Link">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+            <data android:scheme="anymex" />
+            <data android:host="simkl.com" />
+            <data android:host="www.simkl.com" />
+            <data android:host="simkl" />
+            <data android:pathPrefix="/anime/" />
+            <data android:pathPrefix="/tv/" />
+            <data android:pathPrefix="/movie/" />
+            <data android:pathPrefix="/movies/" />
         </intent-filter>
         
         </activity>

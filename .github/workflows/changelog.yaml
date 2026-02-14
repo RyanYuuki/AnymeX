@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows:
       - "Build and Release AnymeX"
-      - "Build and Release AnymeX Beta"
     types:
       - completed
   workflow_dispatch:
@@ -20,43 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  check-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      is_beta: ${{ steps.validate.outputs.is_beta }}
-      current_tag: ${{ steps.validate.outputs.current_tag }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Resolve and Validate Tag
-        id: validate
-        run: |
-          git fetch --tags
-
-          if [ -n "${{ inputs.current_tag }}" ]; then
-            CURRENT_TAG="${{ inputs.current_tag }}"
-          else
-            CURRENT_TAG=$(git tag --sort=-creatordate | head -n 1)
-          fi
-
-          echo "Resolved tag: $CURRENT_TAG"
-          echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
-
-          if [[ "$CURRENT_TAG" =~ \-beta$ ]]; then
-            echo "✅ Tag '$CURRENT_TAG' is a beta tag"
-            echo "is_beta=true" >> $GITHUB_OUTPUT
-          else
-            echo "✅ Tag '$CURRENT_TAG' is a stable tag"
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-          fi
-
-  # ─── STABLE ────────────────────────────────────────────────────────────────
-  generate-changelog-stable:
-    needs: check-tag
-    if: ${{ needs.check-tag.outputs.is_beta == 'false' }}
+  generate-changelog:
     runs-on: ubuntu-latest
     steps:
       - name: Check Job Statuses
@@ -65,27 +28,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
+          # For manual dispatch, always proceed
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "Manual trigger detected, skipping job checks"
             echo "all_jobs_success=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
+          # For auto-trigger, fetch job details from the triggering workflow
           echo "Fetching jobs for workflow run ID: $RUN_ID"
-
+          
           JOBS_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/jobs")
-
+          
           echo "Jobs data retrieved"
-
+          
+          # Only check build-all-platforms jobs, ignore post-release jobs
           REQUIRED_JOBS=("build-all-platforms (android, ubuntu-latest)" "build-all-platforms (linux, ubuntu-latest)" "build-all-platforms (windows, windows-latest)" "build-all-platforms (macos, macos-latest)" "build-all-platforms (ios, macos-latest)")
-
+          
           ALL_SUCCESS=true
-
+          
           for REQUIRED_JOB in "${REQUIRED_JOBS[@]}"; do
             JOB_STATUS=$(echo "$JOBS_DATA" | jq -r --arg job "$REQUIRED_JOB" '.jobs[] | select(.name == $job) | .conclusion')
-
+            
             if [ -z "$JOB_STATUS" ]; then
               echo "⚠️ Job '$REQUIRED_JOB' not found in workflow run"
               ALL_SUCCESS=false
@@ -98,13 +64,13 @@ jobs:
               echo "✅ Job '$REQUIRED_JOB' succeeded"
             fi
           done
-
+          
           if [ "$ALL_SUCCESS" = true ]; then
             echo "✅ All required build jobs succeeded"
           else
             echo "❌ Some required build jobs failed, skipping changelog generation"
           fi
-
+          
           echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
 
       - name: Checkout Code
@@ -169,7 +135,7 @@ jobs:
       - name: Debug Commit Log
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
-
+   
       - name: Get Commit Messages Between Tags
         id: get_commits
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
@@ -188,19 +154,26 @@ jobs:
           FEATURES=""; BUG_FIXES=""; REFACTORS=""; STYLE_CHANGES=""; PERFORMANCE=""; CHORES=""
           REPO_URL="https://github.com/${{ github.repository }}"
 
+          # Function to get GitHub username from commit SHA using the Commits API
           get_author_username() {
             local commit_sha="$1"
             local api_url="https://api.github.com/repos/${REPO}/commits/${commit_sha}"
             local response=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "${api_url}")
+            
+            # Extract the author's login. If it's null, default to 'ghost'.
             echo "$response" | jq -r '.author.login // "ghost"'
           }
 
+          # Process each commit
           while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
-
+            
+            # Get the GitHub username using the commit hash
             AUTHOR_USERNAME=$(get_author_username "$HASH")
+            
             echo "Processing commit: $HASH - $MESSAGE by $AUTHOR_USERNAME"
 
+            # Categorize and format the entry
             if [[ "$MESSAGE" =~ ^feat: ]]; then
               DESCR=$(echo "$MESSAGE" | sed 's/^feat: //')
               FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
@@ -220,8 +193,10 @@ jobs:
               DESCR=$(echo "$MESSAGE" | sed -E 's/^(chore|docs|build|ci): //')
               CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             fi
+          # The git log command fetches the hash and the full subject line
           done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
 
+          # Write the final changelog
           echo "### 🆕 Changelog" > CHANGELOG.md
           [ -n "$FEATURES" ] && echo -e "### 🌟 Features\n$FEATURES\n" >> CHANGELOG.md
           [ -n "$BUG_FIXES" ] && echo -e "### 🔧 Bug Fixes & Improvements\n$BUG_FIXES\n" >> CHANGELOG.md
@@ -250,13 +225,13 @@ jobs:
       - name: Generate Plaintext Changelog for F-Droid/Izzy
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
         run: |
-          mkdir -p fastlane/metadata/android/en-US/changelogs
-          awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
-          | sed -E 's/!\[[^]]*\]\([^)]*\)//g' \
-          | sed -E 's/\[[^]]*\]\([^)]*\)//g' \
-          | sed 's/^֍[[:space:]]*/- /' \
-          | sed '/^$/N;/^\n$/D' \
-          > fastlane/metadata/android/en-US/changelogs/default.txt
+         mkdir -p fastlane/metadata/android/en-US/changelogs
+         awk '/^### 🆕 Changelog/{flag=1; next}/^![Tt]otal/{flag=0}flag' CHANGELOG.md \
+         | sed -E 's/!\[[^]]*\]\([^)]*\)//g' \
+         | sed -E 's/\[[^]]*\]\([^)]*\)//g' \
+         | sed 's/^֍[[:space:]]*/- /' \
+         | sed '/^$/N;/^\n$/D' \
+         > fastlane/metadata/android/en-US/changelogs/default.txt
 
       - name: Debug default.txt
         if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
@@ -277,200 +252,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: CHANGELOG.md
-          tag: ${{ env.current_tag }}
-          allowUpdates: true
-
-  # ─── BETA ──────────────────────────────────────────────────────────────────
-  generate-changelog-beta:
-    needs: check-tag
-    if: ${{ needs.check-tag.outputs.is_beta == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Job Statuses
-        id: check_jobs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "Manual trigger detected, skipping job checks"
-            echo "all_jobs_success=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "Fetching jobs for workflow run ID: $RUN_ID"
-
-          JOBS_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/jobs")
-
-          echo "Jobs data retrieved"
-
-          REQUIRED_JOBS=("build-all-platforms (android, ubuntu-latest)" "build-all-platforms (linux, ubuntu-latest)" "build-all-platforms (windows, windows-latest)" "build-all-platforms (macos, macos-latest)" "build-all-platforms (ios, macos-latest)")
-
-          ALL_SUCCESS=true
-
-          for REQUIRED_JOB in "${REQUIRED_JOBS[@]}"; do
-            JOB_STATUS=$(echo "$JOBS_DATA" | jq -r --arg job "$REQUIRED_JOB" '.jobs[] | select(.name == $job) | .conclusion')
-
-            if [ -z "$JOB_STATUS" ]; then
-              echo "⚠️ Job '$REQUIRED_JOB' not found in workflow run"
-              ALL_SUCCESS=false
-              break
-            elif [ "$JOB_STATUS" != "success" ]; then
-              echo "❌ Job '$REQUIRED_JOB' failed with status: $JOB_STATUS"
-              ALL_SUCCESS=false
-              break
-            else
-              echo "✅ Job '$REQUIRED_JOB' succeeded"
-            fi
-          done
-
-          if [ "$ALL_SUCCESS" = true ]; then
-            echo "✅ All required build jobs succeeded"
-          else
-            echo "❌ Some required build jobs failed, skipping changelog generation"
-          fi
-
-          echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT
-
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        with:
-          fetch-depth: 0
-
-      - name: Fetch Tags
-        id: fetch_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        run: |
-          git fetch --tags
-          TAGS=$(git tag --sort=-creatordate | grep -E '\-beta$' | tr '\n' ' ')
-          echo "All beta tags: $TAGS"
-          echo "tags=$TAGS" >> $GITHUB_ENV
-
-      - name: Determine Tags for Comparison
-        id: determine_tags
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        run: |
-          if [ -n "${{ inputs.current_tag }}" ]; then
-            CURRENT_TAG="${{ inputs.current_tag }}"
-          else
-            CURRENT_TAG=$(git tag --sort=-creatordate | grep -E '\-beta$' | head -n 1)
-          fi
-          echo "Current beta tag: $CURRENT_TAG"
-          echo "current_tag=$CURRENT_TAG" >> $GITHUB_ENV
-
-          ALL_TAGS=(${{ env.tags }})
-          PREV_TAG=""
-          SECOND_PREV_TAG=""
-
-          for TAG in "${ALL_TAGS[@]}"; do
-            if [ "$TAG" != "$CURRENT_TAG" ]; then
-              if [ -z "$PREV_TAG" ]; then
-                PREV_TAG="$TAG"
-              elif [ -z "$SECOND_PREV_TAG" ]; then
-                SECOND_PREV_TAG="$TAG"
-                break
-              fi
-            fi
-          done
-
-          if [ -n "${{ inputs.previous_tag }}" ]; then
-            PREV_TAG="${{ inputs.previous_tag }}"
-          elif [ "$PREV_TAG" == "$CURRENT_TAG" ] || [ -z "$PREV_TAG" ]; then
-            PREV_TAG="$SECOND_PREV_TAG"
-          fi
-
-          if [ -z "$PREV_TAG" ]; then
-            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-
-          echo "Previous beta tag: $PREV_TAG"
-          echo "prev_tag=$PREV_TAG" >> $GITHUB_ENV
-
-      - name: Debug Commit Log
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        run: git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s'
-
-      - name: Get Commit Messages Between Tags
-        id: get_commits
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        run: |
-          git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h|||%s' > commits.tmp
-          echo "commits_file=commits.tmp" >> $GITHUB_OUTPUT
-
-      - name: Categorize Commits
-        id: categorize
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          echo "Categorizing commits..."
-          FEATURES=""; BUG_FIXES=""; REFACTORS=""; STYLE_CHANGES=""; PERFORMANCE=""; CHORES=""
-          REPO_URL="https://github.com/${{ github.repository }}"
-
-          get_author_username() {
-            local commit_sha="$1"
-            local api_url="https://api.github.com/repos/${REPO}/commits/${commit_sha}"
-            local response=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "${api_url}")
-            echo "$response" | jq -r '.author.login // "ghost"'
-          }
-
-          while read -r HASH MESSAGE; do
-            [ -z "$HASH" ] && continue
-
-            AUTHOR_USERNAME=$(get_author_username "$HASH")
-            echo "Processing commit: $HASH - $MESSAGE by $AUTHOR_USERNAME"
-
-            if [[ "$MESSAGE" =~ ^feat: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^feat: //')
-              FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            elif [[ "$MESSAGE" =~ ^(fix|bug|improvement|patch): ]]; then
-              DESCR=$(echo "$MESSAGE" | sed -E 's/^(fix|bug|improvement|patch): //')
-              BUG_FIXES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            elif [[ "$MESSAGE" =~ ^refactor: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^refactor: //')
-              REFACTORS+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            elif [[ "$MESSAGE" =~ ^style: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^style: //')
-              STYLE_CHANGES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            elif [[ "$MESSAGE" =~ ^perf: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^perf: //')
-              PERFORMANCE+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            elif [[ "$MESSAGE" =~ ^(chore|docs|build|ci): ]]; then
-              DESCR=$(echo "$MESSAGE" | sed -E 's/^(chore|docs|build|ci): //')
-              CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
-            fi
-          done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
-
-          {
-            echo "### 🆕 Beta Changelog"
-            echo ""
-            echo "> ⚠️ **This is a Beta Release.** Features and fixes in this version are still under testing and may contain bugs or unexpected behavior. Please report any issues you encounter. Do not use in production."
-            echo ""
-            [ -n "$FEATURES" ] && echo -e "### 🌟 Features\n$FEATURES\n"
-            [ -n "$BUG_FIXES" ] && echo -e "### 🔧 Bug Fixes & Improvements\n$BUG_FIXES\n"
-            [ -n "$REFACTORS" ] && echo -e "### 🔧 Refactors\n$REFACTORS\n"
-            [ -n "$STYLE_CHANGES" ] && echo -e "### 🎨 Style Changes\n$STYLE_CHANGES\n"
-            [ -n "$PERFORMANCE" ] && echo -e "### 🚀 Performance Improvements\n$PERFORMANCE\n"
-            [ -n "$CHORES" ] && echo -e "### 🧹 Chores & Documentation\n$CHORES\n"
-          } > CHANGELOG-BETA.md
-
-          CURRENT_TAG_SAFE=$(echo "${{ env.current_tag }}" | sed 's/[^a-zA-Z0-9.-]//g')
-          echo "![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Beta Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/${CURRENT_TAG_SAFE}/total?style=for-the-badge&label=BETA%20RELEASE&labelColor=black&color=white)" >> CHANGELOG-BETA.md
-        shell: /usr/bin/bash -e {0}
-
-      - name: Debug CHANGELOG-BETA.md
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        run: cat CHANGELOG-BETA.md
-
-      - name: Create or Update Beta Release
-        if: ${{ steps.check_jobs.outputs.all_jobs_success == 'true' }}
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          bodyFile: CHANGELOG-BETA.md
           tag: ${{ env.current_tag }}
           allowUpdates: true

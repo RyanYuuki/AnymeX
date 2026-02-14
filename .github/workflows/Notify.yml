@@ -67,11 +67,6 @@ jobs:
 
           echo "" > formatted_notes.txt
 
-          # Extract beta warning if present
-          if grep -q "^> ⚠️" clean_release_notes.txt; then
-            grep "^> ⚠️" clean_release_notes.txt > beta_warning.txt
-          fi
-
           extract_section() {
             local title="$1"
             local emoji="$2"
@@ -181,11 +176,6 @@ jobs:
           # Clean release notes
           sed 's/||//g' release_notes.txt > clean_release_notes.txt
           
-          # Extract beta warning if present and convert to HTML
-          if grep -q "^> ⚠️" clean_release_notes.txt; then
-            grep "^> ⚠️" clean_release_notes.txt | sed 's/^> //' > beta_warning.txt
-          fi
-          
           # Function to extract section content
           extract_section_content() {
             local section_name="$1"
@@ -233,11 +223,6 @@ jobs:
             echo "**💅 Style**" | ./scripts/tel_commit_parser.sed > TStyleT.txt
             echo "**⚡ Performance**" | ./scripts/tel_commit_parser.sed > TPerformanceT.txt
             echo "**🛠 Chores**" | ./scripts/tel_commit_parser.sed > TChoresT.txt
-            
-            # Process beta warning through parser if it exists
-            if [ -f beta_warning.txt ]; then
-              ./scripts/tel_commit_parser.sed beta_warning.txt > beta_warning_clean.txt || cp beta_warning.txt beta_warning_clean.txt
-            fi
           else
             # If no parser script, just convert format manually
             sed -E 's/^- \[֍\]\(([^)]+)\)\s+(.+)/● <a href="\1">֍<\/a> \2/g' feat.txt > feat_clean.txt
@@ -253,11 +238,6 @@ jobs:
             echo "<strong>💅 Style</strong>" > TStyleT.txt
             echo "<strong>⚡ Performance</strong>" > TPerformanceT.txt
             echo "<strong>🛠 Chores</strong>" > TChoresT.txt
-            
-            # Process beta warning for HTML
-            if [ -f beta_warning.txt ]; then
-              sed 's/\*\*\(.*\)\*\*/<strong>\1<\/strong>/g' beta_warning.txt > beta_warning_clean.txt
-            fi
           fi
 
           # Check and remove empty categories
@@ -284,8 +264,6 @@ jobs:
           {
               cat header.txt
               echo ""
-              # Add beta warning right after header if it exists
-              [ -f beta_warning_clean.txt ] && echo "<blockquote>$(cat beta_warning_clean.txt)</blockquote>" && echo ""
               [ -f TFeaturesT.txt ] && [ -f feat_clean.txt ] && echo -n "$(cat TFeaturesT.txt) <blockquote>$(cat feat_clean.txt)</blockquote> "
               [ -f TFixesT.txt ] && [ -f fixes_clean.txt ] && echo -n "$(cat TFixesT.txt) <blockquote>$(cat fixes_clean.txt)</blockquote> "
               [ -f TRefactorsT.txt ] && [ -f refactors_clean.txt ] && echo -n "$(cat TRefactorsT.txt) <blockquote>$(cat refactors_clean.txt)</blockquote> "
@@ -341,15 +319,6 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
         run: |
           FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
-          
-          # Add beta warning to Discord message if it exists
-          if [ -f beta_warning.txt ]; then
-            BETA_WARNING=$(cat beta_warning.txt | sed 's/^> //')
-            FORMATTED_NOTES_CLEAN="**⚠️ BETA WARNING**
-            $BETA_WARNING
-            
-            $FORMATTED_NOTES_CLEAN"
-                      fi
           
           # Mention the role based on the release name
           if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
