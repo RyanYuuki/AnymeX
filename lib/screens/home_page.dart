@@ -59,11 +59,6 @@ class _HomePageState extends State<HomePage> {
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
 
-    // final historyData = Get.find<OfflineStorageController>()
-    //     .animeLibrary
-    //     .where((e) => e.currentEpisode?.currentTrack != null)
-    //     .toList();
-
     return RefreshIndicator(
       onRefresh: () {
         if (!serviceHandler.isLoggedIn.value) {
@@ -152,65 +147,23 @@ class _HomePageState extends State<HomePage> {
                                       height: 100,
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        itemCount: cacheController
-                                            .getStoredAnime()
-                                            .length,
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        itemCount: data.length,
                                         itemBuilder: (context, i) {
-                                          final media = cacheController
-                                              .getStoredAnime()[i];
-                                          return RecentlyOpenedAnimeCard(
-                                              media: media);
+                                          final media = data[i];
+                                          // FIXED: Added ClipRRect around the card to prevent bar overflow
+                                          return Container(
+                                            clipBehavior: Clip.antiAlias,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: RecentlyOpenedAnimeCard(
+                                                media: media),
+                                          );
                                         },
                                       ),
                                     ),
                                   ),
-                                // if (historyData.isNotEmpty) ...[
-                                //   10.height(),
-                                //   Column(
-                                //     crossAxisAlignment:
-                                //         CrossAxisAlignment.start,
-                                //     children: [
-                                //       Padding(
-                                //         padding:
-                                //             const EdgeInsets.only(left: 20.0),
-                                //         child: Text(
-                                //           "Continue Watching (Literally)",
-                                //           style: TextStyle(
-                                //             fontFamily: "Poppins-SemiBold",
-                                //             fontSize: 17,
-                                //             color: Theme.of(context)
-                                //                 .colorScheme
-                                //                 .primary,
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       10.height(),
-                                //       SizedBox(
-                                //         height: 228,
-                                //         child: GridView.builder(
-                                //           padding: const EdgeInsets.symmetric(
-                                //               horizontal: 15),
-                                //           scrollDirection: Axis.horizontal,
-                                //           itemCount: historyData.length,
-                                //           gridDelegate:
-                                //               const SliverGridDelegateWithFixedCrossAxisCount(
-                                //                   crossAxisCount: 1,
-                                //                   crossAxisSpacing: 10,
-                                //                   mainAxisSpacing: 0,
-                                //                   mainAxisExtent: 300),
-                                //           itemBuilder: (context, i) {
-                                //             final historyModel =
-                                //                 HistoryModel.fromOfflineMedia(
-                                //                     historyData[i],
-                                //                     ItemType.anime);
-                                //             return ContinueWatchingCard(
-                                //                 media: historyModel);
-                                //           },
-                                //         ),
-                                //       )
-                                //     ],
-                                //   ),
-                                // ],
                               ],
                             ),
                           );
@@ -226,65 +179,23 @@ class _HomePageState extends State<HomePage> {
                                       height: 100,
                                       child: ListView.builder(
                                         scrollDirection: Axis.horizontal,
-                                        itemCount: cacheController
-                                            .getStoredAnime()
-                                            .length,
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        itemCount: data.length,
                                         itemBuilder: (context, i) {
-                                          final media = cacheController
-                                              .getStoredAnime()[i];
-                                          return RecentlyOpenedAnimeCard(
-                                              media: media);
+                                          final media = data[i];
+                                          // FIXED: Added ClipRRect around the card to prevent bar overflow
+                                          return Container(
+                                            clipBehavior: Clip.antiAlias,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: RecentlyOpenedAnimeCard(
+                                                media: media),
+                                          );
                                         },
                                       ),
                                     ),
                                   ),
-                                // if (historyData.isNotEmpty) ...[
-                                //   10.height(),
-                                //   Column(
-                                //     crossAxisAlignment:
-                                //         CrossAxisAlignment.start,
-                                //     children: [
-                                //       Padding(
-                                //         padding:
-                                //             const EdgeInsets.only(left: 20.0),
-                                //         child: Text(
-                                //           "Continue Watching (Literally)",
-                                //           style: TextStyle(
-                                //             fontFamily: "Poppins-SemiBold",
-                                //             fontSize: 17,
-                                //             color: Theme.of(context)
-                                //                 .colorScheme
-                                //                 .primary,
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       10.height(),
-                                //       SizedBox(
-                                //         height: 228,
-                                //         child: GridView.builder(
-                                //           padding: const EdgeInsets.symmetric(
-                                //               horizontal: 15),
-                                //           scrollDirection: Axis.horizontal,
-                                //           itemCount: historyData.length,
-                                //           gridDelegate:
-                                //               const SliverGridDelegateWithFixedCrossAxisCount(
-                                //                   crossAxisCount: 1,
-                                //                   crossAxisSpacing: 10,
-                                //                   mainAxisSpacing: 0,
-                                //                   mainAxisExtent: 300),
-                                //           itemBuilder: (context, i) {
-                                //             final historyModel =
-                                //                 HistoryModel.fromOfflineMedia(
-                                //                     historyData[i],
-                                //                     ItemType.anime);
-                                //             return ContinueWatchingCard(
-                                //                 media: historyModel);
-                                //           },
-                                //         ),
-                                //       )
-                                //     ],
-                                //   ),
-                                // ],
                               ],
                             ),
                           );
