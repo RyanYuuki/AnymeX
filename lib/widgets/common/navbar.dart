@@ -113,7 +113,6 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                 );
               }
             }),
-            // FIXED: Wrapped the flex builder in Center/Align to ensure Y-axis centering in horizontal mode
             Align(
               alignment: Alignment.center,
               child: getResponsiveValue(context,
@@ -162,7 +161,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
       key: key,
       direction: isDesktop ? Axis.vertical : Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center, // Added explicit cross-axis centering
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: widget.fit ? MainAxisSize.min : MainAxisSize.max,
       children: items.asMap().entries.map((entry) {
         final index = entry.key;
@@ -329,7 +328,7 @@ class _NavBarItemState extends State<NavBarItem>
             )
           : Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center, // Added to ensure vertical centering inside the item column
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
                   onTap: widget.onTap,
