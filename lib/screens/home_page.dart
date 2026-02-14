@@ -60,9 +60,9 @@ class _HomePageState extends State<HomePage> {
         isMobile ? TextAlign.center : TextAlign.left;
 
     // final historyData = Get.find<OfflineStorageController>()
-    //      .animeLibrary
-    //      .where((e) => e.currentEpisode?.currentTrack != null)
-    //      .toList();
+    //     .animeLibrary
+    //     .where((e) => e.currentEpisode?.currentTrack != null)
+    //     .toList();
 
     return RefreshIndicator(
       onRefresh: () {
