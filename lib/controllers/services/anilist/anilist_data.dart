@@ -8,6 +8,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -758,7 +759,7 @@ averageScore
       'variables': variables,
     };
 
-    final token = anilistAuth.storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -803,7 +804,7 @@ averageScore
     final Map<String, dynamic> variables = {'id': int.tryParse(id)};
     
     
-    final token = await anilistAuth.storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -843,7 +844,7 @@ averageScore
     List<dynamic> allCharacterEdges = [];
     List<dynamic> allStaffEdges = [];
     
-    final token = await anilistAuth.storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

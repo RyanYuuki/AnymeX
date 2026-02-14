@@ -955,7 +955,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<bool> toggleFavorite({required int id, required String type}) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) return false;
 
    
