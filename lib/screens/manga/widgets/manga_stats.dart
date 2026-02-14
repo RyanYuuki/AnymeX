@@ -5,9 +5,11 @@ import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/news/news_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
-import 'package:anymex/utils/fallback/fallback_anime.dart';
-import 'package:anymex/utils/fallback/fallback_manga.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -19,9 +21,14 @@ import 'package:intl/intl.dart';
 
 class MangaStats extends StatefulWidget {
   final Media data;
+  final List<TrackedMedia>? friendsWatching;
+  final String? totalEpisodes;
+
   const MangaStats({
     super.key,
     required this.data,
+    this.friendsWatching,
+    this.totalEpisodes,
   });
 
   @override
@@ -44,11 +51,20 @@ class _MangaStatsState extends State<MangaStats> {
 
   @override
   Widget build(BuildContext context) {
-    final covers = [...trendingAnimes, ...trendingMangas]
+    final serviceHandler = Get.find<ServiceHandler>();
+    final isSimkl = serviceHandler.serviceType.value == ServicesType.simkl;
+    final covers = (isSimkl
+            ? [
+                ...serviceHandler.simklService.trendingMovies,
+                ...serviceHandler.simklService.trendingSeries
+              ]
+            : [
+                ...serviceHandler.anilistService.trendingAnimes,
+                ...serviceHandler.anilistService.trendingMangas,
+              ])
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
     final isDesktop = MediaQuery.of(context).size.width > 600;
-    final colorScheme = context.colors;
 
     return SingleChildScrollView(
       child: Column(
@@ -58,7 +74,7 @@ class _MangaStatsState extends State<MangaStats> {
             _buildNextChapterPrediction(context),
             const SizedBox(height: 16),
           ],
-          _buildSectionContainer(
+          _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
             title: "Statistics",
@@ -68,6 +84,7 @@ class _MangaStatsState extends State<MangaStats> {
                 _buildStatsGrid(context),
               ],
             ),
+            isInitiallyExpanded: true,
           ),
           const SizedBox(height: 16),
           Row(
@@ -90,7 +107,7 @@ class _MangaStatsState extends State<MangaStats> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildInfoCard(
+          _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
             title: "Synopsis",
@@ -99,7 +116,7 @@ class _MangaStatsState extends State<MangaStats> {
               style: {
                 "body": Style(
                   fontSize: FontSize(15.0),
-                  lineHeight: LineHeight(1.7),
+                  lineHeight: const LineHeight(1.7),
                   margin: Margins.zero,
                   padding: HtmlPaddings.zero,
                 ),
@@ -107,6 +124,7 @@ class _MangaStatsState extends State<MangaStats> {
                 "i": Style(fontStyle: FontStyle.italic),
               },
             ),
+            isInitiallyExpanded: true,
           ),
           const SizedBox(height: 16),
           FutureBuilder<AnimeAdaptation>(
@@ -190,12 +208,19 @@ class _MangaStatsState extends State<MangaStats> {
                           },
                         ));
                   },
-                  backgroundImage: covers[index].cover!,
+                  backgroundImage: (index < covers.length) ? (covers[index].cover ?? widget.data.poster) : (widget.data.cover ?? widget.data.poster),
                 );
               },
             ),
           ),
           const SizedBox(height: 16),
+          if (widget.friendsWatching != null && widget.friendsWatching!.isNotEmpty) ...[
+            SocialSection(
+              friends: widget.friendsWatching!,
+              totalEpisodes: widget.totalEpisodes,
+            ),
+            const SizedBox(height: 16),
+          ],
 
           FutureBuilder<List<NewsItem>>(
             future: _newsFuture,
@@ -318,7 +343,7 @@ class _MangaStatsState extends State<MangaStats> {
   Widget _buildMangaOthersSection(BuildContext context, List<NewsItem> news) {
   final colorScheme = context.colors;
   
-  return _buildSectionContainer(
+  return _buildCollapsibleSectionContainer(
     context, 
     icon: Icons.more,
     title: "Others", 
@@ -357,7 +382,7 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      const AnymexText(
                         text: "Recent News",
                         variant: TextVariant.bold,
                         size: 14,
@@ -382,7 +407,8 @@ class _MangaStatsState extends State<MangaStats> {
           ),
         ),
       ],
-    )
+    ),
+    isInitiallyExpanded: true,
   );
   }
 
@@ -592,6 +618,183 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCollapsibleInfoCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget content,
+    bool isInitiallyExpanded = false,
+  }) {
+    final colorScheme = context.colors;
+
+    return _CollapsibleBox(
+      isInitiallyExpanded: isInitiallyExpanded,
+      header: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          AnymexText(
+            text: title,
+            variant: TextVariant.bold,
+            size: 16,
+          ),
+        ],
+      ),
+      content: content,
+      colorScheme: colorScheme,
+    );
+  }
+
+  Widget _buildCollapsibleSectionContainer(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget child,
+    bool isInitiallyExpanded = true,
+  }) {
+    final colorScheme = context.colors;
+
+    return _CollapsibleBox(
+      isInitiallyExpanded: isInitiallyExpanded,
+      header: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          AnymexText(
+            text: title,
+            variant: TextVariant.bold,
+            size: 20,
+          ),
+        ],
+      ),
+      content: child,
+      colorScheme: colorScheme,
+      padding: const EdgeInsets.all(24),
+    );
+  }
+}
+
+class _CollapsibleBox extends StatefulWidget {
+  final Widget header;
+  final Widget content;
+  final bool isInitiallyExpanded;
+  final ColorScheme colorScheme;
+  final EdgeInsetsGeometry padding;
+
+  const _CollapsibleBox({
+    required this.header,
+    required this.content,
+    required this.colorScheme,
+    this.isInitiallyExpanded = false,
+    this.padding = const EdgeInsets.all(20),
+  });
+
+  @override
+  State<_CollapsibleBox> createState() => _CollapsibleBoxState();
+}
+
+class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProviderStateMixin {
+  late bool isExpanded;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
+
+  @override
+  void initState() {
+    super.initState();
+    isExpanded = widget.isInitiallyExpanded;
+    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    if (isExpanded) {
+      _controller.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handleTap,
+      child: Container(
+        padding: widget.padding,
+        decoration: BoxDecoration(
+          color: widget.colorScheme.surfaceContainerHighest.opaque(0.35),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: widget.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: widget.header),
+                RotationTransition(
+                  turns: _iconTurns,
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: widget.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox(width: double.infinity),
+              secondChild: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  widget.content,
+                ],
+              ),
+              crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+              sizeCurve: Curves.easeInOut,
+            ),
+          ],
+        ),
       ),
     );
   }

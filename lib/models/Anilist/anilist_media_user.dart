@@ -16,23 +16,32 @@ class TrackedMedia {
   String? type;
   String? mediaListId;
   ServicesType servicesType;
+  String? userName;
+  String? userAvatar;
+  int? userProgress;
+  double? userScore;
 
-  TrackedMedia(
-      {this.id,
-      this.title,
-      this.poster,
-      this.episodeCount,
-      this.chapterCount,
-      this.rating,
-      this.totalEpisodes,
-      this.releasedEpisodes,
-      this.watchingStatus,
-      this.format,
-      this.mediaStatus,
-      this.score,
-      this.type,
-      this.mediaListId,
-      this.servicesType = ServicesType.anilist});
+  TrackedMedia({
+    this.id,
+    this.title,
+    this.poster,
+    this.episodeCount,
+    this.chapterCount,
+    this.rating,
+    this.totalEpisodes,
+    this.releasedEpisodes,
+    this.watchingStatus,
+    this.format,
+    this.mediaStatus,
+    this.score,
+    this.type,
+    this.mediaListId,
+    this.servicesType = ServicesType.anilist,
+    this.userName,
+    this.userAvatar,
+    this.userProgress,
+    this.userScore,
+  });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     return TrackedMedia(
@@ -58,8 +67,20 @@ class TrackedMedia {
         type: json['media']['type']?.toString(),
         servicesType: ServicesType.anilist,
         mediaListId:
-            (json['media']['mediaListEntry']['id'] ?? json['media']['id'])
+            (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
                 .toString());
+  }
+
+  factory TrackedMedia.fromSocialJson(Map<String, dynamic> json) {
+    return TrackedMedia(
+      id: json['id']?.toString(),
+      userName: json['user']['name'],
+      userAvatar: json['user']['avatar']['large'],
+      userProgress: json['progress'],
+      userScore: (json['score'] ?? 0).toDouble(),
+      watchingStatus: json['status'],
+      servicesType: ServicesType.anilist,
+    );
   }
 
   factory TrackedMedia.fromSimklShow(Map<String, dynamic> json) {

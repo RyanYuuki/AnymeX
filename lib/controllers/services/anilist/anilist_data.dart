@@ -8,6 +8,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -33,6 +34,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:anymex/models/Media/character.dart';
+import 'package:anymex/models/Media/staff.dart';
 
 Map<String, dynamic> _parseJson(String body) {
   return jsonDecode(body) as Map<String, dynamic>;
@@ -756,21 +759,26 @@ averageScore
       'variables': variables,
     };
 
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
     try {
       final response = await post(
         Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: json.encode(body),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final media = data['data']['Media'];
+        final page = data['data']['Page'];
         cacheController.addCache(media);
-        return Media.fromJson(media);
+        return Media.fromJson(media, pageJson: page);
       } else if (response.statusCode == 429) {
         warningSnackBar('Chill for a min, you got rate limited.');
         throw Exception(response.body);
@@ -789,6 +797,149 @@ averageScore
       fetchAnilistHomepage(),
       fetchAnilistMangaPage(),
     ]);
+  }
+
+  Future<dynamic> getCharacterDetails(String id) async {
+    const String url = 'https://graphql.anilist.co';
+    final Map<String, dynamic> variables = {'id': int.tryParse(id)};
+    
+    
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      final response = await post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode({
+          'query': characterDetailsQuery,
+          'variables': variables,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return Character.fromDetailJson(data['data']['Character']);
+      }
+    } catch (e) {
+      Logger.i('Error fetching character details: $e');
+    }
+    return null;
+  }
+
+  Future<Staff?> getStaffDetails(String id) async {
+    const String url = 'https://graphql.anilist.co';
+    int charPage = 1;
+    int staffPage = 1;
+    bool charHasNext = true;
+    bool staffHasNext = true;
+    
+    List<dynamic> allCharacterEdges = [];
+    List<dynamic> allStaffEdges = [];
+    
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      Map<String, dynamic>? initialData;
+      int loopCount = 0;
+      
+      while (staffHasNext && loopCount < 20) {
+        Logger.i("Loop $loopCount: charPage=$charPage, staffPage=$staffPage");
+        
+        final variables = {
+          'id': int.tryParse(id),
+          'characterPage': charPage,
+          'staffPage': staffPage,
+        };
+
+        final response = await post(
+          Uri.parse(url),
+          headers: headers,
+          body: json.encode({
+            'query': staffDetailsQuery,
+            'variables': variables,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          final staffData = data['data']['Staff'];
+          
+          if (loopCount == 0) {
+            initialData = staffData;
+          }
+          
+          // Character
+          if (charHasNext) {
+            final charData = staffData['characters'];
+            if (charData != null) {
+               final edges = charData['edges'] as List?;
+               if (edges != null) {
+                 Logger.i("Fetched ${edges.length} character edges");
+                 allCharacterEdges.addAll(edges);
+               }
+               
+               final pageInfo = charData['pageInfo'];
+               charHasNext = pageInfo?['hasNextPage'] ?? false;
+               if (charHasNext) charPage++;
+            } else {
+              charHasNext = false;
+            }
+          }
+          
+          // Staff
+          if (staffHasNext) {
+            final stfMedia = staffData['staffMedia'];
+            if (stfMedia != null) {
+               final edges = stfMedia['edges'] as List?;
+               if (edges != null) allStaffEdges.addAll(edges);
+               
+               final pageInfo = stfMedia['pageInfo'];
+               staffHasNext = pageInfo?['hasNextPage'] ?? false;
+               if (staffHasNext) staffPage++;
+            } else {
+              staffHasNext = false;
+            }
+          }
+          
+        } else {
+          Logger.i('Error fetching staff details page $loopCount: ${response.statusCode}');
+          break; 
+        }
+        loopCount++;
+      }
+      
+      if (initialData != null) {
+        final finalData = Map<String, dynamic>.from(initialData);
+        
+        
+        if (finalData['characters'] == null) finalData['characters'] = {};
+        finalData['characters']['edges'] = allCharacterEdges;
+        
+        if (finalData['staffMedia'] == null) finalData['staffMedia'] = {};
+        finalData['staffMedia']['edges'] = allStaffEdges;
+        
+        return Staff.fromDetailJson(finalData);
+      }
+    } catch (e) {
+      Logger.i('Error fetching staff details: $e');
+    }
+    return null;
   }
 
   @override
@@ -835,9 +986,7 @@ averageScore
 
   @override
   Future<void> refresh() async {
-    Future.wait([
-      anilistAuth.fetchUserAnimeList(),
-      anilistAuth.fetchUserMangaList(),
-    ]);
+    await anilistAuth.fetchUserAnimeList();
+    await anilistAuth.fetchUserMangaList();
   }
 }

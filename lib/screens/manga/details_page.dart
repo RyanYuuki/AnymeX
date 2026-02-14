@@ -501,7 +501,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              MangaStats(data: anilistData!),
+              MangaStats(
+                data: anilistData!,
+                friendsWatching: anilistData?.friendsWatching,
+                totalEpisodes: anilistData?.totalChapters,
+              ),
               const SizedBox(height: 20),
             ],
           ),
