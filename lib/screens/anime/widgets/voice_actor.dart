@@ -1,12 +1,14 @@
 import 'dart:math' show Random;
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
-import 'package:anymex/widgets/animation/slide_scale.dart';
+import 'package:anymex/models/Media/staff.dart';
+import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
+
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
+
 
 class CharactersCarousel extends StatelessWidget {
   final List<Character> characters;
@@ -36,91 +38,96 @@ class CharactersCarousel extends StatelessWidget {
         const SizedBox(height: 15),
         SizedBox(
           height: isDesktop ? 290 : 210,
-          child: SuperListView.builder(
+          child: ListView.builder(
             itemCount: characters.length,
             scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
             itemBuilder: (BuildContext context, int index) {
               final itemData = characters[index];
               final tag = generateTag('${itemData.name}-$index');
 
-              return SlideAndScaleAnimation(
-                initialScale: 0.0,
-                finalScale: 1.0,
-                initialOffset: const Offset(1.0, 0.0),
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Stack(
-                        children: [
-                          Hero(
-                            tag: tag,
-                            child: AnymeXImage(
-                              imageUrl: itemData.image ??
-                                  'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
-                              radius: 12.multiplyRoundness(),
-                              height: isDesktop ? 210 : 160,
-                              width: double.infinity,
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+
+                      showCharacterStaffSheet(context,
+                          item: itemData, isCharacter: true);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Hero(
+                              tag: tag,
+                              child: AnymeXImage(
+                                imageUrl: itemData.image ??
+                                    'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
+                                radius: 12.multiplyRoundness(),
+                                height: isDesktop ? 210 : 160,
+                                width: double.infinity,
+                              ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomRight: Radius.circular(12),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer,
                                 ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer,
+                                clipBehavior: Clip.antiAlias,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Iconsax.heart5,
+                                      size: 16,
+                                      color: context.colors.primary,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      itemData.favourites.toString(),
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontFamily: "Poppins-Bold",
+                                          fontStyle: FontStyle.italic,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface
+                                              .opaque(0.9)),
+                                    ),
+                                    const SizedBox(width: 3),
+                                  ],
+                                ),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Iconsax.heart5,
-                                    size: 16,
-                                    color:
-                                        context.colors.primary,
-                                  ),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    itemData.favourites.toString(),
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontFamily: "Poppins-Bold",
-                                        fontStyle: FontStyle.italic,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface
-                                            .opaque(0.9)),
-                                  ),
-                                  const SizedBox(width: 3),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        itemData.name ?? '??',
-                        maxLines: 2,
-                        style: TextStyle(
-                            fontSize: isDesktop ? 14 : 12,
-                            fontFamily: "Poppins-SemiBold"),
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          itemData.name ?? '??',
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: isDesktop ? 14 : 12,
+                              fontFamily: "Poppins-SemiBold"),
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -139,10 +146,11 @@ class CharactersCarousel extends StatelessWidget {
           const SizedBox(height: 15),
           SizedBox(
             height: isDesktop ? 290 : 230,
-            child: SuperListView.builder(
-              itemCount: characters.length,
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(left: 20),
+            child: ListView.builder(
+            itemCount: characters.length,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(left: 20),
               itemBuilder: (BuildContext context, int index) {
                 final character = characters[index];
                 final characterName = character.name;
@@ -152,15 +160,16 @@ class CharactersCarousel extends StatelessWidget {
                 final tag =
                     generateTag('${itemData?.name ?? 'No Voice Actor'}-$index');
 
-                return SlideAndScaleAnimation(
-                  initialScale: 0.0,
-                  finalScale: 1.0,
-                  initialOffset: const Offset(1.0, 0.0),
-                  duration: const Duration(milliseconds: 200),
+                return GestureDetector(
+                  onTap: () {
+                    if (itemData != null) {
+                      showCharacterStaffSheet(context,
+                          item: itemData, isCharacter: false);
+                    }
+                  },
                   child: Container(
                     margin: const EdgeInsets.only(right: 10),
-                    constraints:
-                        BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+                    constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -184,8 +193,7 @@ class CharactersCarousel extends StatelessWidget {
                                   bottom: 0,
                                   right: 0,
                                   child: Container(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                    padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
                                     decoration: BoxDecoration(
                                       borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(12),
@@ -198,10 +206,8 @@ class CharactersCarousel extends StatelessWidget {
                                     clipBehavior: Clip.antiAlias,
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Iconsax.microphone5,
@@ -250,6 +256,129 @@ class CharactersCarousel extends StatelessWidget {
             ),
           ),
         ]
+      ],
+    );
+  }
+}
+
+class StaffCarousel extends StatelessWidget {
+  final List<Staff> staff;
+  const StaffCarousel({super.key, required this.staff});
+
+  @override
+  Widget build(BuildContext context) {
+    if (staff.isEmpty) return const SizedBox.shrink();
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: Text("Staff",
+              style: TextStyle(
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: 18,
+                  color: context.colors.primary)),
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          height: isDesktop ? 290 : 210,
+          child: ListView.builder(
+            itemCount: staff.length,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
+            itemBuilder: (BuildContext context, int index) {
+              final itemData = staff[index];
+              final tag = generateTag('${itemData.name}-$index');
+
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+
+                      showCharacterStaffSheet(context,
+                          item: itemData, isCharacter: false);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            Hero(
+                              tag: tag,
+                              child: AnymeXImage(
+                                imageUrl: itemData.image ??
+                                    'https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg',
+                                radius: 12.multiplyRoundness(),
+                                height: isDesktop ? 210 : 160,
+                                width: double.infinity,
+                              ),
+                            ),
+                            if (itemData.role != null)
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
+                                    ),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Text(
+                                    itemData.role!,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: "Poppins-Bold",
+                                        fontStyle: FontStyle.italic,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface
+                                            .opaque(0.9)),
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          itemData.name ?? '??',
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: isDesktop ? 14 : 12,
+                              fontFamily: "Poppins-SemiBold"),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (itemData.primaryOccupations != null &&
+                            itemData.primaryOccupations!.isNotEmpty)
+                          Text(
+                            itemData.primaryOccupations!.join(", "),
+                            maxLines: 1,
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: context.colors.onSurface.withOpacity(0.7),
+                                fontFamily: "Poppins"),
+                            overflow: TextOverflow.ellipsis,
+                          )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
