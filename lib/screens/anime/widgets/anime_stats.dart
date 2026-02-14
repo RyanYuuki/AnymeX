@@ -7,7 +7,9 @@ import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/news/news_page.dart';
+import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
@@ -21,10 +23,15 @@ import 'package:get/get.dart';
 class AnimeStats extends StatelessWidget {
   final Media data;
   final String countdown;
+  final List<TrackedMedia>? friendsWatching;
+  final String? totalEpisodes;
+
   const AnimeStats({
     super.key,
     required this.data,
     required this.countdown,
+    this.friendsWatching,
+    this.totalEpisodes,
   });
 
   @override
@@ -53,11 +60,12 @@ class AnimeStats extends StatelessWidget {
             _buildCountdownCard(context),
             const SizedBox(height: 16),
           ],
-          _buildSectionContainer(
+          _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
             title: "Statistics",
             child: _buildStatsGrid(context),
+            isInitiallyExpanded: true,
           ),
           const SizedBox(height: 16),
           Row(
@@ -80,7 +88,7 @@ class AnimeStats extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildInfoCard(
+          _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
             title: "Synopsis",
@@ -91,6 +99,7 @@ class AnimeStats extends StatelessWidget {
               maxLines: 100,
               stripHtml: true,
             ),
+            isInitiallyExpanded: true,
           ),
           const SizedBox(height: 16),
           _buildSectionContainer(
@@ -131,11 +140,20 @@ class AnimeStats extends StatelessWidget {
                           ));
                     }
                   },
-                  backgroundImage: covers[index].cover!,
+                  backgroundImage: (index < covers.length) ? covers[index].cover! : data.cover ?? data.poster,
                 );
               },
             ),
           ),
+          const SizedBox(height: 16),
+          if (friendsWatching != null && friendsWatching!.isNotEmpty) ...[
+            SocialSection(
+              friends: friendsWatching!,
+              totalEpisodes: totalEpisodes,
+            ),
+            const SizedBox(height: 16),
+          ],
+
           const SizedBox(height: 16),
           _buildSeasons(context),
           const SizedBox(height: 16),
@@ -149,7 +167,8 @@ class AnimeStats extends StatelessWidget {
 
   Widget _buildOthersSection(BuildContext context) {
     final colorScheme = context.colors;
-    return _buildSectionContainer(context,
+    return _buildCollapsibleSectionContainer(
+        context,
         icon: Icons.more,
         title: "Others",
         child: Column(
@@ -553,6 +572,83 @@ class AnimeStats extends StatelessWidget {
     );
   }
 
+  Widget _buildCollapsibleInfoCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget content,
+    bool isInitiallyExpanded = false,
+  }) {
+    final colorScheme = context.colors;
+    
+    return _CollapsibleBox(
+      isInitiallyExpanded: isInitiallyExpanded,
+      header: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          AnymexText(
+            text: title,
+            variant: TextVariant.bold,
+            size: 16,
+          ),
+        ],
+      ),
+      content: content,
+      colorScheme: colorScheme,
+    );
+  }
+
+  Widget _buildCollapsibleSectionContainer(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget child,
+    bool isInitiallyExpanded = true,
+  }) {
+    final colorScheme = context.colors;
+
+    return _CollapsibleBox(
+      isInitiallyExpanded: isInitiallyExpanded,
+      header: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          AnymexText(
+            text: title,
+            variant: TextVariant.bold,
+            size: 20,
+          ),
+        ],
+      ),
+      content: child,
+      colorScheme: colorScheme,
+      padding: const EdgeInsets.all(24),
+    );
+  }
+
   Widget _buildStatsGrid(BuildContext context) {
     final colorScheme = context.colors;
     final stats = [
@@ -662,6 +758,106 @@ class AnimeStats extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _CollapsibleBox extends StatefulWidget {
+  final Widget header;
+  final Widget content;
+  final bool isInitiallyExpanded;
+  final ColorScheme colorScheme;
+  final EdgeInsetsGeometry padding;
+
+  const _CollapsibleBox({
+    required this.header,
+    required this.content,
+    required this.colorScheme,
+    this.isInitiallyExpanded = false,
+    this.padding = const EdgeInsets.all(20),
+  });
+
+  @override
+  State<_CollapsibleBox> createState() => _CollapsibleBoxState();
+}
+
+class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProviderStateMixin {
+  late bool isExpanded;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
+
+  @override
+  void initState() {
+    super.initState();
+    isExpanded = widget.isInitiallyExpanded;
+    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    if (isExpanded) {
+      _controller.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handleTap,
+      child: Container(
+        padding: widget.padding,
+        decoration: BoxDecoration(
+          color: widget.colorScheme.surfaceContainerHighest.opaque(0.35),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: widget.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: widget.header),
+                RotationTransition(
+                  turns: _iconTurns,
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: widget.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox(width: double.infinity),
+              secondChild: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  widget.content,
+                ],
+              ),
+              crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+              sizeCurve: Curves.easeInOut,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
