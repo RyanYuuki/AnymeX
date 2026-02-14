@@ -1,7 +1,8 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
@@ -18,101 +19,79 @@ class HistoryEditor extends StatefulWidget {
 }
 
 class _HistoryEditorState extends State<HistoryEditor> {
-  late List<HistoryItem> _historyItems;
   bool _isSelecting = false;
-  final Set<int> _selectedIndices = {};
+  final Set<String> _selectedMediaIds = {};
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadHistory();
-  }
+  Future<void> _deleteHistory(OfflineMedia media) async {
+    final mediaToUpdate = offlineStorage.getAnimeById(media.mediaId ?? '');
+    if (mediaToUpdate == null) return;
 
-  void _loadHistory() {
-    final items = <HistoryItem>[];
+    await offlineStorage.addOrUpdateAnime(
+      convertOfflineToMedia(mediaToUpdate),
+      mediaToUpdate.episodes,
+      null,
+    );
 
-    for (var anime in offlineStorage.animeLibrary) {
-      if (anime.currentEpisode?.currentTrack != null) {
-        items.add(HistoryItem(
-          media: anime,
-          episode: anime.currentEpisode!,
-        ));
-      }
-    }
-
-    items.sort((a, b) => (b.episode.lastWatchedTime ?? 0)
-        .compareTo(a.episode.lastWatchedTime ?? 0));
-
-    setState(() {
-      _historyItems = items;
-    });
-  }
-
-  void _deleteHistory(int index) {
-    final item = _historyItems[index];
-
-    setState(() {
-      item.media.currentEpisode?.currentTrack = null;
-      _historyItems.removeAt(index);
-    });
-
-    offlineStorage.saveEverything();
     HapticFeedback.lightImpact();
-    snackBar('History item deleted (Change tabs to refresh)');
+    snackBar('History item deleted');
     Get.delete<LibraryController>();
   }
 
-  void _deleteAllHistory() {
-    for (var item in _historyItems) {
-      item.media.currentEpisode?.currentTrack = null;
+  Future<void> _deleteAllHistory(List<OfflineMedia> items) async {
+    for (var media in items) {
+      final mediaToUpdate = offlineStorage.getAnimeById(media.mediaId ?? '');
+      if (mediaToUpdate == null) continue;
+
+      await offlineStorage.addOrUpdateAnime(
+        convertOfflineToMedia(mediaToUpdate),
+        mediaToUpdate.episodes,
+        null,
+      );
     }
 
     setState(() {
-      _historyItems.clear();
-      _selectedIndices.clear();
+      _selectedMediaIds.clear();
       _isSelecting = false;
     });
 
-    offlineStorage.saveEverything();
     HapticFeedback.mediumImpact();
-    offlineStorage.animeLibrary.refresh();
-    snackBar('All history cleared (Change tabs to refresh)');
+    snackBar('All history cleared');
     Get.delete<LibraryController>();
   }
 
-  void _deleteSelectedHistory() {
-    final sortedIndices = _selectedIndices.toList()
-      ..sort((a, b) => b.compareTo(a));
+  Future<void> _deleteSelectedHistory(List<OfflineMedia> allItems) async {
+    for (var mediaId in _selectedMediaIds) {
+      final mediaToUpdate = offlineStorage.getAnimeById(mediaId);
+      if (mediaToUpdate == null) continue;
 
-    for (var index in sortedIndices) {
-      if (index < _historyItems.length) {
-        _historyItems[index].media.currentEpisode?.currentTrack = null;
-        _historyItems.removeAt(index);
-      }
+      await offlineStorage.addOrUpdateAnime(
+        convertOfflineToMedia(mediaToUpdate),
+        mediaToUpdate.episodes,
+        null,
+      );
     }
 
     setState(() {
-      _selectedIndices.clear();
+      _selectedMediaIds.clear();
       _isSelecting = false;
     });
 
-    offlineStorage.saveEverything();
     HapticFeedback.mediumImpact();
-    snackBar('${sortedIndices.length} history items deleted');
+    snackBar('${_selectedMediaIds.length} history items deleted');
     Get.delete<LibraryController>();
   }
 
-  void _toggleSelection(int index) {
+  void _toggleSelection(String mediaId) {
     setState(() {
-      if (_selectedIndices.contains(index)) {
-        _selectedIndices.remove(index);
-        if (_selectedIndices.isEmpty) {
+      if (_selectedMediaIds.contains(mediaId)) {
+        _selectedMediaIds.remove(mediaId);
+        if (_selectedMediaIds.isEmpty) {
           _isSelecting = false;
         }
       } else {
-        _selectedIndices.add(index);
+        _selectedMediaIds.add(mediaId);
       }
     });
     HapticFeedback.selectionClick();
@@ -122,18 +101,19 @@ class _HistoryEditorState extends State<HistoryEditor> {
     setState(() {
       _isSelecting = !_isSelecting;
       if (!_isSelecting) {
-        _selectedIndices.clear();
+        _selectedMediaIds.clear();
       }
     });
     HapticFeedback.lightImpact();
   }
 
-  void _selectAll() {
+  void _selectAll(List<OfflineMedia> items) {
     setState(() {
-      if (_selectedIndices.length == _historyItems.length) {
-        _selectedIndices.clear();
+      if (_selectedMediaIds.length == items.length) {
+        _selectedMediaIds.clear();
       } else {
-        _selectedIndices.addAll(List.generate(_historyItems.length, (i) => i));
+        _selectedMediaIds.clear();
+        _selectedMediaIds.addAll(items.map((e) => e.mediaId ?? ''));
       }
     });
     HapticFeedback.selectionClick();
@@ -144,20 +124,39 @@ class _HistoryEditorState extends State<HistoryEditor> {
     return Glow(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: _buildContent(),
-            ),
-          ],
+        body: StreamBuilder<List<OfflineMedia>>(
+          stream: offlineStorage.watchAnimeLibrary().map((items) => items
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList()
+            ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+                .compareTo(a.currentEpisode?.lastWatchedTime ?? 0))),
+          builder: (context, snapshot) {
+            final historyItems = snapshot.data ?? [];
+
+            return Column(
+              children: [
+                _buildAppBar(historyItems),
+                Expanded(
+                  child: _buildContent(historyItems),
+                ),
+              ],
+            );
+          },
         ),
-        floatingActionButton: _buildFAB(),
+        floatingActionButton: StreamBuilder<List<OfflineMedia>>(
+          stream: offlineStorage.watchAnimeLibrary().map((items) => items
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList()),
+          builder: (context, snapshot) {
+            final historyItems = snapshot.data ?? [];
+            return _buildFAB(historyItems);
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(List<OfflineMedia> historyItems) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
@@ -219,8 +218,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 ),
                 Text(
                   _isSelecting
-                      ? '${_selectedIndices.length} selected'
-                      : '${_historyItems.length} items',
+                      ? '${_selectedMediaIds.length} selected'
+                      : '${historyItems.length} items',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface
                         .opaque(0.6, iReallyMeanIt: true),
@@ -235,7 +234,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
             Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: _selectAll,
+                onTap: () => _selectAll(historyItems),
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -249,7 +248,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     ),
                   ),
                   child: Icon(
-                    _selectedIndices.length == _historyItems.length
+                    _selectedMediaIds.length == historyItems.length
                         ? Icons.deselect_rounded
                         : Icons.select_all_rounded,
                     color: theme.colorScheme.onSurface,
@@ -297,24 +296,25 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  Widget _buildContent() {
-    if (_historyItems.isEmpty) {
+  Widget _buildContent(List<OfflineMedia> historyItems) {
+    if (historyItems.isEmpty) {
       return _buildEmptyState();
     }
 
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: _historyItems.length,
+      itemCount: historyItems.length,
       itemBuilder: (context, index) {
-        return _buildHistoryCard(index);
+        return _buildHistoryCard(historyItems[index]);
       },
     );
   }
 
-  Widget _buildHistoryCard(int index) {
+  Widget _buildHistoryCard(OfflineMedia item) {
     final theme = Theme.of(context);
-    final item = _historyItems[index];
-    final isSelected = _selectedIndices.contains(index);
+    final mediaId = item.mediaId ?? '';
+    final isSelected = _selectedMediaIds.contains(mediaId);
+    final episode = item.currentEpisode!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -332,12 +332,12 @@ class _HistoryEditorState extends State<HistoryEditor> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _isSelecting ? () => _toggleSelection(index) : null,
+          onTap: _isSelecting ? () => _toggleSelection(mediaId) : null,
           onLongPress: !_isSelecting
               ? () {
                   setState(() {
                     _isSelecting = true;
-                    _selectedIndices.add(index);
+                    _selectedMediaIds.add(mediaId);
                   });
                   HapticFeedback.mediumImpact();
                 }
@@ -393,10 +393,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   child: AnymeXImage(
                     width: 80,
                     height: 80,
-                    imageUrl: item.episode.thumbnail ??
-                        item.media.poster ??
-                        item.media.cover ??
-                        '',
+                    imageUrl:
+                        episode.thumbnail ?? item.poster ?? item.cover ?? '',
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -405,7 +403,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item.media.name ?? item.media.jname ?? 'Unknown',
+                        item.name ?? item.jname ?? 'Unknown',
                         style: TextStyle(
                           color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
@@ -417,7 +415,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        item.episode.title ?? 'Episode ${item.episode.number}',
+                        episode.title ?? 'Episode ${episode.number}',
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.opaque(0.7),
                           fontSize: 14,
@@ -428,7 +426,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Episode ${item.episode.number}',
+                        'Episode ${episode.number}',
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.opaque(0.6),
                           fontSize: 12,
@@ -436,8 +434,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (item.episode.currentTrack != null)
-                        _buildProgressBar(item, theme),
+                      if (episode.currentTrack != null)
+                        _buildProgressBar(episode, theme),
                     ],
                   ),
                 ),
@@ -446,7 +444,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => _showDeleteDialog(index),
+                      onTap: () => _showDeleteDialog(item),
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         padding: const EdgeInsets.all(8),
@@ -472,9 +470,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  Widget _buildProgressBar(HistoryItem item, ThemeData theme) {
-    final currentTrack = item.episode.timeStampInMilliseconds ?? 1;
-    final totalDuration = item.episode.durationInMilliseconds ?? 1;
+  Widget _buildProgressBar(Episode episode, ThemeData theme) {
+    final currentTrack = episode.timeStampInMilliseconds ?? 1;
+    final totalDuration = episode.durationInMilliseconds ?? 1;
     final progress = (currentTrack / totalDuration).clamp(0.0, 1.0);
 
     return Column(
@@ -573,14 +571,14 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  Widget? _buildFAB() {
-    if (_historyItems.isEmpty) return null;
+  Widget _buildFAB(List<OfflineMedia> historyItems) {
+    if (historyItems.isEmpty) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
 
-    if (_isSelecting && _selectedIndices.isNotEmpty) {
+    if (_isSelecting && _selectedMediaIds.isNotEmpty) {
       return FloatingActionButton.extended(
-        onPressed: _deleteSelectedHistory,
+        onPressed: () => _deleteSelectedHistory(historyItems),
         backgroundColor: theme.colorScheme.error.opaque(0.7),
         foregroundColor: theme.colorScheme.onError,
         elevation: 8,
@@ -599,7 +597,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     }
 
     return FloatingActionButton.extended(
-      onPressed: _showClearAllDialog,
+      onPressed: () => _showClearAllDialog(historyItems),
       backgroundColor: theme.colorScheme.error.opaque(0.7),
       foregroundColor: theme.colorScheme.onError,
       elevation: 8,
@@ -617,9 +615,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  void _showDeleteDialog(int index) {
+  void _showDeleteDialog(OfflineMedia item) {
     final theme = Theme.of(context);
-    final item = _historyItems[index];
+    final episode = item.currentEpisode!;
 
     showDialog(
       context: context,
@@ -634,7 +632,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
         ),
         content: Text(
-          'Remove "${item.episode.title ?? 'Episode ${item.episode.number}'}" from your watch history?',
+          'Remove "${episode.title ?? 'Episode ${episode.number}'}" from your watch history?',
           style: TextStyle(color: theme.colorScheme.onSurface),
         ),
         actions: [
@@ -647,7 +645,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
           FilledButton(
             onPressed: () {
-              _deleteHistory(index);
+              _deleteHistory(item);
               Navigator.pop(context);
             },
             style: FilledButton.styleFrom(
@@ -663,7 +661,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  void _showClearAllDialog() {
+  void _showClearAllDialog(List<OfflineMedia> items) {
     final theme = Theme.of(context);
 
     showDialog(
@@ -692,7 +690,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
           FilledButton(
             onPressed: () {
-              _deleteAllHistory();
+              _deleteAllHistory(items);
               Navigator.pop(context);
             },
             style: FilledButton.styleFrom(
@@ -707,14 +705,4 @@ class _HistoryEditorState extends State<HistoryEditor> {
       ),
     );
   }
-}
-
-class HistoryItem {
-  final OfflineMedia media;
-  final Episode episode;
-
-  HistoryItem({
-    required this.media,
-    required this.episode,
-  });
 }

@@ -1,11 +1,9 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:flutter/material.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 
 class InlineSearchHistory extends StatelessWidget {
@@ -35,11 +33,10 @@ class InlineSearchHistory extends StatelessWidget {
   }
 
   void _saveToDatabase(List<String> terms) {
-    Hive.box('preferences').put(
-        isManga
-            ? 'manga_searched_queries_${serviceHandler.serviceType.value.name}'
-            : 'anime_searched_queries__${serviceHandler.serviceType.value.name}',
-        terms);
+    DynamicKeys.searchHistory.set(
+      '${isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
+      terms,
+    );
   }
 
   @override
@@ -47,7 +44,7 @@ class InlineSearchHistory extends StatelessWidget {
     if (searchTerms.isEmpty) {
       return const SizedBox.shrink();
     }
-    
+
     final displayedTerms = searchTerms.reversed.toList();
 
     return Container(
@@ -56,7 +53,7 @@ class InlineSearchHistory extends StatelessWidget {
         color: context.colors.surface.opaque(0.3),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: context.colors.outline.opaque(0.1),
+          color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
           width: 1,
         ),
       ),
@@ -74,9 +71,8 @@ class InlineSearchHistory extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: context.colors
-                            .primary
-                            .opaque(0.15),
+                        color: context.colors.primary
+                            .opaque(0.15, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
@@ -93,7 +89,7 @@ class InlineSearchHistory extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .opaque(0.9),
+                          .opaque(0.9, iReallyMeanIt: true),
                     ),
                   ],
                 ),
@@ -104,7 +100,7 @@ class InlineSearchHistory extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color:
-                          context.colors.error.opaque(0.1),
+                          context.colors.error.opaque(0.1, iReallyMeanIt: true),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -116,7 +112,7 @@ class InlineSearchHistory extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .error
-                              .opaque(0.8),
+                              .opaque(0.8, iReallyMeanIt: true),
                         ),
                         const SizedBox(width: 4),
                         AnymexText(
@@ -125,7 +121,7 @@ class InlineSearchHistory extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .error
-                              .opaque(0.8),
+                              .opaque(0.8, iReallyMeanIt: true),
                         ),
                       ],
                     ),
@@ -134,8 +130,6 @@ class InlineSearchHistory extends StatelessWidget {
               ],
             ),
           ),
-
-          // Search terms
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -170,7 +164,6 @@ class InlineSearchHistory extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            // Search icon
                             Container(
                               width: 28,
                               height: 28,
@@ -178,7 +171,7 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .opaque(0.1),
+                                    .opaque(0.1, iReallyMeanIt: true),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -187,13 +180,10 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primary
-                                    .opaque(0.7),
+                                    .opaque(0.7, iReallyMeanIt: true),
                               ),
                             ),
-
                             const SizedBox(width: 12),
-
-                            // Search term
                             Expanded(
                               child: AnymexText(
                                 text: term,
@@ -201,11 +191,9 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .opaque(0.8),
+                                    .opaque(0.8, iReallyMeanIt: true),
                               ),
                             ),
-
-                            // Delete button
                             GestureDetector(
                               onTap: () => _deleteTerm(term),
                               child: Container(
@@ -215,7 +203,7 @@ class InlineSearchHistory extends StatelessWidget {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
-                                      .opaque(0.1),
+                                      .opaque(0.1, iReallyMeanIt: true),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -224,7 +212,7 @@ class InlineSearchHistory extends StatelessWidget {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
-                                      .opaque(0.6),
+                                      .opaque(0.6, iReallyMeanIt: true),
                                 ),
                               ),
                             ),

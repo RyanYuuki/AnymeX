@@ -2,8 +2,9 @@
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
@@ -117,8 +118,7 @@ class ChapterSection extends StatelessWidget {
                                 Media.froDMedia(manga, ItemType.manga));
                             final key =
                                 '${sourceController.activeMangaSource.value?.id}-${anilistData.id}-${anilistData.serviceType.index}';
-                            settingsController.preferences
-                                .put(key, manga.title);
+                            DynamicKeys.mappedMediaTitle.set(key, manga.title);
                           },
                           isManga: true,
                         );

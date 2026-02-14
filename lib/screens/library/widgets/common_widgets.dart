@@ -3,7 +3,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';

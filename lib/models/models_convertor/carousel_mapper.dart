@@ -1,11 +1,11 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 
 extension DMediaMapper on DMedia {
   CarouselData toCarouselData({
@@ -28,7 +28,7 @@ extension OfflineMediaMapper on OfflineMedia {
     bool isManga = false,
   }) {
     return CarouselData(
-        id: id,
+        id: mediaId,
         title: name,
         poster: poster,
         source: currentChapter?.sourceName ?? currentEpisode?.source,

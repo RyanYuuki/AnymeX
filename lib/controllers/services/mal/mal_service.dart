@@ -9,6 +9,7 @@ import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -30,11 +31,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 
 class MalService extends GetxController implements BaseService, OnlineService {
-  final storage = Hive.box('auth');
   @override
   RxList<TrackedMedia> animeList = <TrackedMedia>[].obs;
   @override
@@ -60,7 +59,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
     return (data['data'] as List<dynamic>)
         .map((e) => Media.fromMAL(e))
-        .toList();
+        .toList()
+        .removeDupes();
   }
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
@@ -108,23 +108,23 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<void> fetchHomePage() async {
     try {
-      trendingAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15');
-      popularAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15');
-      topAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15');
-      upcomingAnimes.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15');
-
-      trendingManga.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15');
-      topManga.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15');
-      topManhwa.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15');
-      topManhua.value = await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15');
+      trendingAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15')).removeDupes();
+      popularAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15')).removeDupes();
+      topAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15')).removeDupes();
+      upcomingAnimes.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15')).removeDupes();
+      
+      trendingManga.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15')).removeDupes();
+      topManga.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15')).removeDupes();
+      topManhwa.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15')).removeDupes();
+      topManhua.value = (await fetchDataFromApi(
+          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15')).removeDupes();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
     }
@@ -295,7 +295,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   Future<void> fetchUserInfo({String? token}) async {
-    final tokenn = token ?? storage.get('mal_auth_token');
+    final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
     final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me',
         auth: true, useAuthHeader: true, token: tokenn);
     profileData.value = Profile.fromKitsu(data);
@@ -306,8 +306,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<void> autoLogin() async {
     try {
-      final token = await storage.get('mal_auth_token');
-      final refreshToken = await storage.get('mal_refresh_token');
+      final token = AuthKeys.malAuthToken.get<String?>();
+      final refreshToken = AuthKeys.malRefreshToken.get<String?>();
 
       if (token != null) {
         final isValid = await _validateToken(token);
@@ -366,9 +366,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
       final newToken = data['access_token'];
       final newRefreshToken = data['refresh_token'];
 
-      await storage.put('mal_auth_token', newToken);
+      AuthKeys.malAuthToken.set(newToken);
       if (newRefreshToken != null) {
-        await storage.put('mal_refresh_token', newRefreshToken);
+        AuthKeys.malRefreshToken.set(newRefreshToken);
       }
 
       Logger.i("Token refreshed successfully.");
@@ -428,9 +428,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
       final token = data['access_token'];
       final refreshToken = data['refresh_token'];
 
-      await storage.put('mal_auth_token', token);
+      AuthKeys.malAuthToken.set(token);
       if (refreshToken != null) {
-        await storage.put('mal_refresh_token', refreshToken);
+        AuthKeys.malRefreshToken.set(refreshToken);
       }
 
       Logger.i("MAL Access token: $token");
@@ -449,7 +449,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (clientId == null || clientId.isEmpty) {
         throw Exception('MAL_CLIENT_ID is not set in .env file.');
       }
-      final tokenn = token ?? await storage.get('mal_auth_token');
+      final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
       final response = await get(Uri.parse(url),
           headers: useAuthHeader
               ? {
@@ -487,7 +487,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final progress = params.progress;
     final isAnime = params.isAnime;
 
-    final token = await storage.get('mal_auth_token');
+    final token = AuthKeys.malAuthToken.get<String?>();
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
@@ -542,7 +542,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async {
-    final token = await storage.get('mal_auth_token');
+    final token = AuthKeys.malAuthToken.get<String?>();
 
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
@@ -592,7 +592,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),
@@ -602,8 +602,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> logout() async {
-    storage.delete('mal_auth_token');
-    storage.delete('mal_refresh_token');
+    AuthKeys.malAuthToken.delete();
+    AuthKeys.malRefreshToken.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
     // animeList.value = [];

@@ -1,31 +1,37 @@
-import 'package:hive/hive.dart';
+import 'package:isar_community/isar.dart';
 
 part 'custom_list.g.dart';
 
-@HiveType(typeId: 9)
-class CustomList extends HiveObject {
-  @HiveField(0)
+@collection
+class CustomList {
+  Id id = Isar.autoIncrement;
+
+  @Index()
   String? listName;
 
-  @HiveField(1)
   List<String>? mediaIds;
+
+  int mediaTypeIndex;
 
   CustomList({
     this.listName = "Default",
-    this.mediaIds = const ['0'],
+    this.mediaIds,
+    this.mediaTypeIndex = 0,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'listName': listName,
       'mediaIds': mediaIds,
+      'mediaTypeIndex': mediaTypeIndex,
     };
   }
 
   factory CustomList.fromJson(Map<String, dynamic> json) {
     return CustomList(
       listName: json['listName'] as String? ?? "Default",
-      mediaIds: (json['mediaIds'] as List<dynamic>?)?.cast<String>() ?? ['0'],
+      mediaIds: (json['mediaIds'] as List<dynamic>?)?.cast<String>(),
+      mediaTypeIndex: json['mediaTypeIndex'] as int? ?? 0,
     );
   }
 }

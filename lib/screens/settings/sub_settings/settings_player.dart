@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/data_keys/player.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -94,8 +94,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     _hiddenButtonIds = [];
     _buttonConfigs = {};
 
-    final String jsonString =
-        settings.preferences.get('bottomControlsSettings', defaultValue: '{}');
+    final String jsonString = PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     if (decodedConfig.isEmpty) _initializeDefaultButtonLayout();
@@ -124,8 +123,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       'hiddenButtonIds': _hiddenButtonIds,
       'buttonConfigs': _buttonConfigs,
     };
-    settings.preferences
-        .put('bottomControlsSettings', json.encode(configToSave));
+    PlayerUiKeys.bottomControlsSettings.set(json.encode(configToSave));
     if (mounted) {
       setState(() {});
     }

@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -9,7 +10,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/widgets/common/no_source.dart';
@@ -68,7 +69,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       _episodeFuture.value = Future.value(widget.episodeList!);
       _fetchFillerInfo();
     }
-   
+
     if (widget.episodeList != null) {
       _episodeListListener = ever(widget.episodeList!, (episodes) {
         if (episodes.isNotEmpty && !_fillerFetched) {
@@ -86,14 +87,14 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
   Future<void> _fetchFillerInfo() async {
     if (_fillerFetched) return;
-    
+
     if (widget.episodeList != null && widget.episodeList!.isNotEmpty) {
       if (widget.episodeList!.any((ep) => ep.filler == true)) {
         _fillerFetched = true;
         return;
       }
     }
-    
+
     final malId = widget.anilistData?.idMal;
     if (malId == null) return;
 
@@ -101,14 +102,14 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     try {
       final fillerMap = await JikanService.getFillerEpisodes(malId.toString());
-      
+
       if (fillerMap.isNotEmpty && widget.episodeList != null) {
         bool updated = false;
-        
+
         for (var ep in widget.episodeList!) {
           if (fillerMap.containsKey(ep.number)) {
-             ep.filler = true;
-             updated = true;
+            ep.filler = true;
+            updated = true;
           }
         }
 
@@ -125,7 +126,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         throw Exception('Request cancelled');
       }
 
-    
       final episodes = widget.episodeList?.value ?? [];
       if (episodes.isNotEmpty) {
         _fetchFillerInfo();
@@ -302,13 +302,12 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
+                  color:
+                      context.colors.outline.opaque(0.2, iReallyMeanIt: true),
                   width: 1.5,
                 ),
                 boxShadow: [
@@ -368,7 +367,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                           });
                           final key =
                               '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
-                          settingsController.preferences.put(key, manga.title);
+                          DynamicKeys.mappedMediaTitle.set(key, manga.title);
                         },
                       );
                     },
@@ -376,15 +375,11 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: context.colors
-                            .primaryContainer
-                            .opaque(0.4),
+                        color: context.colors.primaryContainer.opaque(0.4),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .opaque(0.3),
+                          color:
+                              Theme.of(context).colorScheme.outline.opaque(0.3),
                           width: 1,
                         ),
                       ),

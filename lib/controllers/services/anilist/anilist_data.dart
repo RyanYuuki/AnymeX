@@ -14,7 +14,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
@@ -231,15 +231,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _initFallback() {
     if (trendingAnimes.isEmpty) {
-      upcomingAnimes.value = fb.upcomingAnimes;
-      popularAnimes.value = fb.popularAnimes;
-      trendingAnimes.value = fb.trendingAnimes;
-      latestAnimes.value = fb.latestAnimes;
+      upcomingAnimes.value = fb.upcomingAnimes.removeDupes(); 
+      popularAnimes.value = fb.popularAnimes.removeDupes();
+      trendingAnimes.value = fb.trendingAnimes.removeDupes();
+      latestAnimes.value = fb.latestAnimes.removeDupes();
 
-      popularMangas.value = fbm.popularMangas;
-      latestMangas.value = fbm.latestMangas;
-      topOngoingMangas.value = fbm.trendingMangas;
-      trendingMangas.value = fbm.trendingMangas;
+      popularMangas.value = fbm.popularMangas.removeDupes();
+      latestMangas.value = fbm.latestMangas.removeDupes();
+      topOngoingMangas.value = fbm.trendingMangas.removeDupes();
+      trendingMangas.value = fbm.trendingMangas.removeDupes();
     }
   }
 

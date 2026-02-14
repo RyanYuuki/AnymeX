@@ -1,11 +1,7 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/screens/library/widgets/history_model.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -15,7 +11,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -64,10 +59,10 @@ class _HomePageState extends State<HomePage> {
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
 
-    final historyData = Get.find<OfflineStorageController>()
-        .animeLibrary
-        .where((e) => e.currentEpisode?.currentTrack != null)
-        .toList();
+    // final historyData = Get.find<OfflineStorageController>()
+    //     .animeLibrary
+    //     .where((e) => e.currentEpisode?.currentTrack != null)
+    //     .toList();
 
     return RefreshIndicator(
       onRefresh: () {
@@ -144,7 +139,10 @@ class _HomePageState extends State<HomePage> {
                         final data = cacheController.getStoredAnime();
                         if (serviceHandler.isLoggedIn.value) {
                           children.insert(
-                            2,
+                            serviceHandler.serviceType.value ==
+                                    ServicesType.extensions
+                                ? 0
+                                : 2,
                             Column(
                               children: [
                                 if (data.isNotEmpty)
@@ -166,53 +164,53 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
-                                if (historyData.isNotEmpty) ...[
-                                  10.height(),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 20.0),
-                                        child: Text(
-                                          "Continue Watching (Literally)",
-                                          style: TextStyle(
-                                            fontFamily: "Poppins-SemiBold",
-                                            fontSize: 17,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                        ),
-                                      ),
-                                      10.height(),
-                                      SizedBox(
-                                        height: 228,
-                                        child: GridView.builder(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 15),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: historyData.length,
-                                          gridDelegate:
-                                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 1,
-                                                  crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 0,
-                                                  mainAxisExtent: 300),
-                                          itemBuilder: (context, i) {
-                                            final historyModel =
-                                                HistoryModel.fromOfflineMedia(
-                                                    historyData[i],
-                                                    ItemType.anime);
-                                            return ContinueWatchingCard(
-                                                media: historyModel);
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                // if (historyData.isNotEmpty) ...[
+                                //   10.height(),
+                                //   Column(
+                                //     crossAxisAlignment:
+                                //         CrossAxisAlignment.start,
+                                //     children: [
+                                //       Padding(
+                                //         padding:
+                                //             const EdgeInsets.only(left: 20.0),
+                                //         child: Text(
+                                //           "Continue Watching (Literally)",
+                                //           style: TextStyle(
+                                //             fontFamily: "Poppins-SemiBold",
+                                //             fontSize: 17,
+                                //             color: Theme.of(context)
+                                //                 .colorScheme
+                                //                 .primary,
+                                //           ),
+                                //         ),
+                                //       ),
+                                //       10.height(),
+                                //       SizedBox(
+                                //         height: 228,
+                                //         child: GridView.builder(
+                                //           padding: const EdgeInsets.symmetric(
+                                //               horizontal: 15),
+                                //           scrollDirection: Axis.horizontal,
+                                //           itemCount: historyData.length,
+                                //           gridDelegate:
+                                //               const SliverGridDelegateWithFixedCrossAxisCount(
+                                //                   crossAxisCount: 1,
+                                //                   crossAxisSpacing: 10,
+                                //                   mainAxisSpacing: 0,
+                                //                   mainAxisExtent: 300),
+                                //           itemBuilder: (context, i) {
+                                //             final historyModel =
+                                //                 HistoryModel.fromOfflineMedia(
+                                //                     historyData[i],
+                                //                     ItemType.anime);
+                                //             return ContinueWatchingCard(
+                                //                 media: historyModel);
+                                //           },
+                                //         ),
+                                //       )
+                                //     ],
+                                //   ),
+                                // ],
                               ],
                             ),
                           );
@@ -240,53 +238,53 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
-                                if (historyData.isNotEmpty) ...[
-                                  10.height(),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 20.0),
-                                        child: Text(
-                                          "Continue Watching (Literally)",
-                                          style: TextStyle(
-                                            fontFamily: "Poppins-SemiBold",
-                                            fontSize: 17,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                        ),
-                                      ),
-                                      10.height(),
-                                      SizedBox(
-                                        height: 228,
-                                        child: GridView.builder(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 15),
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: historyData.length,
-                                          gridDelegate:
-                                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 1,
-                                                  crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 0,
-                                                  mainAxisExtent: 300),
-                                          itemBuilder: (context, i) {
-                                            final historyModel =
-                                                HistoryModel.fromOfflineMedia(
-                                                    historyData[i],
-                                                    ItemType.anime);
-                                            return ContinueWatchingCard(
-                                                media: historyModel);
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                // if (historyData.isNotEmpty) ...[
+                                //   10.height(),
+                                //   Column(
+                                //     crossAxisAlignment:
+                                //         CrossAxisAlignment.start,
+                                //     children: [
+                                //       Padding(
+                                //         padding:
+                                //             const EdgeInsets.only(left: 20.0),
+                                //         child: Text(
+                                //           "Continue Watching (Literally)",
+                                //           style: TextStyle(
+                                //             fontFamily: "Poppins-SemiBold",
+                                //             fontSize: 17,
+                                //             color: Theme.of(context)
+                                //                 .colorScheme
+                                //                 .primary,
+                                //           ),
+                                //         ),
+                                //       ),
+                                //       10.height(),
+                                //       SizedBox(
+                                //         height: 228,
+                                //         child: GridView.builder(
+                                //           padding: const EdgeInsets.symmetric(
+                                //               horizontal: 15),
+                                //           scrollDirection: Axis.horizontal,
+                                //           itemCount: historyData.length,
+                                //           gridDelegate:
+                                //               const SliverGridDelegateWithFixedCrossAxisCount(
+                                //                   crossAxisCount: 1,
+                                //                   crossAxisSpacing: 10,
+                                //                   mainAxisSpacing: 0,
+                                //                   mainAxisExtent: 300),
+                                //           itemBuilder: (context, i) {
+                                //             final historyModel =
+                                //                 HistoryModel.fromOfflineMedia(
+                                //                     historyData[i],
+                                //                     ItemType.anime);
+                                //             return ContinueWatchingCard(
+                                //                 media: historyModel);
+                                //           },
+                                //         ),
+                                //       )
+                                //     ],
+                                //   ),
+                                // ],
                               ],
                             ),
                           );
