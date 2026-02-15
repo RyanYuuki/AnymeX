@@ -96,7 +96,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           _photoViewController.scale = newScale;
         }
       } else {
-        widget.controller.handleMouseScroll(event.scrollDelta.dy);
+         widget.controller.handleMouseScroll(event.scrollDelta.dy);
       }
     }
   }
@@ -177,8 +177,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     return Listener(
       onPointerSignal: _handlePointerSignal,
       onPointerPanZoomUpdate: (event) {
-        widget.controller
-            .handleMouseScroll(-event.panDelta.dy * 4, isTrackpad: true);
+        widget.controller.handleMouseScroll(-event.panDelta.dy * 4, isTrackpad: true);
       },
       onPointerPanZoomEnd: (event) {
         widget.controller.handleOverscrollEnd();
@@ -369,13 +368,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                       : page.headers,
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
-                  cropThreshold: 30,
+                  cropThreshold: 30, // idk i hardcoded it cause , it wasn't good for AnymeX 
                 )
               : ExtendedImage.network(
                   page.url,
                   key: ValueKey(page.url),
-                  cacheMaxAge:
-                      Duration(days: PlayerUiKeys.cacheDays.get<int>(7)),
+                  cacheMaxAge: Duration(
+                      days: PlayerUiKeys.cacheDays.get<int>(7)),
                   mode: ExtendedImageMode.none,
                   gaplessPlayback: true,
                   headers: (page.headers?.isEmpty ?? true)
@@ -387,9 +386,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                       : page.headers,
                   fit: BoxFit.contain,
                   constraints: isContinuous
-                      ? BoxConstraints(
-                          maxWidth: 500 *
-                              widget.controller.pageWidthMultiplier.value)
+                      ? BoxConstraints(maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
                       : null,
                   cache: true,
                   clearMemoryCacheIfFailed: true,
