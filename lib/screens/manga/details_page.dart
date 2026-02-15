@@ -22,7 +22,6 @@ import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/manga/widgets/manga_stats.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
@@ -47,12 +46,7 @@ import 'package:iconsax/iconsax.dart';
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
-  final int initialTabIndex;
-  const MangaDetailsPage(
-      {super.key,
-      required this.media,
-      required this.tag,
-      this.initialTabIndex = 0});
+  const MangaDetailsPage({super.key, required this.media, required this.tag});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -83,47 +77,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   RxString mangaStatus = "".obs;
 
   // Tracker's Controller
-  late final PageController controller;
+  PageController controller = PageController();
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
     controller.animateToPage(index,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  }
-
-  Future<void> _showShareOptions() async {
-    await MediaShare.showOptions(
-      context: context,
-      baseMedia: widget.media,
-      hydratedMedia: anilistData,
-      isManga: true,
-    );
-  }
-
-  Widget _buildActionIconButton({
-    required BuildContext context,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      height: 50,
-      width: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.opaque(0.2),
-        ),
-        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Icon(icon),
-        ),
-      ),
-    );
   }
 
   final sourceController = Get.find<SourceController>();
@@ -133,9 +92,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   void initState() {
     super.initState();
-    final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
-    selectedPage.value = initialPage;
-    controller = PageController(initialPage: initialPage);
     mediaService = widget.media.serviceType;
     Future.delayed(const Duration(milliseconds: 300), () {
       _checkMangaPresence();
@@ -149,9 +105,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = mediaService.onlineService.currentMedia;
 
-    if (data.value.id != null || data.value.id != '') {
+    if (data.value.id != null && data.value.id != '') {
       isListedManga.value = true;
-      currentManga = data;
+      currentManga.value = data.value;
     } else {
       isListedManga.value = false;
       currentManga.value = null;
@@ -234,6 +190,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       );
       chapterList?.value = episodes;
       searchedTitle.value = media.title;
+
+      // FIX: Re-check presence to update the "Continue Reading" button with new links
+      _checkMangaPresence();
 
       setState(() {});
     } catch (e) {
@@ -356,29 +315,37 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                             ),
                           ),
                           const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
-                            icon: Icons.share_rounded,
-                            onTap: _showShareOptions,
-                          ),
-                          const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
-                            icon: HugeIcons.strokeRoundedLibrary,
-                            onTap: () {
-                              showCustomListDialog(
-                                context,
-                                anilistData!,
-                              );
-                            },
+                          Container(
+                            height: 50,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outline
+                                    .opaque(0.2),
+                              ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer
+                                  .opaque(0.5),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                  onTap: () {
+                                    showCustomListDialog(
+                                      context,
+                                      anilistData!,
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: const Icon(
+                                      HugeIcons.strokeRoundedLibrary)),
+                            ),
                           ),
                         ] else ...[
-                          _buildActionIconButton(
-                            context: context,
-                            icon: Icons.share_rounded,
-                            onTap: _showShareOptions,
-                          ),
-                          const SizedBox(width: 7),
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
@@ -539,8 +506,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               const SizedBox(height: 20),
               MangaStats(
                 data: anilistData!,
-                friendsWatching: anilistData?.friendsWatching,
-                totalEpisodes: anilistData?.totalChapters,
               ),
               const SizedBox(height: 20),
             ],
@@ -645,26 +610,26 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 // Mobile Navigation bar: START
   Widget _buildMobiledNav() {
     return Obx(() => ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
-            items: [
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.info_circle5,
-                  unselectedIcon: Iconsax.info_circle,
-                  label: "Info"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.book,
-                  unselectedIcon: Iconsax.book,
-                  label: "Watch"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: HugeIcons.strokeRoundedComment01,
-                  unselectedIcon: HugeIcons.strokeRoundedComment02,
-                  label: "Comments"),
-            ]));
+        isDesktop: false,
+        currentIndex: selectedPage.value,
+        margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+        items: [
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.info_circle5,
+              unselectedIcon: Iconsax.info_circle,
+              label: "Info"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.book,
+              unselectedIcon: Iconsax.book,
+              label: "Watch"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: HugeIcons.strokeRoundedComment01,
+              unselectedIcon: HugeIcons.strokeRoundedComment02,
+              label: "Comments"),
+        ]));
   }
   // Mobile Navigation bar: END
 
