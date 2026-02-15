@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
@@ -21,16 +21,15 @@ class SettingsCommon extends StatefulWidget {
 class _SettingsCommonState extends State<SettingsCommon> {
   final settings = Get.find<Settings>();
   late bool uniScrapper;
-  late bool shouldAskForPermission = General.shouldAskForTrack.get(true);
-  late bool hideAdultContent = General.hideAdultContent.get(true);
+  late bool shouldAskForPermission = General.shouldAskForTrack.get<bool>(true);
+  late bool hideAdultContent = General.hideAdultContent.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
   late Map<String, bool> homePageCards;
 
   @override
   void initState() {
     super.initState();
-    uniScrapper = settingsController.preferences
-        .get('universal_scrapper', defaultValue: false);
+    uniScrapper = General.universalScrapper.get<bool>(false);
     homePageCards = isMal ? settings.homePageCardsMal : settings.homePageCards;
     homePageCards.putIfAbsent('Recommended Animes', () => true);
     homePageCards.putIfAbsent('Recommended Mangas', () => true);

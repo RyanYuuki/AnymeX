@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/utils/function.dart';
@@ -11,11 +12,13 @@ import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+const MethodChannel _utilsChannel = MethodChannel('com.ryan.anymex/utils');
 
 Future<bool> _requestStoragePermissions() async {
   if (!Platform.isAndroid) return true;
@@ -209,6 +212,34 @@ void showWelcomeDialogg(BuildContext context) {
                               SettingsSheet().showServiceSelector(context);
                             },
                           ),
+                          if (Platform.isAndroid)
+                            CustomTile(
+                              description:
+                                  'Open app settings to allow AnymeX to open supported links',
+                              icon: Icons.link_rounded,
+                              title: 'Open Link Settings',
+                              onTap: () async {
+                                bool opened = false;
+                                try {
+                                  opened =
+                                      (await _utilsChannel.invokeMethod<bool>(
+                                              'openOpenByDefaultSettings')) ??
+                                          false;
+                                } catch (e) {
+                                  Logger.i(
+                                      'Failed to open Open by default settings: $e');
+                                }
+
+                                if (!opened) {
+                                  opened = await openAppSettings();
+                                }
+
+                                if (!opened) {
+                                  snackBar(
+                                      "Couldn't open app settings. Open it manually.");
+                                }
+                              },
+                            ),
                           Container(
                             height: 50,
                             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -227,8 +258,7 @@ void showWelcomeDialogg(BuildContext context) {
                                             borderRadius:
                                                 BorderRadius.circular(12))),
                                     onPressed: () {
-                                      Hive.box('themeData')
-                                          .put('isFirstTime', false);
+                                      General.isFirstTime.set(false);
                                       Navigator.of(context).pop();
                                       navigate(() => const SettingsAccounts());
                                     },
@@ -262,8 +292,7 @@ void showWelcomeDialogg(BuildContext context) {
                                           borderRadius:
                                               BorderRadius.circular(12))),
                                   onPressed: () {
-                                    Hive.box('themeData')
-                                        .put('isFirstTime', false);
+                                    General.isFirstTime.set(false);
                                     Get.back();
                                   },
                                   label: Text(

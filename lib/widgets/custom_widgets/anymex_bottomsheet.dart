@@ -8,6 +8,7 @@ class AnymexSheet extends StatelessWidget {
   final String? message;
   final Widget? contentWidget;
   final Widget? customWidget;
+  final bool showDragHandle;
 
   const AnymexSheet({
     super.key,
@@ -15,10 +16,17 @@ class AnymexSheet extends StatelessWidget {
     this.message,
     this.contentWidget,
     this.customWidget,
+    this.showDragHandle = false,
   });
 
-  static void custom(Widget widget, BuildContext context) => AnymexSheet(
+  static void custom(
+    Widget widget,
+    BuildContext context, {
+    bool showDragHandle = false,
+  }) =>
+      AnymexSheet(
         customWidget: widget,
+        showDragHandle: showDragHandle,
       ).show(context);
 
   void show(
@@ -27,6 +35,7 @@ class AnymexSheet extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: showDragHandle,
       // backgroundColor: settingsController.liquidMode
       //     ? Colors.transparent
       //     : context.theme.colorScheme.surface,
@@ -36,6 +45,7 @@ class AnymexSheet extends StatelessWidget {
         message: message,
         contentWidget: contentWidget,
         customWidget: customWidget,
+        showDragHandle: showDragHandle,
       ),
     );
   }

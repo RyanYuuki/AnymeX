@@ -1,9 +1,10 @@
-import 'package:anymex/models/Offline/Hive/episode.dart';
+import 'dart:ui';
+
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'dart:ui';
 
 enum EpisodeLayoutType {
   compact,
@@ -90,7 +91,8 @@ class BetterEpisode extends StatelessWidget {
       decoration: BoxDecoration(
         color: _getBackgroundColor(context, isFiller),
         borderRadius: BorderRadius.circular(12),
-        border: isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
+        border:
+            isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
       ),
       child: Row(
         children: [
@@ -98,26 +100,26 @@ class BetterEpisode extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Column(
-               mainAxisAlignment: MainAxisAlignment.center,
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                  if (isFiller)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 2.0),
-                      child: AnymexText(
-                        text: "[Filler]",
-                        size: 10,
-                        color: Colors.orange,
-                        variant: TextVariant.bold,
-                      ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isFiller)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: AnymexText(
+                      text: "[Filler]",
+                      size: 10,
+                      color: Colors.orange,
+                      variant: TextVariant.bold,
                     ),
-                  AnymexText(
-                    text: episode.title ?? '?',
-                    variant: TextVariant.bold,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
-               ],
+                AnymexText(
+                  text: episode.title ?? '?',
+                  variant: TextVariant.bold,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
@@ -137,7 +139,8 @@ class BetterEpisode extends StatelessWidget {
       decoration: BoxDecoration(
         color: _getBackgroundColor(context, isFiller),
         borderRadius: BorderRadius.circular(12),
-        border: isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
+        border:
+            isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,25 +159,26 @@ class BetterEpisode extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                     if (isFiller)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                               color: Colors.orange.withOpacity(0.2),
-                               borderRadius: BorderRadius.circular(4),
-                               border: Border.all(color: Colors.orange.withOpacity(0.5))
-                            ),
-                            child: AnymexText(
-                              text: "FILLER",
-                              size: 10,
-                              color: Colors.orange,
-                              variant: TextVariant.bold,
-                            ),
+                    if (isFiller)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                  color: Colors.orange.withOpacity(0.5))),
+                          child: AnymexText(
+                            text: "FILLER",
+                            size: 10,
+                            color: Colors.orange,
+                            variant: TextVariant.bold,
                           ),
                         ),
-                     AnymexText(
+                      ),
+                    AnymexText(
                       text: episode.title ?? 'Unknown Title',
                       variant: TextVariant.bold,
                       maxLines: 3,

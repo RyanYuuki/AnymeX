@@ -4,7 +4,8 @@ import 'dart:typed_data';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Offline/Hive/video.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/utils/logger.dart';
@@ -15,7 +16,6 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
@@ -67,21 +67,22 @@ class LocalSourceController extends GetxController
   void onInit() {
     super.onInit();
     // Initialize local path
-    currentPath.value = settingsController.preferences
-        .get('watch_offline_path', defaultValue: '');
+    currentPath.value =
+        LocalSourceKeys.watchOfflinePath.get<String>('');
 
-    List<String>? savedHistory = settingsController.preferences
-        .get('watch_offline_path_history', defaultValue: <String>[]);
+    List<String>? savedHistory = LocalSourceKeys.watchOfflinePathHistory
+        .get<List<String>>(<String>[]);
     if (savedHistory != null) {
       pathHistory.value = savedHistory;
     }
 
     // Initialize download path
-    downloadPath.value = settingsController.preferences
-        .get('watch_offline_download_path', defaultValue: '');
+    downloadPath.value =
+        LocalSourceKeys.watchOfflineDownloadPath.get<String>('');
 
-    List<String>? savedDownloadHistory = settingsController.preferences
-        .get('watch_offline_download_path_history', defaultValue: <String>[]);
+    List<String>? savedDownloadHistory = LocalSourceKeys
+        .watchOfflineDownloadPathHistory
+        .get<List<String>>(<String>[]);
     if (savedDownloadHistory != null) {
       downloadPathHistory.value = savedDownloadHistory;
     }
@@ -118,26 +119,23 @@ class LocalSourceController extends GetxController
 
   void _saveCurrentPath() {
     if (currentPath.isNotEmpty) {
-      settingsController.preferences
-          .put('watch_offline_path', currentPath.value);
+      LocalSourceKeys.watchOfflinePath.set(currentPath.value);
     }
   }
 
   void _savePathHistory() {
-    settingsController.preferences
-        .put('watch_offline_path_history', pathHistory.toList());
+    LocalSourceKeys.watchOfflinePathHistory.set(pathHistory.toList());
   }
 
   void _saveDownloadPath() {
     if (downloadPath.isNotEmpty) {
-      settingsController.preferences
-          .put('watch_offline_download_path', downloadPath.value);
+      LocalSourceKeys.watchOfflineDownloadPath.set(downloadPath.value);
     }
   }
 
   void _saveDownloadPathHistory() {
-    settingsController.preferences.put(
-        'watch_offline_download_path_history', downloadPathHistory.toList());
+    LocalSourceKeys.watchOfflineDownloadPathHistory
+        .set(downloadPathHistory.toList());
   }
 
   Future<void> _initializeDownloadPath() async {

@@ -2,8 +2,7 @@
 
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/data_keys/general.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -21,7 +20,6 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:iconsax/iconsax.dart';
 
 enum ViewMode { grid, list }
@@ -75,9 +73,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   void _initializeData() {
     _searchController.text = widget.searchTerm;
-    _searchedTerms.value = Hive.box('preferences').get(
-        '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
-        defaultValue: [].cast<String>());
+    _searchedTerms.value = DynamicKeys.searchHistory.get<List<String>>(
+      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
+      <String>[],
+    );
 
     if (widget.initialFilters != null) {
       _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
@@ -92,8 +91,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _saveHistory() {
-    Hive.box('preferences').put(
-      '${widget.isManga ? 'manga' : 'anime'}_searched_queries_${serviceHandler.serviceType.value.name}',
+    DynamicKeys.searchHistory.set(
+      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
       _searchedTerms.toList(),
     );
   }
@@ -247,17 +246,19 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
+          if (!General.hideAdultContent.get(true) &&
+              (serviceHandler.serviceType.value.isAL ||
+                  serviceHandler.serviceType.value.isMal)) ...[
+            Obx(() {
+              return _buildToggleButton(
+                label: 'Adult',
+                isActive: isAdult.value,
+                onTap: () => isAdult.value = !isAdult.value,
+              );
+            }),
+            const SizedBox(width: 12),
+          ],
           if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
-            if (!General.hideAdultContent.get(true)) ...[
-              Obx(() {
-                return _buildToggleButton(
-                  label: 'Adult',
-                  isActive: isAdult.value,
-                  onTap: () => isAdult.value = !isAdult.value,
-                );
-              }),
-              const SizedBox(width: 12),
-            ],
             _buildActionButton(
               icon: Iconsax.setting_4,
               label: 'Filters',
@@ -672,7 +673,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
-              mainAxisExtent: 120,
+              mainAxisExtent: 130,
             )
           : SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveValue(context,
@@ -814,7 +815,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
-    }, currentFilters: _activeFilters);
+    }, currentFilters: _activeFilters, isManga: widget.isManga);
   }
 
   void _removeFilter(String key, dynamic value) {

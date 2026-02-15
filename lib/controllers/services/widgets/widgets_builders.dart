@@ -4,17 +4,34 @@ import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 
-Widget buildSection(String title, List<dynamic> data,
+Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
     bool isLoading = false,
     ItemType type = ItemType.anime,
     Source? source}) {
+  if (data is Stream) {
+    return StreamBuilder(
+      stream: data,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return buildLoader(title);
+        }
+        return ReusableCarousel(
+          data: snapshot.data ?? [],
+          title: title,
+          type: type,
+          variant: variant,
+          isLoading: isLoading,
+          source: source,
+        );
+      },
+    );
+  }
   return ReusableCarousel(
     data: data,
     title: title,

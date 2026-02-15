@@ -11,10 +11,11 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
-import 'package:anymex/database/model/comment.dart';
+import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/episode.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -24,6 +25,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -49,7 +51,12 @@ import 'package:iconsax/iconsax.dart';
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
-  const AnimeDetailsPage({super.key, required this.media, required this.tag});
+  final int initialTabIndex;
+  const AnimeDetailsPage(
+      {super.key,
+      required this.media,
+      required this.tag,
+      this.initialTabIndex = 0});
 
   @override
   State<AnimeDetailsPage> createState() => _AnimeDetailsPageState();
@@ -80,10 +87,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   RxBool episodeError = false.obs;
 
- // for fast parallel filler fetching 
+  // for fast parallel filler fetching
   Map<String, bool> fillerEpisodes = {};
 
-  PageController controller = PageController();
+  late final PageController controller;
 
   final sourceController = Get.find<SourceController>();
 
@@ -97,9 +104,47 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
+  Future<void> _showShareOptions() async {
+    await MediaShare.showOptions(
+      context: context,
+      baseMedia: widget.media,
+      hydratedMedia: anilistData,
+      isManga: false,
+    );
+  }
+
+  Widget _buildActionIconButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.opaque(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
+    selectedPage.value = initialPage;
+    controller = PageController(initialPage: initialPage);
     if (sourceController.installedExtensions.isEmpty) {
       showAnify.value = false;
     }
@@ -122,10 +167,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
- 
   Future<void> _fetchFillerInfo() async {
     final malId = anilistData?.idMal ?? widget.media.idMal;
-    if (malId == null) return;
+
 
     try {
       final data = await JikanService.getFillerEpisodes(malId.toString());
@@ -136,10 +180,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     } catch (_) {}
   }
 
-
   void _applyFillerInfo() {
     if (fillerEpisodes.isEmpty || episodeList.isEmpty) return;
-    
+
     bool updated = false;
     for (var ep in episodeList) {
       if (fillerEpisodes.containsKey(ep.number)) {
@@ -147,7 +190,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         updated = true;
       }
     }
-    
+
     if (updated && mounted) setState(() {});
   }
 
@@ -219,7 +262,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         _processExtensionData(tempData);
       } else {
-    
         Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
     } catch (e) {
@@ -234,8 +276,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _mapToService() async {
     final key =
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
-    final savedTitle =
-        settingsController.preferences.get(key, defaultValue: null);
+    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
         formatTitles(widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);
@@ -270,7 +311,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       rawEpisodes.value = _createRawEpisodes(episodes);
       episodeList.value = _renewEpisodeData(episodes);
       searchedTitle.value = media.title;
-      _applyFillerInfo(); 
+      _applyFillerInfo();
       if (mounted) {
         setState(() {});
       }
@@ -284,7 +325,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> applyAnifyCovers() async {
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
-      episodeList.value,
+      episodeList,
     );
     if (newEps.isNotEmpty &&
         newEps.first.thumbnail == null &&
@@ -292,7 +333,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       showAnify.value = false;
     }
     episodeList.value = newEps;
-    _applyFillerInfo(); 
+    _applyFillerInfo();
     if (mounted) {
       setState(() {});
     }
@@ -419,7 +460,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
-                    widget.media.serviceType.onlineService.animeList.value;
+                    widget.media.serviceType.onlineService.animeList;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=
@@ -473,34 +514,26 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                             ),
                           ),
                           const SizedBox(width: 7),
-                          Container(
-                            height: 50,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .opaque(0.2),
-                              ),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .opaque(0.5),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                  onTap: () {
-                                    showCustomListDialog(context, anilistData!);
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: const Icon(
-                                      HugeIcons.strokeRoundedLibrary)),
-                            ),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: HugeIcons.strokeRoundedLibrary,
+                            onTap: () {
+                              showCustomListDialog(context, anilistData!);
+                            },
                           ),
                         ] else ...[
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
@@ -663,6 +696,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 () => AnimeStats(
                   data: anilistData!,
                   countdown: formatTime(timeLeft.value),
+                  friendsWatching: anilistData?.friendsWatching,
+                  totalEpisodes: anilistData?.totalEpisodes,
                 ),
               ),
               const SizedBox(height: 20),
@@ -675,6 +710,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           variant: DataVariant.relation,
         ),
         CharactersCarousel(characters: anilistData!.characters ?? []),
+        if (anilistData?.staff != null && anilistData!.staff!.isNotEmpty)
+          StaffCarousel(staff: anilistData!.staff!),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Animes",

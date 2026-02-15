@@ -8,9 +8,10 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
@@ -21,6 +22,7 @@ import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/manga/widgets/manga_stats.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
@@ -45,7 +47,12 @@ import 'package:iconsax/iconsax.dart';
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
-  const MangaDetailsPage({super.key, required this.media, required this.tag});
+  final int initialTabIndex;
+  const MangaDetailsPage(
+      {super.key,
+      required this.media,
+      required this.tag,
+      this.initialTabIndex = 0});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -76,12 +83,47 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   RxString mangaStatus = "".obs;
 
   // Tracker's Controller
-  PageController controller = PageController();
+  late final PageController controller;
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
     controller.animateToPage(index,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  Future<void> _showShareOptions() async {
+    await MediaShare.showOptions(
+      context: context,
+      baseMedia: widget.media,
+      hydratedMedia: anilistData,
+      isManga: true,
+    );
+  }
+
+  Widget _buildActionIconButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.opaque(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
   }
 
   final sourceController = Get.find<SourceController>();
@@ -91,6 +133,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   void initState() {
     super.initState();
+    final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
+    selectedPage.value = initialPage;
+    controller = PageController(initialPage: initialPage);
     mediaService = widget.media.serviceType;
     Future.delayed(const Duration(milliseconds: 300), () {
       _checkMangaPresence();
@@ -160,8 +205,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Future<void> _mapToService() async {
     final key =
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
-    final savedTitle =
-        settingsController.preferences.get(key, defaultValue: null);
+    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(formatTitles(anilistData!), searchedTitle,
         savedTitle: savedTitle);
     if (mappedData != null) {
@@ -312,37 +356,29 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                             ),
                           ),
                           const SizedBox(width: 7),
-                          Container(
-                            height: 50,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .opaque(0.2),
-                              ),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .opaque(0.5),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                  onTap: () {
-                                    showCustomListDialog(
-                                      context,
-                                      anilistData!,
-                                    );
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: const Icon(
-                                      HugeIcons.strokeRoundedLibrary)),
-                            ),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
+                          _buildActionIconButton(
+                            context: context,
+                            icon: HugeIcons.strokeRoundedLibrary,
+                            onTap: () {
+                              showCustomListDialog(
+                                context,
+                                anilistData!,
+                              );
+                            },
                           ),
                         ] else ...[
+                          _buildActionIconButton(
+                            context: context,
+                            icon: Icons.share_rounded,
+                            onTap: _showShareOptions,
+                          ),
+                          const SizedBox(width: 7),
                           Expanded(
                             child: AnymexButton2(
                               onTap: () {
@@ -501,7 +537,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              MangaStats(data: anilistData!),
+              MangaStats(
+                data: anilistData!,
+                friendsWatching: anilistData?.friendsWatching,
+                totalEpisodes: anilistData?.totalChapters,
+              ),
               const SizedBox(height: 20),
             ],
           ),

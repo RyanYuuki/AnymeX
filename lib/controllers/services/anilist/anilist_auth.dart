@@ -5,27 +5,26 @@ import 'dart:convert';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/database/comments_db.dart';
+import 'package:anymex/database/comments/comments_db.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
   Rx<Profile> profileData = Profile().obs;
-  final storage = Hive.box('auth');
   final offlineStorage = Get.find<OfflineStorageController>();
 
   Rx<TrackedMedia> currentMedia = TrackedMedia().obs;
@@ -38,7 +37,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token != null) {
       await fetchUserProfile();
       await fetchUserAnimeList();
@@ -291,7 +290,7 @@ class AnilistAuth extends GetxController {
               if (token.isNotEmpty) {
                 Navigator.pop(context);
                 try {
-                  await storage.put('auth_token', token);
+                  AuthKeys.authToken.set(token);
                   await fetchUserProfile();
                   await fetchUserAnimeList();
                   await fetchUserMangaList();
@@ -344,7 +343,7 @@ class AnilistAuth extends GetxController {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final token = data['access_token'];
-      await storage.put('auth_token', token);
+      AuthKeys.authToken.set(token);
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
@@ -360,7 +359,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> fetchUserProfile() async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
 
     if (token == null) {
       Logger.i('No token found');
@@ -388,6 +387,14 @@ class AnilistAuth extends GetxController {
           chaptersRead
           volumesRead
           meanScore
+        }
+      }
+      favourites {
+        anime {
+          pageInfo { total }
+        }
+        manga {
+          pageInfo { total }
         }
       }
     }
@@ -428,7 +435,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> fetchFollowersAndFollowing(String userId) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
 
     if (token == null) {
       Logger.i('No token found');
@@ -437,11 +444,11 @@ class AnilistAuth extends GetxController {
 
     const query = '''
   query(\$userId: Int!) {
-    Follower(userId: \$userId) {
-      id
+    followers: Page {
+      pageInfo { total }
     }
-    Following(userId: \$userId) {
-      id
+    following: Page {
+      pageInfo { total }
     }
   }
   ''';
@@ -462,14 +469,12 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        Logger.i(data.toString());
-
-        final followersList = data['data']['followers'] as List<dynamic>;
-        final followingList = data['data']['following'] as List<dynamic>;
+        final followersCount = data['data']['followers']['pageInfo']['total'] as int;
+        final followingCount = data['data']['following']['pageInfo']['total'] as int;
 
         final updatedProfile = profileData.value
-          ..followers = followersList.length
-          ..following = followingList.length;
+          ..followers = followersCount
+          ..following = followingCount;
 
         profileData.value = updatedProfile;
       } else {
@@ -482,7 +487,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> fetchUserAnimeList() async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       return;
     }
@@ -590,7 +595,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> deleteMediaFromList(String listId, {bool isAnime = true}) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       return;
     }
@@ -655,7 +660,7 @@ class AnilistAuth extends GetxController {
     int? progress,
     bool isAnime = true,
   }) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null || !isLoggedIn.value) {
       return;
     }
@@ -740,7 +745,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> fetchUserMangaList() async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       return;
     }
@@ -849,7 +854,7 @@ class AnilistAuth extends GetxController {
     int? progress,
     double score = 0.0,
   }) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       Logger.i('Auth token is not available.');
       return;
@@ -902,7 +907,7 @@ class AnilistAuth extends GetxController {
     int? progress,
     double? score,
   }) async {
-    final token = await storage.get('auth_token');
+    final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       Logger.i('Auth token is not available.');
       return;
@@ -949,12 +954,51 @@ class AnilistAuth extends GetxController {
     }
   }
 
+  Future<bool> toggleFavorite({required int id, required String type}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+   
+    final String idField = type == "CHARACTER" ? "characterId" : "staffId";
+    final mutation = '''
+    mutation (\$id: Int) {
+      ToggleFavourite($idField: \$id) {
+        characters {
+          nodes { id }
+        }
+        staff {
+          nodes { id }
+        }
+      }
+    }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i("Error toggling favorite: $e");
+      return false;
+    }
+  }
+
   TrackedMedia returnAvailAnime(String id) {
     return animeList.value
         .firstWhere((el) => el.id == id, orElse: () => TrackedMedia());
   }
 
-  void setCurrentMedia(String id, {bool isManga = false}) {
+  void setCurrentMedia(String id, {bool isManga = false}) async {
     if (isManga) {
       final savedManga = offlineStorage.getMangaById(id);
       final number = savedManga?.currentChapter?.number?.toInt() ?? 0;
@@ -965,7 +1009,7 @@ class AnilistAuth extends GetxController {
               ));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
       currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),
@@ -979,7 +1023,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> logout() async {
-    await storage.delete('auth_token');
+    AuthKeys.authToken.delete();
     profileData.value = Profile();
     isLoggedIn.value = false;
   }

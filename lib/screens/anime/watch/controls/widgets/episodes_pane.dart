@@ -1,9 +1,9 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
-import 'package:anymex/utils/string_extensions.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:dartotsu_extension_bridge/Mangayomi/string_extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -130,14 +130,14 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                             context.theme.colorScheme.surface,
                         boxShadow: [
                           BoxShadow(
-                            color: widget.shadowColor ??
-                                Colors.black.opaque(0.3),
+                            color:
+                                widget.shadowColor ?? Colors.black.opaque(0.3),
                             blurRadius: 20,
                             offset: const Offset(-4, 0),
                           ),
                           BoxShadow(
-                            color: context.theme.colorScheme.primary
-                                .opaque(0.1),
+                            color:
+                                context.theme.colorScheme.primary.opaque(0.1),
                             blurRadius: 30,
                             offset: const Offset(-8, 0),
                           ),
@@ -178,8 +178,7 @@ class EpisodesPane extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color:
-                      context.theme.colorScheme.surfaceVariant.opaque(0.3),
+                  color: context.theme.colorScheme.surfaceVariant.opaque(0.3),
                   border: Border(
                     bottom: BorderSide(
                       color: context.theme.colorScheme.outline.opaque(0.2),
@@ -208,8 +207,8 @@ class EpisodesPane extends StatelessWidget {
                         child: Icon(
                           Icons.close,
                           size: 20,
-                          color: context.theme.colorScheme.onSurface
-                              .opaque(0.7),
+                          color:
+                              context.theme.colorScheme.onSurface.opaque(0.7),
                         ),
                       ),
                     ),
@@ -221,7 +220,7 @@ class EpisodesPane extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: ScrollablePositionedList.separated(
                     initialScrollIndex:
-                        controller.currentEpisode.value.number.toInt() - 1,
+                        controller.currentEpisode.value.number!.toInt() - 1,
                     separatorBuilder: (context, i) => const SizedBox(height: 8),
                     itemCount: controller.episodeList.length,
                     itemBuilder: (context, index) {

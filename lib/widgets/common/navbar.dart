@@ -3,12 +3,12 @@ import 'dart:ui';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ResponsiveNavBar extends StatefulWidget {
@@ -96,8 +96,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: context.colors
-                            .surfaceContainer
+                        color: context.colors.surfaceContainer
                             .withValues(alpha: 0.2),
                       ),
                     ),
@@ -280,8 +279,8 @@ class _NavBarItemState extends State<NavBarItem>
                             borderRadius: BorderRadius.circular(1.5),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    theme.colorScheme.primary.opaque(0.6, iReallyMeanIt: true),
+                                color: theme.colorScheme.primary
+                                    .opaque(0.6, iReallyMeanIt: true),
                                 blurRadius: 12,
                                 spreadRadius: 1,
                                 offset: const Offset(0, 2),
@@ -370,8 +369,8 @@ class _NavBarItemState extends State<NavBarItem>
                             borderRadius: BorderRadius.circular(1.5),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    theme.colorScheme.primary.opaque(0.6, iReallyMeanIt: true),
+                                color: theme.colorScheme.primary
+                                    .opaque(0.6, iReallyMeanIt: true),
                                 blurRadius: 12,
                                 spreadRadius: 1,
                                 offset: const Offset(0, 2),
@@ -447,7 +446,8 @@ class BlurredContainer extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: borderRadius ?? BorderRadius.circular(24),
           border: Border.all(
-            color: borderColor ?? theme.colorScheme.onSurface.opaque(0.2, iReallyMeanIt: true),
+            color: borderColor ??
+                theme.colorScheme.onSurface.opaque(0.2, iReallyMeanIt: true),
             width: borderWidth,
           ),
           boxShadow: elevation != null

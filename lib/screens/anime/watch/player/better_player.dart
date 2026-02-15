@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'base_player.dart';
 
@@ -72,6 +73,7 @@ class BetterPlayerImpl extends BasePlayer {
 
   @override
   Future<void> initialize() async {
+    WakelockPlus.enable();
     final betterPlayerConfiguration = BetterPlayerConfiguration(
       autoPlay: true,
       autoDetectFullscreenDeviceOrientation: true,
@@ -377,6 +379,7 @@ class BetterPlayerImpl extends BasePlayer {
 
   @override
   Future<void> dispose() async {
+    WakelockPlus.disable();
     _isDisposed = true;
 
     _positionTimer?.cancel();

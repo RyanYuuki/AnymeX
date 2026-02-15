@@ -1,9 +1,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/relation.dart';
-import 'package:anymex/models/Offline/Hive/chapter.dart';
-import 'package:anymex/models/Offline/Hive/offline_media.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/utils/logger.dart';
@@ -36,6 +37,7 @@ class Media {
   List<String> genres;
   List<String>? studios;
   List<Character>? characters;
+  List<Staff>? staff;
   List<Relation>? relations;
   List<Media> recommendations;
   NextAiringEpisode? nextAiringEpisode;
@@ -44,6 +46,10 @@ class Media {
   DateTime? createdAt;
   bool? isAdult;
   String? sourceName;
+  List<TrackedMedia>? friendsWatching;
+  String? userStatus;
+  String? characterRole;
+  int? seasonYear;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -74,6 +80,8 @@ class Media {
       this.genres = const [],
       this.studios,
       this.characters,
+      this.staff,
+      this.seasonYear,
       this.altMediaContent,
       this.relations,
       this.recommendations = const [],
@@ -82,6 +90,9 @@ class Media {
       this.mediaContent,
       required this.serviceType,
       this.sourceName,
+      this.friendsWatching,
+      this.userStatus,
+      this.characterRole,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -120,6 +131,45 @@ class Media {
       rankings: [],
       mediaContent: [],
       mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
+      serviceType: ServicesType.mal,
+    );
+  }
+
+  factory Media.fromJikan(Map<String, dynamic> json, {bool isManga = false}) {
+    return Media(
+      id: json['mal_id']?.toString() ?? '0',
+      title: json['title'] ?? '??',
+      romajiTitle: json['title_english'] ?? json['title'] ?? '??',
+      description: json['synopsis'] ?? '??',
+      poster: json['images']?['jpg']?['image_url'] ?? '??',
+      cover: json['images']?['jpg']?['large_image_url'] ??
+          json['images']?['jpg']?['image_url'] ??
+          '??',
+      totalEpisodes: json['episodes']?.toString() ?? '??',
+      totalChapters: json['chapters']?.toString() ?? '??',
+      type: json['type'] ?? '??',
+      season: json['season'] ?? '??',
+      premiered: json['aired']?['from'] ?? json['published']?['from'] ?? '??',
+      duration: json['duration'] ?? '??',
+      status: (json['status'] ?? '??').replaceAll('_', ' '),
+      rating: json['score']?.toString() ?? '??',
+      popularity: json['popularity']?.toString() ?? '??',
+      format: json['type'] ?? '??',
+      aired: json['aired']?['from'] ?? json['published']?['from'] ?? '??',
+      genres: (json['genres'] as List<dynamic>?)
+              ?.map((g) => g['name']?.toString() ?? '??')
+              .toList() ??
+          [],
+      studios: (json['studios'] as List<dynamic>?)
+          ?.map((s) => s['name']?.toString() ?? '??')
+          .toList(),
+      characters: [],
+      relations: [],
+      recommendations: [],
+      nextAiringEpisode: null,
+      rankings: [],
+      mediaContent: [],
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.mal,
     );
   }
@@ -278,13 +328,14 @@ class Media {
     );
   }
 
-  factory Media.fromJson(Map<String, dynamic> json) {
+  factory Media.fromJson(Map<String, dynamic> json, {Map<String, dynamic>? pageJson}) {
     ItemType type = json['type'] == "ANIME"
         ? ItemType.anime
         : json['type'] == "MANGA"
             ? ItemType.manga
             : ItemType.novel;
-    return Media(
+    
+    var media = Media(
       id: json['id'].toString(),
       idMal: json['idMal'].toString(),
       romajiTitle: json['title']['romaji'] ?? '?',
@@ -304,18 +355,19 @@ class Media {
       popularity: json['popularity']?.toString() ?? '6900',
       format: json['format'] ?? '?',
       aired: _parseDateRange(json['startDate'], json['endDate']),
+      seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
       totalChapters: json['chapters']?.toString() ?? '?',
       genres: List<String>.from(json['genres'] ?? []),
       studios: (json['studios']['nodes'] as List)
           .map((el) => el['name'].toString())
           .toList(),
-      characters: (json['characters']['edges'] as List)
-          .map((character) => Character.fromJson(character))
+      characters: (json['characters']['edges'] as List?)
+          ?.map((character) => Character.fromJson(character))
           .toList(),
       relations: (json['relations']['edges'] as List)
           .map((relation) => Relation.fromJson(relation))
           .toList(),
-      recommendations: (json['recommendations']['edges'] as List)
+      recommendations: (json['recommendations']['nodes'] as List)
           .map((recommendation) => Media.fromRecs(recommendation))
           .toList(),
       nextAiringEpisode: json['nextAiringEpisode'] != null
@@ -327,25 +379,45 @@ class Media {
       mediaType: type,
       serviceType: ServicesType.anilist,
     );
+
+    if (json['staffPreview'] != null) {
+      media.staff = (json['staffPreview']['edges'] as List?)
+          ?.map((e) => Staff.fromJson(e))
+          .toList();
+    }
+
+    if (pageJson != null) {
+      media.friendsWatching = (pageJson['mediaList'] as List?)
+          ?.map((e) => TrackedMedia.fromSocialJson(e))
+          .toList();
+    }
+
+    return media;
   }
 
   factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga,
-      {bool isMal = false}) {
+      {bool isMal = false, String? role}) {
+    if (json['type'] == 'MANGA') {
+      // Logger.i('Parsing MANGA: ${json['title']['romaji']}');
+    }
     return Media(
       id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '',
-      isAdult: json['isAdult'] ?? false,
-      totalEpisodes: json['episodes']?.toString() ?? '?',
+      isAdult: (json['isAdult'] as bool?) ?? false,
+      totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
       poster: json['coverImage']?['large'] ?? '?',
       largePoster: json['coverImage']?['extraLarge'] ?? '?',
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
-      type: isManga ? 'MANGA' : 'ANIME',
-      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
+      mediaType: (json['type'] == 'MANGA' || isManga) ? ItemType.manga : ItemType.anime,
+      userStatus: json['mediaListEntry']?['status'],
       serviceType: ServicesType.anilist,
-    );
+      characterRole: role,
+      seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
+    )..type = json['type'] ?? (isManga ? 'MANGA' : 'ANIME'); 
   }
   factory Media.fromCarouselData(CarouselData data, ItemType type) {
     return Media(
@@ -360,18 +432,18 @@ class Media {
 
   factory Media.fromRecs(Map<String, dynamic> json) {
     return Media(
-        id: json['node']['mediaRecommendation'] != null
-            ? json['node']['mediaRecommendation']['id'].toString()
+        id: json['mediaRecommendation'] != null
+            ? json['mediaRecommendation']['id'].toString()
             : '',
-        title: json['node']['mediaRecommendation'] != null
-            ? json['node']['mediaRecommendation']['title']['english'] ??
-                json['node']['mediaRecommendation']['title']['romaji']
+        title: json['mediaRecommendation'] != null
+            ? json['mediaRecommendation']['title']['english'] ??
+                json['mediaRecommendation']['title']['romaji']
             : '',
-        poster: json['node']['mediaRecommendation'] != null
-            ? json['node']['mediaRecommendation']['coverImage']['large']
+        poster: json['mediaRecommendation'] != null
+            ? json['mediaRecommendation']['coverImage']['large']
             : '',
-        rating: ((json['node']['mediaRecommendation'] != null
-                    ? json['node']['mediaRecommendation']['averageScore'] ?? 0
+        rating: ((json['mediaRecommendation'] != null
+                    ? json['mediaRecommendation']['averageScore'] ?? 0
                     : 0) /
                 10)
             .toString(),
@@ -380,7 +452,7 @@ class Media {
 
   factory Media.fromOfflineMedia(OfflineMedia offline, ItemType type) {
     return Media(
-      id: offline.id?.toString() ?? '0',
+      id: offline.mediaId.toString(),
       title: offline.name ?? offline.english ?? offline.jname ?? '?',
       romajiTitle: offline.jname ?? '?',
       description: offline.description ?? '?',
@@ -457,13 +529,6 @@ class Ranking {
       type: json['type'] ?? '?',
       year: json['year'] ?? 0,
     );
-  }
-}
-
-extension RemoveDupes on List<Media> {
-  List<Media> removeDupes() {
-    final seen = <String>{};
-    return where((media) => seen.add(media.id)).toList();
   }
 }
 
