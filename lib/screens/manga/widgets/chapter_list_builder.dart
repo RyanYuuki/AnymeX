@@ -185,7 +185,6 @@ class ChapterService {
       });
       return;
     }
-    
     final shouldTrack = anilistData.serviceType == ServicesType.extensions
         ? false
         : await showTrackingDialog(context);
@@ -200,6 +199,7 @@ class ChapterService {
       Future.delayed(const Duration(seconds: 1), () {
         onReturn();
       });
+      onReturn();
     }
   }
 
