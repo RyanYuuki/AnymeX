@@ -1,11 +1,8 @@
-
-
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/image_cropper.dart';
-
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -56,7 +53,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     _animation.addListener(() => _photoViewController.scale = _animation.value);
     widget.controller.photoViewController = _photoViewController;
     ever(widget.controller.readingLayout, (_) => setState(() {}));
-    ever(widget.controller.readingLayout, (_) => setState(() {}));
     ever(widget.controller.readingDirection, (_) => setState(() {}));
     ever(widget.controller.dualPageMode, (_) => setState(() {}));
   }
@@ -100,7 +96,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           _photoViewController.scale = newScale;
         }
       } else {
-         widget.controller.handleMouseScroll(event.scrollDelta.dy);
+        widget.controller.handleMouseScroll(event.scrollDelta.dy);
       }
     }
   }
@@ -181,15 +177,14 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     return Listener(
       onPointerSignal: _handlePointerSignal,
       onPointerPanZoomUpdate: (event) {
-        widget.controller.handleMouseScroll(-event.panDelta.dy * 4, isTrackpad: true);
+        widget.controller
+            .handleMouseScroll(-event.panDelta.dy * 4, isTrackpad: true);
       },
       onPointerPanZoomEnd: (event) {
         widget.controller.handleOverscrollEnd();
       },
       onPointerUp: widget.controller.onPointerUp,
       onPointerDown: widget.controller.onPointerDown,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: widget.controller.onScrollNotification,
       child: NotificationListener<ScrollNotification>(
         onNotification: widget.controller.onScrollNotification,
         child: Obx(() {
@@ -202,7 +197,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               return _buildContentView(context);
           }
         }),
-      ),
       ),
     );
   }
@@ -335,13 +329,10 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       reverse: widget.controller.readingDirection.value.reversed,
       onPageChanged: widget.controller.onPageChanged,
       itemBuilder: (context, index) {
-        return _buildSpread(
-            context, widget.controller.spreads[index], index);
+        return _buildSpread(context, widget.controller.spreads[index], index);
       },
     );
   }
-
-
 
   Widget _buildSpread(BuildContext context, ReaderPage spread, int index) {
     if (!spread.isSpread) {
@@ -358,7 +349,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
 
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
     final size = MediaQuery.of(context).size;
-    final isContinuous = widget.controller.readingLayout.value == MangaPageViewMode.continuous;
+    final isContinuous =
+        widget.controller.readingLayout.value == MangaPageViewMode.continuous;
 
     return Obx(() {
       return Padding(
@@ -377,12 +369,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                       : page.headers,
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
-                  cropThreshold: 30, // idk i hardcoded it cause , it wasn't good for AnymeX 
+                  cropThreshold: 30,
                 )
               : ExtendedImage.network(
                   page.url,
-                  cacheMaxAge: Duration(
-                      days: PlayerUiKeys.cacheDays.get<int>(7)),
+                  key: ValueKey(page.url),
+                  cacheMaxAge:
+                      Duration(days: PlayerUiKeys.cacheDays.get<int>(7)),
                   mode: ExtendedImageMode.none,
                   gaplessPlayback: true,
                   headers: (page.headers?.isEmpty ?? true)
@@ -393,21 +386,32 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         }
                       : page.headers,
                   fit: BoxFit.contain,
-                  constraints: isContinuous 
-                      ? BoxConstraints(maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
+                  constraints: isContinuous
+                      ? BoxConstraints(
+                          maxWidth: 500 *
+                              widget.controller.pageWidthMultiplier.value)
                       : null,
                   cache: true,
+                  clearMemoryCacheIfFailed: true,
                   alignment: Alignment.center,
                   filterQuality: FilterQuality.medium,
                   enableLoadState: true,
                   loadStateChanged: (ExtendedImageState state) {
                     switch (state.extendedImageLoadState) {
                       case LoadState.loading:
-                        final progress =
-                            (state.loadingProgress?.cumulativeBytesLoaded ??
-                                    0) /
-                                (state.loadingProgress?.expectedTotalBytes ?? 1)
-                                    .toDouble();
+                        final isCurrentPage =
+                            (widget.controller.currentPageIndex.value - 1) ==
+                                index;
+
+                        if (!isCurrentPage && !isContinuous) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final progress = (state
+                                    .loadingProgress?.cumulativeBytesLoaded ??
+                                0) /
+                            (state.loadingProgress?.expectedTotalBytes ?? 1)
+                                .toDouble();
                         return SizedBox(
                           height: size.height,
                           child: Center(
