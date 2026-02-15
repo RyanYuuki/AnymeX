@@ -15,6 +15,7 @@ class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
   final canShowUpdate = true.obs;
+  final playerControlThemeRx = 'default'.obs;
 
   RxBool enableBetaUpdates = false.obs;
 
@@ -48,6 +49,8 @@ class Settings extends GetxController {
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
     selectedShader = PlayerUiKeys.selectedShaderLegacy.get<String>("");
     selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
+    playerControlThemeRx.value =
+        PlayerUiKeys.playerControlTheme.get<String>('default');
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
 
@@ -241,6 +244,12 @@ class Settings extends GetxController {
   int get playerStyle => _getPlayerSetting((s) => s.playerStyle);
   set playerStyle(int value) =>
       _setPlayerSetting((s) => s?.playerStyle = value);
+
+  String get playerControlTheme => playerControlThemeRx.value;
+  set playerControlTheme(String value) {
+    playerControlThemeRx.value = value;
+    PlayerUiKeys.playerControlTheme.set(value);
+  }
 
   int get subtitleOutlineWidth =>
       _getPlayerSetting((s) => s.subtitleOutlineWidth);
