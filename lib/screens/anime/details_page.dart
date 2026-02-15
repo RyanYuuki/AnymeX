@@ -169,7 +169,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _fetchFillerInfo() async {
     final malId = anilistData?.idMal ?? widget.media.idMal;
-    if (malId == null) return;
+
 
     try {
       final data = await JikanService.getFillerEpisodes(malId.toString());
@@ -325,7 +325,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> applyAnifyCovers() async {
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
-      episodeList.value,
+      episodeList,
     );
     if (newEps.isNotEmpty &&
         newEps.first.thumbnail == null &&
@@ -460,7 +460,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
-                    widget.media.serviceType.onlineService.animeList.value;
+                    widget.media.serviceType.onlineService.animeList;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=
@@ -696,6 +696,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 () => AnimeStats(
                   data: anilistData!,
                   countdown: formatTime(timeLeft.value),
+                  friendsWatching: anilistData?.friendsWatching,
+                  totalEpisodes: anilistData?.totalEpisodes,
                 ),
               ),
               const SizedBox(height: 20),
@@ -708,6 +710,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           variant: DataVariant.relation,
         ),
         CharactersCarousel(characters: anilistData!.characters ?? []),
+        if (anilistData?.staff != null && anilistData!.staff!.isNotEmpty)
+          StaffCarousel(staff: anilistData!.staff!),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Animes",

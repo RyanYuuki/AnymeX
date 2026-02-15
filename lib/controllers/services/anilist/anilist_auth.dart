@@ -389,6 +389,14 @@ class AnilistAuth extends GetxController {
           meanScore
         }
       }
+      favourites {
+        anime {
+          pageInfo { total }
+        }
+        manga {
+          pageInfo { total }
+        }
+      }
     }
   }
   ''';
@@ -436,11 +444,11 @@ class AnilistAuth extends GetxController {
 
     const query = '''
   query(\$userId: Int!) {
-    Follower(userId: \$userId) {
-      id
+    followers: Page {
+      pageInfo { total }
     }
-    Following(userId: \$userId) {
-      id
+    following: Page {
+      pageInfo { total }
     }
   }
   ''';
@@ -461,14 +469,12 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        Logger.i(data.toString());
-
-        final followersList = data['data']['followers'] as List<dynamic>;
-        final followingList = data['data']['following'] as List<dynamic>;
+        final followersCount = data['data']['followers']['pageInfo']['total'] as int;
+        final followingCount = data['data']['following']['pageInfo']['total'] as int;
 
         final updatedProfile = profileData.value
-          ..followers = followersList.length
-          ..following = followingList.length;
+          ..followers = followersCount
+          ..following = followingCount;
 
         profileData.value = updatedProfile;
       } else {
@@ -945,6 +951,45 @@ class AnilistAuth extends GetxController {
       }
     } catch (e) {
       Logger.i('Error while updating manga status: $e');
+    }
+  }
+
+  Future<bool> toggleFavorite({required int id, required String type}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+   
+    final String idField = type == "CHARACTER" ? "characterId" : "staffId";
+    final mutation = '''
+    mutation (\$id: Int) {
+      ToggleFavourite($idField: \$id) {
+        characters {
+          nodes { id }
+        }
+        staff {
+          nodes { id }
+        }
+      }
+    }
+  ''';
+
+    try {
+      final response = await post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i("Error toggling favorite: $e");
+      return false;
     }
   }
 
