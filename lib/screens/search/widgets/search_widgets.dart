@@ -332,6 +332,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     if (widget.currentFilters != null) {
       final filters = widget.currentFilters!;
 
+      // sort is stored as the raw API value e.g. "SCORE_DESC"
       String? currentSort = filters['sort'];
       if (currentSort != null) {
         for (String sortKey in sortOptions.keys) {
@@ -347,65 +348,75 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         }
       }
 
-      selectedSeason = filters['season'];
-      selectedStatus = filters['status'];
-      selectedCountry = filters['country'];
-      selectedYear = filters['year'];
-      showAdult = filters['adult'] ?? false;
-      showDoujin = filters['doujin'] ?? false;
-      onlyShowMine = filters['onlyShowMine'] ?? false;
-      hideMine = filters['hideMine'] ?? false;
+      // Keys match GraphQL variable names exactly
+      selectedSeason = filters['season'];           // $season: MediaSeason
+      selectedStatus = filters['status'];           // $status: MediaStatus
+      selectedCountry = filters['countryOfOrigin']; // $countryOfOrigin: CountryCode
+      showAdult = filters['isAdult'] ?? false;      // $isAdult: Boolean
+      onlyShowMine = filters['onList'] ?? false;    // $onList: Boolean (show my list)
+      hideMine = filters['onList'] == false
+          ? true
+          : false; // onList=false means hide
 
-      if (filters['formats'] is List) {
-        selectedFormats = List<String>.from(filters['formats']);
+      if (filters['format'] is List) {
+        selectedFormats = List<String>.from(filters['format']); // $format: [MediaFormat]
       }
       if (filters['genres'] != null && filters['genres'] is List) {
-        selectedGenres = List<String>.from(filters['genres']);
+        selectedGenres = List<String>.from(filters['genres']); // $genres: [String]
       }
       if (filters['tags'] is List) {
-        selectedTags = List<String>.from(filters['tags']);
+        selectedTags = List<String>.from(filters['tags']); // $tags: [String]
       }
-      if (filters['streamingOn'] is List) {
-        selectedStreamingOn = List<int>.from(filters['streamingOn']);
+      if (filters['licensedBy'] is List) {
+        selectedStreamingOn = List<int>.from(filters['licensedBy']); // $licensedBy: [Int]
       }
-      if (filters['yearRange'] is List &&
-          (filters['yearRange'] as List).length == 2) {
-        yearRange = RangeValues(
-          (filters['yearRange'][0] as num).toDouble(),
-          (filters['yearRange'][1] as num).toDouble(),
-        );
+
+      // $seasonYear: Int (single year)
+      selectedYear = filters['seasonYear'];
+
+      // Year range: $yearGreater / $yearLesser (stored as FuzzyDateInt e.g. 20230000)
+      final yg = filters['yearGreater'];
+      final yl = filters['yearLesser'];
+      if (yg != null && yl != null) {
+        final startYear = (yg as int) ~/ 10000;
+        final endYear = (yl as int) ~/ 10000;
+        yearRange = RangeValues(startYear.toDouble(), endYear.toDouble());
         useYearRange = true;
       }
-      if (filters['episodeRange'] is List &&
-          (filters['episodeRange'] as List).length == 2) {
-        episodeRange = RangeValues(
-          (filters['episodeRange'][0] as num).toDouble(),
-          (filters['episodeRange'][1] as num).toDouble(),
-        );
+
+      // Episode range: $episodeGreater / $episodeLesser
+      final eg = filters['episodeGreater'];
+      final el = filters['episodeLesser'];
+      if (eg != null && el != null) {
+        episodeRange =
+            RangeValues((eg as int).toDouble(), (el as int).toDouble());
         useEpisodeRange = true;
       }
-      if (filters['durationRange'] is List &&
-          (filters['durationRange'] as List).length == 2) {
-        durationRange = RangeValues(
-          (filters['durationRange'][0] as num).toDouble(),
-          (filters['durationRange'][1] as num).toDouble(),
-        );
+
+      // Duration range: $durationGreater / $durationLesser
+      final dg = filters['durationGreater'];
+      final dl = filters['durationLesser'];
+      if (dg != null && dl != null) {
+        durationRange =
+            RangeValues((dg as int).toDouble(), (dl as int).toDouble());
         useDurationRange = true;
       }
-      if (filters['chaptersRange'] is List &&
-          (filters['chaptersRange'] as List).length == 2) {
-        chaptersRange = RangeValues(
-          (filters['chaptersRange'][0] as num).toDouble(),
-          (filters['chaptersRange'][1] as num).toDouble(),
-        );
+
+      // Chapter range: $chapterGreater / $chapterLesser
+      final cg = filters['chapterGreater'];
+      final cl = filters['chapterLesser'];
+      if (cg != null && cl != null) {
+        chaptersRange =
+            RangeValues((cg as int).toDouble(), (cl as int).toDouble());
         useChaptersRange = true;
       }
-      if (filters['volumesRange'] is List &&
-          (filters['volumesRange'] as List).length == 2) {
-        volumesRange = RangeValues(
-          (filters['volumesRange'][0] as num).toDouble(),
-          (filters['volumesRange'][1] as num).toDouble(),
-        );
+
+      // Volume range: $volumeGreater / $volumeLesser
+      final vg = filters['volumeGreater'];
+      final vl = filters['volumeLesser'];
+      if (vg != null && vl != null) {
+        volumesRange =
+            RangeValues((vg as int).toDouble(), (vl as int).toDouble());
         useVolumesRange = true;
       }
     }
@@ -1032,7 +1043,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
             _buildToggleChip(
                 label: '📚 Doujin',
                 value: showDoujin,
-                onTap: () => setState(() => showDoujin = !showDoujin)),
+                onTap: () => setState(() => showDoujin = !showDoujin)), // maps to source: DOUJIN
             _buildToggleChip(
                 label: isManga ? '📖 My Manga Only' : '📺 My Anime Only',
                 value: onlyShowMine,
@@ -1894,55 +1905,75 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   }
 
   void _applyFilters() {
-    String? finalSort;
+    // $sort: [MediaSort]
+    List<String>? finalSort;
     if (selectedSortBy != null && selectedSortType != null) {
-      finalSort = sortOptions[selectedSortBy!]![selectedSortType!];
+      final s = sortOptions[selectedSortBy!]![selectedSortType!];
+      if (s != null) finalSort = [s];
     }
 
     final Map<String, dynamic> result = {
+      // $season: MediaSeason
       'season': selectedSeason,
+      // $sort: [MediaSort]
       'sort': finalSort,
-      'formats': selectedFormats.isEmpty ? null : selectedFormats,
+      // $format: [MediaFormat]
+      'format': selectedFormats.isEmpty ? null : selectedFormats,
+      // $genres: [String]
       'genres': selectedGenres.isEmpty ? null : selectedGenres,
+      // $tags: [String]
       'tags': selectedTags.isEmpty ? null : selectedTags,
+      // $status: MediaStatus
       'status': selectedStatus,
-      'year': useYearRange ? null : selectedYear,
-      'country': selectedCountry,
-      'adult': showAdult ? true : null,
-      'doujin': showDoujin ? true : null,
-      'onlyShowMine': onlyShowMine ? true : null,
-      'hideMine': hideMine ? true : null,
-      'streamingOn': selectedStreamingOn.isEmpty ? null : selectedStreamingOn,
+      // $countryOfOrigin: CountryCode
+      'countryOfOrigin': selectedCountry,
+      // $isAdult: Boolean
+      'isAdult': showAdult,
+      // $licensedBy: [Int]
+      'licensedBy': selectedStreamingOn.isEmpty ? null : selectedStreamingOn,
+      // $isLicensed: Boolean — only when streaming filter is active
+      'isLicensed': selectedStreamingOn.isNotEmpty ? true : null,
+      // $onList: Boolean (true=only my list, false=hide my list, null=all)
+      'onList': onlyShowMine ? true : hideMine ? false : null,
+      // $source: MediaSource (DOUJIN when doujin toggle is on)
+      'source': showDoujin ? 'DOUJIN' : null,
     };
 
-    if (useYearRange && yearRange.end < 2027) {
-      result['yearRange'] = [yearRange.start.toInt(), yearRange.end.toInt()];
+    // $seasonYear: Int — single year
+    if (!useYearRange && selectedYear != null) {
+      result['seasonYear'] = selectedYear;
+      // $year: String — used as startDate_like e.g. "2023%"
+      result['year'] = '${selectedYear}%';
     }
+
+    // Year range → FuzzyDateInt (YYYYMMDD where MM/DD = 0 means any)
+    // $yearGreater / $yearLesser: FuzzyDateInt
+    if (useYearRange && yearRange.end < 2027) {
+      result['yearGreater'] = yearRange.start.toInt() * 10000;
+      result['yearLesser'] = (yearRange.end.toInt() + 1) * 10000;
+    }
+
     if (!isManga) {
+      // $episodeGreater / $episodeLesser: Int
       if (useEpisodeRange && episodeRange.end < 150) {
-        result['episodeRange'] = [
-          episodeRange.start.toInt(),
-          episodeRange.end.toInt()
-        ];
+        result['episodeGreater'] = episodeRange.start.toInt();
+        result['episodeLesser'] = episodeRange.end.toInt();
       }
+      // $durationGreater / $durationLesser: Int
       if (useDurationRange && durationRange.end < 170) {
-        result['durationRange'] = [
-          durationRange.start.toInt(),
-          durationRange.end.toInt()
-        ];
+        result['durationGreater'] = durationRange.start.toInt();
+        result['durationLesser'] = durationRange.end.toInt();
       }
     } else {
+      // $chapterGreater / $chapterLesser: Int
       if (useChaptersRange && chaptersRange.end < 500) {
-        result['chaptersRange'] = [
-          chaptersRange.start.toInt(),
-          chaptersRange.end.toInt()
-        ];
+        result['chapterGreater'] = chaptersRange.start.toInt();
+        result['chapterLesser'] = chaptersRange.end.toInt();
       }
+      // $volumeGreater / $volumeLesser: Int
       if (useVolumesRange && volumesRange.end < 50) {
-        result['volumesRange'] = [
-          volumesRange.start.toInt(),
-          volumesRange.end.toInt()
-        ];
+        result['volumeGreater'] = volumesRange.start.toInt();
+        result['volumeLesser'] = volumesRange.end.toInt();
       }
     }
 
