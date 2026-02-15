@@ -5,6 +5,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:get/get.dart';
 
@@ -53,23 +54,32 @@ class _MangaHomePageState extends State<MangaHomePage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: statusBarHeight + appBarHeight),
-                const SizedBox(height: 10),
-                Obx(() {
-                  return Column(
-                    children: serviceHandler.mangaWidgets(context),
-                  );
-                }),
-                if (!isDesktop)
-                  SizedBox(height: bottomNavBarHeight)
-                else
-                  const SizedBox(height: 50),
-              ],
+          ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.trackpad,
+              },
+            ),
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: statusBarHeight + appBarHeight),
+                  const SizedBox(height: 10),
+                  Obx(() {
+                    return Column(
+                      children: serviceHandler.mangaWidgets(context),
+                    );
+                  }),
+                  if (!isDesktop)
+                    SizedBox(height: bottomNavBarHeight)
+                  else
+                    const SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
           CustomAnimatedAppBar(
