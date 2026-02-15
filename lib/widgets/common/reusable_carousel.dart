@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+import 'package:flutter/gestures.dart' as gestures;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -46,6 +48,14 @@ class ReusableCarousel extends StatefulWidget {
 }
 
 class _ReusableCarouselState extends State<ReusableCarousel> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isEmptyOrOffline) {
@@ -126,12 +136,40 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       return SizedBox(
         height: getCardHeight(CardStyle.values[settingsController.cardStyle],
             getPlatform(context)),
-        child: SuperListView.builder(
-          itemCount: processedData.length,
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
-          itemBuilder: (context, index) =>
-              _buildCarouselItem(processedData[index], index),
+        child: Listener(
+          onPointerSignal: (pointerSignal) {
+            if (pointerSignal is gestures.PointerScrollEvent) {
+              final double newOffset = _scrollController.offset +
+                  (pointerSignal.scrollDelta.dy != 0
+                      ? pointerSignal.scrollDelta.dy
+                      : pointerSignal.scrollDelta.dx);
+              if (newOffset != _scrollController.offset) {
+                _scrollController.jumpTo(newOffset.clamp(
+                  _scrollController.position.minScrollExtent,
+                  _scrollController.position.maxScrollExtent,
+                ));
+              }
+            }
+          },
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                ui.PointerDeviceKind.touch,
+                ui.PointerDeviceKind.mouse,
+                ui.PointerDeviceKind.trackpad,
+              },
+              scrollbars: false,
+            ),
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: processedData.length,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
+              itemBuilder: (context, index) =>
+                  _buildCarouselItem(processedData[index], index),
+            ),
+          ),
         ),
       );
     });

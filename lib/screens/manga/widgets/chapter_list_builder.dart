@@ -21,6 +21,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/utils/logger.dart';
 
 class ChapterState {
   final int? userProgress;
@@ -202,6 +203,7 @@ class ChapterService {
       onReturn();
     }
   }
+}
 
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter>? chapters;
@@ -699,10 +701,10 @@ class ContinueChapterButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Continue: ${chapter.title}'.toUpperCase(),
-              style: textStyle ??
+              'Continue: ${this.chapter.title}'.toUpperCase(),
+              style: this.textStyle ??
                   TextStyle(
-                    color: textColor,
+                    color: this.textColor,
                     fontFamily: 'Poppins-SemiBold',
                   ),
             ),
@@ -711,7 +713,7 @@ class ContinueChapterButton extends StatelessWidget {
               color: context.colors.primary,
               height: 2,
               width: 6 *
-                  'Chapter ${chapter.number}: ${chapter.title}'
+                  'Chapter ${this.chapter.number}: ${this.chapter.title}'
                       .length
                       .toDouble(),
             ),

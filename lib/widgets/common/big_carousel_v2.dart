@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/gestures.dart';
 
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -37,6 +38,30 @@ class BigCarouselV2 extends StatefulWidget {
 class _BigCarouselV2State extends State<BigCarouselV2> {
   int activeIndex = 0;
   final CarouselSliderController controller = CarouselSliderController();
+  double _scrollDelta = 0;
+  DateTime _lastScrollTime = DateTime.now();
+
+  void _handleScroll(Offset delta) {
+    final now = DateTime.now();
+    if (now.difference(_lastScrollTime) < const Duration(milliseconds: 300)) {
+      return;
+    }
+
+    _scrollDelta += delta.dy;
+    if (delta.dx != 0) {
+      _scrollDelta -= delta.dx;
+    }
+
+    if (_scrollDelta.abs() > 15) {
+      if (_scrollDelta > 0) {
+        controller.nextPage();
+      } else {
+        controller.previousPage();
+      }
+      _scrollDelta = 0;
+      _lastScrollTime = now;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,39 +76,60 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             children: [
-              CarouselSlider.builder(
-                itemCount: newData.length,
-                itemBuilder: (context, index, realIndex) {
-                  final item = newData[index];
-                  final isActive = index == activeIndex;
-                  return _CarouselCard(
-                    media: item,
-                    isActive: isActive,
-                    carouselType: widget.carouselType,
-                    onTap: () => navigateToDetailsPage(item),
-                    onShowDescription: () =>
-                        _showDescriptionSheet(context, item),
-                  );
-                },
-                options: CarouselOptions(
-                  height: 400,
-                  viewportFraction: 0.65,
-                  enlargeCenterPage: true,
-                  enlargeFactor: 0.2,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  autoPlay: !kDebugMode,
-                  autoPlayInterval: const Duration(seconds: 6),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      activeIndex = index;
-                    });
-                  },
-                ),
-                carouselController: controller,
+
+              Stack(
+                children: [
+                  CarouselSlider.builder(
+                    itemCount: newData.length,
+                    itemBuilder: (context, index, realIndex) {
+                      final item = newData[index];
+                      final isActive = index == activeIndex;
+                      return _CarouselCard(
+                        media: item,
+                        isActive: isActive,
+                        carouselType: widget.carouselType,
+                        onTap: () => navigateToDetailsPage(item),
+                        onShowDescription: () =>
+                            _showDescriptionSheet(context, item),
+                      );
+                    },
+                    options: CarouselOptions(
+                      height: 400,
+                      viewportFraction: 0.65,
+                      enlargeCenterPage: true,
+                      enlargeFactor: 0.2,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      autoPlay: !kDebugMode,
+                      autoPlayInterval: const Duration(seconds: 6),
+                      autoPlayAnimationDuration:
+                          const Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      scrollDirection: Axis.horizontal,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          activeIndex = index;
+                        });
+                      },
+                    ),
+                    carouselController: controller,
+                  ),
+                  Positioned.fill(
+                    child: Listener(
+                      behavior: HitTestBehavior.translucent,
+                      onPointerSignal: (pointerSignal) {
+                        if (pointerSignal is PointerScrollEvent) {
+                          _handleScroll(pointerSignal.scrollDelta);
+                        }
+                      },
+                      onPointerPanZoomUpdate: (event) {
+                       
+                        _handleScroll(event.panDelta);
+                      },
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               AnimatedSmoothIndicator(
