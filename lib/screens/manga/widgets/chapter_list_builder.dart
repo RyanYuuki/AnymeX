@@ -161,10 +161,22 @@ class ChapterService {
       Chapter currentChapter,
       BuildContext context,
       VoidCallback onReturn) async {
+  
+    List<Chapter> optimizedList = chapterList;
+    
+    if (currentChapter.scanlator != null && currentChapter.scanlator!.isNotEmpty) {
+      final hasScanlatorDuplicates = chapterList.where((e) => e.number == currentChapter.number).length > 1;
+      
+      if (hasScanlatorDuplicates) {
+        optimizedList = chapterList.where((e) => e.scanlator == currentChapter.scanlator).toList();
+        Logger.i("Filtered reading list to scanlator: ${currentChapter.scanlator}");
+      }
+    }
+
     if (General.shouldAskForTrack.get(true) == false) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
-            chapterList: chapterList,
+            chapterList: optimizedList,
             currentChapter: currentChapter,
             shouldTrack: true,
           ));
@@ -173,6 +185,7 @@ class ChapterService {
       });
       return;
     }
+    
     final shouldTrack = anilistData.serviceType == ServicesType.extensions
         ? false
         : await showTrackingDialog(context);
@@ -180,17 +193,15 @@ class ChapterService {
     if (shouldTrack != null) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
-            chapterList: chapterList,
+            chapterList: optimizedList,
             currentChapter: currentChapter,
             shouldTrack: shouldTrack,
           ));
       Future.delayed(const Duration(seconds: 1), () {
         onReturn();
       });
-      onReturn();
     }
   }
-}
 
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter>? chapters;
