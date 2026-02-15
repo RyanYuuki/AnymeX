@@ -53,40 +53,22 @@ class MangaDetailsPage extends StatefulWidget {
 }
 
 class _MangaDetailsPageState extends State<MangaDetailsPage> {
-  // AnilistData
   Media? anilistData;
   Rx<TrackedMedia?> currentManga = TrackedMedia().obs;
   final anilist = Get.find<AnilistAuth>();
   late ServicesType mediaService;
-  // Tracker for Avail Anime
   RxBool isListedManga = false.obs;
-
-  // Offline Storage
   final offlineStorage = Get.find<OfflineStorageController>();
 
-  // Extension Data
   RxString searchedTitle = ''.obs;
   RxList<Chapter>? chapterList = <Chapter>[].obs;
-
-  // Page View Tracker
   RxInt selectedPage = 0.obs;
-
-  // Current Manga
   RxDouble mangaScore = 0.0.obs;
   RxInt mangaProgress = 0.obs;
   RxString mangaStatus = "".obs;
-
-  // Tracker's Controller
   PageController controller = PageController();
 
-  void _onPageSelected(int index) {
-    selectedPage.value = index;
-    controller.animateToPage(index,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  }
-
   final sourceController = Get.find<SourceController>();
-
   String posterColor = '';
 
   @override
@@ -105,9 +87,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = mediaService.onlineService.currentMedia;
 
-    if (data.value.id != null && data.value.id != '') {
+    if (data.value.id != null || data.value.id != '') {
       isListedManga.value = true;
-      currentManga.value = data.value;
+      currentManga = data;
     } else {
       isListedManga.value = false;
       currentManga.value = null;
@@ -116,7 +98,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   void _initListVars() {
-    Logger.i('[_initListVars] ${currentManga.value?.episodeCount}');
     mangaProgress.value = currentManga.value?.episodeCount?.toInt() ?? 0;
     mangaScore.value = currentManga.value?.score?.toDouble() ?? 0.0;
     mangaStatus.value = currentManga.value?.watchingStatus ?? "";
@@ -144,24 +125,21 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       CommentPreloader.to.removePreloadedController(widget.media.id.toString());
       CommentPreloader.to.preloadComments(anilistData!);
       if (isExtensions) {
-        Logger.i("Data Loaded for media => ${widget.media.title}");
         _processExtensionData(tempData);
       } else {
         await _mapToService();
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (e.toString().contains("dynamic")) {
         _fetchAnilistData();
       }
-      Logger.i(e.toString());
-      Logger.i(stackTrace.toString());
     }
   }
 
-  Future<void> _mapToService() async {
+  Future<void> _mapToService({String? newTitle}) async {
     final key =
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
-    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
+    final savedTitle = newTitle ?? DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(formatTitles(anilistData!), searchedTitle,
         savedTitle: savedTitle);
     if (mappedData != null) {
@@ -172,7 +150,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   void _processExtensionData(Media tempData) async {
     final chapters = tempData.mediaContent!.reversed.toList();
     final convertedEpisodes = _convertChapters(chapters, tempData.title);
-
     chapterList?.value = convertedEpisodes;
     searchedTitle.value = tempData.title;
     setState(() {});
@@ -190,16 +167,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       );
       chapterList?.value = episodes;
       searchedTitle.value = media.title;
-
-      // FIX: Re-check presence to update the "Continue Reading" button with new links
-      _checkMangaPresence();
-
       setState(() {});
     } catch (e) {
       if (e.toString().contains("dynamic")) {
         _fetchSourceDetails(media);
       }
-      Logger.i(e.toString());
     }
   }
 
@@ -209,6 +181,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   List<Chapter> _convertChapters(List<DEpisode> chapters, String title) {
     return DEpisodeToChapter(chapters, title);
+  }
+
+  void _onPageSelected(int index) {
+    selectedPage.value = index;
+    controller.animateToPage(index,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   @override
@@ -407,12 +385,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       if (value is String) return num.tryParse(value) ?? 1;
       return 1;
     }
-
     final num current = parseNum(currentChapter);
     final num total = parseNum(totalChapters) != 1
         ? parseNum(totalChapters)
         : parseNum(altLength);
-
     final num safeTotal = total.clamp(1, double.infinity);
     if (safeTotal < current) return '??';
     final progress = (current / safeTotal) * 100;
@@ -453,9 +429,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                   AnymexTextSpan(
-                    text: anilistData?.totalChapters.toString() ??
-                        anilistData?.totalChapters.toString() ??
-                        '??',
+                    text: anilistData?.totalChapters.toString() ?? '??',
                     variant: TextVariant.bold,
                     color: context.colors.primary,
                   ),
@@ -491,11 +465,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       sourceController: sourceController,
       mapToAnilist: _mapToService,
       getDetailsFromSource: _fetchSourceDetails,
-      showWrongTitleModal: showWrongTitleModal,
+      showWrongTitleModal: (ctx, title, onSelected, {required isManga}) {
+        showWrongTitleModal(ctx, title, (manga) {
+          final key = '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
+          DynamicKeys.mappedMediaTitle.set(key, manga.title);
+          searchedTitle.value = manga.title; 
+          chapterList?.clear();
+          _mapToService(newTitle: manga.title);
+        }, isManga: isManga);
+      },
     );
   }
 
-  // Common Info Section
   Column _buildCommonInfo(BuildContext context) {
     return Column(
       children: [
@@ -506,6 +487,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               const SizedBox(height: 20),
               MangaStats(
                 data: anilistData!,
+                friendsWatching: anilistData?.friendsWatching,
+                totalEpisodes: anilistData?.totalChapters,
               ),
               const SizedBox(height: 20),
             ],
@@ -527,7 +510,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       ],
     );
   }
-  // Common Info Section
 
   Glow _buildAndroidLayout(BuildContext context) {
     return Glow(
@@ -541,7 +523,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     );
   }
 
-  // Desktop Navigation bar: START
   Widget _buildDesktopNav() {
     return Obx(() => Container(
           margin: const EdgeInsets.all(20),
@@ -552,11 +533,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               Container(
                 width: 70,
                 height: 65,
-                padding: const EdgeInsets.all(0),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 0,
-                ),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     color: Colors.transparent,
@@ -571,9 +547,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 child: NavBarItem(
                     isSelected: false,
                     isVertical: true,
-                    onTap: () {
-                      Get.back();
-                    },
+                    onTap: () => Get.back(),
                     selectedIcon: Iconsax.back_square,
                     unselectedIcon: IconlyBold.arrow_left,
                     label: "Back"),
@@ -605,35 +579,31 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           ),
         ));
   }
-  // Desktop Navigation bar: END
 
-// Mobile Navigation bar: START
   Widget _buildMobiledNav() {
     return Obx(() => ResponsiveNavBar(
-        isDesktop: false,
-        currentIndex: selectedPage.value,
-        margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
-        items: [
-          NavItem(
-              onTap: _onPageSelected,
-              selectedIcon: Iconsax.info_circle5,
-              unselectedIcon: Iconsax.info_circle,
-              label: "Info"),
-          NavItem(
-              onTap: _onPageSelected,
-              selectedIcon: Iconsax.book,
-              unselectedIcon: Iconsax.book,
-              label: "Watch"),
-          NavItem(
-              onTap: _onPageSelected,
-              selectedIcon: HugeIcons.strokeRoundedComment01,
-              unselectedIcon: HugeIcons.strokeRoundedComment02,
-              label: "Comments"),
-        ]));
+            isDesktop: false,
+            currentIndex: selectedPage.value,
+            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+            items: [
+              NavItem(
+                  onTap: _onPageSelected,
+                  selectedIcon: Iconsax.info_circle5,
+                  unselectedIcon: Iconsax.info_circle,
+                  label: "Info"),
+              NavItem(
+                  onTap: _onPageSelected,
+                  selectedIcon: Iconsax.book,
+                  unselectedIcon: Iconsax.book,
+                  label: "Read"),
+              NavItem(
+                  onTap: _onPageSelected,
+                  selectedIcon: HugeIcons.strokeRoundedComment01,
+                  unselectedIcon: HugeIcons.strokeRoundedComment02,
+                  label: "Comments"),
+            ]));
   }
-  // Mobile Navigation bar: END
 
-  // List Editor Modal: START
   void showListEditorModal(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: context.colors.surfaceContainer,
@@ -669,5 +639,4 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       },
     );
   }
-  // List Editor Modal: END
 }
